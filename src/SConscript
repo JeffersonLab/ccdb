@@ -1,0 +1,84 @@
+
+Import('env')
+
+#TODO move to normal debug\release modes
+
+#debugcflags = ['-W1', '-GX', '-EHsc', '-D_DEBUG', '/MDd']   #extra compile flags for debug
+#releasecflags = ['-O2', '-EHsc', '-DNDEBUG', '/MD']         #extra compile flags for release
+#env.Append(CCFLAGS='-g')
+
+
+#Configure environment to create ccdb_library
+
+lib_target  = "ccdb"
+lib_sources = [
+    
+    #some global objects
+    "DObjectsOwner.cc",
+	"DStoredObject.cc",
+	"DConsole.cc",
+	"DLog.cc",
+	"DStringUtils.cc",
+	"DPathUtils.cc",
+	"DWorkUtils.cc",
+	"DCCDBError.cc",
+	
+	#model and provider
+	"Model/DAssignment.cc",
+	"Model/DConstantsTypeColumn.cc",
+	"Model/DConstantsTypeTable.cc",
+	"Model/DDirectory.cc",
+	"Model/DEventRange.cc",
+	"Model/DRunRange.cc",
+	"Model/DVariation.cc",
+	"Providers/DDataProvider.cc",
+	"Providers/DFileDataProvider.cc",
+	"Providers/DMySQLConnectionInfo.cc",
+	"Providers/DMySQLDataProvider.cc",
+	
+	#web
+	"Web/DConfigReader.cc",
+	"Web/DHttpContext.cc",
+	
+	#user api
+	"UserAPI/DCalibration.cc",
+	"UserAPI/DCalibrationGenerator.cc",
+	"UserAPI/DMySQLCalibration.cc",
+	"UserAPI/DCCDBGlobalMutex.cc"
+	]
+
+env.ParseConfig('mysql_config --libs --cflags')
+
+#Making library
+lib = env.SharedLibrary(target = lib_target, source = lib_sources)
+env.Install('#lib', lib)
+
+#Configure environment to create tests
+test_sources = [
+	"Tests/benchmark_PreparedStatements.cc",
+	"Tests/benchmark_Providers.cc",
+	"Tests/test_DConsole.cc",
+	"Tests/test_DMySQLProvider_Assignments.cc",
+	"Tests/test_DMySQLProvider_Connection.cc",
+	"Tests/test_DMySQLProvider.cc",
+	"Tests/test_DMySQLProvider_Directories.cc",
+	"Tests/test_DMySQLProvider_Other.cc",
+	"Tests/test_DMySQLProvider_RunRanges.cc",
+	"Tests/test_DMySQLProvider_RunRangesVariations.cc",
+	"Tests/test_DMySQLProvider_TypeTables.cc",
+	"Tests/test_DMySQLProvider_Variations.cc",
+	"Tests/test_DStringUtils.cc",
+	"Tests/test_DPathUtils.cc",
+	"Tests/test_ModelObjects.cc",
+	"Tests/test_UserAPI.cc",
+	"mainTests.cc"
+	]
+
+#Making tests
+ccdb_tests_program = env.Program('ccdb_tests', source = test_sources, LIBS=[lib_target], LIBPATH='#lib')
+env.Install('#bin', ccdb_tests_program)
+
+
+#Making web cgi sctipt
+ccdb_web_program = env.Program('ccdb_cgi', source = ["mainWeb.cc"], LIBS=[lib_target], LIBPATH='#lib')
+env.Install('#web/cgi-bin', ccdb_web_program)

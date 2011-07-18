@@ -1,0 +1,7 @@
+
+#this is a comment   
+#more comments on this line   "something in the string"
+#meta variation : default
+#& x y z
+10 20 30
+40 50 30e-2

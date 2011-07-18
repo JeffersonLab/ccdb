@@ -1,0 +1,42 @@
+GENERAL
+=======
+
+$CCDB_HOME should point to the current directory (directory which has: bin, lib, src, etc.)
+
+
+*  [MySQL x86 for windows](http://www.mysql.com/downloads/mysql/) 
+*  [Pthreads-w32](http://sourceware.org/pthreads-win32/)
+
+Windows
+swig should be somewhere in the path in order to automaticly build swig wrapping from visual studio, otherwise disable "Wrapping" projects from build.
+
+
+need to be installed
+MySQL x86 for windows
+MySQL Connector C x86 for windows
+Windows Services for UNIX Version 3.5
+Steps
+1) Install MySQL x86
+
+2) Install MySQL Connector C x86
+
+3) install python
+3.2) install readline for windows. One of which
+	https://launchpad.net/pyreadline/+download
+	
+*both are easy to find via google or on MySQL web site
+
+4) Get CCDB sources
+
+5) set environmen variables CCDB_HOME, PYTHON_INCLUDE, PYTHON_LIB
+   5.1) Set CCDB_HOME directory. CCDB_HOME is a directory that contain /bin, lib, include, src ... and this file. 
+      a) pres win+r and type cmd. Or start cmd by any other method. 
+      b) write
+      setx CCDB_HOME C:\Your\Path\To\CCDB\home
+
+   5.2 set PYTHON_INCLUDE and PYTHON_LIB directories. If you installed python to C:\python\Python27_32 you may type in cmd
+      setx PYTHON_INCLUDE C:\python\Python27_32\include
+      setx PYTHON_LIB  c:\Python\Python\libs\python27.lib
+
+One may also use	
+[Windows Services for UNIX](http://www.microsoft.com/download/en/details.aspx?id=274)

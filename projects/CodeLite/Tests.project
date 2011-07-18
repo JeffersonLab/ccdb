@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="Tests" InternalType="Console">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="Headers">
+    <File Name="../../../../../../../mnt/work/romanov/ccdb/ccdb/include/Tests/tests.h"/>
+    <File Name="../../../../../../../mnt/work/romanov/ccdb/ccdb/include/Tests/tests_macros.h"/>
+    <File Name="../../include/Tests/tests.h"/>
+    <File Name="../../include/Tests/tests_macros.h"/>
+  </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
+  <VirtualDirectory Name="Source">
+    <File Name="../../src/Tests/benchmark_Providers.cpp"/>
+    <File Name="../../src/Tests/test_DConsole.cpp"/>
+    <File Name="../../src/Tests/test_DMySQLProvider.cpp"/>
+    <File Name="../../src/Tests/test_DMySQLProvider_Assignments.cpp"/>
+    <File Name="../../src/Tests/test_DMySQLProvider_Connection.cpp"/>
+    <File Name="../../src/Tests/test_DMySQLProvider_Directories.cpp"/>
+    <File Name="../../src/Tests/test_DMySQLProvider_Other.cpp"/>
+    <File Name="../../src/Tests/test_DMySQLProvider_RunRanges.cpp"/>
+    <File Name="../../src/Tests/test_DMySQLProvider_RunRangesVariations.cpp"/>
+    <File Name="../../src/Tests/test_DMySQLProvider_TypeTables.cpp"/>
+    <File Name="../../src/Tests/test_DMySQLProvider_Variations.cpp"/>
+    <File Name="../../src/Tests/test_DStringUtils.cpp"/>
+    <File Name="../../src/Tests/test_ModelObjects.cpp"/>
+    <File Name="../../src/mainTests.cc"/>
+    <File Name="../../src/Tests/benchmark_PreparedStatements.cpp"/>
+  </VirtualDirectory>
+  <Settings Type="Executable">
+    <GlobalSettings>
+      <Compiler Options="$(shell mysql_config --cflags)" C_Options="">
+        <IncludePath Value="."/>
+        <IncludePath Value="$(WorkspacePath)/../../include"/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="$(shell mysql_config --libs)"/>
+        <LibraryPath Value="$(WorkspacePath)/../../lib"/>
+        <Library Value="ccdb"/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(WorkspacePath)/../../bin/tests" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Required="yes" PreCompiledHeader="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O2" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

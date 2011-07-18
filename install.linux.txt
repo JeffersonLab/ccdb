@@ -1,0 +1,111 @@
+  S T E P   1   -   E N V I R O N M E N T
+=========================================
+
+One must have CCDB_HOME variable pointitng to the root of CCDB package. 
+You can run script located at root of CCDB:
+
+##RUN CODE:
+
+     source environment.bash
+
+The script will determine it's path and set all needed directories to run and test ccdb.
+
+Or you can add next lines to your .bashrc
+
+##CODE FOR .bashrc:
+
+    #set CCDB environment
+    export CCDB_HOME=/path/to/ccdb/home/directory
+
+    export LD_LIBRARY_PATH="$CCDB_HOME/lib":$LD_LIBRARY_PATH
+    export PYTHONPATH="$CCDB_HOME/python":"$CCDB_HOME/python/ccdb/ccdb_pyllapi/":$PYTHONPATH
+    export PATH="$CCDB_HOME/bin":$
+
+
+
+  S T E P   2   -  M A K E
+==========================
+
+ make ccdb library for your system. 
+ scons            - makes ccdb library located $CCDB_HOME/lib and test executable located in $CCDB_HOME/bin
+ SwigPython.make  - makes python wrapping of CCDB C++ api. Not moved to scons yet
+
+
+##RUN CODE:
+
+    cd $CCDB_HOME
+    scons
+
+ the code will produce libccdb.so in $CCDB_HOME/lib and python wrapping library for python script.
+
+ It is desired design that all scripts to compile without swig installed.  But 
+ on alpha stage one may need to regenerate python wrapper by swig prior 
+ making SwigPython.make. If you were unable to make without calling swig, please, 
+ email to romanov@jlab.com
+ 
+ So if you have to regenerate swig wrappers:
+
+##RUN CODE:
+
+     swig -c++ -classic -python $CCDB_HOME/swig/ccdb_pyllapi.i
+
+ 
+
+  S T E P   3   -   M Y S Q L
+=============================
+
+ If You would like to install database on the local machine, you need to create a database (by default it is ment to be called ccdb). 
+ mysql script $CCDB_HOME/mysql/ccdb.mysql.sql generates schema for you. 
+ MySQL-Workbench project with mysql schema is located in the same directory. 
+
+##RUN CODE:
+
+      mysql -u root -p <$CCDB_HOME/mysql/ccdb.mysql.sql
+
+
+ 
+ Database ccdb will be created and filled with tables and some needed and semple records
+  
+ By default package tries to connect by using 'ccdb_user' user name with no password 
+ So You might whant to create such user or specify connection string explicitly later
+
+ To create the user for development purposes use sql command like this 
+
+##RUN CODE:
+
+     mysql -u root -p 
+     CREATE USER ccdb_user;
+     GRANT ALL PRIVILEGES ON ccdb.* TO 'ccdb_user'@'localhost' WITH GRANT OPTION;
+     exit;
+
+
+
+  T E S T
+===========
+ To test the CCDB installed correctly you might go to $CCDB_HOME/bin directory and run ./test 
+
+##RUN CODE:
+
+     cd $CCDB_HOME/bin
+     ./ccdb_tests
+
+You should see ccdb unit test running and successfully complete.
+
+
+To test python is working you may run ccdbcmd 
+
+#RUN CODE:
+
+     ccdbcmd -I
+
+interactive ccdb shell should be started
+
+
+
+  C O N T A C T S
+===================
+Any questions, suggestions or discussions:
+
+Dmitry romanov
+JLab id: romanov
+757-269-5332

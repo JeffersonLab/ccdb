@@ -1,0 +1,23 @@
+import os
+
+Import('default_env')
+
+#Create environment
+pyllapi_env = default_env.Clone()
+
+#Define sources and target
+pyllapi_target  = "pyllapi"
+pyllapi_sources = ["ccdb_pyllapi_wrap.cxx"]
+
+#Setup addintional dependencies
+pyllapi_env.ParseConfig('python-config --cflags --libs')
+pyllapi_env.ParseConfig('mysql_config --libs --cflags')
+pyllapi_env.Append(CCFLAGS='-g')
+pyllapi_env.Append(CCFLAGS='-fPIC')
+#Making library
+pyllapi_lib = pyllapi_env.SharedLibrary(target = pyllapi_target, source = pyllapi_sources)
+
+#Installing 
+pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so', pyllapi_lib)
+
+#Default(pyllapi_lib)

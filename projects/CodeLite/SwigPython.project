@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="SwigPython" InternalType="Library">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
+    </Plugin>
+  </Plugins>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="../../swig/ccdb_pyllapi_wrap.cxx"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="include"/>
+  <VirtualDirectory Name="swig_interface">
+    <File Name="../../swig/ccdb_pyllapi.i"/>
+    <File Name="../../swig/DAssignment.i"/>
+    <File Name="../../swig/DConstantsTypeColumn.i"/>
+    <File Name="../../swig/DConstantsTypeTable.i"/>
+    <File Name="../../swig/DConstantTypeTable.i"/>
+    <File Name="../../swig/DDataProvider.i"/>
+    <File Name="../../swig/DDirectory.i"/>
+    <File Name="../../swig/DMySQLDataProvider.i"/>
+    <File Name="../../swig/DRunRange.i"/>
+    <File Name="../../swig/DVariation.i"/>
+  </VirtualDirectory>
+  <Settings Type="Dynamic Library">
+    <GlobalSettings>
+      <Compiler Options="$(shell mysql_config --cflags) $(shell python-config --cflags) -shared" C_Options="">
+        <IncludePath Value="."/>
+        <IncludePath Value="$(WorkspacePath)/../../include"/>
+        <IncludePath Value="/usr/include/python2.7"/>
+      </Compiler>
+      <Linker Options="$(shell mysql_config --libs) $(shell python-config --libs) -shared">
+        <LibraryPath Value="$(WorkspacePath)/../../lib"/>
+        <Library Value="ccdb"/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(WorkspacePath)/../../python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild>
+        <Command Enabled="yes">swig -c++ -python $(WorkspacePath)/../../swig/ccdb_pyllapi.i</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">cp $(WorkspacePath)/../../swig/ccdb_pyllapi.py $(WorkspacePath)/../../python/ccdb/ccdb_pyllapi</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Required="yes" PreCompiledHeader="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O2" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="$(WorkspacePath)/../../python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild>
+        <Command Enabled="yes">swig -c++ -python $(WorkspacePath)/../../swig/ccdb_pyllapi.i</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">cp $(WorkspacePath)/../../swig/ccdb_pyllapi.py $(WorkspacePath)/../../python/ccdb/ccdb_pyllapi</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

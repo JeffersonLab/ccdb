@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Workspace Name="ccdb" Database="./ccdb.tags">
+  <Project Name="CCDBLibrary" Path="CCDBLibrary.project" Active="No"/>
+  <Project Name="Tests" Path="Tests.project" Active="No"/>
+  <Project Name="Tests" Path="Tests.project"/>
+  <Project Name="SwigPython" Path="SwigPython.project" Active="No"/>
+  <Project Name="WebCgi" Path="WebCgi.project" Active="Yes"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="yes">
+      <Project Name="CCDBLibrary" ConfigName="Debug"/>
+      <Project Name="Tests" ConfigName="Debug"/>
+      <Project Name="Tests" ConfigName="Debug"/>
+      <Project Name="Web" ConfigName="Debug"/>
+      <Project Name="SwigPython" ConfigName="Debug"/>
+      <Project Name="WebCgi" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Project Name="CCDBLibrary" ConfigName="Release"/>
+      <Project Name="Tests" ConfigName="Release"/>
+      <Project Name="Tests" ConfigName="Release"/>
+      <Project Name="Web" ConfigName="Release"/>
+      <Project Name="SwigPython" ConfigName="Release"/>
+      <Project Name="WebCgi" ConfigName="Release"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Libs" Selected="yes">
+      <Project Name="Tests" ConfigName="Debug"/>
+      <Project Name="CCDBLibrary" ConfigName="Debug"/>
+      <Project Name="Tests" ConfigName="Debug"/>
+      <Project Name="Web" ConfigName="Debug"/>
+      <Project Name="SwigPython" ConfigName="Debug"/>
+      <Project Name="WebCgi" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

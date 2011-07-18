@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\Providers\DDataProvider.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\DEventRange.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\DAssignment.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\DConstantsTypeColumn.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\DConstantsTypeTable.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\DDirectory.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Web\DConfigReader.cc">
+      <Filter>Web\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\DConsole.cc">
+      <Filter>General\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\DLog.cc">
+      <Filter>General\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\DStringUtils.cc">
+      <Filter>General\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\DWorkUtils.cc">
+      <Filter>General\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\DRunRange.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\DVariation.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Providers\DMySQLDataProvider.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Providers\DMySQLConnectionInfo.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Providers\DFileDataProvider.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Web\DHttpContext.cc">
+      <Filter>Web</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\DObjectsOwner.cc">
+      <Filter>General\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\DStoredObject.cc">
+      <Filter>General\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\DCCDBError.cc">
+      <Filter>General\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\UserAPI\DCalibration.cc">
+      <Filter>UserAPI\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\UserAPI\DCalibrationGenerator.cc">
+      <Filter>UserAPI\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\DPathUtils.cc">
+      <Filter>General\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\UserAPI\DCCDBGlobalMutex.cc">
+      <Filter>UserAPI\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\UserAPI\DMySQLCalibration.cc">
+      <Filter>UserAPI\Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\include\Providers\DDataProvider.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Model\DAssignment.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Model\DConstantsTypeColumn.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Model\DConstantsTypeTable.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Model\DDirectory.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Web\DConfigReader.h">
+      <Filter>Web\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Model\DEventRange.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DCCDBGlobals.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DConsole.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DLog.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DStringUtils.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DWorkUtils.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Model\DRunRange.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Model\DVariation.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Providers\DMySQLDataProvider.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Providers\DMySQLConnectionInfo.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Providers\DFileDataProvider.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\Web\DHttpContext.h">
+      <Filter>Web</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DObjectsOwner.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DStoredObject.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DStopWatch.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DCCDBError.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\UserAPI\DCCDBGlobalMutex.h">
+      <Filter>UserAPI\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\UserAPI\DMySQLCallibration.h">
+      <Filter>UserAPI\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\UserAPI\DCalibration.h">
+      <Filter>UserAPI\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\UserAPI\DCalibrationGenerator.h">
+      <Filter>UserAPI\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\DPathUtils.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\winpthreads.h">
+      <Filter>General\Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="General">
+      <UniqueIdentifier>{8fcbf3cb-9db6-476d-9eb1-dde621dbc23f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{b73b8c14-4c10-4e01-a20b-78d9d1c38c55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Providers">
+      <UniqueIdentifier>{fb21d897-dc36-478b-922f-502905f0fcac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserAPI">
+      <UniqueIdentifier>{7680d7e0-3131-4f5f-a28e-8cf00034f899}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Web">
+      <UniqueIdentifier>{9ca4b3dc-c443-4585-85c1-b5ce78c0c3b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="General\Headers">
+      <UniqueIdentifier>{db726980-05e4-4e2a-b114-1c67c67fbe29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="General\Sources">
+      <UniqueIdentifier>{ed536031-6326-4717-9856-6bebd236a911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model\Headers">
+      <UniqueIdentifier>{7ecbe854-6c44-40af-aa2e-ef51b2fc77b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model\Sources">
+      <UniqueIdentifier>{64bd9ce3-0a03-4f58-9244-0dc91462976f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Web\Headers">
+      <UniqueIdentifier>{ec92cfee-7960-4f75-b52b-849cbe2dccaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Web\Sources">
+      <UniqueIdentifier>{d6ec6341-c8b0-4afa-a03f-81e51d0f1b95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserAPI\Headers">
+      <UniqueIdentifier>{e99e69b5-4ae0-452f-8808-3ede61fff0c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserAPI\Sources">
+      <UniqueIdentifier>{8222b7e4-5484-43cd-882e-10ec2276298b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Providers\Headers">
+      <UniqueIdentifier>{75589e3c-c8e8-4848-ab11-29b8480be26b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Providers\Sources">
+      <UniqueIdentifier>{4152868a-9e44-4b8e-a2c3-673d5efdf377}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
