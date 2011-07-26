@@ -10,11 +10,20 @@ from ccdb.cmd import is_verbose, is_debug_verbose
 
 log = logging.getLogger("ccdb.cmd.utils.ls")
 
+#ccdbcmd module interface
 def create_util_instance():
     log.debug("      registring ListUtil")
-    return ListUtil()
+    return List()
 
-class ListUtil(ConsoleUtilBase):
+#*********************************************************************
+#   Class List - List objects in a given directory                   *
+#                                                                    *
+#*********************************************************************
+class List(ConsoleUtilBase):
+    """ List objects in a given directory """
+    
+    # ccdb utility class descr part 
+    #------------------------------
     command = "ls"
     name = "List"
     short_descr = "List objects in a given directory"

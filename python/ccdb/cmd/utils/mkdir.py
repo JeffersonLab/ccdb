@@ -6,14 +6,24 @@ from ccdb.ccdb_pyllapi import Directory, MySQLDataProvider, DirectoryVector, Con
 import posixpath
 
 
+#ccdbcmd module interface
 def create_util_instance():
     if is_debug_verbose(): print "      registring MakeDirectory"
     return MakeDirectory()
 
+
+#*********************************************************************
+#   Class MakeDirectory - Create directory                           *
+#                                                                    *
+#*********************************************************************
 class MakeDirectory(ConsoleUtilBase):
+    """ Create directory """
+    
+    # ccdb utility class descr part 
+    #------------------------------
     command = "mkdir"
     name = "MakeDirectory"
-    short_descr = "Create constants type table"
+    short_descr = "Create directory"
     uses_db = True
 
     def process(self, args):

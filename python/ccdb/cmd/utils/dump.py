@@ -10,11 +10,21 @@ from ccdb.cmd import is_verbose, is_debug_verbose
 
 log = logging.getLogger("ccdb.cmd.utils.ls")
 
+#ccdbcmd module interface
 def create_util_instance():
     log.debug("      registring Dump")
     return Dump()
 
+
+#*********************************************************************
+#   Class List - Dumps datat table to a file                         *
+#                                                                    *
+#*********************************************************************
 class Dump(ConsoleUtilBase):
+    """ Dumps datat table to a file """
+    
+    # ccdb utility class descr part 
+    #------------------------------
     command = "dump"
     name = "Dump"
     short_descr = "Dumps datat table to a file"
@@ -33,6 +43,7 @@ class Dump(ConsoleUtilBase):
         
         assert self.context != None
         provider = self.context.provider;
+        #self.context.
         assert isinstance(provider, MySQLProvider)
         
         print "Dump is not implemented now"

@@ -2,11 +2,21 @@ from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd.Theme import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
 
+#ccdbcmd module interface
 def create_util_instance():
     if is_debug_verbose(): print "      registring Usage"
     return Usage()
 
+
+#*********************************************************************
+#   Class Usage - Prints usage for each util                         *
+#                                                                    *
+#*********************************************************************
 class Usage(ConsoleUtilBase):
+    """ Prints usage for each util """
+    
+    # ccdb utility class descr part 
+    #------------------------------
     command = "usage"
     name = "Usage"
     short_descr = "Prints usage for each util"

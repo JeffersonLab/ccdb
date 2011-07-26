@@ -10,36 +10,40 @@ from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
 
-log = logging.getLogger("ccdb.cmd.utils.cat")
+#######################################################################
+#                                                                     #
+#      T H I S    I S   E M P T Y   U T I L I T Y   E X A M P L E     #
+#                                                                     #
+#######################################################################
 
+
+#logger must be set to ccdb.cmd.utils.<utility command>
+log = logging.getLogger("ccdb.cmd.utils.empty")   
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registring Cat")
-    return Cat()
+    log.debug("      registring Empty")
+    return Empty()
 
 
 #*********************************************************************
-#   Class Cat - Show assignment data by ID                           *
+#   Class Empty - empty utility example with description             *
 #                                                                    *
 #*********************************************************************
-class Cat(ConsoleUtilBase):
-    """Show assignment data by ID"""
+class Empty(ConsoleUtilBase):
+    """empty utility example"""
     
     # ccdb utility class descr part 
     #------------------------------
-    command = "cat"
-    name = "Cat"
-    short_descr = "Show assignment data by ID"
+    command = "empty"
+    name = "Empty"
+    short_descr = "empty utility example"
     uses_db = True
 
-    # variables for each command process
-    #------------------------------------
+    # variables for each process
+    #------------------------------
     rawentry = "/"      #object path with possible pattern, like /mole/*
     path = "/"          #parent path
-    raw_table_path = ""
-    variation = ""
-    run = -1
     show_borders = True
     show_header = True
     show_comments = False
@@ -92,7 +96,6 @@ class Cat(ConsoleUtilBase):
 	    
 	    #assignment = provider.get_assignment(self.table_path, self.run)
         assignment = Assignment()
-        
         assignment.db_id = self.ass_id
         print self.ass_id
 	
@@ -149,13 +152,12 @@ class Cat(ConsoleUtilBase):
                         log.warning("cannot read run from %s command"%(token))
                     return false
                 
-            else:    #!token.startswith('-')
-                #it probably must be a type table path
-                try:
-                    self.ass_id = int(token)
-                    log.debug("The id is... " + repr(self.ass_id));
-                except ValueError:
-                    print "Cannot parse argument"
+                else:
+                    #it probably must be a type table path
+                    try:
+                        self.ass_id = int(token)
+                    except ValueError:
+                        print "Cannot parse argument"
 
         return True
     

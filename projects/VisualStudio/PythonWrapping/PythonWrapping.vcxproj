@@ -85,6 +85,7 @@ echo PYTHON_LIB: %PYTHON_LIB%
 echo on 
 swig.exe -c++ -classic -python %(FullPath) </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName)_wrap.cxx;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <None Include="..\..\..\swig\DAssignment.i" />
     <None Include="..\..\..\swig\DCCDBError.i" />

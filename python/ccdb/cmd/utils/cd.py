@@ -4,11 +4,21 @@ from ccdb.cmd import is_verbose, is_debug_verbose
 from ccdb.ccdb_pyllapi import Directory
 import posixpath
 
+#ccdbcmd module interface
 def create_util_instance():
     if is_debug_verbose(): print "      registring ChangeDir"
     return ChangeDir()
 
+
+#*********************************************************************
+#   Class ChangeDir - Change current directory                       *
+#                                                                    *
+#*********************************************************************
 class ChangeDir(ConsoleUtilBase):
+    """ Change current directory """
+    
+    # ccdb utility class descr part 
+    #------------------------------
     command = "cd"
     name = "ChangeDir"
     short_descr = "Change current directory"

@@ -2,11 +2,21 @@ from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd.Theme import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
 
+#ccdbcmd module interface
 def create_util_instance():
     if is_debug_verbose(): print "      registring PrintWorkDir"
     return PrintWorkDir()
 
+
+#*********************************************************************
+#   Class PrintWorkDir - Prints working directory                    *
+#                                                                    *
+#*********************************************************************
 class PrintWorkDir(ConsoleUtilBase):
+    """ Prints working directory """
+    
+    # ccdb utility class descr part 
+    #------------------------------
     command = "pwd"
     name = "PrintWorkDir"
     short_descr = "Prints working directory"

@@ -2,11 +2,21 @@ from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd.Theme import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
 
+#ccdbcmd module interface
 def create_util_instance():
     if is_debug_verbose(): print "      registring HelpUtil"
     return HelpUtil()
 
+
+#*********************************************************************
+#   Class HelpUtil - Prints help for each util                       *
+#                                                                    *
+#*********************************************************************
 class HelpUtil(ConsoleUtilBase):
+    """ Prints help for each util """
+    
+    # ccdb utility class descr part 
+    #------------------------------
     command = "help"
     name = "Help"
     short_descr = "Prints help for each util"

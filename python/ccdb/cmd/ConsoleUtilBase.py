@@ -1,7 +1,8 @@
+from . import ConsoleContext
 
 class ConsoleUtilBase:
     "base class for console utility"
-    context=None
+    context = ConsoleContext()
     uses_db = False
     changes_db = False
     help_util = False
@@ -21,6 +22,8 @@ class ConsoleUtilBase:
     def __init(self):
         self.description = ""
         self.command = ""
+        #context = None
+        
     def read_multiline(self):
         user_input = []
         entry = raw_input("Enter comment text, 'EOF' on its own line to quit: \n")
