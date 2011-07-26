@@ -29,16 +29,16 @@ java_library_message          = '%sCreating Java Archive %s==> %s$TARGET%s' % (c
 #Create 'default' environment. Other environments will be a copy of this one
 default_env = Environment(
     #Messages
-    CXXCOMSTR = compile_source_message, 
-    CCCOMSTR = compile_source_message,
-    SHCCCOMSTR = compile_shared_source_message,
-    SHCXXCOMSTR = compile_shared_source_message,
-    ARCOMSTR = link_library_message,
-    RANLIBCOMSTR = ranlib_library_message,
-    SHLINKCOMSTR = link_shared_library_message,
-    LINKCOMSTR = link_program_message,
-    JARCOMSTR = java_library_message,
-    JAVACCOMSTR = compile_source_message,
+    #CXXCOMSTR = compile_source_message, 
+    #CCCOMSTR = compile_source_message,
+    #SHCCCOMSTR = compile_shared_source_message,
+    #SHCXXCOMSTR = compile_shared_source_message,
+    #ARCOMSTR = link_library_message,
+    #RANLIBCOMSTR = ranlib_library_message,
+    #SHLINKCOMSTR = link_shared_library_message,
+    #LINKCOMSTR = link_program_message,
+    #JARCOMSTR = java_library_message,
+    #JAVACCOMSTR = compile_source_message,
     
     #>> CCDB related default staff <<
     CPPPATH = ['#include', 'src'],

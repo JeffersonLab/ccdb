@@ -205,11 +205,9 @@ class ConsoleContext:
 
 
     def print_general_usage(self):
-        print "To use utilites print command and arguments"
-        print "   help"
-        print "or"
-        print "   help ls"
-        print "   ls /"
+        print "Use '-I'   option to enter interactive shell"
+        print "Use 'help' option for help"
+        print "Use 'help command' to get help for particular command"
 
         
     def process_command(self, command, commandArgs):
@@ -280,7 +278,8 @@ class ConsoleContext:
         command = ""
         while 1:
             colorama.pause()
-            #read command from user
+            
+            # read command from user
             user_input=""
             try:
                 user_input=raw_input( self.current_path +"> ")
@@ -290,12 +289,20 @@ class ConsoleContext:
             except KeyboardInterrupt:
                 if self.verbose: print "Break sequence recieved. Ending interactive loop"
                 break
-                    
-                
+                                
+            # exit if user wishes so    
             if user_input in ("quit", "q", "exit"):
-                #quit!
-                break
-               
+                break #quit!
+            
+            # execute shell command if input starts with '!'
+            if user_input.startswith('!'):
+               user_input = user_input[1:]
+               try:	
+                    os.system(user_input)
+               except:
+                    pass
+               continue #skip to new command     
+				   
                     
             tokens = shlex.split(user_input)
             

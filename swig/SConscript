@@ -1,23 +1,61 @@
-import os
+import distutils.sysconfig
+import os;
 
-Import('default_env')
+os.system("make -f $CCDB_HOME/swig/SwigPython.make");
+
+#Import('default_env')
 
 #Create environment
-pyllapi_env = default_env.Clone()
-
+#pyllapi_env = default_env.Clone()
+#pyllapi_env.Command("echo $CCDB_CMD")
 #Define sources and target
-pyllapi_target  = "pyllapi"
-pyllapi_sources = ["ccdb_pyllapi_wrap.cxx"]
+#pyllapi_target  = "pyllapi"
+
+#pyllapi_sources = ["ccdb_pyllapi.i"]
+
+#vars = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS', 'CCSHARED', 'LDSHARED', 'SO')
+
+
+#for i in range(len(vars)):
+#    if vars[i] is None:
+#        vars[i] = ""
+#(cc, cxx, opt, basecflags, ccshared, ldshared, so_ext) = vars
+#print vars
+#pyllapi_env.ParseConfig('mysql_config --libs --cflags')
+#pyllapi_env.ParseConfig('python-config --cflags --libs')
+
+#pyllapi_lib = pyllapi_env.SharedLibrary("pyllapi",
+#                    ["ccdb_pyllapi_wrap.cxx"],
+                    #LIBS=['mkdparse', 'dparse'],
+                    #LIBPATH=["../"],
+##                    CC=cc,
+#                    SHLINK=ldshared,
+#                    SHLINKFLAGS=[],
+#                    SHLIBPREFIX="",
+#                    SHLIBSUFFIX=so_ext,
+#                    #CPPPATH=[distutils.sysconfig.get_python_inc(), '#include', 'src'],
+#                    CPPDEFINES={"SWIG_GLOBAL":None},
+#                    CPPFLAGS=basecflags + " " + opt)
+                    
+#if type(pyllapi_lib) == type([]): pyllapi_lib = pyllapi_lib[0]
+#dp1 = Install(os.path.join(tool_prefix, "lib"), "dparser.py")
+#dp2 = Install(os.path.join(tool_prefix, "lib"), lib)
+#Depends(dp1, dp2)
 
 #Setup addintional dependencies
-pyllapi_env.ParseConfig('python-config --cflags --libs')
-pyllapi_env.ParseConfig('mysql_config --libs --cflags')
-pyllapi_env.Append(CCFLAGS='-g')
-pyllapi_env.Append(CCFLAGS='-fPIC')
+
+
+#pyllapi_env.Append(CCFLAGS='-g')
+#pyllapi_env.Append(CCFLAGS='-fPIC')
+#pyllapi_env.Append(SWIGFLAGS=['-c++', '-classic', '-python'])
+#pyllapi_env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
+#pyllapi_env.Append(SHLIBPREFIX="")
+
 #Making library
-pyllapi_lib = pyllapi_env.SharedLibrary(target = pyllapi_target, source = pyllapi_sources)
+#pyllapi_lib = pyllapi_env.SharedLibrary(target = pyllapi_target, source = pyllapi_sources)
 
 #Installing 
-pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so', pyllapi_lib)
+#pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so', pyllapi_lib)
 
 #Default(pyllapi_lib)
+
