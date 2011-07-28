@@ -231,29 +231,66 @@ class MakeTable(ConsoleUtilBase):
             
     def print_help(self):
         "prints help for MakeTable"
+        
         print """
-    usage: 
-         
-        mktbl <name> -r <rows_number> <columns> #<comments>
-     
-    examples:
+MakeTable or mktbl - create type table with the specified namepath and parameters
 
-        1) mktbl /test/mytable x y z 
-           creates in a directory "/test" a table with name "mytable" with 1 row (by default) and 3 columns "x", "y", "z" of type double
-        
-        2) mktbl /test/mytable -r 2 x y z #"This is comment for my table"
-            the same as in first example, but with 2 rows and comment      
-        
-        3) mktbl /test/table2 5val_2(int)
-           creates in a directory "/test" a table with name "table2" with 5 columns "val_2", "val_3" ... "val_6" of type (int)
+usage: 
+     
+    mktbl <name> -r <rows_number> <columns> #<comments>
+
+    name        - is a /name/path
+    rows_number - number of rows
+    columns     - see 'columns format'
+    comments    - are comments...
+
+columns format:
+    full columns format is:
+
+    <quantity><name><start_index>(<type>) 
     
-    keys:
-        -r <N> or  --rows <N>     Sets number of rows
-        -c <N> or  --columns <N>  Sets number of columns
-        -I     or  --interactive  Interactively ask information that is not provided (rows number, comments)
-                                  (This option is switched ON by default if ccdbcmd is in interactive mode)
-        
-                """
+    or
+    
+    <quantity>(<type>)<name><start_index>
+
+    name      - name of the column
+    quantity  - number of columns with such name
+    type      - type of the column (int, double, string)
+    start_index - start_index different from 1 if one defined quantity
+
+    It is simple! Just look at examples:
+
+    1)  'x y z'   -   this means 3 columns with names "x", "y", "z". The type is considered to be 'double' by default
+    
+    2) 'index(int) digit(double) descr(string)'  -  this means 3 columns: "index" of type int, "digit" of double and "descr" of int
+
+    But imagine one wants to create 50 columns for 50 channels? Then one should simply put:
+
+    3) '50channel'   -  it would create 50 columns channel0,channel1, ..., channel49. The type is considered to be 'double' by default
+      
+    4) '50channel(int)'   -  it would create 50 columns channel0,channel1, ..., channel49 of type (int)
+
+    'index(int) digit(double) descr(string)' - this means 3 columns: "index" of type int, "digit" of double and "descr" of int
+    
+ 
+examples:
+
+    1) mktbl /test/mytable x y z 
+       creates in a directory "/test" a table with name "mytable" with 1 row (by default) and 3 columns "x", "y", "z" of type double
+    
+    2) mktbl /test/mytable -r 2 x y z #"This is comment for my table"
+        the same as in first example, but with 2 rows and comment      
+    
+    3) mktbl /test/table2 5val_2(int)
+       creates in a directory "/test" a table with name "table2" with 5 columns "val_2", "val_3" ... "val_6" of type (int)
+
+keys:
+    -r <N> or  --rows <N>     Sets number of rows
+    -c <N> or  --columns <N>  Sets number of columns
+    -I     or  --interactive  Interactively ask information that is not provided (rows number, comments)
+                              (This option is switched ON by default if ccdbcmd is in interactive mode)
+    
+            """
 
     def print_validation(self):
         #basic values: name rows columns path
