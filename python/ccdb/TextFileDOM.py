@@ -1,6 +1,12 @@
 import shlex
 
+#*********************************************************************
+#   Class TextFileDOM - store information of text data files         *
+#                                                                    *
+#*********************************************************************
 class TextFileDOM(object):
+    """store information of text data files"""
+
     def __init__(self):
         self.comment_lines = []
         self.metas={}
@@ -36,8 +42,10 @@ class TextFileDOM(object):
         except:
             return False
         
-            
-    
+
+#----------------------------------------
+#   read_ccdb_text_file 
+#---------------------------------------- 
 def read_ccdb_text_file(file_name):
     dom = TextFileDOM()    
     try:
@@ -85,4 +93,45 @@ def read_ccdb_text_file(file_name):
     
     #everything is fine?
     return dom
-                   
+
+
+#----------------------------------------
+#   read_namevalue_text_file 
+#---------------------------------------- 
+def read_namevalue_text_file(file_name):
+    dom = TextFileDOM()    
+    try:
+        with open(file_name) as f:
+            values = []
+            for line in f:
+                assert isinstance(line, str)
+                
+                #prepare line and skip empty one
+                line = line.strip()
+                if not len(line): continue
+                
+                #what is this line?
+                if line.startswith("#"):     #comment
+                    line = line[1:]
+                    dom.comment_lines.append(line)
+                    
+                else:                          #string with data?
+                    tokens = []
+                    tokens = shlex.split(line)
+                    
+                    #check we have name and value
+                    if len(tokens) < 2: 
+                        print "ERROR. The name-value file have less than 2 columns. So where are names and values?"
+                        raise IOError()
+                    values.append(tokens[1])
+                    dom.column_names.append(tokens[0])
+           
+            #add line       
+            dom.rows.append(values)
+                    
+    except IOError as error:
+        #error open or read file...
+        raise error
+    
+    #everything is fine?
+    return dom                   

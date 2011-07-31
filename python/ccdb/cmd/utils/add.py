@@ -56,6 +56,9 @@ class AddData(ConsoleUtilBase):
         self.run_max = ccdb.INFINITE_RUN
         self.variation = ""
         self.comment = ""
+        self.is_namevalue_format = False
+        self.no_comments = False
+
         if not self.process_arguments(args):
             return 1
         
@@ -65,17 +68,21 @@ class AddData(ConsoleUtilBase):
         if not self.validate():
             return 1
         
-        #correct path
+        #correct paths
         self.table_path = self.context.prepare_path(self.raw_table_path)
         self.file_path = self.raw_file_path
         
         #reading file
         dom = None
         try:
-            dom = ccdb.read_ccdb_text_file(self.file_path)
+            if not self.is_namevalue_format:
+                dom = ccdb.read_ccdb_text_file(self.file_path)
+            else:
+                dom = ccdb.read_namevalue_text_file(self.file_path)
         except IOError as error:
             log.warning("Unable to read file %s. The error message is: \n %s"%(self.file_path, error.message))
-            return 1    
+            return 1  
+        
         #check what we've got
         assert isinstance(dom, TextFileDOM)     
         if not dom.data_is_consistant:
@@ -139,6 +146,14 @@ class AddData(ConsoleUtilBase):
                     self.object_type = "directory"
                     i+=1
                 
+                #skip comments 'no-comments' value
+                if token == "-n" or token == "--no-comments":
+                    self.no_comments = true
+                
+                #name-value file mode
+                if token == "--name-value":
+                    self.is_namevalue_format = True
+
             else:
                 if token.startswith("#"):
                     #everething next are comments
@@ -172,6 +187,25 @@ class AddData(ConsoleUtilBase):
         "Prints help of the command"
           
         print """Add data constants according given type table
-        add <type table path>  -v <variation>  -r <run_min>-<run_max>  file_to_import
+    add <type table path>  -v <variation>  -r <run_min>-<run_max>  file_to_import
+
+Required parameters:
+    <type table path> - must be /absolute/path/ in command line mode
+                        might be also relative/path in interactive mode 
+
+    <variation> - variation name 
+    
+    <run_min>-<run_max> - run range. 
+        if one inputs '<run_min>-' this means <run_min>-<infinit run>
+        if one inputs '-<run_max>' this means <0>-<run_max> 
+        if one omits runrange at all. The data will be put as
+    
+   file_to_import - file to import. It should be ccdb file format (see documentation or file format section) 
+                    if file format is column of names and column of values add --name-value flag
+
+Additionsl flags:
+    
+          --name-value  - indicates that the input file is in name-value format (column of names and column of values)
+    -n or --no-comments - do not add all "#..." comments that is found in file to ccdb database
     
     """

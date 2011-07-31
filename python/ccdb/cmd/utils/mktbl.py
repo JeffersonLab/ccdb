@@ -245,33 +245,30 @@ usage:
     comments    - are comments...
 
 columns format:
-    full columns format is:
+    minimal columns format:
+      <name1> <name2> ... <nameN>   -   create N columns, with names name1 ... nameN of type double (by default)
 
-    <quantity><name><start_index>(<type>) 
-    
+    full format for each column:
+       <quantity><name><start_index>(<type>) 
     or
-    
-    <quantity>(<type>)<name><start_index>
-
-    name      - name of the column
-    quantity  - number of columns with such name
-    type      - type of the column (int, double, string)
-    start_index - start_index different from 1 if one defined quantity
+       <quantity>(<type>)<name><start_index>
+    where: 
+       quantity - number of columns with such name
+       type     - type of the column (int, double, string)
+       name     - name of the column - the only required part
+       start_index - if quantity is defined set start index for auto-naming
 
     It is simple! Just look at examples:
-
-    1)  'x y z'   -   this means 3 columns with names "x", "y", "z". The type is considered to be 'double' by default
+    1) 'x  y  z'   -   create 3 columns with names "x", "y", "z". The type is considered to be 'double' by default
+    2) 'index(int) digit(double) descr(string)' - create 3 columns: 'index', 'digit' and 'descr' of types int, double and string
     
-    2) 'index(int) digit(double) descr(string)'  -  this means 3 columns: "index" of type int, "digit" of double and "descr" of int
-
-    But imagine one wants to create 50 columns for 50 channels? Then one should simply put:
-
-    3) '50channel'   -  it would create 50 columns channel0,channel1, ..., channel49. The type is considered to be 'double' by default
-      
-    4) '50channel(int)'   -  it would create 50 columns channel0,channel1, ..., channel49 of type (int)
-
-    'index(int) digit(double) descr(string)' - this means 3 columns: "index" of type int, "digit" of double and "descr" of int
+    Imagine, one needs to create 50 columns for 50 channels?
+    3) '50channel'        -  create 50 columns channel0,channel1, ..., channel49. The type is considered to be 'double' by default
+    4) '50channel(int)'   -  create 50 columns channel0,channel1, ..., channel49 of type (int)
     
+    The last one is change start index of auto naming the colums
+    5) '50channel1'    -  create 50 columns channel1,channel1, ..., channel50
+    6) '3item_15(long) - create item_15, item_16, item_17 of type long
  
 examples:
 

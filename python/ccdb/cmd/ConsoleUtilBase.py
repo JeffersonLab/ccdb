@@ -1,7 +1,8 @@
-from . import ConsoleContext
+from ccdb.cmd import ConsoleContext
 
 class ConsoleUtilBase:
     "base class for console utility"
+    
     context = ConsoleContext()
     uses_db = False
     changes_db = False
@@ -22,11 +23,14 @@ class ConsoleUtilBase:
     def __init(self):
         self.description = ""
         self.command = ""
+        self.context = ConsoleContext()
+        
         #context = None
         
     def read_multiline(self):
         user_input = []
         entry = raw_input("Enter comment text, 'EOF' on its own line to quit: \n")
+        
         while entry != "EOF":
             user_input.append(entry)
             entry = raw_input("")

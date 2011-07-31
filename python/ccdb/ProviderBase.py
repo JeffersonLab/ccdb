@@ -513,14 +513,11 @@ class ProviderBase(object):
         assert isinstance(table, ccdb.ConstantsTypeTable)
     
         rows = None
-    
+        
         #maybe it is a dom?
         if isinstance(data, ccdb.TextFileDOM):
             rows = data.rows
-            for row in rows:
-                for cell in row:
-                    sys.stdout.write(cell+"\t")
-                sys.stdout.write("\n")
+            print len(rows)
         else:
             #it should be list than...
             rows = data

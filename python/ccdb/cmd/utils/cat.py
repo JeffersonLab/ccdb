@@ -54,6 +54,7 @@ class Cat(ConsoleUtilBase):
 
         assert self.context != None
         provider = self.context.provider
+        
         isinstance(provider, MySQLProvider)
         
     

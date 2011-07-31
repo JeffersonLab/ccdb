@@ -71,7 +71,7 @@ class ConsoleContext:
     @current_path.setter
     def current_path(self, newPath):
         self._current_path = newPath
-	
+        
     ##property current_run
     #_______________________
     def _get_current_run(self):
@@ -98,11 +98,14 @@ class ConsoleContext:
     @is_interactive.setter
     def is_interactive(self, value):
         self._is_interactive = value
-#
-#--------------------------------------------------
-#        PLUGIN MANAGEMENT
-#--------------------------------------------------
-#
+
+#=====================================================================================
+#------------------ P L U G I N   M A N A G E M E N T  -------------------------------
+#=====================================================================================
+
+#--------------------------------
+#       
+#--------------------------------
     def register_utilities(self, path = None):
         """ Function to auto find and registe utilites"""
         if path == None: path = os.path.join(ccdb.cmd.__path__[0],"utils")
@@ -124,7 +127,10 @@ class ConsoleContext:
             print "%-10s %-15s %s:"%("(command)", "(name)", "(description)")
             print "\n".join(["%-10s %-15s %s" % (command, util.name, util.short_descr) for command, util in self._utils.items()])
 
-	    
+
+#--------------------------------
+#       
+#--------------------------------            
     def search_utils(self, path):
         """Load plugin from directory and return list of modules"""
         
@@ -156,7 +162,9 @@ class ConsoleContext:
 
         return modules
     
-
+#--------------------------------
+#       
+#--------------------------------
     def process(self, args, startIndex=1):
 
         #check if there is enough argumens...
@@ -180,18 +188,18 @@ class ConsoleContext:
                     #connection string
                     self.connection_string = workargs[i]
                     i+=1
-		    
-                elif (token == "-I" or token == "--interactive"):
-		    #it is an interactive mode
+                    
+                elif (token == "-I" or token == "-i" or token == "--interactive"):
+                    #it is an interactive mode
                     self._is_interactive = True
-		    
-		elif (token == "-r" or token == "--run"):
-		    #working run
-		    try:
-			self.current_run = int(workargs[i])
-			log.info("Working run is %i", self.current_run)
-		    except ValueError:
-			log.warning("cannot read run from %s command"%(token))
+                    
+                elif (token == "-r" or token == "--run"):
+                    #working run
+                    try:
+                        self.current_run = int(workargs[i])
+                        log.info("Working run is %i", self.current_run)
+                    except ValueError:
+                        log.warning("cannot read run from %s command"%(token))
                     i+=1
             else:
                 #looks like is is a command
@@ -201,15 +209,10 @@ class ConsoleContext:
         
         if self._is_interactive:
             self.interactive_loop()
-
-
-
-    def print_general_usage(self):
-        print "Use '-I'   option to enter interactive shell"
-        print "Use 'help' option for help"
-        print "Use 'help command' to get help for particular command"
-
-        
+   
+#--------------------------------
+#       
+#--------------------------------        
     def process_command(self, command, commandArgs):
         
         #>oO debug
@@ -233,11 +236,12 @@ class ConsoleContext:
             if not self.check_connection(util): return False
                
         #execute command
-        return util.process(commandArgs)
-        
-            
-        
-        
+        return util.process(commandArgs)            
+
+
+#--------------------------------
+#       
+#--------------------------------       
     def check_connection(self, util):
         if(self.verbose):
             print util.name + " uses the database and there is no connection yet. Trying to connect..."
@@ -256,7 +260,9 @@ class ConsoleContext:
             return True
             
 
-
+#--------------------------------
+#       
+#--------------------------------
     def interactive_loop(self):
         import shlex
         self.print_interactive_intro()
@@ -267,10 +273,10 @@ class ConsoleContext:
         readline.parse_and_bind("tab: complete")
         readline.set_completer(self.complete)
         try: 
-	    readline.read_history_file()
-	except:
-	    pass #eat it
-	
+            readline.read_history_file()
+        except:
+            pass #eat it
+        
         #readline..set_completion_display_matches_hook(self.show_completions)
 #readline.set_completion_display_matches_hook([function])
 #Set or remove the completion display function. If function is specified, it will be used as the new completion display function; if omitted or None, any completion display function already installed is removed. The completion display function is called as function(substitution, [matches], longest_match_length) once each time matches need to be displayed.
@@ -297,12 +303,12 @@ class ConsoleContext:
             # execute shell command if input starts with '!'
             if user_input.startswith('!'):
                user_input = user_input[1:]
-               try:	
+               try:     
                     os.system(user_input)
                except:
                     pass
                continue #skip to new command     
-				   
+                                   
                     
             tokens = shlex.split(user_input)
             
@@ -320,18 +326,20 @@ class ConsoleContext:
                 colorama.resume()
                 
                 self.process_command(command, arguments)
-	#loop ended
-	try:
-	    readline.write_history_file()
-	except:
-	    log.warn("unable to write history file")
-#
-#--------------------------------- C O M P L E T I O N --------------------------------------------------
-#
+        #loop ended
+        try:
+            readline.write_history_file()
+        except:
+            log.warn("unable to write history file")
+
+
+#=====================================================================================
+#------------------------ C O M P L E T I O N ----------------------------------------
+#=====================================================================================
         
-##
-#       show_completions
-#
+#--------------------------------
+# show_completions      
+#-------------------------------- 
     def show_completions(self, substitution, matches, longest_match_length):
         print self
         print substitution
@@ -369,8 +377,15 @@ class ConsoleContext:
             return self.matching_words[index]
         except IndexError:
             return None
-#
-#-------- GETTING OBJECTS -----------------
+
+
+#=====================================================================================
+#--------  G E T T I N G    O B J E C T S  -------------------------------------------
+#=====================================================================================
+
+#--------------------------------
+#  prepare_path      
+#--------------------------------
     def prepare_path(self, path):
         
         #correct ending /
@@ -384,35 +399,59 @@ class ConsoleContext:
         path = posixpath.normpath(path)
         
         return path
-    
-    def parse_run_range(self, run_range_str):
-	assert isinstance(run_range_str, str)
-	if not "-" in run_range_str:
-	    return None
-	    
-	(str_min, str_max) = run_range_str.split("-")	
-	run_min = 0
-	run_min_set = False
-	run_max = ccdb.INFINITE_RUN
-	run_max_set = False
-	
-	try:
-	    run_min = int(str_min)
-	    run_min_set = True
-	except ValueError as error:
-	    self.run_min = 0
-	
-	try:
-	    run_max = int(str_max)
-	    run_max_set = True
-	except ValueError as error:
-	    self.run_max = ccdb.INFINITE_RUN
-	
-	return (run_min,  run_max, run_min_set, run_max_set)
 
-#
-#--------------- HELP AND INFO -------------------------
-#
+
+#--------------------------------
+#  parse_run_range  
+#--------------------------------    
+    def parse_run_range(self, run_range_str):
+        """ @brief parse run range string in form of <run_min>-<run-max>
+
+            if one inputs '<run_min>-' this means <run_min>-<infinit run>
+            if one inputs '-<run_max>' this means <0>-<run_max> 
+
+            @return (run_min, run_max, run_min_set, run_max_set)
+            run_min_set, run_max_set - are flags indicating that values was set by user
+            """
+
+        assert isinstance(run_range_str, str)
+        if not "-" in run_range_str:
+            return None
+        
+        #split <>-<>     
+        (str_min, str_max) = run_range_str.split("-")   
+        run_min = 0
+        run_min_set = False
+        run_max = ccdb.INFINITE_RUN
+        run_max_set = False
+        
+        #parse run min 
+        try:
+            run_min = int(str_min)
+            run_min_set = True
+        except ValueError as error:
+            self.run_min = 0
+        
+        #parse run max 
+        try:
+            run_max = int(str_max)
+            run_max_set = True
+        except ValueError as error:
+            self.run_max = ccdb.INFINITE_RUN
+        
+        return (run_min,  run_max, run_min_set, run_max_set)
+
+
+#=====================================================================================
+#------------------------- H E L P   A N D   I N F O ---------------------------------
+#=====================================================================================
+
+
+    def print_general_usage(self):
+        print "Use '-i'   option to enter interactive shell"
+        print "Use 'help' option for help"
+        print "Use 'help command' to get help for particular command"
+
 
     def print_interactive_intro(self):
         print """

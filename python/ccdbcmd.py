@@ -13,18 +13,18 @@ def parse_columns(value):
     print m.groups()
 
 
-	
+        
     if(m.group("times")):
-	print "num times ",m.group("times")
-	
+        print "num times ",m.group("times")
+        
     if(m.group("pretype")):
-	print "num pretype ",m.group("pretype")
-	
+        print "num pretype ",m.group("pretype")
+        
     if(m.group("type")):
-	print "num type ",m.group("type")
-	
+        print "num type ",m.group("type")
+        
     if(m.group("name")):
-	print "num name ",m.group("name")
+        print "num name ",m.group("name")
 
 def test_parse_columns():
     parse_columns("x")
@@ -40,18 +40,3 @@ if __name__ == "__main__":
     import ccdb
     import ccdb.ccdb_pyllapi
     ccdb.init_ccdb_console()
-    
-    
-    
-    
-    
-        
-
-
-
-
-
-
-
-
-

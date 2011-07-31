@@ -23,7 +23,7 @@ class Theme:
     Reset = Style.RESET_ALL
     Success = Fore.GREEN + Style.BRIGHT
     Fail = Fore.RED + Style.BRIGHT
-    Accent = Fore.CYAN + Style.BRIGHT
+    Accent = Fore.BLUE + Style.BRIGHT
     Title = Style.BRIGHT
     Type = Fore.CYAN
     

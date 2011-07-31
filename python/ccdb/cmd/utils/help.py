@@ -21,7 +21,10 @@ class HelpUtil(ConsoleUtilBase):
     name = "Help"
     short_descr = "Prints help for each util"
     help_util = True
-    
+
+#----------------------------------------
+#   print_help 
+#----------------------------------------    
     def print_help(self):
         print self.help_text
 
@@ -37,9 +40,9 @@ class HelpUtil(ConsoleUtilBase):
         print self.enveron_text
 
 
-    # ---- end of print_help() ----
-
-
+#----------------------------------------
+#   process 
+#----------------------------------------
     def process(self, args):
         if self.context:
             commands = self.context.utils.keys()
@@ -65,9 +68,9 @@ Usage:
     flags_text = """
 
 Flags:
+-I, -i or --interactive  Starts programm in interactive mode.
     -d or --debug        Show verbose debug output
     -s or --silent       Do not display any text. Will not work in interactive mode. 
-    -I or --interactive  Starts programm in interactive mode.
           --no-color     No colored output
     -c <connection string>  or  --connection <connection string>
                          Set connection string to server"""
