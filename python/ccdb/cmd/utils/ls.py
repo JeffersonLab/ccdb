@@ -79,6 +79,9 @@ class List(ConsoleUtilBase):
         #normalize
         self.rawentry = posixpath.normpath(self.rawentry)
         
+        #SEARCH LOGIC
+        #---------------------------
+
         #brute assumption that user has entered a simple dir path
         self.parent_dir = provider.get_directory(self.rawentry)
         self.parent_path = self.rawentry
@@ -112,7 +115,7 @@ class List(ConsoleUtilBase):
             subdirs = []
             if self.pattern == "":
                 subdirs = self.parent_dir.subdirs
-            else:                
+            else:
                 subdirs = self.context.provider.search_directories(self.pattern, self.parent_path)
            
             for subdir in subdirs:
@@ -122,7 +125,7 @@ class List(ConsoleUtilBase):
             tables = []
             if self.pattern == "":
                 tables = self.context.provider.get_type_tables(self.parent_dir)
-            else:                
+            else:
                 tables = self.context.provider.search_type_tables(self.pattern, self.parent_path)
                         
             for table in tables:

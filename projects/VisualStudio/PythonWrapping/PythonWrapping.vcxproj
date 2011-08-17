@@ -53,11 +53,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(PYTHON_INCLUDE);$(CCDB_HOME)\include;C:\Program Files %28x86%29\MySQL\MySQL Connector C 6.0.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalDependencies>$(PYTHON_LIB);libmysql.lib;mysqlclient.lib;zlib.lib</AdditionalDependencies>
+      <OutputFile>$(CCDB_HOME)\python\ccdb\ccdb_pyllapi\_ccdb_pyllapi.pyd</OutputFile>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\MySQL\MySQL Connector C 6.0.2\lib\opt</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -71,9 +73,9 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(PYTHON_LIB);libmysql.lib;mysqlclient.lib;zlib.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(PYTHON_LIB);libmysql.lib;mysqlclient.lib;zlib.lib;pthreadVC2.lib;</AdditionalDependencies>
       <OutputFile>$(CCDB_HOME)\python\ccdb\ccdb_pyllapi\_ccdb_pyllapi.pyd</OutputFile>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\MySQL\MySQL Connector C 6.0.2\lib\opt</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\MySQL\MySQL Connector C 6.0.2\lib\opt;$(CCDB_HOME)\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -85,7 +87,6 @@ echo PYTHON_LIB: %PYTHON_LIB%
 echo on 
 swig.exe -c++ -classic -python %(FullPath) </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName)_wrap.cxx;%(Outputs)</Outputs>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <None Include="..\..\..\swig\DAssignment.i" />
     <None Include="..\..\..\swig\DCCDBError.i" />

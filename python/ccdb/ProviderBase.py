@@ -539,8 +539,8 @@ class ProviderBase(object):
                     cells_vector.push_back(cell)
                 else:
                     cells_vector.push_back(repr(cell))
-                rows_vector.push_back(cells_vector)
-            
+            rows_vector.push_back(cells_vector)
+        print "rows " +repr(rows_vector.size())
         #do the job
         return self._provider.CreateAssignment(rows_vector, path, min_run, max_run, variation, comment)
     

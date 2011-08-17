@@ -717,7 +717,7 @@ bool ccdb::DMySQLDataProvider::SearchConstantsTypeTables( vector<DConstantsTypeT
 	// in MYSQL compared to wildcards % is * and _ is 
 	// convert it. 
 	string likePattern = WilcardsToLike(pattern);
-	
+    
 	//do we need to search only in specific directory?
 	string parentAddon(""); 		//this is addon to query indicates this
 	DDirectory *parentDir = NULL; //will need it anyway later
@@ -735,7 +735,7 @@ bool ccdb::DMySQLDataProvider::SearchConstantsTypeTables( vector<DConstantsTypeT
 			return false;
 		}
 	}
-	
+	    
 	//Ok, lets cleanup result list
 	if(typeTables.size()>0)
 	{
@@ -743,30 +743,34 @@ bool ccdb::DMySQLDataProvider::SearchConstantsTypeTables( vector<DConstantsTypeT
 		while(iter != typeTables.end())
 		{
 			DConstantsTypeTable *obj = *iter;
-			if(IsOwner(obj)) delete obj;		//delete objects if this provider is owner
+			if(IsOwner(obj) ) delete obj;		//delete objects if this provider is owner
 			iter++;	
 		}
 	}
 	typeTables.clear(); //we clear the consts. Considering that some one else  should handle deletion
+    
 
 	string limitAddon = PrepareLimitInsertion(take, startWith);
 
+    
 	//combine query
 	string query = DStringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `name` LIKE '%s' %s ORDER BY `name` %s;",
 		likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
-
+        
 	if(!QuerySelect(query))
 	{
 		//no report error
 		return NULL;
 	}
 
-
+    
 	//Ok! We queried our directories! lets catch them! 
 	while(FetchRow())
 	{
 		//ok lets read the data...
 		DConstantsTypeTable *result = new DConstantsTypeTable(this, this);
+        DLog::Message("inside fetch");
+
 		result->SetId(ReadULong(0));
 		result->SetCreatedTime(ReadUnixTime(1));
 		result->SetModifiedTime(ReadUnixTime(2));
@@ -775,24 +779,40 @@ bool ccdb::DMySQLDataProvider::SearchConstantsTypeTables( vector<DConstantsTypeT
 		result->SetNRows(ReadInt(5));
 		result->SetNColumnsFromDB(ReadInt(6));
 		result->SetComment(ReadString(7));
-		
-		result->SetDirectory(parentDir);
-		if(loadColumns) LoadColumns(result);
+
+        if(parentDir) //we already may have parrent directory
+        {
+		    result->SetDirectory(parentDir);
+        }
+        else //Or we should find it...
+        {
+            result->SetDirectory(mDirectoriesById[result->GetDirectoryId()]);
+        }
+
 		SetObjectLoaded(result); //set object flags that it was just loaded from DB
 		
 		typeTables.push_back(result);
-		
 	}
 
+    //Load COLUMNS if needed...
+	if(loadColumns)
+    {
+        for (int i=0; i< typeTables.size(); i++)
+        {
+            LoadColumns(typeTables[i]);
+        }   
+    }
+
+    DLog::Message("Free result");
 	FreeMySQLResult();
 	
 	return true;
 
 }
 
-vector<DConstantsTypeTable *> ccdb::DMySQLDataProvider::SearchConstantsTypeTables( const string& pattern, const string& parentPath /*= ""*/, bool loadColumns/*=false*/, int take/*=0*/, int startWith/*=0 */ )
+std::vector<DConstantsTypeTable *> ccdb::DMySQLDataProvider::SearchConstantsTypeTables( const string& pattern, const string& parentPath /*= ""*/, bool loadColumns/*=false*/, int take/*=0*/, int startWith/*=0 */ )
 {
-	vector<DConstantsTypeTable *> tables;
+	std::vector<DConstantsTypeTable *> tables;
 	SearchConstantsTypeTables(tables, pattern, parentPath,loadColumns, take, startWith);
 	return tables;
 }
@@ -2850,6 +2870,7 @@ bool ccdb::DMySQLDataProvider::QueryCustom( const string& query )
 
 bool ccdb::DMySQLDataProvider::FetchRow()
 {	
+    
 	if(mRow = mysql_fetch_row(mResult)) return true;
 	return false;
 }

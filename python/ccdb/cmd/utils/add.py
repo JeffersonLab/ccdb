@@ -30,9 +30,9 @@ class AddData(ConsoleUtilBase):
     name = "AddData"
     short_descr = "Add data constants"
     uses_db = True
+    d_i = "      "; #debug indent. Dont bother your mind what is this
 
     #variables for each process
-
     rawentry = "/"   #object path with possible pattern, like /mole/*
     path = "/"       #parent path
     
@@ -40,14 +40,15 @@ class AddData(ConsoleUtilBase):
 #   process 
 #----------------------------------------  
     def process(self, args):
-        log.debug("AddData is gained a control over the process.")
-        log.debug("   " + " ".join(args))
+        log.debug(self.d_i + "---------------------------------------------")
+        log.debug(self.d_i + "AddData is gained a control over the process.")
+        log.debug(self.d_i + "args: " + " ".join(args))
 
         assert self.context != None
         provider = self.context.provider
         isinstance(provider, MySQLProvider)
         
-        #process arguments
+        #set arguments to default
         self.raw_table_path = ""
         self.table_path = ""
         self.raw_file_path = ""
@@ -59,13 +60,18 @@ class AddData(ConsoleUtilBase):
         self.is_namevalue_format = False
         self.no_comments = False
 
+        #process arguments
         if not self.process_arguments(args):
+            log.debug(self.d_i + "process arguments " + Theme.Fail + "failed");
             return 1
         
+        #by "" user means default variation
         if self.variation == "":
             self.variation = "default"
-            
+        
+        #validate what we've got
         if not self.validate():
+            log.debug(self.d_i + "arguments validation " + Theme.Fail + "failed");
             return 1
         
         #correct paths
@@ -92,6 +98,11 @@ class AddData(ConsoleUtilBase):
         if len(dom.comment_lines):
             self.comment += "\n" + "\n".join(dom.comment_lines)
             
+        # >oO debug record
+        log.debug(self.d_i+"adding constants")
+        log.debug(self.d_i+"columns {0} rows {1} comment lines {2} metas {3}".format(len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
+
+
         #try to create
         result = provider.create_assignment(dom, self.table_path, self.run_min, self.run_max, self.variation, self.comment)
         

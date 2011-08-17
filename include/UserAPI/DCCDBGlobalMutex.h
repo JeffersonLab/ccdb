@@ -8,13 +8,15 @@
 #include <new>
 #include "DCCDBGlobals.h"
 
+using namespace std;
+
 #ifdef WIN32
 #include "winpthreads.h"
 #else //posix
 #include <pthread.h>
 #endif
 
-using namespace std;
+
 
 namespace ccdb
 {

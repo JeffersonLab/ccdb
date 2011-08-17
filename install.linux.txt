@@ -35,6 +35,9 @@ Or you can add next lines to your .bashrc
 
     cd $CCDB_HOME
     scons
+    scons
+
+ (one has to run scons TWO TIMES. One would build library, second would build python wrapping.)
 
  the code will produce libccdb.so in $CCDB_HOME/lib and python wrapping library for python script.
 

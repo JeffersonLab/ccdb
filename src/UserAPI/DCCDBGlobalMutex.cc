@@ -96,6 +96,7 @@ unsigned int ccdb::DCCDBGlobalMutex::GetCurrentThreadId()
     We will think about better implementation later
     */
     fprintf(stderr, "Not implemented ccdb::GetCurrentThreadId");
+    return 0;
 }
 
 //______________________________________________________________________________

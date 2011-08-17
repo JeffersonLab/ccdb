@@ -1,42 +1,95 @@
 GENERAL
 =======
-
-$CCDB_HOME should point to the current directory (directory which has: bin, lib, src, etc.)
-
-
-*  [MySQL x86 for windows](http://www.mysql.com/downloads/mysql/) 
-*  [Pthreads-w32](http://sourceware.org/pthreads-win32/)
-
-Windows
-swig should be somewhere in the path in order to automaticly build swig wrapping from visual studio, otherwise disable "Wrapping" projects from build.
+This manual will help you to use Visual Studio 2010 to develop CCDB package. It is EASY to do this on Windows, and the only requirment to install some additional FREE tools and setup some variables. 
 
 
-need to be installed
-MySQL x86 for windows
-MySQL Connector C x86 for windows
-Windows Services for UNIX Version 3.5
-Steps
-1) Install MySQL x86
 
-2) Install MySQL Connector C x86
+1. INSTALL TOOLS
+================
+We assume that you use VS2010 for development. VS2010 C++ Express is free. Our recomendation is to use VS2010 pro + Whole Tomato Visual Assist X, you can try both for 60 days for free and then decide. VS2010 C++ Express + Visual Assist X will work too. JUST TRY IT. [VS2010 compare](http://www.microsoft.com/visualstudio/en-us/products/2010-editions/product-comparison#expressCompareTable) here is detailed comparision of different Visual Studio versions with links to download. Configuring other IDEs on Windows would be merelly the same. 
 
-3) install python
-3.2) install readline for windows. One of which
-	https://launchpad.net/pyreadline/+download
-	
-*both are easy to find via google or on MySQL web site
+So... You have to install next software (all is free and mostly open source). Choose x86 versions for now:
 
-4) Get CCDB sources
+*  [Python 2.7 x86](http://www.python.org/ftp/python/2.7.2/python-2.7.2.msi)
+*  [pyreadline for windows](https://launchpad.net/pyreadline/+download)
+*  [Python tools for VS2010](http://pytools.codeplex.com/releases) - to open VS2010 python project
+*  [MySQL community server](http://dev.mysql.com/downloads/mysql/)
+*  [MySQL Connector C x86](http://dev.mysql.com/downloads/connector/c/)
+*  [MySQL workbench](http://dev.mysql.com/downloads/workbench/) this is optional but very helpfull tool
+*  [tortoise svn](http://tortoisesvn.net/downloads.html) - dont reboot as it asks. Reboot in the end.
 
-5) set environmen variables CCDB_HOME, PYTHON_INCLUDE, PYTHON_LIB
-   5.1) Set CCDB_HOME directory. CCDB_HOME is a directory that contain /bin, lib, include, src ... and this file. 
-      a) pres win+r and type cmd. Or start cmd by any other method. 
-      b) write
-      setx CCDB_HOME C:\Your\Path\To\CCDB\home
 
-   5.2 set PYTHON_INCLUDE and PYTHON_LIB directories. If you installed python to C:\python\Python27_32 you may type in cmd
-      setx PYTHON_INCLUDE C:\python\Python27_32\include
-      setx PYTHON_LIB  c:\Python\Python\libs\python27.lib
 
-One may also use	
-[Windows Services for UNIX](http://www.microsoft.com/download/en/details.aspx?id=274)
+2. GET SOURCES
+==============
+To use tortoise svn click right button on a folder you would like CCDB to be checked out in, choose "SVN Checkout" in the context menu. 
+
+Ccdb trunk is 
+https://phys12svn.jlab.org/repos/trunk/ccdb
+
+
+
+3. ENVIRONMENT
+==============
+
+3 environment variables must be set in order to compile swig with VS2010. Swig and Python should be in PATH variable.
+It is optional to include MySQL connector incluydto the path too.
+
+CCDB_HOME - pointing to the ccdb root directory. (directory containing this file and folders: bin, lib, src, etc.)
+PYTHON_INCLUDE - the directory that contains python.h
+PYTHON_LIB - the python library including path for linking
+
+Start -> Edit environment variables for your account *-> Set there:  
+>  PATH C:\Swig;
+>       C:\Python27_x86;
+>       C:\Program Files (x86)\MySQL\MySQL Connector C 6.0.2\lib\opt\;
+>       C:\Program Files (x86)\MySQL\MySQL Connector C 6.0.2\include\;
+>  PYTHON_INCLUDE C:\Python27_x86\include
+>  PYTHON_LIB     c:\Python27_x86\python27.lib
+>  CCDB_HOME C:\Your\Path\To\CCDB\home     
+(!) Dont forget to change this directories to yours! =)
+
+* - just press 'start' and put 'environ' in the search bar
+
+Tortoise svn asks to reboot. Thus reboot would do. 
+
+
+
+4. MySQL
+========
+
+Run mysql-workbench. 
+The workbench project is located in %CCDB_HOME\mysql
+in mysqlworkbench press 
+
+
+
+5. VS2010 PROJECT AND TEST
+==========================
+
+The VS2010 project is located in:
+
+%CCDB_HOME%\projects\VisualStudio\CCDB.sln
+
+4.1) Directories of mysql connector are "entered directly" in VS2010 projects. Check that properties: 
+
+Configuration properties->C/C++->Additional include directories
+Configuration properties->Librarian->Additional Library directories
+
+for projects CCDBLibrary, CCDBTests, PythonWrapping pointing to a real directory
+
+
+4.2) Your enviroment is stored in CCDB.suo file wich is not included in the svn (it is Your enviroment), so you may have to:
+a) In the Solution Explorer (place where files are listed)
+b) click right mouse button on CCDBTests project
+c) click "Set as SturtUp Project"
+
+
+press ctrl+F5 to run the project. 
+
+
+
+6. CONTACTS
+===========
+
+Is you have any questions, ideas, complains or suggestions feel free to email me to romanov at jlab.org

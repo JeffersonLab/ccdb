@@ -208,7 +208,7 @@ public:
 	 * @param  parentPath
 	 * @return bool
 	 */
-	virtual bool SearchConstantsTypeTables(vector<DConstantsTypeTable *>& typeTables, const std::string& pattern, const std::string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 )=0;
+	virtual bool SearchConstantsTypeTables(std::vector<DConstantsTypeTable *>& typeTables, const std::string& pattern, const std::string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 )=0;
 
 	/** @brief Searches for type tables that matches the patten
 	 *
@@ -229,7 +229,7 @@ public:
 	 * @param  parentPath
 	 * @return vector<DConstantsTypeTable *>
 	 */
-	virtual vector<DConstantsTypeTable *> SearchConstantsTypeTables(const string& pattern, const string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 )=0;
+	virtual std::vector<DConstantsTypeTable *> SearchConstantsTypeTables(const std::string& pattern, const std::string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 )=0;
 
 	/**
 	 * @brief This function counts number of type tables for a given directory 

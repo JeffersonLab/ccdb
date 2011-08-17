@@ -1,4 +1,5 @@
 from ccdb.cmd import ConsoleContext
+import ccdb.cmd
 
 class ConsoleUtilBase:
     "base class for console utility"
@@ -23,8 +24,8 @@ class ConsoleUtilBase:
     def __init(self):
         self.description = ""
         self.command = ""
-        self.context = ConsoleContext()
-        
+        #self.context = ConsoleContext()
+                        
         #context = None
         
     def read_multiline(self):
