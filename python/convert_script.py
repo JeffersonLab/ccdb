@@ -81,16 +81,11 @@ rules_xml_dir = os.path.join(rules_dir, 'xml')
 #-----------------------------
 # *** PRINT CONFIGURATION  ***
 #-----------------------------
-print "CCDB path: "
-print "   " + ccdb_dir
-print "CCDB options: "
-print "    '" + ccdbcmd_opts + "'"
-print "JANA svn calibrations path:"
-print "   " + calib_dir
-print "conversion rules base dir: "
-print "   " + rules_dir
-print "converion rules xml dir: " 
-print "    " + rules_xml_dir
+print "CCDB path:      " + ccdb_dir
+print "CCDB options:   " + ccdbcmd_opts
+print "SVN calib:      " + calib_dir
+print "Converse rules: " + rules_dir
+print "Cnv. rules xml: " + rules_xml_dir
 
 #-----------------------------
 # ***    PARSE XML DIRS    ***
@@ -127,15 +122,23 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
     #parse xml file
     rule_file_path = os.path.join(home_dir, rule_file_name);
     xmldoc = minidom.parse(rule_file_path) 
+
+    #>oO
     print "  Processing file " + rule_file_path
     print "  ***********************************************"
     
-    #iterate type tables
+    #get type tables    
     xml_tables = xmldoc.getElementsByTagName('type')
+
+    #iterate type tables
     for xml_table in xml_tables:
+
+        #parameters
         table_name = xml_table.attributes['name'].value
         nrows = int(xml_table.attributes['nrow'].value)
         is_name_value_format = bool(int(xml_table.attributes['namevalue'].value))
+
+        #comments
         comments = ''
         xml_comments = xml_table.getElementsByTagName('comment')
         if len(xml_comments):
@@ -144,19 +147,17 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         comments.replace("\n","\\n")
         comments.replace('"',"'")
 
-        
-
             #comments = comments.replace("\\n",os.linesep)
         
-
-        print "    Found table: " + table_name
-        print "    Comments: " 
-        print "    " + comments[0:50]
-        print "    Rows Number: " + str(nrows)
-        print "    Is namevalue: " + repr(is_name_value_format);
-       
+        #print out what we've got
+        print "     Process table: " + table_name
+        print "     Comments: " 
+        print "     " + comments[0:50]
+        print "     Rows Number: " + str(nrows)
+        print "     Is namevalue: " + repr(is_name_value_format)
         
-        #iterate columns
+
+        #iterate columns, create columns command
         columns_create_command = ''
         xml_columns = xml_table.getElementsByTagName('column')
         if not is_verbose: print "    Columns : " + repr(len(xml_columns))
@@ -166,9 +167,11 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
             column_type = xml_column.attributes['type'].value
             if(is_verbose): print "      {:<35} ({})".format(column_name, column_type)
             columns_create_command+=' "{}({})"'.format(column_name, column_type)
+
+        #create table command
         table_path = (ccdb_parent_path + "/" + table_name).replace("//","/")
-        create_table_command = 'ccdbcmd ' + ccdbcmd_opts +' mktbl {0} -r {1} {2} "#{3}"'
-        create_table_command = create_table_command.format(table_path, nrows, columns_create_command, comments)
+        create_table_command = 'ccdbcmd ' + ccdbcmd_opts +' mktbl  {0} -r {1} {2} "#{3}"'
+        create_table_command = create_table_command.format(table_path, nrows, columns_create_command, "")
 
         print "    Create command"
         print "    " + create_table_command
@@ -184,18 +187,21 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
 
         data_file_path = os.path.join(ccdb_parent_path, table_name)
         data_file_path = (calib_dir + "/" + data_file_path).replace("//","/")
-        print "    Data file is: " + data_file_path
+        print "     Data file is: " + data_file_path
 
+        #read dom
         dom = ccdb.TextFileDOM()
-        dom = ccdb.read_namevalue_text_file(data_file_path)
+        if(is_name_value_format): dom = ccdb.read_namevalue_text_file(data_file_path)
+        else: dom = ccdb.read_ccdb_text_file(data_file_path)
         
+        #print verbose info
         if is_verbose:
             print dom.column_names
             print dom.rows
             for i in range(min(len(dom.column_names),50)):
                 print "{:>35}     {}".format(dom.column_names[i], dom.rows[0][i])
 
-        add_command = "ccdbcmd " + ccdbcmd_opts + " add "
+        add_command = "ccdbcmd " + ccdbcmd_opts + " add  --c-comments "
         if(is_name_value_format) : add_command += "--name-value "
         add_command += table_path +" -v default -r 0- " + data_file_path
         print add_command

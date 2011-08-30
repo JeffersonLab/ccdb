@@ -28,7 +28,6 @@ Or you can add next lines to your .bashrc
 
  make ccdb library for your system. 
  scons            - makes ccdb library located $CCDB_HOME/lib and test executable located in $CCDB_HOME/bin
- SwigPython.make  - makes python wrapping of CCDB C++ api. Not moved to scons yet
 
 
 ##RUN CODE:
@@ -37,7 +36,7 @@ Or you can add next lines to your .bashrc
     scons
     scons
 
- (one has to run scons TWO TIMES. One would build library, second would build python wrapping.)
+ (TWO TIMES of scons. One would build library, second would build python wrapping.)
 
  the code will produce libccdb.so in $CCDB_HOME/lib and python wrapping library for python script.
 
@@ -102,6 +101,24 @@ To test python is working you may run ccdbcmd
      ccdbcmd -I
 
 interactive ccdb shell should be started
+
+
+
+  I N S T A L L   O N   F E D O R A
+====================================
+
+This manual was tested on Fedora 14, Fedora 15, RHEL 6
+
+##RUN CODE:
+
+     yum install scons mysql-server mysql-devel python-devel
+
+If you haven't configured mysql server:
+
+##RUN CODE:
+
+     service mysqld start
+     mysqladmin -u root -h password 'your-password'
 
 
 

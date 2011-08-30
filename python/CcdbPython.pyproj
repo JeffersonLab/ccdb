@@ -5,7 +5,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5d9fd999-b0dc-446c-a481-0093353dbff8}</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Program.py</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath>D:\Projects\12gev_svn\trunk\ccdb\python\;D:\Projects\12gev_svn\trunk\ccdb\python\ccdb\ccdb_pyllapi\;D:\Projects\12gev_svn\trunk\ccdb\python\ccdb\;D:\Projects\12gev_svn\trunk\ccdb\python\ccdb\cmd\utils</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <AssemblyName>CcdbPython</AssemblyName>
@@ -60,7 +61,7 @@
     <Compile Include="ccdb\ProviderBase.py" />
     <Compile Include="ccdb\TextFileDOM.py" />
     <Compile Include="ccdb\__init__.py" />
-    <Compile Include="Program.py" />
+    <Compile Include="convert_script.py" />
     <Compile Include="runme.py" />
     <Compile Include="tests.py" />
   </ItemGroup>

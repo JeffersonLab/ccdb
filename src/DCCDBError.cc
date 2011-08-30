@@ -151,6 +151,9 @@ mKeys[1220] = "CCDB_ERROR_TABLE_EXISTS";
 mDescriptions[1230] = "Run range is NULL or has improper ID so update operations cant be done"; 
 mKeys[1230] = "CCDB_ERROR_RUNRANGE_INVALID"; 
 
+mDescriptions[1235] = "Run range is NULL or has improper ID so update operations cant be done"; 
+mKeys[1235] = "CCDB_ERROR_OBTAINING_RUNRANGE";
+
 mDescriptions[1240] = "Variation is NULL or has improper ID so update operations cant be done"; 
 mKeys[1240] = "CCDB_ERROR_VARIATION_INVALID"; 
 

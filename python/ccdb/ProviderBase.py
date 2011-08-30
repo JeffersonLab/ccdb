@@ -506,7 +506,8 @@ class ProviderBase(object):
     #/
     def create_assignment(self, data, path, min_run, max_run, variation, comment):
         table = self.get_type_table(path);
-        if not table: 
+        if not table:
+            log.warning("Table : " + path + " - was not found. ")
             log.debug(self, data, path, min_run, max_run, variation, comment)
             return None
     
@@ -542,6 +543,7 @@ class ProviderBase(object):
             rows_vector.push_back(cells_vector)
         print "rows " +repr(rows_vector.size())
         #do the job
+        
         return self._provider.CreateAssignment(rows_vector, path, min_run, max_run, variation, comment)
     
     

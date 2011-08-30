@@ -23,8 +23,6 @@ bool test_DMySQLDataProvider_TypeTables()
 	if(!prov->Connect(gConnectionString)) return false;
     bool result;
 	
-	
-	
     //TYPE TABLE BASICS
     //======================================================
     //basic get type table functional

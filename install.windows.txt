@@ -53,6 +53,9 @@ Start -> Edit environment variables for your account *-> Set there:
 
 Tortoise svn asks to reboot. Thus reboot would do. 
 
+(***) One optional environment is JANA_HOME, VS2010 Jana project use it for autocomplition of Jana classes
+No any other goal for this variable. One is free to set it or not
+
 
 
 4. MySQL

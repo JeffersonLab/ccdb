@@ -61,6 +61,8 @@ class MakeTable(ConsoleUtilBase):
         self.interactive = self.context.is_interactive
         
 
+    # process this command
+    #------------------------------
     def process(self, args):
         
         #>oO debug      
@@ -122,9 +124,22 @@ class MakeTable(ConsoleUtilBase):
         #    column.SetName(pycolumn["name"])
         #    column.SetType(pycolumn["type"])
         #    table.AddColumn(column)
-            
+
         
+    # process input arguments
+    #------------------------------    
     def process_arguments(self, args):
+        """@brief process input arguments
+        
+           @remarks 
+           Logic:
+           *  All tokens that have '-' in the beginning are commands
+           *  If token starts with '#' this and all next tokens are comments
+           *  If token not starts with '-' or '#' it could be a table name or column name
+               > So the first such token considered to be table name
+               > All other such tokens are treated as columns
+        
+        """
         
         #parse loop
         i=0
@@ -132,8 +147,7 @@ class MakeTable(ConsoleUtilBase):
         while i < len(args):
             token = args[i].strip()
             i+=1
-            if token.startswith('-'):
-                #it is some command, lets parse what is the command
+            if token.startswith('-'): #it is some command
 
                 #rows number
                 if token == "-r" or token.startswith("--rows"):
@@ -147,27 +161,36 @@ class MakeTable(ConsoleUtilBase):
                             self.rows_set = False
                             
                         i+=1
-                
-                if token == "-I" or token == "--interactive":
+                        
+                #interactive mode
+                if token == "-i" or token == "--interactive":
                     self.interactive = True
                     self.interactive_set = True
                 
             else:
+                
+                #is it a comment?
                 if token.startswith("#"):
                     #everething next are comments
                     self.comment += " ".join( args[i-1:])
                     self.comment_set = True
                     break #break the loop since everething next are comment
-                    
+                
+                #if table_path is NOT set it is table_path 
                 elif not self.table_path_set:
                     self.table_path = token
                     self.table_path_set = True
                 
+                #othervise it is one of the columns
                 else:
                     self.unparsed_columns.append(token)
                     
-                    
+    
+    # parse columns 
+    #------------------------------ ----------
     def parse_columns(self, unparsed_columns):
+        """ parse columns part of arguments """
+        
         columns = {}
         for unparsed_column in unparsed_columns:
             parse_result = self.parse_column(unparsed_column)
@@ -198,7 +221,11 @@ class MakeTable(ConsoleUtilBase):
         return columns
             
     
+    # parse each column argument record
+    #-----------------------------------
     def parse_column(self, value):
+        """parse each column argument record"""
+        
         result = {}
         result["type"] = "double" #default type
         result["name"] = ""       #no name
@@ -228,7 +255,8 @@ class MakeTable(ConsoleUtilBase):
         return result
             
             
-            
+    # print help
+    #-----------------------------------
     def print_help(self):
         "prints help for MakeTable"
         
@@ -288,7 +316,9 @@ keys:
                               (This option is switched ON by default if ccdbcmd is in interactive mode)
     
             """
-
+        
+    # print validation table
+    #--------------------------
     def print_validation(self):
         #basic values: name rows columns path
         print

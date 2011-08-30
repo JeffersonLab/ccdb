@@ -769,7 +769,6 @@ bool ccdb::DMySQLDataProvider::SearchConstantsTypeTables( vector<DConstantsTypeT
 	{
 		//ok lets read the data...
 		DConstantsTypeTable *result = new DConstantsTypeTable(this, this);
-        DLog::Message("inside fetch");
 
 		result->SetId(ReadULong(0));
 		result->SetCreatedTime(ReadUnixTime(1));
@@ -802,8 +801,7 @@ bool ccdb::DMySQLDataProvider::SearchConstantsTypeTables( vector<DConstantsTypeT
             LoadColumns(typeTables[i]);
         }   
     }
-
-    DLog::Message("Free result");
+    
 	FreeMySQLResult();
 	
 	return true;
@@ -1060,6 +1058,8 @@ bool ccdb::DMySQLDataProvider::CreateRunRange( DRunRange *run )
 		//NO report error
 		return false;
 	}
+    
+    run->SetId(mLastInsertedId);
 
 	return true;
 }
@@ -1154,7 +1154,7 @@ DRunRange* ccdb::DMySQLDataProvider::GetOrCreateRunRange( int min, int max, cons
 {
 	//if one gets NULL after that function it is probably only because 
 	//run range with such name already exists but have different min and max ranges
-	// or, surely, because error with MySQL connection or something like this happened
+	// or, surely, because error with MySQL coGetOrCreateRunRangennection or something like this happened
 	DRunRange *result = GetRunRange(min,max, name);
 	if(!result)
 	{
@@ -1166,7 +1166,12 @@ DRunRange* ccdb::DMySQLDataProvider::GetOrCreateRunRange( int min, int max, cons
 		//TODO deside how to handle comment and time;
 		//TODO (!) Maybe change to REPLACE instead of insert?
 		//Try to create and return null if it was impossible
-		if(!CreateRunRange(result)) return NULL;
+		if(!CreateRunRange(result)) 
+        {
+            Error(CCDB_ERROR_OBTAINING_RUNRANGE,"DDataProvider::GetOrCreateRunRange", 
+                  DStringUtils::Format("Can not get or create run range run-min: %i, run-max: %i, run-name: %s", min, max, name.c_str()));
+            return NULL;
+        }
 
 	}
 	return result;
@@ -1804,34 +1809,35 @@ DAssignment* ccdb::DMySQLDataProvider::GetAssignmentShortByVersion(int run, cons
 }
 
 bool ccdb::DMySQLDataProvider::CreateAssignment(DAssignment *assignment )
-{
+{   
 	ClearErrors(); //Clear error in function that can produce new ones
 
 	//Check runrange...
 	DRunRange * runRange= assignment->GetRunRange();
-	if(
-			!assignment->GetRunRange()
-		||	!assignment->GetRunRange()->GetId()
-		||	!assignment->GetVariation()
-		||	!assignment->GetVariation()->GetId()
-		)
-	{
-		//TODO event range handling! 
-		//TODO do we need a warning or error here?
-		return false;
-	}
+    //TODO event range handling
+
+    //Validation of inputted object
+    if(!assignment->GetRunRange())           {cout<<"!assignment->GetRunRange()"<<endl;           return false;}
+    if(!assignment->GetRunRange()->GetId())  
+    {
+        Error(CCDB_ERROR_RUNRANGE_INVALID,"DMySQLDataProvider::CreateAssignment(DAssignment *assignment)", DStringUtils::Format("Runrange is null or have invalid ID. ID is: %i" + assignment->GetRunRange()->GetId()));
+        return false;
+    }
+    if(!assignment->GetVariation())          {cout<<"!assignment->GetVariation()"<<endl;          return false;}
+	if(!assignment->GetVariation()->GetId()) {cout<<"!assignment->GetVariation()->GetId()"<<endl; return false;}
+
 	DConstantsTypeTable *table = assignment->GetTypeTable();
 	if(table == NULL || !table->GetId())
 	{
 		//TODO warning
 		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::CreateAssignment", "Table is NULL or has wrong id");
 		return false;
-
 	}
 
 	//start query, lock tables, make transaction imune;
 	if(!QueryCustom("START TRANSACTION;"))
 	{
+        cout<<"!QueryCustom(\"START TRANSACTION;\")"<<endl;
 		return false; 
 	}
 
@@ -1846,6 +1852,7 @@ bool ccdb::DMySQLDataProvider::CreateAssignment(DAssignment *assignment )
 	{
 		//TODO report error
 		QueryCustom("ROLLBACK;"); //rollback transaction doesnt matter will it happen or not but we should try
+        cout<<"!QueryInsert(query)1"<<endl;
 		return false;
 	}
 	assignment->SetDataVaultId(static_cast<dbkey_t>(mLastInsertedId));
@@ -1874,6 +1881,7 @@ bool ccdb::DMySQLDataProvider::CreateAssignment(DAssignment *assignment )
 	{
 		//TODO report error
 		QueryCustom("ROLLBACK;"); //rollback transaction doesnt matter will it happen or not but we should try
+        cout<<"!QueryInsert(query)2"<<endl;
 		return false;
 	}
 	assignment->SetId(static_cast<dbkey_t>(mLastInsertedId));
@@ -1885,6 +1893,7 @@ bool ccdb::DMySQLDataProvider::CreateAssignment(DAssignment *assignment )
 	//commit changes
 	if(!QueryCustom("COMMIT;"))
 	{	
+        cout<<"!QueryCustom(\"COMMIT;\")"<<endl;
 		return false; 
 	}
 
@@ -1898,7 +1907,7 @@ bool ccdb::DMySQLDataProvider::CreateAssignment(DAssignment *assignment )
 
 DAssignment* ccdb::DMySQLDataProvider::CreateAssignment(const std::vector<std::vector<std::string> >& data, const std::string& path, int runMin, int runMax, const std::string& variationName, const std::string& comments)
 {
-
+    // cout <<"HERE HERE"<<endl;
 	/* Creates Assignment using related object.
 	* Validation:
 	* If no such run range found, the new will be created (with no name)
@@ -1929,7 +1938,8 @@ DAssignment* ccdb::DMySQLDataProvider::CreateAssignment(const std::vector<std::v
 	if(data.size()!= table->GetNRows())
 	{
 		 //error message
-		Error(CCDB_ERROR_TABLE_NO_ROWS,"DMySQLDataProvider::CreateAssignment", "For given table number of rows is zero");
+		Error(CCDB_ERROR_DATA_INCONSISTANT,"DMySQLDataProvider::CreateAssignment", 
+              DStringUtils::Format("Number of rows is inconsistent. Rows in table definition: %i, actual rows number %i",table->GetNRows(), data.size()));
 		return NULL;
 	}
 
@@ -1941,8 +1951,8 @@ DAssignment* ccdb::DMySQLDataProvider::CreateAssignment(const std::vector<std::v
 		if(row.size() != table->GetNColumns())
 		{
 			//TODO error handle
-			 //TODO error message
-			Error(CCDB_ERROR_DATA_INCONSISTANT,"DMySQLDataProvider::CreateAssignment", "Number of columns in rows is inconsistant");
+			Error(CCDB_ERROR_DATA_INCONSISTANT, "DMySQLDataProvider::CreateAssignment", 
+                    DStringUtils::Format("Number of columns is inconsistent. Row with inconsistency (zero based): %i , columns by table definition: %i, actual columns number %i",rowIter, table->GetNColumns(), row.size()));
 			return NULL;
 		}
 
@@ -1953,11 +1963,10 @@ DAssignment* ccdb::DMySQLDataProvider::CreateAssignment(const std::vector<std::v
 	}
 	
 	//last one we need is a run range
-	DRunRange * runRange = GetOrCreateRunRange(runMin, runMax, "", comments);
+	DRunRange * runRange = GetOrCreateRunRange(runMin, runMax, "", "");
 	if(runRange == NULL)
 	{
-		//TODO report cannot creat runrange
-		Error(CCDB_ERROR_RUNRANGE_INVALID,"DMySQLDataProvider::CreateAssignment", "Can not get or create run range");
+		//error reporting is in GetOrCreateRunRange
 		return NULL;
 	}
 

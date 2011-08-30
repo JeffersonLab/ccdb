@@ -98,7 +98,10 @@ def read_ccdb_text_file(file_name):
 #----------------------------------------
 #   read_namevalue_text_file 
 #---------------------------------------- 
-def read_namevalue_text_file(file_name):
+def read_namevalue_text_file(file_name, replace_c_comments = False):
+    """
+        @param replace_c_comments - if file contains // - 'C' style comments, replace them by # first
+    """
     dom = TextFileDOM()    
     try:
         with open(file_name) as f:
@@ -108,6 +111,7 @@ def read_namevalue_text_file(file_name):
                 
                 #prepare line and skip empty one
                 line = line.strip()
+                if replace_c_comments: line = line.replace("//","#")
                 if not len(line): continue
                 
                 #what is this line?

@@ -35,7 +35,7 @@ namespace jana
          */
         double CheckOpenable(std::string url, int run, std::string context)   ///< Test probability of opening the given calibration
         { 
-            if(url.find("http://")!=0)  return 0.0;
+            if(url.find("mysql://")!=0)  return 0.0;
             return 0.99;
         } 
 

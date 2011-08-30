@@ -9,6 +9,7 @@
 #include <JANA/jerror.h>
 #include <JANA/JCalibration.h>
 #include <UserAPI/DMySQLCalibration.h>
+#include "DMySQLCalibration.h"
 
 // Place everything in JANA namespace
 namespace jana
@@ -29,7 +30,7 @@ namespace jana
     private:
         JCalibrationCCDB(); // prevent use of default constructor
 
-        DMySQLCalibration * mCalibration;
+        ccdb::DMySQLCalibration * mCalibration;
         std::string mConnectionString;
     };
 

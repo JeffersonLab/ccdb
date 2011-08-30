@@ -62,7 +62,7 @@ bool test_DMySQLDataProvider_Assignments()
 	
 	//simple copy
 	result = prov->CreateAssignment(assignment);
-	TITLE("Create assignment from previus one"); TEST(result);	
+	TITLE("Create assignment from previous one"); TEST(result);	
 
 	//test what we will get
 	result = prov->GetAssignments(assignments, "/test/test_vars/test_table", 100);
@@ -74,9 +74,9 @@ bool test_DMySQLDataProvider_Assignments()
 	
 	//Lets print table
 	vector<vector<string> > tabeled_values = assignment->GetData();
-	TITLE("Test rows exists");       TEST(tabeled_values.size()>0);	
-	TITLE("Test cells exists");       TEST(tabeled_values[0].size()>0);	
-	TITLE("Decode blob");       TEST(DAssignment::DecodeBlobSeparator("30e-2") == "30e-2");	
+	TITLE("Test rows exists");   TEST(tabeled_values.size()>0);	
+	TITLE("Test cells exists");  TEST(tabeled_values[0].size()>0);	
+	TITLE("Decode blob");        TEST(DAssignment::DecodeBlobSeparator("30e-2") == "30e-2");	
 	
 	return true;
 }

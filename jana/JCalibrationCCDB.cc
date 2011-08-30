@@ -5,7 +5,7 @@ jana::JCalibrationCCDB::JCalibrationCCDB( string url, int run, string context/*=
 {
     //constructor 
 
-    mCalibration = new DMySQLCalibration(run, context);
+    mCalibration = new ccdb::DMySQLCalibration(run, context);
     try
     {
         mCalibration->Connect(url);

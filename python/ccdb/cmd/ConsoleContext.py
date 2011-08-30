@@ -302,12 +302,12 @@ class ConsoleContext:
             
             # execute shell command if input starts with '!'
             if user_input.startswith('!'):
-               user_input = user_input[1:]
-               try:     
+                user_input = user_input[1:]
+                try:     
                     os.system(user_input)
-               except:
+                except:
                     pass
-               continue #skip to new command     
+                continue #skip to next command     
                                    
                     
             tokens = shlex.split(user_input)

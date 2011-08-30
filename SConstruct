@@ -2,7 +2,11 @@ import sys
 import os
 
 #Setup default environment. This environment 
-
+if not 'CCDB_HOME' in os.environ:
+	print "CCDB_HOME environment variable should be set to compile the CCDB"
+	print "just run 'source environment.bash' from your bash shell"
+	exit(1)
+	
 #add some colors 
 colors = {
 	'cyan':'\033[96m', 
@@ -44,6 +48,8 @@ default_env = Environment(
     CPPPATH = ['#include', 'src'],
     ENV = os.environ,
 )
+
+
 
 #Export 'default' environment for everything that whishes to use it
 Export('default_env') 

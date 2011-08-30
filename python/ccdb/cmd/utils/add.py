@@ -59,6 +59,7 @@ class AddData(ConsoleUtilBase):
         self.comment = ""
         self.is_namevalue_format = False
         self.no_comments = False
+        self.c_comments = False   #file has '//'-style comments
 
         #process arguments
         if not self.process_arguments(args):
@@ -84,7 +85,7 @@ class AddData(ConsoleUtilBase):
             if not self.is_namevalue_format:
                 dom = ccdb.read_ccdb_text_file(self.file_path)
             else:
-                dom = ccdb.read_namevalue_text_file(self.file_path)
+                dom = ccdb.read_namevalue_text_file(self.file_path, self.c_comments)
         except IOError as error:
             log.warning("Unable to read file %s. The error message is: \n %s"%(self.file_path, error.message))
             return 1  
@@ -132,7 +133,7 @@ class AddData(ConsoleUtilBase):
                     if i<len(args):
                         self.variation = args[i]
                         i+=1
-                                                
+                                                                                    
                 #runrange
                 if token == "-r" or token == "--runrange":
                     result = self.context.parse_run_range(args[i])
@@ -151,7 +152,7 @@ class AddData(ConsoleUtilBase):
                         log.warning("Max run bound was set as INFINITE_RUN by default")
                     
                 
-                #runrange
+                #file
                 if token == "-f" or token == "--file":
                     self.rawentry = args[i]
                     self.object_type = "directory"
@@ -164,6 +165,10 @@ class AddData(ConsoleUtilBase):
                 #name-value file mode
                 if token == "--name-value":
                     self.is_namevalue_format = True
+                
+                #c style comments
+                if token == "--c-comments":
+                    self.c_comments = True
 
             else:
                 if token.startswith("#"):
@@ -218,5 +223,6 @@ Additionsl flags:
     
           --name-value  - indicates that the input file is in name-value format (column of names and column of values)
     -n or --no-comments - do not add all "#..." comments that is found in file to ccdb database
+          --c-comments  - for files that contains '//' - C style comments. The add replaces simply // to #. 
     
     """

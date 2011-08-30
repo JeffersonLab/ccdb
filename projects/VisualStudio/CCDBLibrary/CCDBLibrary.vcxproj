@@ -39,11 +39,8 @@
     <ClInclude Include="..\..\..\include\Web\DConfigReader.h" />
     <ClInclude Include="..\..\..\include\Web\DHttpContext.h" />
     <ClInclude Include="..\..\..\include\winpthreads.h" />
-    <ClInclude Include="..\..\..\jana\JCalibrationCCDB.h" />
-    <ClInclude Include="..\..\..\jana\JCalibrationGeneratorCCDB.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\jana\JCalibrationCCDB.cc" />
     <ClCompile Include="..\..\..\src\DCCDBError.cc" />
     <ClCompile Include="..\..\..\src\DConsole.cc" />
     <ClCompile Include="..\..\..\src\DLog.cc" />
@@ -69,9 +66,6 @@
     <ClCompile Include="..\..\..\src\UserAPI\DMySQLCalibration.cc" />
     <ClCompile Include="..\..\..\src\Web\DConfigReader.cc" />
     <ClCompile Include="..\..\..\src\Web\DHttpContext.cc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\jana\README.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FF2376E7-5637-46A4-AE1B-A083D7588552}</ProjectGuid>

@@ -76,9 +76,6 @@
     <ClCompile Include="..\..\..\src\UserAPI\DMySQLCalibration.cc">
       <Filter>UserAPI\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\jana\JCalibrationCCDB.cc">
-      <Filter>JANA</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\Providers\DDataProvider.h">
@@ -165,12 +162,6 @@
     <ClInclude Include="..\..\..\include\winpthreads.h">
       <Filter>General\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\jana\JCalibrationCCDB.h">
-      <Filter>JANA</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\jana\JCalibrationGeneratorCCDB.h">
-      <Filter>JANA</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="General">
@@ -218,13 +209,5 @@
     <Filter Include="Providers\Sources">
       <UniqueIdentifier>{4152868a-9e44-4b8e-a2c3-673d5efdf377}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JANA">
-      <UniqueIdentifier>{d8d3d1fa-0194-403a-b437-c872b4d50a97}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\jana\README.txt">
-      <Filter>JANA</Filter>
-    </None>
   </ItemGroup>
 </Project>

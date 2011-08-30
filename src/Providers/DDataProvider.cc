@@ -1,5 +1,7 @@
 #include "Providers/DDataProvider.h"
 #include "DLog.h"
+#include "DStringUtils.h"
+#include "DCCDBGlobals.h"
 using namespace ccdb;
 
 namespace ccdb
@@ -135,10 +137,10 @@ DAssignment* ccdb::DDataProvider::CreateAssignment(const vector<vector<string> >
 	}
 	
 	//last one we need is a run range
-	DRunRange * runRange = GetOrCreateRunRange(runMin, runMax, "", comments);
+	DRunRange * runRange = GetOrCreateRunRange(runMin, runMax, "", "");
 	if(runRange == NULL)
 	{
-		//TODO report cannot creat runrange
+        //error report is in GetOrCreateRunRange
 		return NULL;
 	}
 

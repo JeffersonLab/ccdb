@@ -119,6 +119,9 @@ typedef int dbkey_t;
 //Run range is NULL or has improper ID so update operations cant be done
 #define CCDB_ERROR_RUNRANGE_INVALID 1230
 
+//Run range is NULL or has improper ID so update operations cant be done
+#define CCDB_ERROR_OBTAINING_RUNRANGE 1235
+
 //Variation is NULL or has improper ID so update operations cant be done
 #define CCDB_ERROR_VARIATION_INVALID 1240
 
