@@ -1288,11 +1288,11 @@ bool ccdb::DMySQLDataProvider::DeleteRunRange(DRunRange* run)
 	}
 	FreeMySQLResult();
 
-	string query = DStringUtils::Format("DELETE FROM `runranges` WHERE `runranges`.`id`='%i';", run->GetId());
+	string query = DStringUtils::Format("DELETE FROM `runRanges` WHERE `runRanges`.`id`='%i';", run->GetId());
 	bool result = QueryDelete(query);
 	if(result)
 	{
-		AddLogRecord("runranges;",DStringUtils::Format("runranges_%i;", run->GetId()), "Delete run range", DStringUtils::Format("Delete run range: from %i to %i with name %s", run->GetMin(), run->GetMax(), run->GetName().c_str()));
+		AddLogRecord("runranges;",DStringUtils::Format("runRanges_%i;", run->GetId()), "Delete run range", DStringUtils::Format("Delete run range: from %i to %i with name %s", run->GetMin(), run->GetMax(), run->GetName().c_str()));
 	}
 	return result;
 }
@@ -1309,9 +1309,9 @@ bool ccdb::DMySQLDataProvider::UpdateRunRange(DRunRange* run)
 	}
 
 	string query=DStringUtils::Format(
-		"UPDATE `runranges` SET `modified` = NULL, " 
+		"UPDATE `runRanges` SET `modified` = NULL, " 
 		" `name` = \"%s\", `runMin` = '%i', `runMax` = '%i', `comment` = %s "
-		" WHERE `runranges`.`id` = '%i' ;",
+		" WHERE `runRanges`.`id` = '%i' ;",
 		DStringUtils::Encode(run->GetName()).c_str(), 
 		run->GetMin(),
 		run->GetMax(),
