@@ -16,7 +16,36 @@
 /* @class DDataProvider
  * This is the main base interface to the Providers class family. Providers - are classes 
  * derived from this class, each Provider provides data from/to a specified data source. 
- * I.e. MySQLDataProvider works with MySQL database.                     
+ * I.e. MySQLDataProvider works with MySQL database.
+ *
+ *==============================================
+ *Low Level API
+ *
+ *                    ^ ^ ^  
+ *                    | | |                            
+ *  +------------------------------------------+
+ *  | Data Model: DAssignment, DTypeTable, ... |    -   Data model is returned to user
+ *  +------------------------------------------+        
+ *                       ^                              
+ *                       |                              
+ *                       |                              
+ *  +------------------------------------------+        
+ *  |   DDataProvider - Interface to database  |    -   User get data by using DDataProvider functions
+ *  +------------------------------------------+        
+ *                       |                              
+ *             +---------------------+                  
+ *            /                       \                 
+ *  +----------------+        +----------------+        
+ *  | DMySQLProvider |        | DSQLiteProvider|    -   These classes are inherited from DDataProvider and do actual querries to related sources
+ *  +----------------+        +----------------+        
+ *          |                          |                
+ *  <================>        <================>        
+ *  | MySQL Database |        |     SQLite     |    -   Data storages 
+ *  <________________>        <________________>
+ *
+ *
+ *
+ *
  */
 namespace ccdb
 {
@@ -24,6 +53,7 @@ namespace ccdb
 class DDataProvider: public DObjectsOwner
 {
 public:
+
     DDataProvider(void);
     virtual ~DDataProvider(void);
     
@@ -55,9 +85,9 @@ public:
      */
     virtual bool IsConnected()=0;
     
-    /** @brief Conection string that was used on last successfull connect.
+    /** @brief Connection string that was used on last successful connect.
      *
-     * Conection string that was used on last successfull connect.
+     * Connection string that was used on last successful connect.
      * If no any successfull connects were done string::empty will be returned
      *
      * @return  Last connection string or string::empty() if no successfull connection was done
@@ -189,6 +219,15 @@ public:
      */
     virtual bool DeleteDirectory(DDirectory *dir) =0;
 
+    /** NEVER USE IT UNLESS YOU KNOW
+     *  Deletes directory and all tables and subdirectories in it
+     *
+     *  @remarks This function is here to use ccdb as a general data storage only 
+     *  this function is against the philosofy "No delete. Any change by adding New"
+     *
+     */
+    virtual bool RecursiveDeleteDirectory(DDirectory *dir);
+
 
     //----------------------------------------------------------------------------------------
     //	C O N S T A N T   T Y P E   T A B L E
@@ -204,7 +243,7 @@ public:
 
     /** @brief Gets ConstantsType information from the DB
      *
-     * @param  [in] name nfme of ConstantsTypeTable
+     * @param  [in] name name of ConstantsTypeTable
      * @param  [in] parentDir directory that contains type table
      * @return new object of DConstantsTypeTable
      */
@@ -212,7 +251,7 @@ public:
 
     /** @brief Gets ConstantsType information from the DB
      *
-     * @param  [in] name nfme of ConstantsTypeTable
+     * @param  [in] name name of ConstantsTypeTable
      * @param  [in] parentDir directory that contains type table
      * @return new object of DConstantsTypeTable
      */
@@ -273,8 +312,7 @@ public:
      * @return vector<DConstantsTypeTable *>
      */
     virtual vector<DConstantsTypeTable *> SearchConstantsTypeTables(const string& pattern, const string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 )=0;
-
-
+    
     /**
      * @brief This function counts number of type tables for a given directory 
      * @param [in] directory to look tables in
@@ -369,10 +407,20 @@ public:
      * @return bool true if success
      */
     virtual bool DeleteConstantsTypeTable(DConstantsTypeTable *table)=0;
+
+    /** NEVER USE IT UNLESS YOU KNOW
+     *  Deletes type table and all assignments in it
+     *
+     *  @remarks This function is here to use ccdb as a general data storage only 
+     *  this function is against the philosofy "No delete. Any change by adding New"
+     *
+     */
+    virtual bool RecursiveDeleteTypeTable(DConstantsTypeTable *dir);
     
     //----------------------------------------------------------------------------------------
     //	R U N   R A N G E S
     //----------------------------------------------------------------------------------------
+
     /** @brief Creates RunRange in db
      *
      * TODO remove method
@@ -451,6 +499,15 @@ public:
      */
     virtual bool DeleteRunRange(DRunRange* run)=0;
 
+    /** NEVER USE IT UNLESS YOU KNOW
+     *  Deletes run range and all assignments in it
+     *
+     *  @remarks This function is here to use ccdb as a general data storage only 
+     *  this function is against the philosophy "No delete. Any change by adding New"
+     *
+     */
+    virtual bool RecursiveDeleteRunRange(DRunRange *dir);
+
     //----------------------------------------------------------------------------------------
     //	V A R I A T I O N
     //----------------------------------------------------------------------------------------
@@ -520,10 +577,20 @@ public:
      * @return   bool
      */
     virtual bool DeleteVariation(DVariation *variation) =0;
+
+    /** NEVER USE IT UNLESS YOU KNOW
+     *  Deletes variation and all assignments that belongs to it 
+     *
+     *  @remarks This function is here to use ccdb as a general data storage only 
+     *  this function is against the philosophy "No delete. Any change by adding New"
+     *
+     */
+    virtual bool RecursiveDeleteVariation(DVariation *dir);
     
     //----------------------------------------------------------------------------------------
     //	A S S I G N M E N T S
     //----------------------------------------------------------------------------------------
+
     /** @brief Get Assignment with data blob only
      *
      * This function is optimized for fast data retrieving and is assumed to be performance critical;
@@ -666,7 +733,7 @@ public:
      *       will be ignored if equals to ""
      * 
      * variation:
-     *       if "", all variations will be 
+     *       if "", all variations will be get
      * 
      * date: 
      *       unix timestamp that indicates the latest time to select assignments from

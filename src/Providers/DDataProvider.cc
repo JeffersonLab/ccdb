@@ -2,30 +2,39 @@
 #include "DLog.h"
 #include "DStringUtils.h"
 #include "DCCDBGlobals.h"
+#include <stdio.h>
+
 using namespace ccdb;
+using namespace std;
 
 namespace ccdb
 {
 
 
-
+//______________________________________________________________________________
 DDataProvider::DDataProvider(void):
-mMaximumErrorsToHold(100)
+    mMaximumErrorsToHold(100)
 {
+    //Constructor
+
 	ClearErrorsOnFunctionStart();
     mConnectionString="";
 }
 
 
+//______________________________________________________________________________
 DDataProvider::~DDataProvider(void)
 {
-	
+	//Guess what is it?
 }
 
 
+//______________________________________________________________________________
 bool DDataProvider::ValidateName(const string& name )
 {
 	//Validates that name has a-zA-Z0-9_- symbols
+    //TODO move this function to Path API
+
 	for(string::const_iterator charIter = name.begin(); charIter<name.end(); ++charIter)
 	{
 		char letter = *charIter;
@@ -42,8 +51,12 @@ bool DDataProvider::ValidateName(const string& name )
 	return true;
 }
 
+
+//______________________________________________________________________________
 void DDataProvider::SetObjectLoaded( DStoredObject* obj )
 {
+
+    //TODO possibly we dont use it anymore...
 	if(obj!=NULL)
 	{
 		obj->SetIsLoaded(true);
@@ -52,8 +65,13 @@ void DDataProvider::SetObjectLoaded( DStoredObject* obj )
 }
 
 
+//----------------------------------------------------------------------------------------
+//	C O N N E C T I O N
+//----------------------------------------------------------------------------------------
+
+
 //______________________________________________________________________________
-std::string ccdb::DDataProvider::GetConnectionString()
+std::string DDataProvider::GetConnectionString()
 {
     /** @brief Conection string that was used on last successfull connect.
      *
@@ -66,19 +84,85 @@ std::string ccdb::DDataProvider::GetConnectionString()
     return mConnectionString;
 }
 
+//----------------------------------------------------------------------------------------
+//	D I R E C T O R Y   M A N G E M E N T
+//----------------------------------------------------------------------------------------
 
-
+//______________________________________________________________________________
 vector<DDirectory *> DDataProvider::SearchDirectories( const string& searchPattern, const string& parentPath/*=""*/, int startWith/*=0*/, int select/*=0*/ )
 {
+    /** @brief Searches for directory 
+     *
+     * Searches directories that matches the pattern 
+     * inside parent directory with path @see parentPath 
+     * or globally through all type tables if parentPath is empty
+     * The pattern might contain
+     * '*' - any character sequence 
+     * '?' - any single character
+     *
+     * paging could be done with @see startWith  @see take
+     * startWith=0 and take=0 means select all records;
+     *
+     * objects that are contained in vector<DDirectory *>& resultDirectories will be
+     * 1) if this provider owned - deleted (@see ReleaseOwnership)
+     * 2) if not owned - just leaved on user control
+     *
+     * @param  [out] resultDirectories	search result
+     * @param  [in]  searchPattern		Pattern to search
+     * @param  [in]  parentPath			Parent path. If NULL search through all directories
+     * @param  [in]  startRecord		record number to start with
+     * @param  [in]  selectRecords		number of records to select. 0 means select all records
+     * @return bool true if there were error (even if 0 directories found) 
+     */
+
 	vector<DDirectory *> result;
 	SearchDirectories(result, searchPattern, parentPath, startWith, select);
 	return result;
 }
 
+
+//______________________________________________________________________________
+bool DDataProvider::RecursiveDeleteDirectory( DDirectory *dir )
+{
+    //  NEVER USE IT UNLESS YOU KNOW
+    //  Deletes directory and all tables and subdirectories in it
+    // 
+    //  @remarks This function is here to use ccdb as a general data storage only 
+    //  this function is against the phylosofy "No delete. Any change by adding New"
+    // 
+    // 
+
+    std::cerr<<"RecursiveDeleteDirectory( DDirectory *dir ) is not implemented"<<endl;
+    return false;
+}
+
+//----------------------------------------------------------------------------------------
+//	C O N S T A N T   T Y P E   T A B L E
+//----------------------------------------------------------------------------------------
+
+
+//______________________________________________________________________________
+bool DDataProvider::RecursiveDeleteTypeTable( DConstantsTypeTable *dir )
+{
+    //
+    /** NEVER USE IT UNLESS YOU KNOW
+     *  Deletes type table and all assignments in it
+     *
+     *  @remarks This function is here to use ccdb as a general data storage only 
+     *  this function is against the philosofy "No delete. Any change by adding New"
+     *
+     */
+    std::cerr<<"RecursiveDeleteTypeTable( DConstantsTypeTable *dir ) is not implemented"<<endl;
+    return false;
 }
 
 
-bool ccdb::DDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, const string& typeTablePath, const string& variation/*=""*/, int take/*=0*/, int startWith/*=0*/)
+//----------------------------------------------------------------------------------------
+//	R U N   R A N G E S
+//----------------------------------------------------------------------------------------
+
+//______________________________________________________________________________
+bool DDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, const string& typeTablePath, const string& variation/*=""*/, int take/*=0*/, int startWith/*=0*/)
 {
 	DConstantsTypeTable *table=GetConstantsTypeTable(typeTablePath);
 	//dont look for table to be NULL, it will be checked in GetRunRanges;
@@ -86,7 +170,55 @@ bool ccdb::DDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, cons
 	return GetRunRanges(resultRunRanges, table, variation, take, startWith);
 }
 
-DAssignment* ccdb::DDataProvider::CreateAssignment(const vector<vector<string> >& data, const string& path, int runMin, int runMax, const string& variationName, const string& comments)
+//______________________________________________________________________________
+bool DDataProvider::RecursiveDeleteRunRange( DRunRange *dir )
+{
+    /** NEVER USE IT UNLESS YOU KNOW
+     *  Deletes run range and all assignments in it
+     *
+     *  @remarks This function is here to use ccdb as a general data storage only 
+     *  this function is against the philosophy "No delete. Any change by adding New"
+     *
+     */
+    std::cerr<<"RecursiveDeleteRunRange( DRunRange *dir ) is not implemented"<<endl;
+    return false;
+
+}
+
+//----------------------------------------------------------------------------------------
+//	V A R I A T I O N
+//----------------------------------------------------------------------------------------
+
+//______________________________________________________________________________
+bool DDataProvider::GetVariations(vector<DVariation*>& resultVariations, const string& path, int run, int take, int startWith)
+{
+
+    DConstantsTypeTable* table = GetConstantsTypeTable(path); 
+    return GetVariations(resultVariations, table, run, take, startWith);
+}
+
+
+//______________________________________________________________________________
+bool DDataProvider::RecursiveDeleteVariation( DVariation *dir )
+{
+    /** NEVER USE IT UNLESS YOU KNOW
+     *  Deletes variation and all assignments that belongs to it 
+     *
+     *  @remarks This function is here to use ccdb as a general data storage only 
+     *  this function is against the philosophy "No delete. Any change by adding New"
+     *
+     */
+    std::cerr<<"RecursiveDeleteVariation( DVariation *dir ) is not implemented"<<endl;
+    return false;
+
+}
+
+//----------------------------------------------------------------------------------------
+//	A S S I G N M E N T S
+//----------------------------------------------------------------------------------------
+
+//______________________________________________________________________________
+DAssignment* DDataProvider::CreateAssignment(const vector<vector<string> >& data, const string& path, int runMin, int runMax, const string& variationName, const string& comments)
 {
 	/* Creates Assignment using related object.
 	* Validation:
@@ -167,7 +299,8 @@ DAssignment* ccdb::DDataProvider::CreateAssignment(const vector<vector<string> >
 	}
 }
 
-DAssignment* ccdb::DDataProvider::CreateAssignment( const vector<vector<string> > &data, const string& path, const string& runRangeName, const string& variationName, const string& comments )
+//______________________________________________________________________________
+DAssignment* DDataProvider::CreateAssignment( const vector<vector<string> > &data, const string& path, const string& runRangeName, const string& variationName, const string& comments )
 {
 	/* Creates Assignment using related object.
 	* Validation:
@@ -248,33 +381,36 @@ DAssignment* ccdb::DDataProvider::CreateAssignment( const vector<vector<string> 
 	}
 }
 
+//----------------------------------------------------------------------------------------
+//	E R R O R   H A N D L I N G 
+//----------------------------------------------------------------------------------------
 
-bool ccdb::DDataProvider::GetVariations(vector<DVariation*>& resultVariations, const string& path, int run, int take, int startWith)
-{
-
-	DConstantsTypeTable* table = GetConstantsTypeTable(path); 
-	return GetVariations(resultVariations, table, run, take, startWith);
-}
-
-int ccdb::DDataProvider::GetNErrors()
+//______________________________________________________________________________
+int DDataProvider::GetNErrors()
 {
 	//Get number of errors 
 	return mErrorCodes.size();
 }
-const vector<int>& ccdb::DDataProvider::GetErrorCodes()
+
+
+//______________________________________________________________________________
+const vector<int>& DDataProvider::GetErrorCodes()
 {
 	//Get vector of last errors 
 	return mErrorCodes;
 }
 
-int ccdb::DDataProvider::GetLastError()
+
+//______________________________________________________________________________
+int DDataProvider::GetLastError()
 {
 	//Gets last of the last error
 	return mLastError;
 }
 
 
-void ccdb::DDataProvider::Error(int errorCode, const string& module, const string& message)
+//______________________________________________________________________________
+void DDataProvider::Error(int errorCode, const string& module, const string& message)
 {
 	//Logs error 
 	DCCDBError * error  = new DCCDBError();
@@ -293,14 +429,18 @@ void ccdb::DDataProvider::Error(int errorCode, const string& module, const strin
 	DLog::Error(errorCode, module, message);
 }
 
-void ccdb::DDataProvider::ClearErrorsOnFunctionStart()
+
+//______________________________________________________________________________
+void DDataProvider::ClearErrorsOnFunctionStart()
 {
 	//Clear error state on start of each function that emmits error
 	mErrorCodes.clear();
 	mLastError = CCDB_NO_ERRORS;
 }
 
-void ccdb::DDataProvider::Warning( int errorCode, const string& module, const string& message )
+
+//______________________________________________________________________________
+void DDataProvider::Warning( int errorCode, const string& module, const string& message )
 {
 	//add error 
 	mErrorCodes.push_back(errorCode);
@@ -313,14 +453,27 @@ void ccdb::DDataProvider::Warning( int errorCode, const string& module, const st
 	DLog::Warning(errorCode, module, message);
 }
 
-void ccdb::DDataProvider::ClearErrors()
+
+//______________________________________________________________________________
+void DDataProvider::ClearErrors()
 {
 	mErrorCodes.clear();
 	mLastError = CCDB_NO_ERRORS;
 }
 
-std::vector<DCCDBError *> ccdb::DDataProvider::GetErrors()
+
+//______________________________________________________________________________
+std::vector<DCCDBError *> DDataProvider::GetErrors()
 {
 	return mErrors;
 }
+
+
+
+
+
+
+
+
+} //namespace ccdb
 

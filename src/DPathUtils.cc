@@ -299,5 +299,32 @@ ccdb::DParseRequestResult ccdb::DPathUtils::ParseRequest( const string& requestS
 }
 
 
+//______________________________________________________________________________
+string & ccdb::DPathUtils::MakeAbsolute( string &path )
+{
+     /** @brief Adds '/' to the beginning of the path if it is not there
+     *
+     * If one have 'the/path' this function will change the string as '/the/path'
+     * If one gave '/the/path' this function does nothing
+     * @parameter [in] string & path
+     * @return   void
+     */
+
+    if(IsAbsolute(path)) path.insert(0,1,'/');
+    return path;
+
+
+}
+//______________________________________________________________________________
+bool ccdb::DPathUtils::IsAbsolute( const string &path )
+{
+    /** @brief Check if the path is absolute - starts with /
+     */
+    return (path.length()>0 && path[0]!='/');
+}
+
+
+
+
 
 

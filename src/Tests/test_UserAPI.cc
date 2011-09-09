@@ -47,6 +47,7 @@ bool test_UserAPI()
     }
     TITLE("DMySQLCalibration connected");  TEST(result);
 
+    
     //get data as table of strings
     //----------------------------------------------------
     vector<vector<string> > tabledValues;
@@ -62,6 +63,22 @@ bool test_UserAPI()
     TITLE("Data read");          TEST(tabledValues.size()>0);
     TITLE("Test rows exists");   TEST(tabledValues.size()==2);	
     TITLE("Test cells exists");  TEST(tabledValues[0].size()==3);
+
+    //test of getting data without / in the beginning
+    //----------------------------------------------------
+
+    tabledValues.clear();
+    try
+    {
+        result = calib->GetCalib(tabledValues, "test/test_vars/test_table");
+    }
+    catch (exception &e)
+    {
+        gConsole.WriteLine("Exception was caught %s", e.what());
+    }
+
+    TITLE("No starting / data read");          TEST(tabledValues.size()>0);
+
 
     int rowsNum = tabledValues.size();
     int columnsNum = tabledValues[0].size(); //rawTableValues[0] - size was checked in GetCalib

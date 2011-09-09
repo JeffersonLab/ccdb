@@ -131,8 +131,7 @@ class MakeTable(ConsoleUtilBase):
     def process_arguments(self, args):
         """@brief process input arguments
         
-           @remarks 
-           Logic:
+           @remarks Logic:
            *  All tokens that have '-' in the beginning are commands
            *  If token starts with '#' this and all next tokens are comments
            *  If token not starts with '-' or '#' it could be a table name or column name

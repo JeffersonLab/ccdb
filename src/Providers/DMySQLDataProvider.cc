@@ -295,7 +295,7 @@ bool ccdb::DMySQLDataProvider::MakeDirectory( const string& newDirName, const st
 
 DDirectory* ccdb::DMySQLDataProvider::GetDirectory( const string& path )
 {
-	//Mayby we need to update our directories?
+	//maybe we need to update our directories?
 	UpdateDirectoriesIfNeeded();
 	
 	//search full path
@@ -1573,7 +1573,7 @@ DAssignment* ccdb::DMySQLDataProvider::GetAssignmentShort(int run, const string&
 	if(!table)
 	{
 		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetAssignmentShort", "Table with this name was not found");
+		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetAssignmentShort", DStringUtils::Format("Table with the name '%s' was not found", path.c_str()));
 		return NULL;
 	}
 

@@ -50,7 +50,6 @@ void ccdb::DCCDBGlobalMutex::Lock(pthread_mutex_t * mutex)
 void ccdb::DCCDBGlobalMutex::Release(pthread_mutex_t * mutex)
 { 
 	///releases mutex by handle posix version
-     cout<<"Release"<<endl;
 	pthread_mutex_unlock(mutex);
 }
 

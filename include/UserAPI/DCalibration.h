@@ -178,6 +178,12 @@ public:
      */
     std::string GetDefaultVariation() const { return mDefaultVariation; }
 
+     /** @brief Get list of all type tables with full path
+      *
+      * @parameter [in] vector<string> & namepaths
+      * @return   void
+      */
+     void GetListOfNamepaths(vector<string> &namepaths);
 protected:
     
     /** @brief Gets the assignment from provider using namepath

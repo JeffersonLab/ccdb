@@ -99,6 +99,7 @@ class List(ConsoleUtilBase):
                 print "new path: "
                 print "   ", self.parent_path
                 if len(self.pattern): print "pattern: ", self.pattern
+
             #try to find such dir once more
             self.parent_dir = provider.get_directory(self.parent_path)
 

@@ -79,8 +79,11 @@ bool DCalibration::GetCalib( vector< map<string, string> > &values, const string
 	 * @parameter [in]  namepath - data path
 	 * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
 	 */
-    
+
+  
+
     DAssignment* assignment = GetAssignment(namepath);
+
     if(assignment == NULL) return false; //TODO possibly exception throwing?
 
     //Get data
@@ -375,6 +378,7 @@ bool DCalibration::GetCalib( map<string, int> &values, const string & namepath )
     //TODO right now the function works through copy. 
     //one needs to find out, maybe it needs to be reimplemented
 
+
     map<string, string> rawValues;
     try
     {
@@ -518,11 +522,11 @@ DAssignment * DCalibration::GetAssignment( const string& namepath )
     Lock();
     if(result.WasParsedTime)
     {   
-        assigment = mProvider->GetAssignmentShort(run, result.Path, result.Time, variation);
+        assigment = mProvider->GetAssignmentShort(run, DPathUtils::MakeAbsolute(result.Path), result.Time, variation);
     }
     else
     {
-        assigment = mProvider->GetAssignmentShort(run, result.Path, variation);
+        assigment = mProvider->GetAssignmentShort(run, DPathUtils::MakeAbsolute(result.Path), variation);
     }
     Unlock();
     return assigment;
@@ -544,5 +548,30 @@ void DCalibration::Unlock()
     //Thread mutex Unlock lock for multithreaded operations
     DCCDBGlobalMutex::Instance()->ReadConstantsRelease();
 }
+
+
+//______________________________________________________________________________
+void DCalibration::GetListOfNamepaths( vector<string> &namepaths )
+{
+     /** @brief Get list of all type tables with full path
+      *
+      * @parameter [in] vector<string> & namepaths
+      * @return   void
+      */
+    vector<DConstantsTypeTable*> tables;
+    if(!mProvider->SearchConstantsTypeTables(tables, "*"))
+    {
+        throw logic_error("Error selecting all type tables"); 
+    }
+    for (int i=0; i< tables.size(); i++)
+    {
+        // we use substr(1) because JANA users await list 
+        // without '/' in the beginning of each string,
+        // while GetFullPath() returns strings that start with '/'
+        namepaths.push_back(tables[i]->GetFullPath().substr(1));
+        delete tables[i];
+    }
+}
+
 }
 

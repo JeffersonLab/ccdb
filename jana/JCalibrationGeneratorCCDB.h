@@ -5,6 +5,7 @@
 #include <JANA/JCalibrationGenerator.h>
 #include <string>
 #include "JCalibrationCCDB.h"
+#include <iostream>
 
 // Place everything in JANA namespace
 namespace jana
@@ -35,6 +36,8 @@ namespace jana
          */
         double CheckOpenable(std::string url, int run, std::string context)   ///< Test probability of opening the given calibration
         { 
+            std::cout<<"CheckOpenable "<<"url "<<url<<" run "<<run<< " context "<<context<< " url.find(mysql://) "<< url.find("mysql://")<<std::endl;
+
             if(url.find("mysql://")!=0)  return 0.0;
             return 0.99;
         } 

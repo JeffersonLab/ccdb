@@ -1,7 +1,8 @@
 #include "JCalibrationCCDB.h"
 
 //______________________________________________________________________________
-jana::JCalibrationCCDB::JCalibrationCCDB( string url, int run, string context/*="default"*/ )
+jana::JCalibrationCCDB::JCalibrationCCDB( string url, int run, string context/*="default"*/ ):
+    JCalibration(url, run, context)
 {
     //constructor 
 
@@ -34,5 +35,5 @@ bool jana::JCalibrationCCDB::GetCalib( string namepath, map<string, string> &sva
 bool jana::JCalibrationCCDB::GetCalib( string namepath, vector< map<string, string> > &vsvals, int event_number/*=0*/ )
 {
     //
-    mCalibration->GetCalib(svals, namepath);
+    mCalibration->GetCalib(vsvals, namepath);
 }

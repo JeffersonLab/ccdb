@@ -115,6 +115,20 @@ public:
      * @return   time_t
      */
     static time_t ParseTime(const string &timeStr, bool * succsess);
+
+    /** @brief Adds '/' to the beginning of the path if it is not there
+     *
+     * If one have 'the/path' this function will change the string as '/the/path'
+     * If one gave '/the/path' this function does nothing
+     * @parameter [in, out] string & path
+     * @return   void
+     */
+    static string & MakeAbsolute(string &path);
+
+    /** @brief Check if the path is absolute - starts with /
+     */
+    static bool IsAbsolute(const string &path);
+
 };
 }
 #endif // _DPathUtils_
