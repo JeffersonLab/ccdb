@@ -77,16 +77,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\jana\jana_ccdb.cc" />
-    <ClCompile Include="..\..\..\jana\JCalibrationCCDB.cc" />
+    <ClCompile Include="..\..\..\janaccdb\janaccdb.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\jana\JCalibrationCCDB.h" />
-    <ClInclude Include="..\..\..\jana\JCalibrationGeneratorCCDB.h" />
+    <ClInclude Include="..\..\..\janaccdb\JCalibrationCCDB.h" />
+    <ClInclude Include="..\..\..\janaccdb\JCalibrationGeneratorCCDB.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\jana\Makefile" />
-    <None Include="..\..\..\jana\README.txt" />
+    <None Include="..\..\..\janaccdb\Makefile" />
+    <None Include="..\..\..\janaccdb\README.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

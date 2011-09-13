@@ -56,7 +56,8 @@ Or you can add next lines to your .bashrc
   S T E P   3   -   M Y S Q L
 =============================
 
- If You would like to install database on the local machine, you need to create a database (by default it is ment to be called ccdb). 
+ If You would like to install database on the local machine, you need to create
+ a database (by default it is ment to be called ccdb). 
  mysql script $CCDB_HOME/mysql/ccdb.mysql.sql generates schema for you. 
  MySQL-Workbench project with mysql schema is located in the same directory. 
 
@@ -66,9 +67,9 @@ Or you can add next lines to your .bashrc
 
 
  
- Database ccdb will be created and filled with tables and some needed and semple records
+ Database ccdb will be created and filled with tables and records
   
- By default package tries to connect by using 'ccdb_user' user name with no password 
+ By default CCDB tries to connect by using 'ccdb_user' user name with no password 
  So You might whant to create such user or specify connection string explicitly later
 
  To create the user for development purposes use sql command like this 
@@ -79,6 +80,15 @@ Or you can add next lines to your .bashrc
      CREATE USER ccdb_user;
      GRANT ALL PRIVILEGES ON ccdb.* TO 'ccdb_user'@'localhost' WITH GRANT OPTION;
      exit;
+
+
+  Adjust mysql configuration *max_allowed_packet* for bigger value i.e 32M in order
+  to be able to get large tables from the CCDB
+
+
+##RUN CODE:
+ 
+     sudo echo max_allowed_packet=32M >> /etc/my.cnf 
 
 
 

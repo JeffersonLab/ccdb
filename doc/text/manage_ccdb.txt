@@ -1,34 +1,51 @@
 Use ccdbcmd to manage CCDB contents
 
-ccdbcmd is interactive or by commands from shell. 
+
+
+LIST OF CONTENTS
+================
+
+1.  [Basic usage][#ch_basics]
+2.  [Connection to database][#ch_connection]
+3.  [Help system][#ch_help]
+
+BASICS               
+======
+<a id="ch_basics"/>
+
+ccdbcmd could be use as interactive shell or just like command shell tool. 
 
 Usage from command line is:
    
      ccdbcmd <ccdb arguents> command <command arguments>
 
-To start ccdbcmd interactively:
+Usage as interactive shell:
     
-     ccdbcmd <ccdb options> -i 
-     > command1 <command options>
-     > command2 <command options>
+     ccdbcmd <ccdb arguments> -i 
+     > command1 
+     > command2 
      > ...
      > q 
 
 
-Example 1. Command line:
+
+### Example 1. Command line:
 
                 (1)                           (2)  (3)
       ccdbcmd -c "mysql://john@localhost:999" ls /TOF/params
 
-1) -c "mysql://john@localhost:999" - sets the ccdb connection string.
-   A default connection string is:  
-   "mysql://ccdb_user@localhost ccdb"
-   The default connecion string will be used if no -c flag or CCDB_CONNECTION environment variable are set.
+1. *-c* "mysql://john@localhost" - sets the ccdb connection string. 
+   If no *-c*  flag is given, ccdb will try CCDB_CONNECTION environment 
+   variable, then use default connection string. The connection strings are 
+   described in a next chapter []. 
 
-2-3) ls - is a ccdb command returns list of directories and tables which parent directory is /TOF/params
+2. *ls* - is a ccdb command which returns a list of directories and tables
+     that belongs to parent directory /TOF/params
+
+3  */TOF/params* is the argument of ls command. All is like in posix shell.
 
 
-Example 2. Interactive:
+### Example 2. Interactive:
  
       ccdbcmd -c "mysql://john@localhost:999" -i               (1)
       > ls /TOF/params                                         (2)
@@ -36,30 +53,47 @@ Example 2. Interactive:
       > cd /TOF                                                (4)
       > cd params
       > ls
-      > pwd                                                    
-      > q                                                      (5)
+      > pwd                                                    (5)                                              
+      > q                                                      (6)
 
-1) -i - will start ccdbcmd in interactive mode. 
-2) 'ls /TOF/params' - at this point ls will be executed. The result is exactly the same as in Example 1.
-3) 'help' command provides what commands are ready to use and how to use them
-4) executing these commands will reproduce Example 1 once more. The commands are very posix-shell-like. 
-   Since we have /name/paths of objects and many other things that looks like POSIX file system 
-   we use such commands that would be familiar for user from the begining
-5) to exit interactive mode enter 'q', 'quit' or press ^D
+1. flag '-i'  will start ccdbcmd in interactive mode. 
+
+2. 'ls /TOF/params' - the result is exactly the same as in Example 1. 
+    One stays in the interactive shell after the execution.
+
+3. 'help' command provides what commands are ready to use and how to use them
+
+4. executing next commands will reproduce Example 1 once more. 
+
+5. ccdbcmd interactive mode have the concept of a current working directory,
+   with relative and absolute pathes. *pwd* command will show the current
+   working directory.    
+
+
+6. to exit interactive mode enter 'q', 'quit' or press ^D
+
+
+Since ccdb objects have /name/paths and many other things that looks like 
+POSIX file system, the commands are very posix-shell-like. 
 
 
 CONNECTION
 ==========
+<a id="ch_connection">
 
-To specify a source of data CCDB uses the connection strings. 
-The Connection String is a string in form of:
+
+CCDB uses the connection strings to specify a data source. 
+The connection string is a string in a form of:
 <protocol>://<protocol specified format>
 
 *MySQL connection string:*
->  mysql://<username>:<password>@<server.address>:<port> <database>
-for mysql one may ommit any part after "mysql://" except of server.adress. The default values will be used:
 
-The Default values are:
+>  mysql://<username>:<password>@<server_address>:<port> <database>
+
+One may ommit any part except "mysql://<server_address>". The default values
+will be used:
+
+CCDB connection defaults:
 * username - ccdb_user
 * password - no password
 * port - default MySQL port (now is 3306)
@@ -67,48 +101,81 @@ The Default values are:
 
 
 How ccdbcmd gets the connection string:
-1) The default connection string is  **"mysql://ccdb_user@localhost ccdb"** (as mentioned before) 
-2) if CCDB_CONNECTION environment variable is set it is used overwriting the default connection string.
-3) if -c or --connection flag followed connection string is set it is used overwriting all other
 
-Example 3. Connection string 1:
+1. The default connection string is  **"mysql://ccdb_user@localhost ccdb"** 
+   (as mentioned before) 
+
+2. if CCDB_CONNECTION environment variable is set it is used overwriting 
+   the default connection string.
+
+3. if -c or --connection flag followed connection string is set it is used
+   overwriting all other
+
+
+### Example 3. Connection string 1:
 
         "mysql://john@localhost:999"
 
 This is the connection string from Example 1. It tells ccdbcmd to connect to:
- * MySQL server
- * on 'localhost' using port 999
- * user is 'john' with no password
- * the database is 'ccdb' by default
+ *  MySQL server on 'localhost' using port 999
+ *  user is 'john' with no password
+ *  the database is 'ccdb' by default
 
-Example 4. Connection string 2:
 
-        "mysql://smith:hHjD83f@192.168.1.3 ccdb_database"
-
-This is the connection string from Example 1. It tells ccdbcmd to connect to:
- * MySQL server
- * on '192.168.1.3' using port 3306 (default)
- * user is 'smith' with password 'hHjD83f'
- * the database is 'ccdb_database'
-
-Example 5. Simple connection string:
+### Example 4. Simple connection string:
 	
 	"mysql://localhost"
 
- * MySQL server
- * on localhost using port 3306 (default)
+ * MySQL server on localhost using port 3306 (default)
  * user is 'ccdb_user' with no password (default)
  * the database is 'ccdb' (default)
 
-      
+
+### Example 5. Full connection string:
+
+        "mysql://smith:hHjD83f@192.168.1.3:4444 ccdb_database"
+
+It tells ccdbcmd to connect to:
+ * MySQL server  on '192.168.1.3' using port 4444 
+ * user is 'smith' with password 'hHjD83f'
+ * the database is 'ccdb_database'
+
+     
+
+
+HELP SYSTEM 
+===========
+<a id="ch_help">
+
+ccdbcmd is designed to be a self descriptive. By using 'help' 'usage' and 'example' commands 
+one could get all the commands and how to use them. 
+
+By using 'howto' command one could get tutorials for typical situations. 
+
 
 
 COMMANDS OVERVIEW
 =================
+<a id="ch_commands">
 
-ccdbcmd is designed to be a self descriptive. By using 'help' 'usage' and 'example' commands 
-one could get all the commands and how to use them. By using 'howto' command one could get tutorials 
-for typical situations. 
+(command)  (name)          (description):
+  info       Info            Prints extended information of object by the path
+  vers       Versions        Show versions of data for specified type table
+  horse      Horse           Horse
+  run        CurrentRun      gets or sets current working run
+  dump       Dump            Dumps datat table to a file
+  show       Show            Shows type table data
+  mkdir      MakeDirectory   Create directory
+  pwd        PrintWorkDir    Prints working directory
+  cd         ChangeDir       Change current directory
+  add        AddData         Add data constants
+  mktbl      MakeTable       Create constants type table
+  cat        Cat             Show assignment data by ID
+  empty      Empty           empty utility example
+  ls         List            List objects in a given directory
+
+
+
 
 
 
