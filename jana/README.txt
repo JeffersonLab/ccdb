@@ -1,1 +1,0 @@
-This is JANA integration plugin that allows to use CCDB from JANA
