@@ -8,9 +8,13 @@ LIST OF CONTENTS
 1.  [Basic usage][#ch_basics]
 2.  [Connection to database][#ch_connection]
 3.  [Help system][#ch_help]
+4.  [Commands][#ch_commands]
+5.  [Data requests][#ch_requests]
 
-BASICS               
-======
+
+
+BASIC USAGE               
+===========
 <a id="ch_basics"/>
 
 ccdbcmd could be use as interactive shell or just like command shell tool. 
@@ -28,7 +32,6 @@ Usage as interactive shell:
      > q 
 
 
-
 ### Example 1. Command line:
 
                 (1)                           (2)  (3)
@@ -37,12 +40,12 @@ Usage as interactive shell:
 1. *-c* "mysql://john@localhost" - sets the ccdb connection string. 
    If no *-c*  flag is given, ccdb will try CCDB_CONNECTION environment 
    variable, then use default connection string. The connection strings are 
-   described in a next chapter []. 
+   described in the [next chapter][#ch_connection]. 
 
 2. *ls* - is a ccdb command which returns a list of directories and tables
-     that belongs to parent directory /TOF/params
+     that belongs to directory '/TOF/params'
 
-3  */TOF/params* is the argument of ls command. All is like in posix shell.
+3  */TOF/params* is the argument of ls command. Like a posix shell.
 
 
 ### Example 2. Interactive:
@@ -83,15 +86,15 @@ CONNECTION
 
 
 CCDB uses the connection strings to specify a data source. 
-The connection string is a string in a form of:
-<protocol>://<protocol specified format>
+The generic format of a conection string is:
+<protocol>://<protocol specified string>
 
 *MySQL connection string:*
 
 >  mysql://<username>:<password>@<server_address>:<port> <database>
 
-One may ommit any part except "mysql://<server_address>". The default values
-will be used:
+One may ommit any part except "mysql://" and "<server_address>". The default
+values will be used:
 
 CCDB connection defaults:
 * username - ccdb_user
@@ -102,14 +105,13 @@ CCDB connection defaults:
 
 How ccdbcmd gets the connection string:
 
-1. The default connection string is  **"mysql://ccdb_user@localhost ccdb"** 
-   (as mentioned before) 
+1. The default connection string is  **"mysql://ccdb_user@localhost ccdb"**
 
 2. if CCDB_CONNECTION environment variable is set it is used overwriting 
    the default connection string.
 
-3. if -c or --connection flag followed connection string is set it is used
-   overwriting all other
+3. if -c or --connection flag is given in command promt it is used overwriting
+   all other.
 
 
 ### Example 3. Connection string 1:
@@ -139,7 +141,6 @@ It tells ccdbcmd to connect to:
  * MySQL server  on '192.168.1.3' using port 4444 
  * user is 'smith' with password 'hHjD83f'
  * the database is 'ccdb_database'
-
      
 
 
@@ -154,29 +155,124 @@ By using 'howto' command one could get tutorials for typical situations.
 
 
 
-COMMANDS OVERVIEW
-=================
+COMMANDS
+========
 <a id="ch_commands">
 
-(command)  (name)          (description):
-  info       Info            Prints extended information of object by the path
-  vers       Versions        Show versions of data for specified type table
-  horse      Horse           Horse
-  run        CurrentRun      gets or sets current working run
-  dump       Dump            Dumps datat table to a file
-  show       Show            Shows type table data
-  mkdir      MakeDirectory   Create directory
-  pwd        PrintWorkDir    Prints working directory
-  cd         ChangeDir       Change current directory
-  add        AddData         Add data constants
-  mktbl      MakeTable       Create constants type table
-  cat        Cat             Show assignment data by ID
-  empty      Empty           empty utility example
-  ls         List            List objects in a given directory
+
+Commands consistancy
+--------------------
+
+Command arguments are choosen to be consistant with other commands. Some flags 
+and argument formats means the same across all commands. 
+What are these flags? Some commands may be applied for different objects. 
+For example 'info' command may be executed against directory, table or variation
+There are flags to identify objects for all such commands:
+
+*  *-v* - Variation
+*  *-t* - Data table
+*  *-r* - Run or run-range
+*  *-d* - Directory
+
+### Example 6. Info command:
+ 
+      ccdbcmd -i
+      > info -v default                                          (1)
+	  > info -r all                                              (2)
+	  > info -d /TOF                                             (3)
+	  > info -t /TOF/params                                      (4)
+	  > info /TOF/params                                         (5)
+
+1. Get information about "default" variation
+2. Get information about "all" runrange. "all" runrange is [0, infinite_run]
+3. Get information about "/TOF" directory.
+4. Get information about "/TOF/params" type table
+5. By default '*info*' treat non flag argument as a name of a table. 
+
+
+Commands overview
+------------------
+
+This table is printed if one executes "ccdbcmd help"
+
++----------+-------------------+------------------------------------------------
+|(command) | (name)            | (description):
++----------+-------------------+------------------------------------------------
+|  info    |   Info            |   Prints extended information about an object
+|  vers    |   Versions        |   Show versions of data for the specified table
+|  run     |   CurrentRun      |   gets or sets current working run
+|  dump    |   Dump            |   Dumps datat table to a file
+|  show    |   Show            |   Shows type table data
+|  mkdir   |   MakeDirectory   |   Create directory
+|  pwd     |   PrintWorkDir    |   Prints working directory
+|  cd      |   ChangeDir       |   Change current directory
+|  add     |   AddData         |   Add data constants
+|  mktbl   |   MakeTable       |   Create constants type table
+|  cat     |   Cat             |   Show assignment data by ID
+|  ls      |   List            |   List objects in a given directory
++----------+-------------------+------------------------------------------------
+
+Assuming that user is in interactive mode, one may categorize the commands:
+
+
+**To navigate directories**
+
+* pwd - prints curent directory
+* cd  - switch to specified directory
+* ls  - list objects in the directory (wildcards are allowed)
+* mkdir - creates directory
+
+### Example 7. Directory commands overview:
+
+    > pwd
+	> cd /TOF
+	> ls
+	> mkdir constants
+	> ls con*
+
+
+**Get information about objects**
+
+* info - gets information about objects (use -v -r -d flags), see example 6.
+* vers - gets all versions of the table
+* cat  - displays values
+* dump - same as cat but dumps files to disk
+* logs - see logs information
+
+**Manage objects**
+
+* mkdir - creates directory
+* mktbl - creates data table
+* add - adds data from text file to table
+  (variation and runranges are created automatically by add command)
 
 
 
+DATA REQUESTS
+=============
+<a id="ch_requests">
 
+
+How do *cat* and *dump* commands know what data table version to use?
+Full form of the request is 
+
+    </path/to/data>:<run>:<variation>:<time>
+
+One may ommit any part of the request excep name-path:
+* /path/to/data - just path to data, no run, variation and timestamp specified
+* /path/to/data::mc - no run or date specified
+* /path/to/data:::2029 - only path and date(year)
+
+The time is parsed as any part of:
+
+    *YYYY:MM:DD-hh:mm:ss* 
+
+Any non digit character may be used as separator instead of ':' and '-'
+
+One could place only part of the string, the latest date for this part will be 
+returned. I.e. if the given time is "2011" - (it means the year 2011), it will 
+be interpreted as 2011:12:31-23:59:59 timestamp so the latest constants for 
+year 2011 will be returned.
 
 
 
