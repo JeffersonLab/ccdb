@@ -103,7 +103,6 @@ class AddData(ConsoleUtilBase):
         log.debug(self.d_i+"adding constants")
         log.debug(self.d_i+"columns {0} rows {1} comment lines {2} metas {3}".format(len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
 
-
         #try to create
         result = provider.create_assignment(dom, self.table_path, self.run_min, self.run_max, self.variation, self.comment)
         
