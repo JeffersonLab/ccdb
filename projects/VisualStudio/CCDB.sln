@@ -1,18 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PythonWrapping", "PythonWrapping\PythonWrapping.vcxproj", "{C3904F06-5EF3-4E29-A395-B1957CBFE247}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Python", "Python\Python.vcxproj", "{C3904F06-5EF3-4E29-A395-B1957CBFE247}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CCDBLibrary", "CCDBLibrary\CCDBLibrary.vcxproj", "{FF2376E7-5637-46A4-AE1B-A083D7588552}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Library", "Library\Library.vcxproj", "{FF2376E7-5637-46A4-AE1B-A083D7588552}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CCDBTests", "CCDBTests\CCDBTests.vcxproj", "{3E64C06E-02CC-4183-92B2-6012CB975413}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxproj", "{3E64C06E-02CC-4183-92B2-6012CB975413}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{97FCBE83-E4FE-43B3-BB62-7CE0090E2A42}"
 	ProjectSection(SolutionItems) = preProject
 		Performance1.psess = Performance1.psess
 	EndProjectSection
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "CcdbPython", "..\..\python\CcdbPython.pyproj", "{5D9FD999-B0DC-446C-A481-0093353DBFF8}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Python", "..\..\python\Python.pyproj", "{5D9FD999-B0DC-446C-A481-0093353DBFF8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jana", "Jana\Jana.vcxproj", "{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}"
 EndProject
