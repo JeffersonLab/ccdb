@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Providers">
+      <UniqueIdentifier>{aa7ed321-f0e8-4ec8-852e-4e8372c2be7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Providers\Headers">
+      <UniqueIdentifier>{f8825fb0-69c9-4ed7-8410-1b05f5f30973}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Providers\Sources">
+      <UniqueIdentifier>{cfa14838-d96e-4126-a044-204863fe4ae3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{01d71cdb-0585-46b1-8248-75566d717c26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model\Sources">
+      <UniqueIdentifier>{98bdd288-e057-4051-9211-9d5f3251c135}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model\Headers">
+      <UniqueIdentifier>{84fd2c79-ecd2-47f2-9261-a8a2d926212f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserApi">
+      <UniqueIdentifier>{bb35650e-a4ae-42c1-bab8-5f579f223c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserApi\Headers">
+      <UniqueIdentifier>{d70bc452-7101-4b19-9fc0-3c8b90b2c323}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserApi\Sources">
+      <UniqueIdentifier>{490e6452-e30c-4504-9739-d78fb7a9de6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{85448266-7249-4bf9-aa60-f6c10a6cf542}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers\Sources">
+      <UniqueIdentifier>{ce17f0e5-3201-41e6-8a73-2e7e1ab355cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers\Headers">
+      <UniqueIdentifier>{559b8d40-0e50-4276-b9a4-6375e258c891}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Global">
+      <UniqueIdentifier>{67f2082a-b987-46e2-9391-51b6c03916ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Web">
+      <UniqueIdentifier>{0fee12cb-d38b-4b3e-a832-df76a44a094e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\include\CCDB\Model\Assignment.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Model\ConstantsTypeColumn.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Model\ConstantsTypeTable.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Model\Directory.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Model\EventRange.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Model\RunRange.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Model\Variation.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\ObjectsOwner.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\PathUtils.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\StopWatch.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\StoredObject.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\StringUtils.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\WorkUtils.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\CcdbError.h">
+      <Filter>Global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\CcdbGlobals.h">
+      <Filter>Global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Console.h">
+      <Filter>Global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Log.h">
+      <Filter>Global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Varargs.h">
+      <Filter>Global</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Calibration.h">
+      <Filter>UserApi\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\CalibrationGenerator.h">
+      <Filter>UserApi\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\MySQLCalibration.h">
+      <Filter>UserApi\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Providers\DataProvider.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Providers\FileDataProvider.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLConnectionInfo.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLDataProvider.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Web\ConfigReader.h">
+      <Filter>Web</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Web\HttpContext.h">
+      <Filter>Web</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\Providers\AuthenticationBase.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Providers\DataProvider.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Providers\EnvironmentAuthentication.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Providers\FileDataProvider.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Providers\MySQLConnectionInfo.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Providers\MySQLDataProvider.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Calibration.cc">
+      <Filter>UserApi\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\CalibrationGenerator.cc">
+      <Filter>UserApi\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\MySQLCalibration.cc">
+      <Filter>UserApi\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Web\ConfigReader.cc">
+      <Filter>Web</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Web\HttpContext.cc">
+      <Filter>Web</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\Assignment.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\ConstantsTypeColumn.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\ConstantsTypeTable.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\Directory.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\EventRange.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\RunRange.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Model\Variation.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\ObjectsOwner.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\PathUtils.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\StoredObject.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\StringUtils.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\WorkUtils.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
