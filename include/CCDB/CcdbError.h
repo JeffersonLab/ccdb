@@ -4,13 +4,14 @@
 #include <iostream>
 #include <queue>
 #include <map>
-#include "DConsole.h"
+
+#include "CCDB/IO/Console.h"
 
 namespace ccdb {
 
-class DCCDBError {
+class CCDBError {
 public:
-	DCCDBError();
+	CCDBError();
 
 	/** @brief gets source of an error 
 	*@return mSource
@@ -89,8 +90,8 @@ private:
 	unsigned int mThreadId;
 	
 
-	DCCDBError(DCCDBError const&) {};					// copy constructor is private
-	DCCDBError& operator=(DCCDBError const&) {};		// assignment operator is private
+	CCDBError(CCDBError const&) {};					// copy constructor is private
+	CCDBError& operator=(CCDBError const&) {};		// assignment operator is private
 };
 }
 #endif // _DCcdbError_
