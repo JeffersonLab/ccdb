@@ -5,13 +5,13 @@
  *      Author: romanov
  */
 
-#include "Model/DVariation.h"
-#include "DObjectsOwner.h"
+#include "CCDB/Model/Variation.h"
+#include "CCDB/Model/ObjectsOwner.h"
 
 namespace ccdb {
 
-DVariation::DVariation( DObjectsOwner * owner/*=NULL*/, DDataProvider *provider/*=NULL*/ )
-:DStoredObject(owner, provider)
+Variation::Variation( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ )
+:StoredObject(owner, provider)
 {
 	mId=0;			//! database table uniq id;
 	mCreatedTime=0;	//! Creation Time 
@@ -20,7 +20,7 @@ DVariation::DVariation( DObjectsOwner * owner/*=NULL*/, DDataProvider *provider/
 
 
 
-DVariation::~DVariation() {
+Variation::~Variation() {
 	// TODO Auto-generated destructor stub
 }
 

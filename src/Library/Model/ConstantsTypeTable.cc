@@ -4,16 +4,16 @@
  *  Created on: Sep 29, 2010
  *      Author: romanov
  */
-
-#include "Model/DConstantsTypeTable.h"
 #include <algorithm>
-#include "DStringUtils.h"
+
+#include "CCDB/Model/ConstantsTypeTable.h"
+#include "CCDB/Helpers/StringUtils.h"
 
 namespace ccdb {
 	class DConstantsType;
 
-DConstantsTypeTable::DConstantsTypeTable( DObjectsOwner * owner/*=NULL*/, DDataProvider *provider/*=NULL*/ ):
-DStoredObject(owner, provider)
+ConstantsTypeTable::ConstantsTypeTable( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ ):
+StoredObject(owner, provider)
 {
 	mName = "";				//Name of the table of constants
 	mFullPath = "";		//Full path of the constant
@@ -30,7 +30,7 @@ DStoredObject(owner, provider)
 }
 
 
-DConstantsTypeTable::~DConstantsTypeTable() 
+ConstantsTypeTable::~ConstantsTypeTable() 
 {
 	
 }
@@ -40,14 +40,14 @@ DConstantsTypeTable::~DConstantsTypeTable()
  *
  * @return   vector<DConstantsTypeColumn *>
  */
-const vector<DConstantsTypeColumn *>& DConstantsTypeTable::GetColumns() const
+const vector<DConstantsTypeColumn *>& ConstantsTypeTable::GetColumns() const
 {
 	//TODO: Implement method
 
 	return mColumns;
 }
 
-int DConstantsTypeTable::GetNColumns() const
+int ConstantsTypeTable::GetNColumns() const
 {
 	//Here is a trick. Maybe we loaded it from db with no columns objects
 	if(mColumns.size() ==0 && IsLoaded()) return mNColumnsFromDB;
@@ -56,7 +56,7 @@ int DConstantsTypeTable::GetNColumns() const
 	return mColumns.size();
 }
 
-void DConstantsTypeTable::AddColumn( DConstantsTypeColumn *col, int order )
+void ConstantsTypeTable::AddColumn( DConstantsTypeColumn *col, int order )
 {
 	if(order > mColumns.size())
 	{
@@ -92,14 +92,14 @@ void DConstantsTypeTable::AddColumn( DConstantsTypeColumn *col, int order )
 	col->SetTypeTable(this);
 }
 
-void DConstantsTypeTable::AddColumn( DConstantsTypeColumn *col )
+void ConstantsTypeTable::AddColumn( DConstantsTypeColumn *col )
 {
 	mColumns.push_back(col);
 	col->SetOrder(mColumns.size()-1);
 	col->SetTypeTable(this);
 }
 
-void DConstantsTypeTable::AddColumn( const std::string& name, const std::string& type )
+void ConstantsTypeTable::AddColumn( const std::string& name, const std::string& type )
 {
 	DConstantsTypeColumn *column = new DConstantsTypeColumn(this);
 	column->SetName(name);
@@ -108,7 +108,7 @@ void DConstantsTypeTable::AddColumn( const std::string& name, const std::string&
 }
 
 
-void ccdb::DConstantsTypeTable::AddColumn(const string& name, DConstantsTypeColumn::DColumnTypes type)
+void ccdb::ConstantsTypeTable::AddColumn(const string& name, DConstantsTypeColumn::DColumnTypes type)
 {
 	DConstantsTypeColumn *column = new DConstantsTypeColumn(this);
 	column->SetName(name);
@@ -116,7 +116,7 @@ void ccdb::DConstantsTypeTable::AddColumn(const string& name, DConstantsTypeColu
 	AddColumn(column);
 }
 
-DConstantsTypeColumn * DConstantsTypeTable::RemoveColumn( int order )
+DConstantsTypeColumn * ConstantsTypeTable::RemoveColumn( int order )
 {
 	if(order > mColumns.size() && mColumns.size()>0)
 	{
@@ -134,44 +134,44 @@ DConstantsTypeColumn * DConstantsTypeTable::RemoveColumn( int order )
 
 }
 
-int DConstantsTypeTable::GetNRows() const
+int ConstantsTypeTable::GetNRows() const
 {
 	return mNRows;
 }
 
-void DConstantsTypeTable::SetNRows( int val )
+void ConstantsTypeTable::SetNRows( int val )
 {
 	mNRows = val;
 }
 
 #pragma region Setters and getters
 
-    DDirectory *DConstantsTypeTable::GetDirectory() const
+    Directory *ConstantsTypeTable::GetDirectory() const
     {
         return mDirectory;
     }
 
-    int DConstantsTypeTable::GetDirectoryId() const
+    int ConstantsTypeTable::GetDirectoryId() const
     {
         return mDirectoryId;
     }
 
-    string DConstantsTypeTable::GetFullPath() const
+    string ConstantsTypeTable::GetFullPath() const
     {
         return mFullPath;
     }
 
-    int DConstantsTypeTable::GetId() const
+    int ConstantsTypeTable::GetId() const
     {
         return mId;
     }
 
-    string DConstantsTypeTable::GetName() const
+    string ConstantsTypeTable::GetName() const
     {
         return mName;
     }
 
-void DConstantsTypeTable::SetDirectory(DDirectory *fDirectory)
+void ConstantsTypeTable::SetDirectory(Directory *fDirectory)
 {
 	this->mDirectory = fDirectory;
 	
@@ -186,17 +186,17 @@ void DConstantsTypeTable::SetDirectory(DDirectory *fDirectory)
 	}
 }
 
-void DConstantsTypeTable::SetDirectoryId(int fDirectoryId)
+void ConstantsTypeTable::SetDirectoryId(int fDirectoryId)
 {
 	this->mDirectoryId = fDirectoryId;
 }
 
-void DConstantsTypeTable::SetFullPath(string fFullPath)
+void ConstantsTypeTable::SetFullPath(string fFullPath)
 {
 	this->mFullPath = fFullPath;
 }
 
-void DConstantsTypeTable::SetId(dbkey_t id)
+void ConstantsTypeTable::SetId(dbkey_t id)
 {
 	this->mId = id;
 	
@@ -210,7 +210,7 @@ void DConstantsTypeTable::SetId(dbkey_t id)
 	}
 }
 
-void DConstantsTypeTable::SetName(const string& name)
+void ConstantsTypeTable::SetName(const string& name)
 {
 	mName.assign(name);
 	
@@ -225,52 +225,52 @@ void DConstantsTypeTable::SetName(const string& name)
 	}
 }
 
-	time_t DConstantsTypeTable::GetCreatedTime() const
+	time_t ConstantsTypeTable::GetCreatedTime() const
 	{
 		return mCreatedTime;
 	}
 
-	void DConstantsTypeTable::SetCreatedTime( time_t val )
+	void ConstantsTypeTable::SetCreatedTime( time_t val )
 	{
 		mCreatedTime = val;
 	}
 
-	std::string DConstantsTypeTable::GetComment() const
+	std::string ConstantsTypeTable::GetComment() const
 	{
 		return mComment;
 	}
 
-	void DConstantsTypeTable::SetComment(const string& val )
+	void ConstantsTypeTable::SetComment(const string& val )
 	{
 		mComment.assign(val);
 	}
 
-	time_t DConstantsTypeTable::GetModifiedTime() const
+	time_t ConstantsTypeTable::GetModifiedTime() const
 	{
 		return mUpdateTime;
 	}
 
-	void DConstantsTypeTable::SetModifiedTime( time_t val )
+	void ConstantsTypeTable::SetModifiedTime( time_t val )
 	{
 		mUpdateTime = val;
 	}
 
-	void DConstantsTypeTable::ClearColumns()
+	void ConstantsTypeTable::ClearColumns()
 	{
 		mColumns.clear();
 	}
 
-	int DConstantsTypeTable::GetNColumnsFromDB() const
+	int ConstantsTypeTable::GetNColumnsFromDB() const
 	{
 		return mNColumnsFromDB;
 	}
 
-	void DConstantsTypeTable::SetNColumnsFromDB( int val )
+	void ConstantsTypeTable::SetNColumnsFromDB( int val )
 	{
 		mNColumnsFromDB = val;
 	}
 
-	vector<string> DConstantsTypeTable::GetColumnNames() const
+	vector<string> ConstantsTypeTable::GetColumnNames() const
 	{
 		//future result
 		vector<string> names;
@@ -285,7 +285,7 @@ void DConstantsTypeTable::SetName(const string& name)
 		return names;
 	}
 
-	vector<string> DConstantsTypeTable::GetColumnTypeStrings() const
+	vector<string> ConstantsTypeTable::GetColumnTypeStrings() const
 	{
 		//future result
 		vector<string> types;

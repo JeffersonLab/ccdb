@@ -5,12 +5,13 @@
  *      Author: romanov
  */
 
-#include "Model/DConstantsTypeColumn.h"
-#include "Model/DConstantsTypeTable.h"
+#include "CCDB/Model/ConstantsTypeColumn.h"
+#include "CCDB/Model/ConstantsTypeTable.h"
+
 namespace ccdb {
 
-DConstantsTypeColumn::DConstantsTypeColumn( DObjectsOwner * owner/*=NULL*/, DDataProvider *provider/*=NULL*/ ):
-DStoredObject(owner, provider)
+ConstantsTypeColumn::ConstantsTypeColumn( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ ):
+StoredObject(owner, provider)
 {
 	mId = 0;			//database table uniq id;
 
@@ -19,14 +20,14 @@ DStoredObject(owner, provider)
 	mDBTypeTableId = 0; //gets Type table Id
 
 	mOrder = 0;			//order of the column
-	mType = DConstantsTypeColumn::cDoubleColumn;			//column type
+	mType = ConstantsTypeColumn::cDoubleColumn;			//column type
 	mTypeTable = NULL;
 
 }
 
 
 
-DConstantsTypeColumn::DColumnTypes DConstantsTypeColumn::StringToType( string val )
+ConstantsTypeColumn::DColumnTypes ConstantsTypeColumn::StringToType( string val )
 {
 	if(val == "int"	) return cIntColumn	  ;
 	else if(val == "uint"	) return cUIntColumn  ;
@@ -43,7 +44,7 @@ DConstantsTypeColumn::DColumnTypes DConstantsTypeColumn::StringToType( string va
 
 }
 
-string DConstantsTypeColumn::TypeToString( DConstantsTypeColumn::DColumnTypes val )
+string ConstantsTypeColumn::TypeToString( ConstantsTypeColumn::DColumnTypes val )
 {
 	if(val == cIntColumn   ) return string("int"	);
 	else if(val == cUIntColumn  ) return string("uint"	);
@@ -58,103 +59,103 @@ string DConstantsTypeColumn::TypeToString( DConstantsTypeColumn::DColumnTypes va
 
 }
 
-DConstantsTypeColumn::~DConstantsTypeColumn() {
+ConstantsTypeColumn::~ConstantsTypeColumn() {
 	// TODO Auto-generated destructor stub
 }
 
-dbkey_t DConstantsTypeColumn::GetId() const
+dbkey_t ConstantsTypeColumn::GetId() const
 {
 	return mId;
 }
 
-void DConstantsTypeColumn::SetId( dbkey_t val )
+void ConstantsTypeColumn::SetId( dbkey_t val )
 {
 	mId = val;
 }
 
-std::string DConstantsTypeColumn::GetName() const
+std::string ConstantsTypeColumn::GetName() const
 {
 	return mName;
 }
 
-void DConstantsTypeColumn::SetName( std::string val )
+void ConstantsTypeColumn::SetName( std::string val )
 {
 	mName = val;
 }
 
-std::string DConstantsTypeColumn::GetComment() const
+std::string ConstantsTypeColumn::GetComment() const
 {
 	return mComment;
 }
 
-void DConstantsTypeColumn::SetComment( std::string val )
+void ConstantsTypeColumn::SetComment( std::string val )
 {
 	mComment = val;
 }
 
-time_t DConstantsTypeColumn::GetCreatedTime() const
+time_t ConstantsTypeColumn::GetCreatedTime() const
 {
 	return mCreatedTime;
 }
 
-void DConstantsTypeColumn::SetCreatedTime( time_t val )
+void ConstantsTypeColumn::SetCreatedTime( time_t val )
 {
 	mCreatedTime = val;
 }
 
-time_t DConstantsTypeColumn::GetModifiedTime() const
+time_t ConstantsTypeColumn::GetModifiedTime() const
 {
 	return mModifiedTime;
 }
 
-void DConstantsTypeColumn::SetModifiedTime( time_t val )
+void ConstantsTypeColumn::SetModifiedTime( time_t val )
 {
 	mModifiedTime = val;
 }
 
-dbkey_t DConstantsTypeColumn::GetTypeTableId() const
+dbkey_t ConstantsTypeColumn::GetTypeTableId() const
 {
 	if(mTypeTable == NULL) return mDBTypeTableId;
 	return mTypeTable->GetId();
 }
 
 
-DConstantsTypeColumn::DColumnTypes DConstantsTypeColumn::GetType() const
+ConstantsTypeColumn::DColumnTypes ConstantsTypeColumn::GetType() const
 {
 	return mType;
 }
 
-std::string DConstantsTypeColumn::GetTypeString() const
+std::string ConstantsTypeColumn::GetTypeString() const
 {
 	return TypeToString(mType);
 }
 
-void DConstantsTypeColumn::SetType( string val )
+void ConstantsTypeColumn::SetType( string val )
 {
 	mType = StringToType(val);
 }
-void DConstantsTypeColumn::SetType( DColumnTypes val )
+void ConstantsTypeColumn::SetType( DColumnTypes val )
 {	
 	mType = val;
 }
-DConstantsTypeTable * DConstantsTypeColumn::GetTypeTable() const
+ConstantsTypeTable * ConstantsTypeColumn::GetTypeTable() const
 {
 	return mTypeTable;
 }
 
-void DConstantsTypeColumn::SetTypeTable( DConstantsTypeTable * val )
+void ConstantsTypeColumn::SetTypeTable( ConstantsTypeTable * val )
 {
 	mTypeTable = val;
 }
 
-dbkey_t DConstantsTypeColumn::GetDBTypeTableId() const
+dbkey_t ConstantsTypeColumn::GetDBTypeTableId() const
 {
 	//TODO: Implement method
 
 	return mDBTypeTableId;
 }
 
-void DConstantsTypeColumn::SetDBTypeTableId( dbkey_t val )
+void ConstantsTypeColumn::SetDBTypeTableId( dbkey_t val )
 {
 	//TODO: Implement method
 

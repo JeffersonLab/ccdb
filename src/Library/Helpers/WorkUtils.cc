@@ -1,10 +1,12 @@
-#include "DWorkUtils.h"
-#include "DConsole.h"
+#include "CCDB/Helpers/WorkUtils.h"
+#include "CCDB/IO/Console.h"
+#include "CCDB/Helpers/StringUtils.h"
+
 #include <assert.h>
-#include "DStringUtils.h"
+
 using namespace ccdb;
 
-void PrintDirectoryTree( DDirectory *dir, bool printFullPath/*=false*/,int level/*=0*/ )
+void PrintDirectoryTree( Directory *dir, bool printFullPath/*=false*/,int level/*=0*/ )
 {
 	//TODO: Implement method
 
@@ -27,10 +29,10 @@ void PrintDirectoryTree( DDirectory *dir, bool printFullPath/*=false*/,int level
 		console.WriteLine(dir->GetFullPath().c_str());
 	}
 
-	const vector<DDirectory*>& subDirs=dir->GetSubdirectories();
+	const vector<Directory*>& subDirs=dir->GetSubdirectories();
 	if(subDirs.size()>0)
 	{
-		for(vector<DDirectory *>::const_iterator it=subDirs.begin(); it<subDirs.end(); ++it)
+		for(vector<Directory *>::const_iterator it=subDirs.begin(); it<subDirs.end(); ++it)
 		{
 			PrintDirectoryTree(*it, printFullPath, level+1);
 		}
@@ -38,12 +40,12 @@ void PrintDirectoryTree( DDirectory *dir, bool printFullPath/*=false*/,int level
 	
 }
 
-void PrintAssignmentVertical( DConsole & console, DAssignment *assignment, bool printHeader/*=true*/, bool displayBorders/*=true*/, DConsole::ConsoleColors headColor/*=DConsole::cBrightBlue*/, DConsole::ConsoleColors typeColor/*=DConsole::cGray*/, DConsole::ConsoleColors valueColor/*=DConsole::cGray*/, DConsole::ConsoleColors borderColor/*=DConsole::cGreen*/ )
+void PrintAssignmentVertical( DConsole & console, Assignment *assignment, bool printHeader/*=true*/, bool displayBorders/*=true*/, DConsole::ConsoleColors headColor/*=DConsole::cBrightBlue*/, DConsole::ConsoleColors typeColor/*=DConsole::cGray*/, DConsole::ConsoleColors valueColor/*=DConsole::cGray*/, DConsole::ConsoleColors borderColor/*=DConsole::cGreen*/ )
 {
 	const char * border = (displayBorders)? "|" : " ";
 	
 	
-	DConstantsTypeTable *table = assignment->GetTypeTable(); 
+	ConstantsTypeTable *table = assignment->GetTypeTable(); 
 	if(table == NULL) return;
 
 	vector<string> columnNames = table->GetColumnNames();
@@ -77,7 +79,7 @@ void PrintAssignmentVertical( DConsole & console, DAssignment *assignment, bool 
 		for(int i=0; i< columnsNum; i++)
 		{
 			console.Write(borderColor, "%s",border);
-			console.Write(headColor, DStringUtils::Format(" %%-%is ", columnLengths[i]).c_str(), columnNames[i].c_str());
+			console.Write(headColor, StringUtils::Format(" %%-%is ", columnLengths[i]).c_str(), columnNames[i].c_str());
 		}
 		console.WriteLine(borderColor, "%s",border);
 
@@ -85,7 +87,7 @@ void PrintAssignmentVertical( DConsole & console, DAssignment *assignment, bool 
 		for(int i=0; i< columnsNum; i++)
 		{
 			console.Write(borderColor, "%s",border);
-			console.Write(typeColor, DStringUtils::Format(" %%-%is ", columnLengths[i]).c_str(), columnTypes[i].c_str());
+			console.Write(typeColor, StringUtils::Format(" %%-%is ", columnLengths[i]).c_str(), columnTypes[i].c_str());
 		}
 		console.WriteLine(borderColor, "%s",border);
 	}
@@ -100,7 +102,7 @@ void PrintAssignmentVertical( DConsole & console, DAssignment *assignment, bool 
 	{
 		//place data 
 		console.Write(borderColor, "%s",border);
-		console.Write(valueColor, DStringUtils::Format(" %%-%is ", columnLengths[columnIter]).c_str(), (*colIter).c_str());
+		console.Write(valueColor, StringUtils::Format(" %%-%is ", columnLengths[columnIter]).c_str(), (*colIter).c_str());
 		columnIter++;
 		colIter++;
 				
@@ -117,7 +119,7 @@ void PrintAssignmentVertical( DConsole & console, DAssignment *assignment, bool 
 	delete[] columnLengths;
 }
 
-void PrintConstantsTypeTable( DConstantsTypeTable *table )
+void PrintConstantsTypeTable( ConstantsTypeTable *table )
 {
 	DConsole console;
 	console.WriteLine("Table : %s", table->GetName().c_str());
@@ -137,12 +139,12 @@ void PrintConstantsTypeTable( DConstantsTypeTable *table )
 		if(columnNames[i].length() > nameColumnLength) nameColumnLength = columnNames[i].length();
 	}
 	//this strange structure is just to create 
-	console.WriteLine(DStringUtils::Format(" %%-%is           type", nameColumnLength).c_str(), "name");
+	console.WriteLine(StringUtils::Format(" %%-%is           type", nameColumnLength).c_str(), "name");
 
 
 	//names line
 	for(int i=0; i< columnsNum; i++)
 	{
-		console.WriteLine(DStringUtils::Format(" %%-%is           %%s", nameColumnLength).c_str(), columnNames[i].c_str(), columnTypes[i].c_str());
+		console.WriteLine(StringUtils::Format(" %%-%is           %%s", nameColumnLength).c_str(), columnNames[i].c_str(), columnTypes[i].c_str());
 	}
 }

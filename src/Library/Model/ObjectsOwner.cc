@@ -1,23 +1,23 @@
-#include "DObjectsOwner.h"
+#include "CCDB/Model/ObjectsOwner.h"
 
 namespace ccdb
 {
 
-DObjectsOwner::DObjectsOwner()
+ObjectsOwner::ObjectsOwner()
 {
 }
 
-DObjectsOwner::~DObjectsOwner()
+ObjectsOwner::~ObjectsOwner()
 {
 	//delete owned objects
 	if(mOwnedObjects.size()>0)	//do we need to delete objects?
 	{
 
 		//iterate through list and delete
-		map<unsigned long, DStoredObject *>::iterator it = mOwnedObjects.begin();
+		map<unsigned long, StoredObject *>::iterator it = mOwnedObjects.begin();
 		while(it != mOwnedObjects.end())
 		{
-			DStoredObject *obj = it->second;
+			StoredObject *obj = it->second;
 			mOwnedObjects.erase(it++);
 			delete obj;
 		}
@@ -25,7 +25,7 @@ DObjectsOwner::~DObjectsOwner()
 }
 
 
-void DObjectsOwner::BeOwner( DStoredObject * object )
+void ObjectsOwner::BeOwner( StoredObject * object )
 {
 	//check and set
 	if(object->GetOwner()!=this || !object->GetIsOwned())
@@ -41,10 +41,10 @@ void DObjectsOwner::BeOwner( DStoredObject * object )
 	}
 }
 
-void DObjectsOwner::ReleaseOwnership( DStoredObject * object )
+void ObjectsOwner::ReleaseOwnership( StoredObject * object )
 {
 	//get iterator
-	map<unsigned long, DStoredObject *>::iterator it=mOwnedObjects.find(object->GetTempUID());
+	map<unsigned long, StoredObject *>::iterator it=mOwnedObjects.find(object->GetTempUID());
 
 	//if it is found
 	if(it!=mOwnedObjects.end())
@@ -60,7 +60,7 @@ void DObjectsOwner::ReleaseOwnership( DStoredObject * object )
 	}
 }
 
-bool DObjectsOwner::IsOwner( DStoredObject * object )
+bool ObjectsOwner::IsOwner( StoredObject * object )
 {
 	if((object!=NULL) && (object->GetOwner()==this) && object->GetIsOwned())	 return true;
 	return false;

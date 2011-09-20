@@ -1,7 +1,10 @@
-#include "DStringUtils.h"
 #include <cstdlib>
+
+#include "CCDB/Helpers/StringUtils.h"
+
 using namespace std;
 using namespace ccdb;
+
 struct DHTMLReplace {
     string match;
     string replace;
@@ -12,7 +15,7 @@ struct DHTMLReplace {
     {"\"","&quot;"}
 };
 
-std::string ccdb::DStringUtils::Decode(const string& source )
+std::string ccdb::StringUtils::Decode(const string& source )
 {
     string rs = source;
 
@@ -34,7 +37,7 @@ std::string ccdb::DStringUtils::Decode(const string& source )
     return rs;
 }
 
-std::string ccdb::DStringUtils::Encode( const string& source )
+std::string ccdb::StringUtils::Encode( const string& source )
 {
     string rs = source;
 
@@ -55,7 +58,7 @@ std::string ccdb::DStringUtils::Encode( const string& source )
 
     return rs;
 }
-std::string ccdb::DStringUtils::vFormat( const char *fmt, va_list ap)
+std::string ccdb::StringUtils::vFormat( const char *fmt, va_list ap)
 {
     // Formats a string using a printf style format descriptor.
     // Existing string contents will be overwritten.
@@ -94,7 +97,7 @@ again:
    return string(buffer);
 }
 
-std::string ccdb::DStringUtils::Format(const char *va_(fmt), ...)
+std::string ccdb::StringUtils::Format(const char *va_(fmt), ...)
 {
    // Static method which formats a string using a printf style format
    // descriptor and return a TString. Same as TString::Form() but it is
@@ -226,7 +229,7 @@ char * make_message(const char *fmt, ...) {
 }
 
 
-int ccdb::DStringUtils::Replace(const string& pattern, const string& replace, const string& source, string &out)
+int ccdb::StringUtils::Replace(const string& pattern, const string& replace, const string& source, string &out)
 {
     int matches = 0;
     out.assign(source);
@@ -243,24 +246,24 @@ int ccdb::DStringUtils::Replace(const string& pattern, const string& replace, co
     return matches;
 }
 
-string ccdb::DStringUtils::Replace(const string& pattern, const string& replace, const string& source)
+string ccdb::StringUtils::Replace(const string& pattern, const string& replace, const string& source)
 {
     string out("");
     Replace(pattern, replace, source, out);
     return out;
 }
 
-string ccdb::DStringUtils::ExtractDirectory( const string& path )
+string ccdb::StringUtils::ExtractDirectory( const string& path )
 {
     return path.substr( 0, path.find_last_of( '/' )  ); //will get directory without final /
 }
 
-string ccdb::DStringUtils::ExtractObjectname( const string& path )
+string ccdb::StringUtils::ExtractObjectname( const string& path )
 {
     return path.substr( path.find_last_of( '/' ) +1 );
 }
 
-string ccdb::DStringUtils::CombinePath( const string& left, const string& right )
+string ccdb::StringUtils::CombinePath( const string& left, const string& right )
 {
     if(right.length()==0) return left;
     if(left.length()==0)  return right;
@@ -293,7 +296,7 @@ string ccdb::DStringUtils::CombinePath( const string& left, const string& right 
     return result+right;
 }
 
-bool ccdb::DStringUtils::WildCardCheck( const char* pattern, const char* source )
+bool ccdb::StringUtils::WildCardCheck( const char* pattern, const char* source )
 {   
     char *cp, *mp;
     while ((*source) && (*pattern != '*')) 
@@ -340,13 +343,13 @@ bool ccdb::DStringUtils::WildCardCheck( const char* pattern, const char* source 
 }
 
 
-std::vector<std::string> ccdb::DStringUtils::Split( const std::string &s, const string& delimiters /*= " "*/ )
+std::vector<std::string> ccdb::StringUtils::Split( const std::string &s, const string& delimiters /*= " "*/ )
 {
     std::vector<std::string> elems;
     return Split(s, elems, delimiters);
 }
 
-vector<string> & ccdb::DStringUtils::Split( const string& str, vector<string>& tokens, const string& delimiters /*= " "*/ )
+vector<string> & ccdb::StringUtils::Split( const string& str, vector<string>& tokens, const string& delimiters /*= " "*/ )
 {
     // Skip delimiters at beginning.
     string::size_type lastPos = str.find_first_not_of(delimiters, 0);
@@ -368,27 +371,27 @@ vector<string> & ccdb::DStringUtils::Split( const string& str, vector<string>& t
 
 
 
-int ccdb::DStringUtils::ParseInt( const string& source, bool *result/*=NULL*/  )
+int ccdb::StringUtils::ParseInt( const string& source, bool *result/*=NULL*/  )
 {
     return atoi(source.c_str()); //ugly isn't it?
 }
 
-unsigned int ccdb::DStringUtils::ParseUInt( const string& source, bool *result/*=NULL*/  )
+unsigned int ccdb::StringUtils::ParseUInt( const string& source, bool *result/*=NULL*/  )
 {
     return static_cast<unsigned int>(atoi(source.c_str())); //ugly isn't it?
 }
 
-long ccdb::DStringUtils::ParseLong( const string& source, bool *result/*=NULL*/  )
+long ccdb::StringUtils::ParseLong( const string& source, bool *result/*=NULL*/  )
 {
     return atol(source.c_str()); //ugly isn't it?
 }
 
-unsigned long ccdb::DStringUtils::ParseULong( const string& source, bool *result/*=NULL*/  )
+unsigned long ccdb::StringUtils::ParseULong( const string& source, bool *result/*=NULL*/  )
 {
     return static_cast<unsigned long>(atol(source.c_str())); //ugly isn't it?
 }
 
-bool ccdb::DStringUtils::ParseBool( const string& source, bool *result/*=NULL*/  )
+bool ccdb::StringUtils::ParseBool( const string& source, bool *result/*=NULL*/  )
 {
     if(source=="true") return true;
     if(source=="false") return false;
@@ -397,18 +400,18 @@ bool ccdb::DStringUtils::ParseBool( const string& source, bool *result/*=NULL*/ 
 
 }
 
-double ccdb::DStringUtils::ParseDouble( const string& source, bool *result/*=NULL*/  )
+double ccdb::StringUtils::ParseDouble( const string& source, bool *result/*=NULL*/  )
 {
     return atof(source.c_str()); //ugly isn't it?
 }
 
-std::string ccdb::DStringUtils::ParseString( const string& source, bool *result/*=NULL*/  )
+std::string ccdb::StringUtils::ParseString( const string& source, bool *result/*=NULL*/  )
 {
     return string(source);
 }
 
 
-time_t ccdb::DStringUtils::ParseUnixTime( const string& source, bool *result/*=NULL*/  )
+time_t ccdb::StringUtils::ParseUnixTime( const string& source, bool *result/*=NULL*/  )
 {   
     return static_cast<time_t>(ParseULong(source, result));
 }

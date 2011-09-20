@@ -1,10 +1,10 @@
-#include "DCCDBError.h"
-#include <DStringUtils.h>
+#include "CCDB/CCDBError.h"
+#include "CCDB/Helpers/StringUtils.h"
 
-std::map<int, std::string > ccdb::DCCDBError::mDescriptions;
-std::map<int, std::string > ccdb::DCCDBError::mKeys;
+std::map<int, std::string > ccdb::CCDBError::mDescriptions;
+std::map<int, std::string > ccdb::CCDBError::mKeys;
 
-std::string ccdb::DCCDBError::GetDescription() const
+std::string ccdb::CCDBError::GetDescription() const
 {
 	//has the errors descriptions been set?
 	if (mDescriptions.size() ==0)
@@ -15,7 +15,7 @@ std::string ccdb::DCCDBError::GetDescription() const
 	//check description exist
 	if(mDescriptions.find(mId)==mDescriptions.end())
 	{
-		return DStringUtils::Format("Cannot find generic description for error %d", mId);
+		return StringUtils::Format("Cannot find generic description for error %d", mId);
 	}
 	else
 	{
@@ -23,7 +23,7 @@ std::string ccdb::DCCDBError::GetDescription() const
 	}
 }
 
-ccdb::DCCDBError::DCCDBError(void)
+ccdb::CCDBError::CCDBError(void)
 {
 	mMessage = "";	
 	mSource ="";	
@@ -33,7 +33,7 @@ ccdb::DCCDBError::DCCDBError(void)
 
 }
 
-std::string ccdb::DCCDBError::GetErrorKey() const
+std::string ccdb::CCDBError::GetErrorKey() const
 {
 	//has the errors been set?
 	if (mKeys.size() ==0)
@@ -44,7 +44,7 @@ std::string ccdb::DCCDBError::GetErrorKey() const
 	//check key exist
 	if(mKeys.find(mId)==mKeys.end())
 	{
-		return DStringUtils::Format("Cannot find generic description for error %d", mId);
+		return StringUtils::Format("Cannot find generic description for error %d", mId);
 	}
 	else
 	{
@@ -52,7 +52,7 @@ std::string ccdb::DCCDBError::GetErrorKey() const
 	}
 }
 
-void ccdb::DCCDBError::FillErrors()
+void ccdb::CCDBError::FillErrors()
 {
 	//0) get error defines from DCCDBGlobals.h
 	//1) join comment lines

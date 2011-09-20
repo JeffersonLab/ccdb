@@ -6,12 +6,12 @@
  *      Author: romanov
  */
 
-#include "Model/DRunRange.h"
+#include "CCDB/Model/RunRange.h"
 
 namespace ccdb {
 
-DRunRange::DRunRange( DObjectsOwner * owner/*=NULL*/, DDataProvider *provider/*=NULL*/ )
-:DStoredObject(owner, provider)
+RunRange::RunRange( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ )
+:StoredObject(owner, provider)
 {
 	mId = 0;
 	mMin = 0;
@@ -21,7 +21,7 @@ DRunRange::DRunRange( DObjectsOwner * owner/*=NULL*/, DDataProvider *provider/*=
 
 }
 
-DRunRange::DRunRange(): DStoredObject(NULL, NULL)
+RunRange::RunRange(): StoredObject(NULL, NULL)
 {
 	mId = 0;
 	mMin = 0;
@@ -30,35 +30,35 @@ DRunRange::DRunRange(): DStoredObject(NULL, NULL)
 	mModifiedTime =0;
 }
 
-DRunRange::~DRunRange() {
+RunRange::~RunRange() {
 	// TODO Auto-generated destructor stub
 }
-int DRunRange::GetId() const
+int RunRange::GetId() const
 {
 	//returns database id
 
 	return mId;
 }
-int DRunRange::GetMax() const
+int RunRange::GetMax() const
 {
 	//returns maximal run number for this range
 	return mMax;
 }
 
-int DRunRange::GetMin() const
+int RunRange::GetMin() const
 {
 	//returns the minimal run number of this range
 	return mMin;
 }
 
-std::string DRunRange::GetName() const
+std::string RunRange::GetName() const
 {
 	//gets the name of the run range
 
 	return mName;
 }
 
-void DRunRange::SetMax( int val )
+void RunRange::SetMax( int val )
 {
 	//sets the maximal run number of this range
 
@@ -66,7 +66,7 @@ void DRunRange::SetMax( int val )
 	mMax = val;
 }
 
-void DRunRange::SetMin( int val )
+void RunRange::SetMin( int val )
 {
 	//sets the minimal run number of this range
 
@@ -74,7 +74,7 @@ void DRunRange::SetMin( int val )
 	mMin = val;
 }
 
-void DRunRange::SetName( std::string val )
+void RunRange::SetName( std::string val )
 {
 	//sets the name of the run range
 	
@@ -84,14 +84,14 @@ void DRunRange::SetName( std::string val )
 
 
 
-void DRunRange::SetId( int val )
+void RunRange::SetId( int val )
 {
 	//
 	SetIsChanged(true);
 	mId = val;
 }
 
-void DRunRange::SetRange( int min, int max )
+void RunRange::SetRange( int min, int max )
 {
 	//sets the range window
 
@@ -100,12 +100,12 @@ void DRunRange::SetRange( int min, int max )
 	mMin = min;
 }
 
-std::string DRunRange::GetComment() const
+std::string RunRange::GetComment() const
 {
 	return mComment;
 }
 
-void DRunRange::SetComment( std::string val )
+void RunRange::SetComment( std::string val )
 {
 	mComment = val;
 }

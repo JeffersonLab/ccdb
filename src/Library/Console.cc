@@ -1,4 +1,4 @@
-#include "DConsole.h"
+
 #ifdef WIN32
 #include <Windows.h>
 #endif
@@ -14,7 +14,10 @@
 #ifdef _WIN32
 #define vsnprintf _vsnprintf
 #endif
-#include "DStringUtils.h"
+
+
+#include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/Console.h"
 
 
 //All C++ programmers must Love such macros crap =)
@@ -26,7 +29,7 @@
 #  endif
 #endif
 
-ccdb::DConsole::DConsole(ostream *out):
+ccdb::Console::Console(ostream *out):
 	mOutStream(out)
 {
 #ifdef WIN32
@@ -39,7 +42,7 @@ ccdb::DConsole::DConsole(ostream *out):
 	}
 	else
 	{
-		mDefultAttributes = DConsole::cGray;
+		mDefultAttributes = Console::cGray;
 	}
 
 	mForeground = static_cast<ConsoleColors>(mDefultAttributes&3 + (mDefultAttributes&FOREGROUND_INTENSITY)?8:0 );
@@ -48,12 +51,12 @@ ccdb::DConsole::DConsole(ostream *out):
 #endif //#ifdef WIN32
 }
 
-ccdb::DConsole::~DConsole()
+ccdb::Console::~Console()
 {
 	//Looks like nothing to do here!
 }
 
-void ccdb::DConsole::ResetTextProperties()
+void ccdb::Console::ResetTextProperties()
 {
 	//TODO:actually we have to do something here with fForeground and fBackground when we reset
 	mAttributes = cReset;
@@ -74,7 +77,7 @@ void ccdb::DConsole::ResetTextProperties()
 }
 
 
-void ccdb::DConsole::SetTextAttribute( int attr)
+void ccdb::Console::SetTextAttribute( int attr)
 {
 	mAttributes = attr;
 	if(mUseColors)
@@ -82,24 +85,24 @@ void ccdb::DConsole::SetTextAttribute( int attr)
 	//W I N D O W S implementation
 #ifdef WIN32
 		//A way to do an intensity in windows
-		if(attr & DConsole::cBright) SetConsoleTextAttribute(mConsoleHandle, FOREGROUND_INTENSITY);
+		if(attr & Console::cBright) SetConsoleTextAttribute(mConsoleHandle, FOREGROUND_INTENSITY);
 		return; //nothing to do more
 #endif //#ifdef WIN32
 		//Begin to process our pattern
 		string pattern = "\033[";
 		if(attr == 0)					pattern.append("00;");	//Reset All Attributes (return to normal mode)
-		if(attr & DConsole::cBright)	pattern.append("01;");	//Bright (Usually turns on BOLD)
-		if(attr & DConsole::cDim)		pattern.append("02;");	//Dim
-		if(attr & DConsole::cUnderline)	pattern.append("03;");	//Underline
-		if(attr & DConsole::cBlink)		pattern.append("04;");	//Blink
-		if(attr & DConsole::cReverse)	pattern.append("05;");	//Reverse
-		if(attr & DConsole::cHidden)	pattern.append("06;");	//unknown =)
+		if(attr & Console::cBright)	pattern.append("01;");	//Bright (Usually turns on BOLD)
+		if(attr & Console::cDim)		pattern.append("02;");	//Dim
+		if(attr & Console::cUnderline)	pattern.append("03;");	//Underline
+		if(attr & Console::cBlink)		pattern.append("04;");	//Blink
+		if(attr & Console::cReverse)	pattern.append("05;");	//Reverse
+		if(attr & Console::cHidden)	pattern.append("06;");	//unknown =)
 		pattern.append("m");	//Now we finalize the pattern
 		*mOutStream<<pattern;	//Write pattern to disk
 	}
 }
 
-void ccdb::DConsole::SetForegroundColor( ConsoleColors foreground)
+void ccdb::Console::SetForegroundColor( ConsoleColors foreground)
 {
 	if(mUseColors)
 	{
@@ -109,7 +112,7 @@ void ccdb::DConsole::SetForegroundColor( ConsoleColors foreground)
 		//if(  8 < static_cast<int>(foreground) ) colorSetup|=FOREGROUND_INTENSITY;
 
 		//A way to do an intensity in windows
-		if(mAttributes & DConsole::cBright) colorSetup|=FOREGROUND_INTENSITY;
+		if(mAttributes & Console::cBright) colorSetup|=FOREGROUND_INTENSITY;
 		colorSetup |= foreground;
 		colorSetup |= mBackground <<4;
 		//This is how the text is written in windows
@@ -128,7 +131,7 @@ void ccdb::DConsole::SetForegroundColor( ConsoleColors foreground)
 		{
 			//bright colors in linux...
 			pattern.append("01;");
-			foreground = static_cast<DConsole::ConsoleColors> (intForeground - 8);
+			foreground = static_cast<Console::ConsoleColors> (intForeground - 8);
 		}
 		//Now we finalize the pattern
 		pattern.append("%dm");
@@ -140,7 +143,7 @@ void ccdb::DConsole::SetForegroundColor( ConsoleColors foreground)
 	}
 }
 
-void ccdb::DConsole::SetBackgroundColor( ConsoleColors background)
+void ccdb::Console::SetBackgroundColor( ConsoleColors background)
 {
 	if (mUseColors)
 	{
@@ -151,7 +154,7 @@ void ccdb::DConsole::SetBackgroundColor( ConsoleColors background)
 		if(  8 < static_cast<int>(background) ) colorSetup|=FOREGROUND_INTENSITY;
 
 		//A way to do an intensity in windows
-		if(mAttributes & DConsole::cBright) colorSetup|=FOREGROUND_INTENSITY;
+		if(mAttributes & Console::cBright) colorSetup|=FOREGROUND_INTENSITY;
 		colorSetup |= mForeground;
 		colorSetup |= background <<4;
 		//This is how the text is written in windows
@@ -167,7 +170,7 @@ void ccdb::DConsole::SetBackgroundColor( ConsoleColors background)
 		int intBackground = static_cast<int>(background);
 		if( intBackground > 8  )
 		{
-			background = static_cast<DConsole::ConsoleColors> (intBackground - 8);
+			background = static_cast<Console::ConsoleColors> (intBackground - 8);
 		}
 
 		//Command is the control command to the terminal
@@ -177,7 +180,7 @@ void ccdb::DConsole::SetBackgroundColor( ConsoleColors background)
 	}
 }
 
-void ccdb::DConsole::SetTextParams( int attr, ConsoleColors foreground, ConsoleColors background)
+void ccdb::Console::SetTextParams( int attr, ConsoleColors foreground, ConsoleColors background)
 {
 	//If we need we store the attributes
 	mForeground = foreground;
@@ -193,7 +196,7 @@ void ccdb::DConsole::SetTextParams( int attr, ConsoleColors foreground, ConsoleC
 			colorSetup|=FOREGROUND_INTENSITY;
 
 		//A way to do an intensity in windows
-		if(attr & DConsole::cBright) colorSetup|=FOREGROUND_INTENSITY;
+		if(attr & Console::cBright) colorSetup|=FOREGROUND_INTENSITY;
 		colorSetup |= foreground;
 		colorSetup |= background <<4;
 		//This is how the text is written in windows
@@ -213,23 +216,23 @@ void ccdb::DConsole::SetTextParams( int attr, ConsoleColors foreground, ConsoleC
 		{
 			//bright colors in linux...
 			pattern.append("01;");
-			foreground = static_cast<DConsole::ConsoleColors> (intForeground - 8);
+			foreground = static_cast<Console::ConsoleColors> (intForeground - 8);
 		}
 
 		//There is no bright backgrounds (it assumes!) so we correct it
 		int intBackground = static_cast<int>(background);
 		if( intBackground > 8  )
 		{
-			background = static_cast<DConsole::ConsoleColors> (intBackground - 8);
+			background = static_cast<Console::ConsoleColors> (intBackground - 8);
 		}
 
 		if(attr == 0)					pattern.append("00;");	//Reset All Attributes (return to normal mode)
-		if(attr & DConsole::cBright)	pattern.append("01;");	//Bright (Usually turns on BOLD)
-		if(attr & DConsole::cDim)		pattern.append("02;");	//Dim
-		if(attr & DConsole::cUnderline)	pattern.append("03;");	//Underline
-		if(attr & DConsole::cBlink)		pattern.append("04;");	//Blink
-		if(attr & DConsole::cReverse)	pattern.append("05;");	//Reverse
-		if(attr & DConsole::cHidden)	pattern.append("06;");	//unknown =)
+		if(attr & Console::cBright)	pattern.append("01;");	//Bright (Usually turns on BOLD)
+		if(attr & Console::cDim)		pattern.append("02;");	//Dim
+		if(attr & Console::cUnderline)	pattern.append("03;");	//Underline
+		if(attr & Console::cBlink)		pattern.append("04;");	//Blink
+		if(attr & Console::cReverse)	pattern.append("05;");	//Reverse
+		if(attr & Console::cHidden)	pattern.append("06;");	//unknown =)
 
 		//Now we finalize the pattern
 		pattern.append("%d;%dm");
@@ -241,7 +244,7 @@ void ccdb::DConsole::SetTextParams( int attr, ConsoleColors foreground, ConsoleC
 	}
 }
 
-void ccdb::DConsole::SetTextParams( ConsoleColors foreground, ConsoleColors background)
+void ccdb::Console::SetTextParams( ConsoleColors foreground, ConsoleColors background)
 {
 	//If we need we store the colors
 	mForeground = foreground;
@@ -254,7 +257,7 @@ void ccdb::DConsole::SetTextParams( ConsoleColors foreground, ConsoleColors back
 
 		//This is how the text is written in windows
 		WORD format = foreground | (background<<4);
-		if(mAttributes & DConsole::cBlink) format |= FOREGROUND_INTENSITY;
+		if(mAttributes & Console::cBlink) format |= FOREGROUND_INTENSITY;
 
 		SetConsoleTextAttribute(mConsoleHandle, format);
 
@@ -273,12 +276,12 @@ void ccdb::DConsole::SetTextParams( ConsoleColors foreground, ConsoleColors back
 	}
 }
 
-int ccdb::DConsole::Write( const char *fmt, ... )
+int ccdb::Console::Write( const char *fmt, ... )
 {
 	//Formatting
 	va_list ap;
 	va_start(ap, fmt);
-	string str = DStringUtils::vFormat(fmt, ap);
+	string str = StringUtils::vFormat(fmt, ap);
 	va_end(ap);
 
 	//Writing to stream
@@ -286,7 +289,7 @@ int ccdb::DConsole::Write( const char *fmt, ... )
 	return str.length();
 }
 
-int ccdb::DConsole::Write( ConsoleColors color, const char *fmt, ... )
+int ccdb::Console::Write( ConsoleColors color, const char *fmt, ... )
 {
 	//set colors
 	ConsoleColors fcBackup = GetForegroundColor();	// save color
@@ -296,7 +299,7 @@ int ccdb::DConsole::Write( ConsoleColors color, const char *fmt, ... )
 	//format
 	va_list ap;
 	va_start(ap, fmt);
-	string str = DStringUtils::vFormat(fmt, ap);
+	string str = StringUtils::vFormat(fmt, ap);
 	va_end(ap);
 
 	//output
@@ -312,12 +315,12 @@ int ccdb::DConsole::Write( ConsoleColors color, const char *fmt, ... )
 }
 
 
-int ccdb::DConsole::WriteLine( const char *fmt, ... )
+int ccdb::Console::WriteLine( const char *fmt, ... )
 {
 	//format
 	va_list ap;
 	va_start(ap, fmt);
-	string str = DStringUtils::vFormat(fmt, ap);
+	string str = StringUtils::vFormat(fmt, ap);
 	va_end(ap);
 
 	//output
@@ -328,14 +331,14 @@ int ccdb::DConsole::WriteLine( const char *fmt, ... )
 }
 
 
-int ccdb::DConsole::WriteLine()
+int ccdb::Console::WriteLine()
 {
 	//output
 	*mOutStream<<endl;
 	return 1;
 }
 
-int ccdb::DConsole::WriteLine( ConsoleColors color, const char *fmt, ... )
+int ccdb::Console::WriteLine( ConsoleColors color, const char *fmt, ... )
 {
 	//set colors
 	ConsoleColors fcBackup = GetForegroundColor();	// save color
@@ -345,7 +348,7 @@ int ccdb::DConsole::WriteLine( ConsoleColors color, const char *fmt, ... )
 	//format
 	va_list ap;
 	va_start(ap, fmt);
-	string str = DStringUtils::vFormat(fmt, ap);
+	string str = StringUtils::vFormat(fmt, ap);
 	va_end(ap);
 
 	//output
@@ -370,7 +373,7 @@ int ccdb::DConsole::WriteLine( ConsoleColors color, const char *fmt, ... )
 	return str.length()	;				// return number of chars
 }
 
-void ccdb::DConsole::PrintCondition( bool condition, bool newLine /*= true*/ )
+void ccdb::Console::PrintCondition( bool condition, bool newLine /*= true*/ )
 {	
 	//just puts [ true ] or [ false ] depending on condition
 	Write(CCDB_CONSOLE_PASSED_BRACES_COLOR, "[ ");

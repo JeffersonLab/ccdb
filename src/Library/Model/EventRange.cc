@@ -1,10 +1,10 @@
-#include "Model/DEventRange.h"
-#include "DStoredObject.h"
+#include "CCDB/Model/EventRange.h"
+#include "CCDB/Model/StoredObject.h"
 
 namespace ccdb{
 
-DEventRange::DEventRange( DObjectsOwner * owner/*=NULL*/, DDataProvider *provider/*=NULL*/ ):
-DStoredObject(owner, provider)
+EventRange::EventRange( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ ):
+StoredObject(owner, provider)
 {
 	mId=0;		//database table uniq id;
 	mCreatedTime =0;	//creationTime time
@@ -12,7 +12,7 @@ DStoredObject(owner, provider)
 }
 
 
-DEventRange::~DEventRange(void)
+EventRange::~EventRange(void)
 {
 }
 }//namespace ccdb{

@@ -1,18 +1,16 @@
-#include "UserAPI/DCalibration.h"
-#include "UserAPI/DCCDBGlobalMutex.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "DPathUtils.h"
-
-
 #include <stdexcept>
 #include <assert.h>
 
+#include "CCDB/Calibration.h"
+#include "CCDB/CCDBGlobalMutex.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Helpers/PathUtils.h"
 
 namespace ccdb
 {
 
 //______________________________________________________________________________
-DCalibration::DCalibration()
+Calibration::Calibration()
 {
     //Constructor 
 
@@ -24,7 +22,7 @@ DCalibration::DCalibration()
 
 
 //______________________________________________________________________________
-DCalibration::DCalibration(int defaultRun, string defaultVariation/*="default"*/ )
+Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/ )
 {	
     //Constructor 
 
@@ -36,7 +34,7 @@ DCalibration::DCalibration(int defaultRun, string defaultVariation/*="default"*/
 
 
 //______________________________________________________________________________
-DCalibration::~DCalibration()
+Calibration::~Calibration()
 {
     //Destructor
 
@@ -45,7 +43,7 @@ DCalibration::~DCalibration()
 
 
 //______________________________________________________________________________
-void DCalibration::UseProvider( DDataProvider * provider, bool lockProvider/*=true*/ )
+void Calibration::UseProvider( DataProvider * provider, bool lockProvider/*=true*/ )
 {
     // set provider to use. 
     //if lockProvider==true, than @see Connect, @see Disconnect and @see SetConnectionString 
@@ -58,7 +56,7 @@ void DCalibration::UseProvider( DDataProvider * provider, bool lockProvider/*=tr
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( vector< map<string, string> > &values, const string & namepath )
+bool Calibration::GetCalib( vector< map<string, string> > &values, const string & namepath )
 {
      /** @brief Get constants by namepath
      * 
@@ -82,7 +80,7 @@ bool DCalibration::GetCalib( vector< map<string, string> > &values, const string
 
   
 
-    DAssignment* assignment = GetAssignment(namepath);
+    Assignment* assignment = GetAssignment(namepath);
 
     if(assignment == NULL) return false; //TODO possibly exception throwing?
 
@@ -98,7 +96,7 @@ bool DCalibration::GetCalib( vector< map<string, string> > &values, const string
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( vector< map<string, double> > &values, const string & namepath )
+bool Calibration::GetCalib( vector< map<string, double> > &values, const string & namepath )
 {
     //read values
 
@@ -140,7 +138,7 @@ bool DCalibration::GetCalib( vector< map<string, double> > &values, const string
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( vector< map<string, int> > &values, const string & namepath )
+bool Calibration::GetCalib( vector< map<string, int> > &values, const string & namepath )
 {
     //TODO right now the function works through copy. 
     //one needs to find out, maybe it needs to be reimplemented
@@ -180,7 +178,7 @@ bool DCalibration::GetCalib( vector< map<string, int> > &values, const string & 
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( vector< vector<string> > &values, const string & namepath )
+bool Calibration::GetCalib( vector< vector<string> > &values, const string & namepath )
 {
     /** @brief Get constants by namepath
      * 
@@ -192,7 +190,7 @@ bool DCalibration::GetCalib( vector< vector<string> > &values, const string & na
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
     
-    DAssignment* assigment = GetAssignment(namepath);
+    Assignment* assigment = GetAssignment(namepath);
     
     if(assigment == NULL) 
     {
@@ -209,7 +207,7 @@ bool DCalibration::GetCalib( vector< vector<string> > &values, const string & na
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( vector< vector<double> > &values, const string & namepath )
+bool Calibration::GetCalib( vector< vector<double> > &values, const string & namepath )
 {
     //TODO right now the function works through copy. 
     //one needs to find out, maybe it needs to be reimplemented
@@ -248,7 +246,7 @@ bool DCalibration::GetCalib( vector< vector<double> > &values, const string & na
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( vector< vector<int> > &values, const string & namepath )
+bool Calibration::GetCalib( vector< vector<int> > &values, const string & namepath )
 {
     vector< vector<string> > rawValues;
     try
@@ -284,7 +282,7 @@ bool DCalibration::GetCalib( vector< vector<int> > &values, const string & namep
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( map<string, string> &values, const string & namepath )
+bool Calibration::GetCalib( map<string, string> &values, const string & namepath )
 {
      /** @brief Get constants by namepath
      * 
@@ -296,7 +294,7 @@ bool DCalibration::GetCalib( map<string, string> &values, const string & namepat
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
     
-    DAssignment* assignment = GetAssignment(namepath);
+    Assignment* assignment = GetAssignment(namepath);
     
 
     if(assignment == NULL) 
@@ -320,7 +318,7 @@ bool DCalibration::GetCalib( map<string, string> &values, const string & namepat
     vector<string> rawValues = rawTableValues[0];
 
     //get table
-    DConstantsTypeTable *table = assignment->GetTypeTable(); 
+    ConstantsTypeTable *table = assignment->GetTypeTable(); 
     assert(table != NULL); //It is DataProvider logic, that assignments have some table information
 
     //get columns names
@@ -344,7 +342,7 @@ bool DCalibration::GetCalib( map<string, string> &values, const string & namepat
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( map<string, double> &values, const string & namepath )
+bool Calibration::GetCalib( map<string, double> &values, const string & namepath )
 {
     map<string, string> rawValues;
     try
@@ -373,7 +371,7 @@ bool DCalibration::GetCalib( map<string, double> &values, const string & namepat
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( map<string, int> &values, const string & namepath )
+bool Calibration::GetCalib( map<string, int> &values, const string & namepath )
 {
     //TODO right now the function works through copy. 
     //one needs to find out, maybe it needs to be reimplemented
@@ -406,7 +404,7 @@ bool DCalibration::GetCalib( map<string, int> &values, const string & namepath )
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( vector<string> &values, const string & namepath )
+bool Calibration::GetCalib( vector<string> &values, const string & namepath )
 {
     /** @brief Get constants by namepath
      * 
@@ -418,7 +416,7 @@ bool DCalibration::GetCalib( vector<string> &values, const string & namepath )
      */
 
     
-    DAssignment* assignment = GetAssignment(namepath);
+    Assignment* assignment = GetAssignment(namepath);
     
     if(assignment == NULL) return false; //TODO possibly exception throwing?
 
@@ -436,7 +434,7 @@ bool DCalibration::GetCalib( vector<string> &values, const string & namepath )
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( vector<double> &values, const string & namepath )
+bool Calibration::GetCalib( vector<double> &values, const string & namepath )
 {
     vector<string> rawValues;
     try
@@ -466,7 +464,7 @@ bool DCalibration::GetCalib( vector<double> &values, const string & namepath )
 
 
 //______________________________________________________________________________
-bool DCalibration::GetCalib( vector<int> &values, const string & namepath )
+bool Calibration::GetCalib( vector<int> &values, const string & namepath )
 {
     vector<string> rawValues;
     try
@@ -495,7 +493,7 @@ bool DCalibration::GetCalib( vector<int> &values, const string & namepath )
 }
 
 //______________________________________________________________________________
-string DCalibration::GetConnectionString() const
+string Calibration::GetConnectionString() const
 {
     //
     if (mProvider!=NULL) return mProvider->GetConnectionString();
@@ -504,7 +502,7 @@ string DCalibration::GetConnectionString() const
 
 
 //______________________________________________________________________________
-DAssignment * DCalibration::GetAssignment( const string& namepath )
+Assignment * Calibration::GetAssignment( const string& namepath )
 {
     /** @brief Gets the assignment from provider using namepath
      * namepath is the common ccdb request; @see GetCalib
@@ -518,7 +516,7 @@ DAssignment * DCalibration::GetAssignment( const string& namepath )
     DParseRequestResult result = DPathUtils::ParseRequest(namepath);
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
-    DAssignment* assigment = NULL;
+    Assignment* assigment = NULL;
     Lock();
     if(result.WasParsedTime)
     {   
@@ -535,30 +533,30 @@ DAssignment * DCalibration::GetAssignment( const string& namepath )
 
 
 //______________________________________________________________________________
-void DCalibration::Lock()
+void Calibration::Lock()
 {
     //Thread mutex lock for multithreaded operations
-    DCCDBGlobalMutex::Instance()->ReadConstantsLock();
+    CCDBGlobalMutex::Instance()->ReadConstantsLock();
 }
 
 
 //______________________________________________________________________________
-void DCalibration::Unlock()
+void Calibration::Unlock()
 {
     //Thread mutex Unlock lock for multithreaded operations
-    DCCDBGlobalMutex::Instance()->ReadConstantsRelease();
+    CCDBGlobalMutex::Instance()->ReadConstantsRelease();
 }
 
 
 //______________________________________________________________________________
-void DCalibration::GetListOfNamepaths( vector<string> &namepaths )
+void Calibration::GetListOfNamepaths( vector<string> &namepaths )
 {
      /** @brief Get list of all type tables with full path
       *
       * @parameter [in] vector<string> & namepaths
       * @return   void
       */
-    vector<DConstantsTypeTable*> tables;
+    vector<ConstantsTypeTable*> tables;
     if(!mProvider->SearchConstantsTypeTables(tables, "*"))
     {
         throw logic_error("Error selecting all type tables"); 

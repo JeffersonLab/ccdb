@@ -1,23 +1,24 @@
-#include "UserAPI/DMySQLCallibration.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "DPathUtils.h"
 #include <stdexcept>
 #include <assert.h>
+
+#include "CCDB/MySQLCalibration.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/HelpersPathUtils.h"
 
 namespace ccdb
 {
 
 
 //______________________________________________________________________________
-DMySQLCalibration::DMySQLCalibration()
+MySQLCalibration::MySQLCalibration()
 {
 	
 	
 	
 }
 //______________________________________________________________________________
-DMySQLCalibration::DMySQLCalibration( int defaultRun, string defaultVariation/*="default"*/ )
-    :DCalibration(defaultRun,defaultVariation)
+MySQLCalibration::MySQLCalibration( int defaultRun, string defaultVariation/*="default"*/ )
+    :Calibration(defaultRun,defaultVariation)
 {
     //
 
@@ -27,14 +28,14 @@ DMySQLCalibration::DMySQLCalibration( int defaultRun, string defaultVariation/*=
 
 
 //______________________________________________________________________________
-DMySQLCalibration::~DMySQLCalibration()
+MySQLCalibration::~MySQLCalibration()
 {
     
 }
 
 
 //______________________________________________________________________________
-bool DMySQLCalibration::Connect( std::string connectionString )
+bool MySQLCalibration::Connect( std::string connectionString )
 {
     /**
 	 * @brief Connects to database using connection string
@@ -60,7 +61,7 @@ bool DMySQLCalibration::Connect( std::string connectionString )
     {
         if(!mProviderIsLocked)
         {
-            mProvider = new DMySQLDataProvider();
+            mProvider = new MySQLDataProvider();
         }
         else
         {
@@ -98,7 +99,7 @@ bool DMySQLCalibration::Connect( std::string connectionString )
 
 
 //______________________________________________________________________________
-void DMySQLCalibration::Disconnect()
+void MySQLCalibration::Disconnect()
 {
     /**
 	 * @brief closes connection to data
@@ -119,7 +120,7 @@ void DMySQLCalibration::Disconnect()
 
 
 //______________________________________________________________________________
-bool DMySQLCalibration::IsConnected()
+bool MySQLCalibration::IsConnected()
 {
     /** @brief indicates ether the connection is open or not
 	 * 

@@ -1,25 +1,24 @@
 /*
- * DAssignment.cpp
+ * Assignment.cpp
  *
  *  Created on: Sep 28, 2010
  *      Author: romanov
  */
-
-#include "Model/DAssignment.h"
-#include "DStringUtils.h"
-#include "DCCDBGlobals.h"
-
 #include <vector>
 #include <sstream>
 #include <assert.h>
+
+#include "CCDB/Model/Assignment.h"
+#include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/CcdbGlobals.h"
 
 using namespace ccdb;
 using namespace std;
 
 
 //______________________________________________________________________________
-ccdb::DAssignment::DAssignment( DObjectsOwner * owner/*=NULL*/, DDataProvider *provider/*=NULL*/ )
-:DStoredObject(owner, provider)
+ccdb::Assignment::Assignment( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ )
+:StoredObject(owner, provider)
 {
 	mRawData = string(); 	// data blob
 	mId=0;					// id in database
@@ -38,12 +37,12 @@ ccdb::DAssignment::DAssignment( DObjectsOwner * owner/*=NULL*/, DDataProvider *p
 
 
 //______________________________________________________________________________
-ccdb::DAssignment::~DAssignment() {
+ccdb::Assignment::~Assignment() {
 	// TODO Auto-generated destructor stub
 }
 
 //______________________________________________________________________________
-bool ccdb::DAssignment::MapData(vector<map<string,string> > & mappedData, const vector<string>& data, const vector<string>& columns )
+bool ccdb::Assignment::MapData(vector<map<string,string> > & mappedData, const vector<string>& data, const vector<string>& columns )
 {
 	//check error
     //TODO print error;
@@ -66,7 +65,7 @@ bool ccdb::DAssignment::MapData(vector<map<string,string> > & mappedData, const 
 }
 
 //______________________________________________________________________________
-bool ccdb::DAssignment::MapData( vector<vector<string> > & mappedData, const vector<string>& data, int columnsNum )
+bool ccdb::Assignment::MapData( vector<vector<string> > & mappedData, const vector<string>& data, int columnsNum )
 {
 	//check error
     //TODO error report?
@@ -89,115 +88,115 @@ bool ccdb::DAssignment::MapData( vector<vector<string> > & mappedData, const vec
 }
 
 //______________________________________________________________________________
-void ccdb::DAssignment::SplitData( vector<string>& outArray,string blob )
+void ccdb::Assignment::SplitData( vector<string>& outArray,string blob )
 {
 	//split blob from DB to tokens and data
 	DStringUtils::Split(blob,outArray, "|");
 }
 
 //______________________________________________________________________________
-unsigned int ccdb::DAssignment::GetVariationId() const
+unsigned int ccdb::Assignment::GetVariationId() const
 {
 	return mVariationId;
 }
 
 //______________________________________________________________________________
-void ccdb::DAssignment::SetVariationId( unsigned int val )
+void ccdb::Assignment::SetVariationId( unsigned int val )
 {
 	mVariationId = val;
 }
 
 //______________________________________________________________________________
-unsigned int ccdb::DAssignment::GetRunRangeId() const
+unsigned int ccdb::Assignment::GetRunRangeId() const
 {
 	return mRunRangeId;
 }
 
 //______________________________________________________________________________
-void ccdb::DAssignment::SetRunRangeId( unsigned int val )
+void ccdb::Assignment::SetRunRangeId( unsigned int val )
 {
 	mRunRangeId = val;
 }
 
 //______________________________________________________________________________
-unsigned int ccdb::DAssignment::GetDataVaultId() const
+unsigned int ccdb::Assignment::GetDataVaultId() const
 {
 	return mDataVaultId;
 }
 
 //______________________________________________________________________________
-void ccdb::DAssignment::SetDataVaultId( unsigned int val )
+void ccdb::Assignment::SetDataVaultId( unsigned int val )
 {
 	mDataVaultId = val;
 }
 
 //______________________________________________________________________________
-unsigned int ccdb::DAssignment::GetEventRangeId() const
+unsigned int ccdb::Assignment::GetEventRangeId() const
 {
 	return mEventRangeId;
 }
 
 //______________________________________________________________________________
-void ccdb::DAssignment::SetEventRangeId( unsigned int val )
+void ccdb::Assignment::SetEventRangeId( unsigned int val )
 {
 	mEventRangeId = val;
 }
 
 //______________________________________________________________________________
-int ccdb::DAssignment::GetRequestedRun() const
+int ccdb::Assignment::GetRequestedRun() const
 {
 	return mRequestedRun;
 }
 
 //______________________________________________________________________________
-void ccdb::DAssignment::SetRequestedRun( int val )
+void ccdb::Assignment::SetRequestedRun( int val )
 {
 	mRequestedRun = val;
 }
 
 
 //______________________________________________________________________________
-DRunRange * ccdb::DAssignment::GetRunRange() const
+RunRange * ccdb::Assignment::GetRunRange() const
 {
 	return mRunRange;
 }
 
 //______________________________________________________________________________
-void ccdb::DAssignment::SetRunRange( DRunRange * val )
+void ccdb::Assignment::SetRunRange( RunRange * val )
 {
 	mRunRange = val;
 }
 
 //______________________________________________________________________________
-DEventRange * ccdb::DAssignment::GetEventRange() const
+EventRange * ccdb::Assignment::GetEventRange() const
 {
 	return mEventRange;
 }
 
 
 //______________________________________________________________________________
-void ccdb::DAssignment::SetEventRange( DEventRange * val )
+void ccdb::Assignment::SetEventRange( EventRange * val )
 {
 	mEventRange = val;
 }
 
 
 //______________________________________________________________________________
-DVariation * ccdb::DAssignment::GetVariation() const
+Variation * ccdb::Assignment::GetVariation() const
 {
 	return mVariation;
 }
 
 
 //______________________________________________________________________________
-void ccdb::DAssignment::SetVariation( DVariation * val )
+void ccdb::Assignment::SetVariation( Variation * val )
 {
 	mVariation = val;
 }
 
 
 //______________________________________________________________________________
-string ccdb::DAssignment::VectorToBlob(const vector<string>& values)
+string ccdb::Assignment::VectorToBlob(const vector<string>& values)
 {
 	string result("");
 	if(values.size() <=0)
@@ -221,7 +220,7 @@ string ccdb::DAssignment::VectorToBlob(const vector<string>& values)
 
 
 //______________________________________________________________________________
-vector<map<string,string> > ccdb::DAssignment::GetMappedData() const
+vector<map<string,string> > ccdb::Assignment::GetMappedData() const
 {
 	vector<map<string,string> > result;
 	GetMappedData(result);
@@ -230,7 +229,7 @@ vector<map<string,string> > ccdb::DAssignment::GetMappedData() const
 
 
 //______________________________________________________________________________
-void ccdb::DAssignment::GetMappedData(vector<map<string, string> >& mappedData) const
+void ccdb::Assignment::GetMappedData(vector<map<string, string> >& mappedData) const
 {
     assert(mTypeTable !=NULL); // it is DataProvider work
     	
@@ -241,7 +240,7 @@ void ccdb::DAssignment::GetMappedData(vector<map<string, string> >& mappedData) 
 
 
 //______________________________________________________________________________
-std::vector<std::vector<std::string> > ccdb::DAssignment::GetData() const
+std::vector<std::vector<std::string> > ccdb::Assignment::GetData() const
 {
 	std::vector<std::vector<std::string> > result;
 	GetData(result);
@@ -250,7 +249,7 @@ std::vector<std::vector<std::string> > ccdb::DAssignment::GetData() const
 
 
 //______________________________________________________________________________
-void ccdb::DAssignment::GetData(std::vector<std::vector<std::string> >& data) const
+void ccdb::Assignment::GetData(std::vector<std::vector<std::string> >& data) const
 {
 	if(mTypeTable == NULL)
 	{
@@ -273,7 +272,7 @@ void ccdb::DAssignment::GetData(std::vector<std::vector<std::string> >& data) co
 
 
 //______________________________________________________________________________
-string ccdb::DAssignment::DecodeBlobSeparator(string str)
+string ccdb::Assignment::DecodeBlobSeparator(string str)
 {
 	
 	return DStringUtils::Replace("&delimeter;", CCDB_DATA_BLOB_DELIMETER, str);
@@ -281,14 +280,14 @@ string ccdb::DAssignment::DecodeBlobSeparator(string str)
 
 
 //______________________________________________________________________________
-string ccdb::DAssignment::EncodeBlobSeparator(string str)
+string ccdb::Assignment::EncodeBlobSeparator(string str)
 {
 	return DStringUtils::Replace(CCDB_DATA_BLOB_DELIMETER, "&delimeter;", str);
 }
 
 
 //______________________________________________________________________________
-vector<string> ccdb::DAssignment::GetVectorData() const
+vector<string> ccdb::Assignment::GetVectorData() const
 {
 	//Just create vector and run it through GetVectorData(vector<string>& vectorData)
 	vector<string> vect;
@@ -298,7 +297,7 @@ vector<string> ccdb::DAssignment::GetVectorData() const
 
 
 //______________________________________________________________________________
-void ccdb::DAssignment::GetVectorData(vector<string>& vectorData) const
+void ccdb::Assignment::GetVectorData(vector<string>& vectorData) const
 {
 	//split data
 	vector<string> values = DStringUtils::Split(mRawData, CCDB_DATA_BLOB_DELIMETER);

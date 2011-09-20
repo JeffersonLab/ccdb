@@ -1,12 +1,12 @@
-#include "DStoredObject.h"
-#include "Providers/DDataProvider.h"
+#include "CCDB/Model/StoredObject.h"
+#include "CCDB/Providers/DataProvider.h"
 
 using namespace ccdb;
 //class DDataProvider;
 
-unsigned long ccdb::DStoredObject::mLastTempId=0;
+unsigned long ccdb::StoredObject::mLastTempId=0;
 
-ccdb::DStoredObject::DStoredObject( DObjectsOwner * owner/*=NULL*/, DDataProvider *provider/*=NULL*/ )
+ccdb::StoredObject::StoredObject( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ )
 {
 	mOwner = NULL;
 	mTempId = ++mLastTempId;
@@ -14,7 +14,7 @@ ccdb::DStoredObject::DStoredObject( DObjectsOwner * owner/*=NULL*/, DDataProvide
 	SetOwner(owner, owner!=NULL);
 }
 
-ccdb::DStoredObject::~DStoredObject(void)
+ccdb::StoredObject::~StoredObject(void)
 {
 	//Ok! The object is going to be deleted!
 	//Maybe somebody called a destructor, but 
@@ -26,10 +26,10 @@ ccdb::DStoredObject::~DStoredObject(void)
 	}
 }
 
-void ccdb::DStoredObject::SetOwner( DObjectsOwner * val, bool isOwned )
+void ccdb::StoredObject::SetOwner( ObjectsOwner * val, bool isOwned )
 {
 	//save old provider
-	DObjectsOwner *oldOwner = mOwner;
+	ObjectsOwner *oldOwner = mOwner;
 	
 	// It is important to set mOwner and mIsProviderOwned here!!!
 	// When something call this function, it calls mOwner->BeOwner(this);
@@ -62,7 +62,7 @@ void ccdb::DStoredObject::SetOwner( DObjectsOwner * val, bool isOwned )
 
 }
 
-void ccdb::DStoredObject::ReleaseOwning()
+void ccdb::StoredObject::ReleaseOwning()
 {
 	//if we have provider to release...
 	if(mOwner!=NULL)
@@ -74,13 +74,13 @@ void ccdb::DStoredObject::ReleaseOwning()
 
 }
 
-void ccdb::DStoredObject::ReleaseOwningRecursive()
+void ccdb::StoredObject::ReleaseOwningRecursive()
 {
 	//TODO: Impement method for objects like directories
 	ReleaseOwning();
 }
 
-unsigned long ccdb::DStoredObject::GetTempUID() const
+unsigned long ccdb::StoredObject::GetTempUID() const
 {
 	return mTempId;
 }

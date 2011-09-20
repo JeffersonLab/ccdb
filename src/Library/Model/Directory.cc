@@ -5,13 +5,14 @@
  *      Author: romanov
  */
 
-#include "Model/DDirectory.h"
+#include "CCDB/Model/Directory.h"
+
 using namespace std;
 namespace ccdb
 {
 
-DDirectory::DDirectory( DObjectsOwner * owner/*=NULL*/, DDataProvider *provider/*=NULL*/ ):
-DStoredObject(owner, provider),
+Directory::Directory( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ ):
+StoredObject(owner, provider),
 mSubDirectories(0),
 mName(""),
 mFullPath(""),
@@ -23,8 +24,8 @@ mComment("")
 
 }
 
-DDirectory::DDirectory():
-DStoredObject(NULL, NULL),
+Directory::Directory():
+StoredObject(NULL, NULL),
 mSubDirectories(0),
 mName(""),
 mFullPath(""),
@@ -37,19 +38,19 @@ mComment("")
 
 
 
-DDirectory::~DDirectory() {
+Directory::~Directory() {
 	// TODO Auto-generated destructor stub
 }
 }
 
-void ccdb::DDirectory::DisposeSubdirectories()
+void ccdb::Directory::DisposeSubdirectories()
 {
 	if(mSubDirectories.size() > 0 ) //do we have subdirectories at all?
 	{
-		vector<DDirectory *>::iterator it;
+		vector<Directory *>::iterator it;
 		for(it=mSubDirectories.begin(); it<mSubDirectories.end(); ++it)
 		{
-			DDirectory * subdir = *it; 			//get link
+			Directory * subdir = *it; 			//get link
 			subdir->DisposeSubdirectories();	//ask to cleanup its subdirectories
 			
 			delete subdir;						//delete subdir
@@ -58,114 +59,114 @@ void ccdb::DDirectory::DisposeSubdirectories()
 	}
 }
 
-void ccdb::DDirectory::AddSubdirectory(DDirectory* subdirectory)
+void ccdb::Directory::AddSubdirectory(Directory* subdirectory)
 {
 	subdirectory->mParent = this;
 	mSubDirectories.push_back(subdirectory);
 }
 
-ccdb::DDirectory* ccdb::DDirectory::GetParentDirectory()
+ccdb::Directory* ccdb::Directory::GetParentDirectory()
 {	
 	return mParent;
 }
 
-const vector<ccdb::DDirectory*>& ccdb::DDirectory::GetSubdirectories()
+const vector<ccdb::Directory*>& ccdb::Directory::GetSubdirectories()
 {
 	return mSubDirectories;
 }
 
-string ccdb::DDirectory::GetName() const
+string ccdb::Directory::GetName() const
 {
 	//TODO: Implement method
 
 	return mName;
 }
 
-void ccdb::DDirectory::SetName( std::string val )
+void ccdb::Directory::SetName( std::string val )
 {
 	//TODO: Implement method
 
 	mName = val;
 }
 
-std::string ccdb::DDirectory::GetFullPath() const
+std::string ccdb::Directory::GetFullPath() const
 {
 	//TODO: Implement method
 
 	return mFullPath;
 }
 
-void ccdb::DDirectory::SetFullPath( std::string val )
+void ccdb::Directory::SetFullPath( std::string val )
 {
 	//TODO: Implement method
 
 	mFullPath = val;
 }
 
-std::string ccdb::DDirectory::GetComment() const
+std::string ccdb::Directory::GetComment() const
 {
 	//TODO: Implement method
 
 	return mComment;
 }
 
-void ccdb::DDirectory::SetComment( std::string val )
+void ccdb::Directory::SetComment( std::string val )
 {
 	//TODO: Implement method
 
 	mComment = val;
 }
 
-dbkey_t ccdb::DDirectory::GetParentId() const
+dbkey_t ccdb::Directory::GetParentId() const
 {
 	//TODO: Implement method
 
 	return mParentId;
 }
 
-void ccdb::DDirectory::SetParentId( dbkey_t val )
+void ccdb::Directory::SetParentId( dbkey_t val )
 {
 	//TODO: Implement method
 
 	mParentId = val;
 }
 
-int ccdb::DDirectory::GetId() const
+int ccdb::Directory::GetId() const
 {
 	//TODO: Implement method
 
 	return mId;
 }
 
-void ccdb::DDirectory::SetId( dbkey_t val )
+void ccdb::Directory::SetId( dbkey_t val )
 {
 	//TODO: Implement method
 
 	mId = val;
 }
 
-time_t ccdb::DDirectory::GetCreatedTime() const
+time_t ccdb::Directory::GetCreatedTime() const
 {
 	//TODO: Implement method
 
 	return mCreatedTime;
 }
 
-void ccdb::DDirectory::SetCreatedTime( time_t val )
+void ccdb::Directory::SetCreatedTime( time_t val )
 {
 	//TODO: Implement method
 
 	mCreatedTime = val;
 }
 
-time_t ccdb::DDirectory::GetModifiedTime() const
+time_t ccdb::Directory::GetModifiedTime() const
 {
 	//TODO: Implement method
 
 	return mModifiedTime;
 }
 
-void ccdb::DDirectory::SetModifiedTime( time_t val )
+void ccdb::Directory::SetModifiedTime( time_t val )
 {
 	//TODO: Implement method
 

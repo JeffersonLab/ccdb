@@ -1,8 +1,10 @@
-#include "UserAPI/DCalibrationGenerator.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "UserAPI/DMySQLCallibration.h"
 #include <iostream>
 #include <strstream>
+
+#include "CCDB/CalibrationGenerator.h"
+#include "CCDB/MySQLCallibration.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+
 using namespace std;
 
 namespace ccdb
@@ -10,26 +12,26 @@ namespace ccdb
 
 
 //______________________________________________________________________________
-DCalibrationGenerator::DCalibrationGenerator()
+CalibrationGenerator::CalibrationGenerator()
 {
 }
 
 
 //______________________________________________________________________________
-DCalibrationGenerator::~DCalibrationGenerator()
+CalibrationGenerator::~CalibrationGenerator()
 {
 }
 
 
 //______________________________________________________________________________
-DCalibration* DCalibrationGenerator::MakeCalibration( const std::string & connectionString, int run, const std::string& context )
+Calibration* CalibrationGenerator::MakeCalibration( const std::string & connectionString, int run, const std::string& context )
 {
 	return MakeMySQLCalibration(connectionString, run, context);
 }
 
 
 //______________________________________________________________________________
-DCalibration* DCalibrationGenerator::MakeMySQLCalibration( const std::string & connectionString, int run, const std::string& variation )
+Calibration* CalibrationGenerator::MakeMySQLCalibration( const std::string & connectionString, int run, const std::string& variation )
 {
     //hash of requested variation
     string calibHash = GetCalibrationHash(connectionString, run, variation);
@@ -42,10 +44,10 @@ DCalibration* DCalibrationGenerator::MakeMySQLCalibration( const std::string & c
 
     //Ok, we have to create calibration
     //but lets see, maybe we at least have a DMySQLDataProvider for this connectionString
-    DMySQLDataProvider *provider = NULL;
+    MySQLDataProvider *provider = NULL;
     if(mProvidersByUrl.find(connectionString) != mProvidersByUrl.end())
     {
-        provider = static_cast<DMySQLDataProvider *>(mProvidersByUrl[connectionString]);
+        provider = static_cast<MySQLDataProvider *>(mProvidersByUrl[connectionString]);
 
         //lets see the provider is connected... if not it is useless
         if(provider!= NULL && !provider->IsConnected()) provider = NULL;
@@ -54,13 +56,13 @@ DCalibration* DCalibrationGenerator::MakeMySQLCalibration( const std::string & c
     if(provider == NULL)
     {
         //Ok now... we have to create provider... 
-        DMySQLDataProvider *provider = new DMySQLDataProvider();
+        MySQLDataProvider *provider = new MySQLDataProvider();
 
         //and connect it
         if(!provider->Connect(connectionString))
         {
             //error hangling...
-            vector<DCCDBError *> errors = provider->GetErrors();
+            vector<CCDBError *> errors = provider->GetErrors();
             string message;
             for(int i=0; i< errors.size(); i++)
             {
@@ -83,7 +85,7 @@ DCalibration* DCalibrationGenerator::MakeMySQLCalibration( const std::string & c
 
 
     //now we create calibration
-    DMySQLCalibration * calib = new DMySQLCalibration();
+    MySQLCalibration * calib = new MySQLCalibration();
     calib->UseProvider(provider, true);
     
     //add it to arrays
@@ -95,7 +97,7 @@ DCalibration* DCalibrationGenerator::MakeMySQLCalibration( const std::string & c
 
 
 //______________________________________________________________________________
-string DCalibrationGenerator::GetCalibrationHash( const std::string & connectionString, int run, const std::string& variation )
+string CalibrationGenerator::GetCalibrationHash( const std::string & connectionString, int run, const std::string& variation )
 {   
      //gets string hash based on  connectionString, run, and variation
      //
@@ -109,12 +111,12 @@ string DCalibrationGenerator::GetCalibrationHash( const std::string & connection
     return strstrm.str();
 }
 //______________________________________________________________________________
-bool DCalibrationGenerator::CheckOpenable( const std::string & str)
+bool CalibrationGenerator::CheckOpenable( const std::string & str)
 {
     //
     //right now we have only one provider, so it is simple
-    DMySQLConnectionInfo info;
-    return DMySQLDataProvider::ParseConnectionString(str,info);
+    MySQLConnectionInfo info;
+    return MySQLDataProvider::ParseConnectionString(str,info);
 }
 
 

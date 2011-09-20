@@ -1,25 +1,26 @@
-#include "DPathUtils.h"
 #include <cstdlib>
+
+#include "CCDB/Helpers/PathUtils.h"
+
 using namespace std;
 using namespace ccdb;
 
-
 //______________________________________________________________________________
-string ccdb::DPathUtils::ExtractDirectory( const string& path )
+string ccdb::PathUtils::ExtractDirectory( const string& path )
 {
 	return path.substr( 0, path.find_last_of( '/' )  ); //will get directory without final /
 }
 
 
 //______________________________________________________________________________
-string ccdb::DPathUtils::ExtractObjectname( const string& path )
+string ccdb::PathUtils::ExtractObjectname( const string& path )
 {
 	return path.substr( path.find_last_of( '/' ) +1 );
 }
 
 
 //______________________________________________________________________________
-string ccdb::DPathUtils::CombinePath( const string& left, const string& right )
+string ccdb::PathUtils::CombinePath( const string& left, const string& right )
 {
 	if(right.length()==0) return left;
 	if(left.length()==0)  return right;
@@ -54,7 +55,7 @@ string ccdb::DPathUtils::CombinePath( const string& left, const string& right )
 
 
 //______________________________________________________________________________
-bool ccdb::DPathUtils::WildCardCheck( const char* pattern, const char* source )
+bool ccdb::PathUtils::WildCardCheck( const char* pattern, const char* source )
 {	
 	char *cp, *mp;
 	while ((*source) && (*pattern != '*')) 	{
@@ -94,7 +95,7 @@ bool ccdb::DPathUtils::WildCardCheck( const char* pattern, const char* source )
 
 
 //______________________________________________________________________________
-time_t ccdb::DPathUtils::ParseTime( const string &timeStr, bool * succsess )
+time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
 {
      /** @brief ParseTime
      * parses time as any part of
@@ -152,7 +153,7 @@ time_t ccdb::DPathUtils::ParseTime( const string &timeStr, bool * succsess )
                     if(succsess!=NULL) succsess = false;
                     return 0;
                 }
-                time.tm_year = DStringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
+                time.tm_year = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
             if(delimCount ==2) //it was a month
             {
@@ -161,7 +162,7 @@ time_t ccdb::DPathUtils::ParseTime( const string &timeStr, bool * succsess )
                     if(succsess!=NULL) succsess = false;
                     return 0;
                 }
-                time.tm_mon = DStringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
+                time.tm_mon = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
             if(delimCount ==3) //it was a day
             {
@@ -170,7 +171,7 @@ time_t ccdb::DPathUtils::ParseTime( const string &timeStr, bool * succsess )
                     if(succsess!=NULL) succsess = false;
                     return 0;
                 }
-                time.tm_mday = DStringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
+                time.tm_mday = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
             if(delimCount ==4) //it was a hour
             {
@@ -179,7 +180,7 @@ time_t ccdb::DPathUtils::ParseTime( const string &timeStr, bool * succsess )
                     if(succsess!=NULL) succsess = false;
                     return 0;
                 }
-                time.tm_hour = DStringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
+                time.tm_hour = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
             if(delimCount ==5) //it was a min
             {
@@ -188,7 +189,7 @@ time_t ccdb::DPathUtils::ParseTime( const string &timeStr, bool * succsess )
                     if(succsess!=NULL) succsess = false;
                     return 0;
                 }
-                time.tm_min = DStringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
+                time.tm_min = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
             if(delimCount ==6) //it was a sec
             {
@@ -197,7 +198,7 @@ time_t ccdb::DPathUtils::ParseTime( const string &timeStr, bool * succsess )
                     if(succsess!=NULL) succsess = false;
                     return 0;
                 }
-                time.tm_sec = DStringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
+                time.tm_sec = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
 
             //clear temp string for the next digit seria
@@ -214,7 +215,7 @@ time_t ccdb::DPathUtils::ParseTime( const string &timeStr, bool * succsess )
 
 
 //______________________________________________________________________________
-ccdb::DParseRequestResult ccdb::DPathUtils::ParseRequest( const string& requestStr )
+ccdb::DParseRequestResult ccdb::PathUtils::ParseRequest( const string& requestStr )
 {
     /** @brief    Parses request string and returns corresponding 
      * @see DParseRequestResult structure. 
@@ -284,7 +285,7 @@ ccdb::DParseRequestResult ccdb::DPathUtils::ParseRequest( const string& requestS
     if(result.WasParsedRunNumber)
     {
         bool success = true;
-        result.RunNumber = DStringUtils::ParseInt(runStr, &success);
+        result.RunNumber = StringUtils::ParseInt(runStr, &success);
 
         result.IsInvalidRunNumber = !success || result.RunNumber<0;
     }
@@ -300,7 +301,7 @@ ccdb::DParseRequestResult ccdb::DPathUtils::ParseRequest( const string& requestS
 
 
 //______________________________________________________________________________
-string & ccdb::DPathUtils::MakeAbsolute( string &path )
+string & ccdb::PathUtils::MakeAbsolute( string &path )
 {
      /** @brief Adds '/' to the beginning of the path if it is not there
      *
@@ -316,7 +317,7 @@ string & ccdb::DPathUtils::MakeAbsolute( string &path )
 
 }
 //______________________________________________________________________________
-bool ccdb::DPathUtils::IsAbsolute( const string &path )
+bool ccdb::PathUtils::IsAbsolute( const string &path )
 {
     /** @brief Check if the path is absolute - starts with /
      */
