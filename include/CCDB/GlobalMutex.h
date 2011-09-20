@@ -6,7 +6,8 @@
 #include <stdlib.h>
 #include <map>
 #include <new>
-#include "DCCDBGlobals.h"
+
+#include "CCDB/CCDBGlobals.h"
 
 using namespace std;
 
@@ -27,14 +28,14 @@ namespace ccdb
  * With time...
  *                                                                     
  */
-class DCCDBGlobalMutex
+class CCDBGlobalMutex
 {
 public:
 	/** @brief Singleton instance for global mutex-es
 	 *
 	 * @return   DConsoleContext* instance
 	 */
-	static DCCDBGlobalMutex* Instance();
+	static CCDBGlobalMutex* Instance();
 	
 	void ReadConstantsLock();
 	void ReadConstantsRelease();
@@ -43,14 +44,14 @@ public:
 	void LogRelease();
 
 	static unsigned int GetCurrentThreadId();
-	~DCCDBGlobalMutex();
+	~CCDBGlobalMutex();
 protected:
 private:
-	DCCDBGlobalMutex();										/// Private so that it can  not be called
-	DCCDBGlobalMutex(DCCDBGlobalMutex const&){};			/// copy constructor is private
-	DCCDBGlobalMutex& operator=(DCCDBGlobalMutex const&);	/// assignment operator is private
+	CCDBGlobalMutex();										/// Private so that it can  not be called
+	CCDBGlobalMutex(CCDBGlobalMutex const&){};			/// copy constructor is private
+	CCDBGlobalMutex& operator=(CCDBGlobalMutex const&);	/// assignment operator is private
 		
-	static DCCDBGlobalMutex* mInstance;					    ///Main and only singleton instance
+	static CCDBGlobalMutex* mInstance;					    ///Main and only singleton instance
 
 	pthread_mutex_t mReadConstsMutex;	    ///read constants mutex posix
 

@@ -1,18 +1,18 @@
 #ifndef DEventRange_h__
 #define DEventRange_h__
 
-#include "DStoredObject.h"
-#include "Providers/DDataProvider.h"
-#include "DObjectsOwner.h"
+#include "CCDB/Model/StoredObject.h"
+#include "CCDB/Providers/DataProvider.h"
+#include "CCDB/Model/ObjectsOwner.h"
 
 namespace ccdb
 {
-class DEventRange : public DStoredObject
+class EventRange : public StoredObject
 {
 public:
-	DEventRange(DObjectsOwner * owner=NULL, DDataProvider *provider=NULL);
+	EventRange(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);
 
-	virtual ~DEventRange(void);
+	virtual ~EventRange(void);
 		dbkey_t GetId() const { return mId; }				//get database table uniq id;
 	void SetId(	dbkey_t val) { mId = val; }				//set database table uniq id;
 
@@ -36,8 +36,8 @@ private:
 	time_t mCreatedTime;	//creationTime time
 	time_t mUpdateTime;		//mUpdateTime time
 	string mDescription;	//description
-	DEventRange(const DEventRange& rhs);	
-	DEventRange& operator=(const DEventRange& rhs);
+	EventRange(const EventRange& rhs);	
+	EventRange& operator=(const EventRange& rhs);
 };
 
 

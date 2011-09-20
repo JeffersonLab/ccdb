@@ -12,11 +12,15 @@
 #include <string>
 #include <iostream>
 #include <queue>
-#include "DConsole.h"
+
+#include "CCDB/Console.h"
 
 namespace ccdb {
 
-class DLog {
+/**
+ * Log class. Write errors, love children...
+ */
+class Log {
 public:
     /** @brief writes status
      *
@@ -93,13 +97,13 @@ public:
 protected:
 
 private:
-    DLog() {};                              /// Private it can  not be called
-    DLog(DLog const&) {};                   /// copy constructor is private
-    DLog& operator=(DLog const&) {};        /// assignment operator is private
-    static DConsole msConsole;              /// standart output console
-    static DConsole msErrorConsole;         /// output for error reporting
-    static DConsole msMessageConsole;       /// Console for messages
-    static DConsole msVerboseConsole;       /// consold efor verbose messages
+    Log() {};                              /// Private it can  not be called
+    Log(Log const&) {};                   /// copy constructor is private
+    Log& operator=(Log const&) {};        /// assignment operator is private
+    static Console msConsole;              /// standart output console
+    static Console msErrorConsole;         /// output for error reporting
+    static Console msMessageConsole;       /// Console for messages
+    static Console msVerboseConsole;       /// consold efor verbose messages
     static int msLastError;
     static int mLevel; //0-fatal, 1 - error, 2 - warning, 3 - message, 4 - verbose
     

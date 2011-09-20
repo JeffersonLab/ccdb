@@ -7,10 +7,10 @@ using namespace std;
 namespace ccdb
 {
 	///Internal temporary class to pass connection info to mysql provider
-class DMySQLConnectionInfo
+class MySQLConnectionInfo
 {
 	public:
-	DMySQLConnectionInfo()
+	MySQLConnectionInfo()
 	:UserName(""),
 	Password(""),
 	HostName(""),
@@ -18,7 +18,7 @@ class DMySQLConnectionInfo
 	Port(0)
 	{
 	}
-	~DMySQLConnectionInfo(){};
+	~MySQLConnectionInfo(){};
 	string	UserName;
 	string	Password;
 	string 	Database;

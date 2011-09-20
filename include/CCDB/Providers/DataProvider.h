@@ -4,14 +4,16 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "DObjectsOwner.h"
-#include "Model/DAssignment.h"
-#include "Model/DConstantsTypeTable.h"
-#include "Model/DDirectory.h"
-#include "Model/DRunRange.h"
-#include "DCCDBError.h"
 
-#include "Model/DVariation.h"
+#include "CCDB/Model/ObjectsOwner.h"
+#include "CCDB/Model/Assignment.h"
+#include "CCDB/Model/ConstantsTypeTable.h"
+#include "CCDB/Model/Directory.h"
+#include "CCDB/Model/RunRange.h"
+#include "CCDB/Model/Variation.h"
+#include "CCDB/CCDBError.h"
+
+
 
 /* @class DDataProvider
  * This is the main base interface to the Providers class family. Providers - are classes 
@@ -50,12 +52,12 @@
 namespace ccdb
 {
 
-class DDataProvider: public DObjectsOwner
+class DataProvider: public ObjectsOwner
 {
 public:
 
-    DDataProvider(void);
-    virtual ~DDataProvider(void);
+    DataProvider(void);
+    virtual ~DataProvider(void);
     
     //----------------------------------------------------------------------------------------
     //	C O N N E C T I O N
@@ -103,7 +105,7 @@ public:
     * @param   Full path of the directory
     * @return DDirectory object if directory exists, NULL otherwise
     */
-    virtual DDirectory* GetDirectory(const string& path)=0;
+    virtual Directory* GetDirectory(const string& path)=0;
 
     /** @brief return reference to root directory
      * 
@@ -111,7 +113,7 @@ public:
      *
      * @return   DDirectory object pointer
      */
-    virtual DDirectory * const GetRootDirectory()=0;
+    virtual Directory * const GetRootDirectory()=0;
 
     /** @brief Searches for directory 
      *
@@ -136,7 +138,7 @@ public:
      * @param  [in]  selectRecords		number of records to select. 0 means select all records
      * @return bool true if there were error (even if 0 directories found) 
      */
-    virtual bool SearchDirectories(vector<DDirectory *>& resultDirectories, const string& searchPattern, const string& parentPath="", int take=0, int startWith=0)=0;
+    virtual bool SearchDirectories(vector<Directory *>& resultDirectories, const string& searchPattern, const string& parentPath="", int take=0, int startWith=0)=0;
     
     
     /** @brief SearchDirectories
@@ -160,7 +162,7 @@ public:
      * @param  [in]  selectRecords		number of records to select. 0 means select all records
      * @return list of 
      */
-    virtual vector<DDirectory *> SearchDirectories(const string& searchPattern, const string& parentPath="", int take=0, int startWith=0);
+    virtual vector<Directory *> SearchDirectories(const string& searchPattern, const string& parentPath="", int take=0, int startWith=0);
 
 
     /** @brief Creates directory using parent parentDirFullPath
@@ -187,7 +189,7 @@ public:
      * @param  dir		Directory to update
      * @return   bool
      */
-    virtual bool UpdateDirectory(DDirectory *dir)=0;
+    virtual bool UpdateDirectory(Directory *dir)=0;
 
     /**
      * @brief Deletes directory using parent path
@@ -217,7 +219,7 @@ public:
      * @param  [in] dir	Directory to Delete
      * @return true if no errors 
      */
-    virtual bool DeleteDirectory(DDirectory *dir) =0;
+    virtual bool DeleteDirectory(Directory *dir) =0;
 
     /** NEVER USE IT UNLESS YOU KNOW
      *  Deletes directory and all tables and subdirectories in it
@@ -226,7 +228,7 @@ public:
      *  this function is against the philosofy "No delete. Any change by adding New"
      *
      */
-    virtual bool RecursiveDeleteDirectory(DDirectory *dir);
+    virtual bool RecursiveDeleteDirectory(Directory *dir);
 
 
     //----------------------------------------------------------------------------------------
@@ -239,7 +241,7 @@ public:
      * @param  [in] path absolute path of the type table
      * @return new object of DConstantsTypeTable
      */
-    virtual DConstantsTypeTable * GetConstantsTypeTable(const string& path, bool loadColumns=false)=0;
+    virtual ConstantsTypeTable * GetConstantsTypeTable(const string& path, bool loadColumns=false)=0;
 
     /** @brief Gets ConstantsType information from the DB
      *
@@ -247,7 +249,7 @@ public:
      * @param  [in] parentDir directory that contains type table
      * @return new object of DConstantsTypeTable
      */
-    virtual DConstantsTypeTable * GetConstantsTypeTable(const string& name, DDirectory *parentDir, bool loadColumns=false)=0;
+    virtual ConstantsTypeTable * GetConstantsTypeTable(const string& name, Directory *parentDir, bool loadColumns=false)=0;
 
     /** @brief Gets ConstantsType information from the DB
      *
@@ -255,21 +257,21 @@ public:
      * @param  [in] parentDir directory that contains type table
      * @return new object of DConstantsTypeTable
      */
-    virtual bool GetConstantsTypeTables(vector<DConstantsTypeTable *>& typeTables,const string& parentDirPath, bool loadColumns=false) =0;
+    virtual bool GetConstantsTypeTables(vector<ConstantsTypeTable *>& typeTables,const string& parentDirPath, bool loadColumns=false) =0;
 
     /** @brief Get all "constants" from current directory
      *
      * @param parentDir
      * @return vector of constants
      */
-    virtual vector<DConstantsTypeTable *> GetConstantsTypeTables (DDirectory *parentDir, bool loadColumns=false)=0;
+    virtual vector<ConstantsTypeTable *> GetConstantsTypeTables (Directory *parentDir, bool loadColumns=false)=0;
 
     /** @brief Get all "constants" from current directory
      *
      * @param parentDir
      * @return vector of constants
      */
-    virtual bool GetConstantsTypeTables(vector<DConstantsTypeTable *>& typeTables, DDirectory *parentDir, bool loadColumns=false) =0;
+    virtual bool GetConstantsTypeTables(vector<ConstantsTypeTable *>& typeTables, Directory *parentDir, bool loadColumns=false) =0;
     
     /** @brief Searches for type tables that matches the patten
      *
@@ -290,7 +292,7 @@ public:
      * @param  parentPath
      * @return bool
      */
-    virtual bool SearchConstantsTypeTables(vector<DConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 )=0;
+    virtual bool SearchConstantsTypeTables(vector<ConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 )=0;
 
     /** @brief Searches for type tables that matches the patten
      *
@@ -311,28 +313,28 @@ public:
      * @param  parentPath
      * @return vector<DConstantsTypeTable *>
      */
-    virtual vector<DConstantsTypeTable *> SearchConstantsTypeTables(const string& pattern, const string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 )=0;
+    virtual vector<ConstantsTypeTable *> SearchConstantsTypeTables(const string& pattern, const string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 )=0;
     
     /**
      * @brief This function counts number of type tables for a given directory 
      * @param [in] directory to look tables in
      * @return number of tables to return
      */
-    virtual int CountConstantsTypeTables(DDirectory *dir)=0;
+    virtual int CountConstantsTypeTables(Directory *dir)=0;
     
     /** @brief Loads columns for this table
      *
      * @param parentDir
      * @return vector of constants
      */
-    virtual bool LoadColumns(DConstantsTypeTable* table) =0;
+    virtual bool LoadColumns(ConstantsTypeTable* table) =0;
 
     /** @brief Creates constant table in database
      *
      * @param  table
      * @return bool
      */
-    virtual bool CreateConstantsTypeTable(DConstantsTypeTable *table)=0;
+    virtual bool CreateConstantsTypeTable(ConstantsTypeTable *table)=0;
     
     /** @brief Creates constant table in database
      * 	
@@ -356,7 +358,7 @@ public:
      * @param [in] comments		description for this type table
      * @return NULL if failed, pointer to created object otherwise
      */
-    virtual DConstantsTypeTable* CreateConstantsTypeTable(const string& name, const string& parentPath, int rowsNumber, map<string, string> columns, const string& comments ="") =0;
+    virtual ConstantsTypeTable* CreateConstantsTypeTable(const string& name, const string& parentPath, int rowsNumber, map<string, string> columns, const string& comments ="") =0;
     
     /** @brief Creates constant table in database
      * 	
@@ -380,7 +382,7 @@ public:
      * @param [in] comments		description for this type table
      * @return NULL if failed, pointer to created object otherwise
      */
-    virtual DConstantsTypeTable* CreateConstantsTypeTable(const string& name, DDirectory *parentDir, int rowsNumber, map<string, string> columns, const string& comments ="")=0;
+    virtual ConstantsTypeTable* CreateConstantsTypeTable(const string& name, Directory *parentDir, int rowsNumber, map<string, string> columns, const string& comments ="")=0;
     
     /** @brief Uptades constant table in database
      *
@@ -394,7 +396,7 @@ public:
      * @param   [in] table with updated info
      * @return bool
      */
-    virtual bool UpdateConstantsTypeTable(DConstantsTypeTable *table)=0;
+    virtual bool UpdateConstantsTypeTable(ConstantsTypeTable *table)=0;
 
 
     /** @brief Deletes constant type table
@@ -406,7 +408,7 @@ public:
      * @param   table table info
      * @return bool true if success
      */
-    virtual bool DeleteConstantsTypeTable(DConstantsTypeTable *table)=0;
+    virtual bool DeleteConstantsTypeTable(ConstantsTypeTable *table)=0;
 
     /** NEVER USE IT UNLESS YOU KNOW
      *  Deletes type table and all assignments in it
@@ -415,7 +417,7 @@ public:
      *  this function is against the philosofy "No delete. Any change by adding New"
      *
      */
-    virtual bool RecursiveDeleteTypeTable(DConstantsTypeTable *dir);
+    virtual bool RecursiveDeleteTypeTable(ConstantsTypeTable *dir);
     
     //----------------------------------------------------------------------------------------
     //	R U N   R A N G E S
@@ -427,7 +429,7 @@ public:
      * @param     DRunRange * run
      * @return   bool
      */
-    virtual bool CreateRunRange(DRunRange *run)=0;
+    virtual bool CreateRunRange(RunRange *run)=0;
 
     /** @brief GetRun Range from db
      *
@@ -436,7 +438,7 @@ public:
      * @param     const char * name
      * @return   DRunRange* return NULL if not found or failed
      */
-    virtual DRunRange* GetRunRange(int min, int max, const string& name = "")=0;
+    virtual RunRange* GetRunRange(int min, int max, const string& name = "")=0;
 
     
     /**
@@ -449,7 +451,7 @@ public:
      * @param [in]  startWith	start record to take
      * @return 
      */
-    virtual bool GetRunRanges(vector<DRunRange *>& resultRunRanges, DConstantsTypeTable *table, const string& variation="", int take=0, int startWith=0 )=0;
+    virtual bool GetRunRanges(vector<RunRange *>& resultRunRanges, ConstantsTypeTable *table, const string& variation="", int take=0, int startWith=0 )=0;
     
     /**
      * @brief Searches all run ranges associated with this type table
@@ -461,7 +463,7 @@ public:
      * @param [in]  startWith	start record to take
      * @return 
      */
-    virtual bool GetRunRanges(vector<DRunRange *>& resultRunRanges, const string& typeTablePath, const string& variation="",int take=0, int startWith=0 );
+    virtual bool GetRunRanges(vector<RunRange *>& resultRunRanges, const string& typeTablePath, const string& variation="",int take=0, int startWith=0 );
     
     /** @brief GetRun Range from db
      *
@@ -470,7 +472,7 @@ public:
      * @param     const char * name
      * @return   DRunRange* return NULL if not found or failed
      */
-    virtual DRunRange* GetRunRange(const string& name)=0;
+    virtual RunRange* GetRunRange(const string& name)=0;
 
     /** @brief Gets run range from DB Or Creates RunRange in DB
      *
@@ -479,7 +481,7 @@ public:
      * @param name name of the run range
      * @return   DRunRange* return NULL if failed
      */
-    virtual DRunRange* GetOrCreateRunRange(int min, int max, const string& name="", const string& comment="")=0;
+    virtual RunRange* GetOrCreateRunRange(int min, int max, const string& name="", const string& comment="")=0;
     
     /** @brief Updates run range
      * 
@@ -491,13 +493,13 @@ public:
      * @param [in] run runrange model with proper id and updated data
      * @return bool if no errors and data is changed
      */
-    virtual bool UpdateRunRange(DRunRange* run)=0;
+    virtual bool UpdateRunRange(RunRange* run)=0;
     
     /** @brief Deletes run range
      * @param [in] run model object to delete
      * @return true if no errors and run range deleted
      */
-    virtual bool DeleteRunRange(DRunRange* run)=0;
+    virtual bool DeleteRunRange(RunRange* run)=0;
 
     /** NEVER USE IT UNLESS YOU KNOW
      *  Deletes run range and all assignments in it
@@ -506,7 +508,7 @@ public:
      *  this function is against the philosophy "No delete. Any change by adding New"
      *
      */
-    virtual bool RecursiveDeleteRunRange(DRunRange *dir);
+    virtual bool RecursiveDeleteRunRange(RunRange *dir);
 
     //----------------------------------------------------------------------------------------
     //	V A R I A T I O N
@@ -516,7 +518,7 @@ public:
      * @param     const char * name
      * @return   DVariation*
      */
-    virtual DVariation* GetVariation(const string& name)=0;
+    virtual Variation* GetVariation(const string& name)=0;
      
     /**
      * @brief Searches all variations associated with this type table
@@ -527,7 +529,7 @@ public:
      * @param  [in]  startWith start record to take
      * @return 
      */
-    virtual bool GetVariations(vector<DVariation *>& resultVariations, DConstantsTypeTable *table, int run=0, int take=0, int startWith=0 )=0;
+    virtual bool GetVariations(vector<Variation *>& resultVariations, ConstantsTypeTable *table, int run=0, int take=0, int startWith=0 )=0;
 
     /**
      * @brief Searches all variations associated with this type table
@@ -538,7 +540,7 @@ public:
      * @param  [in]  startWith start record to take
      * @return 
      */
-    virtual vector<DVariation *> GetVariations(DConstantsTypeTable *table, int run=0, int take=0, int startWith=0 )=0;
+    virtual vector<Variation *> GetVariations(ConstantsTypeTable *table, int run=0, int take=0, int startWith=0 )=0;
     
     /**
      * @brief Searches all variations associated with this type table
@@ -549,14 +551,14 @@ public:
      * @param  [in]  startWith start record to take
      * @return 
      */
-    virtual bool GetVariations(vector<DVariation *>& resultVariations, const string& path, int run=0, int take=0, int startWith=0 );
+    virtual bool GetVariations(vector<Variation *>& resultVariations, const string& path, int run=0, int take=0, int startWith=0 );
     
     /** @brief Create variation
      *
      * @param  [in] DVariation * variation
      * @return true if success
      */
-    virtual bool CreateVariation(DVariation *variation)=0;
+    virtual bool CreateVariation(Variation *variation)=0;
 
     /** @brief Update variation
      *
@@ -567,7 +569,7 @@ public:
      * @param   [in]  variation to update
      * @return true if success  
      */
-    virtual bool UpdateVariation(DVariation *variation) =0;
+    virtual bool UpdateVariation(Variation *variation) =0;
 
     /** @brief Delete variation
      *
@@ -576,7 +578,7 @@ public:
      * @param    [in] variation to delete
      * @return   bool
      */
-    virtual bool DeleteVariation(DVariation *variation) =0;
+    virtual bool DeleteVariation(Variation *variation) =0;
 
     /** NEVER USE IT UNLESS YOU KNOW
      *  Deletes variation and all assignments that belongs to it 
@@ -585,7 +587,7 @@ public:
      *  this function is against the philosophy "No delete. Any change by adding New"
      *
      */
-    virtual bool RecursiveDeleteVariation(DVariation *dir);
+    virtual bool RecursiveDeleteVariation(Variation *dir);
     
     //----------------------------------------------------------------------------------------
     //	A S S I G N M E N T S
@@ -601,7 +603,7 @@ public:
      * @param [in] variation - variation name
      * @return DAssignment object or NULL if no assignment is found or error
      */
-    virtual DAssignment* GetAssignmentShort(int run, const string& path, const string& variation="default")=0;
+    virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation="default")=0;
     
     
     /** @brief Get specified by creation time version of Assignment with data blob only.
@@ -617,7 +619,7 @@ public:
      * @param [in] variation - variation name
      * @return DAssignment object or NULL if no assignment is found or error
      */
-    virtual DAssignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default")=0;
+    virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default")=0;
     
      /** @brief Get specified version of Assignment with data blob only
      *
@@ -628,7 +630,7 @@ public:
      * @param [in] variation - variation name
      * @return DAssignment object or NULL if no assignment is found or error
      */
-    virtual DAssignment* GetAssignmentShortByVersion(int run, const string& path, int version, const string& variation="default")=0;
+    virtual Assignment* GetAssignmentShortByVersion(int run, const string& path, int version, const string& variation="default")=0;
     
 
     /** @brief Get last Assignment with all related objects
@@ -637,7 +639,7 @@ public:
      * @param     path to constant path
      * @return NULL if no assignment is found or error
      */
-    virtual DAssignment* GetAssignmentFull(int run, const string& path, const string& variation="default")=0;
+    virtual Assignment* GetAssignmentFull(int run, const string& path, const string& variation="default")=0;
     
     
     /** @brief  Get specified version of Assignment with all related objects
@@ -648,7 +650,7 @@ public:
      * @param     int version
      * @return   DAssignment*
      */
-    virtual DAssignment* GetAssignmentFull(int run, const string& path, int version, const string& variation="default")=0;
+    virtual Assignment* GetAssignmentFull(int run, const string& path, int version, const string& variation="default")=0;
         
     /** @brief Creates Assignment using related object
      * 
@@ -669,7 +671,7 @@ public:
      * @param    DAssignment * assignment
      * @return   DAssignment* adjusted with Id-s of objects and etc
      */
-    virtual bool CreateAssignment(DAssignment *assignment) = 0;
+    virtual bool CreateAssignment(Assignment *assignment) = 0;
     
         /** @brief Creates Assignment using related object
      *
@@ -690,7 +692,7 @@ public:
      * @param comments   comments
      * @return NULL if failed, DAssignment reference if success
      */
-    virtual DAssignment* CreateAssignment(const std::vector<std::vector<std::string> >& data, const std::string& path, int runMin, int runMax, const std::string& variationName, const std::string& comments);
+    virtual Assignment* CreateAssignment(const std::vector<std::vector<std::string> >& data, const std::string& path, int runMin, int runMax, const std::string& variationName, const std::string& comments);
 
     /** @brief Creates Assignment using related object
      *
@@ -710,7 +712,7 @@ public:
      * @param comments   comments
      * @return NULL if failed, DAssignment reference if success
      */
-    virtual DAssignment* CreateAssignment(const vector<vector<string> > &data, const string& path, const string& runRangeName, const string& variationName, const string& comments);
+    virtual Assignment* CreateAssignment(const vector<vector<string> > &data, const string& path, const string& runRangeName, const string& variationName, const string& comments);
     
     /**
      * @brief Complex and universal function to retrieve assignments
@@ -755,7 +757,7 @@ public:
      * @param [in] take		  records to select
      * @return true if no errors (even if no assignments was selected)
      */
-    virtual bool GetAssignments(vector<DAssignment *> &assingments,const string& path, int runMin, int runMax, const string& runRangeName, const string& variation, time_t beginTime, time_t endTime, int sortBy=0, int take=0, int startWith=0)=0;
+    virtual bool GetAssignments(vector<Assignment *> &assingments,const string& path, int runMin, int runMax, const string& runRangeName, const string& variation, time_t beginTime, time_t endTime, int sortBy=0, int take=0, int startWith=0)=0;
     
     
     /**
@@ -781,7 +783,7 @@ public:
      * @param [in]  startWith
      * @return 
      */
-    virtual bool GetAssignments(vector<DAssignment *> &assingments,const string& path, int run, const string& variation="", time_t date=0, int take=0, int startWith=0)=0;
+    virtual bool GetAssignments(vector<Assignment *> &assingments,const string& path, int run, const string& variation="", time_t date=0, int take=0, int startWith=0)=0;
 
     /**
      * @brief Get assigments for particular run
@@ -805,7 +807,7 @@ public:
      * @param [in]  startWith
      * @return assingments
      */
-    virtual vector<DAssignment *> GetAssignments(const string& path, int run, const string& variation="", time_t date=0, int take=0, int startWith=0)=0;
+    virtual vector<Assignment *> GetAssignments(const string& path, int run, const string& variation="", time_t date=0, int take=0, int startWith=0)=0;
 
     /**
      * @brief Get assigments for particular run
@@ -830,7 +832,7 @@ public:
      * @param [in]  startWith
      * @return 
      */
-    virtual bool GetAssignments(vector<DAssignment *> &assingments,const string& path, const string& runName, const string& variation="", time_t date=0, int take=0, int startWith=0)=0;
+    virtual bool GetAssignments(vector<Assignment *> &assingments,const string& path, const string& runName, const string& variation="", time_t date=0, int take=0, int startWith=0)=0;
 
     /**
      * @brief Get assigments for particular run
@@ -855,21 +857,21 @@ public:
      * @param [in]  startWith
      * @return 
      */
-    virtual vector<DAssignment *> GetAssignments(const string& path, const string& runName, const string& variation="", time_t date=0, int take=0, int startWith=0)=0;
+    virtual vector<Assignment *> GetAssignments(const string& path, const string& runName, const string& variation="", time_t date=0, int take=0, int startWith=0)=0;
     
     /**
      * @brief the function updates assignment comments
      * @param assignment
      * @return 
      */
-    virtual bool UpdateAssignment(DAssignment* assignment)=0;
+    virtual bool UpdateAssignment(Assignment* assignment)=0;
     
     /**
      * @brief Deletes assignment
      * @param assignment object to delete. Must have valid ID 
      * @return true if success
      */
-    virtual bool DeleteAssignment(DAssignment* assignment)=0;
+    virtual bool DeleteAssignment(Assignment* assignment)=0;
     
     /**
      * @brief Fill assignment with data if it has proper ID
@@ -888,7 +890,7 @@ public:
      * @param [in, out] assignment to fill
      * @return true if success and assignment was filled with data
      */
-    virtual bool FillAssignment(DAssignment* assignment)=0;
+    virtual bool FillAssignment(Assignment* assignment)=0;
     
     //----------------------------------------------------------------------------------------
     //	E R R O R   H A N D L I N G 
@@ -909,7 +911,7 @@ public:
      * (!) Copy this error objects before next provider function call. 
      * @return   std::vector<DCcdbError *>
      */
-    virtual std::vector<DCCDBError *> GetErrors();
+    virtual std::vector<CCDBError *> GetErrors();
     
     /**
      * @brief Gets last of the last error
@@ -968,7 +970,7 @@ protected:
      * @param     obj
      * @return   void
      */
-    void SetObjectLoaded(DStoredObject* obj);
+    void SetObjectLoaded(StoredObject* obj);
     
     
     /** @brief Clear error state on start of each function that emits error
@@ -976,7 +978,7 @@ protected:
     virtual void ClearErrorsOnFunctionStart();
     
     vector<int> mErrorCodes;		///vector of last errors
-    vector<DCCDBError *> mErrors;	///errors 
+    vector<CCDBError *> mErrors;	///errors 
     
     int mLastError;		///last error
     

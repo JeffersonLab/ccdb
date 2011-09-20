@@ -8,24 +8,24 @@
 
 #ifndef VARIATION_H_
 #define VARIATION_H_
-#include "DStoredObject.h"
+#include "CCDB/Model/StoredObject.h"
 #include <string>
 #include <time.h>
 using namespace std;
 
 namespace ccdb {
 
-class DVariation: public DStoredObject {
+class Variation: public StoredObject {
 public:
-	DVariation(DObjectsOwner * owner=NULL, DDataProvider *provider=NULL);
+	Variation(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);
 
-	virtual ~DVariation();
+	virtual ~Variation();
 	unsigned int GetId() const { return mId; }					//get database table uniq id;
-	void SetId(unsigned int val) { mId = val; }				//set database table uniq id;
+	void SetId(unsigned int val) { mId = val; }	                //set database table uniq id;
 	std::string GetName() const { return mName; }				//get name
 	void SetName(std::string val) { mName = val; }				//set name
 	std::string GetComment() const { return mComment; }			//get comment
-	void SetComment(std::string val) { mComment = val; }			//set comment
+	void SetComment(std::string val) { mComment = val; }		//set comment
 	time_t GetCreatedTime() const { return mCreatedTime; }		//get mCreatedTime time
 	void SetCreatedTime(time_t val) { mCreatedTime = val;}		//set mCreatedTime time
 	time_t GetModifiedTime() const { return mUpdateTime; }		//get mUpdateTime time
@@ -41,8 +41,8 @@ private:
 	time_t			mCreatedTime;	//! Creation Time 
 	time_t			mUpdateTime;	//! Update Time 
 	string			mDescription;	//! description
-	DVariation(const DVariation& rhs);	
-	DVariation& operator=(const DVariation& rhs);
+	Variation(const Variation& rhs);	
+	Variation& operator=(const Variation& rhs);
 };
 
 }

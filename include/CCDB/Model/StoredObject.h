@@ -8,8 +8,8 @@
 using namespace std;
 
 namespace ccdb {
-class DDataProvider; // provider class See DDataProvider.h
-class DObjectsOwner; //owner
+class DataProvider; // provider class See DDataProvider.h
+class ObjectsOwner; //owner
 /** @brief Base class for "database (or file) stored" objects
 *
 * Objects derived from this class designed to be a "Object Model" of the Database records
@@ -26,13 +26,13 @@ class DObjectsOwner; //owner
 * @param     isOwner
 * @return
 */
-class DStoredObject {
-	friend class DDataProvider;
-	friend class DObjectsOwner;
+class StoredObject {
+	friend class DataProvider;
+	friend class ObjectsOwner;
 public:
 
-	DStoredObject(DObjectsOwner * owner=NULL, DDataProvider *provider=NULL);
-	virtual ~DStoredObject(void);
+	StoredObject(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);
+	virtual ~StoredObject(void);
 	
 	/** @brief GetNextUID
 	 *
@@ -44,14 +44,14 @@ public:
 	 *
 	 * @return   DDataProvider *
 	 */
-	DObjectsOwner * GetOwner() const { return mOwner; }
+	ObjectsOwner * GetOwner() const { return mOwner; }
 
 	/** @brief Set provider that managed this object
 	 *
 	 * @param     val				provider
 	 * @param     isOwner	provider is owner @see DStoredObject
 	 */
-	void			SetOwner(DObjectsOwner * val, bool isOwner = true);
+	void			SetOwner(ObjectsOwner * val, bool isOwner = true);
 
 
 	/** @brief If provider is not null, releases the owning of the provider
@@ -108,9 +108,9 @@ private:
 	bool mIsChanged;			// NOT IMPLEMENTED
 	bool mIsOwned;			// indicates that provider owns deletion of this object
 	bool mIsLoaded;			// Loaded by provider from persistent storage
-	DDataProvider * mProvider; //back hook to provider of the object
+	DataProvider * mProvider; //back hook to provider of the object
 	
-	DObjectsOwner* mOwner;		//owner of the object
+	ObjectsOwner* mOwner;		//owner of the object
 	unsigned long mTempId;	// This is actually UID, The unique Id during a program run. It is called Temp to emphasise that it has no buisness to Id in database
 
 

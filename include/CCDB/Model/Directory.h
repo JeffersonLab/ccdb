@@ -10,14 +10,16 @@
 #include <vector>
 #include <string>
 #include <time.h>
-#include "DStoredObject.h"
-#include "DObjectsOwner.h"
-#include "DCCDBGlobals.h"
+
+#include "CCDB/Model/StoredObject.h"
+#include "CCDB/Model/ObjectsOwner.h"
+#include "CCDB/CCDBGlobals.h"
+
 using namespace std;
 
 namespace ccdb{
 
-class DDirectory : public DStoredObject
+class Directory : public StoredObject
 {
 
 public:
@@ -28,23 +30,23 @@ public:
 	 * @param  [in] provider
 	 * @return 
 	 */
-	DDirectory(DObjectsOwner * owner, DDataProvider *provider=NULL);
+	Directory(ObjectsOwner * owner, DataProvider *provider=NULL);
 	
-	DDirectory(); ///Default constructor
+	Directory(); ///Default constructor
 
-	virtual ~DDirectory(); ///Destructor
+	virtual ~Directory(); ///Destructor
 	
 	/**
 	 * @brief Get
 	 * @return pointer to parent directory. NULL if there is no parent directory
 	 */
-	DDirectory* GetParentDirectory();
+	Directory* GetParentDirectory();
 	
 	/**
 	 * @brief Gets the vector of pointers to subdirectories
 	 * @return vector of pointers to subdirectories
 	 */
-	const vector<DDirectory*>& GetSubdirectories();
+	const vector<Directory*>& GetSubdirectories();
 	
 	/**
 	 * @brief Adds a subdirectory of this directory
@@ -54,7 +56,7 @@ public:
 	 * 
 	 * @param subDirectory Child directory to be added
 	 */
-	void AddSubdirectory(DDirectory *subdirectory);
+	void AddSubdirectory(Directory *subdirectory);
 	
 	/**
 	 * @brief deletes all subdirectories recursively
@@ -91,22 +93,22 @@ protected:
 	 * So one uses only AddSubdirecrory to generate directories structure
 	 * @param parent Parent directory. Might be NULL if No parent is present
 	 */
-	void SetParent(DDirectory *parent);
+	void SetParent(Directory *parent);
 	
 private:
 	string mName;		///Name of directorey like in db
 	string mFullPath;	///full path
 	string mComment;	///Comment like in db
-	DDirectory *mParent;
-	vector<DDirectory *> mSubDirectories;
+	Directory *mParent;
+	vector<Directory *> mSubDirectories;
 	dbkey_t mParentId;
 	dbkey_t mId;
 	time_t mCreatedTime;
 	time_t mModifiedTime;
 	
 
-	DDirectory(const DDirectory& rhs){}	
-	DDirectory& operator=(const DDirectory& rhs);
+	Directory(const Directory& rhs){}	
+	Directory& operator=(const Directory& rhs);
 };
 
 }

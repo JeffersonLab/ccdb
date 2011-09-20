@@ -1,18 +1,20 @@
 #ifndef DCallibrationGenerator_h
 #define DCallibrationGenerator_h
-#include "UserAPI/DCalibration.h"
+
 #include <vector>
 #include <map>
 #include <stdexcept>
 
+#include "CCDB/Calibration.h"
+
 namespace ccdb
 {
-class DCalibrationGenerator {
+class CalibrationGenerator {
 public:
 	/** @brief   default constructor*/
-	DCalibrationGenerator();
+	CalibrationGenerator();
 	/** @brief destructor	 */
-	virtual ~DCalibrationGenerator();
+	virtual ~CalibrationGenerator();
 
 	/** @brief Creates @see DCalibration by connectionString, run number and desirable variation
 	 *
@@ -21,7 +23,7 @@ public:
 	 * @parameter [in] variation - desirable variation
 	 * @return   DCalibration*
 	 */
-	virtual DCalibration* MakeCalibration(const std::string & connectionString, int run, const std::string& variation); 
+	virtual Calibration* MakeCalibration(const std::string & connectionString, int run, const std::string& variation); 
 
 	/** @brief    CheckOpenable
 	 *
@@ -43,12 +45,12 @@ public:
      */
     virtual string GetCalibrationHash(const std::string & connectionString, int run, const std::string& variation);
 private:
-	virtual DCalibration* MakeMySQLCalibration(const std::string & connectionString, int run, const std::string& context); ///< Instantiate an JCalibration object (subclass)
-	DCalibrationGenerator(const DCalibrationGenerator& rhs);
-	DCalibrationGenerator& operator=(const DCalibrationGenerator& rhs);
-	std::vector<DCalibration *> mCalibrations;					///Created Calibrations
-	std::map<std::string, DCalibration*> mCalibrationsByHash;    ///map of connection string => DCallibration
-	std::map<std::string, DDataProvider*> mProvidersByUrl;      ///map of connection string => DCallibration
+	virtual Calibration* MakeMySQLCalibration(const std::string & connectionString, int run, const std::string& context); ///< Instantiate an JCalibration object (subclass)
+	CalibrationGenerator(const CalibrationGenerator& rhs);
+	CalibrationGenerator& operator=(const CalibrationGenerator& rhs);
+	std::vector<Calibration *> mCalibrations;					///Created Calibrations
+	std::map<std::string, Calibration*> mCalibrationsByHash;    ///map of connection string => DCallibration
+	std::map<std::string, DataProvider*> mProvidersByUrl;      ///map of connection string => DCallibration
 };
 }
 

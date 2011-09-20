@@ -1,5 +1,5 @@
 #pragma once
-#include "DDataProvider.h"
+#include "DataProvider.h"
 #ifndef WIN32
 #include <dirent.h>
 #include <stdio.h>
@@ -26,11 +26,11 @@ namespace ccdb
 	}
 #endif
 
-class DFileDataProvider : public DDataProvider
+class FileDataProvider : public DataProvider
 {
 public:
-	DFileDataProvider(void);
-	~DFileDataProvider(void);
+	FileDataProvider(void);
+	~FileDataProvider(void);
 	virtual bool Connect(std::string connectionString);
 
 	virtual void Disconnect();

@@ -1,41 +1,41 @@
 #ifndef _DObjectsOwner_
 #define _DObjectsOwner_
-#include "DStoredObject.h"
+#include "CCDB/Model/StoredObject.h"
 #include <map>
 using namespace std;
 
 namespace ccdb
 {
 
-class DObjectsOwner {
+class ObjectsOwner {
 
 public:
-	DObjectsOwner();
-	virtual ~DObjectsOwner();
+	ObjectsOwner();
+	virtual ~ObjectsOwner();
 	
 	/** @brief Checks if this DObjectsOwner is owner of this object
 	 *
 	 * @param   object to check ownership
 	 * @return  true if this provider is owner
 	 */
-	virtual bool IsOwner(DStoredObject * object);
+	virtual bool IsOwner(StoredObject * object);
 
 	/** @brief Stes ownship for this object
 	 *
 	 * @param     DStoredObject * object
 	 * @return   void
 	 */
-	virtual void BeOwner(DStoredObject * object);
+	virtual void BeOwner(StoredObject * object);
 	
 	/** @brief Release ownship for this object
 	 *
 	 * @param     DStoredObject * object
 	 * @return   void
 	 */
-	virtual void ReleaseOwnership(DStoredObject * object);
+	virtual void ReleaseOwnership(StoredObject * object);
 private:
 	
-	std::map<unsigned long, DStoredObject *> mOwnedObjects; //stored objects by id
+	std::map<unsigned long, StoredObject *> mOwnedObjects; //stored objects by id
 };
 
 }

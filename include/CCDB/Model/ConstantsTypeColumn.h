@@ -10,17 +10,17 @@
 
 #include <time.h>
 #include <string>
-#include "DCCDBGlobals.h"
-#include "DStoredObject.h"
+#include "CCDB/Ccdb/Globals.h"
+#include "CCDB/Model/StoredObject.h"
 //#include "Model/DConstantsTypeTable.h"
 
 using namespace std;
 
 namespace ccdb {
-class DConstantsTypeTable;
+class ConstantsTypeTable;
 
-class DConstantsTypeColumn: public DStoredObject {
-	friend class DConstantsTypeTable;
+class ConstantsTypeColumn: public StoredObject {
+	friend class ConstantsTypeTable;
 public:
 	enum DColumnTypes
 	{
@@ -61,8 +61,8 @@ public:
 	 */
 	static string  TypeToString(DColumnTypes val);
 
-	DConstantsTypeColumn(DObjectsOwner * owner=NULL, DDataProvider *provider=NULL);	///Constructor
-	virtual ~DConstantsTypeColumn();					///Destructor
+	ConstantsTypeColumn(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);	///Constructor
+	virtual ~ConstantsTypeColumn();					///Destructor
 
 	dbkey_t			GetId() const;						///get database table uniq id;
 	void			SetId(dbkey_t val);					///set database table uniq id;
@@ -117,12 +117,12 @@ public:
 	void			SetType(string val);				///Sets type of column
 	void			SetType(DColumnTypes val);			///Sets type of column
 
-	DConstantsTypeTable * GetTypeTable() const;
-	void SetTypeTable(DConstantsTypeTable * val);
+	ConstantsTypeTable * GetTypeTable() const;
+	void SetTypeTable(ConstantsTypeTable * val);
 	unsigned int GetOrder() const { return mOrder; }
 	//The compare operations must be predefined to use the std::sort function 
-	bool operator<(DConstantsTypeColumn rhs) { return mOrder < rhs.mOrder; }
-	bool operator>(DConstantsTypeColumn rhs) { return mOrder > rhs.mOrder; }
+	bool operator<(ConstantsTypeColumn rhs) { return mOrder < rhs.mOrder; }
+	bool operator>(ConstantsTypeColumn rhs) { return mOrder > rhs.mOrder; }
 protected:
 	
 	void SetOrder(unsigned int val) { mOrder = val; }
@@ -137,10 +137,10 @@ private:
 	unsigned int	mOrder;			//order of the column
 	DColumnTypes	mType;			//column type
 
-	DConstantsTypeTable *mTypeTable; //ref to type table; 
+	ConstantsTypeTable *mTypeTable; //ref to type table; 
 	
-	DConstantsTypeColumn(const DConstantsTypeColumn& rhs){}	
-	DConstantsTypeColumn& operator=(const DConstantsTypeColumn& rhs){}
+	ConstantsTypeColumn(const ConstantsTypeColumn& rhs){}	
+	ConstantsTypeColumn& operator=(const ConstantsTypeColumn& rhs){}
 };
 
 }

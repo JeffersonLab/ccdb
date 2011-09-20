@@ -19,7 +19,8 @@
 #include <iostream>
 #include <ostream>
 #include <time.h>
-#include "DStringUtils.h"
+
+#include "CCDB/StringUtils.h"
 
 using namespace std;
 
@@ -44,7 +45,7 @@ struct DParseRequestResult
 
 /*@class DPathUtils provides static methods of CCDB objects namepath manipulation
  */
-class DPathUtils
+class PathUtils
 {
 public:
 

@@ -7,24 +7,26 @@
 
 #ifndef _DAssignment_
 #define _DAssignment_
-#include "DStoredObject.h"
-#include "DObjectsOwner.h"
-#include "Model/DConstantsTypeTable.h"
 
 #include <vector>
 #include <map>
+
+#include "CCDB/Model/StoredObject.h"
+#include "CCDB/Model/ObjectsOwner.h"
+#include "CCDB/Model/ConstantsTypeTable.h"
 
 using namespace std;
 
 namespace ccdb {
 
-class DEventRange;
-class DVariation;
-class DRunRange;
-class DAssignment: public DObjectsOwner, public DStoredObject {
+class EventRange;
+class Variation;
+class RunRange;
+
+class Assignment: public ObjectsOwner, public StoredObject {
 public:
-	DAssignment(DObjectsOwner * owner=NULL, DDataProvider *provider=NULL);
-	virtual ~DAssignment();
+	Assignment(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);
+	virtual ~Assignment();
 
 	/** @brief creates mapped data by columns
 	 *
@@ -88,14 +90,14 @@ public:
 	int			GetRequestedRun() const;				/// Run than was requested for user
 	void			SetRequestedRun(int val);			/// Run than was requested for user
 
-	DRunRange *	GetRunRange() const;					/// Run range object, is NULL if not set
-	void			SetRunRange(DRunRange * val);		/// Run range object, is NULL if not set
+	RunRange *	GetRunRange() const;					/// Run range object, is NULL if not set
+	void			SetRunRange(RunRange * val);		/// Run range object, is NULL if not set
 
-	DEventRange *	GetEventRange() const;				/// Event range object, is NULL if not set
-	void			SetEventRange(DEventRange * val);	/// Event range object, is NULL if not set
+	EventRange *	GetEventRange() const;				/// Event range object, is NULL if not set
+	void			SetEventRange(EventRange * val);	/// Event range object, is NULL if not set
 
-	DVariation *	GetVariation() const;				/// Variation object, is NULL if not set
-	void			SetVariation(DVariation * val);		/// Variation object, is NULL if not set
+	Variation *	GetVariation() const;				/// Variation object, is NULL if not set
+	void			SetVariation(Variation * val);		/// Variation object, is NULL if not set
 
 	int		GetId() const {
 		return mId;    /// id in database
@@ -148,10 +150,10 @@ public:
 		mComment = val;    ///Comment of assignment
 	}
 	
-	void SetTypeTable(DConstantsTypeTable* typeTable) {
+	void SetTypeTable(ConstantsTypeTable* typeTable) {
 		this->mTypeTable = typeTable;
 	}
-	DConstantsTypeTable* GetTypeTable() const {
+	ConstantsTypeTable* GetTypeTable() const {
 		return mTypeTable;
 	}
 private:
@@ -166,17 +168,17 @@ private:
 	unsigned int mDataVaultId;			// database ID of data blob
 	unsigned int mEventRangeId;			// event range ID
 	int	mRequestedRun;					// Run than was requested for user
-	DRunRange *mRunRange;				// Run range object, is NULL if not set
-	DEventRange *mEventRange;			// Event range object, is NULL if not set
-	DVariation *mVariation;				// Variation object, is NULL if not set
-	DConstantsTypeTable * mTypeTable;	// Constants table
+	RunRange *mRunRange;				// Run range object, is NULL if not set
+	EventRange *mEventRange;			// Event range object, is NULL if not set
+	Variation *mVariation;				// Variation object, is NULL if not set
+	ConstantsTypeTable * mTypeTable;	// Constants table
 	
 	time_t mCreatedTime;				// time of creation
 	time_t mModifiedTime;				// time of last modification
 	string mComment;					// Comment of assignment
 
-	DAssignment(const DAssignment& rhs);	
-	DAssignment& operator=(const DAssignment& rhs);
+	Assignment(const Assignment& rhs);	
+	Assignment& operator=(const Assignment& rhs);
 	
 	
 };

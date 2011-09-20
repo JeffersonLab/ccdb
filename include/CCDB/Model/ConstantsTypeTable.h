@@ -9,11 +9,12 @@
 #define TABLEHEADER_H_
 
 #include <string>
-#include "DDirectory.h"
-#include "DStoredObject.h"
-#include "DConstantsTypeColumn.h"
-#include "DObjectsOwner.h"
-#include "DConstantsTypeColumn.h"
+
+#include "CCDB/Model/Directory.h"
+#include "CCDB/Model/StoredObject.h"
+#include "CCDB/Model/ConstantsTypeColumn.h"
+#include "CCDB/Model/ObjectsOwner.h"
+#include "CCDB/Model/ConstantsTypeColumn.h"
 
 using namespace std;
 
@@ -21,15 +22,15 @@ namespace ccdb {
 
 	//class DConstantsTypeColumn;
 
-class DConstantsTypeTable: public DObjectsOwner, public DStoredObject 
+class ConstantsTypeTable: public ObjectsOwner, public StoredObject 
 {
-	friend class DDataProvider;
+	friend class DataProvider;
 public:
-	DConstantsTypeTable(DObjectsOwner * owner=NULL, DDataProvider *provider=NULL);
-	virtual ~DConstantsTypeTable();
+	ConstantsTypeTable(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);
+	virtual ~ConstantsTypeTable();
       
-    void			SetDirectory(DDirectory *directory); /// Parent directory	reference
-	DDirectory *	GetDirectory() const;				 /// Parent directory	reference
+    void			SetDirectory(Directory *directory); /// Parent directory	reference
+	Directory *	GetDirectory() const;				 /// Parent directory	reference
 
     void			SetDirectoryId(int directoryId);/// Parent directory id
 	int 			GetDirectoryId() const;			/// Parent directory id
@@ -76,7 +77,7 @@ public:
 	 *
 	 * @return   const vector<DConstantsTypeColumn *>&
 	 */
-	const vector<DConstantsTypeColumn *>& GetColumns() const;
+	const vector<ConstantsTypeColumn *>& GetColumns() const;
 
 	/** @brief Adds Column to array
 	 *
@@ -84,7 +85,7 @@ public:
 	 * @param     int order
 	 * @return   void
 	 */
-	void	AddColumn(DConstantsTypeColumn *col, int order);
+	void	AddColumn(ConstantsTypeColumn *col, int order);
 	
 	/** @brief Adds Column to array and sets order to it as in array
 	 *
@@ -94,7 +95,7 @@ public:
 	 * @param     int order
 	 * @return   void
 	 */
-	void	AddColumn(DConstantsTypeColumn *col);
+	void	AddColumn(ConstantsTypeColumn *col);
 	
 	
 	/**
@@ -102,7 +103,7 @@ public:
 	 * @param name
 	 * @param type
 	 */
-	void	AddColumn(const string& name, DConstantsTypeColumn::DColumnTypes type=DConstantsTypeColumn::cDoubleColumn);
+	void	AddColumn(const string& name, ConstantsTypeColumn::DColumnTypes type=ConstantsTypeColumn::cDoubleColumn);
 
 	/**
 	 * @brief Adds Column to array and sets order to it as in array
@@ -116,7 +117,7 @@ public:
 	 * @param     int order
 	 * @return   void
 	 */
-	DConstantsTypeColumn * 	RemoveColumn(int order);
+	ConstantsTypeColumn * 	RemoveColumn(int order);
 
 	/** @brief clear columns
 	 *
@@ -130,7 +131,7 @@ public:
 private:
 	string		mName;			//Name of the table of constants
 	string		mFullPath;		//Full path of the constant
-    DDirectory *mDirectory;		//Link to the directory that holds this constant
+    Directory *mDirectory;		//Link to the directory that holds this constant
     int			mDirectoryId;	//Parent directory ID in the DB
     dbkey_t mId;			//db id
 	string		mComment;		//comment
@@ -141,9 +142,9 @@ private:
 	int			mNColumnsFromDB;// Value of nColumns of constantType table in DB
 								
 
-	vector<DConstantsTypeColumn *> mColumns; //Columns object
-	DConstantsTypeTable(const DConstantsTypeTable& rhs);	
-	DConstantsTypeTable& operator=(const DConstantsTypeTable& rhs);
+	vector<ConstantsTypeColumn *> mColumns; //Columns object
+	ConstantsTypeTable(const ConstantsTypeTable& rhs);	
+	ConstantsTypeTable& operator=(const ConstantsTypeTable& rhs);
 };
 
 } //namespace ccdb

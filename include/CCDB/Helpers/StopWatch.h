@@ -9,7 +9,7 @@
 
    
   
-class DStopWatch
+class StopWatch
 {
   
 private:

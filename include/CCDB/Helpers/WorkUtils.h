@@ -9,11 +9,11 @@
 using namespace std;
 using namespace ccdb;
 
-void PrintDirectoryTree(DDirectory *dir,  bool printFullPath=false,int level=0);
+void PrintDirectoryTree(Directory *dir,  bool printFullPath=false,int level=0);
 
-void PrintConstantTypeTable(DConstantsTypeTable *table );
+void PrintConstantTypeTable(ConstantsTypeTable *table );
 
-void PrintAssignmentVertical(DConsole & console, DAssignment *assignment, bool printHeader=true, bool displayBorders=true, DConsole::ConsoleColors headColor=DConsole::cGray, DConsole::ConsoleColors typeColor=DConsole::cBrightBlue, DConsole::ConsoleColors valueColor=DConsole::cBrightMagenta, DConsole::ConsoleColors borderColor=DConsole::cGray);
-void PrintAssignmentHorisontal(DAssignment *assignment);
-void PrintConstantsTypeTable(DConstantsTypeTable *table);
+void PrintAssignmentVertical(DConsole & console, Assignment *assignment, bool printHeader=true, bool displayBorders=true, DConsole::ConsoleColors headColor=DConsole::cGray, DConsole::ConsoleColors typeColor=DConsole::cBrightBlue, DConsole::ConsoleColors valueColor=DConsole::cBrightMagenta, DConsole::ConsoleColors borderColor=DConsole::cGray);
+void PrintAssignmentHorisontal(Assignment *assignment);
+void PrintConstantsTypeTable(ConstantsTypeTable *table);
 #endif // DWorkUtils_h__

@@ -4,21 +4,21 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "DCCDBGlobals.h"
 
-#include "Providers/DDataProvider.h"
+#include "CCDB/CCDBGlobals.h"
+#include "CCDB/Providers/DataProvider.h"
 
 using namespace std;
 
 namespace ccdb
 {
 
-class DCalibration {
+class Calibration {
 
 public:
-	DCalibration(); ///< Default constructor
-	DCalibration(int defaultRun, string defaultVariation="default");
-	virtual ~DCalibration();
+	Calibration(); ///< Default constructor
+	Calibration(int defaultRun, string defaultVariation="default");
+	virtual ~Calibration();
 	
 	/**
 	 * @brief Connects to database using connection string
@@ -59,7 +59,7 @@ public:
 	/** @brief gets DDataProvider* object used for specified DCalibration
 	*@returns provider used for specified DCalibration
 	*/
-	DDataProvider * GetProvider() const { return mProvider; }
+	DataProvider * GetProvider() const { return mProvider; }
 	
 	
 	/** @brief set provider to use. 
@@ -69,7 +69,7 @@ public:
 	 * @parameter [in] bool lockProvider
 	 * @return   void
 	 */
-	void UseProvider(DDataProvider * provider, bool lockProvider=true);
+	void UseProvider(DataProvider * provider, bool lockProvider=true);
 
 	/** @brief Get constants by namepath
      * 
@@ -194,18 +194,18 @@ protected:
      * @parameter [in] namepath -  full namepath is /path/to/data:run:variation:time but usually it is only /path/to/data
      * @return   DAssignment *
      */
-    virtual DAssignment * GetAssignment(const string& namepath);
+    virtual Assignment * GetAssignment(const string& namepath);
 
     virtual void Lock();   ///Thread mutex lock for multithreaded operations
     virtual void Unlock(); ///Thread mutex Unlock lock for multithreaded operations
 
 private:
-	DCalibration(const DCalibration& rhs);
-	DCalibration& operator=(const DCalibration& rhs);
+	Calibration(const Calibration& rhs);
+	Calibration& operator=(const Calibration& rhs);
 	
 protected:
 
-	DDataProvider *mProvider;	///<Underlayed DDataProvider object
+	DataProvider *mProvider;	///<Underlayed DDataProvider object
 	bool mProviderIsLocked;     ///If provider 
 	int mDefaultRun;			///Default run number
     string mDefaultVariation;	///Default variation

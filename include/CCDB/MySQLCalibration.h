@@ -2,7 +2,7 @@
 #define DMySQLCalibration_h
 
 #include <string>
-#include "UserAPI/DCalibration.h"
+#include "CCDB/Calibration.h"
 
 #define ERRMSG_INVALID_CONNECT_USAGE "Invalid DMySQLCalibration usage. Using DMySQLCalibration::Connect method with provider == NULL and ProviderIsLocked==true." 
 #define ERRMSG_CONECTED_TO_ANOTHER "The connection is open to another source. DCalibration is already connected using another connection string" 
@@ -12,7 +12,7 @@ using namespace std;
 namespace ccdb
 {
 
-class DMySQLCalibration: public DCalibration
+class MySQLCalibration: public Calibration
 {
     
 public:
@@ -20,19 +20,19 @@ public:
 	 *
 	 * @return   
 	 */
-    DMySQLCalibration(int defaultRun, string defaultVariation="default");
+    MySQLCalibration(int defaultRun, string defaultVariation="default");
 
 	/** @brief    DMySQLCalibration
 	 *
 	 * @return   
 	 */
-	DMySQLCalibration();
+	MySQLCalibration();
 
 	/** @brief    ~DMySQLCalibration
 	 *
 	 * @return   
 	 */
-	virtual ~DMySQLCalibration();
+	virtual ~MySQLCalibration();
 
 	/**
 	 * @brief Connects to database using connection string
@@ -72,8 +72,8 @@ public:
 
 
 private:
-    DMySQLCalibration(const DMySQLCalibration& rhs);
-    DMySQLCalibration& operator=(const DMySQLCalibration& rhs);
+    MySQLCalibration(const MySQLCalibration& rhs);
+    MySQLCalibration& operator=(const MySQLCalibration& rhs);
     
 };
 

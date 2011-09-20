@@ -21,7 +21,10 @@
 #include <iostream>
 #include <ostream>
 #include <time.h>
-#include <DVarargs.h>
+
+
+#include <CCDB/IO/Varargs.h>
+
 #define CCDB_BLANK_CHARACTERS " \n\t\v\r\f"
 //checks if character is blank.
 //returns true if char is one of CCDB_BLANK_CHARACTERS
@@ -45,41 +48,11 @@ struct DAssignmentRequest
 };
 
 
-class DStringUtils
+class StringUtils
 {
 public:
-//______________________________________________________________________________
-	// Formats a string using a printf style format descriptor.
-   // Existing string contents will be overwritten.
-//const char * FormatImp(const char *fmt, va_list ap);
 
-////______________________________________________________________________________
-//void Form(const char *va_(fmt), ...)
-//{
-//   // Formats a string using a printf style format descriptor.
-//   // Existing string contents will be overwritten.
-//
-//   va_list ap;
-//   va_start(ap, va_(fmt));
-//   FormImp(va_(fmt), ap);
-//   va_end(ap);
-//}
-
-//______________________________________________________________________________
-static std::string Format(const char *va_(fmt), ...);
-//{
-//   // Static method which formats a string using a printf style format
-//   // descriptor and return a TString. Same as TString::Form() but it is
-//   // not needed to first create a TString.
-//
-//   va_list ap;
-//   va_start(ap, va_(fmt));
-//   string str;
-//   str.FormImp(va_(fmt), ap);
-//   va_end(ap);
-//   return str;
-//}		
-	/**
+    /**
 	 * @brief printf like string formatter
 	 * 
 	 * printf like string formatter, based on @see vsprintf
@@ -89,6 +62,9 @@ static std::string Format(const char *va_(fmt), ...);
 	 * @param fmt
 	 * @return 
 	 */
+    static std::string Format(const char *va_(fmt), ...);
+	
+	
 	//static string	Format(const char *fmt, ...);			
 	
 	/**
@@ -193,6 +169,7 @@ static std::string Format(const char *va_(fmt), ...);
 	 */
 	static std::vector<std::string> Split(const std::string &s, const string& delimiters = " ");
 
+    
 	
 	/**
 	 * @brief trims string from the both sides
@@ -212,12 +189,12 @@ static std::string Format(const char *va_(fmt), ...);
 		s.erase( s.find_last_not_of(whitespace) + 1U );
 	}
 	
-	static std::vector<string> SplitStringToData(const std::string& source)
-	{
-		std::vector<string> tokens;
-		SplitStringToData(tokens, source);
-		return tokens;
-	}
+    static std::vector<string> SplitStringToData(const std::string& source)
+    {
+        std::vector<string> tokens;
+        SplitStringToData(tokens, source);
+        return tokens;
+    }
 	
 	static void SplitStringToData(std::vector<string>& tokens, const std::string& source)
 	{
@@ -240,8 +217,7 @@ static std::string Format(const char *va_(fmt), ...);
 			}
 			else
 			{
-				//it is not a blank character! 
-				
+				//it is not a blank character!
 				if(source[i]=='\\' && stringIsStarted && i<(source.length()-1) && source[i+1]=='"')
 				{
 					//ok! we found a \" inside a string! Not a problem! At all!					
@@ -312,14 +288,14 @@ static std::string Format(const char *va_(fmt), ...);
 		return result;
 	}
 	
-	static int				ParseInt(const string& source, bool *result=NULL );		///Reads int	from the last query row
-	static unsigned int		ParseUInt(const string& source, bool *result=NULL );		///Reads unsigned int from the last query row
-	static long				ParseLong(const string& source, bool *result=NULL );		///Reads long from the last query row
-	static unsigned long	ParseULong(const string& source, bool *result=NULL );		///Reads unsigned long from the last query row
-	static bool				ParseBool(const string& source, bool *result=NULL );		///Reads bool from the last query row
-	static double			ParseDouble(const string& source, bool *result=NULL );		///Reads double from the last query row
-	static string			ParseString(const string& source, bool *result=NULL );		///Reads string from the last query row
-	static time_t			ParseUnixTime(const string& source, bool *result=NULL ); 	///Reads string from the last query row
+	static int				ParseInt(const string& source, bool *result=NULL );		    ///Reads int	from the last query row
+	static unsigned int		ParseUInt(const string& source, bool *result=NULL );        ///Reads unsigned int from the last query row
+	static long				ParseLong(const string& source, bool *result=NULL );        ///Reads long from the last query row
+	static unsigned long	ParseULong(const string& source, bool *result=NULL );       ///Reads unsigned long from the last query row
+	static bool				ParseBool(const string& source, bool *result=NULL );        ///Reads bool from the last query row
+	static double			ParseDouble(const string& source, bool *result=NULL );      ///Reads double from the last query row
+	static string			ParseString(const string& source, bool *result=NULL );      ///Reads string from the last query row
+	static time_t			ParseUnixTime(const string& source, bool *result=NULL );    ///Reads string from the last query row
 };
 
 

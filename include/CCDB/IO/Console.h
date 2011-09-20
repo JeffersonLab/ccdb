@@ -32,7 +32,7 @@ using namespace std;
 
 namespace ccdb {
 
-class DConsole
+class Console
 {
 public:
 	/*
@@ -103,9 +103,9 @@ public:
 	};
 
 	
-	DConsole(ostream *out=&cout);	///Constructor
+	Console(ostream *out=&cout);	///Constructor
 
-	virtual	~DConsole();			//! Destructor
+	virtual	~Console();			//! Destructor
 
 	/** 
 	 * Returns outstream that is used as the console output
