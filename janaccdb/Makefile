@@ -1,16 +1,12 @@
 
-PACKAGES = JANA
+SOLIB_NAME = janaccdb.so
 
+ifndef BMSDIR
+BMSDIR := ../../../BMS
+endif
 
-CFLAGS += -I$(CCDB_HOME)/include
 CXXFLAGS += -I$(CCDB_HOME)/include
 
 
-MISC_LIBS += -L$(CCDB_HOME)/lib -lccdb 
-LD_FLAGS += -L$(CCDB_HOME)/lib -lccdb 
-LIBS += -L$(CCDB_HOME)/lib -lccdb 
-LD_DIRS += -L$(CCDB_HOME)/lib
-LD_LIBS += -lccdb 
+include $(BMSDIR)/Makefile.shlib
 
-
-include $(HALLD_HOME)/src/BMS/Makefile.shlib
