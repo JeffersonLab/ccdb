@@ -10,7 +10,7 @@
 
 #include <time.h>
 #include <string>
-#include "CCDB/Ccdb/Globals.h"
+#include "CCDB/Globals.h"
 #include "CCDB/Model/StoredObject.h"
 //#include "Model/DConstantsTypeTable.h"
 

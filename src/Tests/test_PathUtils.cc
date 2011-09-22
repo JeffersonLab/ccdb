@@ -1,7 +1,7 @@
-#ifndef test_DStringUtils_h
-#define test_DStringUtils_h
+#ifndef test_StringUtils_h
+#define test_StringUtils_h
 
-#include "DPathUtils.h"
+#include "CCDB/Helpers/PathUtils.h"
 #include <vector>
 #include <string>
 #include "Tests/tests_macros.h"
@@ -9,16 +9,16 @@
 using namespace std;
 using namespace ccdb;
 
-bool test_DPathUtils()
+bool test_PathUtils()
 {
 	TESTS_INIT(" --- D P a t h   U t i l s   t e s t s --- ")
 
 
     // * * * try to parse simple path  * * * 
-    gConsole.WriteLine(DConsole::cBrightWhite, "[ Parse simple request '/my/value' ]");
+    gConsole.WriteLine(Console::cBrightWhite, "[ Parse simple request '/my/value' ]");
 
     string path("/my/value");
-    DParseRequestResult result= DPathUtils::ParseRequest(path);
+    DParseRequestResult result= PathUtils::ParseRequest(path);
 
     TITLE("Path is correct");          TEST(result.Path == path);
     TITLE("Was parsed Path");          TEST(result.WasParsedPath);
@@ -28,10 +28,10 @@ bool test_DPathUtils()
 
 
     // * * * parse full request  * * * 
-    gConsole.WriteLine(DConsole::cBrightWhite, "[ Parse '/my/value:100:mc:2029' ]");
+    gConsole.WriteLine(Console::cBrightWhite, "[ Parse '/my/value:100:mc:2029' ]");
     
     path.assign("/my/value:100:mc:2029");
-    result= DPathUtils::ParseRequest(path);
+    result= PathUtils::ParseRequest(path);
 
     //now tests
     TITLE("Path is correct");          TEST(result.Path == "/my/value");
@@ -45,10 +45,10 @@ bool test_DPathUtils()
     TITLE("Was parsed Time");          TEST(result.WasParsedTime);
     
     // * * * parse part of request  * * * 
-    gConsole.WriteLine(DConsole::cBrightWhite, "[ Parse '/my/value::mc' ]");
+    gConsole.WriteLine(Console::cBrightWhite, "[ Parse '/my/value::mc' ]");
 
     path.assign("/my/value::mc");
-    result= DPathUtils::ParseRequest(path);
+    result= PathUtils::ParseRequest(path);
 
     TITLE("Path is correct");          TEST(result.Path == "/my/value");
     TITLE("Was parsed Path");          TEST(result.WasParsedPath);
@@ -71,4 +71,4 @@ bool test_DPathUtils()
 
 
 }
-#endif //test_DStringUtils_h
+#endif //test_StringUtils_h

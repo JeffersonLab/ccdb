@@ -1,11 +1,11 @@
 %{
 
-#include "Model/DVariation.h"
+#include "CCDB/Model/	Variation.h"
 using namespace ccdb;
 using namespace std;
 %}
 
-class DVariation{
+class Variation{
 
     %rename(_GetId) GetId();
     %rename(_SetId) SetId(dbkey_t);

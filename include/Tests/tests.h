@@ -9,19 +9,41 @@
 #ifndef tests_h__
 #define tests_h__
 
+//function pointer typedef:
+typedef bool (*test_function)();
+
+
+class UnitTests
+{
+public:
+    UnitTests()
+    {
+        mCurrentIndex = 0;
+    }
+
+    void AddTest(test_function func)
+    {
+        mTests[mCurrentIndex] = func;
+        mCurrentIndex++;
+    }
+
+private:
+    int mCurrentIndex;
+    test_function mTests[1000];
+};
 /*****************************************************
 *                   T E S T S                        *
 *****************************************************/
 
-bool test_DConsole();                //A Test of DConsole class
+bool test_Console();                //A Test of Console class
 bool test_ModelObjects();            //A test of model creation
 bool test_DMySQLDataProvider();      //A test of MySQL Provider
 bool test_DMySQLDataProvider_TypeTables();      //tables work
 bool test_DMySQLDataProvider_RunRanges();       //tun ranges
 bool test_DMySQLDataProvider_Variations();      //variations work
 bool test_DMySQLDataProvider_Assignments();     //assignments tests
-bool test_DStringUtils();                       //string utils
-bool test_DPathUtils();                         //test or parsing requests
+bool test_StringUtils();                       //string utils
+bool test_PathUtils();                         //test or parsing requests
 bool test_UserAPI();                            //test of user api functions and objects
 /**
  * Run unit tests
@@ -29,9 +51,9 @@ bool test_UserAPI();                            //test of user api functions and
 bool RunTests()
 {
     bool result = true;
-    result = result && test_DConsole();             //disabled, too many text
-    result = result && test_DStringUtils();
-    result = result && test_DPathUtils();
+    result = result && test_Console();             //disabled, too many text
+    result = result && test_StringUtils();
+    result = result && test_PathUtils();
     result = result && test_ModelObjects();         //A test of model creation
     result = result && test_DMySQLDataProvider(); 
     result = result && test_DMySQLDataProvider_TypeTables();

@@ -1,5 +1,5 @@
-#ifndef _DStringUtils_
-#define _DStringUtils_
+#ifndef _StringUtils_
+#define _StringUtils_
 
 #ifdef WIN32
 #define _CRT_SECURE_NO_WARNINGS
@@ -23,7 +23,7 @@
 #include <time.h>
 
 
-#include <CCDB/IO/Varargs.h>
+#include <CCDB/Helpers/Varargs.h>
 
 #define CCDB_BLANK_CHARACTERS " \n\t\v\r\f"
 //checks if character is blank.
@@ -300,5 +300,5 @@ public:
 
 
 }
-#endif // DStringUtils_h__
+#endif // StringUtils_h__
 

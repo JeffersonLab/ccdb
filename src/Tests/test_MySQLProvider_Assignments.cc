@@ -1,12 +1,12 @@
 #pragma warning(disable:4800)
 #include "Tests/tests_macros.h"
-#include "DConsole.h"
-#include "DStringUtils.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "Model/DDirectory.h"
-#include "DWorkUtils.h"
-#include "DStopWatch.h"
-#include "Model/DVariation.h"
+#include "CCDB/Console.h"
+#include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Model/Directory.h"
+#include "CCDB/Helpers/WorkUtils.h"
+#include "CCDB/Helpers/StopWatch.h"
+#include "CCDB/Model/Variation.h"
 
 using namespace std;
 using namespace ccdb;
@@ -25,7 +25,7 @@ bool test_DMySQLDataProvider_Assignments()
 
 	//GET ASSIGNMENTS TESTS
 	//----------------------------------------------------
-	gConsole.WriteLine(DConsole::cBrightWhite, "\n[ Get Assignment testing ]");
+	gConsole.WriteLine(Console::cBrightWhite, "\n[ Get Assignment testing ]");
 
 	//lets start with simple cases. 
 	//Get FULL assignment by table and name
@@ -58,7 +58,7 @@ bool test_DMySQLDataProvider_Assignments()
 	gConsole.WriteLine("Selected %i assignments; Last id %i; Last dataVault id %i",selectedAssignments, lastId, lastDataVaultId);
 	
 	//Lets try create assignments testing from copy assignment
-	gConsole.WriteLine(DConsole::cBrightWhite, "\n[ Copy Assignment testing ]");
+	gConsole.WriteLine(Console::cBrightWhite, "\n[ Copy Assignment testing ]");
 	
 	//simple copy
 	result = prov->CreateAssignment(assignment);

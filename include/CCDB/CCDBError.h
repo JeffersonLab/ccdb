@@ -5,7 +5,7 @@
 #include <queue>
 #include <map>
 
-#include "CCDB/IO/Console.h"
+#include "CCDB/Console.h"
 
 namespace ccdb {
 

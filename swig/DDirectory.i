@@ -13,7 +13,7 @@
 #else
 #include <time.h>
 #endif
-#include "Model/DDirectory.h"
+#include "CCDB/Model/Directory.h"
 using namespace ccdb;
 %}
 

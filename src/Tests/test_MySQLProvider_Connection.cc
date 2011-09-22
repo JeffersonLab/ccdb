@@ -1,11 +1,11 @@
 #pragma warning(disable:4800)
 #include "Tests/tests_macros.h"
-#include "DConsole.h"
-#include "DStringUtils.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "Model/DDirectory.h"
-#include "DWorkUtils.h"
-#include "DStopWatch.h"
+#include "CCDB/Console.h"
+#include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Model/Directory.h"
+#include "CCDB/Helpers/WorkUtils.h"
+#include "CCDB/Helpers/StopWatch.h"
 
 
 using namespace std;
@@ -25,7 +25,7 @@ bool test_DMySQLDataProviderConnection()
 	DMySQLDataProvider *prov = new DMySQLDataProvider();
 
 	//Connection
-	gConsole.WriteLine(DConsole::cBrightWhite, "[ Connect testing ]");
+	gConsole.WriteLine(Console::cBrightWhite, "[ Connect testing ]");
 
 	TITLE("Not connected                          ");
 	TEST(!prov->IsConnected());

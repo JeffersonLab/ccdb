@@ -8,11 +8,11 @@
 #include <vector>
 #include <map>
 
-#include "CCDB/DDataProvider.h"
+#include "CCDB/DataProvider.h"
 #include "CCDB/Providers/MySQLConnectionInfo.h"
-#include "CCDB/Model/DConstantsTypeTable.h"
+#include "CCDB/Model/ConstantsTypeTable.h"
 
-#define CCDB_DEFAULT_MYSQL_USERNAME  "hallduser"
+#define CCDB_DEFAULT_MYSQL_USERNAME  "ccdbuser"
 #define CCDB_DEFAULT_MYSQL_PASSWORD  ""
 #define CCDB_DEFAULT_MYSQL_URL 		 "localhost"
 #define CCDB_DEFAULT_MYSQL_PORT 	 3306

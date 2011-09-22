@@ -5,10 +5,10 @@
 #include <string.h>
 #include <limits.h>
 
-#include "CCDB/CcdbGlobals.h"
+#include "CCDB/Globals.h"
+#include "CCDB/Log.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
-#include "CCDB/IO/Log.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
 #include "CCDB/Model/RunRange.h"
 
@@ -76,7 +76,7 @@ bool ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
 
 
 	//verbose...
-	DLog::Verbose("ccdb::DMySQLDataProvider::Connect", DStringUtils::Format("Connecting to database:\n UserName: %s \n Password: %i symbols \n HostName: %s Database: %s Port: %i",
+	DLog::Verbose("ccdb::DMySQLDataProvider::Connect", StringUtils::Format("Connecting to database:\n UserName: %s \n Password: %i symbols \n HostName: %s Database: %s Port: %i",
 					connection.UserName.c_str(), connection.Password.length(), connection.HostName.c_str(), connection.Database.c_str(), connection.Port) );
 					
 	//init connection variable
@@ -244,7 +244,7 @@ bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const str
 	}
 
 	//maybe such directory already exists?
-	string fullPath = DStringUtils::CombinePath(parentDir->GetFullPath() ,name);
+	string fullPath = StringUtils::CombinePath(parentDir->GetFullPath() ,name);
 	Directory * dir = GetDirectory(fullPath.c_str());
 	if(dir)
 	{
@@ -263,7 +263,7 @@ bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const str
 	}
 	//building such query
 	string commentInsertion = PrepareCommentForInsert(comment);	//might be NULL or \"<comment>\"
-	string query = DStringUtils::Format(						
+	string query = StringUtils::Format(						
 		"INSERT INTO `directories` (`modified`, `name`, `parentId`, `comment`) VALUES (NULL, '%s', '%i', %s);", 
 		name.c_str(), 
 		parentDir->GetId(), 
@@ -286,9 +286,9 @@ bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const str
 
 		//And log such function
 		AddLogRecord("directories;", 
-			DStringUtils::Format("directories_%i;", mLastInsertedId), 
-			DStringUtils::Format("Directory %s created in %s", name.c_str(), parentName.c_str()),
-			DStringUtils::Encode(DStringUtils::Format("Related comments: %s", commentInsertion.c_str())));
+			StringUtils::Format("directories_%i;", mLastInsertedId), 
+			StringUtils::Format("Directory %s created in %s", name.c_str(), parentName.c_str()),
+			StringUtils::Encode(StringUtils::Format("Related comments: %s", commentInsertion.c_str())));
 	}
 	
 	return result;
@@ -321,8 +321,8 @@ bool ccdb::MySQLDataProvider::UpdateDirectory( Directory *dir )
 		return false;
 	}
 
-	string query = DStringUtils::Format("UPDATE `directories` SET `modified` = NULL, `name` = '%s', `parentId` = %i, `comment` = %s, WHERE `id` = '%i'",
-		/*name */		DStringUtils::Encode(dir->GetName()).c_str(),
+	string query = StringUtils::Format("UPDATE `directories` SET `modified` = NULL, `name` = '%s', `parentId` = %i, `comment` = %s, WHERE `id` = '%i'",
+		/*name */		StringUtils::Encode(dir->GetName()).c_str(),
 		/*partntId */	dir->GetParentId(),
 		/*comment */	PrepareCommentForInsert(dir->GetComment().c_str()).c_str(),
 		/*id */			dir->GetId());
@@ -369,7 +369,7 @@ bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
 		return false;
 	}
 	
-	string assCountQuery = DStringUtils::Format("SELECT `id` FROM `typeTables` WHERE `directoryId`='%i' LIMIT 1",dir->GetId());
+	string assCountQuery = StringUtils::Format("SELECT `id` FROM `typeTables` WHERE `directoryId`='%i' LIMIT 1",dir->GetId());
 	if(!QuerySelect(assCountQuery)) 
 	{
 		return false;
@@ -382,16 +382,16 @@ bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
 	}
 	string affectedIds;
 	
-	string query = DStringUtils::Format("DELETE FROM `directories` WHERE id = '%i';", dir->GetId());
+	string query = StringUtils::Format("DELETE FROM `directories` WHERE id = '%i';", dir->GetId());
 	
 	bool result =  QueryDelete(query.c_str());
 	if(result)
 	{
 		//just log this wicked action
 		AddLogRecord("directories;",
-		DStringUtils::Format("directories_%l;", dir->GetId()),
-		DStringUtils::Format("Delete directory %s", dir->GetName().c_str()),
-		DStringUtils::Format("Delete directory %s,\n comments: %s", dir->GetName().c_str(), dir->GetComment().c_str()));
+		StringUtils::Format("directories_%l;", dir->GetId()),
+		StringUtils::Format("Delete directory %s", dir->GetName().c_str()),
+		StringUtils::Format("Delete directory %s,\n comments: %s", dir->GetName().c_str(), dir->GetComment().c_str()));
 	}
 	LoadDirectories();
 
@@ -432,7 +432,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 		return NULL;
 	}
 	
-	string query = DStringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `name` = '%s' AND `directoryId` = '%i';",
+	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `name` = '%s' AND `directoryId` = '%i';",
 		 /*`name`*/ name.c_str(),
 		 /*`directoryId`*/ parentDir->GetId());
 
@@ -475,7 +475,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 	}
 	
 	//Ok set a full path for this constant...
-	result->SetFullPath(DStringUtils::CombinePath(parentDir->GetFullPath(), result->GetName()));
+	result->SetFullPath(StringUtils::CombinePath(parentDir->GetFullPath(), result->GetName()));
 
 	
 	FreeMySQLResult();
@@ -488,7 +488,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable(const string& path, bool loadColumns/*=false*/ )
 {
 	//get directory path
-	string dirPath = DStringUtils::ExtractDirectory(path);
+	string dirPath = StringUtils::ExtractDirectory(path);
 	
 	//and directory
 	Directory *dir = GetDirectory(dirPath.c_str());
@@ -496,7 +496,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable(const string
 	//but such check is in GetConstantsTypeHeader(const char* name, DDirectory *parentDir);
 	
 	//retrieve name of our constant table 
-	string name = DStringUtils::ExtractObjectname(path);
+	string name = StringUtils::ExtractObjectname(path);
 	
 	//get it from db etc...
 	return GetConstantsTypeTable(name.c_str(), dir, loadColumns);
@@ -526,7 +526,7 @@ bool ccdb::MySQLDataProvider::GetConstantsTypeTables(  vector<ConstantsTypeTable
 	//Ok, lets cleanup result list
 		resultTypeTables.clear(); //we clear the consts. Considering that some one else should handle deletion
 
-	string query = DStringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `directoryId` = '%i';",
+	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `directoryId` = '%i';",
 		/*`directoryId`*/ parentDir->GetId());
 
 	if(!QuerySelect(query))
@@ -627,7 +627,7 @@ bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *tabl
 	}
 
 	//ok... maybe directory with such name exist? 
-	Directory *tmpDir = GetDirectory(DStringUtils::CombinePath(table->GetDirectory()->GetFullPath(), table->GetName()) );
+	Directory *tmpDir = GetDirectory(StringUtils::CombinePath(table->GetDirectory()->GetFullPath(), table->GetName()) );
 	if(tmpDir)
 	{	
 		//error? Warning?
@@ -647,7 +647,7 @@ bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *tabl
 	"	(`modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments`) VALUES "
 	"	(   NULL   , \"%s\",      '%i'    ,   '%i' ,     '%i'  ,     %s	  ); ";
 	
-	query = DStringUtils::Format(query.c_str(), 
+	query = StringUtils::Format(query.c_str(), 
 		table->GetName().c_str(),
 		table->GetDirectory()->GetId(),
 		table->GetNRows(),
@@ -680,9 +680,9 @@ bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *tabl
 
 	//add log record
 	AddLogRecord("typeTables;",
-		DStringUtils::Format("typeTables_%l;", table->GetId()),
-		DStringUtils::Format("Created constants type table %s", table->GetName().c_str()),
-		DStringUtils::Format("Created constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
+		StringUtils::Format("typeTables_%l;", table->GetId()),
+		StringUtils::Format("Created constants type table %s", table->GetName().c_str()),
+		StringUtils::Format("Created constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
 	
 	return true;
 }
@@ -727,7 +727,7 @@ bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTab
 	{	//we should care about parent path!
 		if(parentDir = GetDirectory(parentPath.c_str()))
 		{
-			parentAddon = DStringUtils::Format(" AND `directoryId` = '%i'", parentDir->GetId());
+			parentAddon = StringUtils::Format(" AND `directoryId` = '%i'", parentDir->GetId());
 		}
 		else
 		{
@@ -756,7 +756,7 @@ bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTab
 
     
 	//combine query
-	string query = DStringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `name` LIKE '%s' %s ORDER BY `name` %s;",
+	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `name` LIKE '%s' %s ORDER BY `name` %s;",
 		likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
         
 	if(!QuerySelect(query))
@@ -852,7 +852,7 @@ bool ccdb::MySQLDataProvider::UpdateConstantsTypeTable( ConstantsTypeTable *tabl
 		return false;
 	}
 	
-	string query = DStringUtils::Format(" UPDATE `typeTables`"
+	string query = StringUtils::Format(" UPDATE `typeTables`"
 			" SET `modified` = NULL, `name` = \"%s\", `directoryId` = '%i', `comments` = %s "
 			" WHERE `id` = '%i' ", 
 			table->GetName().c_str(), 
@@ -864,9 +864,9 @@ bool ccdb::MySQLDataProvider::UpdateConstantsTypeTable( ConstantsTypeTable *tabl
 	if(result)
 	{
 		AddLogRecord("typeTables;",
-		DStringUtils::Format("typeTables_%l;", table->GetId()),
-		DStringUtils::Format("Update constants type table %s", table->GetName().c_str()),
-		DStringUtils::Format("Update constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
+		StringUtils::Format("typeTables_%l;", table->GetId()),
+		StringUtils::Format("Update constants type table %s", table->GetName().c_str()),
+		StringUtils::Format("Update constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
 	}
 	else
 	{
@@ -889,7 +889,7 @@ bool ccdb::MySQLDataProvider::DeleteConstantsTypeTable( ConstantsTypeTable *tabl
 		return false;
 	}
 	
-	string assCountQuery = DStringUtils::Format(" SELECT `id` FROM `constantSets` WHERE `constantTypeId`='%i' LIMIT 1", table->GetId() );
+	string assCountQuery = StringUtils::Format(" SELECT `id` FROM `constantSets` WHERE `constantTypeId`='%i' LIMIT 1", table->GetId() );
 	if(!QuerySelect(assCountQuery)) 
 	{	
 		return false;
@@ -901,14 +901,14 @@ bool ccdb::MySQLDataProvider::DeleteConstantsTypeTable( ConstantsTypeTable *tabl
 	FreeMySQLResult();
 	
 
-	string query = DStringUtils::Format("DELETE FROM `typeTables` WHERE `id` = %i ;", table->GetId());
+	string query = StringUtils::Format("DELETE FROM `typeTables` WHERE `id` = %i ;", table->GetId());
 	if(!QueryDelete(query))
 	{
 		return false;
 	}
 
 	//Delete columns
-	query = DStringUtils::Format("DELETE FROM `columns` WHERE `typeId` = %i ;", table->GetId());
+	query = StringUtils::Format("DELETE FROM `columns` WHERE `typeId` = %i ;", table->GetId());
 	if(!QueryDelete(query))
 	{
 		return false;
@@ -917,9 +917,9 @@ bool ccdb::MySQLDataProvider::DeleteConstantsTypeTable( ConstantsTypeTable *tabl
 	{
 		//just log this wicked action
 		AddLogRecord("typeTables;",
-		DStringUtils::Format("typeTables_%l;", table->GetId()),
-		DStringUtils::Format("Delete constants type table %s", table->GetName().c_str()),
-		DStringUtils::Format("Delete constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
+		StringUtils::Format("typeTables_%l;", table->GetId()),
+		StringUtils::Format("Delete constants type table %s", table->GetName().c_str()),
+		StringUtils::Format("Delete constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
 	}
 	return true;
 }
@@ -939,7 +939,7 @@ bool ccdb::MySQLDataProvider::CreateColumn(DConstantsTypeColumn* column)
 		"	VALUES															  "
 		"	(   NULL    , \"%s\",   '%i'  ,    '%s'     ,  '%i'  ,    %s    );";
 
-	query = DStringUtils::Format(query.c_str(), 
+	query = StringUtils::Format(query.c_str(), 
 		column->GetName().c_str(), 
 		column->GetTypeTableId(),  
 		column->GetTypeString().c_str(),
@@ -1007,7 +1007,7 @@ bool ccdb::MySQLDataProvider::LoadColumns( ConstantsTypeTable* table )
 		return false;
 	}
 		
-	string query = DStringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `columnType`, `comment` FROM `columns` WHERE `typeId` = '%i' ORDER BY `order`;",
+	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `columnType`, `comment` FROM `columns` WHERE `typeId` = '%i' ORDER BY `order`;",
 		/*`directoryId`*/ table->GetId());
 
 	if(!QuerySelect(query))
@@ -1047,7 +1047,7 @@ bool ccdb::MySQLDataProvider::CreateRunRange( RunRange *run )
 	ClearErrors(); //Clear error in function that can produce new ones
 
 	//query;
-	string query = DStringUtils::Format("INSERT INTO `runRanges` (`modified`, `runMin`, `runMax`, `name`, `comment`)"
+	string query = StringUtils::Format("INSERT INTO `runRanges` (`modified`, `runMin`, `runMax`, `name`, `comment`)"
 		"VALUES (NULL, '%i', '%i', '%s', '%s');",
 		run->GetMin(),
 		run->GetMax(),
@@ -1071,7 +1071,7 @@ RunRange* ccdb::MySQLDataProvider::GetRunRange( int min, int max, const string& 
 	//build query
 	string query = "SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `runMin`, `runMax`,  `comment`"
 	               " FROM `runRanges` WHERE `runMin`='%i' AND `runMax`='%i' AND `name`=\"%s\"";
-	query = DStringUtils::Format(query.c_str(), min, max, name.c_str());
+	query = StringUtils::Format(query.c_str(), min, max, name.c_str());
 	
 	//query this
 	if(!QuerySelect(query))
@@ -1116,7 +1116,7 @@ RunRange* ccdb::MySQLDataProvider::GetRunRange( const string& name )
 	//build query
 	string query = "SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `runMin`, `runMax`,  `comment`"
 		" FROM `runRanges` WHERE `name`=\"%s\"";
-	query = DStringUtils::Format(query.c_str(), name.c_str());
+	query = StringUtils::Format(query.c_str(), name.c_str());
 
 	//query this
 	if(!QuerySelect(query))
@@ -1171,7 +1171,7 @@ RunRange* ccdb::MySQLDataProvider::GetOrCreateRunRange( int min, int max, const 
 		if(!CreateRunRange(result)) 
         {
             Error(CCDB_ERROR_OBTAINING_RUNRANGE,"DDataProvider::GetOrCreateRunRange", 
-                  DStringUtils::Format("Can not get or create run range run-min: %i, run-max: %i, run-name: %s", min, max, name.c_str()));
+                  StringUtils::Format("Can not get or create run range run-min: %i, run-max: %i, run-name: %s", min, max, name.c_str()));
             return NULL;
         }
 
@@ -1197,7 +1197,7 @@ bool ccdb::MySQLDataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, C
 	string variationWhere("");
 	if(variation != "")
 	{
-		variationWhere.assign(DStringUtils::Format(" AND `variations`.`name`=\"%s\" ", variation.c_str()));
+		variationWhere.assign(StringUtils::Format(" AND `variations`.`name`=\"%s\" ", variation.c_str()));
 	}
 
 	//limits handle 
@@ -1236,7 +1236,7 @@ bool ccdb::MySQLDataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, C
 		" %s "
 		" ORDER BY `runRanges`.`runMin` ASC	 %s";
 		
-	query=DStringUtils::Format(query.c_str(), table->GetId(), variationWhere.c_str(), limitInsertion.c_str());
+	query=StringUtils::Format(query.c_str(), table->GetId(), variationWhere.c_str(), limitInsertion.c_str());
 	
 	//query this
 	if(!QuerySelect(query))
@@ -1276,7 +1276,7 @@ bool ccdb::MySQLDataProvider::DeleteRunRange(RunRange* run)
 		Error(CCDB_ERROR_RUNRANGE_INVALID,"DMySQLDataProvider::DeleteRunRange", "Runrange is null or have invalid ID");
 		return false;
 	}
-	string assCountQuery = DStringUtils::Format("SELECT `id` FROM `assignments` WHERE `runRangeId`='%i' LIMIT 1",run->GetId() );
+	string assCountQuery = StringUtils::Format("SELECT `id` FROM `assignments` WHERE `runRangeId`='%i' LIMIT 1",run->GetId() );
 	if(!QuerySelect(assCountQuery)) 
 	{
 		//TODO error;
@@ -1290,11 +1290,11 @@ bool ccdb::MySQLDataProvider::DeleteRunRange(RunRange* run)
 	}
 	FreeMySQLResult();
 
-	string query = DStringUtils::Format("DELETE FROM `runRanges` WHERE `runRanges`.`id`='%i';", run->GetId());
+	string query = StringUtils::Format("DELETE FROM `runRanges` WHERE `runRanges`.`id`='%i';", run->GetId());
 	bool result = QueryDelete(query);
 	if(result)
 	{
-		AddLogRecord("runranges;",DStringUtils::Format("runRanges_%i;", run->GetId()), "Delete run range", DStringUtils::Format("Delete run range: from %i to %i with name %s", run->GetMin(), run->GetMax(), run->GetName().c_str()));
+		AddLogRecord("runranges;",StringUtils::Format("runRanges_%i;", run->GetId()), "Delete run range", StringUtils::Format("Delete run range: from %i to %i with name %s", run->GetMin(), run->GetMax(), run->GetName().c_str()));
 	}
 	return result;
 }
@@ -1310,14 +1310,14 @@ bool ccdb::MySQLDataProvider::UpdateRunRange(RunRange* run)
 		return false;
 	}
 
-	string query=DStringUtils::Format(
+	string query=StringUtils::Format(
 		"UPDATE `runRanges` SET `modified` = NULL, " 
 		" `name` = \"%s\", `runMin` = '%i', `runMax` = '%i', `comment` = %s "
 		" WHERE `runRanges`.`id` = '%i' ;",
-		DStringUtils::Encode(run->GetName()).c_str(), 
+		StringUtils::Encode(run->GetName()).c_str(), 
 		run->GetMin(),
 		run->GetMax(),
-		DStringUtils::Encode(run->GetComment()).c_str(),
+		StringUtils::Encode(run->GetComment()).c_str(),
 		run->GetId());
 	return QueryUpdate(query);
 
@@ -1342,7 +1342,7 @@ bool ccdb::MySQLDataProvider::GetVariations(vector<Variation*>& resultVariations
 	string runRangeWhere(""); //Where clause for run range
 	if(run != 0)
 	{		
-		runRangeWhere = DStringUtils::Format(" AND `runRanges`.`runMin` <= '%i' AND `runRanges`.`runMax` >= '%i' ", run, run);
+		runRangeWhere = StringUtils::Format(" AND `runRanges`.`runMin` <= '%i' AND `runRanges`.`runMax` >= '%i' ", run, run);
 	}
 
 	//limits handle 
@@ -1380,7 +1380,7 @@ bool ccdb::MySQLDataProvider::GetVariations(vector<Variation*>& resultVariations
 		" %s "
 		" ORDER BY `runRanges`.`runMin` ASC	 %s";
 		
-	query=DStringUtils::Format(query.c_str(), table->GetId(), runRangeWhere.c_str(), limitInsertion.c_str());
+	query=StringUtils::Format(query.c_str(), table->GetId(), runRangeWhere.c_str(), limitInsertion.c_str());
 	
 	//query this
 	if(!QuerySelect(query))
@@ -1432,7 +1432,7 @@ Variation* ccdb::MySQLDataProvider::GetVariation( const string& name )
 		"`comment`										 "
 		"FROM `variations`								 "
 		"WHERE `name`= \"%s\";							 ";
-	query = DStringUtils::Format(query.c_str(), name.c_str());
+	query = StringUtils::Format(query.c_str(), name.c_str());
 	//query this
 	if(!QuerySelect(query))
 	{
@@ -1478,7 +1478,7 @@ bool ccdb::MySQLDataProvider::CreateVariation( Variation *variation )
 		"VALUES	(NULL, \"%s\",	\"\", %s);";
 	
 	//TODO decide what to do with description of variation
-	query = DStringUtils::Format(query.c_str(), variation->GetName().c_str(), variation->GetComment().c_str());
+	query = StringUtils::Format(query.c_str(), variation->GetName().c_str(), variation->GetComment().c_str());
 	
 	//Do query
 	if(!QueryInsert(query))
@@ -1504,7 +1504,7 @@ bool ccdb::MySQLDataProvider::UpdateVariation( Variation *variation )
 	}
 	
 	string query = "UPDATE `variations` SET `modified` = NULL, `name` = \"%s\", `comment` = %s, WHERE `id` = %i";
-	query = DStringUtils::Format(query.c_str(), variation->GetName().c_str(), PrepareCommentForInsert(variation->GetComment().c_str()).c_str(), variation->GetId());
+	query = StringUtils::Format(query.c_str(), variation->GetName().c_str(), PrepareCommentForInsert(variation->GetComment().c_str()).c_str(), variation->GetId());
 
 	if(!QueryUpdate(query))
 	{
@@ -1528,7 +1528,7 @@ bool ccdb::MySQLDataProvider::DeleteVariation( Variation *variation )
 		return false;
 	}
 	
-	string assCountQuery = DStringUtils::Format("SELECT `id` FROM `assignments` WHERE `variationId`='%i' LIMIT 1",variation->GetId() );
+	string assCountQuery = StringUtils::Format("SELECT `id` FROM `assignments` WHERE `variationId`='%i' LIMIT 1",variation->GetId() );
 	if(!QuerySelect(assCountQuery)) 
 	{
 		//TODO error;
@@ -1539,12 +1539,12 @@ bool ccdb::MySQLDataProvider::DeleteVariation( Variation *variation )
 		//TODO warning
 		return false;
 	}
-	string query = DStringUtils::Format("DELETE FROM `variations` WHERE `id` = %'i'", variation->GetId());
+	string query = StringUtils::Format("DELETE FROM `variations` WHERE `id` = %'i'", variation->GetId());
 
 	bool result = QueryDelete(query);
 	if(result)
 	{
-		AddLogRecord("variations;",DStringUtils::Format("variations_%i;", variation->GetId()), "Delete run variation", DStringUtils::Format("Delete variation: name %s", variation->GetName().c_str()));
+		AddLogRecord("variations;",StringUtils::Format("variations_%i;", variation->GetId()), "Delete run variation", StringUtils::Format("Delete variation: name %s", variation->GetName().c_str()));
 	}
 	return result;
 }
@@ -1575,7 +1575,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	if(!table)
 	{
 		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetAssignmentShort", DStringUtils::Format("Table with the name '%s' was not found", path.c_str()));
+		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetAssignmentShort", StringUtils::Format("Table with the name '%s' was not found", path.c_str()));
 		return NULL;
 	}
 
@@ -1595,7 +1595,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
         "ORDER BY `assignments`.`id` DESC "
         "LIMIT 1 ";
 
-	query=DStringUtils::Format(query.c_str(), run, run, variation.c_str(), table->GetId());
+	query=StringUtils::Format(query.c_str(), run, run, variation.c_str(), table->GetId());
 	//query this
 	if(!QuerySelect(query))
 	{
@@ -1679,7 +1679,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
         "LIMIT 1 ";
 		
 
-	query=DStringUtils::Format(query.c_str(), run,run, variation.c_str(), time, table->GetId());
+	query=StringUtils::Format(query.c_str(), run,run, variation.c_str(), time, table->GetId());
 	
 	//query this
 	if(!QuerySelect(query))
@@ -1771,7 +1771,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByVersion(int run, const 
 		" LIMIT 0,1; ";
 		
 
-	query=DStringUtils::Format(query.c_str(), run,run, variation.c_str(), table->GetId());
+	query=StringUtils::Format(query.c_str(), run,run, variation.c_str(), table->GetId());
 	
 	//query this
 	if(!QuerySelect(query))
@@ -1822,7 +1822,7 @@ bool ccdb::MySQLDataProvider::CreateAssignment(Assignment *assignment )
     if(!assignment->GetRunRange())           {cout<<"!assignment->GetRunRange()"<<endl;           return false;}
     if(!assignment->GetRunRange()->GetId())  
     {
-        Error(CCDB_ERROR_RUNRANGE_INVALID,"DMySQLDataProvider::CreateAssignment(DAssignment *assignment)", DStringUtils::Format("Runrange is null or have invalid ID. ID is: %i" + assignment->GetRunRange()->GetId()));
+        Error(CCDB_ERROR_RUNRANGE_INVALID,"DMySQLDataProvider::CreateAssignment(DAssignment *assignment)", StringUtils::Format("Runrange is null or have invalid ID. ID is: %i" + assignment->GetRunRange()->GetId()));
         return false;
     }
     if(!assignment->GetVariation())          {cout<<"!assignment->GetVariation()"<<endl;          return false;}
@@ -1847,7 +1847,7 @@ bool ccdb::MySQLDataProvider::CreateAssignment(Assignment *assignment )
 	string query = 
 		" INSERT INTO `constantSets` (`modified`, `vault`, `constantTypeId`) "
 	    "                      VALUES(   NULL   ,  \"%s\",	       %i      );";
-	query = DStringUtils::Format(query.c_str(), assignment->GetRawData().c_str(), table->GetId());
+	query = StringUtils::Format(query.c_str(), assignment->GetRawData().c_str(), table->GetId());
 	
 	//query...
 	if(!QueryInsert(query))
@@ -1874,7 +1874,7 @@ bool ccdb::MySQLDataProvider::CreateAssignment(Assignment *assignment )
 	"	LAST_INSERT_ID(), "		//	#{constantSetId: INT},	
 	"	%s "					//	#{comment: TEXT}
 	");	";
-	query = DStringUtils::Format(query.c_str(), 
+	query = StringUtils::Format(query.c_str(), 
 		assignment->GetVariation()->GetId(), 
 		assignment->GetRunRange()->GetId(),
 		PrepareCommentForInsert(assignment->GetComment().c_str()).c_str());
@@ -1889,7 +1889,7 @@ bool ccdb::MySQLDataProvider::CreateAssignment(Assignment *assignment )
 	assignment->SetId(static_cast<dbkey_t>(mLastInsertedId));
 	
 	//adjust number in data table
-	query = DStringUtils::Format("UPDATE typeTables SET nAssignments=nAssignments+1 WHERE id='%i';", table->GetId());
+	query = StringUtils::Format("UPDATE typeTables SET nAssignments=nAssignments+1 WHERE id='%i';", table->GetId());
 	QueryUpdate(query);
 	
 	//commit changes
@@ -1901,9 +1901,9 @@ bool ccdb::MySQLDataProvider::CreateAssignment(Assignment *assignment )
 
 	//just log this wicked action
 	AddLogRecord("assignments;constantSets;",
-		DStringUtils::Format("assignments_%i;constantSets_%i", assignment->GetId(), assignment->GetDataVaultId()),
-		DStringUtils::Format("Add assignment to %s", assignment->GetTypeTable()->GetName().c_str()),
-		DStringUtils::Format("Add assignment to %s,\n comments: %s", assignment->GetTypeTable()->GetName().c_str(), table->GetComment().c_str()));
+		StringUtils::Format("assignments_%i;constantSets_%i", assignment->GetId(), assignment->GetDataVaultId()),
+		StringUtils::Format("Add assignment to %s", assignment->GetTypeTable()->GetName().c_str()),
+		StringUtils::Format("Add assignment to %s,\n comments: %s", assignment->GetTypeTable()->GetName().c_str(), table->GetComment().c_str()));
 	return true;
 }
 
@@ -1941,7 +1941,7 @@ Assignment* ccdb::MySQLDataProvider::CreateAssignment(const std::vector<std::vec
 	{
 		 //error message
 		Error(CCDB_ERROR_DATA_INCONSISTANT,"DMySQLDataProvider::CreateAssignment", 
-              DStringUtils::Format("Number of rows is inconsistent. Rows in table definition: %i, actual rows number %i",table->GetNRows(), data.size()));
+              StringUtils::Format("Number of rows is inconsistent. Rows in table definition: %i, actual rows number %i",table->GetNRows(), data.size()));
 		return NULL;
 	}
 
@@ -1954,7 +1954,7 @@ Assignment* ccdb::MySQLDataProvider::CreateAssignment(const std::vector<std::vec
 		{
 			//TODO error handle
 			Error(CCDB_ERROR_DATA_INCONSISTANT, "DMySQLDataProvider::CreateAssignment", 
-                    DStringUtils::Format("Number of columns is inconsistent. Row with inconsistency (zero based): %i , columns by table definition: %i, actual columns number %i",rowIter, table->GetNColumns(), row.size()));
+                    StringUtils::Format("Number of columns is inconsistent. Row with inconsistency (zero based): %i , columns by table definition: %i, actual columns number %i",rowIter, table->GetNColumns(), row.size()));
 			return NULL;
 		}
 
@@ -1984,7 +1984,7 @@ Assignment* ccdb::MySQLDataProvider::CreateAssignment(const std::vector<std::vec
 	assignment->SetTypeTable(table);	//set this table
 	assignment->BeOwner(table);			//new table should be owned by assignment
 
-	assignment->SetComment(DStringUtils::Encode(comments));
+	assignment->SetComment(StringUtils::Encode(comments));
 
 	if(CreateAssignment(assignment))
 	{
@@ -2062,25 +2062,25 @@ bool ccdb::MySQLDataProvider::GetAssignments( vector<Assignment *> &assingments,
 	string runRangeWhere(""); //Where clause for run range
 	if(runRangeName != "")
 	{
-		runRangeWhere = DStringUtils::Format(" AND `runRanges`.`name` = \"%s\" ", runRangeName.c_str());
+		runRangeWhere = StringUtils::Format(" AND `runRanges`.`name` = \"%s\" ", runRangeName.c_str());
 	}
 	else if(runMax!=0 || runMin!=0)
 	{
-		runRangeWhere = DStringUtils::Format(" AND `runRanges`.`runMin` <= '%i' AND `runRanges`.`runMax` >= '%i' ", runMin, runMax);
+		runRangeWhere = StringUtils::Format(" AND `runRanges`.`runMin` <= '%i' AND `runRanges`.`runMax` >= '%i' ", runMin, runMax);
 	}
 
 	//variation handle
 	string variationWhere("");
 	if(variation != "")
 	{
-		variationWhere.assign(DStringUtils::Format(" AND `variations`.`name`=\"%s\" ", variation.c_str()));
+		variationWhere.assign(StringUtils::Format(" AND `variations`.`name`=\"%s\" ", variation.c_str()));
 	}
 
 	//time handle 
 	string timeWhere("");
 	if(beginTime!=0 || endTime!=0)
 	{
-		timeWhere.assign(DStringUtils::Format(" AND `asCreated` >= '%i' AND `asCreated` <= '%i' ", beginTime, endTime));
+		timeWhere.assign(StringUtils::Format(" AND `asCreated` >= '%i' AND `asCreated` <= '%i' ", beginTime, endTime));
 	}
 
 	//limits handle 
@@ -2123,7 +2123,7 @@ bool ccdb::MySQLDataProvider::GetAssignments( vector<Assignment *> &assingments,
 		    " WHERE  `typeTables`.`id` = '%i' %s %s %s %s %s";
 
 
-	query=DStringUtils::Format(query.c_str(), table->GetId(), runRangeWhere.c_str(), variationWhere.c_str(), timeWhere.c_str(), orderByInsertion.c_str(), limitInsertion.c_str());
+	query=StringUtils::Format(query.c_str(), table->GetId(), runRangeWhere.c_str(), variationWhere.c_str(), timeWhere.c_str(), orderByInsertion.c_str(), limitInsertion.c_str());
 	//query this
 	if(!QuerySelect(query))
 	{
@@ -2211,7 +2211,7 @@ bool ccdb::MySQLDataProvider::DeleteAssignment(Assignment* assignment)
 	}
 	
 	//add constants
-	string query = DStringUtils::Format(" DELETE FROM  constantSets WHERE constantSets.id = '%i% ;",assignment->GetDataVaultId());
+	string query = StringUtils::Format(" DELETE FROM  constantSets WHERE constantSets.id = '%i% ;",assignment->GetDataVaultId());
 	
 	//query...
 	if(!QueryDelete(query))
@@ -2221,7 +2221,7 @@ bool ccdb::MySQLDataProvider::DeleteAssignment(Assignment* assignment)
 		return false;
 	}
 	
-	query = DStringUtils::Format(" DELETE FROM  assignments WHERE assignments.id = '%i% ;",assignment->GetId());
+	query = StringUtils::Format(" DELETE FROM  assignments WHERE assignments.id = '%i% ;",assignment->GetId());
 	
 	//query...
 	if(!QueryDelete(query))
@@ -2232,7 +2232,7 @@ bool ccdb::MySQLDataProvider::DeleteAssignment(Assignment* assignment)
 	}
 	
 	//adjust number in data table
-	query = DStringUtils::Format("UPDATE typeTables SET nAssignments=nAssignments-1 WHERE id='%i';", assignment->GetTypeTable()->GetId());
+	query = StringUtils::Format("UPDATE typeTables SET nAssignments=nAssignments-1 WHERE id='%i';", assignment->GetTypeTable()->GetId());
 	QueryUpdate(query);
 	
 	//commit changes
@@ -2286,7 +2286,7 @@ bool ccdb::MySQLDataProvider::FillAssignment(Assignment* assignment)
 		    " WHERE  `assignments`.`id` = '%i'";
 	
 	
-	query=DStringUtils::Format(query.c_str(), assignment->GetId());
+	query=StringUtils::Format(query.c_str(), assignment->GetId());
 	//cout << query<<endl;
 	//query this
 	if(!QuerySelect(query))
@@ -2379,7 +2379,7 @@ void ccdb::MySQLDataProvider::FetchAssignment(Assignment* assignment, ConstantsT
 	variation->SetCreatedTime(ReadUnixTime(14));	/*14  " UNIX_TIMESTAMP(`variations`.`created`) as `varCreated`,"	 */
 	variation->SetModifiedTime(ReadUnixTime(15));	/*15  " UNIX_TIMESTAMP(`variations`.`modified`) as `varModified`,	 */
 	variation->SetName(ReadString(16));			/*16  " `variations`.`name` AS `varName` "*/
-	variation->SetComment(DStringUtils::Decode(ReadString(12)));		/*17  " `variations`.`comment`  AS `varComment` "*/
+	variation->SetComment(StringUtils::Decode(ReadString(12)));		/*17  " `variations`.`comment`  AS `varComment` "*/
 
 	//compose objects
 	assignment->SetRunRange(runRange);
@@ -2471,7 +2471,7 @@ void ccdb::MySQLDataProvider::BuildDirectoryDependences()
 		}
 
 		//creating full path for this directory
-		string fullpath = DStringUtils::CombinePath(dir->GetParentDirectory()->GetFullPath(), dir->GetName());
+		string fullpath = StringUtils::CombinePath(dir->GetParentDirectory()->GetFullPath(), dir->GetName());
 		dir->SetFullPath(fullpath);
 
 
@@ -2525,7 +2525,7 @@ bool ccdb::MySQLDataProvider::SearchDirectories( vector<Directory *>& resultDire
 		Directory *parentDir;
 		if(parentDir = GetDirectory(parentPath.c_str()))
 		{
-			parentAddon = DStringUtils::Format(" AND `parentId` = '%i'", parentDir->GetId());
+			parentAddon = StringUtils::Format(" AND `parentId` = '%i'", parentDir->GetId());
 		}
 		else
 		{
@@ -2538,7 +2538,7 @@ bool ccdb::MySQLDataProvider::SearchDirectories( vector<Directory *>& resultDire
 	string limitAddon = PrepareLimitInsertion(take, startWith);
 
 	//combine query
-	string query = DStringUtils::Format("SELECT `id` FROM `directories` WHERE name LIKE \"%s\" %s %s;",
+	string query = StringUtils::Format("SELECT `id` FROM `directories` WHERE name LIKE \"%s\" %s %s;",
 		likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
 	
 	//do query!
@@ -2583,13 +2583,13 @@ std::string ccdb::MySQLDataProvider::WilcardsToLike( const string& str )
 	//_ - ?
 
 	//encode underscores
-	string result = DStringUtils::Replace("_", "\\_", str);
+	string result = StringUtils::Replace("_", "\\_", str);
 
 	//replace ? to _
-	DStringUtils::Replace("?","_",result, result);
+	StringUtils::Replace("?","_",result, result);
 
 	//replace * to %
-	DStringUtils::Replace("*","%",result, result);
+	StringUtils::Replace("*","%",result, result);
 
 	return result;
 }
@@ -2894,7 +2894,7 @@ void ccdb::MySQLDataProvider::FreeMySQLResult()
 
 std::string ccdb::MySQLDataProvider::ComposeMySQLError(std::string mySqlFunctionName)
 {
-	string mysqlErr=DStringUtils::Format("%s failed:\nError %u (%s)\n",mySqlFunctionName.c_str(), mysql_errno(mMySQLHnd), mysql_error (mMySQLHnd));
+	string mysqlErr=StringUtils::Format("%s failed:\nError %u (%s)\n",mySqlFunctionName.c_str(), mysql_errno(mMySQLHnd), mysql_error (mMySQLHnd));
 	return mysqlErr;
 }
 #pragma endregion Fetch_free_and_other_MySQL_operations
@@ -2907,7 +2907,7 @@ void ccdb::MySQLDataProvider::AddLogRecord( string userName, string affectedTabl
 	string query = "INSERT INTO `logs` "
 		" (`affectedTables`, `affectedIds`, `authorId`, `description`,  `fullDescription`) VALUES "
 		" (    \"%s\"      ,      \"%s\"  , 	 %i   ,    \"%s\"    ,        \"%s\"     ); ";
-	query = DStringUtils::Format(query.c_str(), affectedTables.c_str(), affectedIds.c_str(), id, shortDescription.c_str(), fullDescription.c_str());
+	query = StringUtils::Format(query.c_str(), affectedTables.c_str(), affectedIds.c_str(), id, shortDescription.c_str(), fullDescription.c_str());
 	
 	QueryInsert(query);
 	
@@ -2925,7 +2925,7 @@ dbkey_t ccdb::MySQLDataProvider::GetUserId( string userName )
 		return 1; //anonymous id
 	}
 
-	string query = DStringUtils::Format("SELECT `id` FROM `authors` WHERE `name` = \"%s\" LIMIT 0,1", userName.c_str());
+	string query = StringUtils::Format("SELECT `id` FROM `authors` WHERE `name` = \"%s\" LIMIT 0,1", userName.c_str());
 	if(!QuerySelect(query))
 	{
 		return 1; //anonymous id
@@ -2948,9 +2948,9 @@ dbkey_t ccdb::MySQLDataProvider::GetUserId( string userName )
 
 std::string ccdb::MySQLDataProvider::PrepareLimitInsertion(  int take/*=0*/, int startWith/*=0*/ )
 {
-	if(startWith != 0 && take != 0) return DStringUtils::Format(" LIMIT %i, %i ", startWith, take);
-	if(startWith != 0 && take == 0) return DStringUtils::Format(" LIMIT %i, %i ", startWith, INFINITE_RUN);
-	if(startWith == 0 && take != 0) return DStringUtils::Format(" LIMIT %i ", take);
+	if(startWith != 0 && take != 0) return StringUtils::Format(" LIMIT %i, %i ", startWith, take);
+	if(startWith != 0 && take == 0) return StringUtils::Format(" LIMIT %i, %i ", startWith, INFINITE_RUN);
+	if(startWith == 0 && take != 0) return StringUtils::Format(" LIMIT %i ", take);
 	
 	return string(); //No LIMIT at all, if run point is here it corresponds to if(startWith == 0 && take ==0 )
 

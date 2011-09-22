@@ -2,7 +2,7 @@
 #include <strstream>
 
 #include "CCDB/CalibrationGenerator.h"
-#include "CCDB/MySQLCallibration.h"
+#include "CCDB/MySQLCalibration.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 
 using namespace std;

@@ -37,11 +37,14 @@
     <Filter Include="Helpers\Headers">
       <UniqueIdentifier>{559b8d40-0e50-4276-b9a4-6375e258c891}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Global">
-      <UniqueIdentifier>{67f2082a-b987-46e2-9391-51b6c03916ab}</UniqueIdentifier>
+    <Filter Include="Globals">
+      <UniqueIdentifier>{fc21a92f-e260-47b7-afeb-0daa88f0ae47}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Web">
-      <UniqueIdentifier>{0fee12cb-d38b-4b3e-a832-df76a44a094e}</UniqueIdentifier>
+    <Filter Include="Globals\Headers">
+      <UniqueIdentifier>{005481d0-fe11-41c3-b2ff-8fe7d24fc76c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Globals\Sources">
+      <UniqueIdentifier>{c5a49971-91dc-46ee-bc42-1b040dfe9832}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -66,39 +69,6 @@
     <ClInclude Include="..\..\..\include\CCDB\Model\Variation.h">
       <Filter>Model\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\ObjectsOwner.h">
-      <Filter>Helpers\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\PathUtils.h">
-      <Filter>Helpers\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\StopWatch.h">
-      <Filter>Helpers\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\StoredObject.h">
-      <Filter>Helpers\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\StringUtils.h">
-      <Filter>Helpers\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\WorkUtils.h">
-      <Filter>Helpers\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\CcdbError.h">
-      <Filter>Global</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\CcdbGlobals.h">
-      <Filter>Global</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\Console.h">
-      <Filter>Global</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\Log.h">
-      <Filter>Global</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\Varargs.h">
-      <Filter>Global</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\CCDB\Calibration.h">
       <Filter>UserApi\Headers</Filter>
     </ClInclude>
@@ -120,82 +90,112 @@
     <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLDataProvider.h">
       <Filter>Providers\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\Web\ConfigReader.h">
-      <Filter>Web</Filter>
+    <ClInclude Include="..\..\..\include\CCDB\Model\ObjectsOwner.h">
+      <Filter>Model\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\Web\HttpContext.h">
-      <Filter>Web</Filter>
+    <ClInclude Include="..\..\..\include\CCDB\Model\StoredObject.h">
+      <Filter>Model\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Helpers\PathUtils.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Helpers\StopWatch.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Helpers\StringUtils.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Helpers\WorkUtils.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Helpers\Varargs.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\CCDBError.h">
+      <Filter>Globals\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Console.h">
+      <Filter>Globals\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\GlobalMutex.h">
+      <Filter>Globals\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Globals.h">
+      <Filter>Globals\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Log.h">
+      <Filter>Globals\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Providers\AuthenticationBase.cc">
+    <ClCompile Include="..\..\..\src\Library\Helpers\PathUtils.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Helpers\StringUtils.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Helpers\WorkUtils.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Model\Assignment.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Model\ConstantsTypeColumn.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Model\ConstantsTypeTable.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Model\Directory.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Model\EventRange.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Model\ObjectsOwner.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Model\RunRange.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Model\StoredObject.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Model\Variation.cc">
+      <Filter>Model\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Providers\DataProvider.cc">
       <Filter>Providers\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Providers\DataProvider.cc">
+    <ClCompile Include="..\..\..\src\Library\Providers\FileDataProvider.cc">
       <Filter>Providers\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Providers\EnvironmentAuthentication.cc">
+    <ClCompile Include="..\..\..\src\Library\Providers\MySQLConnectionInfo.cc">
       <Filter>Providers\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Providers\FileDataProvider.cc">
+    <ClCompile Include="..\..\..\src\Library\Providers\MySQLDataProvider.cc">
       <Filter>Providers\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Providers\MySQLConnectionInfo.cc">
-      <Filter>Providers\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Providers\MySQLDataProvider.cc">
-      <Filter>Providers\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Calibration.cc">
+    <ClCompile Include="..\..\..\src\Library\Calibration.cc">
       <Filter>UserApi\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\CalibrationGenerator.cc">
+    <ClCompile Include="..\..\..\src\Library\CalibrationGenerator.cc">
       <Filter>UserApi\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\MySQLCalibration.cc">
+    <ClCompile Include="..\..\..\src\Library\MySQLCalibration.cc">
       <Filter>UserApi\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Web\ConfigReader.cc">
-      <Filter>Web</Filter>
+    <ClCompile Include="..\..\..\src\Library\CccdbError.cc">
+      <Filter>Globals\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Web\HttpContext.cc">
-      <Filter>Web</Filter>
+    <ClCompile Include="..\..\..\src\Library\Console.cc">
+      <Filter>Globals\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Model\Assignment.cc">
-      <Filter>Model\Sources</Filter>
+    <ClCompile Include="..\..\..\src\Library\GlobalMutex.cc">
+      <Filter>Globals\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Model\ConstantsTypeColumn.cc">
-      <Filter>Model\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Model\ConstantsTypeTable.cc">
-      <Filter>Model\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Model\Directory.cc">
-      <Filter>Model\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Model\EventRange.cc">
-      <Filter>Model\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Model\RunRange.cc">
-      <Filter>Model\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Model\Variation.cc">
-      <Filter>Model\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\ObjectsOwner.cc">
-      <Filter>Helpers\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\PathUtils.cc">
-      <Filter>Helpers\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\StoredObject.cc">
-      <Filter>Helpers\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\StringUtils.cc">
-      <Filter>Helpers\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\WorkUtils.cc">
-      <Filter>Helpers\Sources</Filter>
+    <ClCompile Include="..\..\..\src\Library\Log.cc">
+      <Filter>Globals\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

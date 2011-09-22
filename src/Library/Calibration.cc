@@ -2,7 +2,7 @@
 #include <assert.h>
 
 #include "CCDB/Calibration.h"
-#include "CCDB/CCDBGlobalMutex.h"
+#include "CCDB/GlobalMutex.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Helpers/PathUtils.h"
 
@@ -127,7 +127,7 @@ bool Calibration::GetCalib( vector< map<string, double> > &values, const string 
         for ( iter=rawValues[rowIter].begin() ; iter != rawValues[rowIter].end(); iter++ )
         {
             bool parseResult;
-            double tmpVal = DStringUtils::ParseDouble(iter->second, &parseResult);
+            double tmpVal = StringUtils::ParseDouble(iter->second, &parseResult);
             if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< map<string, double> > &, const string &)");
             values[rowIter][iter->first] = tmpVal;
         }
@@ -167,7 +167,7 @@ bool Calibration::GetCalib( vector< map<string, int> > &values, const string & n
         for ( iter=rawValues[rowIter].begin() ; iter != rawValues[rowIter].end(); iter++ )
         {
             bool parseResult;
-            int intlVal = DStringUtils::ParseInt(iter->second, &parseResult);
+            int intlVal = StringUtils::ParseInt(iter->second, &parseResult);
             if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< map<string, int> > &, const string &)");
             values[rowIter][iter->first] = intlVal;
         }
@@ -235,7 +235,7 @@ bool Calibration::GetCalib( vector< vector<double> > &values, const string & nam
         for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
         {
             bool parseResult;
-            double tmpVal = DStringUtils::ParseDouble(rawValues[rowIter][columnsIter], &parseResult);
+            double tmpVal = StringUtils::ParseDouble(rawValues[rowIter][columnsIter], &parseResult);
             if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< vector<double> > &, const string &)");
             values[rowIter].push_back(tmpVal);
         }
@@ -271,7 +271,7 @@ bool Calibration::GetCalib( vector< vector<int> > &values, const string & namepa
         for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
         {
             bool parseResult;
-            int tmpVal = DStringUtils::ParseInt(rawValues[rowIter][columnsIter], &parseResult);
+            int tmpVal = StringUtils::ParseInt(rawValues[rowIter][columnsIter], &parseResult);
             if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< vector<int> > &, const string &)");
             values[rowIter].push_back(tmpVal);
         }
@@ -361,7 +361,7 @@ bool Calibration::GetCalib( map<string, double> &values, const string & namepath
     for ( iter=rawValues.begin() ; iter != rawValues.end(); iter++ )
     {
         bool parseResult;
-        double tmpVal = DStringUtils::ParseDouble(iter->second, &parseResult);
+        double tmpVal = StringUtils::ParseDouble(iter->second, &parseResult);
         if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib(  map<string, double> &, const string &)");
         values[iter->first] = tmpVal;
     }
@@ -394,7 +394,7 @@ bool Calibration::GetCalib( map<string, int> &values, const string & namepath )
     for ( iter=rawValues.begin() ; iter != rawValues.end(); iter++ )
     {
         bool parseResult;
-        int tmpVal = DStringUtils::ParseInt(iter->second, &parseResult);
+        int tmpVal = StringUtils::ParseInt(iter->second, &parseResult);
         if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib(  map<string, int> &, const string &)");
         values[iter->first] = tmpVal;
     }
@@ -455,7 +455,7 @@ bool Calibration::GetCalib( vector<double> &values, const string & namepath )
     for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
     {
         bool parseResult;
-        double tmpVal = DStringUtils::ParseDouble(rawValues[columnsIter], &parseResult);
+        double tmpVal = StringUtils::ParseDouble(rawValues[columnsIter], &parseResult);
         if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< vector<double> > &, const string &)");
         values.push_back(tmpVal);
     }
@@ -485,7 +485,7 @@ bool Calibration::GetCalib( vector<int> &values, const string & namepath )
     for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
     {
         bool parseResult;
-        int tmpVal = DStringUtils::ParseInt(rawValues[columnsIter], &parseResult);
+        int tmpVal = StringUtils::ParseInt(rawValues[columnsIter], &parseResult);
         if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< vector<int> > &, const string &)");
         values.push_back(tmpVal);
     }
@@ -513,18 +513,18 @@ Assignment * Calibration::GetAssignment( const string& namepath )
      * @return   DAssignment *
      */
 
-    DParseRequestResult result = DPathUtils::ParseRequest(namepath);
+    DParseRequestResult result = PathUtils::ParseRequest(namepath);
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
     Assignment* assigment = NULL;
     Lock();
     if(result.WasParsedTime)
     {   
-        assigment = mProvider->GetAssignmentShort(run, DPathUtils::MakeAbsolute(result.Path), result.Time, variation);
+        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation);
     }
     else
     {
-        assigment = mProvider->GetAssignmentShort(run, DPathUtils::MakeAbsolute(result.Path), variation);
+        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation);
     }
     Unlock();
     return assigment;

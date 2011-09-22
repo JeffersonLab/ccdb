@@ -1,4 +1,4 @@
-#include "CCDB/CCDBGlobalMutex.h"
+#include "CCDB/GlobalMutex.h"
 #pragma warning(disable: 4996)
 #include <iostream>
 #include <stdio.h>

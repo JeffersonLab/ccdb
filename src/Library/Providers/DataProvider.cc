@@ -3,7 +3,7 @@
 #include "CCDB/Providers/DataProvider.h"
 #include "CCDB/Log.h"
 #include "CCDB/Helpers/StringUtils.h"
-#include "CCDB/CCDBGlobals.h"
+#include "CCDB/Globals.h"
 
 using namespace ccdb;
 using namespace std;
@@ -427,7 +427,7 @@ void DataProvider::Error(int errorCode, const string& module, const string& mess
 	while(mErrorCodes.size()> mMaximumErrorsToHold) mErrorCodes.erase(mErrorCodes.begin());
 	
 	//do log error
-	DLog::Error(errorCode, module, message);
+	Log::Error(errorCode, module, message);
 }
 
 
@@ -451,7 +451,7 @@ void DataProvider::Warning( int errorCode, const string& module, const string& m
 	while(mErrorCodes.size()> mMaximumErrorsToHold) mErrorCodes.erase(mErrorCodes.begin());
 
 	//do log error
-	DLog::Warning(errorCode, module, message);
+	Log::Warning(errorCode, module, message);
 }
 
 

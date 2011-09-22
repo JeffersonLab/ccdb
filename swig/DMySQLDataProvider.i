@@ -1,6 +1,6 @@
 %{
-#include "Model/DDirectory.h"
-#include "Providers/DMySQLDataProvider.h"
+#include "CCDB/Model/Directory.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
 using namespace ccdb;
 using namespace std;
 %}

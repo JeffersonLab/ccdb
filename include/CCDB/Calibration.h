@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-#include "CCDB/CCDBGlobals.h"
+#include "CCDB/Globals.h"
 #include "CCDB/Providers/DataProvider.h"
 
 using namespace std;

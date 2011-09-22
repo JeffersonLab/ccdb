@@ -1,13 +1,15 @@
 #ifndef benchmark_PreparedStatements_h__
 #define benchmark_PreparedStatements_h__
-#include "DConsole.h"
-#include "DStopWatch.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "Model/DAssignment.h"
-#include "Tests/tests_macros.h"
-#include "Model/DConstantsTypeTable.h"
+
 #include <string.h>
 #include <mysql.h>
+#include "CCDB/IO/Console.h"
+#include "CCDB/Helpers/DStopWatch.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Model/DAssignment.h"
+#include "Tests/tests_macros.h"
+#include "CCDB/Model/ConstantsTypeTable.h"
+
 
 
 /////////////////////////////////////////////////////////
@@ -193,7 +195,7 @@ bool benchmark_PreparedStatements()
 
     if(!PreparedQueriesInit()) return false;
 
-    DMySQLDataProvider *prov = new DMySQLDataProvider();
+    MySQLDataProvider *prov = new MySQLDataProvider();
     if(!prov->Connect("mysql://ccdb_user@localhost")) return false;
 
     BENCHMARK_INIT("P R E P A R E D   Q U E R I E S    B E N C H M A R K S");

@@ -18,6 +18,7 @@ So... You have to install next software (all is free and mostly open source). Ch
 *  [MySQL workbench](http://dev.mysql.com/downloads/workbench/) this is optional but very helpfull tool
 *  [tortoise svn](http://tortoisesvn.net/downloads.html) - dont reboot as it asks. Reboot in the end.
 
+(!) It is relevant to install x86 versions of the packages
 
 
 2. GET SOURCES
@@ -40,13 +41,24 @@ PYTHON_INCLUDE - the directory that contains python.h
 PYTHON_LIB - the python library including path for linking
 
 Start -> Edit environment variables for your account *-> Set there:  
->  PATH C:\Swig;
->       C:\Python27_x86;
->       C:\Program Files (x86)\MySQL\MySQL Connector C 6.0.2\lib\opt\;
->       C:\Program Files (x86)\MySQL\MySQL Connector C 6.0.2\include\;
->  PYTHON_INCLUDE C:\Python27_x86\include
->  PYTHON_LIB     c:\Python27_x86\python27.lib
->  CCDB_HOME C:\Your\Path\To\CCDB\home     
+
+     ++------------------++----------------------------------------------------------
+     ||                  ||
+     ||     NAME         ||     VALUE      
+     ++------------------++----------------------------------------------------------
+     ||                  ||
+     || CCDB_HOME        ||  C:\Your\Path\To\CCDB\home     
+     ||                  ||
+     || PATH             ||  C:\Swig;   C:\Python27;
+     ||                  ||
+     || PYTHON_INCLUDE   ||  C:\Python27\include
+     ||                  ||
+     || PYTHON_LIB       ||  c:\Python27\python27.lib
+     ||                  ||
+     || MYSQL_CONNECTOR  ||  C:\Program Files (x86)\MySQL\MySQL Connector C 6.0.2\
+     ||                  ||
+     ++------------------++----------------------------------------------------------
+
 (!) Dont forget to change this directories to yours! =)
 
 * - just press 'start' and put 'environ' in the search bar

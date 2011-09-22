@@ -1,17 +1,17 @@
-#include "DConsole.h"
-#include "DStringUtils.h"
+#include "CCDB/Console.h"
+#include "CCDB/Helpers/StringUtils.h"
 
 using namespace std;
 using namespace ccdb;
 
-bool test_DConsole()
+bool test_Console()
 {
-	DConsole console;
+	Console console;
 	console.SetUseColors(true);
 
 	//Formatting tests
-	cout<<DStringUtils::Format("test console.Format %i %f", 5, 3.14)<<endl;
-	cout<<DStringUtils::Format("test long string console.Format aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa %i %f", 5, 3.14)<<endl;
+	cout<<StringUtils::Format("test console.Format %i %f", 5, 3.14)<<endl;
+	cout<<StringUtils::Format("test long string console.Format aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa %i %f", 5, 3.14)<<endl;
 
 	//Wite line test
 	console.WriteLine("test console.WriteLine %i \n",6);
@@ -22,14 +22,14 @@ bool test_DConsole()
 	console.WriteLine(" and WriteLine |");
 
 	//Test of SetTextParams - setting different colors and cases
-	console.SetTextParams(DConsole::cBright, DConsole::cRed, DConsole::cBlack);
+	console.SetTextParams(Console::cBright, Console::cRed, Console::cBlack);
 	console.WriteLine("test console.SetTextParams(cBright, cRed, cBlack)");
 
-	console.SetTextParams(DConsole::cReset, DConsole::cRed, DConsole::cBlack);
-	console.WriteLine(DConsole::cRed,"test colors console.SetTextParams(DConsole::cReset, DConsole::cRed, DConsole::cBlack);");
+	console.SetTextParams(Console::cReset, Console::cRed, Console::cBlack);
+	console.WriteLine(Console::cRed,"test colors console.SetTextParams(Console::cReset, Console::cRed, Console::cBlack);");
 
-	console.SetTextParams(0, DConsole::cBrightGreen, DConsole::cBlue);
-	console.WriteLine(DConsole::cRed,"test colors console.SetTextParams(0, DConsole::cBrightGreen, DConsole::cBlue);");
+	console.SetTextParams(0, Console::cBrightGreen, Console::cBlue);
+	console.WriteLine(Console::cRed,"test colors console.SetTextParams(0, Console::cBrightGreen, Console::cBlue);");
 
 	//test of resetting the params
 	console.ResetTextProperties();
@@ -43,9 +43,9 @@ bool test_DConsole()
 	//Testing write
 	//cout<<"joke";
 	console.Write("test console.Write | ");
-	console.Write(DConsole::cBrightCyan," more cyan %f ", 22.2);
+	console.Write(Console::cBrightCyan," more cyan %f ", 22.2);
 	console.Write("uuu ");
-	console.WriteLine(DConsole::cBrightYellow,"test console.Write(DConsole::cBrightYellow... !");
+	console.WriteLine(Console::cBrightYellow,"test console.Write(Console::cBrightYellow... !");
 
 	//Finally we return the original colors
 	console.ResetTextProperties();

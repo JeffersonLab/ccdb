@@ -1,5 +1,5 @@
-#ifndef _DPathUtils_
-#define _DPathUtils_
+#ifndef _PathUtils_
+#define _PathUtils_
 
 #ifdef WIN32
 #define _CRT_SECURE_NO_WARNINGS
@@ -20,14 +20,14 @@
 #include <ostream>
 #include <time.h>
 
-#include "CCDB/StringUtils.h"
+#include "CCDB/Helpers/StringUtils.h"
 
 using namespace std;
 
 namespace ccdb
 {
     /// @brief DRequestParseResult is structure that represents parse result of
-    /// a string request. @see DPathUtils::ParseRequest
+    /// a string request. @see PathUtils::ParseRequest
 struct DParseRequestResult
 {
 	int    RunNumber;	       /// Run number
@@ -43,7 +43,7 @@ struct DParseRequestResult
 };
 
 
-/*@class DPathUtils provides static methods of CCDB objects namepath manipulation
+/*@class PathUtils provides static methods of CCDB objects namepath manipulation
  */
 class PathUtils
 {
@@ -132,4 +132,4 @@ public:
 
 };
 }
-#endif // _DPathUtils_
+#endif // _PathUtils_

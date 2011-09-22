@@ -68,7 +68,7 @@ std::string ccdb::StringUtils::vFormat( const char *fmt, va_list ap)
     if (buffer == NULL)
     {
         //Aha! It is an error!
-        fprintf(stderr, "Error allocating memory in ccdb::DConsole::vFormat( const char *fmt, va_list ap) ");
+        fprintf(stderr, "Error allocating memory in ccdb::Console::vFormat( const char *fmt, va_list ap) ");
         return string();
     }
 
@@ -110,7 +110,7 @@ std::string ccdb::StringUtils::Format(const char *va_(fmt), ...)
    return str;
 }   
 
-//std::string ccdb::DStringUtils::vFormat( const char *fmt, va_list ap)
+//std::string ccdb::StringUtils::vFormat( const char *fmt, va_list ap)
 //{
 //  // The function is quite similar to asprintf
 //  // but it uses its implementation that assumes, that the message is short
@@ -125,7 +125,7 @@ std::string ccdb::StringUtils::Format(const char *va_(fmt), ...)
 //  if (buffer == NULL)
 //  {
 //      //Aha! It is an error!
-//      fprintf(stderr, "Error allocating memory in ccdb::DConsole::vFormat( const char *fmt, va_list ap) ");
+//      fprintf(stderr, "Error allocating memory in ccdb::Console::vFormat( const char *fmt, va_list ap) ");
 //      return string();
 //  }
 //
@@ -161,7 +161,7 @@ std::string ccdb::StringUtils::Format(const char *va_(fmt), ...)
 //      {
 //          // we need to free it
 //          free(buffer);
-//          fprintf(stderr, "Error allocating memory ccdb::DConsole::vFormat( const char *fmt, va_list ap)");
+//          fprintf(stderr, "Error allocating memory ccdb::Console::vFormat( const char *fmt, va_list ap)");
 //          return string();
 //      }
 //
@@ -183,7 +183,7 @@ std::string ccdb::StringUtils::Format(const char *va_(fmt), ...)
 //  return string(buffer);
 //}
 
-//std::string ccdb::DStringUtils::Format( const char *fmt, ... )
+//std::string ccdb::StringUtils::Format( const char *fmt, ... )
 //{
 //  //format
 //  va_list ap;

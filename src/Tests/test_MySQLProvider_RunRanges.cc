@@ -1,12 +1,12 @@
 #pragma warning(disable:4800)
 #include "Tests/tests_macros.h"
-#include "DConsole.h"
-#include "DStringUtils.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "Model/DDirectory.h"
-#include "DWorkUtils.h"
-#include "DStopWatch.h"
-#include "Model/DVariation.h"
+#include "CCDB/Console.h"
+#include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Model/Directory.h"
+#include "CCDB/Helpers/WorkUtils.h"
+#include "CCDB/Helpers/StopWatch.h"
+#include "CCDB/Model/Variation.h"
 
 using namespace std;
 using namespace ccdb;
@@ -26,7 +26,7 @@ bool test_DMySQLDataProvider_RunRanges()
 
     // GET RUN-RANGE TEST
     //----------------------------------------------------
-    gConsole.WriteLine(DConsole::cBrightWhite, "\n[ Get run-range testing ]");
+    gConsole.WriteLine(Console::cBrightWhite, "\n[ Get run-range testing ]");
   
     //Get run range by name, test "all" run range	
 	DRunRange *rrange = prov->GetRunRange(CCDB_ALL_RUNRANGE_NAME);
@@ -72,7 +72,7 @@ bool test_DMySQLDataProvider_RunRanges()
 
     // DELETE RUN-RANGE TEST
     //----------------------------------------------------
-    gConsole.WriteLine(DConsole::cBrightWhite, "\n[ Delete run-range testing ]");
+    gConsole.WriteLine(Console::cBrightWhite, "\n[ Delete run-range testing ]");
 
     bool result = prov->DeleteRunRange(rrange);
     TITLE("Delete run range"); TEST(result)

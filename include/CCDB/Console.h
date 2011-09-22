@@ -5,8 +5,8 @@
  *      Author: romanov
  */
 
-#ifndef _DConsole_
-#define _DConsole_
+#ifndef _Console_
+#define _Console_
 
 #ifdef WIN32
 #define _CRT_SECURE_NO_WARNINGS
@@ -172,7 +172,7 @@ public:
 	/** @brief
 	 * GetForegroundColor
 	 *
-	 * @returns   ccdb::DConsole::ConsoleColors
+	 * @returns   ccdb::Console::ConsoleColors
 	 */
 	ConsoleColors		GetForegroundColor() const {return mForeground;}
 
@@ -186,7 +186,7 @@ public:
 	/** @brief
 	 * GetBackgroundColor
 	 *
-	 * @returns   ccdb::DConsole::ConsoleColors
+	 * @returns   ccdb::Console::ConsoleColors
 	 */
 	ConsoleColors		GetBackgroundColor() const {return mBackground;}
 
@@ -269,4 +269,4 @@ protected:
 
 };
 }
-#endif /* _DConsole_ */
+#endif /* _Console_ */

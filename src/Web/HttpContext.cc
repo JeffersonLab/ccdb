@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "Web/DConfigReader.h"
-#include "Providers/DDataProvider.h"
+#include "Providers/DataProvider.h"
 #include "Providers/DMySQLDataProvider.h"
 #include "Model/DDirectory.h"
-#include "DLog.h"
+#include "Log.h"
 
 using namespace std;
 using namespace ccdb;
@@ -35,7 +35,7 @@ ccdb::DHttpContext::DHttpContext()
 	mConnectionString = "None";
 	DConfigReader reader("ccdb.inp");	
 	reader.readInto(mConnectionString, "ConnectionString");
-	DLog::SetUseColors(false);
+	Log::SetUseColors(false);
 	
 }
 
@@ -99,14 +99,14 @@ void ccdb::DHttpContext::ProcessRequest()
 
 void ccdb::DHttpContext::OpAjaxDirectoryList()
 {
-	DDataProvider *prov = new DMySQLDataProvider();
+	DataProvider *prov = new MySQLDataProvider();
 	
 	if(!prov->Connect(mConnectionString))
 	{
 		cout<<"error connect"<<endl;
 	}
 	
-	vector<DDirectory *> dirs;// = prov->SearchDirectories("*", "/");
+	vector<Directory *> dirs;// = prov->SearchDirectories("*", "/");
 	string rootDir="/";
 	if(mGet.find("root")!=mGet.end() && mGet["root"]!="source")
 	{

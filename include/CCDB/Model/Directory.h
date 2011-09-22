@@ -13,7 +13,7 @@
 
 #include "CCDB/Model/StoredObject.h"
 #include "CCDB/Model/ObjectsOwner.h"
-#include "CCDB/CCDBGlobals.h"
+#include "CCDB/Globals.h"
 
 using namespace std;
 

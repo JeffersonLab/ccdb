@@ -1,5 +1,5 @@
 %{
-#include "Model/DDirectory.h"
+#include "CCDB/Model/Directory.h"
 #include "Providers/DDataProvider.h"
 using namespace ccdb;
 using namespace std;

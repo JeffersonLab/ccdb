@@ -40,7 +40,7 @@ ConstantsTypeTable::~ConstantsTypeTable()
  *
  * @return   vector<DConstantsTypeColumn *>
  */
-const vector<DConstantsTypeColumn *>& ConstantsTypeTable::GetColumns() const
+const vector<ConstantsTypeColumn *>& ConstantsTypeTable::GetColumns() const
 {
 	//TODO: Implement method
 
@@ -56,7 +56,7 @@ int ConstantsTypeTable::GetNColumns() const
 	return mColumns.size();
 }
 
-void ConstantsTypeTable::AddColumn( DConstantsTypeColumn *col, int order )
+void ConstantsTypeTable::AddColumn( ConstantsTypeColumn *col, int order )
 {
 	if(order > mColumns.size())
 	{
@@ -70,10 +70,10 @@ void ConstantsTypeTable::AddColumn( DConstantsTypeColumn *col, int order )
 		if(order <= (mColumns.size() - 1))
 		{
 			/*mColumns.insert()*/ //C++ are surprisingly dump language...
-			vector<DConstantsTypeColumn *>::iterator it= mColumns.begin();
+			vector<ConstantsTypeColumn *>::iterator it= mColumns.begin();
 			for(;it<mColumns.end();++it)
 			{
-				DConstantsTypeColumn *column = *it;
+				ConstantsTypeColumn *column = *it;
 				if((int)column->GetOrder() >= order) column->SetOrder(column->GetOrder()+1); 
 			}
 
@@ -92,7 +92,7 @@ void ConstantsTypeTable::AddColumn( DConstantsTypeColumn *col, int order )
 	col->SetTypeTable(this);
 }
 
-void ConstantsTypeTable::AddColumn( DConstantsTypeColumn *col )
+void ConstantsTypeTable::AddColumn( ConstantsTypeColumn *col )
 {
 	mColumns.push_back(col);
 	col->SetOrder(mColumns.size()-1);
@@ -101,22 +101,22 @@ void ConstantsTypeTable::AddColumn( DConstantsTypeColumn *col )
 
 void ConstantsTypeTable::AddColumn( const std::string& name, const std::string& type )
 {
-	DConstantsTypeColumn *column = new DConstantsTypeColumn(this);
+	ConstantsTypeColumn *column = new ConstantsTypeColumn(this);
 	column->SetName(name);
 	column->SetType(type);
 	AddColumn(column);
 }
 
 
-void ccdb::ConstantsTypeTable::AddColumn(const string& name, DConstantsTypeColumn::DColumnTypes type)
+void ccdb::ConstantsTypeTable::AddColumn(const string& name, ConstantsTypeColumn::DColumnTypes type)
 {
-	DConstantsTypeColumn *column = new DConstantsTypeColumn(this);
+	ConstantsTypeColumn *column = new ConstantsTypeColumn(this);
 	column->SetName(name);
 	column->SetType(type);
 	AddColumn(column);
 }
 
-DConstantsTypeColumn * ConstantsTypeTable::RemoveColumn( int order )
+ConstantsTypeColumn * ConstantsTypeTable::RemoveColumn( int order )
 {
 	if(order > mColumns.size() && mColumns.size()>0)
 	{
@@ -127,8 +127,8 @@ DConstantsTypeColumn * ConstantsTypeTable::RemoveColumn( int order )
 	std::sort(mColumns.begin(), mColumns.end()); //sort vector by order;
 
 	//C++ are surprisingly dump language...
-	vector<DConstantsTypeColumn *>::iterator it= mColumns.begin();
-	DConstantsTypeColumn *col = *it;
+	vector<ConstantsTypeColumn *>::iterator it= mColumns.begin();
+	ConstantsTypeColumn *col = *it;
 	mColumns.erase(it + order);
 	return *it;
 
@@ -178,7 +178,7 @@ void ConstantsTypeTable::SetDirectory(Directory *fDirectory)
 	 //now this name affects full path...
 	if(mDirectory!=NULL)	
 	{
-		mFullPath.assign(DStringUtils::CombinePath(mDirectory->GetFullPath(), mName));
+		mFullPath.assign(StringUtils::CombinePath(mDirectory->GetFullPath(), mName));
 	}
 	else
 	{
@@ -217,7 +217,7 @@ void ConstantsTypeTable::SetName(const string& name)
 	//now this name affects full path...
 	if(mDirectory!=NULL)	
 	{
-		mFullPath.assign(DStringUtils::CombinePath(mDirectory->GetFullPath(), name));
+		mFullPath.assign(StringUtils::CombinePath(mDirectory->GetFullPath(), name));
 	}
 	else
 	{
@@ -276,7 +276,7 @@ void ConstantsTypeTable::SetName(const string& name)
 		vector<string> names;
 
 		//and just a loop through columns
-		vector<DConstantsTypeColumn *>::const_iterator iter = mColumns.begin();
+		vector<ConstantsTypeColumn *>::const_iterator iter = mColumns.begin();
 		while(iter<mColumns.end())
 		{
 			names.push_back((*iter)->GetName());
@@ -291,7 +291,7 @@ void ConstantsTypeTable::SetName(const string& name)
 		vector<string> types;
 
 		//and just a loop through columns
-		vector<DConstantsTypeColumn *>::const_iterator iter = mColumns.begin();
+		vector<ConstantsTypeColumn *>::const_iterator iter = mColumns.begin();
 		while(iter<mColumns.end())
 		{
 			types.push_back((*iter)->GetTypeString());

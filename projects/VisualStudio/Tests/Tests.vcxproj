@@ -50,13 +50,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\MySQL\MySQL Connector C 6.0.2\include;$(CCDB_HOME)/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MYSQL_CONNECTOR )/include;$(CCDB_HOME)/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>libmysql.lib;mysqlclient.lib;zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\MySQL\MySQL Connector C 6.0.2\lib\opt;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR )\lib\opt;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -80,7 +80,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CCDBLibrary\CCDBLibrary.vcxproj">
+    <ProjectReference Include="..\Library\Library.vcxproj">
       <Project>{ff2376e7-5637-46a4-ae1b-a083d7588552}</Project>
       <Private>true</Private>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
@@ -90,27 +90,27 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\mainTests.cc" />
-    <ClCompile Include="..\..\..\src\Tests\benchmark_PreparedStatements.cc" />
-    <ClCompile Include="..\..\..\src\Tests\benchmark_Providers.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DConsole.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DMySQLProvider.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DMySQLProvider_Assignments.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DMySQLProvider_Connection.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DMySQLProvider_Directories.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DMySQLProvider_Other.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DMySQLProvider_RunRanges.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DMySQLProvider_RunRangesVariations.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DMySQLProvider_TypeTables.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DMySQLProvider_Variations.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DPathUtils.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_DStringUtils.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_UserAPI.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_ModelObjects.cc" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\include\Tests\tests.h" />
     <ClInclude Include="..\..\..\include\Tests\tests_macros.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\Tests\benchmark_PreparedStatements.cc" />
+    <ClCompile Include="..\..\..\src\Tests\benchmark_Providers.cc" />
+    <ClCompile Include="..\..\..\src\Tests\mainTests.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_Console.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_ModelObjects.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Assignments.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Connection.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Directories.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Other.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_RunRanges.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_RunRangesVariations.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_TypeTables.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Variations.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_PathUtils.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_StringUtils.cc" />
+    <ClCompile Include="..\..\..\src\Tests\test_UserAPI.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

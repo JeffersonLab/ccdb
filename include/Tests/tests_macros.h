@@ -3,16 +3,16 @@
 
 #ifndef TESTS_INIT
 
-#include "DConsole.h"
-#include "DStopWatch.h"
+#include "CCDB/Console.h"
+#include "CCDB/Helpers/StopWatch.h"
 
 using namespace std;
 using namespace ccdb;
 
-extern DConsole gConsole;
+extern Console gConsole;
 extern std::string gConnectionString;
 //must be called once per function that performs tests
-#define TESTS_INIT(title) bool testtmp; bool testSetpsPassed;gConsole.WriteLine(); gConsole.WriteLine(DConsole::cBrightYellow, (title)); gConsole.WriteLine();
+#define TESTS_INIT(title) bool testtmp; bool testSetpsPassed;gConsole.WriteLine(); gConsole.WriteLine(Console::cBrightYellow, (title)); gConsole.WriteLine();
 
 //render test title
 #define TITLE(title) gConsole.Write("%-50.50s",(title));
@@ -30,13 +30,13 @@ extern std::string gConnectionString;
 #define STEP_PASSED testtmp
 
 //must be called once per function that performs tests
-#define BENCHMARK_INIT(title) DConsole gConsole; DStopWatch stopwatch; gConsole.WriteLine(DConsole::cBrightYellow, (title)); gConsole.WriteLine();
+#define BENCHMARK_INIT(title) Console gConsole; StopWatch stopwatch; gConsole.WriteLine(Console::cBrightYellow, (title)); gConsole.WriteLine();
 
 //must be called once per function that performs tests
-#define BENCHMARK_START(title) gConsole.WriteLine(DConsole::cBrightWhite,"\n[ %s ]", (title)); stopwatch.Start();
+#define BENCHMARK_START(title) gConsole.WriteLine(Console::cBrightWhite,"\n[ %s ]", (title)); stopwatch.Start();
 
 //must be called once per function that performs tests
-#define BENCHMARK_FINISH(title) stopwatch.Stop(); gConsole.WriteLine(DConsole::cBrightWhite, " %s %f", (title), stopwatch.GetDuration());
+#define BENCHMARK_FINISH(title) stopwatch.Stop(); gConsole.WriteLine(Console::cBrightWhite, " %s %f", (title), stopwatch.GetDuration());
 
 //"gets" test gConsole
 #define CONSOLE gConsole

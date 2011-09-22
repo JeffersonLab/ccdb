@@ -358,7 +358,7 @@ int ccdb::Console::WriteLine( ConsoleColors color, const char *fmt, ... )
 	}
 	catch (std::exception ex)
 	{
-		fprintf(stderr, "Exception caught in ccdb::DConsole::WriteLine, the message exception is:\n%s", ex.what());
+		fprintf(stderr, "Exception caught in ccdb::Console::WriteLine, the message exception is:\n%s", ex.what());
 		SetForegroundColor(fcBackup);	// restore color
 		throw;
 	}

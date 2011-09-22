@@ -3652,7 +3652,7 @@ SWIG_From_unsigned_SS_long  (unsigned long value)
 
 
 
-#include "Model/DVariation.h"
+#include "Model/Variation.h"
 using namespace ccdb;
 using namespace std;
 
@@ -4834,31 +4834,31 @@ SWIGINTERN void vector_Sl_DAssignment_Sm__Sg____setitem____SWIG_2(vector< DAssig
 SWIGINTERN void vector_Sl_DAssignment_Sm__Sg__append(vector< DAssignment * > *self,vector< DAssignment * >::value_type x){
       self->push_back(x);
     }
-SWIGINTERN swig::SwigPyIterator *vector_Sl_DDirectory_Sm__Sg__iterator(vector< DDirectory * > *self,PyObject **PYTHON_SELF){
+SWIGINTERN swig::SwigPyIterator *vector_Sl_DDirectory_Sm__Sg__iterator(vector< Directory * > *self,PyObject **PYTHON_SELF){
       return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
     }
-SWIGINTERN bool vector_Sl_DDirectory_Sm__Sg____nonzero__(vector< DDirectory * > const *self){
+SWIGINTERN bool vector_Sl_DDirectory_Sm__Sg____nonzero__(vector< Directory * > const *self){
       return !(self->empty());
     }
-SWIGINTERN bool vector_Sl_DDirectory_Sm__Sg____bool__(vector< DDirectory * > const *self){
+SWIGINTERN bool vector_Sl_DDirectory_Sm__Sg____bool__(vector< Directory * > const *self){
       return !(self->empty());
     }
-SWIGINTERN vector< DDirectory * >::size_type vector_Sl_DDirectory_Sm__Sg____len__(vector< DDirectory * > const *self){
+SWIGINTERN vector< Directory * >::size_type vector_Sl_DDirectory_Sm__Sg____len__(vector< Directory * > const *self){
       return self->size();
     }
-SWIGINTERN vector< DDirectory * >::value_type vector_Sl_DDirectory_Sm__Sg__pop(vector< DDirectory * > *self){
+SWIGINTERN vector< Directory * >::value_type vector_Sl_DDirectory_Sm__Sg__pop(vector< Directory * > *self){
       if (self->size() == 0)
 	throw std::out_of_range("pop from empty container");
-      std::vector<DDirectory*,std::allocator< DDirectory * > >::value_type x = self->back();
+      std::vector<Directory*,std::allocator< Directory * > >::value_type x = self->back();
       self->pop_back();
       return x;
     }
-SWIGINTERN std::vector< DDirectory *,std::allocator< DDirectory * > > *vector_Sl_DDirectory_Sm__Sg____getslice__(vector< DDirectory * > *self,vector< DDirectory * >::difference_type i,vector< DDirectory * >::difference_type j){
+SWIGINTERN std::vector< Directory *,std::allocator< Directory * > > *vector_Sl_DDirectory_Sm__Sg____getslice__(vector< Directory * > *self,vector< Directory * >::difference_type i,vector< Directory * >::difference_type j){
       return swig::getslice(self, i, j);
     }
 
   namespace swig {
-    template <>  struct traits<DDirectory > {
+    template <>  struct traits<Directory > {
       typedef pointer_category category;
       static const char* type_name() { return"DDirectory"; }
     };
@@ -4866,7 +4866,7 @@ SWIGINTERN std::vector< DDirectory *,std::allocator< DDirectory * > > *vector_Sl
 
 
       namespace swig {
-	template <>  struct traits<std::vector<DDirectory*, std::allocator< DDirectory * > > > {
+	template <>  struct traits<std::vector<Directory*, std::allocator< Directory * > > > {
 	  typedef value_category category;
 	  static const char* type_name() {
 	    return "std::vector<" "DDirectory" " *," "std::allocator< DDirectory * >" " >";
@@ -4874,16 +4874,16 @@ SWIGINTERN std::vector< DDirectory *,std::allocator< DDirectory * > > *vector_Sl
 	};
       }
     
-SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____setslice____SWIG_0(vector< DDirectory * > *self,vector< DDirectory * >::difference_type i,vector< DDirectory * >::difference_type j,std::vector< DDirectory *,std::allocator< DDirectory * > > const &v=std::vector< DDirectory *,std::allocator< DDirectory * > >()){
+SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____setslice____SWIG_0(vector< Directory * > *self,vector< Directory * >::difference_type i,vector< Directory * >::difference_type j,std::vector< Directory *,std::allocator< Directory * > > const &v=std::vector< Directory *,std::allocator< Directory * > >()){
       swig::setslice(self, i, j, v);
     }
-SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____delslice__(vector< DDirectory * > *self,vector< DDirectory * >::difference_type i,vector< DDirectory * >::difference_type j){
+SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____delslice__(vector< Directory * > *self,vector< Directory * >::difference_type i,vector< Directory * >::difference_type j){
       swig::delslice(self, i, j);
     }
-SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____delitem____SWIG_0(vector< DDirectory * > *self,vector< DDirectory * >::difference_type i){
+SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____delitem____SWIG_0(vector< Directory * > *self,vector< Directory * >::difference_type i){
       self->erase(swig::getpos(self,i));
     }
-SWIGINTERN std::vector< DDirectory *,std::allocator< DDirectory * > > *vector_Sl_DDirectory_Sm__Sg____getitem____SWIG_0(vector< DDirectory * > *self,PySliceObject *slice){
+SWIGINTERN std::vector< Directory *,std::allocator< Directory * > > *vector_Sl_DDirectory_Sm__Sg____getitem____SWIG_0(vector< Directory * > *self,PySliceObject *slice){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -4892,7 +4892,7 @@ SWIGINTERN std::vector< DDirectory *,std::allocator< DDirectory * > > *vector_Sl
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       return swig::getslice(self, i, j);
     }
-SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_0(vector< DDirectory * > *self,PySliceObject *slice,std::vector< DDirectory *,std::allocator< DDirectory * > > const &v){
+SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_0(vector< Directory * > *self,PySliceObject *slice,std::vector< Directory *,std::allocator< Directory * > > const &v){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -4901,7 +4901,7 @@ SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_0(vector< DDirect
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       swig::setslice(self, i, j, v);
     }
-SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_1(vector< DDirectory * > *self,PySliceObject *slice){
+SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_1(vector< Directory * > *self,PySliceObject *slice){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -4910,7 +4910,7 @@ SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_1(vector< DDirect
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       swig::delslice(self, i,j);
     }
-SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____delitem____SWIG_1(vector< DDirectory * > *self,PySliceObject *slice){
+SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____delitem____SWIG_1(vector< Directory * > *self,PySliceObject *slice){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -4919,40 +4919,40 @@ SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____delitem____SWIG_1(vector< DDirect
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       swig::delslice(self, i,j);
     }
-SWIGINTERN vector< DDirectory * >::value_type vector_Sl_DDirectory_Sm__Sg____getitem____SWIG_1(vector< DDirectory * > *self,vector< DDirectory * >::difference_type i){
+SWIGINTERN vector< Directory * >::value_type vector_Sl_DDirectory_Sm__Sg____getitem____SWIG_1(vector< Directory * > *self,vector< Directory * >::difference_type i){
       return *(swig::cgetpos(self, i));
     }
-SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_2(vector< DDirectory * > *self,vector< DDirectory * >::difference_type i,vector< DDirectory * >::value_type x){
+SWIGINTERN void vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_2(vector< Directory * > *self,vector< Directory * >::difference_type i,vector< Directory * >::value_type x){
       *(swig::getpos(self,i)) = x;
     }
-SWIGINTERN void vector_Sl_DDirectory_Sm__Sg__append(vector< DDirectory * > *self,vector< DDirectory * >::value_type x){
+SWIGINTERN void vector_Sl_DDirectory_Sm__Sg__append(vector< Directory * > *self,vector< Directory * >::value_type x){
       self->push_back(x);
     }
-SWIGINTERN swig::SwigPyIterator *vector_Sl_DConstantsTypeTable_Sm__Sg__iterator(vector< DConstantsTypeTable * > *self,PyObject **PYTHON_SELF){
+SWIGINTERN swig::SwigPyIterator *vector_Sl_DConstantsTypeTable_Sm__Sg__iterator(vector< ConstantsTypeTable * > *self,PyObject **PYTHON_SELF){
       return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
     }
-SWIGINTERN bool vector_Sl_DConstantsTypeTable_Sm__Sg____nonzero__(vector< DConstantsTypeTable * > const *self){
+SWIGINTERN bool vector_Sl_DConstantsTypeTable_Sm__Sg____nonzero__(vector< ConstantsTypeTable * > const *self){
       return !(self->empty());
     }
-SWIGINTERN bool vector_Sl_DConstantsTypeTable_Sm__Sg____bool__(vector< DConstantsTypeTable * > const *self){
+SWIGINTERN bool vector_Sl_DConstantsTypeTable_Sm__Sg____bool__(vector< ConstantsTypeTable * > const *self){
       return !(self->empty());
     }
-SWIGINTERN vector< DConstantsTypeTable * >::size_type vector_Sl_DConstantsTypeTable_Sm__Sg____len__(vector< DConstantsTypeTable * > const *self){
+SWIGINTERN vector< ConstantsTypeTable * >::size_type vector_Sl_DConstantsTypeTable_Sm__Sg____len__(vector< ConstantsTypeTable * > const *self){
       return self->size();
     }
-SWIGINTERN vector< DConstantsTypeTable * >::value_type vector_Sl_DConstantsTypeTable_Sm__Sg__pop(vector< DConstantsTypeTable * > *self){
+SWIGINTERN vector< ConstantsTypeTable * >::value_type vector_Sl_DConstantsTypeTable_Sm__Sg__pop(vector< ConstantsTypeTable * > *self){
       if (self->size() == 0)
 	throw std::out_of_range("pop from empty container");
-      std::vector<DConstantsTypeTable*,std::allocator< DConstantsTypeTable * > >::value_type x = self->back();
+      std::vector<ConstantsTypeTable*,std::allocator< ConstantsTypeTable * > >::value_type x = self->back();
       self->pop_back();
       return x;
     }
-SWIGINTERN std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *vector_Sl_DConstantsTypeTable_Sm__Sg____getslice__(vector< DConstantsTypeTable * > *self,vector< DConstantsTypeTable * >::difference_type i,vector< DConstantsTypeTable * >::difference_type j){
+SWIGINTERN std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *vector_Sl_DConstantsTypeTable_Sm__Sg____getslice__(vector< ConstantsTypeTable * > *self,vector< ConstantsTypeTable * >::difference_type i,vector< ConstantsTypeTable * >::difference_type j){
       return swig::getslice(self, i, j);
     }
 
   namespace swig {
-    template <>  struct traits<DConstantsTypeTable > {
+    template <>  struct traits<ConstantsTypeTable > {
       typedef pointer_category category;
       static const char* type_name() { return"DConstantsTypeTable"; }
     };
@@ -4960,7 +4960,7 @@ SWIGINTERN std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTabl
 
 
       namespace swig {
-	template <>  struct traits<std::vector<DConstantsTypeTable*, std::allocator< DConstantsTypeTable * > > > {
+	template <>  struct traits<std::vector<ConstantsTypeTable*, std::allocator< ConstantsTypeTable * > > > {
 	  typedef value_category category;
 	  static const char* type_name() {
 	    return "std::vector<" "DConstantsTypeTable" " *," "std::allocator< DConstantsTypeTable * >" " >";
@@ -4968,16 +4968,16 @@ SWIGINTERN std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTabl
 	};
       }
     
-SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____setslice____SWIG_0(vector< DConstantsTypeTable * > *self,vector< DConstantsTypeTable * >::difference_type i,vector< DConstantsTypeTable * >::difference_type j,std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > const &v=std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >()){
+SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____setslice____SWIG_0(vector< ConstantsTypeTable * > *self,vector< ConstantsTypeTable * >::difference_type i,vector< ConstantsTypeTable * >::difference_type j,std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > const &v=std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >()){
       swig::setslice(self, i, j, v);
     }
-SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____delslice__(vector< DConstantsTypeTable * > *self,vector< DConstantsTypeTable * >::difference_type i,vector< DConstantsTypeTable * >::difference_type j){
+SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____delslice__(vector< ConstantsTypeTable * > *self,vector< ConstantsTypeTable * >::difference_type i,vector< ConstantsTypeTable * >::difference_type j){
       swig::delslice(self, i, j);
     }
-SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____delitem____SWIG_0(vector< DConstantsTypeTable * > *self,vector< DConstantsTypeTable * >::difference_type i){
+SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____delitem____SWIG_0(vector< ConstantsTypeTable * > *self,vector< ConstantsTypeTable * >::difference_type i){
       self->erase(swig::getpos(self,i));
     }
-SWIGINTERN std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *vector_Sl_DConstantsTypeTable_Sm__Sg____getitem____SWIG_0(vector< DConstantsTypeTable * > *self,PySliceObject *slice){
+SWIGINTERN std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *vector_Sl_DConstantsTypeTable_Sm__Sg____getitem____SWIG_0(vector< ConstantsTypeTable * > *self,PySliceObject *slice){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -4986,7 +4986,7 @@ SWIGINTERN std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTabl
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       return swig::getslice(self, i, j);
     }
-SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_0(vector< DConstantsTypeTable * > *self,PySliceObject *slice,std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > const &v){
+SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_0(vector< ConstantsTypeTable * > *self,PySliceObject *slice,std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > const &v){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -4995,7 +4995,7 @@ SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_0(vector
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       swig::setslice(self, i, j, v);
     }
-SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_1(vector< DConstantsTypeTable * > *self,PySliceObject *slice){
+SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_1(vector< ConstantsTypeTable * > *self,PySliceObject *slice){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -5004,7 +5004,7 @@ SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_1(vector
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       swig::delslice(self, i,j);
     }
-SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____delitem____SWIG_1(vector< DConstantsTypeTable * > *self,PySliceObject *slice){
+SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____delitem____SWIG_1(vector< ConstantsTypeTable * > *self,PySliceObject *slice){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -5013,40 +5013,40 @@ SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____delitem____SWIG_1(vector
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       swig::delslice(self, i,j);
     }
-SWIGINTERN vector< DConstantsTypeTable * >::value_type vector_Sl_DConstantsTypeTable_Sm__Sg____getitem____SWIG_1(vector< DConstantsTypeTable * > *self,vector< DConstantsTypeTable * >::difference_type i){
+SWIGINTERN vector< ConstantsTypeTable * >::value_type vector_Sl_DConstantsTypeTable_Sm__Sg____getitem____SWIG_1(vector< ConstantsTypeTable * > *self,vector< ConstantsTypeTable * >::difference_type i){
       return *(swig::cgetpos(self, i));
     }
-SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_2(vector< DConstantsTypeTable * > *self,vector< DConstantsTypeTable * >::difference_type i,vector< DConstantsTypeTable * >::value_type x){
+SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_2(vector< ConstantsTypeTable * > *self,vector< ConstantsTypeTable * >::difference_type i,vector< ConstantsTypeTable * >::value_type x){
       *(swig::getpos(self,i)) = x;
     }
-SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg__append(vector< DConstantsTypeTable * > *self,vector< DConstantsTypeTable * >::value_type x){
+SWIGINTERN void vector_Sl_DConstantsTypeTable_Sm__Sg__append(vector< ConstantsTypeTable * > *self,vector< ConstantsTypeTable * >::value_type x){
       self->push_back(x);
     }
-SWIGINTERN swig::SwigPyIterator *vector_Sl_DConstantsTypeColumn_Sm__Sg__iterator(vector< DConstantsTypeColumn * > *self,PyObject **PYTHON_SELF){
+SWIGINTERN swig::SwigPyIterator *vector_Sl_DConstantsTypeColumn_Sm__Sg__iterator(vector< ConstantsTypeColumn * > *self,PyObject **PYTHON_SELF){
       return swig::make_output_iterator(self->begin(), self->begin(), self->end(), *PYTHON_SELF);
     }
-SWIGINTERN bool vector_Sl_DConstantsTypeColumn_Sm__Sg____nonzero__(vector< DConstantsTypeColumn * > const *self){
+SWIGINTERN bool vector_Sl_DConstantsTypeColumn_Sm__Sg____nonzero__(vector< ConstantsTypeColumn * > const *self){
       return !(self->empty());
     }
-SWIGINTERN bool vector_Sl_DConstantsTypeColumn_Sm__Sg____bool__(vector< DConstantsTypeColumn * > const *self){
+SWIGINTERN bool vector_Sl_DConstantsTypeColumn_Sm__Sg____bool__(vector< ConstantsTypeColumn * > const *self){
       return !(self->empty());
     }
-SWIGINTERN vector< DConstantsTypeColumn * >::size_type vector_Sl_DConstantsTypeColumn_Sm__Sg____len__(vector< DConstantsTypeColumn * > const *self){
+SWIGINTERN vector< ConstantsTypeColumn * >::size_type vector_Sl_DConstantsTypeColumn_Sm__Sg____len__(vector< ConstantsTypeColumn * > const *self){
       return self->size();
     }
-SWIGINTERN vector< DConstantsTypeColumn * >::value_type vector_Sl_DConstantsTypeColumn_Sm__Sg__pop(vector< DConstantsTypeColumn * > *self){
+SWIGINTERN vector< ConstantsTypeColumn * >::value_type vector_Sl_DConstantsTypeColumn_Sm__Sg__pop(vector< ConstantsTypeColumn * > *self){
       if (self->size() == 0)
 	throw std::out_of_range("pop from empty container");
-      std::vector<DConstantsTypeColumn*,std::allocator< DConstantsTypeColumn * > >::value_type x = self->back();
+      std::vector<ConstantsTypeColumn*,std::allocator< ConstantsTypeColumn * > >::value_type x = self->back();
       self->pop_back();
       return x;
     }
-SWIGINTERN std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > *vector_Sl_DConstantsTypeColumn_Sm__Sg____getslice__(vector< DConstantsTypeColumn * > *self,vector< DConstantsTypeColumn * >::difference_type i,vector< DConstantsTypeColumn * >::difference_type j){
+SWIGINTERN std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > *vector_Sl_DConstantsTypeColumn_Sm__Sg____getslice__(vector< ConstantsTypeColumn * > *self,vector< ConstantsTypeColumn * >::difference_type i,vector< ConstantsTypeColumn * >::difference_type j){
       return swig::getslice(self, i, j);
     }
 
   namespace swig {
-    template <>  struct traits<DConstantsTypeColumn > {
+    template <>  struct traits<ConstantsTypeColumn > {
       typedef pointer_category category;
       static const char* type_name() { return"DConstantsTypeColumn"; }
     };
@@ -5054,7 +5054,7 @@ SWIGINTERN std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeCol
 
 
       namespace swig {
-	template <>  struct traits<std::vector<DConstantsTypeColumn*, std::allocator< DConstantsTypeColumn * > > > {
+	template <>  struct traits<std::vector<ConstantsTypeColumn*, std::allocator< ConstantsTypeColumn * > > > {
 	  typedef value_category category;
 	  static const char* type_name() {
 	    return "std::vector<" "DConstantsTypeColumn" " *," "std::allocator< DConstantsTypeColumn * >" " >";
@@ -5062,16 +5062,16 @@ SWIGINTERN std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeCol
 	};
       }
     
-SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____setslice____SWIG_0(vector< DConstantsTypeColumn * > *self,vector< DConstantsTypeColumn * >::difference_type i,vector< DConstantsTypeColumn * >::difference_type j,std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > const &v=std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > >()){
+SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____setslice____SWIG_0(vector< ConstantsTypeColumn * > *self,vector< ConstantsTypeColumn * >::difference_type i,vector< ConstantsTypeColumn * >::difference_type j,std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > const &v=std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > >()){
       swig::setslice(self, i, j, v);
     }
-SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____delslice__(vector< DConstantsTypeColumn * > *self,vector< DConstantsTypeColumn * >::difference_type i,vector< DConstantsTypeColumn * >::difference_type j){
+SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____delslice__(vector< ConstantsTypeColumn * > *self,vector< ConstantsTypeColumn * >::difference_type i,vector< ConstantsTypeColumn * >::difference_type j){
       swig::delslice(self, i, j);
     }
-SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____delitem____SWIG_0(vector< DConstantsTypeColumn * > *self,vector< DConstantsTypeColumn * >::difference_type i){
+SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____delitem____SWIG_0(vector< ConstantsTypeColumn * > *self,vector< ConstantsTypeColumn * >::difference_type i){
       self->erase(swig::getpos(self,i));
     }
-SWIGINTERN std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > *vector_Sl_DConstantsTypeColumn_Sm__Sg____getitem____SWIG_0(vector< DConstantsTypeColumn * > *self,PySliceObject *slice){
+SWIGINTERN std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > *vector_Sl_DConstantsTypeColumn_Sm__Sg____getitem____SWIG_0(vector< ConstantsTypeColumn * > *self,PySliceObject *slice){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -5080,7 +5080,7 @@ SWIGINTERN std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeCol
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       return swig::getslice(self, i, j);
     }
-SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_0(vector< DConstantsTypeColumn * > *self,PySliceObject *slice,std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > const &v){
+SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_0(vector< ConstantsTypeColumn * > *self,PySliceObject *slice,std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > const &v){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -5089,7 +5089,7 @@ SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_0(vecto
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       swig::setslice(self, i, j, v);
     }
-SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_1(vector< DConstantsTypeColumn * > *self,PySliceObject *slice){
+SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_1(vector< ConstantsTypeColumn * > *self,PySliceObject *slice){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -5098,7 +5098,7 @@ SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_1(vecto
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       swig::delslice(self, i,j);
     }
-SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____delitem____SWIG_1(vector< DConstantsTypeColumn * > *self,PySliceObject *slice){
+SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____delitem____SWIG_1(vector< ConstantsTypeColumn * > *self,PySliceObject *slice){
       Py_ssize_t i, j, step;
       if( !PySlice_Check(slice) ) {
         SWIG_Error(SWIG_TypeError, "Slice object expected.");
@@ -5107,13 +5107,13 @@ SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____delitem____SWIG_1(vecto
       PySlice_GetIndices(SWIGPY_SLICE_ARG(slice), self->size(), &i, &j, &step);
       swig::delslice(self, i,j);
     }
-SWIGINTERN vector< DConstantsTypeColumn * >::value_type vector_Sl_DConstantsTypeColumn_Sm__Sg____getitem____SWIG_1(vector< DConstantsTypeColumn * > *self,vector< DConstantsTypeColumn * >::difference_type i){
+SWIGINTERN vector< ConstantsTypeColumn * >::value_type vector_Sl_DConstantsTypeColumn_Sm__Sg____getitem____SWIG_1(vector< ConstantsTypeColumn * > *self,vector< ConstantsTypeColumn * >::difference_type i){
       return *(swig::cgetpos(self, i));
     }
-SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_2(vector< DConstantsTypeColumn * > *self,vector< DConstantsTypeColumn * >::difference_type i,vector< DConstantsTypeColumn * >::value_type x){
+SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_2(vector< ConstantsTypeColumn * > *self,vector< ConstantsTypeColumn * >::difference_type i,vector< ConstantsTypeColumn * >::value_type x){
       *(swig::getpos(self,i)) = x;
     }
-SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg__append(vector< DConstantsTypeColumn * > *self,vector< DConstantsTypeColumn * >::value_type x){
+SWIGINTERN void vector_Sl_DConstantsTypeColumn_Sm__Sg__append(vector< ConstantsTypeColumn * > *self,vector< ConstantsTypeColumn * >::value_type x){
       self->push_back(x);
     }
 
@@ -6670,10 +6670,10 @@ SWIGINTERN PyObject *SwigPyIterator_swigregister(PyObject *SWIGUNUSEDPARM(self),
 
 SWIGINTERN PyObject *_wrap_new_RunRange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":new_RunRange")) SWIG_fail;
-  result = (DRunRange *)new DRunRange();
+  result = (RunRange *)new RunRange();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -6683,7 +6683,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_delete_RunRange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -6693,7 +6693,7 @@ SWIGINTERN PyObject *_wrap_delete_RunRange(PyObject *SWIGUNUSEDPARM(self), PyObj
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_RunRange" "', argument " "1"" of type '" "DRunRange *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
+  arg1 = reinterpret_cast< RunRange * >(argp1);
   delete arg1;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -6704,7 +6704,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__GetId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -6715,8 +6715,8 @@ SWIGINTERN PyObject *_wrap_RunRange__GetId(PyObject *SWIGUNUSEDPARM(self), PyObj
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__GetId" "', argument " "1"" of type '" "DRunRange const *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
-  result = (int)((DRunRange const *)arg1)->GetId();
+  arg1 = reinterpret_cast< RunRange * >(argp1);
+  result = (int)((RunRange const *)arg1)->GetId();
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -6726,7 +6726,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__GetMax(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -6737,8 +6737,8 @@ SWIGINTERN PyObject *_wrap_RunRange__GetMax(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__GetMax" "', argument " "1"" of type '" "DRunRange const *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
-  result = (int)((DRunRange const *)arg1)->GetMax();
+  arg1 = reinterpret_cast< RunRange * >(argp1);
+  result = (int)((RunRange const *)arg1)->GetMax();
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -6748,7 +6748,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__GetMin(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -6759,8 +6759,8 @@ SWIGINTERN PyObject *_wrap_RunRange__GetMin(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__GetMin" "', argument " "1"" of type '" "DRunRange const *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
-  result = (int)((DRunRange const *)arg1)->GetMin();
+  arg1 = reinterpret_cast< RunRange * >(argp1);
+  result = (int)((RunRange const *)arg1)->GetMin();
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -6770,7 +6770,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__GetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -6781,8 +6781,8 @@ SWIGINTERN PyObject *_wrap_RunRange__GetName(PyObject *SWIGUNUSEDPARM(self), PyO
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__GetName" "', argument " "1"" of type '" "DRunRange const *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
-  result = ((DRunRange const *)arg1)->GetName();
+  arg1 = reinterpret_cast< RunRange * >(argp1);
+  result = ((RunRange const *)arg1)->GetName();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -6792,7 +6792,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__GetComment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -6803,8 +6803,8 @@ SWIGINTERN PyObject *_wrap_RunRange__GetComment(PyObject *SWIGUNUSEDPARM(self), 
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__GetComment" "', argument " "1"" of type '" "DRunRange const *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
-  result = ((DRunRange const *)arg1)->GetComment();
+  arg1 = reinterpret_cast< RunRange * >(argp1);
+  result = ((RunRange const *)arg1)->GetComment();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -6814,7 +6814,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__SetId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -6828,7 +6828,7 @@ SWIGINTERN PyObject *_wrap_RunRange__SetId(PyObject *SWIGUNUSEDPARM(self), PyObj
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__SetId" "', argument " "1"" of type '" "DRunRange *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
+  arg1 = reinterpret_cast< RunRange * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RunRange__SetId" "', argument " "2"" of type '" "int""'");
@@ -6844,7 +6844,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__SetMax(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -6858,7 +6858,7 @@ SWIGINTERN PyObject *_wrap_RunRange__SetMax(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__SetMax" "', argument " "1"" of type '" "DRunRange *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
+  arg1 = reinterpret_cast< RunRange * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RunRange__SetMax" "', argument " "2"" of type '" "int""'");
@@ -6874,7 +6874,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__SetMin(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -6888,7 +6888,7 @@ SWIGINTERN PyObject *_wrap_RunRange__SetMin(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__SetMin" "', argument " "1"" of type '" "DRunRange *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
+  arg1 = reinterpret_cast< RunRange * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RunRange__SetMin" "', argument " "2"" of type '" "int""'");
@@ -6904,7 +6904,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__SetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -6916,7 +6916,7 @@ SWIGINTERN PyObject *_wrap_RunRange__SetName(PyObject *SWIGUNUSEDPARM(self), PyO
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__SetName" "', argument " "1"" of type '" "DRunRange *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
+  arg1 = reinterpret_cast< RunRange * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -6936,7 +6936,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__SetComment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -6948,7 +6948,7 @@ SWIGINTERN PyObject *_wrap_RunRange__SetComment(PyObject *SWIGUNUSEDPARM(self), 
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__SetComment" "', argument " "1"" of type '" "DRunRange *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
+  arg1 = reinterpret_cast< RunRange * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -6968,7 +6968,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange_set_range(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   int arg2 ;
   int arg3 ;
   void *argp1 = 0 ;
@@ -6986,7 +6986,7 @@ SWIGINTERN PyObject *_wrap_RunRange_set_range(PyObject *SWIGUNUSEDPARM(self), Py
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange_set_range" "', argument " "1"" of type '" "DRunRange *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
+  arg1 = reinterpret_cast< RunRange * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RunRange_set_range" "', argument " "2"" of type '" "int""'");
@@ -7007,7 +7007,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__GetCreatedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7018,8 +7018,8 @@ SWIGINTERN PyObject *_wrap_RunRange__GetCreatedTime(PyObject *SWIGUNUSEDPARM(sel
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__GetCreatedTime" "', argument " "1"" of type '" "DRunRange const *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
-  result = ((DRunRange const *)arg1)->GetCreatedTime();
+  arg1 = reinterpret_cast< RunRange * >(argp1);
+  result = ((RunRange const *)arg1)->GetCreatedTime();
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   return resultobj;
 fail:
@@ -7029,7 +7029,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__SetCreatedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   time_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7043,7 +7043,7 @@ SWIGINTERN PyObject *_wrap_RunRange__SetCreatedTime(PyObject *SWIGUNUSEDPARM(sel
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__SetCreatedTime" "', argument " "1"" of type '" "DRunRange *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
+  arg1 = reinterpret_cast< RunRange * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RunRange__SetCreatedTime" "', argument " "2"" of type '" "time_t""'");
@@ -7059,7 +7059,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__GetModifiedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7070,8 +7070,8 @@ SWIGINTERN PyObject *_wrap_RunRange__GetModifiedTime(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__GetModifiedTime" "', argument " "1"" of type '" "DRunRange const *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
-  result = ((DRunRange const *)arg1)->GetModifiedTime();
+  arg1 = reinterpret_cast< RunRange * >(argp1);
+  result = ((RunRange const *)arg1)->GetModifiedTime();
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   return resultobj;
 fail:
@@ -7081,7 +7081,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_RunRange__SetModifiedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DRunRange *arg1 = (DRunRange *) 0 ;
+  RunRange *arg1 = (RunRange *) 0 ;
   time_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7095,7 +7095,7 @@ SWIGINTERN PyObject *_wrap_RunRange__SetModifiedTime(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "RunRange__SetModifiedTime" "', argument " "1"" of type '" "DRunRange *""'"); 
   }
-  arg1 = reinterpret_cast< DRunRange * >(argp1);
+  arg1 = reinterpret_cast< RunRange * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "RunRange__SetModifiedTime" "', argument " "2"" of type '" "time_t""'");
@@ -7118,10 +7118,10 @@ SWIGINTERN PyObject *RunRange_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObj
 
 SWIGINTERN PyObject *_wrap_new_Variation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *result = 0 ;
+  Variation *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":new_Variation")) SWIG_fail;
-  result = (DVariation *)new DVariation();
+  result = (Variation *)new Variation();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DVariation, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -7131,7 +7131,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_delete_Variation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7141,7 +7141,7 @@ SWIGINTERN PyObject *_wrap_delete_Variation(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Variation" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   delete arg1;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -7152,7 +7152,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__GetId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7163,7 +7163,7 @@ SWIGINTERN PyObject *_wrap_Variation__GetId(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__GetId" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   result = (unsigned int)(arg1)->GetId();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
@@ -7174,7 +7174,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__SetId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   dbkey_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7188,7 +7188,7 @@ SWIGINTERN PyObject *_wrap_Variation__SetId(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__SetId" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Variation__SetId" "', argument " "2"" of type '" "dbkey_t""'");
@@ -7204,7 +7204,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__GetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7215,7 +7215,7 @@ SWIGINTERN PyObject *_wrap_Variation__GetName(PyObject *SWIGUNUSEDPARM(self), Py
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__GetName" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   result = (arg1)->GetName();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
@@ -7226,7 +7226,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__SetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7238,7 +7238,7 @@ SWIGINTERN PyObject *_wrap_Variation__SetName(PyObject *SWIGUNUSEDPARM(self), Py
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__SetName" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -7258,7 +7258,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__GetComment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7269,7 +7269,7 @@ SWIGINTERN PyObject *_wrap_Variation__GetComment(PyObject *SWIGUNUSEDPARM(self),
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__GetComment" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   result = (arg1)->GetComment();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
@@ -7280,7 +7280,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__SetComment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7292,7 +7292,7 @@ SWIGINTERN PyObject *_wrap_Variation__SetComment(PyObject *SWIGUNUSEDPARM(self),
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__SetComment" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -7312,7 +7312,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__GetCreatedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7323,7 +7323,7 @@ SWIGINTERN PyObject *_wrap_Variation__GetCreatedTime(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__GetCreatedTime" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   result = (arg1)->GetCreatedTime();
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   return resultobj;
@@ -7334,7 +7334,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__SetCreatedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   time_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7348,7 +7348,7 @@ SWIGINTERN PyObject *_wrap_Variation__SetCreatedTime(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__SetCreatedTime" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Variation__SetCreatedTime" "', argument " "2"" of type '" "time_t""'");
@@ -7364,7 +7364,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__GetModifiedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7375,7 +7375,7 @@ SWIGINTERN PyObject *_wrap_Variation__GetModifiedTime(PyObject *SWIGUNUSEDPARM(s
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__GetModifiedTime" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   result = (arg1)->GetModifiedTime();
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   return resultobj;
@@ -7386,7 +7386,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__SetModifiedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   time_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7400,7 +7400,7 @@ SWIGINTERN PyObject *_wrap_Variation__SetModifiedTime(PyObject *SWIGUNUSEDPARM(s
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__SetModifiedTime" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Variation__SetModifiedTime" "', argument " "2"" of type '" "time_t""'");
@@ -7416,7 +7416,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__GetDescription(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7427,7 +7427,7 @@ SWIGINTERN PyObject *_wrap_Variation__GetDescription(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__GetDescription" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   result = (arg1)->GetDescription();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
@@ -7438,7 +7438,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Variation__SetDescription(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DVariation *arg1 = (DVariation *) 0 ;
+  Variation *arg1 = (Variation *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7450,7 +7450,7 @@ SWIGINTERN PyObject *_wrap_Variation__SetDescription(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Variation__SetDescription" "', argument " "1"" of type '" "DVariation *""'"); 
   }
-  arg1 = reinterpret_cast< DVariation * >(argp1);
+  arg1 = reinterpret_cast< Variation * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -7477,10 +7477,10 @@ SWIGINTERN PyObject *Variation_swigregister(PyObject *SWIGUNUSEDPARM(self), PyOb
 
 SWIGINTERN PyObject *_wrap_new_Directory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *result = 0 ;
+  Directory *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":new_Directory")) SWIG_fail;
-  result = (DDirectory *)new DDirectory();
+  result = (Directory *)new Directory();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DDirectory, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -7490,7 +7490,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_delete_Directory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7500,7 +7500,7 @@ SWIGINTERN PyObject *_wrap_delete_Directory(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Directory" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
+  arg1 = reinterpret_cast< Directory * >(argp1);
   delete arg1;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -7511,19 +7511,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__GetParentDirectory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  DDirectory *result = 0 ;
+  Directory *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Directory__GetParentDirectory",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__GetParentDirectory" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
-  result = (DDirectory *)(arg1)->GetParentDirectory();
+  arg1 = reinterpret_cast< Directory * >(argp1);
+  result = (Directory *)(arg1)->GetParentDirectory();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DDirectory, 0 |  0 );
   return resultobj;
 fail:
@@ -7533,19 +7533,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__GetSubdirectories(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * > *result = 0 ;
+  vector< Directory * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Directory__GetSubdirectories",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__GetSubdirectories" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
-  result = (vector< DDirectory * > *) &(arg1)->GetSubdirectories();
+  arg1 = reinterpret_cast< Directory * >(argp1);
+  result = (vector< Directory * > *) &(arg1)->GetSubdirectories();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   return resultobj;
 fail:
@@ -7555,8 +7555,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory_add_subdirectory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -7569,12 +7569,12 @@ SWIGINTERN PyObject *_wrap_Directory_add_subdirectory(PyObject *SWIGUNUSEDPARM(s
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory_add_subdirectory" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
+  arg1 = reinterpret_cast< Directory * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Directory_add_subdirectory" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   (arg1)->AddSubdirectory(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -7585,7 +7585,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory_dispose_subdirectories(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7595,7 +7595,7 @@ SWIGINTERN PyObject *_wrap_Directory_dispose_subdirectories(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory_dispose_subdirectories" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
+  arg1 = reinterpret_cast< Directory * >(argp1);
   (arg1)->DisposeSubdirectories();
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -7606,7 +7606,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__GetId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7617,8 +7617,8 @@ SWIGINTERN PyObject *_wrap_Directory__GetId(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__GetId" "', argument " "1"" of type '" "DDirectory const *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
-  result = ((DDirectory const *)arg1)->GetId();
+  arg1 = reinterpret_cast< Directory * >(argp1);
+  result = ((Directory const *)arg1)->GetId();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -7628,7 +7628,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__SetId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   dbkey_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7642,7 +7642,7 @@ SWIGINTERN PyObject *_wrap_Directory__SetId(PyObject *SWIGUNUSEDPARM(self), PyOb
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__SetId" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
+  arg1 = reinterpret_cast< Directory * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Directory__SetId" "', argument " "2"" of type '" "dbkey_t""'");
@@ -7658,7 +7658,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory_get_parent_db_id(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7669,8 +7669,8 @@ SWIGINTERN PyObject *_wrap_Directory_get_parent_db_id(PyObject *SWIGUNUSEDPARM(s
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory_get_parent_db_id" "', argument " "1"" of type '" "DDirectory const *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
-  result = ((DDirectory const *)arg1)->GetParentId();
+  arg1 = reinterpret_cast< Directory * >(argp1);
+  result = ((Directory const *)arg1)->GetParentId();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -7680,7 +7680,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory_set_parent_db_id(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   dbkey_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7694,7 +7694,7 @@ SWIGINTERN PyObject *_wrap_Directory_set_parent_db_id(PyObject *SWIGUNUSEDPARM(s
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory_set_parent_db_id" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
+  arg1 = reinterpret_cast< Directory * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Directory_set_parent_db_id" "', argument " "2"" of type '" "dbkey_t""'");
@@ -7710,7 +7710,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__GetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7721,8 +7721,8 @@ SWIGINTERN PyObject *_wrap_Directory__GetName(PyObject *SWIGUNUSEDPARM(self), Py
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__GetName" "', argument " "1"" of type '" "DDirectory const *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
-  result = ((DDirectory const *)arg1)->GetName();
+  arg1 = reinterpret_cast< Directory * >(argp1);
+  result = ((Directory const *)arg1)->GetName();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -7732,7 +7732,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__SetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7744,7 +7744,7 @@ SWIGINTERN PyObject *_wrap_Directory__SetName(PyObject *SWIGUNUSEDPARM(self), Py
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__SetName" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
+  arg1 = reinterpret_cast< Directory * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -7764,7 +7764,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__GetFullPath(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7775,8 +7775,8 @@ SWIGINTERN PyObject *_wrap_Directory__GetFullPath(PyObject *SWIGUNUSEDPARM(self)
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__GetFullPath" "', argument " "1"" of type '" "DDirectory const *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
-  result = ((DDirectory const *)arg1)->GetFullPath();
+  arg1 = reinterpret_cast< Directory * >(argp1);
+  result = ((Directory const *)arg1)->GetFullPath();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -7786,7 +7786,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__SetFullPath(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7798,7 +7798,7 @@ SWIGINTERN PyObject *_wrap_Directory__SetFullPath(PyObject *SWIGUNUSEDPARM(self)
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__SetFullPath" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
+  arg1 = reinterpret_cast< Directory * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -7818,7 +7818,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__GetCreatedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7829,8 +7829,8 @@ SWIGINTERN PyObject *_wrap_Directory__GetCreatedTime(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__GetCreatedTime" "', argument " "1"" of type '" "DDirectory const *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
-  result = ((DDirectory const *)arg1)->GetCreatedTime();
+  arg1 = reinterpret_cast< Directory * >(argp1);
+  result = ((Directory const *)arg1)->GetCreatedTime();
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   return resultobj;
 fail:
@@ -7840,7 +7840,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__SetCreatedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   time_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7854,7 +7854,7 @@ SWIGINTERN PyObject *_wrap_Directory__SetCreatedTime(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__SetCreatedTime" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
+  arg1 = reinterpret_cast< Directory * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Directory__SetCreatedTime" "', argument " "2"" of type '" "time_t""'");
@@ -7870,7 +7870,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__GetModifiedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7881,8 +7881,8 @@ SWIGINTERN PyObject *_wrap_Directory__GetModifiedTime(PyObject *SWIGUNUSEDPARM(s
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__GetModifiedTime" "', argument " "1"" of type '" "DDirectory const *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
-  result = ((DDirectory const *)arg1)->GetModifiedTime();
+  arg1 = reinterpret_cast< Directory * >(argp1);
+  result = ((Directory const *)arg1)->GetModifiedTime();
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   return resultobj;
 fail:
@@ -7892,7 +7892,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__SetModifiedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   time_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7906,7 +7906,7 @@ SWIGINTERN PyObject *_wrap_Directory__SetModifiedTime(PyObject *SWIGUNUSEDPARM(s
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__SetModifiedTime" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
+  arg1 = reinterpret_cast< Directory * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Directory__SetModifiedTime" "', argument " "2"" of type '" "time_t""'");
@@ -7922,7 +7922,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__GetComment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -7933,8 +7933,8 @@ SWIGINTERN PyObject *_wrap_Directory__GetComment(PyObject *SWIGUNUSEDPARM(self),
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__GetComment" "', argument " "1"" of type '" "DDirectory const *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
-  result = ((DDirectory const *)arg1)->GetComment();
+  arg1 = reinterpret_cast< Directory * >(argp1);
+  result = ((Directory const *)arg1)->GetComment();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -7944,7 +7944,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_Directory__SetComment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DDirectory *arg1 = (DDirectory *) 0 ;
+  Directory *arg1 = (Directory *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -7956,7 +7956,7 @@ SWIGINTERN PyObject *_wrap_Directory__SetComment(PyObject *SWIGUNUSEDPARM(self),
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Directory__SetComment" "', argument " "1"" of type '" "DDirectory *""'"); 
   }
-  arg1 = reinterpret_cast< DDirectory * >(argp1);
+  arg1 = reinterpret_cast< Directory * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -8109,7 +8109,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetDirectory(PyObject *SWIGUNUSEDPARM(se
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  DDirectory *result = 0 ;
+  Directory *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DataProvider_GetDirectory",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -8128,7 +8128,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetDirectory(PyObject *SWIGUNUSEDPARM(se
     }
     arg2 = ptr;
   }
-  result = (DDirectory *)(arg1)->GetDirectory((std::string const &)*arg2);
+  result = (Directory *)(arg1)->GetDirectory((std::string const &)*arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DDirectory, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -8144,7 +8144,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRootDirectory(PyObject *SWIGUNUSEDPAR
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  DDirectory *result = 0 ;
+  Directory *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DataProvider_GetRootDirectory",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -8152,7 +8152,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRootDirectory(PyObject *SWIGUNUSEDPAR
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DataProvider_GetRootDirectory" "', argument " "1"" of type '" "DDataProvider *""'"); 
   }
   arg1 = reinterpret_cast< DDataProvider * >(argp1);
-  result = (DDirectory *)(arg1)->GetRootDirectory();
+  result = (Directory *)(arg1)->GetRootDirectory();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DDirectory, 0 |  0 );
   return resultobj;
 fail:
@@ -8180,7 +8180,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchDirectories__SWIG_0(PyObject *SWIG
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  vector< DDirectory * > result;
+  vector< Directory * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:DataProvider_SearchDirectories",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -8221,7 +8221,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchDirectories__SWIG_0(PyObject *SWIG
   } 
   arg5 = static_cast< int >(val5);
   result = (arg1)->SearchDirectories((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5);
-  resultobj = SWIG_NewPointerObj((new vector< DDirectory * >(static_cast< const vector< DDirectory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Directory * >(static_cast< const vector< Directory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -8248,7 +8248,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchDirectories__SWIG_1(PyObject *SWIG
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  vector< DDirectory * > result;
+  vector< Directory * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:DataProvider_SearchDirectories",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -8284,7 +8284,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchDirectories__SWIG_1(PyObject *SWIG
   } 
   arg4 = static_cast< int >(val4);
   result = (arg1)->SearchDirectories((std::string const &)*arg2,(std::string const &)*arg3,arg4);
-  resultobj = SWIG_NewPointerObj((new vector< DDirectory * >(static_cast< const vector< DDirectory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Directory * >(static_cast< const vector< Directory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -8307,7 +8307,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchDirectories__SWIG_2(PyObject *SWIG
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DDirectory * > result;
+  vector< Directory * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DataProvider_SearchDirectories",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -8338,7 +8338,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchDirectories__SWIG_2(PyObject *SWIG
     arg3 = ptr;
   }
   result = (arg1)->SearchDirectories((std::string const &)*arg2,(std::string const &)*arg3);
-  resultobj = SWIG_NewPointerObj((new vector< DDirectory * >(static_cast< const vector< DDirectory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Directory * >(static_cast< const vector< Directory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -8358,7 +8358,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchDirectories__SWIG_3(PyObject *SWIG
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DDirectory * > result;
+  vector< Directory * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DataProvider_SearchDirectories",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -8378,7 +8378,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchDirectories__SWIG_3(PyObject *SWIG
     arg2 = ptr;
   }
   result = (arg1)->SearchDirectories((std::string const &)*arg2);
-  resultobj = SWIG_NewPointerObj((new vector< DDirectory * >(static_cast< const vector< DDirectory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Directory * >(static_cast< const vector< Directory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
 fail:
@@ -8676,7 +8676,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_UpdateDirectory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -8695,7 +8695,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_UpdateDirectory(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_UpdateDirectory" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   result = (bool)(arg1)->UpdateDirectory(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -8745,7 +8745,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_DeleteDirectory__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -8764,7 +8764,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_DeleteDirectory__SWIG_1(PyObject *SWIGUN
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_DeleteDirectory" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   result = (bool)(arg1)->DeleteDirectory(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -8833,7 +8833,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTable__SWIG_0(PyObject *
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DataProvider_GetConstantsTypeTable",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -8857,7 +8857,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTable__SWIG_0(PyObject *
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DataProvider_GetConstantsTypeTable" "', argument " "3"" of type '" "bool""'");
   } 
   arg3 = static_cast< bool >(val3);
-  result = (DConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3);
+  result = (ConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -8876,7 +8876,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTable__SWIG_1(PyObject *
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DataProvider_GetConstantsTypeTable",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -8895,7 +8895,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTable__SWIG_1(PyObject *
     }
     arg2 = ptr;
   }
-  result = (DConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2);
+  result = (ConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -8909,7 +8909,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTable__SWIG_2(PyObject *
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
   std::string *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   bool arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -8922,7 +8922,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTable__SWIG_2(PyObject *
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:DataProvider_GetConstantsTypeTable",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -8945,13 +8945,13 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTable__SWIG_2(PyObject *
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetConstantsTypeTable" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
   ecode4 = SWIG_AsVal_bool(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "DataProvider_GetConstantsTypeTable" "', argument " "4"" of type '" "bool""'");
   } 
   arg4 = static_cast< bool >(val4);
-  result = (DConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3,arg4);
+  result = (ConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3,arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -8965,7 +8965,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTable__SWIG_3(PyObject *
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
   std::string *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 = SWIG_OLDOBJ ;
@@ -8974,7 +8974,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTable__SWIG_3(PyObject *
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DataProvider_GetConstantsTypeTable",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -8997,8 +8997,8 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTable__SWIG_3(PyObject *
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetConstantsTypeTable" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
-  result = (DConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
+  result = (ConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -9107,7 +9107,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DConstantsTypeTable * > *arg2 = 0 ;
+  vector< ConstantsTypeTable * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   bool arg4 ;
   void *argp1 = 0 ;
@@ -9136,7 +9136,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_0(PyObject 
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "vector< DConstantsTypeTable * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -9166,7 +9166,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DConstantsTypeTable * > *arg2 = 0 ;
+  vector< ConstantsTypeTable * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -9191,7 +9191,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_1(PyObject 
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "vector< DConstantsTypeTable * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -9216,7 +9216,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   bool arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -9227,7 +9227,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_2(PyObject 
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DConstantsTypeTable * > result;
+  vector< ConstantsTypeTable * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DataProvider_GetConstantsTypeTables",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -9239,14 +9239,14 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_2(PyObject 
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   ecode3 = SWIG_AsVal_bool(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DataProvider_GetConstantsTypeTables" "', argument " "3"" of type '" "bool""'");
   } 
   arg3 = static_cast< bool >(val3);
   result = (arg1)->GetConstantsTypeTables(arg2,arg3);
-  resultobj = SWIG_NewPointerObj((new vector< DConstantsTypeTable * >(static_cast< const vector< DConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< ConstantsTypeTable * >(static_cast< const vector< ConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -9256,14 +9256,14 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DConstantsTypeTable * > result;
+  vector< ConstantsTypeTable * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DataProvider_GetConstantsTypeTables",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -9275,9 +9275,9 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_3(PyObject 
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   result = (arg1)->GetConstantsTypeTables(arg2);
-  resultobj = SWIG_NewPointerObj((new vector< DConstantsTypeTable * >(static_cast< const vector< DConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< ConstantsTypeTable * >(static_cast< const vector< ConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -9287,8 +9287,8 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DConstantsTypeTable * > *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  vector< ConstantsTypeTable * > *arg2 = 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   bool arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -9317,12 +9317,12 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_4(PyObject 
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "vector< DConstantsTypeTable * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetConstantsTypeTables" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
   ecode4 = SWIG_AsVal_bool(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "DataProvider_GetConstantsTypeTables" "', argument " "4"" of type '" "bool""'");
@@ -9339,8 +9339,8 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_5(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DConstantsTypeTable * > *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  vector< ConstantsTypeTable * > *arg2 = 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -9365,12 +9365,12 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetConstantsTypeTables__SWIG_5(PyObject 
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "vector< DConstantsTypeTable * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetConstantsTypeTables" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
   result = (bool)(arg1)->GetConstantsTypeTables(*arg2,arg3);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -9526,7 +9526,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg2 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   bool arg5 ;
@@ -9566,7 +9566,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_0(PyObje
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_SearchConstantsTypeTables" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -9619,7 +9619,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg2 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   bool arg5 ;
@@ -9655,7 +9655,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_1(PyObje
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_SearchConstantsTypeTables" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -9703,7 +9703,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg2 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   bool arg5 ;
@@ -9735,7 +9735,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_2(PyObje
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_SearchConstantsTypeTables" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -9778,7 +9778,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg2 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   void *argp1 = 0 ;
@@ -9806,7 +9806,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_3(PyObje
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_SearchConstantsTypeTables" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -9844,7 +9844,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg2 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -9869,7 +9869,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_4(PyObje
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_SearchConstantsTypeTables" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -9915,7 +9915,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_5(PyObje
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
-  SwigValueWrapper< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > > result;
+  SwigValueWrapper< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOOO:DataProvider_SearchConstantsTypeTables",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -9961,7 +9961,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_5(PyObje
   } 
   arg6 = static_cast< int >(val6);
   result = (arg1)->SearchConstantsTypeTables((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5,arg6);
-  resultobj = SWIG_NewPointerObj((new std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >(static_cast< const std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >(static_cast< const std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -9992,7 +9992,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_6(PyObje
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  SwigValueWrapper< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > > result;
+  SwigValueWrapper< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:DataProvider_SearchConstantsTypeTables",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -10033,7 +10033,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_6(PyObje
   } 
   arg5 = static_cast< int >(val5);
   result = (arg1)->SearchConstantsTypeTables((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5);
-  resultobj = SWIG_NewPointerObj((new std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >(static_cast< const std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >(static_cast< const std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -10060,7 +10060,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_7(PyObje
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  SwigValueWrapper< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > > result;
+  SwigValueWrapper< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:DataProvider_SearchConstantsTypeTables",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -10096,7 +10096,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_7(PyObje
   } 
   arg4 = static_cast< bool >(val4);
   result = (arg1)->SearchConstantsTypeTables((std::string const &)*arg2,(std::string const &)*arg3,arg4);
-  resultobj = SWIG_NewPointerObj((new std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >(static_cast< const std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >(static_cast< const std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -10119,7 +10119,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_8(PyObje
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  SwigValueWrapper< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > > result;
+  SwigValueWrapper< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DataProvider_SearchConstantsTypeTables",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -10150,7 +10150,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_8(PyObje
     arg3 = ptr;
   }
   result = (arg1)->SearchConstantsTypeTables((std::string const &)*arg2,(std::string const &)*arg3);
-  resultobj = SWIG_NewPointerObj((new std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >(static_cast< const std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >(static_cast< const std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -10170,7 +10170,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_9(PyObje
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  SwigValueWrapper< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > > result;
+  SwigValueWrapper< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DataProvider_SearchConstantsTypeTables",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -10190,7 +10190,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_SearchConstantsTypeTables__SWIG_9(PyObje
     arg2 = ptr;
   }
   result = (arg1)->SearchConstantsTypeTables((std::string const &)*arg2);
-  resultobj = SWIG_NewPointerObj((new std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >(static_cast< const std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >(static_cast< const std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
 fail:
@@ -10489,7 +10489,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_CountConstantsTypeTables(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -10508,7 +10508,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CountConstantsTypeTables(PyObject *SWIGU
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_CountConstantsTypeTables" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   result = (int)(arg1)->CountConstantsTypeTables(arg2);
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
@@ -10520,7 +10520,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_LoadColumns(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -10539,7 +10539,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_LoadColumns(PyObject *SWIGUNUSEDPARM(sel
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_LoadColumns" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (bool)(arg1)->LoadColumns(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -10551,7 +10551,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -10570,7 +10570,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_0(PyObjec
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_CreateConstantsTypeTable" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (bool)(arg1)->CreateConstantsTypeTable(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -10602,7 +10602,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_1(PyObjec
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOOO:DataProvider_CreateConstantsTypeTable",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -10661,7 +10661,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_1(PyObjec
     }
     arg6 = ptr;
   }
-  result = (DConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5,(std::string const &)*arg6);
+  result = (ConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5,(std::string const &)*arg6);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
@@ -10695,7 +10695,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_2(PyObjec
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:DataProvider_CreateConstantsTypeTable",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -10743,7 +10743,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_2(PyObjec
       if (SWIG_IsNewObj(res5)) delete temp;
     }
   }
-  result = (DConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5);
+  result = (ConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
@@ -10759,7 +10759,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_3(PyObjec
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
   std::string *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   int arg4 ;
   std::map< std::string,std::string,std::less< std::string >,std::allocator< std::pair< std::string const,std::string > > > arg5 ;
   std::string *arg6 = 0 ;
@@ -10779,7 +10779,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_3(PyObjec
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOOO:DataProvider_CreateConstantsTypeTable",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -10802,7 +10802,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_3(PyObjec
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_CreateConstantsTypeTable" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "DataProvider_CreateConstantsTypeTable" "', argument " "4"" of type '" "int""'");
@@ -10832,7 +10832,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_3(PyObjec
     }
     arg6 = ptr;
   }
-  result = (DConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,arg3,arg4,arg5,(std::string const &)*arg6);
+  result = (ConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,arg3,arg4,arg5,(std::string const &)*arg6);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res6)) delete arg6;
@@ -10848,7 +10848,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_4(PyObjec
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
   std::string *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   int arg4 ;
   std::map< std::string,std::string,std::less< std::string >,std::allocator< std::pair< std::string const,std::string > > > arg5 ;
   void *argp1 = 0 ;
@@ -10865,7 +10865,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_4(PyObjec
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:DataProvider_CreateConstantsTypeTable",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -10888,7 +10888,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_4(PyObjec
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_CreateConstantsTypeTable" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "DataProvider_CreateConstantsTypeTable" "', argument " "4"" of type '" "int""'");
@@ -10907,7 +10907,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateConstantsTypeTable__SWIG_4(PyObjec
       if (SWIG_IsNewObj(res5)) delete temp;
     }
   }
-  result = (DConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,arg3,arg4,arg5);
+  result = (ConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,arg3,arg4,arg5);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -11075,7 +11075,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_UpdateConstantsTypeTable(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -11094,7 +11094,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_UpdateConstantsTypeTable(PyObject *SWIGU
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_UpdateConstantsTypeTable" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (bool)(arg1)->UpdateConstantsTypeTable(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -11106,7 +11106,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_DeleteConstantsTypeTable(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -11125,7 +11125,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_DeleteConstantsTypeTable(PyObject *SWIGU
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_DeleteConstantsTypeTable" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (bool)(arg1)->DeleteConstantsTypeTable(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -11137,7 +11137,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_CreateRunRange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DRunRange *arg2 = (DRunRange *) 0 ;
+  RunRange *arg2 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -11156,7 +11156,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateRunRange(PyObject *SWIGUNUSEDPARM(
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_CreateRunRange" "', argument " "2"" of type '" "DRunRange *""'"); 
   }
-  arg2 = reinterpret_cast< DRunRange * >(argp2);
+  arg2 = reinterpret_cast< RunRange * >(argp2);
   result = (bool)(arg1)->CreateRunRange(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -11182,7 +11182,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRange__SWIG_0(PyObject *SWIGUNUSED
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:DataProvider_GetRunRange",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -11211,7 +11211,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRange__SWIG_0(PyObject *SWIGUNUSED
     }
     arg4 = ptr;
   }
-  result = (DRunRange *)(arg1)->GetRunRange(arg2,arg3,(std::string const &)*arg4);
+  result = (RunRange *)(arg1)->GetRunRange(arg2,arg3,(std::string const &)*arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   if (SWIG_IsNewObj(res4)) delete arg4;
   return resultobj;
@@ -11235,7 +11235,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRange__SWIG_1(PyObject *SWIGUNUSED
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DataProvider_GetRunRange",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -11253,7 +11253,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRange__SWIG_1(PyObject *SWIGUNUSED
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DataProvider_GetRunRange" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = static_cast< int >(val3);
-  result = (DRunRange *)(arg1)->GetRunRange(arg2,arg3);
+  result = (RunRange *)(arg1)->GetRunRange(arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   return resultobj;
 fail:
@@ -11264,8 +11264,8 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< RunRange * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   std::string *arg4 = 0 ;
   int arg5 ;
   int arg6 ;
@@ -11301,12 +11301,12 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_0(PyObject *SWIGUNUSE
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetRunRanges" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   {
     std::string *ptr = (std::string *)0;
     res4 = SWIG_AsPtr_std_string(obj3, &ptr);
@@ -11341,8 +11341,8 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< RunRange * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   std::string *arg4 = 0 ;
   int arg5 ;
   void *argp1 = 0 ;
@@ -11374,12 +11374,12 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_1(PyObject *SWIGUNUSE
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetRunRanges" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   {
     std::string *ptr = (std::string *)0;
     res4 = SWIG_AsPtr_std_string(obj3, &ptr);
@@ -11409,8 +11409,8 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< RunRange * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   std::string *arg4 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -11438,12 +11438,12 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_2(PyObject *SWIGUNUSE
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetRunRanges" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   {
     std::string *ptr = (std::string *)0;
     res4 = SWIG_AsPtr_std_string(obj3, &ptr);
@@ -11468,8 +11468,8 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< RunRange * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -11494,12 +11494,12 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_3(PyObject *SWIGUNUSE
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetRunRanges" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   result = (bool)(arg1)->GetRunRanges(*arg2,arg3);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -11511,7 +11511,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
+  vector< RunRange * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   int arg5 ;
@@ -11547,7 +11547,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_4(PyObject *SWIGUNUSE
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -11595,7 +11595,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_5(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
+  vector< RunRange * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   int arg5 ;
@@ -11627,7 +11627,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_5(PyObject *SWIGUNUSE
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -11670,7 +11670,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_6(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
+  vector< RunRange * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   void *argp1 = 0 ;
@@ -11698,7 +11698,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_6(PyObject *SWIGUNUSE
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -11736,7 +11736,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_7(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
+  vector< RunRange * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -11761,7 +11761,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRanges__SWIG_7(PyObject *SWIGUNUSE
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -12026,7 +12026,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRange__SWIG_2(PyObject *SWIGUNUSED
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DataProvider_GetRunRange",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -12045,7 +12045,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetRunRange__SWIG_2(PyObject *SWIGUNUSED
     }
     arg2 = ptr;
   }
-  result = (DRunRange *)(arg1)->GetRunRange((std::string const &)*arg2);
+  result = (RunRange *)(arg1)->GetRunRange((std::string const &)*arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -12155,7 +12155,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetOrCreateRunRange__SWIG_0(PyObject *SW
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:DataProvider_GetOrCreateRunRange",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -12195,7 +12195,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetOrCreateRunRange__SWIG_0(PyObject *SW
     }
     arg5 = ptr;
   }
-  result = (DRunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3,(std::string const &)*arg4,(std::string const &)*arg5);
+  result = (RunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3,(std::string const &)*arg4,(std::string const &)*arg5);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   if (SWIG_IsNewObj(res4)) delete arg4;
   if (SWIG_IsNewObj(res5)) delete arg5;
@@ -12224,7 +12224,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetOrCreateRunRange__SWIG_1(PyObject *SW
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:DataProvider_GetOrCreateRunRange",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -12253,7 +12253,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetOrCreateRunRange__SWIG_1(PyObject *SW
     }
     arg4 = ptr;
   }
-  result = (DRunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3,(std::string const &)*arg4);
+  result = (RunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3,(std::string const &)*arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   if (SWIG_IsNewObj(res4)) delete arg4;
   return resultobj;
@@ -12277,7 +12277,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetOrCreateRunRange__SWIG_2(PyObject *SW
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DataProvider_GetOrCreateRunRange",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -12295,7 +12295,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetOrCreateRunRange__SWIG_2(PyObject *SW
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DataProvider_GetOrCreateRunRange" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = static_cast< int >(val3);
-  result = (DRunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3);
+  result = (RunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   return resultobj;
 fail:
@@ -12402,7 +12402,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_UpdateRunRange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DRunRange *arg2 = (DRunRange *) 0 ;
+  RunRange *arg2 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -12421,7 +12421,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_UpdateRunRange(PyObject *SWIGUNUSEDPARM(
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_UpdateRunRange" "', argument " "2"" of type '" "DRunRange *""'"); 
   }
-  arg2 = reinterpret_cast< DRunRange * >(argp2);
+  arg2 = reinterpret_cast< RunRange * >(argp2);
   result = (bool)(arg1)->UpdateRunRange(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -12433,7 +12433,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_DeleteRunRange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DRunRange *arg2 = (DRunRange *) 0 ;
+  RunRange *arg2 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -12452,7 +12452,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_DeleteRunRange(PyObject *SWIGUNUSEDPARM(
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_DeleteRunRange" "', argument " "2"" of type '" "DRunRange *""'"); 
   }
-  arg2 = reinterpret_cast< DRunRange * >(argp2);
+  arg2 = reinterpret_cast< RunRange * >(argp2);
   result = (bool)(arg1)->DeleteRunRange(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -12470,7 +12470,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariation(PyObject *SWIGUNUSEDPARM(se
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  DVariation *result = 0 ;
+  Variation *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DataProvider_GetVariation",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -12489,7 +12489,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariation(PyObject *SWIGUNUSEDPARM(se
     }
     arg2 = ptr;
   }
-  result = (DVariation *)(arg1)->GetVariation((std::string const &)*arg2);
+  result = (Variation *)(arg1)->GetVariation((std::string const &)*arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DVariation, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -12502,8 +12502,8 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< Variation * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   int arg4 ;
   int arg5 ;
   int arg6 ;
@@ -12540,12 +12540,12 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_0(PyObject *SWIGUNUS
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetVariations" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "DataProvider_GetVariations" "', argument " "4"" of type '" "int""'");
@@ -12572,8 +12572,8 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< Variation * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   int arg4 ;
   int arg5 ;
   void *argp1 = 0 ;
@@ -12606,12 +12606,12 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_1(PyObject *SWIGUNUS
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetVariations" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "DataProvider_GetVariations" "', argument " "4"" of type '" "int""'");
@@ -12633,8 +12633,8 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< Variation * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   int arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -12663,12 +12663,12 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_2(PyObject *SWIGUNUS
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetVariations" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "DataProvider_GetVariations" "', argument " "4"" of type '" "int""'");
@@ -12685,8 +12685,8 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< Variation * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -12711,12 +12711,12 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_3(PyObject *SWIGUNUS
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DataProvider_GetVariations" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   result = (bool)(arg1)->GetVariations(*arg2,arg3);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -12728,7 +12728,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   int arg3 ;
   int arg4 ;
   int arg5 ;
@@ -12747,7 +12747,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_4(PyObject *SWIGUNUS
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  SwigValueWrapper< vector< DVariation * > > result;
+  SwigValueWrapper< vector< Variation * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:DataProvider_GetVariations",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -12759,7 +12759,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_4(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DataProvider_GetVariations" "', argument " "3"" of type '" "int""'");
@@ -12776,7 +12776,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_4(PyObject *SWIGUNUS
   } 
   arg5 = static_cast< int >(val5);
   result = (arg1)->GetVariations(arg2,arg3,arg4,arg5);
-  resultobj = SWIG_NewPointerObj((new vector< DVariation * >(static_cast< const vector< DVariation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Variation * >(static_cast< const vector< Variation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -12786,7 +12786,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_5(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   int arg3 ;
   int arg4 ;
   void *argp1 = 0 ;
@@ -12801,7 +12801,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_5(PyObject *SWIGUNUS
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  SwigValueWrapper< vector< DVariation * > > result;
+  SwigValueWrapper< vector< Variation * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:DataProvider_GetVariations",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -12813,7 +12813,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_5(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DataProvider_GetVariations" "', argument " "3"" of type '" "int""'");
@@ -12825,7 +12825,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_5(PyObject *SWIGUNUS
   } 
   arg4 = static_cast< int >(val4);
   result = (arg1)->GetVariations(arg2,arg3,arg4);
-  resultobj = SWIG_NewPointerObj((new vector< DVariation * >(static_cast< const vector< DVariation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Variation * >(static_cast< const vector< Variation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -12835,7 +12835,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_6(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   int arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -12846,7 +12846,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_6(PyObject *SWIGUNUS
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  SwigValueWrapper< vector< DVariation * > > result;
+  SwigValueWrapper< vector< Variation * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DataProvider_GetVariations",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -12858,14 +12858,14 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_6(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DataProvider_GetVariations" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = static_cast< int >(val3);
   result = (arg1)->GetVariations(arg2,arg3);
-  resultobj = SWIG_NewPointerObj((new vector< DVariation * >(static_cast< const vector< DVariation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Variation * >(static_cast< const vector< Variation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -12875,14 +12875,14 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_7(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  SwigValueWrapper< vector< DVariation * > > result;
+  SwigValueWrapper< vector< Variation * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DataProvider_GetVariations",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DDataProvider, 0 |  0 );
@@ -12894,9 +12894,9 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_7(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (arg1)->GetVariations(arg2);
-  resultobj = SWIG_NewPointerObj((new vector< DVariation * >(static_cast< const vector< DVariation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Variation * >(static_cast< const vector< Variation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -12906,7 +12906,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_8(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
+  vector< Variation * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   int arg4 ;
   int arg5 ;
@@ -12943,7 +12943,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_8(PyObject *SWIGUNUS
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -12983,7 +12983,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_9(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
+  vector< Variation * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   int arg4 ;
   int arg5 ;
@@ -13016,7 +13016,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_9(PyObject *SWIGUNUS
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -13051,7 +13051,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_10(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
+  vector< Variation * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   int arg4 ;
   void *argp1 = 0 ;
@@ -13080,7 +13080,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_10(PyObject *SWIGUNU
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -13110,7 +13110,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_11(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
+  vector< Variation * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -13135,7 +13135,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_GetVariations__SWIG_11(PyObject *SWIGUNU
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -13502,7 +13502,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_CreateVariation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DVariation *arg2 = (DVariation *) 0 ;
+  Variation *arg2 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -13521,7 +13521,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_CreateVariation(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_CreateVariation" "', argument " "2"" of type '" "DVariation *""'"); 
   }
-  arg2 = reinterpret_cast< DVariation * >(argp2);
+  arg2 = reinterpret_cast< Variation * >(argp2);
   result = (bool)(arg1)->CreateVariation(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -13533,7 +13533,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_UpdateVariation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DVariation *arg2 = (DVariation *) 0 ;
+  Variation *arg2 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -13552,7 +13552,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_UpdateVariation(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_UpdateVariation" "', argument " "2"" of type '" "DVariation *""'"); 
   }
-  arg2 = reinterpret_cast< DVariation * >(argp2);
+  arg2 = reinterpret_cast< Variation * >(argp2);
   result = (bool)(arg1)->UpdateVariation(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -13564,7 +13564,7 @@ fail:
 SWIGINTERN PyObject *_wrap_DataProvider_DeleteVariation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DDataProvider *arg1 = (DDataProvider *) 0 ;
-  DVariation *arg2 = (DVariation *) 0 ;
+  Variation *arg2 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -13583,7 +13583,7 @@ SWIGINTERN PyObject *_wrap_DataProvider_DeleteVariation(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DataProvider_DeleteVariation" "', argument " "2"" of type '" "DVariation *""'"); 
   }
-  arg2 = reinterpret_cast< DVariation * >(argp2);
+  arg2 = reinterpret_cast< Variation * >(argp2);
   result = (bool)(arg1)->DeleteVariation(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -18337,7 +18337,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetDirectory(PyObject *SWIGUNUSEDPA
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  DDirectory *result = 0 ;
+  Directory *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:MySQLDataProvider_GetDirectory",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -18356,7 +18356,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetDirectory(PyObject *SWIGUNUSEDPA
     }
     arg2 = ptr;
   }
-  result = (DDirectory *)(arg1)->GetDirectory((std::string const &)*arg2);
+  result = (Directory *)(arg1)->GetDirectory((std::string const &)*arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DDirectory, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -18372,7 +18372,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRootDirectory(PyObject *SWIGUNUS
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  DDirectory *result = 0 ;
+  Directory *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:MySQLDataProvider_GetRootDirectory",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -18380,7 +18380,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRootDirectory(PyObject *SWIGUNUS
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "MySQLDataProvider_GetRootDirectory" "', argument " "1"" of type '" "DMySQLDataProvider *""'"); 
   }
   arg1 = reinterpret_cast< DMySQLDataProvider * >(argp1);
-  result = (DDirectory *)(arg1)->GetRootDirectory();
+  result = (Directory *)(arg1)->GetRootDirectory();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DDirectory, 0 |  0 );
   return resultobj;
 fail:
@@ -18408,7 +18408,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchDirectories__SWIG_0(PyObject 
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  vector< DDirectory * > result;
+  vector< Directory * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:MySQLDataProvider_SearchDirectories",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -18449,7 +18449,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchDirectories__SWIG_0(PyObject 
   } 
   arg5 = static_cast< int >(val5);
   result = (arg1)->SearchDirectories((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5);
-  resultobj = SWIG_NewPointerObj((new vector< DDirectory * >(static_cast< const vector< DDirectory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Directory * >(static_cast< const vector< Directory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -18476,7 +18476,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchDirectories__SWIG_1(PyObject 
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  vector< DDirectory * > result;
+  vector< Directory * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:MySQLDataProvider_SearchDirectories",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -18512,7 +18512,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchDirectories__SWIG_1(PyObject 
   } 
   arg4 = static_cast< int >(val4);
   result = (arg1)->SearchDirectories((std::string const &)*arg2,(std::string const &)*arg3,arg4);
-  resultobj = SWIG_NewPointerObj((new vector< DDirectory * >(static_cast< const vector< DDirectory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Directory * >(static_cast< const vector< Directory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -18535,7 +18535,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchDirectories__SWIG_2(PyObject 
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DDirectory * > result;
+  vector< Directory * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:MySQLDataProvider_SearchDirectories",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -18566,7 +18566,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchDirectories__SWIG_2(PyObject 
     arg3 = ptr;
   }
   result = (arg1)->SearchDirectories((std::string const &)*arg2,(std::string const &)*arg3);
-  resultobj = SWIG_NewPointerObj((new vector< DDirectory * >(static_cast< const vector< DDirectory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Directory * >(static_cast< const vector< Directory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -18586,7 +18586,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchDirectories__SWIG_3(PyObject 
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DDirectory * > result;
+  vector< Directory * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:MySQLDataProvider_SearchDirectories",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -18606,7 +18606,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchDirectories__SWIG_3(PyObject 
     arg2 = ptr;
   }
   result = (arg1)->SearchDirectories((std::string const &)*arg2);
-  resultobj = SWIG_NewPointerObj((new vector< DDirectory * >(static_cast< const vector< DDirectory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Directory * >(static_cast< const vector< Directory * >& >(result))), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
 fail:
@@ -18904,7 +18904,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_UpdateDirectory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -18923,7 +18923,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_UpdateDirectory(PyObject *SWIGUNUSE
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_UpdateDirectory" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   result = (bool)(arg1)->UpdateDirectory(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -18973,7 +18973,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_DeleteDirectory__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -18992,7 +18992,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_DeleteDirectory__SWIG_1(PyObject *S
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_DeleteDirectory" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   result = (bool)(arg1)->DeleteDirectory(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -19061,7 +19061,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTable__SWIG_0(PyObj
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:MySQLDataProvider_GetConstantsTypeTable",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -19085,7 +19085,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTable__SWIG_0(PyObj
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "MySQLDataProvider_GetConstantsTypeTable" "', argument " "3"" of type '" "bool""'");
   } 
   arg3 = static_cast< bool >(val3);
-  result = (DConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3);
+  result = (ConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -19104,7 +19104,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTable__SWIG_1(PyObj
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:MySQLDataProvider_GetConstantsTypeTable",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -19123,7 +19123,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTable__SWIG_1(PyObj
     }
     arg2 = ptr;
   }
-  result = (DConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2);
+  result = (ConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -19137,7 +19137,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTable__SWIG_2(PyObj
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
   std::string *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   bool arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -19150,7 +19150,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTable__SWIG_2(PyObj
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:MySQLDataProvider_GetConstantsTypeTable",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -19173,13 +19173,13 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTable__SWIG_2(PyObj
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetConstantsTypeTable" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
   ecode4 = SWIG_AsVal_bool(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "MySQLDataProvider_GetConstantsTypeTable" "', argument " "4"" of type '" "bool""'");
   } 
   arg4 = static_cast< bool >(val4);
-  result = (DConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3,arg4);
+  result = (ConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3,arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -19193,7 +19193,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTable__SWIG_3(PyObj
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
   std::string *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 = SWIG_OLDOBJ ;
@@ -19202,7 +19202,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTable__SWIG_3(PyObj
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:MySQLDataProvider_GetConstantsTypeTable",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -19225,8 +19225,8 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTable__SWIG_3(PyObj
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetConstantsTypeTable" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
-  result = (DConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
+  result = (ConstantsTypeTable *)(arg1)->GetConstantsTypeTable((std::string const &)*arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -19335,7 +19335,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DConstantsTypeTable * > *arg2 = 0 ;
+  vector< ConstantsTypeTable * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   bool arg4 ;
   void *argp1 = 0 ;
@@ -19364,7 +19364,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_0(PyOb
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "vector< DConstantsTypeTable * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -19394,7 +19394,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DConstantsTypeTable * > *arg2 = 0 ;
+  vector< ConstantsTypeTable * > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -19419,7 +19419,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_1(PyOb
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "vector< DConstantsTypeTable * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -19454,7 +19454,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_2(PyOb
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DConstantsTypeTable * > result;
+  vector< ConstantsTypeTable * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:MySQLDataProvider_GetConstantsTypeTables",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -19479,7 +19479,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_2(PyOb
   } 
   arg3 = static_cast< bool >(val3);
   result = (arg1)->GetConstantsTypeTables((std::string const &)*arg2,arg3);
-  resultobj = SWIG_NewPointerObj((new vector< DConstantsTypeTable * >(static_cast< const vector< DConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< ConstantsTypeTable * >(static_cast< const vector< ConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
 fail:
@@ -19497,7 +19497,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_3(PyOb
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DConstantsTypeTable * > result;
+  vector< ConstantsTypeTable * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:MySQLDataProvider_GetConstantsTypeTables",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -19517,7 +19517,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_3(PyOb
     arg2 = ptr;
   }
   result = (arg1)->GetConstantsTypeTables((std::string const &)*arg2);
-  resultobj = SWIG_NewPointerObj((new vector< DConstantsTypeTable * >(static_cast< const vector< DConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< ConstantsTypeTable * >(static_cast< const vector< ConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
 fail:
@@ -19529,8 +19529,8 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DConstantsTypeTable * > *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  vector< ConstantsTypeTable * > *arg2 = 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   bool arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -19559,12 +19559,12 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_4(PyOb
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "vector< DConstantsTypeTable * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetConstantsTypeTables" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
   ecode4 = SWIG_AsVal_bool(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "MySQLDataProvider_GetConstantsTypeTables" "', argument " "4"" of type '" "bool""'");
@@ -19581,8 +19581,8 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_5(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DConstantsTypeTable * > *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  vector< ConstantsTypeTable * > *arg2 = 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -19607,12 +19607,12 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_5(PyOb
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "vector< DConstantsTypeTable * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetConstantsTypeTables" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
   result = (bool)(arg1)->GetConstantsTypeTables(*arg2,arg3);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -19624,7 +19624,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_6(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   bool arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -19635,7 +19635,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_6(PyOb
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DConstantsTypeTable * > result;
+  vector< ConstantsTypeTable * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:MySQLDataProvider_GetConstantsTypeTables",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -19647,14 +19647,14 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_6(PyOb
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   ecode3 = SWIG_AsVal_bool(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "MySQLDataProvider_GetConstantsTypeTables" "', argument " "3"" of type '" "bool""'");
   } 
   arg3 = static_cast< bool >(val3);
   result = (arg1)->GetConstantsTypeTables(arg2,arg3);
-  resultobj = SWIG_NewPointerObj((new vector< DConstantsTypeTable * >(static_cast< const vector< DConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< ConstantsTypeTable * >(static_cast< const vector< ConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -19664,14 +19664,14 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_7(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DConstantsTypeTable * > result;
+  vector< ConstantsTypeTable * > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:MySQLDataProvider_GetConstantsTypeTables",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -19683,9 +19683,9 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetConstantsTypeTables__SWIG_7(PyOb
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_GetConstantsTypeTables" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   result = (arg1)->GetConstantsTypeTables(arg2);
-  resultobj = SWIG_NewPointerObj((new vector< DConstantsTypeTable * >(static_cast< const vector< DConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< ConstantsTypeTable * >(static_cast< const vector< ConstantsTypeTable * >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -19873,7 +19873,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg2 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   bool arg5 ;
@@ -19913,7 +19913,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_0(P
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_SearchConstantsTypeTables" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -19966,7 +19966,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg2 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   bool arg5 ;
@@ -20002,7 +20002,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_1(P
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_SearchConstantsTypeTables" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -20050,7 +20050,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg2 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   bool arg5 ;
@@ -20082,7 +20082,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_2(P
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_SearchConstantsTypeTables" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -20125,7 +20125,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg2 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   std::string *arg4 = 0 ;
   void *argp1 = 0 ;
@@ -20153,7 +20153,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_3(P
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_SearchConstantsTypeTables" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -20191,7 +20191,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg2 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -20216,7 +20216,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_4(P
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_SearchConstantsTypeTables" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > * >(argp2);
   {
     std::string *ptr = (std::string *)0;
     res3 = SWIG_AsPtr_std_string(obj2, &ptr);
@@ -20262,7 +20262,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_5(P
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
-  SwigValueWrapper< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > > result;
+  SwigValueWrapper< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOOO:MySQLDataProvider_SearchConstantsTypeTables",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -20308,7 +20308,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_5(P
   } 
   arg6 = static_cast< int >(val6);
   result = (arg1)->SearchConstantsTypeTables((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5,arg6);
-  resultobj = SWIG_NewPointerObj((new std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >(static_cast< const std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >(static_cast< const std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -20339,7 +20339,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_6(P
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  SwigValueWrapper< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > > result;
+  SwigValueWrapper< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:MySQLDataProvider_SearchConstantsTypeTables",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -20380,7 +20380,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_6(P
   } 
   arg5 = static_cast< int >(val5);
   result = (arg1)->SearchConstantsTypeTables((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5);
-  resultobj = SWIG_NewPointerObj((new std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >(static_cast< const std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >(static_cast< const std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -20407,7 +20407,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_7(P
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  SwigValueWrapper< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > > result;
+  SwigValueWrapper< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:MySQLDataProvider_SearchConstantsTypeTables",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -20443,7 +20443,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_7(P
   } 
   arg4 = static_cast< bool >(val4);
   result = (arg1)->SearchConstantsTypeTables((std::string const &)*arg2,(std::string const &)*arg3,arg4);
-  resultobj = SWIG_NewPointerObj((new std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >(static_cast< const std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >(static_cast< const std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -20466,7 +20466,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_8(P
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  SwigValueWrapper< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > > result;
+  SwigValueWrapper< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:MySQLDataProvider_SearchConstantsTypeTables",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -20497,7 +20497,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_8(P
     arg3 = ptr;
   }
   result = (arg1)->SearchConstantsTypeTables((std::string const &)*arg2,(std::string const &)*arg3);
-  resultobj = SWIG_NewPointerObj((new std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >(static_cast< const std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >(static_cast< const std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
   return resultobj;
@@ -20517,7 +20517,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_9(P
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  SwigValueWrapper< std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > > result;
+  SwigValueWrapper< std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:MySQLDataProvider_SearchConstantsTypeTables",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -20537,7 +20537,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_SearchConstantsTypeTables__SWIG_9(P
     arg2 = ptr;
   }
   result = (arg1)->SearchConstantsTypeTables((std::string const &)*arg2);
-  resultobj = SWIG_NewPointerObj((new std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >(static_cast< const std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >(static_cast< const std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > >& >(result))), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_OWN |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
 fail:
@@ -20836,7 +20836,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_CountConstantsTypeTables(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -20855,7 +20855,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CountConstantsTypeTables(PyObject *
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_CountConstantsTypeTables" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   result = (int)(arg1)->CountConstantsTypeTables(arg2);
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
@@ -20867,7 +20867,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -20886,7 +20886,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_0(Py
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_CreateConstantsTypeTable" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (bool)(arg1)->CreateConstantsTypeTable(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -20918,7 +20918,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_1(Py
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOOO:MySQLDataProvider_CreateConstantsTypeTable",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -20977,7 +20977,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_1(Py
     }
     arg6 = ptr;
   }
-  result = (DConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5,(std::string const &)*arg6);
+  result = (ConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5,(std::string const &)*arg6);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
@@ -21011,7 +21011,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_2(Py
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:MySQLDataProvider_CreateConstantsTypeTable",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -21059,7 +21059,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_2(Py
       if (SWIG_IsNewObj(res5)) delete temp;
     }
   }
-  result = (DConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5);
+  result = (ConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,(std::string const &)*arg3,arg4,arg5);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res3)) delete arg3;
@@ -21075,7 +21075,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_3(Py
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
   std::string *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   int arg4 ;
   std::map< std::string,std::string,std::less< std::string >,std::allocator< std::pair< std::string const,std::string > > > arg5 ;
   std::string *arg6 = 0 ;
@@ -21095,7 +21095,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_3(Py
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   PyObject * obj5 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOOO:MySQLDataProvider_CreateConstantsTypeTable",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -21118,7 +21118,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_3(Py
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_CreateConstantsTypeTable" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "MySQLDataProvider_CreateConstantsTypeTable" "', argument " "4"" of type '" "int""'");
@@ -21148,7 +21148,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_3(Py
     }
     arg6 = ptr;
   }
-  result = (DConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,arg3,arg4,arg5,(std::string const &)*arg6);
+  result = (ConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,arg3,arg4,arg5,(std::string const &)*arg6);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   if (SWIG_IsNewObj(res6)) delete arg6;
@@ -21164,7 +21164,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_4(Py
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
   std::string *arg2 = 0 ;
-  DDirectory *arg3 = (DDirectory *) 0 ;
+  Directory *arg3 = (Directory *) 0 ;
   int arg4 ;
   std::map< std::string,std::string,std::less< std::string >,std::allocator< std::pair< std::string const,std::string > > > arg5 ;
   void *argp1 = 0 ;
@@ -21181,7 +21181,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_4(Py
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:MySQLDataProvider_CreateConstantsTypeTable",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -21204,7 +21204,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_4(Py
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_CreateConstantsTypeTable" "', argument " "3"" of type '" "DDirectory *""'"); 
   }
-  arg3 = reinterpret_cast< DDirectory * >(argp3);
+  arg3 = reinterpret_cast< Directory * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "MySQLDataProvider_CreateConstantsTypeTable" "', argument " "4"" of type '" "int""'");
@@ -21223,7 +21223,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateConstantsTypeTable__SWIG_4(Py
       if (SWIG_IsNewObj(res5)) delete temp;
     }
   }
-  result = (DConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,arg3,arg4,arg5);
+  result = (ConstantsTypeTable *)(arg1)->CreateConstantsTypeTable((std::string const &)*arg2,arg3,arg4,arg5);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -21391,7 +21391,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_UpdateConstantsTypeTable(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -21410,7 +21410,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_UpdateConstantsTypeTable(PyObject *
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_UpdateConstantsTypeTable" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (bool)(arg1)->UpdateConstantsTypeTable(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -21422,7 +21422,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_DeleteConstantsTypeTable(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -21441,7 +21441,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_DeleteConstantsTypeTable(PyObject *
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_DeleteConstantsTypeTable" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (bool)(arg1)->DeleteConstantsTypeTable(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -21453,7 +21453,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_LoadColumns(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -21472,7 +21472,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_LoadColumns(PyObject *SWIGUNUSEDPAR
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_LoadColumns" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (bool)(arg1)->LoadColumns(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -21484,7 +21484,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateColumn(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DConstantsTypeColumn *arg2 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg2 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -21503,7 +21503,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateColumn(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_CreateColumn" "', argument " "2"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeColumn * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeColumn * >(argp2);
   result = (bool)(arg1)->CreateColumn(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -21515,7 +21515,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateColumns(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -21534,7 +21534,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateColumns(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_CreateColumns" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (bool)(arg1)->CreateColumns(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -21546,7 +21546,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateRunRange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DRunRange *arg2 = (DRunRange *) 0 ;
+  RunRange *arg2 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -21565,7 +21565,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateRunRange(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_CreateRunRange" "', argument " "2"" of type '" "DRunRange *""'"); 
   }
-  arg2 = reinterpret_cast< DRunRange * >(argp2);
+  arg2 = reinterpret_cast< RunRange * >(argp2);
   result = (bool)(arg1)->CreateRunRange(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -21591,7 +21591,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRange__SWIG_0(PyObject *SWIGU
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:MySQLDataProvider_GetRunRange",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -21620,7 +21620,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRange__SWIG_0(PyObject *SWIGU
     }
     arg4 = ptr;
   }
-  result = (DRunRange *)(arg1)->GetRunRange(arg2,arg3,(std::string const &)*arg4);
+  result = (RunRange *)(arg1)->GetRunRange(arg2,arg3,(std::string const &)*arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   if (SWIG_IsNewObj(res4)) delete arg4;
   return resultobj;
@@ -21644,7 +21644,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRange__SWIG_1(PyObject *SWIGU
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:MySQLDataProvider_GetRunRange",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -21662,7 +21662,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRange__SWIG_1(PyObject *SWIGU
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "MySQLDataProvider_GetRunRange" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = static_cast< int >(val3);
-  result = (DRunRange *)(arg1)->GetRunRange(arg2,arg3);
+  result = (RunRange *)(arg1)->GetRunRange(arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   return resultobj;
 fail:
@@ -21679,7 +21679,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRange__SWIG_2(PyObject *SWIGU
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:MySQLDataProvider_GetRunRange",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -21698,7 +21698,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRange__SWIG_2(PyObject *SWIGU
     }
     arg2 = ptr;
   }
-  result = (DRunRange *)(arg1)->GetRunRange((std::string const &)*arg2);
+  result = (RunRange *)(arg1)->GetRunRange((std::string const &)*arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -21808,7 +21808,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetOrCreateRunRange__SWIG_0(PyObjec
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:MySQLDataProvider_GetOrCreateRunRange",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -21848,7 +21848,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetOrCreateRunRange__SWIG_0(PyObjec
     }
     arg5 = ptr;
   }
-  result = (DRunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3,(std::string const &)*arg4,(std::string const &)*arg5);
+  result = (RunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3,(std::string const &)*arg4,(std::string const &)*arg5);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   if (SWIG_IsNewObj(res4)) delete arg4;
   if (SWIG_IsNewObj(res5)) delete arg5;
@@ -21877,7 +21877,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetOrCreateRunRange__SWIG_1(PyObjec
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:MySQLDataProvider_GetOrCreateRunRange",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -21906,7 +21906,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetOrCreateRunRange__SWIG_1(PyObjec
     }
     arg4 = ptr;
   }
-  result = (DRunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3,(std::string const &)*arg4);
+  result = (RunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3,(std::string const &)*arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   if (SWIG_IsNewObj(res4)) delete arg4;
   return resultobj;
@@ -21930,7 +21930,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetOrCreateRunRange__SWIG_2(PyObjec
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:MySQLDataProvider_GetOrCreateRunRange",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -21948,7 +21948,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetOrCreateRunRange__SWIG_2(PyObjec
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "MySQLDataProvider_GetOrCreateRunRange" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = static_cast< int >(val3);
-  result = (DRunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3);
+  result = (RunRange *)(arg1)->GetOrCreateRunRange(arg2,arg3);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   return resultobj;
 fail:
@@ -22055,8 +22055,8 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRanges__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< RunRange * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   std::string *arg4 = 0 ;
   int arg5 ;
   int arg6 ;
@@ -22092,12 +22092,12 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRanges__SWIG_0(PyObject *SWIG
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetRunRanges" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   {
     std::string *ptr = (std::string *)0;
     res4 = SWIG_AsPtr_std_string(obj3, &ptr);
@@ -22132,8 +22132,8 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRanges__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< RunRange * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   std::string *arg4 = 0 ;
   int arg5 ;
   void *argp1 = 0 ;
@@ -22165,12 +22165,12 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRanges__SWIG_1(PyObject *SWIG
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetRunRanges" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   {
     std::string *ptr = (std::string *)0;
     res4 = SWIG_AsPtr_std_string(obj3, &ptr);
@@ -22200,8 +22200,8 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRanges__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< RunRange * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   std::string *arg4 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -22229,12 +22229,12 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRanges__SWIG_2(PyObject *SWIG
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetRunRanges" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   {
     std::string *ptr = (std::string *)0;
     res4 = SWIG_AsPtr_std_string(obj3, &ptr);
@@ -22259,8 +22259,8 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRanges__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DRunRange * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< RunRange * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -22285,12 +22285,12 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetRunRanges__SWIG_3(PyObject *SWIG
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetRunRanges" "', argument " "2"" of type '" "vector< DRunRange * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DRunRange * > * >(argp2);
+  arg2 = reinterpret_cast< vector< RunRange * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetRunRanges" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   result = (bool)(arg1)->GetRunRanges(*arg2,arg3);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -22430,7 +22430,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_UpdateRunRange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DRunRange *arg2 = (DRunRange *) 0 ;
+  RunRange *arg2 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -22449,7 +22449,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_UpdateRunRange(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_UpdateRunRange" "', argument " "2"" of type '" "DRunRange *""'"); 
   }
-  arg2 = reinterpret_cast< DRunRange * >(argp2);
+  arg2 = reinterpret_cast< RunRange * >(argp2);
   result = (bool)(arg1)->UpdateRunRange(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -22461,7 +22461,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_DeleteRunRange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DRunRange *arg2 = (DRunRange *) 0 ;
+  RunRange *arg2 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -22480,7 +22480,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_DeleteRunRange(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_DeleteRunRange" "', argument " "2"" of type '" "DRunRange *""'"); 
   }
-  arg2 = reinterpret_cast< DRunRange * >(argp2);
+  arg2 = reinterpret_cast< RunRange * >(argp2);
   result = (bool)(arg1)->DeleteRunRange(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -22498,7 +22498,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariation(PyObject *SWIGUNUSEDPA
   int res2 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  DVariation *result = 0 ;
+  Variation *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:MySQLDataProvider_GetVariation",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -22517,7 +22517,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariation(PyObject *SWIGUNUSEDPA
     }
     arg2 = ptr;
   }
-  result = (DVariation *)(arg1)->GetVariation((std::string const &)*arg2);
+  result = (Variation *)(arg1)->GetVariation((std::string const &)*arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DVariation, 0 |  0 );
   if (SWIG_IsNewObj(res2)) delete arg2;
   return resultobj;
@@ -22530,8 +22530,8 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< Variation * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   int arg4 ;
   int arg5 ;
   int arg6 ;
@@ -22568,12 +22568,12 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_0(PyObject *SWI
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetVariations" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "MySQLDataProvider_GetVariations" "', argument " "4"" of type '" "int""'");
@@ -22600,8 +22600,8 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< Variation * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   int arg4 ;
   int arg5 ;
   void *argp1 = 0 ;
@@ -22634,12 +22634,12 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_1(PyObject *SWI
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetVariations" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "MySQLDataProvider_GetVariations" "', argument " "4"" of type '" "int""'");
@@ -22661,8 +22661,8 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< Variation * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   int arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -22691,12 +22691,12 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_2(PyObject *SWI
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetVariations" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
     SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "MySQLDataProvider_GetVariations" "', argument " "4"" of type '" "int""'");
@@ -22713,8 +22713,8 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  vector< DVariation * > *arg2 = 0 ;
-  DConstantsTypeTable *arg3 = (DConstantsTypeTable *) 0 ;
+  vector< Variation * > *arg2 = 0 ;
+  ConstantsTypeTable *arg3 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -22739,12 +22739,12 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_3(PyObject *SWI
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "MySQLDataProvider_GetVariations" "', argument " "2"" of type '" "vector< DVariation * > &""'"); 
   }
-  arg2 = reinterpret_cast< vector< DVariation * > * >(argp2);
+  arg2 = reinterpret_cast< vector< Variation * > * >(argp2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "MySQLDataProvider_GetVariations" "', argument " "3"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg3 = reinterpret_cast< DConstantsTypeTable * >(argp3);
+  arg3 = reinterpret_cast< ConstantsTypeTable * >(argp3);
   result = (bool)(arg1)->GetVariations(*arg2,arg3);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -22756,7 +22756,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_4(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   int arg3 ;
   int arg4 ;
   int arg5 ;
@@ -22775,7 +22775,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_4(PyObject *SWI
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
-  SwigValueWrapper< vector< DVariation * > > result;
+  SwigValueWrapper< vector< Variation * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOOO:MySQLDataProvider_GetVariations",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -22787,7 +22787,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_4(PyObject *SWI
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_GetVariations" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "MySQLDataProvider_GetVariations" "', argument " "3"" of type '" "int""'");
@@ -22804,7 +22804,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_4(PyObject *SWI
   } 
   arg5 = static_cast< int >(val5);
   result = (arg1)->GetVariations(arg2,arg3,arg4,arg5);
-  resultobj = SWIG_NewPointerObj((new vector< DVariation * >(static_cast< const vector< DVariation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Variation * >(static_cast< const vector< Variation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -22814,7 +22814,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_5(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   int arg3 ;
   int arg4 ;
   void *argp1 = 0 ;
@@ -22829,7 +22829,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_5(PyObject *SWI
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
-  SwigValueWrapper< vector< DVariation * > > result;
+  SwigValueWrapper< vector< Variation * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOOO:MySQLDataProvider_GetVariations",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -22841,7 +22841,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_5(PyObject *SWI
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_GetVariations" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "MySQLDataProvider_GetVariations" "', argument " "3"" of type '" "int""'");
@@ -22853,7 +22853,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_5(PyObject *SWI
   } 
   arg4 = static_cast< int >(val4);
   result = (arg1)->GetVariations(arg2,arg3,arg4);
-  resultobj = SWIG_NewPointerObj((new vector< DVariation * >(static_cast< const vector< DVariation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Variation * >(static_cast< const vector< Variation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -22863,7 +22863,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_6(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   int arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -22874,7 +22874,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_6(PyObject *SWI
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  SwigValueWrapper< vector< DVariation * > > result;
+  SwigValueWrapper< vector< Variation * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:MySQLDataProvider_GetVariations",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -22886,14 +22886,14 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_6(PyObject *SWI
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_GetVariations" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "MySQLDataProvider_GetVariations" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = static_cast< int >(val3);
   result = (arg1)->GetVariations(arg2,arg3);
-  resultobj = SWIG_NewPointerObj((new vector< DVariation * >(static_cast< const vector< DVariation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Variation * >(static_cast< const vector< Variation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -22903,14 +22903,14 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_7(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  SwigValueWrapper< vector< DVariation * > > result;
+  SwigValueWrapper< vector< Variation * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:MySQLDataProvider_GetVariations",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DMySQLDataProvider, 0 |  0 );
@@ -22922,9 +22922,9 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_GetVariations__SWIG_7(PyObject *SWI
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_GetVariations" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   result = (arg1)->GetVariations(arg2);
-  resultobj = SWIG_NewPointerObj((new vector< DVariation * >(static_cast< const vector< DVariation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj((new vector< Variation * >(static_cast< const vector< Variation * >& >(result))), SWIGTYPE_p_std__vectorT_DVariation_p_std__allocatorT_DVariation_p_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -23164,7 +23164,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateVariation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DVariation *arg2 = (DVariation *) 0 ;
+  Variation *arg2 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -23183,7 +23183,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_CreateVariation(PyObject *SWIGUNUSE
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_CreateVariation" "', argument " "2"" of type '" "DVariation *""'"); 
   }
-  arg2 = reinterpret_cast< DVariation * >(argp2);
+  arg2 = reinterpret_cast< Variation * >(argp2);
   result = (bool)(arg1)->CreateVariation(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -23195,7 +23195,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_UpdateVariation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DVariation *arg2 = (DVariation *) 0 ;
+  Variation *arg2 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -23214,7 +23214,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_UpdateVariation(PyObject *SWIGUNUSE
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_UpdateVariation" "', argument " "2"" of type '" "DVariation *""'"); 
   }
-  arg2 = reinterpret_cast< DVariation * >(argp2);
+  arg2 = reinterpret_cast< Variation * >(argp2);
   result = (bool)(arg1)->UpdateVariation(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -23226,7 +23226,7 @@ fail:
 SWIGINTERN PyObject *_wrap_MySQLDataProvider_DeleteVariation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DMySQLDataProvider *arg1 = (DMySQLDataProvider *) 0 ;
-  DVariation *arg2 = (DVariation *) 0 ;
+  Variation *arg2 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -23245,7 +23245,7 @@ SWIGINTERN PyObject *_wrap_MySQLDataProvider_DeleteVariation(PyObject *SWIGUNUSE
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MySQLDataProvider_DeleteVariation" "', argument " "2"" of type '" "DVariation *""'"); 
   }
-  arg2 = reinterpret_cast< DVariation * >(argp2);
+  arg2 = reinterpret_cast< Variation * >(argp2);
   result = (bool)(arg1)->DeleteVariation(arg2);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
@@ -27294,10 +27294,10 @@ SWIGINTERN PyObject *MySQLDataProvider_swigregister(PyObject *SWIGUNUSEDPARM(sel
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeTable(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":new_ConstantsTypeTable")) SWIG_fail;
-  result = (DConstantsTypeTable *)new DConstantsTypeTable();
+  result = (ConstantsTypeTable *)new ConstantsTypeTable();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -27307,7 +27307,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_delete_ConstantsTypeTable(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27317,7 +27317,7 @@ SWIGINTERN PyObject *_wrap_delete_ConstantsTypeTable(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_ConstantsTypeTable" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   delete arg1;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -27328,8 +27328,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetDirectory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
-  DDirectory *arg2 = (DDirectory *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
+  Directory *arg2 = (Directory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -27342,12 +27342,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetDirectory(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__SetDirectory" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ConstantsTypeTable__SetDirectory" "', argument " "2"" of type '" "DDirectory *""'"); 
   }
-  arg2 = reinterpret_cast< DDirectory * >(argp2);
+  arg2 = reinterpret_cast< Directory * >(argp2);
   (arg1)->SetDirectory(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -27358,19 +27358,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetDirectory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  DDirectory *result = 0 ;
+  Directory *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTable__GetDirectory",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetDirectory" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = (DDirectory *)((DConstantsTypeTable const *)arg1)->GetDirectory();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = (Directory *)((ConstantsTypeTable const *)arg1)->GetDirectory();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DDirectory, 0 |  0 );
   return resultobj;
 fail:
@@ -27380,7 +27380,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable_set_directory_id(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27394,7 +27394,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable_set_directory_id(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable_set_directory_id" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTable_set_directory_id" "', argument " "2"" of type '" "int""'");
@@ -27410,7 +27410,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable_get_directory_id(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27421,8 +27421,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable_get_directory_id(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable_get_directory_id" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = (int)((DConstantsTypeTable const *)arg1)->GetDirectoryId();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = (int)((ConstantsTypeTable const *)arg1)->GetDirectoryId();
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -27432,7 +27432,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetFullPath(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27444,7 +27444,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetFullPath(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__SetFullPath" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -27464,7 +27464,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetFullPath(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27475,8 +27475,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetFullPath(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetFullPath" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = ((DConstantsTypeTable const *)arg1)->GetFullPath();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = ((ConstantsTypeTable const *)arg1)->GetFullPath();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -27486,7 +27486,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   dbkey_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27500,7 +27500,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetId(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__SetId" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTable__SetId" "', argument " "2"" of type '" "dbkey_t""'");
@@ -27516,7 +27516,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27527,8 +27527,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetId(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetId" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = (int)((DConstantsTypeTable const *)arg1)->GetId();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = (int)((ConstantsTypeTable const *)arg1)->GetId();
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -27538,7 +27538,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   std::string *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27551,7 +27551,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetName(PyObject *SWIGUNUSEDPARM(
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__SetName" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -27575,7 +27575,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27586,8 +27586,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetName(PyObject *SWIGUNUSEDPARM(
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetName" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = ((DConstantsTypeTable const *)arg1)->GetName();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = ((ConstantsTypeTable const *)arg1)->GetName();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -27597,7 +27597,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetComment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27608,8 +27608,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetComment(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetComment" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = ((DConstantsTypeTable const *)arg1)->GetComment();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = ((ConstantsTypeTable const *)arg1)->GetComment();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -27619,7 +27619,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetComment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   std::string *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27632,7 +27632,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetComment(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__SetComment" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -27656,7 +27656,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetCreatedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27667,8 +27667,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetCreatedTime(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetCreatedTime" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = ((DConstantsTypeTable const *)arg1)->GetCreatedTime();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = ((ConstantsTypeTable const *)arg1)->GetCreatedTime();
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   return resultobj;
 fail:
@@ -27678,7 +27678,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetCreatedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   time_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27692,7 +27692,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetCreatedTime(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__SetCreatedTime" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTable__SetCreatedTime" "', argument " "2"" of type '" "time_t""'");
@@ -27708,7 +27708,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetModifiedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27719,8 +27719,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetModifiedTime(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetModifiedTime" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = ((DConstantsTypeTable const *)arg1)->GetModifiedTime();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = ((ConstantsTypeTable const *)arg1)->GetModifiedTime();
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   return resultobj;
 fail:
@@ -27730,7 +27730,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetModifiedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   time_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27744,7 +27744,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetModifiedTime(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__SetModifiedTime" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTable__SetModifiedTime" "', argument " "2"" of type '" "time_t""'");
@@ -27760,7 +27760,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetNRows(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27771,8 +27771,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetNRows(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetNRows" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = (int)((DConstantsTypeTable const *)arg1)->GetNRows();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = (int)((ConstantsTypeTable const *)arg1)->GetNRows();
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -27782,7 +27782,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetNRows(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27796,7 +27796,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__SetNRows(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__SetNRows" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTable__SetNRows" "', argument " "2"" of type '" "int""'");
@@ -27812,7 +27812,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetNColumns(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27823,8 +27823,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetNColumns(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetNColumns" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = (int)((DConstantsTypeTable const *)arg1)->GetNColumns();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = (int)((ConstantsTypeTable const *)arg1)->GetNColumns();
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -27834,7 +27834,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable_get_db_num_columns(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -27845,8 +27845,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable_get_db_num_columns(PyObject *SWIGU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable_get_db_num_columns" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = (int)((DConstantsTypeTable const *)arg1)->GetNColumnsFromDB();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = (int)((ConstantsTypeTable const *)arg1)->GetNColumnsFromDB();
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -27856,7 +27856,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable_set_db_num_columns(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27870,7 +27870,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable_set_db_num_columns(PyObject *SWIGU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable_set_db_num_columns" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTable_set_db_num_columns" "', argument " "2"" of type '" "int""'");
@@ -27886,19 +27886,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetColumns(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * > *result = 0 ;
+  vector< ConstantsTypeColumn * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTable__GetColumns",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetColumns" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = (vector< DConstantsTypeColumn * > *) &((DConstantsTypeTable const *)arg1)->GetColumns();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = (vector< ConstantsTypeColumn * > *) &((ConstantsTypeTable const *)arg1)->GetColumns();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   return resultobj;
 fail:
@@ -27908,8 +27908,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable_add_column_in_order(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
-  DConstantsTypeColumn *arg2 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
+  ConstantsTypeColumn *arg2 = (ConstantsTypeColumn *) 0 ;
   int arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -27926,12 +27926,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable_add_column_in_order(PyObject *SWIG
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable_add_column_in_order" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ConstantsTypeTable_add_column_in_order" "', argument " "2"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeColumn * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeColumn * >(argp2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeTable_add_column_in_order" "', argument " "3"" of type '" "int""'");
@@ -27947,8 +27947,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable_add_column__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
-  DConstantsTypeColumn *arg2 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
+  ConstantsTypeColumn *arg2 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -27961,12 +27961,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable_add_column__SWIG_0(PyObject *SWIGU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable_add_column" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ConstantsTypeTable_add_column" "', argument " "2"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeColumn * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeColumn * >(argp2);
   (arg1)->AddColumn(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -27977,7 +27977,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable_add_column__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   std::string *arg2 = 0 ;
   std::string *arg3 = 0 ;
   void *argp1 = 0 ;
@@ -27993,7 +27993,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable_add_column__SWIG_1(PyObject *SWIGU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable_add_column" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     res2 = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -28081,7 +28081,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable_remove_column(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28089,20 +28089,20 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable_remove_column(PyObject *SWIGUNUSED
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  DConstantsTypeColumn *result = 0 ;
+  ConstantsTypeColumn *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:ConstantsTypeTable_remove_column",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable_remove_column" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTable_remove_column" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
-  result = (DConstantsTypeColumn *)(arg1)->RemoveColumn(arg2);
+  result = (ConstantsTypeColumn *)(arg1)->RemoveColumn(arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   return resultobj;
 fail:
@@ -28112,7 +28112,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable_clear_columns(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28122,7 +28122,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable_clear_columns(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable_clear_columns" "', argument " "1"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
   (arg1)->ClearColumns();
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -28133,7 +28133,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetColumnNames(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28144,8 +28144,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetColumnNames(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetColumnNames" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = ((DConstantsTypeTable const *)arg1)->GetColumnNames();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = ((ConstantsTypeTable const *)arg1)->GetColumnNames();
   resultobj = SWIG_NewPointerObj((new vector< string >(static_cast< const vector< string >& >(result))), SWIGTYPE_p_std__vectorT_std__string_std__allocatorT_std__string_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
@@ -28155,7 +28155,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetColumnTypeStrings(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeTable *arg1 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg1 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28166,8 +28166,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTable__GetColumnTypeStrings(PyObject *SW
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTable__GetColumnTypeStrings" "', argument " "1"" of type '" "DConstantsTypeTable const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeTable * >(argp1);
-  result = ((DConstantsTypeTable const *)arg1)->GetColumnTypeStrings();
+  arg1 = reinterpret_cast< ConstantsTypeTable * >(argp1);
+  result = ((ConstantsTypeTable const *)arg1)->GetColumnTypeStrings();
   resultobj = SWIG_NewPointerObj((new vector< string >(static_cast< const vector< string >& >(result))), SWIGTYPE_p_std__vectorT_std__string_std__allocatorT_std__string_t_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
@@ -28188,7 +28188,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn_StringToType(PyObject *SWIGUNUSED
   void *argp1 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  DConstantsTypeColumn::DColumnTypes result;
+  ConstantsTypeColumn::DColumnTypes result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumn_StringToType",&obj0)) SWIG_fail;
   {
@@ -28204,7 +28204,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn_StringToType(PyObject *SWIGUNUSED
       if (SWIG_IsNewObj(res1)) delete temp;
     }
   }
-  result = (DConstantsTypeColumn::DColumnTypes)DConstantsTypeColumn::StringToType(arg1);
+  result = (ConstantsTypeColumn::DColumnTypes)ConstantsTypeColumn::StringToType(arg1);
   resultobj = SWIG_From_int(static_cast< int >(result));
   return resultobj;
 fail:
@@ -28214,7 +28214,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn_TypeToString(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn::DColumnTypes arg1 ;
+  ConstantsTypeColumn::DColumnTypes arg1 ;
   int val1 ;
   int ecode1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28225,8 +28225,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn_TypeToString(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "ConstantsTypeColumn_TypeToString" "', argument " "1"" of type '" "DConstantsTypeColumn::DColumnTypes""'");
   } 
-  arg1 = static_cast< DConstantsTypeColumn::DColumnTypes >(val1);
-  result = DConstantsTypeColumn::TypeToString(arg1);
+  arg1 = static_cast< ConstantsTypeColumn::DColumnTypes >(val1);
+  result = ConstantsTypeColumn::TypeToString(arg1);
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -28236,7 +28236,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeColumn__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DObjectsOwner *arg1 = (DObjectsOwner *) 0 ;
+  ObjectsOwner *arg1 = (ObjectsOwner *) 0 ;
   DDataProvider *arg2 = (DDataProvider *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28244,20 +28244,20 @@ SWIGINTERN PyObject *_wrap_new_ConstantsTypeColumn__SWIG_0(PyObject *SWIGUNUSEDP
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  DConstantsTypeColumn *result = 0 ;
+  ConstantsTypeColumn *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:new_ConstantsTypeColumn",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DObjectsOwner, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_ConstantsTypeColumn" "', argument " "1"" of type '" "DObjectsOwner *""'"); 
   }
-  arg1 = reinterpret_cast< DObjectsOwner * >(argp1);
+  arg1 = reinterpret_cast< ObjectsOwner * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DDataProvider, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_ConstantsTypeColumn" "', argument " "2"" of type '" "DDataProvider *""'"); 
   }
   arg2 = reinterpret_cast< DDataProvider * >(argp2);
-  result = (DConstantsTypeColumn *)new DConstantsTypeColumn(arg1,arg2);
+  result = (ConstantsTypeColumn *)new ConstantsTypeColumn(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeColumn, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -28267,19 +28267,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeColumn__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DObjectsOwner *arg1 = (DObjectsOwner *) 0 ;
+  ObjectsOwner *arg1 = (ObjectsOwner *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  DConstantsTypeColumn *result = 0 ;
+  ConstantsTypeColumn *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:new_ConstantsTypeColumn",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DObjectsOwner, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_ConstantsTypeColumn" "', argument " "1"" of type '" "DObjectsOwner *""'"); 
   }
-  arg1 = reinterpret_cast< DObjectsOwner * >(argp1);
-  result = (DConstantsTypeColumn *)new DConstantsTypeColumn(arg1);
+  arg1 = reinterpret_cast< ObjectsOwner * >(argp1);
+  result = (ConstantsTypeColumn *)new ConstantsTypeColumn(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeColumn, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -28289,10 +28289,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeColumn__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *result = 0 ;
+  ConstantsTypeColumn *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":new_ConstantsTypeColumn")) SWIG_fail;
-  result = (DConstantsTypeColumn *)new DConstantsTypeColumn();
+  result = (ConstantsTypeColumn *)new ConstantsTypeColumn();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeColumn, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -28349,7 +28349,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_delete_ConstantsTypeColumn(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28359,7 +28359,7 @@ SWIGINTERN PyObject *_wrap_delete_ConstantsTypeColumn(PyObject *SWIGUNUSEDPARM(s
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_ConstantsTypeColumn" "', argument " "1"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
   delete arg1;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -28370,7 +28370,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28381,8 +28381,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetId(PyObject *SWIGUNUSEDPARM(s
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__GetId" "', argument " "1"" of type '" "DConstantsTypeColumn const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
-  result = ((DConstantsTypeColumn const *)arg1)->GetId();
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
+  result = ((ConstantsTypeColumn const *)arg1)->GetId();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -28392,7 +28392,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   dbkey_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28406,7 +28406,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetId(PyObject *SWIGUNUSEDPARM(s
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__SetId" "', argument " "1"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumn__SetId" "', argument " "2"" of type '" "dbkey_t""'");
@@ -28422,7 +28422,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28433,8 +28433,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetName(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__GetName" "', argument " "1"" of type '" "DConstantsTypeColumn const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
-  result = ((DConstantsTypeColumn const *)arg1)->GetName();
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
+  result = ((ConstantsTypeColumn const *)arg1)->GetName();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -28444,7 +28444,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetName(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28458,7 +28458,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetName(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__SetName" "', argument " "1"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
   {
     res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__string,  0  | 0);
     if (!SWIG_IsOK(res2)) {
@@ -28482,7 +28482,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetComment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28493,8 +28493,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetComment(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__GetComment" "', argument " "1"" of type '" "DConstantsTypeColumn const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
-  result = ((DConstantsTypeColumn const *)arg1)->GetComment();
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
+  result = ((ConstantsTypeColumn const *)arg1)->GetComment();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -28504,7 +28504,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetComment(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28516,7 +28516,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetComment(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__SetComment" "', argument " "1"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -28536,7 +28536,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetCreatedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28547,8 +28547,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetCreatedTime(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__GetCreatedTime" "', argument " "1"" of type '" "DConstantsTypeColumn const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
-  result = ((DConstantsTypeColumn const *)arg1)->GetCreatedTime();
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
+  result = ((ConstantsTypeColumn const *)arg1)->GetCreatedTime();
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   return resultobj;
 fail:
@@ -28558,7 +28558,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetCreatedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   time_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28572,7 +28572,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetCreatedTime(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__SetCreatedTime" "', argument " "1"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumn__SetCreatedTime" "', argument " "2"" of type '" "time_t""'");
@@ -28588,7 +28588,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetModifiedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28599,8 +28599,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetModifiedTime(PyObject *SWIGUN
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__GetModifiedTime" "', argument " "1"" of type '" "DConstantsTypeColumn const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
-  result = ((DConstantsTypeColumn const *)arg1)->GetModifiedTime();
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
+  result = ((ConstantsTypeColumn const *)arg1)->GetModifiedTime();
   resultobj = SWIG_From_unsigned_SS_long(static_cast< unsigned long >(result));
   return resultobj;
 fail:
@@ -28610,7 +28610,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetModifiedTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   time_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28624,7 +28624,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetModifiedTime(PyObject *SWIGUN
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__SetModifiedTime" "', argument " "1"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_long(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumn__SetModifiedTime" "', argument " "2"" of type '" "time_t""'");
@@ -28640,7 +28640,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetTypeTableId(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28651,8 +28651,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetTypeTableId(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__GetTypeTableId" "', argument " "1"" of type '" "DConstantsTypeColumn const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
-  result = ((DConstantsTypeColumn const *)arg1)->GetTypeTableId();
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
+  result = ((ConstantsTypeColumn const *)arg1)->GetTypeTableId();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -28662,7 +28662,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn_get_dB_type_table_id(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28673,8 +28673,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn_get_dB_type_table_id(PyObject *SW
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn_get_dB_type_table_id" "', argument " "1"" of type '" "DConstantsTypeColumn const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
-  result = ((DConstantsTypeColumn const *)arg1)->GetDBTypeTableId();
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
+  result = ((ConstantsTypeColumn const *)arg1)->GetDBTypeTableId();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -28684,7 +28684,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn_aet_dB_type_table_id(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   dbkey_t arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28698,7 +28698,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn_aet_dB_type_table_id(PyObject *SW
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn_aet_dB_type_table_id" "', argument " "1"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
   ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumn_aet_dB_type_table_id" "', argument " "2"" of type '" "dbkey_t""'");
@@ -28714,7 +28714,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetType(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28725,8 +28725,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetType(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__GetType" "', argument " "1"" of type '" "DConstantsTypeColumn const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
-  result = ((DConstantsTypeColumn const *)arg1)->GetTypeString();
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
+  result = ((ConstantsTypeColumn const *)arg1)->GetTypeString();
   resultobj = SWIG_From_std_string(static_cast< std::string >(result));
   return resultobj;
 fail:
@@ -28736,7 +28736,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetType(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   std::string arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28748,7 +28748,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetType(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__SetType" "', argument " "1"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
   {
     std::string *ptr = (std::string *)0;
     int res = SWIG_AsPtr_std_string(obj1, &ptr);
@@ -28768,19 +28768,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetTypeTable(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumn__GetTypeTable",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__GetTypeTable" "', argument " "1"" of type '" "DConstantsTypeColumn const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
-  result = (DConstantsTypeTable *)((DConstantsTypeColumn const *)arg1)->GetTypeTable();
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
+  result = (ConstantsTypeTable *)((ConstantsTypeColumn const *)arg1)->GetTypeTable();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   return resultobj;
 fail:
@@ -28790,8 +28790,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetTypeTable(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -28804,12 +28804,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__SetTypeTable(PyObject *SWIGUNUSE
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__SetTypeTable" "', argument " "1"" of type '" "DConstantsTypeColumn *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ConstantsTypeColumn__SetTypeTable" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   (arg1)->SetTypeTable(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -28820,7 +28820,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetOrder(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DConstantsTypeColumn *arg1 = (DConstantsTypeColumn *) 0 ;
+  ConstantsTypeColumn *arg1 = (ConstantsTypeColumn *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28831,8 +28831,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumn__GetOrder(PyObject *SWIGUNUSEDPAR
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumn__GetOrder" "', argument " "1"" of type '" "DConstantsTypeColumn const *""'"); 
   }
-  arg1 = reinterpret_cast< DConstantsTypeColumn * >(argp1);
-  result = (unsigned int)((DConstantsTypeColumn const *)arg1)->GetOrder();
+  arg1 = reinterpret_cast< ConstantsTypeColumn * >(argp1);
+  result = (unsigned int)((ConstantsTypeColumn const *)arg1)->GetOrder();
   resultobj = SWIG_From_unsigned_SS_int(static_cast< unsigned int >(result));
   return resultobj;
 fail:
@@ -28849,7 +28849,7 @@ SWIGINTERN PyObject *ConstantsTypeColumn_swigregister(PyObject *SWIGUNUSEDPARM(s
 
 SWIGINTERN PyObject *_wrap_new_Assignment__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DObjectsOwner *arg1 = (DObjectsOwner *) 0 ;
+  ObjectsOwner *arg1 = (ObjectsOwner *) 0 ;
   DDataProvider *arg2 = (DDataProvider *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -28864,7 +28864,7 @@ SWIGINTERN PyObject *_wrap_new_Assignment__SWIG_0(PyObject *SWIGUNUSEDPARM(self)
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Assignment" "', argument " "1"" of type '" "DObjectsOwner *""'"); 
   }
-  arg1 = reinterpret_cast< DObjectsOwner * >(argp1);
+  arg1 = reinterpret_cast< ObjectsOwner * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DDataProvider, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_Assignment" "', argument " "2"" of type '" "DDataProvider *""'"); 
@@ -28880,7 +28880,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_Assignment__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  DObjectsOwner *arg1 = (DObjectsOwner *) 0 ;
+  ObjectsOwner *arg1 = (ObjectsOwner *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -28891,7 +28891,7 @@ SWIGINTERN PyObject *_wrap_new_Assignment__SWIG_1(PyObject *SWIGUNUSEDPARM(self)
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Assignment" "', argument " "1"" of type '" "DObjectsOwner *""'"); 
   }
-  arg1 = reinterpret_cast< DObjectsOwner * >(argp1);
+  arg1 = reinterpret_cast< ObjectsOwner * >(argp1);
   result = (DAssignment *)new DAssignment(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DAssignment, SWIG_POINTER_NEW |  0 );
   return resultobj;
@@ -29247,7 +29247,7 @@ SWIGINTERN PyObject *_wrap_Assignment__GetRunRange(PyObject *SWIGUNUSEDPARM(self
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  DRunRange *result = 0 ;
+  RunRange *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Assignment__GetRunRange",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DAssignment, 0 |  0 );
@@ -29255,7 +29255,7 @@ SWIGINTERN PyObject *_wrap_Assignment__GetRunRange(PyObject *SWIGUNUSEDPARM(self
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Assignment__GetRunRange" "', argument " "1"" of type '" "DAssignment const *""'"); 
   }
   arg1 = reinterpret_cast< DAssignment * >(argp1);
-  result = (DRunRange *)((DAssignment const *)arg1)->GetRunRange();
+  result = (RunRange *)((DAssignment const *)arg1)->GetRunRange();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DRunRange, 0 |  0 );
   return resultobj;
 fail:
@@ -29266,7 +29266,7 @@ fail:
 SWIGINTERN PyObject *_wrap_Assignment__SetRunRange(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DAssignment *arg1 = (DAssignment *) 0 ;
-  DRunRange *arg2 = (DRunRange *) 0 ;
+  RunRange *arg2 = (RunRange *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -29284,7 +29284,7 @@ SWIGINTERN PyObject *_wrap_Assignment__SetRunRange(PyObject *SWIGUNUSEDPARM(self
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Assignment__SetRunRange" "', argument " "2"" of type '" "DRunRange *""'"); 
   }
-  arg2 = reinterpret_cast< DRunRange * >(argp2);
+  arg2 = reinterpret_cast< RunRange * >(argp2);
   (arg1)->SetRunRange(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -29351,7 +29351,7 @@ SWIGINTERN PyObject *_wrap_Assignment__GetVariation(PyObject *SWIGUNUSEDPARM(sel
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  DVariation *result = 0 ;
+  Variation *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Assignment__GetVariation",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DAssignment, 0 |  0 );
@@ -29359,7 +29359,7 @@ SWIGINTERN PyObject *_wrap_Assignment__GetVariation(PyObject *SWIGUNUSEDPARM(sel
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Assignment__GetVariation" "', argument " "1"" of type '" "DAssignment const *""'"); 
   }
   arg1 = reinterpret_cast< DAssignment * >(argp1);
-  result = (DVariation *)((DAssignment const *)arg1)->GetVariation();
+  result = (Variation *)((DAssignment const *)arg1)->GetVariation();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DVariation, 0 |  0 );
   return resultobj;
 fail:
@@ -29370,7 +29370,7 @@ fail:
 SWIGINTERN PyObject *_wrap_Assignment__SetVariation(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DAssignment *arg1 = (DAssignment *) 0 ;
-  DVariation *arg2 = (DVariation *) 0 ;
+  Variation *arg2 = (Variation *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -29388,7 +29388,7 @@ SWIGINTERN PyObject *_wrap_Assignment__SetVariation(PyObject *SWIGUNUSEDPARM(sel
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Assignment__SetVariation" "', argument " "2"" of type '" "DVariation *""'"); 
   }
-  arg2 = reinterpret_cast< DVariation * >(argp2);
+  arg2 = reinterpret_cast< Variation * >(argp2);
   (arg1)->SetVariation(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -29730,7 +29730,7 @@ fail:
 SWIGINTERN PyObject *_wrap_Assignment__SetTypeTable(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   DAssignment *arg1 = (DAssignment *) 0 ;
-  DConstantsTypeTable *arg2 = (DConstantsTypeTable *) 0 ;
+  ConstantsTypeTable *arg2 = (ConstantsTypeTable *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -29748,7 +29748,7 @@ SWIGINTERN PyObject *_wrap_Assignment__SetTypeTable(PyObject *SWIGUNUSEDPARM(sel
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Assignment__SetTypeTable" "', argument " "2"" of type '" "DConstantsTypeTable *""'"); 
   }
-  arg2 = reinterpret_cast< DConstantsTypeTable * >(argp2);
+  arg2 = reinterpret_cast< ConstantsTypeTable * >(argp2);
   (arg1)->SetTypeTable(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -29763,7 +29763,7 @@ SWIGINTERN PyObject *_wrap_Assignment__GetTypeTable(PyObject *SWIGUNUSEDPARM(sel
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  DConstantsTypeTable *result = 0 ;
+  ConstantsTypeTable *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:Assignment__GetTypeTable",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_DAssignment, 0 |  0 );
@@ -29771,7 +29771,7 @@ SWIGINTERN PyObject *_wrap_Assignment__GetTypeTable(PyObject *SWIGUNUSEDPARM(sel
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Assignment__GetTypeTable" "', argument " "1"" of type '" "DAssignment const *""'"); 
   }
   arg1 = reinterpret_cast< DAssignment * >(argp1);
-  result = (DConstantsTypeTable *)((DAssignment const *)arg1)->GetTypeTable();
+  result = (ConstantsTypeTable *)((DAssignment const *)arg1)->GetTypeTable();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   return resultobj;
 fail:
@@ -31666,7 +31666,7 @@ SWIGINTERN PyObject *AssignmentVector_swigregister(PyObject *SWIGUNUSEDPARM(self
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_iterator(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   PyObject **arg2 = (PyObject **) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -31679,7 +31679,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_iterator(PyObject *SWIGUNUSEDPARM(sel
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_iterator" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   result = (swig::SwigPyIterator *)vector_Sl_DDirectory_Sm__Sg__iterator(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
   return resultobj;
@@ -31690,7 +31690,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___nonzero__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -31701,8 +31701,8 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___nonzero__(PyObject *SWIGUNUSEDPARM(
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___nonzero__" "', argument " "1"" of type '" "vector< DDirectory * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
-  result = (bool)vector_Sl_DDirectory_Sm__Sg____nonzero__((vector< DDirectory * > const *)arg1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
+  result = (bool)vector_Sl_DDirectory_Sm__Sg____nonzero__((vector< Directory * > const *)arg1);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -31712,7 +31712,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___bool__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -31723,8 +31723,8 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___bool__(PyObject *SWIGUNUSEDPARM(sel
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___bool__" "', argument " "1"" of type '" "vector< DDirectory * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
-  result = (bool)vector_Sl_DDirectory_Sm__Sg____bool__((vector< DDirectory * > const *)arg1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
+  result = (bool)vector_Sl_DDirectory_Sm__Sg____bool__((vector< Directory * > const *)arg1);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -31734,19 +31734,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___len__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * >::size_type result;
+  vector< Directory * >::size_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector___len__",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___len__" "', argument " "1"" of type '" "vector< DDirectory * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
-  result = vector_Sl_DDirectory_Sm__Sg____len__((vector< DDirectory * > const *)arg1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
+  result = vector_Sl_DDirectory_Sm__Sg____len__((vector< Directory * > const *)arg1);
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
@@ -31756,20 +31756,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_pop(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * >::value_type result;
+  vector< Directory * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector_pop",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_pop" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   try {
-    result = (vector< DDirectory * >::value_type)vector_Sl_DDirectory_Sm__Sg__pop(arg1);
+    result = (vector< Directory * >::value_type)vector_Sl_DDirectory_Sm__Sg__pop(arg1);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -31784,9 +31784,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___getslice__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::difference_type arg2 ;
-  vector< DDirectory * >::difference_type arg3 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::difference_type arg2 ;
+  vector< Directory * >::difference_type arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -31796,26 +31796,26 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___getslice__(PyObject *SWIGUNUSEDPARM
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  std::vector< DDirectory *,std::allocator< DDirectory * > > *result = 0 ;
+  std::vector< Directory *,std::allocator< Directory * > > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DirectoryVector___getslice__",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___getslice__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector___getslice__" "', argument " "2"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::difference_type >(val2);
+  arg2 = static_cast< vector< Directory * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DirectoryVector___getslice__" "', argument " "3"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DDirectory * >::difference_type >(val3);
+  arg3 = static_cast< vector< Directory * >::difference_type >(val3);
   try {
-    result = (std::vector< DDirectory *,std::allocator< DDirectory * > > *)vector_Sl_DDirectory_Sm__Sg____getslice__(arg1,arg2,arg3);
+    result = (std::vector< Directory *,std::allocator< Directory * > > *)vector_Sl_DDirectory_Sm__Sg____getslice__(arg1,arg2,arg3);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -31830,10 +31830,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___setslice____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::difference_type arg2 ;
-  vector< DDirectory * >::difference_type arg3 ;
-  std::vector< DDirectory *,std::allocator< DDirectory * > > *arg4 = 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::difference_type arg2 ;
+  vector< Directory * >::difference_type arg3 ;
+  std::vector< Directory *,std::allocator< Directory * > > *arg4 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -31851,19 +31851,19 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___setslice____SWIG_0(PyObject *SWIGUN
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___setslice__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector___setslice__" "', argument " "2"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::difference_type >(val2);
+  arg2 = static_cast< vector< Directory * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DirectoryVector___setslice__" "', argument " "3"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DDirectory * >::difference_type >(val3);
+  arg3 = static_cast< vector< Directory * >::difference_type >(val3);
   {
-    std::vector<DDirectory*,std::allocator< DDirectory * > > *ptr = (std::vector<DDirectory*,std::allocator< DDirectory * > > *)0;
+    std::vector<Directory*,std::allocator< Directory * > > *ptr = (std::vector<Directory*,std::allocator< Directory * > > *)0;
     res4 = swig::asptr(obj3, &ptr);
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "DirectoryVector___setslice__" "', argument " "4"" of type '" "std::vector< DDirectory *,std::allocator< DDirectory * > > const &""'"); 
@@ -31874,7 +31874,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___setslice____SWIG_0(PyObject *SWIGUN
     arg4 = ptr;
   }
   try {
-    vector_Sl_DDirectory_Sm__Sg____setslice____SWIG_0(arg1,arg2,arg3,(std::vector< DDirectory *,std::allocator< DDirectory * > > const &)*arg4);
+    vector_Sl_DDirectory_Sm__Sg____setslice____SWIG_0(arg1,arg2,arg3,(std::vector< Directory *,std::allocator< Directory * > > const &)*arg4);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -31894,9 +31894,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___setslice____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::difference_type arg2 ;
-  vector< DDirectory * >::difference_type arg3 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::difference_type arg2 ;
+  vector< Directory * >::difference_type arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -31912,17 +31912,17 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___setslice____SWIG_1(PyObject *SWIGUN
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___setslice__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector___setslice__" "', argument " "2"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::difference_type >(val2);
+  arg2 = static_cast< vector< Directory * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DirectoryVector___setslice__" "', argument " "3"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DDirectory * >::difference_type >(val3);
+  arg3 = static_cast< vector< Directory * >::difference_type >(val3);
   try {
     vector_Sl_DDirectory_Sm__Sg____setslice____SWIG_0(arg1,arg2,arg3);
   }
@@ -31987,7 +31987,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___setslice__(PyObject *self, PyObject
           _v = SWIG_CheckState(res);
         }
         if (_v) {
-          int res = swig::asptr(argv[3], (std::vector<DDirectory*,std::allocator< DDirectory * > >**)(0));
+          int res = swig::asptr(argv[3], (std::vector<Directory*,std::allocator< Directory * > >**)(0));
           _v = SWIG_CheckState(res);
           if (_v) {
             return _wrap_DirectoryVector___setslice____SWIG_0(self, args);
@@ -32008,9 +32008,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___delslice__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::difference_type arg2 ;
-  vector< DDirectory * >::difference_type arg3 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::difference_type arg2 ;
+  vector< Directory * >::difference_type arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -32026,17 +32026,17 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___delslice__(PyObject *SWIGUNUSEDPARM
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___delslice__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector___delslice__" "', argument " "2"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::difference_type >(val2);
+  arg2 = static_cast< vector< Directory * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DirectoryVector___delslice__" "', argument " "3"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DDirectory * >::difference_type >(val3);
+  arg3 = static_cast< vector< Directory * >::difference_type >(val3);
   try {
     vector_Sl_DDirectory_Sm__Sg____delslice__(arg1,arg2,arg3);
   }
@@ -32053,8 +32053,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___delitem____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::difference_type arg2 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::difference_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -32067,12 +32067,12 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___delitem____SWIG_0(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___delitem__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector___delitem__" "', argument " "2"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::difference_type >(val2);
+  arg2 = static_cast< vector< Directory * >::difference_type >(val2);
   try {
     vector_Sl_DDirectory_Sm__Sg____delitem____SWIG_0(arg1,arg2);
   }
@@ -32089,20 +32089,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___getitem____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  std::vector< DDirectory *,std::allocator< DDirectory * > > *result = 0 ;
+  std::vector< Directory *,std::allocator< Directory * > > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DirectoryVector___getitem__",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___getitem__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "DirectoryVector___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -32110,7 +32110,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___getitem____SWIG_0(PyObject *SWIGUNU
     arg2 = (PySliceObject *) obj1;
   }
   try {
-    result = (std::vector< DDirectory *,std::allocator< DDirectory * > > *)vector_Sl_DDirectory_Sm__Sg____getitem____SWIG_0(arg1,arg2);
+    result = (std::vector< Directory *,std::allocator< Directory * > > *)vector_Sl_DDirectory_Sm__Sg____getitem____SWIG_0(arg1,arg2);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -32125,9 +32125,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___setitem____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
-  std::vector< DDirectory *,std::allocator< DDirectory * > > *arg3 = 0 ;
+  std::vector< Directory *,std::allocator< Directory * > > *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res3 = SWIG_OLDOBJ ;
@@ -32140,7 +32140,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___setitem____SWIG_0(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___setitem__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "DirectoryVector___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -32148,7 +32148,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___setitem____SWIG_0(PyObject *SWIGUNU
     arg2 = (PySliceObject *) obj1;
   }
   {
-    std::vector<DDirectory*,std::allocator< DDirectory * > > *ptr = (std::vector<DDirectory*,std::allocator< DDirectory * > > *)0;
+    std::vector<Directory*,std::allocator< Directory * > > *ptr = (std::vector<Directory*,std::allocator< Directory * > > *)0;
     res3 = swig::asptr(obj2, &ptr);
     if (!SWIG_IsOK(res3)) {
       SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DirectoryVector___setitem__" "', argument " "3"" of type '" "std::vector< DDirectory *,std::allocator< DDirectory * > > const &""'"); 
@@ -32159,7 +32159,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___setitem____SWIG_0(PyObject *SWIGUNU
     arg3 = ptr;
   }
   try {
-    vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_0(arg1,arg2,(std::vector< DDirectory *,std::allocator< DDirectory * > > const &)*arg3);
+    vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_0(arg1,arg2,(std::vector< Directory *,std::allocator< Directory * > > const &)*arg3);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -32179,7 +32179,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___setitem____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -32191,7 +32191,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___setitem____SWIG_1(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___setitem__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "DirectoryVector___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -32214,7 +32214,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___delitem____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -32226,7 +32226,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___delitem____SWIG_1(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___delitem__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "DirectoryVector___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -32298,29 +32298,29 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___getitem____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::difference_type arg2 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::difference_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DDirectory * >::value_type result;
+  vector< Directory * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DirectoryVector___getitem__",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___getitem__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector___getitem__" "', argument " "2"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::difference_type >(val2);
+  arg2 = static_cast< vector< Directory * >::difference_type >(val2);
   try {
-    result = (vector< DDirectory * >::value_type)vector_Sl_DDirectory_Sm__Sg____getitem____SWIG_1(arg1,arg2);
+    result = (vector< Directory * >::value_type)vector_Sl_DDirectory_Sm__Sg____getitem____SWIG_1(arg1,arg2);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -32384,9 +32384,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector___setitem____SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::difference_type arg2 ;
-  vector< DDirectory * >::value_type arg3 = (vector< DDirectory * >::value_type) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::difference_type arg2 ;
+  vector< Directory * >::value_type arg3 = (vector< Directory * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -32402,17 +32402,17 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___setitem____SWIG_2(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector___setitem__" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector___setitem__" "', argument " "2"" of type '" "vector< DDirectory * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::difference_type >(val2);
+  arg2 = static_cast< vector< Directory * >::difference_type >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DirectoryVector___setitem__" "', argument " "3"" of type '" "vector< DDirectory * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DDirectory * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< Directory * >::value_type >(argp3);
   try {
     vector_Sl_DDirectory_Sm__Sg____setitem____SWIG_2(arg1,arg2,arg3);
   }
@@ -32461,7 +32461,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector___setitem__(PyObject *self, PyObject 
         _v = PySlice_Check(argv[1]);
       }
       if (_v) {
-        int res = swig::asptr(argv[2], (std::vector<DDirectory*,std::allocator< DDirectory * > >**)(0));
+        int res = swig::asptr(argv[2], (std::vector<Directory*,std::allocator< Directory * > >**)(0));
         _v = SWIG_CheckState(res);
         if (_v) {
           return _wrap_DirectoryVector___setitem____SWIG_0(self, args);
@@ -32502,8 +32502,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_append(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::value_type arg2 = (vector< DDirectory * >::value_type) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::value_type arg2 = (vector< Directory * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -32516,12 +32516,12 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_append(PyObject *SWIGUNUSEDPARM(self)
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_append" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DirectoryVector_append" "', argument " "2"" of type '" "vector< DDirectory * >::value_type""'"); 
   }
-  arg2 = reinterpret_cast< vector< DDirectory * >::value_type >(argp2);
+  arg2 = reinterpret_cast< vector< Directory * >::value_type >(argp2);
   vector_Sl_DDirectory_Sm__Sg__append(arg1,arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32532,10 +32532,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_DirectoryVector__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *result = 0 ;
+  vector< Directory * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":new_DirectoryVector")) SWIG_fail;
-  result = (vector< DDirectory * > *)new vector< DDirectory * >();
+  result = (vector< Directory * > *)new vector< Directory * >();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -32545,14 +32545,14 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_DirectoryVector__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  std::vector< DDirectory * > *arg1 = 0 ;
+  std::vector< Directory * > *arg1 = 0 ;
   int res1 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * > *result = 0 ;
+  vector< Directory * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:new_DirectoryVector",&obj0)) SWIG_fail;
   {
-    std::vector<DDirectory*,std::allocator< DDirectory * > > *ptr = (std::vector<DDirectory*,std::allocator< DDirectory * > > *)0;
+    std::vector<Directory*,std::allocator< Directory * > > *ptr = (std::vector<Directory*,std::allocator< Directory * > > *)0;
     res1 = swig::asptr(obj0, &ptr);
     if (!SWIG_IsOK(res1)) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_DirectoryVector" "', argument " "1"" of type '" "std::vector< DDirectory * > const &""'"); 
@@ -32562,7 +32562,7 @@ SWIGINTERN PyObject *_wrap_new_DirectoryVector__SWIG_1(PyObject *SWIGUNUSEDPARM(
     }
     arg1 = ptr;
   }
-  result = (vector< DDirectory * > *)new vector< DDirectory * >((std::vector< DDirectory * > const &)*arg1);
+  result = (vector< Directory * > *)new vector< Directory * >((std::vector< Directory * > const &)*arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_NEW |  0 );
   if (SWIG_IsNewObj(res1)) delete arg1;
   return resultobj;
@@ -32574,7 +32574,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_empty(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -32585,8 +32585,8 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_empty(PyObject *SWIGUNUSEDPARM(self),
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_empty" "', argument " "1"" of type '" "vector< DDirectory * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
-  result = (bool)((vector< DDirectory * > const *)arg1)->empty();
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
+  result = (bool)((vector< Directory * > const *)arg1)->empty();
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -32596,19 +32596,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_size(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * >::size_type result;
+  vector< Directory * >::size_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector_size",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_size" "', argument " "1"" of type '" "vector< DDirectory * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
-  result = ((vector< DDirectory * > const *)arg1)->size();
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
+  result = ((vector< Directory * > const *)arg1)->size();
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
@@ -32618,7 +32618,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_clear(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -32628,7 +32628,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_clear(PyObject *SWIGUNUSEDPARM(self),
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_clear" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   (arg1)->clear();
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32639,8 +32639,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_swap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  std::vector< DDirectory * > *arg2 = 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  std::vector< Directory * > *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -32653,7 +32653,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_swap(PyObject *SWIGUNUSEDPARM(self), 
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_swap" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t,  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DirectoryVector_swap" "', argument " "2"" of type '" "std::vector< DDirectory * > &""'"); 
@@ -32661,7 +32661,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_swap(PyObject *SWIGUNUSEDPARM(self), 
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "DirectoryVector_swap" "', argument " "2"" of type '" "std::vector< DDirectory * > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DDirectory * > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< Directory * > * >(argp2);
   (arg1)->swap(*arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32672,20 +32672,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_get_allocator(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  SwigValueWrapper< std::allocator< DDirectory * > > result;
+  SwigValueWrapper< std::allocator< Directory * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector_get_allocator",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_get_allocator" "', argument " "1"" of type '" "vector< DDirectory * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
-  result = ((vector< DDirectory * > const *)arg1)->get_allocator();
-  resultobj = SWIG_NewPointerObj((new vector< DDirectory * >::allocator_type(static_cast< const vector< DDirectory * >::allocator_type& >(result))), SWIGTYPE_p_std__allocatorT_DDirectory_p_t, SWIG_POINTER_OWN |  0 );
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
+  result = ((vector< Directory * > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new vector< Directory * >::allocator_type(static_cast< const vector< Directory * >::allocator_type& >(result))), SWIGTYPE_p_std__allocatorT_DDirectory_p_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -32694,20 +32694,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_begin(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * >::iterator result;
+  vector< Directory * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector_begin",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_begin" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   result = (arg1)->begin();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DDirectory * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< Directory * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -32717,20 +32717,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_end(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * >::iterator result;
+  vector< Directory * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector_end",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_end" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   result = (arg1)->end();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DDirectory * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< Directory * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -32740,20 +32740,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_rbegin(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * >::reverse_iterator result;
+  vector< Directory * >::reverse_iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector_rbegin",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_rbegin" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   result = (arg1)->rbegin();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DDirectory * >::reverse_iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< Directory * >::reverse_iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -32763,20 +32763,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_rend(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * >::reverse_iterator result;
+  vector< Directory * >::reverse_iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector_rend",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_rend" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   result = (arg1)->rend();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DDirectory * >::reverse_iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< Directory * >::reverse_iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -32786,19 +32786,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_DirectoryVector__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * >::size_type arg1 ;
+  vector< Directory * >::size_type arg1 ;
   size_t val1 ;
   int ecode1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * > *result = 0 ;
+  vector< Directory * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:new_DirectoryVector",&obj0)) SWIG_fail;
   ecode1 = SWIG_AsVal_size_t(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_DirectoryVector" "', argument " "1"" of type '" "vector< DDirectory * >::size_type""'");
   } 
-  arg1 = static_cast< vector< DDirectory * >::size_type >(val1);
-  result = (vector< DDirectory * > *)new vector< DDirectory * >(arg1);
+  arg1 = static_cast< vector< Directory * >::size_type >(val1);
+  result = (vector< Directory * > *)new vector< Directory * >(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -32808,7 +32808,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_pop_back(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -32818,7 +32818,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_pop_back(PyObject *SWIGUNUSEDPARM(sel
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_pop_back" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   (arg1)->pop_back();
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32829,8 +32829,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_resize__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::size_type arg2 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::size_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -32843,12 +32843,12 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_resize__SWIG_0(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_resize" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector_resize" "', argument " "2"" of type '" "vector< DDirectory * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::size_type >(val2);
+  arg2 = static_cast< vector< Directory * >::size_type >(val2);
   (arg1)->resize(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -32859,27 +32859,27 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_erase__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::iterator arg2 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::iterator arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
   int res2 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DDirectory * >::iterator result;
+  vector< Directory * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:DirectoryVector_erase",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_erase" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "DirectoryVector_erase" "', argument " "2"" of type '" "vector< DDirectory * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< Directory * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< Directory * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -32887,7 +32887,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_erase__SWIG_0(PyObject *SWIGUNUSEDPAR
     }
   }
   result = (arg1)->erase(arg2);
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DDirectory * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< Directory * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -32897,9 +32897,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_erase__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::iterator arg2 ;
-  vector< DDirectory * >::iterator arg3 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::iterator arg2 ;
+  vector< Directory * >::iterator arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
@@ -32909,19 +32909,19 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_erase__SWIG_1(PyObject *SWIGUNUSEDPAR
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DDirectory * >::iterator result;
+  vector< Directory * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DirectoryVector_erase",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_erase" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "DirectoryVector_erase" "', argument " "2"" of type '" "vector< DDirectory * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< Directory * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< Directory * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -32932,7 +32932,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_erase__SWIG_1(PyObject *SWIGUNUSEDPAR
   if (!SWIG_IsOK(res3) || !iter3) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "DirectoryVector_erase" "', argument " "3"" of type '" "vector< DDirectory * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *>(iter3);
+    swig::SwigPyIterator_T<vector< Directory * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< Directory * >::iterator > *>(iter3);
     if (iter_t) {
       arg3 = iter_t->get_current();
     } else {
@@ -32940,7 +32940,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_erase__SWIG_1(PyObject *SWIGUNUSEDPAR
     }
   }
   result = (arg1)->erase(arg2,arg3);
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DDirectory * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< Directory * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -32966,7 +32966,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_erase(PyObject *self, PyObject *args)
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< Directory * >::iterator > *>(iter) != 0));
       if (_v) {
         return _wrap_DirectoryVector_erase__SWIG_0(self, args);
       }
@@ -32980,11 +32980,11 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_erase(PyObject *self, PyObject *args)
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< Directory * >::iterator > *>(iter) != 0));
       if (_v) {
         swig::SwigPyIterator *iter = 0;
         int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *>(iter) != 0));
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< Directory * >::iterator > *>(iter) != 0));
         if (_v) {
           return _wrap_DirectoryVector_erase__SWIG_1(self, args);
         }
@@ -33003,28 +33003,28 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_DirectoryVector__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * >::size_type arg1 ;
-  vector< DDirectory * >::value_type arg2 = (vector< DDirectory * >::value_type) 0 ;
+  vector< Directory * >::size_type arg1 ;
+  vector< Directory * >::value_type arg2 = (vector< Directory * >::value_type) 0 ;
   size_t val1 ;
   int ecode1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DDirectory * > *result = 0 ;
+  vector< Directory * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:new_DirectoryVector",&obj0,&obj1)) SWIG_fail;
   ecode1 = SWIG_AsVal_size_t(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_DirectoryVector" "', argument " "1"" of type '" "vector< DDirectory * >::size_type""'");
   } 
-  arg1 = static_cast< vector< DDirectory * >::size_type >(val1);
+  arg1 = static_cast< vector< Directory * >::size_type >(val1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_DirectoryVector" "', argument " "2"" of type '" "vector< DDirectory * >::value_type""'"); 
   }
-  arg2 = reinterpret_cast< vector< DDirectory * >::value_type >(argp2);
-  result = (vector< DDirectory * > *)new vector< DDirectory * >(arg1,arg2);
+  arg2 = reinterpret_cast< vector< Directory * >::value_type >(argp2);
+  result = (vector< Directory * > *)new vector< Directory * >(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -33057,7 +33057,7 @@ SWIGINTERN PyObject *_wrap_new_DirectoryVector(PyObject *self, PyObject *args) {
   }
   if (argc == 1) {
     int _v;
-    int res = swig::asptr(argv[0], (std::vector<DDirectory*,std::allocator< DDirectory * > >**)(0));
+    int res = swig::asptr(argv[0], (std::vector<Directory*,std::allocator< Directory * > >**)(0));
     _v = SWIG_CheckState(res);
     if (_v) {
       return _wrap_new_DirectoryVector__SWIG_1(self, args);
@@ -33092,8 +33092,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_push_back(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::value_type arg2 = (vector< DDirectory * >::value_type) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::value_type arg2 = (vector< Directory * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -33106,12 +33106,12 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_push_back(PyObject *SWIGUNUSEDPARM(se
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_push_back" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "DirectoryVector_push_back" "', argument " "2"" of type '" "vector< DDirectory * >::value_type""'"); 
   }
-  arg2 = reinterpret_cast< vector< DDirectory * >::value_type >(argp2);
+  arg2 = reinterpret_cast< vector< Directory * >::value_type >(argp2);
   (arg1)->push_back(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -33122,19 +33122,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_front(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * >::value_type result;
+  vector< Directory * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector_front",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_front" "', argument " "1"" of type '" "vector< DDirectory * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
-  result = (vector< DDirectory * >::value_type)((vector< DDirectory * > const *)arg1)->front();
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
+  result = (vector< Directory * >::value_type)((vector< Directory * > const *)arg1)->front();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DDirectory, 0 |  0 );
   return resultobj;
 fail:
@@ -33144,19 +33144,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_back(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * >::value_type result;
+  vector< Directory * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector_back",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_back" "', argument " "1"" of type '" "vector< DDirectory * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
-  result = (vector< DDirectory * >::value_type)((vector< DDirectory * > const *)arg1)->back();
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
+  result = (vector< Directory * >::value_type)((vector< Directory * > const *)arg1)->back();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DDirectory, 0 |  0 );
   return resultobj;
 fail:
@@ -33166,9 +33166,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_assign(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::size_type arg2 ;
-  vector< DDirectory * >::value_type arg3 = (vector< DDirectory * >::value_type) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::size_type arg2 ;
+  vector< Directory * >::value_type arg3 = (vector< Directory * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -33184,17 +33184,17 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_assign(PyObject *SWIGUNUSEDPARM(self)
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_assign" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector_assign" "', argument " "2"" of type '" "vector< DDirectory * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::size_type >(val2);
+  arg2 = static_cast< vector< Directory * >::size_type >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DirectoryVector_assign" "', argument " "3"" of type '" "vector< DDirectory * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DDirectory * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< Directory * >::value_type >(argp3);
   (arg1)->assign(arg2,arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -33205,9 +33205,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_resize__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::size_type arg2 ;
-  vector< DDirectory * >::value_type arg3 = (vector< DDirectory * >::value_type) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::size_type arg2 ;
+  vector< Directory * >::value_type arg3 = (vector< Directory * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -33223,17 +33223,17 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_resize__SWIG_1(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_resize" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector_resize" "', argument " "2"" of type '" "vector< DDirectory * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::size_type >(val2);
+  arg2 = static_cast< vector< Directory * >::size_type >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DirectoryVector_resize" "', argument " "3"" of type '" "vector< DDirectory * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DDirectory * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< Directory * >::value_type >(argp3);
   (arg1)->resize(arg2,arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -33299,9 +33299,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_insert__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::iterator arg2 ;
-  vector< DDirectory * >::value_type arg3 = (vector< DDirectory * >::value_type) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::iterator arg2 ;
+  vector< Directory * >::value_type arg3 = (vector< Directory * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
@@ -33311,19 +33311,19 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_insert__SWIG_0(PyObject *SWIGUNUSEDPA
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DDirectory * >::iterator result;
+  vector< Directory * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:DirectoryVector_insert",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_insert" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "DirectoryVector_insert" "', argument " "2"" of type '" "vector< DDirectory * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< Directory * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< Directory * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -33334,9 +33334,9 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_insert__SWIG_0(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "DirectoryVector_insert" "', argument " "3"" of type '" "vector< DDirectory * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DDirectory * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< Directory * >::value_type >(argp3);
   result = (arg1)->insert(arg2,arg3);
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DDirectory * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< Directory * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -33346,10 +33346,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_insert__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::iterator arg2 ;
-  vector< DDirectory * >::size_type arg3 ;
-  vector< DDirectory * >::value_type arg4 = (vector< DDirectory * >::value_type) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::iterator arg2 ;
+  vector< Directory * >::size_type arg3 ;
+  vector< Directory * >::value_type arg4 = (vector< Directory * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
@@ -33368,12 +33368,12 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_insert__SWIG_1(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_insert" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "DirectoryVector_insert" "', argument " "2"" of type '" "vector< DDirectory * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< Directory * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< Directory * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -33384,12 +33384,12 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_insert__SWIG_1(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "DirectoryVector_insert" "', argument " "3"" of type '" "vector< DDirectory * >::size_type""'");
   } 
-  arg3 = static_cast< vector< DDirectory * >::size_type >(val3);
+  arg3 = static_cast< vector< Directory * >::size_type >(val3);
   res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_DDirectory, 0 |  0 );
   if (!SWIG_IsOK(res4)) {
     SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "DirectoryVector_insert" "', argument " "4"" of type '" "vector< DDirectory * >::value_type""'"); 
   }
-  arg4 = reinterpret_cast< vector< DDirectory * >::value_type >(argp4);
+  arg4 = reinterpret_cast< vector< Directory * >::value_type >(argp4);
   (arg1)->insert(arg2,arg3,arg4);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -33416,7 +33416,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_insert(PyObject *self, PyObject *args
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< Directory * >::iterator > *>(iter) != 0));
       if (_v) {
         void *vptr = 0;
         int res = SWIG_ConvertPtr(argv[2], &vptr, SWIGTYPE_p_DDirectory, 0);
@@ -33435,7 +33435,7 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_insert(PyObject *self, PyObject *args
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DDirectory * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< Directory * >::iterator > *>(iter) != 0));
       if (_v) {
         {
           int res = SWIG_AsVal_size_t(argv[2], NULL);
@@ -33464,8 +33464,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_reserve(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
-  vector< DDirectory * >::size_type arg2 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
+  vector< Directory * >::size_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -33478,12 +33478,12 @@ SWIGINTERN PyObject *_wrap_DirectoryVector_reserve(PyObject *SWIGUNUSEDPARM(self
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_reserve" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "DirectoryVector_reserve" "', argument " "2"" of type '" "vector< DDirectory * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DDirectory * >::size_type >(val2);
+  arg2 = static_cast< vector< Directory * >::size_type >(val2);
   (arg1)->reserve(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -33494,19 +33494,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_DirectoryVector_capacity(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DDirectory * >::size_type result;
+  vector< Directory * >::size_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:DirectoryVector_capacity",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DDirectory_p_std__allocatorT_DDirectory_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "DirectoryVector_capacity" "', argument " "1"" of type '" "vector< DDirectory * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
-  result = ((vector< DDirectory * > const *)arg1)->capacity();
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
+  result = ((vector< Directory * > const *)arg1)->capacity();
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
@@ -33516,7 +33516,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_delete_DirectoryVector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DDirectory * > *arg1 = (vector< DDirectory * > *) 0 ;
+  vector< Directory * > *arg1 = (vector< Directory * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -33526,7 +33526,7 @@ SWIGINTERN PyObject *_wrap_delete_DirectoryVector(PyObject *SWIGUNUSEDPARM(self)
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_DirectoryVector" "', argument " "1"" of type '" "vector< DDirectory * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DDirectory * > * >(argp1);
+  arg1 = reinterpret_cast< vector< Directory * > * >(argp1);
   delete arg1;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -33544,7 +33544,7 @@ SWIGINTERN PyObject *DirectoryVector_swigregister(PyObject *SWIGUNUSEDPARM(self)
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_iterator(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   PyObject **arg2 = (PyObject **) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -33557,7 +33557,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_iterator(PyObject *SWIGUNUSE
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_iterator" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   result = (swig::SwigPyIterator *)vector_Sl_DConstantsTypeTable_Sm__Sg__iterator(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
   return resultobj;
@@ -33568,7 +33568,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___nonzero__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -33579,8 +33579,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___nonzero__(PyObject *SWIGUN
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___nonzero__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
-  result = (bool)vector_Sl_DConstantsTypeTable_Sm__Sg____nonzero__((vector< DConstantsTypeTable * > const *)arg1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
+  result = (bool)vector_Sl_DConstantsTypeTable_Sm__Sg____nonzero__((vector< ConstantsTypeTable * > const *)arg1);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -33590,7 +33590,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___bool__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -33601,8 +33601,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___bool__(PyObject *SWIGUNUSE
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___bool__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
-  result = (bool)vector_Sl_DConstantsTypeTable_Sm__Sg____bool__((vector< DConstantsTypeTable * > const *)arg1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
+  result = (bool)vector_Sl_DConstantsTypeTable_Sm__Sg____bool__((vector< ConstantsTypeTable * > const *)arg1);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -33612,19 +33612,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___len__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * >::size_type result;
+  vector< ConstantsTypeTable * >::size_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector___len__",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___len__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
-  result = vector_Sl_DConstantsTypeTable_Sm__Sg____len__((vector< DConstantsTypeTable * > const *)arg1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
+  result = vector_Sl_DConstantsTypeTable_Sm__Sg____len__((vector< ConstantsTypeTable * > const *)arg1);
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
@@ -33634,20 +33634,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_pop(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * >::value_type result;
+  vector< ConstantsTypeTable * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector_pop",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_pop" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   try {
-    result = (vector< DConstantsTypeTable * >::value_type)vector_Sl_DConstantsTypeTable_Sm__Sg__pop(arg1);
+    result = (vector< ConstantsTypeTable * >::value_type)vector_Sl_DConstantsTypeTable_Sm__Sg__pop(arg1);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -33662,9 +33662,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___getslice__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::difference_type arg2 ;
-  vector< DConstantsTypeTable * >::difference_type arg3 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::difference_type arg2 ;
+  vector< ConstantsTypeTable * >::difference_type arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -33674,26 +33674,26 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___getslice__(PyObject *SWIGU
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *result = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:ConstantsTypeTableVector___getslice__",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___getslice__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector___getslice__" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeTableVector___getslice__" "', argument " "3"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val3);
+  arg3 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val3);
   try {
-    result = (std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *)vector_Sl_DConstantsTypeTable_Sm__Sg____getslice__(arg1,arg2,arg3);
+    result = (std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *)vector_Sl_DConstantsTypeTable_Sm__Sg____getslice__(arg1,arg2,arg3);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -33708,10 +33708,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setslice____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::difference_type arg2 ;
-  vector< DConstantsTypeTable * >::difference_type arg3 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg4 = 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::difference_type arg2 ;
+  vector< ConstantsTypeTable * >::difference_type arg3 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg4 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -33729,19 +33729,19 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setslice____SWIG_0(PyObjec
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___setslice__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector___setslice__" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeTableVector___setslice__" "', argument " "3"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val3);
+  arg3 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val3);
   {
-    std::vector<DConstantsTypeTable*,std::allocator< DConstantsTypeTable * > > *ptr = (std::vector<DConstantsTypeTable*,std::allocator< DConstantsTypeTable * > > *)0;
+    std::vector<ConstantsTypeTable*,std::allocator< ConstantsTypeTable * > > *ptr = (std::vector<ConstantsTypeTable*,std::allocator< ConstantsTypeTable * > > *)0;
     res4 = swig::asptr(obj3, &ptr);
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "ConstantsTypeTableVector___setslice__" "', argument " "4"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > const &""'"); 
@@ -33752,7 +33752,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setslice____SWIG_0(PyObjec
     arg4 = ptr;
   }
   try {
-    vector_Sl_DConstantsTypeTable_Sm__Sg____setslice____SWIG_0(arg1,arg2,arg3,(std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > const &)*arg4);
+    vector_Sl_DConstantsTypeTable_Sm__Sg____setslice____SWIG_0(arg1,arg2,arg3,(std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > const &)*arg4);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -33772,9 +33772,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setslice____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::difference_type arg2 ;
-  vector< DConstantsTypeTable * >::difference_type arg3 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::difference_type arg2 ;
+  vector< ConstantsTypeTable * >::difference_type arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -33790,17 +33790,17 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setslice____SWIG_1(PyObjec
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___setslice__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector___setslice__" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeTableVector___setslice__" "', argument " "3"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val3);
+  arg3 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val3);
   try {
     vector_Sl_DConstantsTypeTable_Sm__Sg____setslice____SWIG_0(arg1,arg2,arg3);
   }
@@ -33865,7 +33865,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setslice__(PyObject *self,
           _v = SWIG_CheckState(res);
         }
         if (_v) {
-          int res = swig::asptr(argv[3], (std::vector<DConstantsTypeTable*,std::allocator< DConstantsTypeTable * > >**)(0));
+          int res = swig::asptr(argv[3], (std::vector<ConstantsTypeTable*,std::allocator< ConstantsTypeTable * > >**)(0));
           _v = SWIG_CheckState(res);
           if (_v) {
             return _wrap_ConstantsTypeTableVector___setslice____SWIG_0(self, args);
@@ -33886,9 +33886,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___delslice__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::difference_type arg2 ;
-  vector< DConstantsTypeTable * >::difference_type arg3 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::difference_type arg2 ;
+  vector< ConstantsTypeTable * >::difference_type arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -33904,17 +33904,17 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___delslice__(PyObject *SWIGU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___delslice__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector___delslice__" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeTableVector___delslice__" "', argument " "3"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val3);
+  arg3 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val3);
   try {
     vector_Sl_DConstantsTypeTable_Sm__Sg____delslice__(arg1,arg2,arg3);
   }
@@ -33931,8 +33931,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___delitem____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::difference_type arg2 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::difference_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -33945,12 +33945,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___delitem____SWIG_0(PyObject
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___delitem__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector___delitem__" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val2);
   try {
     vector_Sl_DConstantsTypeTable_Sm__Sg____delitem____SWIG_0(arg1,arg2);
   }
@@ -33967,20 +33967,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___getitem____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *result = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:ConstantsTypeTableVector___getitem__",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___getitem__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeTableVector___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -33988,7 +33988,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___getitem____SWIG_0(PyObject
     arg2 = (PySliceObject *) obj1;
   }
   try {
-    result = (std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *)vector_Sl_DConstantsTypeTable_Sm__Sg____getitem____SWIG_0(arg1,arg2);
+    result = (std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *)vector_Sl_DConstantsTypeTable_Sm__Sg____getitem____SWIG_0(arg1,arg2);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -34003,9 +34003,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setitem____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
-  std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > *arg3 = 0 ;
+  std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res3 = SWIG_OLDOBJ ;
@@ -34018,7 +34018,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setitem____SWIG_0(PyObject
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___setitem__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeTableVector___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -34026,7 +34026,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setitem____SWIG_0(PyObject
     arg2 = (PySliceObject *) obj1;
   }
   {
-    std::vector<DConstantsTypeTable*,std::allocator< DConstantsTypeTable * > > *ptr = (std::vector<DConstantsTypeTable*,std::allocator< DConstantsTypeTable * > > *)0;
+    std::vector<ConstantsTypeTable*,std::allocator< ConstantsTypeTable * > > *ptr = (std::vector<ConstantsTypeTable*,std::allocator< ConstantsTypeTable * > > *)0;
     res3 = swig::asptr(obj2, &ptr);
     if (!SWIG_IsOK(res3)) {
       SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ConstantsTypeTableVector___setitem__" "', argument " "3"" of type '" "std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > const &""'"); 
@@ -34037,7 +34037,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setitem____SWIG_0(PyObject
     arg3 = ptr;
   }
   try {
-    vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_0(arg1,arg2,(std::vector< DConstantsTypeTable *,std::allocator< DConstantsTypeTable * > > const &)*arg3);
+    vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_0(arg1,arg2,(std::vector< ConstantsTypeTable *,std::allocator< ConstantsTypeTable * > > const &)*arg3);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -34057,7 +34057,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setitem____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -34069,7 +34069,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setitem____SWIG_1(PyObject
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___setitem__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeTableVector___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -34092,7 +34092,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___delitem____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -34104,7 +34104,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___delitem____SWIG_1(PyObject
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___delitem__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeTableVector___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -34176,29 +34176,29 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___getitem____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::difference_type arg2 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::difference_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DConstantsTypeTable * >::value_type result;
+  vector< ConstantsTypeTable * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:ConstantsTypeTableVector___getitem__",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___getitem__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector___getitem__" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val2);
   try {
-    result = (vector< DConstantsTypeTable * >::value_type)vector_Sl_DConstantsTypeTable_Sm__Sg____getitem____SWIG_1(arg1,arg2);
+    result = (vector< ConstantsTypeTable * >::value_type)vector_Sl_DConstantsTypeTable_Sm__Sg____getitem____SWIG_1(arg1,arg2);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -34262,9 +34262,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setitem____SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::difference_type arg2 ;
-  vector< DConstantsTypeTable * >::value_type arg3 = (vector< DConstantsTypeTable * >::value_type) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::difference_type arg2 ;
+  vector< ConstantsTypeTable * >::value_type arg3 = (vector< ConstantsTypeTable * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -34280,17 +34280,17 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setitem____SWIG_2(PyObject
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector___setitem__" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector___setitem__" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::difference_type >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ConstantsTypeTableVector___setitem__" "', argument " "3"" of type '" "vector< DConstantsTypeTable * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DConstantsTypeTable * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< ConstantsTypeTable * >::value_type >(argp3);
   try {
     vector_Sl_DConstantsTypeTable_Sm__Sg____setitem____SWIG_2(arg1,arg2,arg3);
   }
@@ -34339,7 +34339,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector___setitem__(PyObject *self, 
         _v = PySlice_Check(argv[1]);
       }
       if (_v) {
-        int res = swig::asptr(argv[2], (std::vector<DConstantsTypeTable*,std::allocator< DConstantsTypeTable * > >**)(0));
+        int res = swig::asptr(argv[2], (std::vector<ConstantsTypeTable*,std::allocator< ConstantsTypeTable * > >**)(0));
         _v = SWIG_CheckState(res);
         if (_v) {
           return _wrap_ConstantsTypeTableVector___setitem____SWIG_0(self, args);
@@ -34380,8 +34380,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_append(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::value_type arg2 = (vector< DConstantsTypeTable * >::value_type) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::value_type arg2 = (vector< ConstantsTypeTable * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -34394,12 +34394,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_append(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_append" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ConstantsTypeTableVector_append" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::value_type""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * >::value_type >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * >::value_type >(argp2);
   vector_Sl_DConstantsTypeTable_Sm__Sg__append(arg1,arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -34410,10 +34410,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeTableVector__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *result = 0 ;
+  vector< ConstantsTypeTable * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":new_ConstantsTypeTableVector")) SWIG_fail;
-  result = (vector< DConstantsTypeTable * > *)new vector< DConstantsTypeTable * >();
+  result = (vector< ConstantsTypeTable * > *)new vector< ConstantsTypeTable * >();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -34423,14 +34423,14 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeTableVector__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  std::vector< DConstantsTypeTable * > *arg1 = 0 ;
+  std::vector< ConstantsTypeTable * > *arg1 = 0 ;
   int res1 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * > *result = 0 ;
+  vector< ConstantsTypeTable * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:new_ConstantsTypeTableVector",&obj0)) SWIG_fail;
   {
-    std::vector<DConstantsTypeTable*,std::allocator< DConstantsTypeTable * > > *ptr = (std::vector<DConstantsTypeTable*,std::allocator< DConstantsTypeTable * > > *)0;
+    std::vector<ConstantsTypeTable*,std::allocator< ConstantsTypeTable * > > *ptr = (std::vector<ConstantsTypeTable*,std::allocator< ConstantsTypeTable * > > *)0;
     res1 = swig::asptr(obj0, &ptr);
     if (!SWIG_IsOK(res1)) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_ConstantsTypeTableVector" "', argument " "1"" of type '" "std::vector< DConstantsTypeTable * > const &""'"); 
@@ -34440,7 +34440,7 @@ SWIGINTERN PyObject *_wrap_new_ConstantsTypeTableVector__SWIG_1(PyObject *SWIGUN
     }
     arg1 = ptr;
   }
-  result = (vector< DConstantsTypeTable * > *)new vector< DConstantsTypeTable * >((std::vector< DConstantsTypeTable * > const &)*arg1);
+  result = (vector< ConstantsTypeTable * > *)new vector< ConstantsTypeTable * >((std::vector< ConstantsTypeTable * > const &)*arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_NEW |  0 );
   if (SWIG_IsNewObj(res1)) delete arg1;
   return resultobj;
@@ -34452,7 +34452,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_empty(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -34463,8 +34463,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_empty(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_empty" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
-  result = (bool)((vector< DConstantsTypeTable * > const *)arg1)->empty();
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
+  result = (bool)((vector< ConstantsTypeTable * > const *)arg1)->empty();
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -34474,19 +34474,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_size(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * >::size_type result;
+  vector< ConstantsTypeTable * >::size_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector_size",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_size" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
-  result = ((vector< DConstantsTypeTable * > const *)arg1)->size();
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
+  result = ((vector< ConstantsTypeTable * > const *)arg1)->size();
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
@@ -34496,7 +34496,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_clear(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -34506,7 +34506,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_clear(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_clear" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   (arg1)->clear();
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -34517,8 +34517,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_swap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  std::vector< DConstantsTypeTable * > *arg2 = 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  std::vector< ConstantsTypeTable * > *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -34531,7 +34531,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_swap(PyObject *SWIGUNUSEDPAR
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_swap" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t,  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ConstantsTypeTableVector_swap" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable * > &""'"); 
@@ -34539,7 +34539,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_swap(PyObject *SWIGUNUSEDPAR
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ConstantsTypeTableVector_swap" "', argument " "2"" of type '" "std::vector< DConstantsTypeTable * > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeTable * > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeTable * > * >(argp2);
   (arg1)->swap(*arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -34550,20 +34550,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_get_allocator(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  SwigValueWrapper< std::allocator< DConstantsTypeTable * > > result;
+  SwigValueWrapper< std::allocator< ConstantsTypeTable * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector_get_allocator",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_get_allocator" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
-  result = ((vector< DConstantsTypeTable * > const *)arg1)->get_allocator();
-  resultobj = SWIG_NewPointerObj((new vector< DConstantsTypeTable * >::allocator_type(static_cast< const vector< DConstantsTypeTable * >::allocator_type& >(result))), SWIGTYPE_p_std__allocatorT_DConstantsTypeTable_p_t, SWIG_POINTER_OWN |  0 );
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
+  result = ((vector< ConstantsTypeTable * > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new vector< ConstantsTypeTable * >::allocator_type(static_cast< const vector< ConstantsTypeTable * >::allocator_type& >(result))), SWIGTYPE_p_std__allocatorT_DConstantsTypeTable_p_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -34572,20 +34572,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_begin(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * >::iterator result;
+  vector< ConstantsTypeTable * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector_begin",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_begin" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   result = (arg1)->begin();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeTable * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeTable * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -34595,20 +34595,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_end(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * >::iterator result;
+  vector< ConstantsTypeTable * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector_end",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_end" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   result = (arg1)->end();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeTable * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeTable * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -34618,20 +34618,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_rbegin(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * >::reverse_iterator result;
+  vector< ConstantsTypeTable * >::reverse_iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector_rbegin",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_rbegin" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   result = (arg1)->rbegin();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeTable * >::reverse_iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeTable * >::reverse_iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -34641,20 +34641,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_rend(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * >::reverse_iterator result;
+  vector< ConstantsTypeTable * >::reverse_iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector_rend",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_rend" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   result = (arg1)->rend();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeTable * >::reverse_iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeTable * >::reverse_iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -34664,19 +34664,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeTableVector__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * >::size_type arg1 ;
+  vector< ConstantsTypeTable * >::size_type arg1 ;
   size_t val1 ;
   int ecode1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * > *result = 0 ;
+  vector< ConstantsTypeTable * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:new_ConstantsTypeTableVector",&obj0)) SWIG_fail;
   ecode1 = SWIG_AsVal_size_t(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_ConstantsTypeTableVector" "', argument " "1"" of type '" "vector< DConstantsTypeTable * >::size_type""'");
   } 
-  arg1 = static_cast< vector< DConstantsTypeTable * >::size_type >(val1);
-  result = (vector< DConstantsTypeTable * > *)new vector< DConstantsTypeTable * >(arg1);
+  arg1 = static_cast< vector< ConstantsTypeTable * >::size_type >(val1);
+  result = (vector< ConstantsTypeTable * > *)new vector< ConstantsTypeTable * >(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -34686,7 +34686,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_pop_back(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -34696,7 +34696,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_pop_back(PyObject *SWIGUNUSE
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_pop_back" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   (arg1)->pop_back();
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -34707,8 +34707,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_resize__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::size_type arg2 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::size_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -34721,12 +34721,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_resize__SWIG_0(PyObject *SWI
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_resize" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector_resize" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::size_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::size_type >(val2);
   (arg1)->resize(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -34737,27 +34737,27 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_erase__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::iterator arg2 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::iterator arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
   int res2 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DConstantsTypeTable * >::iterator result;
+  vector< ConstantsTypeTable * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:ConstantsTypeTableVector_erase",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_erase" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeTableVector_erase" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -34765,7 +34765,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_erase__SWIG_0(PyObject *SWIG
     }
   }
   result = (arg1)->erase(arg2);
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeTable * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeTable * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -34775,9 +34775,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_erase__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::iterator arg2 ;
-  vector< DConstantsTypeTable * >::iterator arg3 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::iterator arg2 ;
+  vector< ConstantsTypeTable * >::iterator arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
@@ -34787,19 +34787,19 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_erase__SWIG_1(PyObject *SWIG
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DConstantsTypeTable * >::iterator result;
+  vector< ConstantsTypeTable * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:ConstantsTypeTableVector_erase",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_erase" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeTableVector_erase" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -34810,7 +34810,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_erase__SWIG_1(PyObject *SWIG
   if (!SWIG_IsOK(res3) || !iter3) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeTableVector_erase" "', argument " "3"" of type '" "vector< DConstantsTypeTable * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *>(iter3);
+    swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *>(iter3);
     if (iter_t) {
       arg3 = iter_t->get_current();
     } else {
@@ -34818,7 +34818,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_erase__SWIG_1(PyObject *SWIG
     }
   }
   result = (arg1)->erase(arg2,arg3);
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeTable * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeTable * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -34844,7 +34844,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_erase(PyObject *self, PyObje
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *>(iter) != 0));
       if (_v) {
         return _wrap_ConstantsTypeTableVector_erase__SWIG_0(self, args);
       }
@@ -34858,11 +34858,11 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_erase(PyObject *self, PyObje
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *>(iter) != 0));
       if (_v) {
         swig::SwigPyIterator *iter = 0;
         int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *>(iter) != 0));
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *>(iter) != 0));
         if (_v) {
           return _wrap_ConstantsTypeTableVector_erase__SWIG_1(self, args);
         }
@@ -34881,28 +34881,28 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeTableVector__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * >::size_type arg1 ;
-  vector< DConstantsTypeTable * >::value_type arg2 = (vector< DConstantsTypeTable * >::value_type) 0 ;
+  vector< ConstantsTypeTable * >::size_type arg1 ;
+  vector< ConstantsTypeTable * >::value_type arg2 = (vector< ConstantsTypeTable * >::value_type) 0 ;
   size_t val1 ;
   int ecode1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DConstantsTypeTable * > *result = 0 ;
+  vector< ConstantsTypeTable * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:new_ConstantsTypeTableVector",&obj0,&obj1)) SWIG_fail;
   ecode1 = SWIG_AsVal_size_t(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_ConstantsTypeTableVector" "', argument " "1"" of type '" "vector< DConstantsTypeTable * >::size_type""'");
   } 
-  arg1 = static_cast< vector< DConstantsTypeTable * >::size_type >(val1);
+  arg1 = static_cast< vector< ConstantsTypeTable * >::size_type >(val1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_ConstantsTypeTableVector" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::value_type""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * >::value_type >(argp2);
-  result = (vector< DConstantsTypeTable * > *)new vector< DConstantsTypeTable * >(arg1,arg2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * >::value_type >(argp2);
+  result = (vector< ConstantsTypeTable * > *)new vector< ConstantsTypeTable * >(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -34935,7 +34935,7 @@ SWIGINTERN PyObject *_wrap_new_ConstantsTypeTableVector(PyObject *self, PyObject
   }
   if (argc == 1) {
     int _v;
-    int res = swig::asptr(argv[0], (std::vector<DConstantsTypeTable*,std::allocator< DConstantsTypeTable * > >**)(0));
+    int res = swig::asptr(argv[0], (std::vector<ConstantsTypeTable*,std::allocator< ConstantsTypeTable * > >**)(0));
     _v = SWIG_CheckState(res);
     if (_v) {
       return _wrap_new_ConstantsTypeTableVector__SWIG_1(self, args);
@@ -34970,8 +34970,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_push_back(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::value_type arg2 = (vector< DConstantsTypeTable * >::value_type) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::value_type arg2 = (vector< ConstantsTypeTable * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -34984,12 +34984,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_push_back(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_push_back" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ConstantsTypeTableVector_push_back" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::value_type""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeTable * >::value_type >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeTable * >::value_type >(argp2);
   (arg1)->push_back(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -35000,19 +35000,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_front(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * >::value_type result;
+  vector< ConstantsTypeTable * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector_front",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_front" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
-  result = (vector< DConstantsTypeTable * >::value_type)((vector< DConstantsTypeTable * > const *)arg1)->front();
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
+  result = (vector< ConstantsTypeTable * >::value_type)((vector< ConstantsTypeTable * > const *)arg1)->front();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   return resultobj;
 fail:
@@ -35022,19 +35022,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_back(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * >::value_type result;
+  vector< ConstantsTypeTable * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector_back",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_back" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
-  result = (vector< DConstantsTypeTable * >::value_type)((vector< DConstantsTypeTable * > const *)arg1)->back();
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
+  result = (vector< ConstantsTypeTable * >::value_type)((vector< ConstantsTypeTable * > const *)arg1)->back();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   return resultobj;
 fail:
@@ -35044,9 +35044,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_assign(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::size_type arg2 ;
-  vector< DConstantsTypeTable * >::value_type arg3 = (vector< DConstantsTypeTable * >::value_type) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::size_type arg2 ;
+  vector< ConstantsTypeTable * >::value_type arg3 = (vector< ConstantsTypeTable * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -35062,17 +35062,17 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_assign(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_assign" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector_assign" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::size_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::size_type >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ConstantsTypeTableVector_assign" "', argument " "3"" of type '" "vector< DConstantsTypeTable * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DConstantsTypeTable * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< ConstantsTypeTable * >::value_type >(argp3);
   (arg1)->assign(arg2,arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -35083,9 +35083,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_resize__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::size_type arg2 ;
-  vector< DConstantsTypeTable * >::value_type arg3 = (vector< DConstantsTypeTable * >::value_type) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::size_type arg2 ;
+  vector< ConstantsTypeTable * >::value_type arg3 = (vector< ConstantsTypeTable * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -35101,17 +35101,17 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_resize__SWIG_1(PyObject *SWI
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_resize" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector_resize" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::size_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::size_type >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ConstantsTypeTableVector_resize" "', argument " "3"" of type '" "vector< DConstantsTypeTable * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DConstantsTypeTable * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< ConstantsTypeTable * >::value_type >(argp3);
   (arg1)->resize(arg2,arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -35177,9 +35177,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_insert__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::iterator arg2 ;
-  vector< DConstantsTypeTable * >::value_type arg3 = (vector< DConstantsTypeTable * >::value_type) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::iterator arg2 ;
+  vector< ConstantsTypeTable * >::value_type arg3 = (vector< ConstantsTypeTable * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
@@ -35189,19 +35189,19 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_insert__SWIG_0(PyObject *SWI
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DConstantsTypeTable * >::iterator result;
+  vector< ConstantsTypeTable * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:ConstantsTypeTableVector_insert",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_insert" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeTableVector_insert" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -35212,9 +35212,9 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_insert__SWIG_0(PyObject *SWI
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ConstantsTypeTableVector_insert" "', argument " "3"" of type '" "vector< DConstantsTypeTable * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DConstantsTypeTable * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< ConstantsTypeTable * >::value_type >(argp3);
   result = (arg1)->insert(arg2,arg3);
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeTable * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeTable * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -35224,10 +35224,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_insert__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::iterator arg2 ;
-  vector< DConstantsTypeTable * >::size_type arg3 ;
-  vector< DConstantsTypeTable * >::value_type arg4 = (vector< DConstantsTypeTable * >::value_type) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::iterator arg2 ;
+  vector< ConstantsTypeTable * >::size_type arg3 ;
+  vector< ConstantsTypeTable * >::value_type arg4 = (vector< ConstantsTypeTable * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
@@ -35246,12 +35246,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_insert__SWIG_1(PyObject *SWI
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_insert" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeTableVector_insert" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -35262,12 +35262,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_insert__SWIG_1(PyObject *SWI
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeTableVector_insert" "', argument " "3"" of type '" "vector< DConstantsTypeTable * >::size_type""'");
   } 
-  arg3 = static_cast< vector< DConstantsTypeTable * >::size_type >(val3);
+  arg3 = static_cast< vector< ConstantsTypeTable * >::size_type >(val3);
   res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_DConstantsTypeTable, 0 |  0 );
   if (!SWIG_IsOK(res4)) {
     SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "ConstantsTypeTableVector_insert" "', argument " "4"" of type '" "vector< DConstantsTypeTable * >::value_type""'"); 
   }
-  arg4 = reinterpret_cast< vector< DConstantsTypeTable * >::value_type >(argp4);
+  arg4 = reinterpret_cast< vector< ConstantsTypeTable * >::value_type >(argp4);
   (arg1)->insert(arg2,arg3,arg4);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -35294,7 +35294,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_insert(PyObject *self, PyObj
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *>(iter) != 0));
       if (_v) {
         void *vptr = 0;
         int res = SWIG_ConvertPtr(argv[2], &vptr, SWIGTYPE_p_DConstantsTypeTable, 0);
@@ -35313,7 +35313,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_insert(PyObject *self, PyObj
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeTable * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeTable * >::iterator > *>(iter) != 0));
       if (_v) {
         {
           int res = SWIG_AsVal_size_t(argv[2], NULL);
@@ -35342,8 +35342,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_reserve(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
-  vector< DConstantsTypeTable * >::size_type arg2 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * >::size_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -35356,12 +35356,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_reserve(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_reserve" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeTableVector_reserve" "', argument " "2"" of type '" "vector< DConstantsTypeTable * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeTable * >::size_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeTable * >::size_type >(val2);
   (arg1)->reserve(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -35372,19 +35372,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeTableVector_capacity(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeTable * >::size_type result;
+  vector< ConstantsTypeTable * >::size_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeTableVector_capacity",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeTable_p_std__allocatorT_DConstantsTypeTable_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeTableVector_capacity" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
-  result = ((vector< DConstantsTypeTable * > const *)arg1)->capacity();
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
+  result = ((vector< ConstantsTypeTable * > const *)arg1)->capacity();
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
@@ -35394,7 +35394,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_delete_ConstantsTypeTableVector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeTable * > *arg1 = (vector< DConstantsTypeTable * > *) 0 ;
+  vector< ConstantsTypeTable * > *arg1 = (vector< ConstantsTypeTable * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -35404,7 +35404,7 @@ SWIGINTERN PyObject *_wrap_delete_ConstantsTypeTableVector(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_ConstantsTypeTableVector" "', argument " "1"" of type '" "vector< DConstantsTypeTable * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeTable * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeTable * > * >(argp1);
   delete arg1;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -35422,7 +35422,7 @@ SWIGINTERN PyObject *ConstantsTypeTableVector_swigregister(PyObject *SWIGUNUSEDP
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_iterator(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   PyObject **arg2 = (PyObject **) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -35435,7 +35435,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_iterator(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_iterator" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   result = (swig::SwigPyIterator *)vector_Sl_DConstantsTypeColumn_Sm__Sg__iterator(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_swig__SwigPyIterator, SWIG_POINTER_OWN |  0 );
   return resultobj;
@@ -35446,7 +35446,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___nonzero__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -35457,8 +35457,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___nonzero__(PyObject *SWIGU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___nonzero__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
-  result = (bool)vector_Sl_DConstantsTypeColumn_Sm__Sg____nonzero__((vector< DConstantsTypeColumn * > const *)arg1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
+  result = (bool)vector_Sl_DConstantsTypeColumn_Sm__Sg____nonzero__((vector< ConstantsTypeColumn * > const *)arg1);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -35468,7 +35468,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___bool__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -35479,8 +35479,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___bool__(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___bool__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
-  result = (bool)vector_Sl_DConstantsTypeColumn_Sm__Sg____bool__((vector< DConstantsTypeColumn * > const *)arg1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
+  result = (bool)vector_Sl_DConstantsTypeColumn_Sm__Sg____bool__((vector< ConstantsTypeColumn * > const *)arg1);
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -35490,19 +35490,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___len__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * >::size_type result;
+  vector< ConstantsTypeColumn * >::size_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector___len__",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___len__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
-  result = vector_Sl_DConstantsTypeColumn_Sm__Sg____len__((vector< DConstantsTypeColumn * > const *)arg1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
+  result = vector_Sl_DConstantsTypeColumn_Sm__Sg____len__((vector< ConstantsTypeColumn * > const *)arg1);
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
@@ -35512,20 +35512,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_pop(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * >::value_type result;
+  vector< ConstantsTypeColumn * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector_pop",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_pop" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   try {
-    result = (vector< DConstantsTypeColumn * >::value_type)vector_Sl_DConstantsTypeColumn_Sm__Sg__pop(arg1);
+    result = (vector< ConstantsTypeColumn * >::value_type)vector_Sl_DConstantsTypeColumn_Sm__Sg__pop(arg1);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -35540,9 +35540,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___getslice__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::difference_type arg2 ;
-  vector< DConstantsTypeColumn * >::difference_type arg3 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::difference_type arg2 ;
+  vector< ConstantsTypeColumn * >::difference_type arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -35552,26 +35552,26 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___getslice__(PyObject *SWIG
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > *result = 0 ;
+  std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:ConstantsTypeColumnVector___getslice__",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___getslice__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector___getslice__" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeColumnVector___getslice__" "', argument " "3"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val3);
+  arg3 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val3);
   try {
-    result = (std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > *)vector_Sl_DConstantsTypeColumn_Sm__Sg____getslice__(arg1,arg2,arg3);
+    result = (std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > *)vector_Sl_DConstantsTypeColumn_Sm__Sg____getslice__(arg1,arg2,arg3);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -35586,10 +35586,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setslice____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::difference_type arg2 ;
-  vector< DConstantsTypeColumn * >::difference_type arg3 ;
-  std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > *arg4 = 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::difference_type arg2 ;
+  vector< ConstantsTypeColumn * >::difference_type arg3 ;
+  std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > *arg4 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -35607,19 +35607,19 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setslice____SWIG_0(PyObje
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___setslice__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector___setslice__" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeColumnVector___setslice__" "', argument " "3"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val3);
+  arg3 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val3);
   {
-    std::vector<DConstantsTypeColumn*,std::allocator< DConstantsTypeColumn * > > *ptr = (std::vector<DConstantsTypeColumn*,std::allocator< DConstantsTypeColumn * > > *)0;
+    std::vector<ConstantsTypeColumn*,std::allocator< ConstantsTypeColumn * > > *ptr = (std::vector<ConstantsTypeColumn*,std::allocator< ConstantsTypeColumn * > > *)0;
     res4 = swig::asptr(obj3, &ptr);
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "ConstantsTypeColumnVector___setslice__" "', argument " "4"" of type '" "std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > const &""'"); 
@@ -35630,7 +35630,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setslice____SWIG_0(PyObje
     arg4 = ptr;
   }
   try {
-    vector_Sl_DConstantsTypeColumn_Sm__Sg____setslice____SWIG_0(arg1,arg2,arg3,(std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > const &)*arg4);
+    vector_Sl_DConstantsTypeColumn_Sm__Sg____setslice____SWIG_0(arg1,arg2,arg3,(std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > const &)*arg4);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -35650,9 +35650,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setslice____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::difference_type arg2 ;
-  vector< DConstantsTypeColumn * >::difference_type arg3 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::difference_type arg2 ;
+  vector< ConstantsTypeColumn * >::difference_type arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -35668,17 +35668,17 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setslice____SWIG_1(PyObje
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___setslice__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector___setslice__" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeColumnVector___setslice__" "', argument " "3"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val3);
+  arg3 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val3);
   try {
     vector_Sl_DConstantsTypeColumn_Sm__Sg____setslice____SWIG_0(arg1,arg2,arg3);
   }
@@ -35743,7 +35743,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setslice__(PyObject *self
           _v = SWIG_CheckState(res);
         }
         if (_v) {
-          int res = swig::asptr(argv[3], (std::vector<DConstantsTypeColumn*,std::allocator< DConstantsTypeColumn * > >**)(0));
+          int res = swig::asptr(argv[3], (std::vector<ConstantsTypeColumn*,std::allocator< ConstantsTypeColumn * > >**)(0));
           _v = SWIG_CheckState(res);
           if (_v) {
             return _wrap_ConstantsTypeColumnVector___setslice____SWIG_0(self, args);
@@ -35764,9 +35764,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___delslice__(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::difference_type arg2 ;
-  vector< DConstantsTypeColumn * >::difference_type arg3 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::difference_type arg2 ;
+  vector< ConstantsTypeColumn * >::difference_type arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -35782,17 +35782,17 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___delslice__(PyObject *SWIG
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___delslice__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector___delslice__" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val2);
   ecode3 = SWIG_AsVal_ptrdiff_t(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeColumnVector___delslice__" "', argument " "3"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg3 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val3);
+  arg3 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val3);
   try {
     vector_Sl_DConstantsTypeColumn_Sm__Sg____delslice__(arg1,arg2,arg3);
   }
@@ -35809,8 +35809,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___delitem____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::difference_type arg2 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::difference_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -35823,12 +35823,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___delitem____SWIG_0(PyObjec
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___delitem__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector___delitem__" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val2);
   try {
     vector_Sl_DConstantsTypeColumn_Sm__Sg____delitem____SWIG_0(arg1,arg2);
   }
@@ -35845,20 +35845,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___getitem____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > *result = 0 ;
+  std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:ConstantsTypeColumnVector___getitem__",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___getitem__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeColumnVector___getitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -35866,7 +35866,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___getitem____SWIG_0(PyObjec
     arg2 = (PySliceObject *) obj1;
   }
   try {
-    result = (std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > *)vector_Sl_DConstantsTypeColumn_Sm__Sg____getitem____SWIG_0(arg1,arg2);
+    result = (std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > *)vector_Sl_DConstantsTypeColumn_Sm__Sg____getitem____SWIG_0(arg1,arg2);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -35881,9 +35881,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setitem____SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
-  std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > *arg3 = 0 ;
+  std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > *arg3 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res3 = SWIG_OLDOBJ ;
@@ -35896,7 +35896,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setitem____SWIG_0(PyObjec
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___setitem__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeColumnVector___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -35904,7 +35904,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setitem____SWIG_0(PyObjec
     arg2 = (PySliceObject *) obj1;
   }
   {
-    std::vector<DConstantsTypeColumn*,std::allocator< DConstantsTypeColumn * > > *ptr = (std::vector<DConstantsTypeColumn*,std::allocator< DConstantsTypeColumn * > > *)0;
+    std::vector<ConstantsTypeColumn*,std::allocator< ConstantsTypeColumn * > > *ptr = (std::vector<ConstantsTypeColumn*,std::allocator< ConstantsTypeColumn * > > *)0;
     res3 = swig::asptr(obj2, &ptr);
     if (!SWIG_IsOK(res3)) {
       SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ConstantsTypeColumnVector___setitem__" "', argument " "3"" of type '" "std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > const &""'"); 
@@ -35915,7 +35915,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setitem____SWIG_0(PyObjec
     arg3 = ptr;
   }
   try {
-    vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_0(arg1,arg2,(std::vector< DConstantsTypeColumn *,std::allocator< DConstantsTypeColumn * > > const &)*arg3);
+    vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_0(arg1,arg2,(std::vector< ConstantsTypeColumn *,std::allocator< ConstantsTypeColumn * > > const &)*arg3);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -35935,7 +35935,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setitem____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -35947,7 +35947,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setitem____SWIG_1(PyObjec
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___setitem__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeColumnVector___setitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -35970,7 +35970,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___delitem____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   PySliceObject *arg2 = (PySliceObject *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -35982,7 +35982,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___delitem____SWIG_1(PyObjec
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___delitem__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   {
     if (!PySlice_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeColumnVector___delitem__" "', argument " "2"" of type '" "PySliceObject *""'");
@@ -36054,29 +36054,29 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___getitem____SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::difference_type arg2 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::difference_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DConstantsTypeColumn * >::value_type result;
+  vector< ConstantsTypeColumn * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:ConstantsTypeColumnVector___getitem__",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___getitem__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector___getitem__" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val2);
   try {
-    result = (vector< DConstantsTypeColumn * >::value_type)vector_Sl_DConstantsTypeColumn_Sm__Sg____getitem____SWIG_1(arg1,arg2);
+    result = (vector< ConstantsTypeColumn * >::value_type)vector_Sl_DConstantsTypeColumn_Sm__Sg____getitem____SWIG_1(arg1,arg2);
   }
   catch(std::out_of_range &_e) {
     SWIG_exception_fail(SWIG_IndexError, (&_e)->what());
@@ -36140,9 +36140,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setitem____SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::difference_type arg2 ;
-  vector< DConstantsTypeColumn * >::value_type arg3 = (vector< DConstantsTypeColumn * >::value_type) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::difference_type arg2 ;
+  vector< ConstantsTypeColumn * >::value_type arg3 = (vector< ConstantsTypeColumn * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   ptrdiff_t val2 ;
@@ -36158,17 +36158,17 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setitem____SWIG_2(PyObjec
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector___setitem__" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_ptrdiff_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector___setitem__" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::difference_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::difference_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::difference_type >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ConstantsTypeColumnVector___setitem__" "', argument " "3"" of type '" "vector< DConstantsTypeColumn * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DConstantsTypeColumn * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< ConstantsTypeColumn * >::value_type >(argp3);
   try {
     vector_Sl_DConstantsTypeColumn_Sm__Sg____setitem____SWIG_2(arg1,arg2,arg3);
   }
@@ -36217,7 +36217,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector___setitem__(PyObject *self,
         _v = PySlice_Check(argv[1]);
       }
       if (_v) {
-        int res = swig::asptr(argv[2], (std::vector<DConstantsTypeColumn*,std::allocator< DConstantsTypeColumn * > >**)(0));
+        int res = swig::asptr(argv[2], (std::vector<ConstantsTypeColumn*,std::allocator< ConstantsTypeColumn * > >**)(0));
         _v = SWIG_CheckState(res);
         if (_v) {
           return _wrap_ConstantsTypeColumnVector___setitem____SWIG_0(self, args);
@@ -36258,8 +36258,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_append(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::value_type arg2 = (vector< DConstantsTypeColumn * >::value_type) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::value_type arg2 = (vector< ConstantsTypeColumn * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -36272,12 +36272,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_append(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_append" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ConstantsTypeColumnVector_append" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::value_type""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeColumn * >::value_type >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeColumn * >::value_type >(argp2);
   vector_Sl_DConstantsTypeColumn_Sm__Sg__append(arg1,arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -36288,10 +36288,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeColumnVector__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *result = 0 ;
+  vector< ConstantsTypeColumn * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)":new_ConstantsTypeColumnVector")) SWIG_fail;
-  result = (vector< DConstantsTypeColumn * > *)new vector< DConstantsTypeColumn * >();
+  result = (vector< ConstantsTypeColumn * > *)new vector< ConstantsTypeColumn * >();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -36301,14 +36301,14 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeColumnVector__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  std::vector< DConstantsTypeColumn * > *arg1 = 0 ;
+  std::vector< ConstantsTypeColumn * > *arg1 = 0 ;
   int res1 = SWIG_OLDOBJ ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * > *result = 0 ;
+  vector< ConstantsTypeColumn * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:new_ConstantsTypeColumnVector",&obj0)) SWIG_fail;
   {
-    std::vector<DConstantsTypeColumn*,std::allocator< DConstantsTypeColumn * > > *ptr = (std::vector<DConstantsTypeColumn*,std::allocator< DConstantsTypeColumn * > > *)0;
+    std::vector<ConstantsTypeColumn*,std::allocator< ConstantsTypeColumn * > > *ptr = (std::vector<ConstantsTypeColumn*,std::allocator< ConstantsTypeColumn * > > *)0;
     res1 = swig::asptr(obj0, &ptr);
     if (!SWIG_IsOK(res1)) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_ConstantsTypeColumnVector" "', argument " "1"" of type '" "std::vector< DConstantsTypeColumn * > const &""'"); 
@@ -36318,7 +36318,7 @@ SWIGINTERN PyObject *_wrap_new_ConstantsTypeColumnVector__SWIG_1(PyObject *SWIGU
     }
     arg1 = ptr;
   }
-  result = (vector< DConstantsTypeColumn * > *)new vector< DConstantsTypeColumn * >((std::vector< DConstantsTypeColumn * > const &)*arg1);
+  result = (vector< ConstantsTypeColumn * > *)new vector< ConstantsTypeColumn * >((std::vector< ConstantsTypeColumn * > const &)*arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, SWIG_POINTER_NEW |  0 );
   if (SWIG_IsNewObj(res1)) delete arg1;
   return resultobj;
@@ -36330,7 +36330,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_empty(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -36341,8 +36341,8 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_empty(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_empty" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
-  result = (bool)((vector< DConstantsTypeColumn * > const *)arg1)->empty();
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
+  result = (bool)((vector< ConstantsTypeColumn * > const *)arg1)->empty();
   resultobj = SWIG_From_bool(static_cast< bool >(result));
   return resultobj;
 fail:
@@ -36352,19 +36352,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_size(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * >::size_type result;
+  vector< ConstantsTypeColumn * >::size_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector_size",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_size" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
-  result = ((vector< DConstantsTypeColumn * > const *)arg1)->size();
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
+  result = ((vector< ConstantsTypeColumn * > const *)arg1)->size();
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
@@ -36374,7 +36374,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_clear(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -36384,7 +36384,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_clear(PyObject *SWIGUNUSEDP
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_clear" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   (arg1)->clear();
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -36395,8 +36395,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_swap(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  std::vector< DConstantsTypeColumn * > *arg2 = 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  std::vector< ConstantsTypeColumn * > *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -36409,7 +36409,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_swap(PyObject *SWIGUNUSEDPA
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_swap" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t,  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ConstantsTypeColumnVector_swap" "', argument " "2"" of type '" "std::vector< DConstantsTypeColumn * > &""'"); 
@@ -36417,7 +36417,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_swap(PyObject *SWIGUNUSEDPA
   if (!argp2) {
     SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "ConstantsTypeColumnVector_swap" "', argument " "2"" of type '" "std::vector< DConstantsTypeColumn * > &""'"); 
   }
-  arg2 = reinterpret_cast< std::vector< DConstantsTypeColumn * > * >(argp2);
+  arg2 = reinterpret_cast< std::vector< ConstantsTypeColumn * > * >(argp2);
   (arg1)->swap(*arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -36428,20 +36428,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_get_allocator(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  SwigValueWrapper< std::allocator< DConstantsTypeColumn * > > result;
+  SwigValueWrapper< std::allocator< ConstantsTypeColumn * > > result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector_get_allocator",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_get_allocator" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
-  result = ((vector< DConstantsTypeColumn * > const *)arg1)->get_allocator();
-  resultobj = SWIG_NewPointerObj((new vector< DConstantsTypeColumn * >::allocator_type(static_cast< const vector< DConstantsTypeColumn * >::allocator_type& >(result))), SWIGTYPE_p_std__allocatorT_DConstantsTypeColumn_p_t, SWIG_POINTER_OWN |  0 );
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
+  result = ((vector< ConstantsTypeColumn * > const *)arg1)->get_allocator();
+  resultobj = SWIG_NewPointerObj((new vector< ConstantsTypeColumn * >::allocator_type(static_cast< const vector< ConstantsTypeColumn * >::allocator_type& >(result))), SWIGTYPE_p_std__allocatorT_DConstantsTypeColumn_p_t, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -36450,20 +36450,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_begin(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * >::iterator result;
+  vector< ConstantsTypeColumn * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector_begin",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_begin" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   result = (arg1)->begin();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeColumn * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeColumn * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -36473,20 +36473,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_end(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * >::iterator result;
+  vector< ConstantsTypeColumn * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector_end",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_end" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   result = (arg1)->end();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeColumn * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeColumn * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -36496,20 +36496,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_rbegin(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * >::reverse_iterator result;
+  vector< ConstantsTypeColumn * >::reverse_iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector_rbegin",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_rbegin" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   result = (arg1)->rbegin();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeColumn * >::reverse_iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeColumn * >::reverse_iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -36519,20 +36519,20 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_rend(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * >::reverse_iterator result;
+  vector< ConstantsTypeColumn * >::reverse_iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector_rend",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_rend" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   result = (arg1)->rend();
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeColumn * >::reverse_iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeColumn * >::reverse_iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -36542,19 +36542,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeColumnVector__SWIG_2(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * >::size_type arg1 ;
+  vector< ConstantsTypeColumn * >::size_type arg1 ;
   size_t val1 ;
   int ecode1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * > *result = 0 ;
+  vector< ConstantsTypeColumn * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"O:new_ConstantsTypeColumnVector",&obj0)) SWIG_fail;
   ecode1 = SWIG_AsVal_size_t(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_ConstantsTypeColumnVector" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * >::size_type""'");
   } 
-  arg1 = static_cast< vector< DConstantsTypeColumn * >::size_type >(val1);
-  result = (vector< DConstantsTypeColumn * > *)new vector< DConstantsTypeColumn * >(arg1);
+  arg1 = static_cast< vector< ConstantsTypeColumn * >::size_type >(val1);
+  result = (vector< ConstantsTypeColumn * > *)new vector< ConstantsTypeColumn * >(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -36564,7 +36564,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_pop_back(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -36574,7 +36574,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_pop_back(PyObject *SWIGUNUS
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_pop_back" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   (arg1)->pop_back();
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -36585,8 +36585,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_resize__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::size_type arg2 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::size_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -36599,12 +36599,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_resize__SWIG_0(PyObject *SW
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_resize" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector_resize" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::size_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::size_type >(val2);
   (arg1)->resize(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -36615,27 +36615,27 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_erase__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::iterator arg2 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::iterator arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
   int res2 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DConstantsTypeColumn * >::iterator result;
+  vector< ConstantsTypeColumn * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:ConstantsTypeColumnVector_erase",&obj0,&obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_erase" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeColumnVector_erase" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -36643,7 +36643,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_erase__SWIG_0(PyObject *SWI
     }
   }
   result = (arg1)->erase(arg2);
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeColumn * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeColumn * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -36653,9 +36653,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_erase__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::iterator arg2 ;
-  vector< DConstantsTypeColumn * >::iterator arg3 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::iterator arg2 ;
+  vector< ConstantsTypeColumn * >::iterator arg3 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
@@ -36665,19 +36665,19 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_erase__SWIG_1(PyObject *SWI
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DConstantsTypeColumn * >::iterator result;
+  vector< ConstantsTypeColumn * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:ConstantsTypeColumnVector_erase",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_erase" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeColumnVector_erase" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -36688,7 +36688,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_erase__SWIG_1(PyObject *SWI
   if (!SWIG_IsOK(res3) || !iter3) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeColumnVector_erase" "', argument " "3"" of type '" "vector< DConstantsTypeColumn * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *>(iter3);
+    swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *>(iter3);
     if (iter_t) {
       arg3 = iter_t->get_current();
     } else {
@@ -36696,7 +36696,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_erase__SWIG_1(PyObject *SWI
     }
   }
   result = (arg1)->erase(arg2,arg3);
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeColumn * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeColumn * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -36722,7 +36722,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_erase(PyObject *self, PyObj
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *>(iter) != 0));
       if (_v) {
         return _wrap_ConstantsTypeColumnVector_erase__SWIG_0(self, args);
       }
@@ -36736,11 +36736,11 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_erase(PyObject *self, PyObj
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *>(iter) != 0));
       if (_v) {
         swig::SwigPyIterator *iter = 0;
         int res = SWIG_ConvertPtr(argv[2], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *>(iter) != 0));
+        _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *>(iter) != 0));
         if (_v) {
           return _wrap_ConstantsTypeColumnVector_erase__SWIG_1(self, args);
         }
@@ -36759,28 +36759,28 @@ fail:
 
 SWIGINTERN PyObject *_wrap_new_ConstantsTypeColumnVector__SWIG_3(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * >::size_type arg1 ;
-  vector< DConstantsTypeColumn * >::value_type arg2 = (vector< DConstantsTypeColumn * >::value_type) 0 ;
+  vector< ConstantsTypeColumn * >::size_type arg1 ;
+  vector< ConstantsTypeColumn * >::value_type arg2 = (vector< ConstantsTypeColumn * >::value_type) 0 ;
   size_t val1 ;
   int ecode1 = 0 ;
   void *argp2 = 0 ;
   int res2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  vector< DConstantsTypeColumn * > *result = 0 ;
+  vector< ConstantsTypeColumn * > *result = 0 ;
   
   if (!PyArg_ParseTuple(args,(char *)"OO:new_ConstantsTypeColumnVector",&obj0,&obj1)) SWIG_fail;
   ecode1 = SWIG_AsVal_size_t(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_ConstantsTypeColumnVector" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * >::size_type""'");
   } 
-  arg1 = static_cast< vector< DConstantsTypeColumn * >::size_type >(val1);
+  arg1 = static_cast< vector< ConstantsTypeColumn * >::size_type >(val1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "new_ConstantsTypeColumnVector" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::value_type""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeColumn * >::value_type >(argp2);
-  result = (vector< DConstantsTypeColumn * > *)new vector< DConstantsTypeColumn * >(arg1,arg2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeColumn * >::value_type >(argp2);
+  result = (vector< ConstantsTypeColumn * > *)new vector< ConstantsTypeColumn * >(arg1,arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, SWIG_POINTER_NEW |  0 );
   return resultobj;
 fail:
@@ -36813,7 +36813,7 @@ SWIGINTERN PyObject *_wrap_new_ConstantsTypeColumnVector(PyObject *self, PyObjec
   }
   if (argc == 1) {
     int _v;
-    int res = swig::asptr(argv[0], (std::vector<DConstantsTypeColumn*,std::allocator< DConstantsTypeColumn * > >**)(0));
+    int res = swig::asptr(argv[0], (std::vector<ConstantsTypeColumn*,std::allocator< ConstantsTypeColumn * > >**)(0));
     _v = SWIG_CheckState(res);
     if (_v) {
       return _wrap_new_ConstantsTypeColumnVector__SWIG_1(self, args);
@@ -36848,8 +36848,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_push_back(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::value_type arg2 = (vector< DConstantsTypeColumn * >::value_type) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::value_type arg2 = (vector< ConstantsTypeColumn * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   void *argp2 = 0 ;
@@ -36862,12 +36862,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_push_back(PyObject *SWIGUNU
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_push_back" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "ConstantsTypeColumnVector_push_back" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::value_type""'"); 
   }
-  arg2 = reinterpret_cast< vector< DConstantsTypeColumn * >::value_type >(argp2);
+  arg2 = reinterpret_cast< vector< ConstantsTypeColumn * >::value_type >(argp2);
   (arg1)->push_back(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -36878,19 +36878,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_front(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * >::value_type result;
+  vector< ConstantsTypeColumn * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector_front",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_front" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
-  result = (vector< DConstantsTypeColumn * >::value_type)((vector< DConstantsTypeColumn * > const *)arg1)->front();
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
+  result = (vector< ConstantsTypeColumn * >::value_type)((vector< ConstantsTypeColumn * > const *)arg1)->front();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   return resultobj;
 fail:
@@ -36900,19 +36900,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_back(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * >::value_type result;
+  vector< ConstantsTypeColumn * >::value_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector_back",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_back" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
-  result = (vector< DConstantsTypeColumn * >::value_type)((vector< DConstantsTypeColumn * > const *)arg1)->back();
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
+  result = (vector< ConstantsTypeColumn * >::value_type)((vector< ConstantsTypeColumn * > const *)arg1)->back();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   return resultobj;
 fail:
@@ -36922,9 +36922,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_assign(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::size_type arg2 ;
-  vector< DConstantsTypeColumn * >::value_type arg3 = (vector< DConstantsTypeColumn * >::value_type) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::size_type arg2 ;
+  vector< ConstantsTypeColumn * >::value_type arg3 = (vector< ConstantsTypeColumn * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -36940,17 +36940,17 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_assign(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_assign" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector_assign" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::size_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::size_type >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ConstantsTypeColumnVector_assign" "', argument " "3"" of type '" "vector< DConstantsTypeColumn * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DConstantsTypeColumn * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< ConstantsTypeColumn * >::value_type >(argp3);
   (arg1)->assign(arg2,arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -36961,9 +36961,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_resize__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::size_type arg2 ;
-  vector< DConstantsTypeColumn * >::value_type arg3 = (vector< DConstantsTypeColumn * >::value_type) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::size_type arg2 ;
+  vector< ConstantsTypeColumn * >::value_type arg3 = (vector< ConstantsTypeColumn * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -36979,17 +36979,17 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_resize__SWIG_1(PyObject *SW
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_resize" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector_resize" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::size_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::size_type >(val2);
   res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ConstantsTypeColumnVector_resize" "', argument " "3"" of type '" "vector< DConstantsTypeColumn * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DConstantsTypeColumn * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< ConstantsTypeColumn * >::value_type >(argp3);
   (arg1)->resize(arg2,arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -37055,9 +37055,9 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_insert__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::iterator arg2 ;
-  vector< DConstantsTypeColumn * >::value_type arg3 = (vector< DConstantsTypeColumn * >::value_type) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::iterator arg2 ;
+  vector< ConstantsTypeColumn * >::value_type arg3 = (vector< ConstantsTypeColumn * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
@@ -37067,19 +37067,19 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_insert__SWIG_0(PyObject *SW
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  vector< DConstantsTypeColumn * >::iterator result;
+  vector< ConstantsTypeColumn * >::iterator result;
   
   if (!PyArg_ParseTuple(args,(char *)"OOO:ConstantsTypeColumnVector_insert",&obj0,&obj1,&obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_insert" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeColumnVector_insert" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -37090,9 +37090,9 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_insert__SWIG_0(PyObject *SW
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "ConstantsTypeColumnVector_insert" "', argument " "3"" of type '" "vector< DConstantsTypeColumn * >::value_type""'"); 
   }
-  arg3 = reinterpret_cast< vector< DConstantsTypeColumn * >::value_type >(argp3);
+  arg3 = reinterpret_cast< vector< ConstantsTypeColumn * >::value_type >(argp3);
   result = (arg1)->insert(arg2,arg3);
-  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< DConstantsTypeColumn * >::iterator & >(result)),
+  resultobj = SWIG_NewPointerObj(swig::make_output_iterator(static_cast< const vector< ConstantsTypeColumn * >::iterator & >(result)),
     swig::SwigPyIterator::descriptor(),SWIG_POINTER_OWN);
   return resultobj;
 fail:
@@ -37102,10 +37102,10 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_insert__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::iterator arg2 ;
-  vector< DConstantsTypeColumn * >::size_type arg3 ;
-  vector< DConstantsTypeColumn * >::value_type arg4 = (vector< DConstantsTypeColumn * >::value_type) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::iterator arg2 ;
+  vector< ConstantsTypeColumn * >::size_type arg3 ;
+  vector< ConstantsTypeColumn * >::value_type arg4 = (vector< ConstantsTypeColumn * >::value_type) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   swig::SwigPyIterator *iter2 = 0 ;
@@ -37124,12 +37124,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_insert__SWIG_1(PyObject *SW
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_insert" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, SWIG_as_voidptrptr(&iter2), swig::SwigPyIterator::descriptor(), 0);
   if (!SWIG_IsOK(res2) || !iter2) {
     SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "ConstantsTypeColumnVector_insert" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::iterator""'");
   } else {
-    swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *>(iter2);
+    swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *iter_t = dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *>(iter2);
     if (iter_t) {
       arg2 = iter_t->get_current();
     } else {
@@ -37140,12 +37140,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_insert__SWIG_1(PyObject *SW
   if (!SWIG_IsOK(ecode3)) {
     SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "ConstantsTypeColumnVector_insert" "', argument " "3"" of type '" "vector< DConstantsTypeColumn * >::size_type""'");
   } 
-  arg3 = static_cast< vector< DConstantsTypeColumn * >::size_type >(val3);
+  arg3 = static_cast< vector< ConstantsTypeColumn * >::size_type >(val3);
   res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_DConstantsTypeColumn, 0 |  0 );
   if (!SWIG_IsOK(res4)) {
     SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "ConstantsTypeColumnVector_insert" "', argument " "4"" of type '" "vector< DConstantsTypeColumn * >::value_type""'"); 
   }
-  arg4 = reinterpret_cast< vector< DConstantsTypeColumn * >::value_type >(argp4);
+  arg4 = reinterpret_cast< vector< ConstantsTypeColumn * >::value_type >(argp4);
   (arg1)->insert(arg2,arg3,arg4);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -37172,7 +37172,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_insert(PyObject *self, PyOb
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *>(iter) != 0));
       if (_v) {
         void *vptr = 0;
         int res = SWIG_ConvertPtr(argv[2], &vptr, SWIGTYPE_p_DConstantsTypeColumn, 0);
@@ -37191,7 +37191,7 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_insert(PyObject *self, PyOb
     if (_v) {
       swig::SwigPyIterator *iter = 0;
       int res = SWIG_ConvertPtr(argv[1], SWIG_as_voidptrptr(&iter), swig::SwigPyIterator::descriptor(), 0);
-      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< DConstantsTypeColumn * >::iterator > *>(iter) != 0));
+      _v = (SWIG_IsOK(res) && iter && (dynamic_cast<swig::SwigPyIterator_T<vector< ConstantsTypeColumn * >::iterator > *>(iter) != 0));
       if (_v) {
         {
           int res = SWIG_AsVal_size_t(argv[2], NULL);
@@ -37220,8 +37220,8 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_reserve(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
-  vector< DConstantsTypeColumn * >::size_type arg2 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * >::size_type arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   size_t val2 ;
@@ -37234,12 +37234,12 @@ SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_reserve(PyObject *SWIGUNUSE
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_reserve" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   ecode2 = SWIG_AsVal_size_t(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
     SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "ConstantsTypeColumnVector_reserve" "', argument " "2"" of type '" "vector< DConstantsTypeColumn * >::size_type""'");
   } 
-  arg2 = static_cast< vector< DConstantsTypeColumn * >::size_type >(val2);
+  arg2 = static_cast< vector< ConstantsTypeColumn * >::size_type >(val2);
   (arg1)->reserve(arg2);
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -37250,19 +37250,19 @@ fail:
 
 SWIGINTERN PyObject *_wrap_ConstantsTypeColumnVector_capacity(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
-  vector< DConstantsTypeColumn * >::size_type result;
+  vector< ConstantsTypeColumn * >::size_type result;
   
   if (!PyArg_ParseTuple(args,(char *)"O:ConstantsTypeColumnVector_capacity",&obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_std__vectorT_DConstantsTypeColumn_p_std__allocatorT_DConstantsTypeColumn_p_t_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "ConstantsTypeColumnVector_capacity" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > const *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
-  result = ((vector< DConstantsTypeColumn * > const *)arg1)->capacity();
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
+  result = ((vector< ConstantsTypeColumn * > const *)arg1)->capacity();
   resultobj = SWIG_From_size_t(static_cast< size_t >(result));
   return resultobj;
 fail:
@@ -37272,7 +37272,7 @@ fail:
 
 SWIGINTERN PyObject *_wrap_delete_ConstantsTypeColumnVector(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  vector< DConstantsTypeColumn * > *arg1 = (vector< DConstantsTypeColumn * > *) 0 ;
+  vector< ConstantsTypeColumn * > *arg1 = (vector< ConstantsTypeColumn * > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
@@ -37282,7 +37282,7 @@ SWIGINTERN PyObject *_wrap_delete_ConstantsTypeColumnVector(PyObject *SWIGUNUSED
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_ConstantsTypeColumnVector" "', argument " "1"" of type '" "vector< DConstantsTypeColumn * > *""'"); 
   }
-  arg1 = reinterpret_cast< vector< DConstantsTypeColumn * > * >(argp1);
+  arg1 = reinterpret_cast< vector< ConstantsTypeColumn * > * >(argp1);
   delete arg1;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -44790,10 +44790,10 @@ static PyMethodDef SwigMethods[] = {
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static void *_p_DDataProviderTo_p_DObjectsOwner(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((DObjectsOwner *)  ((DDataProvider *) x));
+    return (void *)((ObjectsOwner *)  ((DDataProvider *) x));
 }
 static void *_p_DMySQLDataProviderTo_p_DObjectsOwner(void *x, int *SWIGUNUSEDPARM(newmemory)) {
-    return (void *)((DObjectsOwner *) (DDataProvider *) ((DMySQLDataProvider *) x));
+    return (void *)((ObjectsOwner *) (DDataProvider *) ((DMySQLDataProvider *) x));
 }
 static void *_p_DMySQLDataProviderTo_p_DDataProvider(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((DDataProvider *)  ((DMySQLDataProvider *) x));
@@ -45669,13 +45669,13 @@ SWIG_init(void) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
-  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cIntColumn",SWIG_From_int(static_cast< int >(DConstantsTypeColumn::cIntColumn)));
-  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cUIntColumn",SWIG_From_int(static_cast< int >(DConstantsTypeColumn::cUIntColumn)));
-  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cLongColumn",SWIG_From_int(static_cast< int >(DConstantsTypeColumn::cLongColumn)));
-  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cULongColumn",SWIG_From_int(static_cast< int >(DConstantsTypeColumn::cULongColumn)));
-  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cDoubleColumn",SWIG_From_int(static_cast< int >(DConstantsTypeColumn::cDoubleColumn)));
-  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cBoolColumn",SWIG_From_int(static_cast< int >(DConstantsTypeColumn::cBoolColumn)));
-  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cStringColumn",SWIG_From_int(static_cast< int >(DConstantsTypeColumn::cStringColumn)));
+  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cIntColumn",SWIG_From_int(static_cast< int >(ConstantsTypeColumn::cIntColumn)));
+  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cUIntColumn",SWIG_From_int(static_cast< int >(ConstantsTypeColumn::cUIntColumn)));
+  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cLongColumn",SWIG_From_int(static_cast< int >(ConstantsTypeColumn::cLongColumn)));
+  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cULongColumn",SWIG_From_int(static_cast< int >(ConstantsTypeColumn::cULongColumn)));
+  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cDoubleColumn",SWIG_From_int(static_cast< int >(ConstantsTypeColumn::cDoubleColumn)));
+  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cBoolColumn",SWIG_From_int(static_cast< int >(ConstantsTypeColumn::cBoolColumn)));
+  SWIG_Python_SetConstant(d, "ConstantsTypeColumn_cStringColumn",SWIG_From_int(static_cast< int >(ConstantsTypeColumn::cStringColumn)));
 #if PY_VERSION_HEX >= 0x03000000
   return m;
 #else

@@ -1,8 +1,8 @@
 #include <string>
 #include <map>
 
-#include "CCDB/IO/Log.h"
-#include "CCDB/CCDBGlobals.h"
+#include "CCDB/Log.h"
+#include "CCDB/Globals.h"
 
 using namespace std;
 namespace ccdb

@@ -1,5 +1,5 @@
 #include "CCDB/Helpers/WorkUtils.h"
-#include "CCDB/IO/Console.h"
+#include "CCDB/Console.h"
 #include "CCDB/Helpers/StringUtils.h"
 
 #include <assert.h>
@@ -10,16 +10,16 @@ void PrintDirectoryTree( Directory *dir, bool printFullPath/*=false*/,int level/
 {
 	//TODO: Implement method
 
-	DConsole console;
+	Console console;
 	if(!printFullPath)
 	{
 		for (int i=0; i< level; i++)
 		{
-			console.Write(DConsole::cBrightBlue, "--");
+			console.Write(Console::cBrightBlue, "--");
 		}
 		if(level != 0)
 		{
-			console.Write(DConsole::cBrightBlue,"> ");
+			console.Write(Console::cBrightBlue,"> ");
 		}
 
 		console.WriteLine(dir->GetName().c_str());
@@ -40,7 +40,7 @@ void PrintDirectoryTree( Directory *dir, bool printFullPath/*=false*/,int level/
 	
 }
 
-void PrintAssignmentVertical( DConsole & console, Assignment *assignment, bool printHeader/*=true*/, bool displayBorders/*=true*/, DConsole::ConsoleColors headColor/*=DConsole::cBrightBlue*/, DConsole::ConsoleColors typeColor/*=DConsole::cGray*/, DConsole::ConsoleColors valueColor/*=DConsole::cGray*/, DConsole::ConsoleColors borderColor/*=DConsole::cGreen*/ )
+void PrintAssignmentVertical( Console & console, Assignment *assignment, bool printHeader/*=true*/, bool displayBorders/*=true*/, Console::ConsoleColors headColor/*=Console::cBrightBlue*/, Console::ConsoleColors typeColor/*=Console::cGray*/, Console::ConsoleColors valueColor/*=Console::cGray*/, Console::ConsoleColors borderColor/*=Console::cGreen*/ )
 {
 	const char * border = (displayBorders)? "|" : " ";
 	
@@ -121,7 +121,7 @@ void PrintAssignmentVertical( DConsole & console, Assignment *assignment, bool p
 
 void PrintConstantsTypeTable( ConstantsTypeTable *table )
 {
-	DConsole console;
+	Console console;
 	console.WriteLine("Table : %s", table->GetName().c_str());
 	console.WriteLine("Comment: %s", table->GetComment().c_str());
 	console.WriteLine("Columns: %i Rows: %i", table->GetNColumns(), table->GetNColumnsFromDB(), table->GetNRows());

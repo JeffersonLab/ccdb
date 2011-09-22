@@ -1,13 +1,14 @@
 #pragma warning(disable:4800)
 #include "Tests/tests_macros.h"
-#include "DConsole.h"
-#include "DStringUtils.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "Model/DDirectory.h"
-#include "DWorkUtils.h"
-#include "DStopWatch.h"
-#include "Model/DVariation.h"
-#include "UserAPI/DMySQLCallibration.h"
+
+#include "CCDB/Console.h"
+#include "CCDB/MySQLCalibration.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Model/Directory.h"
+#include "CCDB/Model/Variation.h"
+#include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/Helpers/WorkUtils.h"
+#include "CCDB/Helpers/StopWatch.h"
 
 using namespace std;
 using namespace ccdb;
@@ -28,14 +29,14 @@ bool test_UserAPI()
 {
 	bool result;
 	TESTS_INIT(" - - -   U S E R   A P I   - - - ")
-	DDataProvider *prov = new DMySQLDataProvider();
+	DataProvider *prov = new MySQLDataProvider();
 	if(!prov->Connect(gConnectionString)) return false;
 
 	//U S I N G   U S E R   A P I   D I R E C T L Y
 	//----------------------------------------------------
-	gConsole.WriteLine(DConsole::cBrightWhite, "\n[ Creating DMySQLCalibration directly ]");
+	gConsole.WriteLine(Console::cBrightWhite, "\n[ Creating DMySQLCalibration directly ]");
 
-    DMySQLCalibration *calib = new DMySQLCalibration(100);
+    MySQLCalibration *calib = new MySQLCalibration(100);
     result = false;
     try
     {
@@ -128,7 +129,7 @@ bool test_UserAPI()
 	gConsole.WriteLine("Selected %i assignments; Last id %i; Last dataVault id %i",selectedAssignments, lastId, lastDataVaultId);
 	
 	//Lets try create assignments testing from copy assignment
-	gConsole.WriteLine(DConsole::cBrightWhite, "\n[ Copy Assignment testing ]");
+	gConsole.WriteLine(Console::cBrightWhite, "\n[ Copy Assignment testing ]");
 	
 	//simple copy
 	result = prov->CreateAssignment(assignment);
@@ -179,7 +180,7 @@ void test_UserAPI_PrintData(const vector<vector<double> > & data)
     {   
         for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
         {
-            gConsole.Write("| %-9s ", DStringUtils::Format("%.6d", data[rowIter][columnsIter]).c_str());
+            gConsole.Write("| %-9s ", StringUtils::Format("%.6d", data[rowIter][columnsIter]).c_str());
         }
         gConsole.WriteLine("|");
     }
@@ -199,7 +200,7 @@ void test_UserAPI_PrintData(const vector<map<string,double> > & data)
 
         for (cell = row.begin(); cell!= row.end(); cell++)
         {
-            gConsole.Write("| %-20s ", DStringUtils::Format("%s : %.6d", cell->first.c_str(), cell->second).c_str());
+            gConsole.Write("| %-20s ", StringUtils::Format("%s : %.6d", cell->first.c_str(), cell->second).c_str());
         }
         gConsole.WriteLine("|");
     }
@@ -211,7 +212,7 @@ void test_UserAPI_PrintData(const vector<int> & data)
     //print values
     for (int columnsIter = 0; columnsIter < data.size(); columnsIter++)
     {
-        gConsole.Write("| %-9s ", DStringUtils::Format("%i", data[columnsIter]).c_str());
+        gConsole.Write("| %-9s ", StringUtils::Format("%i", data[columnsIter]).c_str());
     }
     gConsole.WriteLine("|");
 }
@@ -224,7 +225,7 @@ void test_UserAPI_PrintData(const map<string,int> & data)
 
     for (cell = row.begin(); cell!= row.end(); cell++)
     {
-        gConsole.Write("| %-20s ", DStringUtils::Format("%s : %i", cell->first.c_str(), cell->second).c_str());
+        gConsole.Write("| %-20s ", StringUtils::Format("%s : %i", cell->first.c_str(), cell->second).c_str());
     }
     gConsole.WriteLine("|");
 }

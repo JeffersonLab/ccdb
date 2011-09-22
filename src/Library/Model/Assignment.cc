@@ -10,7 +10,7 @@
 
 #include "CCDB/Model/Assignment.h"
 #include "CCDB/Helpers/StringUtils.h"
-#include "CCDB/CcdbGlobals.h"
+#include "CCDB/Globals.h"
 
 using namespace ccdb;
 using namespace std;
@@ -91,7 +91,7 @@ bool ccdb::Assignment::MapData( vector<vector<string> > & mappedData, const vect
 void ccdb::Assignment::SplitData( vector<string>& outArray,string blob )
 {
 	//split blob from DB to tokens and data
-	DStringUtils::Split(blob,outArray, "|");
+	StringUtils::Split(blob,outArray, "|");
 }
 
 //______________________________________________________________________________
@@ -275,14 +275,14 @@ void ccdb::Assignment::GetData(std::vector<std::vector<std::string> >& data) con
 string ccdb::Assignment::DecodeBlobSeparator(string str)
 {
 	
-	return DStringUtils::Replace("&delimeter;", CCDB_DATA_BLOB_DELIMETER, str);
+	return StringUtils::Replace("&delimeter;", CCDB_DATA_BLOB_DELIMETER, str);
 }
 
 
 //______________________________________________________________________________
 string ccdb::Assignment::EncodeBlobSeparator(string str)
 {
-	return DStringUtils::Replace(CCDB_DATA_BLOB_DELIMETER, "&delimeter;", str);
+	return StringUtils::Replace(CCDB_DATA_BLOB_DELIMETER, "&delimeter;", str);
 }
 
 
@@ -300,7 +300,7 @@ vector<string> ccdb::Assignment::GetVectorData() const
 void ccdb::Assignment::GetVectorData(vector<string>& vectorData) const
 {
 	//split data
-	vector<string> values = DStringUtils::Split(mRawData, CCDB_DATA_BLOB_DELIMETER);
+	vector<string> values = StringUtils::Split(mRawData, CCDB_DATA_BLOB_DELIMETER);
 
 	vectorData.clear();
 	vector<string>::iterator iter=values.begin();

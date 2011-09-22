@@ -7,7 +7,7 @@
 #include <map>
 #include <new>
 
-#include "CCDB/CCDBGlobals.h"
+#include "CCDB/Globals.h"
 
 using namespace std;
 
@@ -33,7 +33,7 @@ class CCDBGlobalMutex
 public:
 	/** @brief Singleton instance for global mutex-es
 	 *
-	 * @return   DConsoleContext* instance
+	 * @return   ConsoleContext* instance
 	 */
 	static CCDBGlobalMutex* Instance();
 	

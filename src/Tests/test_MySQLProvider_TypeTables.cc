@@ -1,12 +1,12 @@
 #pragma warning(disable:4800)
 #include "Tests/tests_macros.h"
-#include "DConsole.h"
-#include "DStringUtils.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "Model/DDirectory.h"
+#include "CCDB/Console.h"
+#include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Model/Directory.h"
 #include "Model/DConstantsTypeColumn.h"
-#include "DWorkUtils.h"
-#include "DStopWatch.h"
+#include "CCDB/Helpers/WorkUtils.h"
+#include "CCDB/Helpers/StopWatch.h"
 
 using namespace std;
 using namespace ccdb;
@@ -27,14 +27,14 @@ bool test_DMySQLDataProvider_TypeTables()
     //======================================================
     //basic get type table functional
 
-    CONSOLE.WriteLine(DConsole::cBrightWhite, "\n[ Type tables getting ]");
+    CONSOLE.WriteLine(Console::cBrightWhite, "\n[ Type tables getting ]");
 	
     //get type table from DB
 	DConstantsTypeTable *table = prov->GetConstantsTypeTable("/test/test_vars/test_table", true);
     TITLE("Get type table"); TEST(table!=NULL);
 	
 	//print type table
-	gConsole.WriteLine(DConsole::cBrightCyan, "\nCheck returned table details");
+	gConsole.WriteLine(Console::cBrightCyan, "\nCheck returned table details");
 	PrintConstantsTypeTable(table);
 	gConsole.WriteLine();
 	delete table; //cleanup
@@ -72,7 +72,7 @@ bool test_DMySQLDataProvider_TypeTables()
 	
 	//create new type table
 	//-------------------------------------------------------------------------------------
-	CONSOLE.WriteLine(DConsole::cBrightWhite, "\n[ Type tables create/update/delete ]");
+	CONSOLE.WriteLine(Console::cBrightWhite, "\n[ Type tables create/update/delete ]");
 	
 	table = prov->GetConstantsTypeTable("/test/test_vars/new_table");
 	if(table!=NULL)
@@ -98,7 +98,7 @@ bool test_DMySQLDataProvider_TypeTables()
 	table->SetDirectory(prov->GetDirectory("/test/test_vars"));
 	
 	//print this table
-	gConsole.WriteLine(DConsole::cBrightCyan, "\nCheck creting table details");
+	gConsole.WriteLine(Console::cBrightCyan, "\nCheck creting table details");
 	PrintConstantsTypeTable(table);
 	gConsole.WriteLine();
 	
@@ -124,7 +124,7 @@ bool test_DMySQLDataProvider_TypeTables()
 	
 	//Ok! Now lets update table
 	//----------------------------------------------------------------------------
-	CONSOLE.WriteLine(DConsole::cBrightWhite, "\n[ Type tables update ]");
+	CONSOLE.WriteLine(Console::cBrightWhite, "\n[ Type tables update ]");
 	table = prov->GetConstantsTypeTable("/test/test_vars/edited_table");
 	if(table!=NULL)
 	{
@@ -161,14 +161,14 @@ bool test_DMySQLDataProvider_TypeTables()
 	TITLE("Test number of rows not changed"); TEST(table->GetNRows()==5);
 	
 	//print it
-	gConsole.WriteLine(DConsole::cBrightCyan, "\nCheck created table details");
+	gConsole.WriteLine(Console::cBrightCyan, "\nCheck created table details");
 	PrintConstantsTypeTable(table);
 	gConsole.WriteLine();
 	delete table;
 	
 	//Ok! Now lets delete table
 	//----------------------------------------------------------------------------
-	CONSOLE.WriteLine(DConsole::cBrightWhite, "\n[ Type tables delete ]");
+	CONSOLE.WriteLine(Console::cBrightWhite, "\n[ Type tables delete ]");
 	
 	
 	TITLE("Get updated type table from DB");

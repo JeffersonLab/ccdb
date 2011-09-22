@@ -35,12 +35,12 @@
 using namespace std;
 
 //#include "tests.h"
-#include "Model/DDirectory.h"
-#include "Providers/DMySQLDataProvider.h"
+#include "CCDB/Model/Directory.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
 #include "Tests/tests.h"
-#include "DConsole.h"
-#include "DWorkUtils.h"
-#include "DStopWatch.h"
+#include "CCDB/Console.h"
+#include "CCDB/Helpers/WorkUtils.h"
+#include "CCDB/Helpers/StopWatch.h"
 #include "Tests/tests_macros.h"
 #include "DLog.h"
 #include "Web/DHttpContext.h"
@@ -52,7 +52,7 @@ void PrintHelp();
 #include "Model/DConstantsTypeTable.h"
 
 
-DConsole gConsole;
+Console gConsole;
 std::string gConnectionString;
 int main (int argc,char *argv[])
 {
@@ -94,14 +94,14 @@ int main (int argc,char *argv[])
     if(runBenchmarks)
     {
         RunBenchmarks();
-        gConsole.WriteLine(DConsole::cBrightGreen, "\n>>> Benchmarks done <<<");
+        gConsole.WriteLine(Console::cBrightGreen, "\n>>> Benchmarks done <<<");
     }
 
     //tests?
     if(runTests)
     {
         RunTests();
-        gConsole.WriteLine(DConsole::cBrightGreen, "\n>>> Tests done <<<");
+        gConsole.WriteLine(Console::cBrightGreen, "\n>>> Tests done <<<");
     }
 
     //pause?

@@ -1,26 +1,29 @@
 #ifndef benchmark_Providers_h__
 #define benchmark_Providers_h__
-#include "DConsole.h"
-#include "DStopWatch.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "Model/DAssignment.h"
+
+#include "CCDB/Console.h"
+#include "CCDB/Helpers/StopWatch.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Model/Assignment.h"
+#include "CCDB/Model/ConstantsTypeTable.h"
+
 #include "Tests/tests_macros.h"
-#include "Model/DConstantsTypeTable.h"
+
 
 bool benchmark_Providers()
 {	
-	DMySQLDataProvider *prov = new DMySQLDataProvider();
+	MySQLDataProvider *prov = new MySQLDataProvider();
 	if(!prov->Connect(gConnectionString)) return false;
 	
 	BENCHMARK_INIT("P R O V I D E R S   B E N C H M A R K S");
 	
 	BENCHMARK_START("Get assignment benchmark");
-	DStopWatch queryTimer;
+	StopWatch queryTimer;
 	time_t queriesTime=0;
 	for(int i=0; i<1000; i++)
 	{
 		//if(i%100==0) console.WriteLine("%d",i);
-		DAssignment * asgn = prov->GetAssignmentShort(100,"/test/test_vars/test_table");
+		Assignment * asgn = prov->GetAssignmentShort(100,"/test/test_vars/test_table");
 		delete asgn;
 	}
 	BENCHMARK_FINISH("1000 times GetAssignmentShort");

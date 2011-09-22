@@ -1,11 +1,11 @@
 #pragma warning(disable:4800)
 #include "Tests/tests_macros.h"
-#include "DConsole.h"
-#include "DStringUtils.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "Model/DDirectory.h"
-#include "DWorkUtils.h"
-#include "DStopWatch.h"
+#include "CCDB/Console.h"
+#include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Model/Directory.h"
+#include "CCDB/Helpers/WorkUtils.h"
+#include "CCDB/Helpers/StopWatch.h"
 
 
 using namespace std;
@@ -24,10 +24,10 @@ bool test_DMySQLDataProviderDirectories()
 	if(!prov->Connect(gConnectionString)) return false;
 
 	//Directories
-	gConsole.WriteLine(DConsole::cBrightWhite, "\n[ Directories testing ]");
+	gConsole.WriteLine(Console::cBrightWhite, "\n[ Directories testing ]");
 
 	//List of directories
-	gConsole.Write(DConsole::cBrightCyan, "\nCheck list of directories");
+	gConsole.Write(Console::cBrightCyan, "\nCheck list of directories");
 	PrintDirectoryTree(prov->GetRootDirectory(), false);
 	gConsole.WriteLine();
 	
@@ -78,7 +78,7 @@ bool test_DMySQLDataProviderDirectories()
 	TEST(prov->MakeDirectory("my_vars","/test/testdir",""));
 
 	//list what we have
-	gConsole.Write(DConsole::cBrightCyan,"\nCheck list of directories");
+	gConsole.Write(Console::cBrightCyan,"\nCheck list of directories");
 	PrintDirectoryTree(prov->GetRootDirectory(), false);
 	gConsole.WriteLine();
 
@@ -92,7 +92,7 @@ bool test_DMySQLDataProviderDirectories()
 	TITLE("Delete subdirectory 3");	TEST(prov->DeleteDirectory("/test/testdir/variables"));
 	TITLE("Delete subdirectory 4");	TEST(prov->DeleteDirectory("/test/testdir"));
 
-	gConsole.Write(DConsole::cBrightCyan,"\nCheck list of directories");
+	gConsole.Write(Console::cBrightCyan,"\nCheck list of directories");
 	PrintDirectoryTree(prov->GetRootDirectory(), false);
 	gConsole.WriteLine();
 	return true;
