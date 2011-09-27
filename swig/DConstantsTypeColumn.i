@@ -1,11 +1,11 @@
 %{
 
-#include "Model/DConstantsTypeColumn.h"
+#include "Model/ConstantsTypeColumn.h"
 using namespace ccdb;
 using namespace std;
 %}
 
-class DConstantsTypeColumn{
+class ConstantsTypeColumn{
     %rename(_GetId) GetId() const;
     %rename(_SetId) SetId(dbkey_t);
 
@@ -55,7 +55,7 @@ public:
      * std::string => cStringColumn
      * 
      * @param     val
-     * @return   ccdb::DConstantsTypeColumn::DColumnTypes
+     * @return   ccdb::ConstantsTypeColumn::DColumnTypes
      */
     static DColumnTypes StringToType(string val);
 
@@ -69,12 +69,12 @@ public:
      * cBoolColumn     => bool       
      * cStringColumn => std::string 
      * @param     val
-     * @return   ccdb::DConstantsTypeColumn::DColumnTypes
+     * @return   ccdb::ConstantsTypeColumn::DColumnTypes
      */
     static std::string TypeToString(DColumnTypes val);
 
-    DConstantsTypeColumn(DObjectsOwner * owner=NULL, DDataProvider *provider=NULL);    ///Constructor
-    virtual ~DConstantsTypeColumn();                    ///Destructor
+    ConstantsTypeColumn(DObjectsOwner * owner=NULL, DDataProvider *provider=NULL);    ///Constructor
+    virtual ~ConstantsTypeColumn();                    ///Destructor
 
     dbkey_t            GetId() const;                        ///get database table uniq id;
     void            SetId(dbkey_t val);                    ///set database table uniq id;

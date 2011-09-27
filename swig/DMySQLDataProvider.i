@@ -257,7 +257,7 @@ public:
 	 *  -- "type" is the type of the column 
 	 *     might be: int, uint, long, ulong, double, bool, string 
 	 *     other values will lead to "double" type to be used.
-	 *     @see ccdb::DConstantsTypeColumn::StringToType
+	 *     @see ccdb::ConstantsTypeColumn::StringToType
 	 *     Thus <"px", "">, <"py", ""> will create two double typed columns
 	 * 
 	 * @param [in] name			name of the new constants type table 
@@ -281,7 +281,7 @@ public:
 	 *  -- "type" is the type of the column 
 	 *     might be: int, uint, long, ulong, double, bool, string 
 	 *     other values will lead to "double" type to be used.
-	 *     @see ccdb::DConstantsTypeColumn::StringToType
+	 *     @see ccdb::ConstantsTypeColumn::StringToType
 	 *     Thus <"px", "">, <"py", ""> will create two double typed columns
 	 * 
 	 * @param [in] name			name of the new constants type table 
@@ -331,7 +331,7 @@ public:
 	 * @param parentDir
 	 * @return vector of constants
 	 */
-	virtual bool CreateColumn(DConstantsTypeColumn* column);
+	virtual bool CreateColumn(ConstantsTypeColumn* column);
 
 	/** @brief Loads columns for the table
 	 *

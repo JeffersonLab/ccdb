@@ -4,7 +4,7 @@
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/Directory.h"
-#include "Model/DConstantsTypeColumn.h"
+#include "Model/ConstantsTypeColumn.h"
 #include "CCDB/Helpers/WorkUtils.h"
 #include "CCDB/Helpers/StopWatch.h"
 
@@ -89,9 +89,9 @@ bool test_DMySQLDataProvider_TypeTables()
 	table->SetNRows(5);
 	
 	//test various ways to add column
-	table->AddColumn("px", DConstantsTypeColumn::cDoubleColumn);
+	table->AddColumn("px", ConstantsTypeColumn::cDoubleColumn);
 	table->AddColumn("px");	
-	DConstantsTypeColumn *column = new DConstantsTypeColumn(table);
+	ConstantsTypeColumn *column = new ConstantsTypeColumn(table);
 	column->SetName("pz");
 	column->SetType("int");
 	table->AddColumn(column);

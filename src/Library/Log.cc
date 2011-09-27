@@ -7,7 +7,6 @@
 using namespace std;
 namespace ccdb
 {
-
 	Console Log::msConsole;
 	Console Log::msErrorConsole;		//output for error reporting
 	Console Log::msMessageConsole;
@@ -70,13 +69,13 @@ void Log::Verbose( const string& module, const string& message )
 
 }
 
-}
-void ccdb::Log::SetUseColors(bool useIt)
+
+void Log::SetUseColors(bool useIt)
 {
 	Log::msConsole.SetUseColors(useIt);
 	Log::msErrorConsole.SetUseColors(useIt);		//output for error reporting
 	Log::msMessageConsole.SetUseColors(useIt);
 	Log::msVerboseConsole.SetUseColors(useIt);
 }
-
+}
 map<int, string> gCCDBErrorCodes;

@@ -76,7 +76,7 @@ bool ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
 
 
 	//verbose...
-	DLog::Verbose("ccdb::DMySQLDataProvider::Connect", StringUtils::Format("Connecting to database:\n UserName: %s \n Password: %i symbols \n HostName: %s Database: %s Port: %i",
+	Log::Verbose("ccdb::DMySQLDataProvider::Connect", StringUtils::Format("Connecting to database:\n UserName: %s \n Password: %i symbols \n HostName: %s Database: %s Port: %i",
 					connection.UserName.c_str(), connection.Password.length(), connection.HostName.c_str(), connection.Database.c_str(), connection.Port) );
 					
 	//init connection variable
@@ -285,7 +285,7 @@ bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const str
 		LoadDirectories();
 
 		//And log such function
-		AddLogRecord("directories;", 
+		AdLogRecord("directories;", 
 			StringUtils::Format("directories_%i;", mLastInsertedId), 
 			StringUtils::Format("Directory %s created in %s", name.c_str(), parentName.c_str()),
 			StringUtils::Encode(StringUtils::Format("Related comments: %s", commentInsertion.c_str())));
@@ -388,7 +388,7 @@ bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
 	if(result)
 	{
 		//just log this wicked action
-		AddLogRecord("directories;",
+		AdLogRecord("directories;",
 		StringUtils::Format("directories_%l;", dir->GetId()),
 		StringUtils::Format("Delete directory %s", dir->GetName().c_str()),
 		StringUtils::Format("Delete directory %s,\n comments: %s", dir->GetName().c_str(), dir->GetComment().c_str()));
@@ -679,7 +679,7 @@ bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *tabl
 	}
 
 	//add log record
-	AddLogRecord("typeTables;",
+	AdLogRecord("typeTables;",
 		StringUtils::Format("typeTables_%l;", table->GetId()),
 		StringUtils::Format("Created constants type table %s", table->GetName().c_str()),
 		StringUtils::Format("Created constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
@@ -702,7 +702,7 @@ ConstantsTypeTable* ccdb::MySQLDataProvider::CreateConstantsTypeTable( const str
 	map<string, string>::const_iterator iter = columns.begin();
 	for(; iter != columns.end(); iter++)
 	{
-		table->AddColumn(iter->first, DConstantsTypeColumn::StringToType(iter->second));
+		table->AddColumn(iter->first, ConstantsTypeColumn::StringToType(iter->second));
 	}
 	table->SetDirectory(parentDir);
 
@@ -863,7 +863,7 @@ bool ccdb::MySQLDataProvider::UpdateConstantsTypeTable( ConstantsTypeTable *tabl
 	bool result = QueryUpdate(query);
 	if(result)
 	{
-		AddLogRecord("typeTables;",
+		AdLogRecord("typeTables;",
 		StringUtils::Format("typeTables_%l;", table->GetId()),
 		StringUtils::Format("Update constants type table %s", table->GetName().c_str()),
 		StringUtils::Format("Update constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
@@ -916,7 +916,7 @@ bool ccdb::MySQLDataProvider::DeleteConstantsTypeTable( ConstantsTypeTable *tabl
 	else
 	{
 		//just log this wicked action
-		AddLogRecord("typeTables;",
+		AdLogRecord("typeTables;",
 		StringUtils::Format("typeTables_%l;", table->GetId()),
 		StringUtils::Format("Delete constants type table %s", table->GetName().c_str()),
 		StringUtils::Format("Delete constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
@@ -924,7 +924,7 @@ bool ccdb::MySQLDataProvider::DeleteConstantsTypeTable( ConstantsTypeTable *tabl
 	return true;
 }
 
-bool ccdb::MySQLDataProvider::CreateColumn(DConstantsTypeColumn* column)
+bool ccdb::MySQLDataProvider::CreateColumn(ConstantsTypeColumn* column)
 {
 
 	/** @brief Creates columns for the table
@@ -980,11 +980,11 @@ bool ccdb::MySQLDataProvider::CreateColumns(ConstantsTypeTable* table)
 	
 	//TODO begin transaction
 
-	const vector<DConstantsTypeColumn *>& columns = table->GetColumns();
-	vector<DConstantsTypeColumn *>::const_iterator iter= columns.begin();
+	const vector<ConstantsTypeColumn *>& columns = table->GetColumns();
+	vector<ConstantsTypeColumn *>::const_iterator iter= columns.begin();
 	for(; iter<columns.end(); ++iter)
 	{
-		DConstantsTypeColumn *column= *iter;
+		ConstantsTypeColumn *column= *iter;
 		if(!(CreateColumn(column )))
 		{	
 			return false;
@@ -1021,7 +1021,7 @@ bool ccdb::MySQLDataProvider::LoadColumns( ConstantsTypeTable* table )
 	while(FetchRow())
 	{
 		//ok lets read the data...
-		DConstantsTypeColumn *result = new DConstantsTypeColumn(table, this);
+		ConstantsTypeColumn *result = new ConstantsTypeColumn(table, this);
 		result->SetId(ReadULong(0));				
 		result->SetCreatedTime(ReadUnixTime(1));
 		result->SetModifiedTime(ReadUnixTime(2));
@@ -1294,7 +1294,7 @@ bool ccdb::MySQLDataProvider::DeleteRunRange(RunRange* run)
 	bool result = QueryDelete(query);
 	if(result)
 	{
-		AddLogRecord("runranges;",StringUtils::Format("runRanges_%i;", run->GetId()), "Delete run range", StringUtils::Format("Delete run range: from %i to %i with name %s", run->GetMin(), run->GetMax(), run->GetName().c_str()));
+		AdLogRecord("runranges;",StringUtils::Format("runRanges_%i;", run->GetId()), "Delete run range", StringUtils::Format("Delete run range: from %i to %i with name %s", run->GetMin(), run->GetMax(), run->GetName().c_str()));
 	}
 	return result;
 }
@@ -1544,7 +1544,7 @@ bool ccdb::MySQLDataProvider::DeleteVariation( Variation *variation )
 	bool result = QueryDelete(query);
 	if(result)
 	{
-		AddLogRecord("variations;",StringUtils::Format("variations_%i;", variation->GetId()), "Delete run variation", StringUtils::Format("Delete variation: name %s", variation->GetName().c_str()));
+		AdLogRecord("variations;",StringUtils::Format("variations_%i;", variation->GetId()), "Delete run variation", StringUtils::Format("Delete variation: name %s", variation->GetName().c_str()));
 	}
 	return result;
 }
@@ -1900,7 +1900,7 @@ bool ccdb::MySQLDataProvider::CreateAssignment(Assignment *assignment )
 	}
 
 	//just log this wicked action
-	AddLogRecord("assignments;constantSets;",
+	AdLogRecord("assignments;constantSets;",
 		StringUtils::Format("assignments_%i;constantSets_%i", assignment->GetId(), assignment->GetDataVaultId()),
 		StringUtils::Format("Add assignment to %s", assignment->GetTypeTable()->GetName().c_str()),
 		StringUtils::Format("Add assignment to %s,\n comments: %s", assignment->GetTypeTable()->GetName().c_str(), table->GetComment().c_str()));
@@ -2900,7 +2900,7 @@ std::string ccdb::MySQLDataProvider::ComposeMySQLError(std::string mySqlFunction
 #pragma endregion Fetch_free_and_other_MySQL_operations
 
 
-void ccdb::MySQLDataProvider::AddLogRecord( string userName, string affectedTables, string affectedIds, string shortDescription, string fullDescription )
+void ccdb::MySQLDataProvider::AdLogRecord( string userName, string affectedTables, string affectedIds, string shortDescription, string fullDescription )
 {
 	int id = GetUserId(userName);	
 
@@ -2913,9 +2913,9 @@ void ccdb::MySQLDataProvider::AddLogRecord( string userName, string affectedTabl
 	
 }
 
-void ccdb::MySQLDataProvider::AddLogRecord( string affectedTables, string affectedIds, string shortDescription, string fullDescription )
+void ccdb::MySQLDataProvider::AdLogRecord( string affectedTables, string affectedIds, string shortDescription, string fullDescription )
 {
-	AddLogRecord(mLogUserName, affectedTables, affectedIds, shortDescription, fullDescription);
+	AdLogRecord(mLogUserName, affectedTables, affectedIds, shortDescription, fullDescription);
 }
 
 dbkey_t ccdb::MySQLDataProvider::GetUserId( string userName )

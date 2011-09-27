@@ -3,7 +3,7 @@
 
 #include "CCDB/MySQLCalibration.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
-#include "CCDB/HelpersPathUtils.h"
+#include "CCDB/Helpers/PathUtils.h"
 
 namespace ccdb
 {

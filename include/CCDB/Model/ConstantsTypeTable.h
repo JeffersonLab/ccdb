@@ -20,7 +20,7 @@ using namespace std;
 
 namespace ccdb {
 
-	//class DConstantsTypeColumn;
+	//class ConstantsTypeColumn;
 
 class ConstantsTypeTable: public ObjectsOwner, public StoredObject 
 {
@@ -75,13 +75,13 @@ public:
 
 	/** @brief Gets vector containing all columns
 	 *
-	 * @return   const vector<DConstantsTypeColumn *>&
+	 * @return   const vector<ConstantsTypeColumn *>&
 	 */
 	const vector<ConstantsTypeColumn *>& GetColumns() const;
 
 	/** @brief Adds Column to array
 	 *
-	 * @param     DConstantsTypeColumn * col
+	 * @param     ConstantsTypeColumn * col
 	 * @param     int order
 	 * @return   void
 	 */
@@ -91,7 +91,7 @@ public:
 	 *
 	 * @warning it DOES change column mOrder member
 	 *
-	 * @param     DConstantsTypeColumn * col
+	 * @param     ConstantsTypeColumn * col
 	 * @param     int order
 	 * @return   void
 	 */

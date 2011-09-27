@@ -18,7 +18,7 @@
 %rename(DataProvider) DDataProvider;
 %rename(MySQLDataProvider) DMySQLDataProvider;
 %rename(ConstantsTypeTable) DConstantsTypeTable;
-%rename(ConstantsTypeColumn) DConstantsTypeColumn;
+%rename(ConstantsTypeColumn) ConstantsTypeColumn;
 %rename(Assignment) DAssignment;
 
 
@@ -28,7 +28,7 @@
 %include "DDataProvider.i"
 %include "DMySQLDataProvider.i"
 %include "DConstantsTypeTable.i"
-%include "DConstantsTypeColumn.i"
+%include "ConstantsTypeColumn.i"
 %include "DAssignment.i"
 
 
@@ -45,7 +45,7 @@ using namespace std;
 %template(AssignmentVector) vector<DAssignment *>;
 %template(DirectoryVector) vector<DDirectory *>;
 %template(ConstantsTypeTableVector) vector<DConstantsTypeTable *>;
-%template(ConstantsTypeColumnVector) vector<DConstantsTypeColumn *>;
+%template(ConstantsTypeColumnVector) vector<ConstantsTypeColumn *>;
 %template(StringVector) std::vector<std::string>;
 %template(StringVectorVector) std::vector<std::vector<std::string> >;
 %template(StringStringMap) std::map<std::string, std::string>;

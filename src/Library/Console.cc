@@ -34,17 +34,29 @@ ccdb::Console::Console(ostream *out):
 {
 #ifdef WIN32
 	mConsoleHandle=GetStdHandle(STD_OUTPUT_HANDLE);
+    if (mConsoleHandle == INVALID_HANDLE_VALUE)         return;
+
 	PCONSOLE_SCREEN_BUFFER_INFO info = 0;
+    try
+    {
 
-	if(GetConsoleScreenBufferInfo(mConsoleHandle,info))
-	{
-		mDefultAttributes =info->wAttributes;
-	}
-	else
-	{
-		mDefultAttributes = Console::cGray;
-	}
+        //if(GetConsoleScreenBufferInfo(mConsoleHandle,info))
+        //{
+        //    mDefultAttributes =info->wAttributes;
+        //}
+        //else
+        {
+            mDefultAttributes = Console::cGray;
+        }
 
+    }
+    catch (std::exception &e)
+    {
+    	
+    }
+    catch(...)
+    {
+    }
 	mForeground = static_cast<ConsoleColors>(mDefultAttributes&3 + (mDefultAttributes&FOREGROUND_INTENSITY)?8:0 );
 	mBackground = static_cast<ConsoleColors>((mDefultAttributes>>4)&3);
 

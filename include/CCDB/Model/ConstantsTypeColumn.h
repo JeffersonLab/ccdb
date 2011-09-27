@@ -43,7 +43,7 @@ public:
 	 * string  => cStringColumn
 	 * 
 	 * @param     val
-	 * @return   ccdb::DConstantsTypeColumn::DColumnTypes
+	 * @return   ccdb::ConstantsTypeColumn::DColumnTypes
 	 */
 	static DColumnTypes StringToType(string val);
 
@@ -57,7 +57,7 @@ public:
 	 * cBoolColumn	 => bool	   
 	 * cStringColumn => string  
 	 * @param     val
-	 * @return   ccdb::DConstantsTypeColumn::DColumnTypes
+	 * @return   ccdb::ConstantsTypeColumn::DColumnTypes
 	 */
 	static string  TypeToString(DColumnTypes val);
 

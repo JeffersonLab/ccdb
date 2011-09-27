@@ -8,7 +8,7 @@
 #include <vector>
 #include <map>
 
-#include "CCDB/DataProvider.h"
+#include "CCDB/Providers/DataProvider.h"
 #include "CCDB/Providers/MySQLConnectionInfo.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
 
@@ -362,7 +362,7 @@ public:
 	 *  -- "type" is the type of the column 
 	 *     might be: int, uint, long, ulong, double, bool, string 
 	 *     other values will lead to "double" type to be used.
-	 *     @see ccdb::DConstantsTypeColumn::StringToType
+	 *     @see ccdb::ConstantsTypeColumn::StringToType
 	 *     Thus <"px", "">, <"py", ""> will create two double typed columns
 	 * 
 	 * @param [in] name			name of the new constants type table 
@@ -386,7 +386,7 @@ public:
 	 *  -- "type" is the type of the column 
 	 *     might be: int, uint, long, ulong, double, bool, string 
 	 *     other values will lead to "double" type to be used.
-	 *     @see ccdb::DConstantsTypeColumn::StringToType
+	 *     @see ccdb::ConstantsTypeColumn::StringToType
 	 *     Thus <"px", "">, <"py", ""> will create two double typed columns
 	 * 
 	 * @param [in] name	       name of the new constants type table 
@@ -864,7 +864,7 @@ protected:
 	 * @param     fullDescription
 	 * @return   void
 	 */
-	void AddLogRecord(string userName, string affectedTables, string affectedIds, string shortDescription, string fullDescription);
+	void AdLogRecord(string userName, string affectedTables, string affectedIds, string shortDescription, string fullDescription);
 	
 	/** @brief Adds Log Record, uses GetLogUserName() as user name
 	 *
@@ -874,7 +874,7 @@ protected:
 	 * @param     fullDescription
 	 * @return   void
 	 */
-	void AddLogRecord(string affectedTables, string affectedIds, string shortDescription, string fullDescription);
+	void AdLogRecord(string affectedTables, string affectedIds, string shortDescription, string fullDescription);
 	
 	/** @brief Gets user Id by name from appropriate table
 	 *

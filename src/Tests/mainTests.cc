@@ -42,7 +42,7 @@ using namespace std;
 #include "CCDB/Helpers/WorkUtils.h"
 #include "CCDB/Helpers/StopWatch.h"
 #include "Tests/tests_macros.h"
-#include "DLog.h"
+#include "Log.h"
 #include "Web/DHttpContext.h"
 using namespace ccdb;
 
@@ -60,7 +60,7 @@ int main (int argc,char *argv[])
     //some setup
     gConnectionString = TESTS_CONENCTION_STRING;
     gConsole.SetUseColors(true);
-    DLog::SetUseColors(true);
+    Log::SetUseColors(true);
     bool runTests = false;
     bool runBenchmarks = false;
     bool runPause = false;
@@ -73,12 +73,12 @@ int main (int argc,char *argv[])
     // parse arguments    
     for (int i=0;i<args.size();i++) 
     {
-        if(args[i]=="--nocolors"   || args[i]=="-c") { gConsole.SetUseColors(false); DLog::SetUseColors(false);}
+        if(args[i]=="--nocolors"   || args[i]=="-c") { gConsole.SetUseColors(false); Log::SetUseColors(false);}
         if(args[i]=="--tests"      || args[i]=="-t") runTests = true;
         if(args[i]=="--benchmarks" || args[i]=="-b") runBenchmarks = true;
         if(args[i]=="--pause"      || args[i]=="-p") runPause = true;
         if(args[i]=="--help"       || args[i]=="-h") PrintHelp();
-        if(args[i]=="--verbose"    || args[i]=="-v") DLog::SetLevel(4);
+        if(args[i]=="--verbose"    || args[i]=="-v") Log::SetLevel(4);
         if(args[i]=="--server"     || args[i]=="-s") 
         {
             if(i>= (args.size()-1)) PrintHelp(); //check if we have argument after

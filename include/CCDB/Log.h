@@ -1,5 +1,5 @@
-#ifndef _DLog_
-#define _DLog_
+#ifndef _Log_
+#define _Log_
 /** ****************************************************
  * @file 
  *
@@ -15,7 +15,8 @@
 
 #include "CCDB/Console.h"
 
-namespace ccdb {
+namespace ccdb
+{
 
 /**
  * Log class. Write errors, love children...
@@ -111,4 +112,4 @@ private:
 
 };
 }
-#endif // _DLog_
+#endif // _Log_

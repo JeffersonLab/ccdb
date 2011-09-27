@@ -43,8 +43,8 @@ class DConstantsTypeTable
 
     %rename(_GetColumns) GetColumns() const;
 
-    %rename(add_column_in_order) AddColumn(DConstantsTypeColumn*, int);
-    %rename(add_column) AddColumn(DConstantsTypeColumn*);
+    %rename(add_column_in_order) AddColumn(ConstantsTypeColumn*, int);
+    %rename(add_column) AddColumn(ConstantsTypeColumn*);
     %rename(add_column) AddColumn(const std::string&, const std::string&);
 
     %rename(remove_column) RemoveColumn(int);
@@ -103,27 +103,27 @@ public:
 
     /** @brief Gets vector containing all columns
      *
-     * @return   const vector<DConstantsTypeColumn *>&
+     * @return   const vector<ConstantsTypeColumn *>&
      */
-    const vector<DConstantsTypeColumn *>& GetColumns() const;
+    const vector<ConstantsTypeColumn *>& GetColumns() const;
 
     /** @brief Adds Column to array
      *
-     * @param     DConstantsTypeColumn * col
+     * @param     ConstantsTypeColumn * col
      * @param     int order
      * @return   void
      */
-    void    AddColumn(DConstantsTypeColumn *col, int order);
+    void    AddColumn(ConstantsTypeColumn *col, int order);
     
     /** @brief Adds Column to array and sets order to it as in array
      *
      * @warning it DOES change column mOrder member
      *
-     * @param     DConstantsTypeColumn * col
+     * @param     ConstantsTypeColumn * col
      * @param     int order
      * @return   void
      */
-    void    AddColumn(DConstantsTypeColumn *col);
+    void    AddColumn(ConstantsTypeColumn *col);
     
     /**
      * @brief Adds Column to array and sets order to it as in array
@@ -137,7 +137,7 @@ public:
      * @param     int order
      * @return   void
      */
-    DConstantsTypeColumn *     RemoveColumn(int order);
+    ConstantsTypeColumn *     RemoveColumn(int order);
 
     /** @brief clear columns
      *

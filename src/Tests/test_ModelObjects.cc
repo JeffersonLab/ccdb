@@ -11,7 +11,7 @@
 #include "Model/DAssignment.h"
 #include "Model/DRunRange.h"
 #include "Model/Variation.h"
-#include "Model/DConstantsTypeColumn.h"
+#include "Model/ConstantsTypeColumn.h"
 #include "Model/DConstantsTypeTable.h"
 
 using namespace std;
@@ -46,7 +46,7 @@ bool test_ModelObjects()
 	TITLE("DConstantsTypeTable") TEST(ptr);
 	
     ptr = new ConstantsTypeColumn(NULL, NULL);
-	TITLE("DConstantsTypeColumn")	TEST(ptr);
+	TITLE("ConstantsTypeColumn")	TEST(ptr);
 
 	//TODO more complicated tests with a - benchmark, b - check for memory management
 

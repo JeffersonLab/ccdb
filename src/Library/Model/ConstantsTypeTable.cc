@@ -38,7 +38,7 @@ ConstantsTypeTable::~ConstantsTypeTable()
 
 /** @brief GetColumns
  *
- * @return   vector<DConstantsTypeColumn *>
+ * @return   vector<ConstantsTypeColumn *>
  */
 const vector<ConstantsTypeColumn *>& ConstantsTypeTable::GetColumns() const
 {

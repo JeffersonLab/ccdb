@@ -39,6 +39,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -50,14 +51,20 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MYSQL_CONNECTOR )/include;$(CCDB_HOME)/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MYSQL_CONNECTOR)/include;$(CCDB_HOME)/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>libmysql.lib;mysqlclient.lib;zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR )\lib\opt;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR)\lib\opt;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Command>echo %MYSQL_CONNECTOR%</Command>
+    </CustomBuildStep>
+    <PreBuildEvent>
+      <Command>echo $(MYSQL_CONNECTOR)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -94,23 +101,59 @@
     <ClInclude Include="..\..\..\include\Tests\tests_macros.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Tests\benchmark_PreparedStatements.cc" />
-    <ClCompile Include="..\..\..\src\Tests\benchmark_Providers.cc" />
-    <ClCompile Include="..\..\..\src\Tests\mainTests.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_Console.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_ModelObjects.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Assignments.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Connection.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Directories.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Other.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_RunRanges.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_RunRangesVariations.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_TypeTables.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Variations.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_PathUtils.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_StringUtils.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_UserAPI.cc" />
+    <ClCompile Include="..\..\..\src\Tests\benchmark_PreparedStatements.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\benchmark_Providers.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\catch.cc" />
+    <ClCompile Include="..\..\..\src\Tests\catch2.cc" />
+    <ClCompile Include="..\..\..\src\Tests\mainTests.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_Console.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_ModelObjects.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Assignments.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Connection.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Directories.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Other.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_RunRanges.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_RunRangesVariations.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_TypeTables.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Variations.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_PathUtils.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_StringUtils.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_UserAPI.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
