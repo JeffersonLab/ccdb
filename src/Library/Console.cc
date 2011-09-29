@@ -39,16 +39,15 @@ ccdb::Console::Console(ostream *out):
 	PCONSOLE_SCREEN_BUFFER_INFO info = 0;
     try
     {
-
-        //if(GetConsoleScreenBufferInfo(mConsoleHandle,info))
-        //{
-        //    mDefultAttributes =info->wAttributes;
-        //}
-        //else
+        //Windows 8
+        /*if(GetConsoleScreenBufferInfo(mConsoleHandle,info))
+        {
+            mDefultAttributes =info->wAttributes;
+        }
+        else*/
         {
             mDefultAttributes = Console::cGray;
         }
-
     }
     catch (std::exception &e)
     {

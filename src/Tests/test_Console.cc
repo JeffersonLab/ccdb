@@ -4,15 +4,12 @@
 using namespace std;
 using namespace ccdb;
 
-bool test_Console()
+TEST_CASE("CCDB/Console","")
 {
 	Console console;
 	console.SetUseColors(true);
 
-	//Formatting tests
-	cout<<StringUtils::Format("test console.Format %i %f", 5, 3.14)<<endl;
-	cout<<StringUtils::Format("test long string console.Format aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa %i %f", 5, 3.14)<<endl;
-
+	
 	//Wite line test
 	console.WriteLine("test console.WriteLine %i \n",6);
 	

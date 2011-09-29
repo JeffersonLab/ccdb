@@ -1,12 +1,10 @@
 #pragma warning(disable:4800)
-#include "Tests/tests_macros.h"
+#include "Tests/catch.h"
+#include "Tests/tests.h"
+
 #include "CCDB/Console.h"
-#include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/Directory.h"
-#include "CCDB/Helpers/WorkUtils.h"
-#include "CCDB/Helpers/StopWatch.h"
-
 
 using namespace std;
 using namespace ccdb;
@@ -18,33 +16,26 @@ bool test_DMySQLDataProviderConnection();  //Test basic connection
  *
  * @return true if test passed
  */
-bool test_DMySQLDataProviderConnection()
+TEST_CASE("CCDB/MySQLDataProvider/Connection","Connection tests")
 {
-	TESTS_INIT("")
+	MySQLDataProvider *prov = new MySQLDataProvider();
 
-	DMySQLDataProvider *prov = new DMySQLDataProvider();
+	//Pre Connection
+	REQUIRE_FALSE(prov->IsConnected());
+    
+    //Connection
+	REQUIRE(prov->Connect(TESTS_CONENCTION_STRING));
+	REQUIRE(prov->IsConnected());
+    REQUIRE(prov->GetConnectionString() == TESTS_CONENCTION_STRING);
 
-	//Connection
-	gConsole.WriteLine(Console::cBrightWhite, "[ Connect testing ]");
-
-	TITLE("Not connected                          ");
-	TEST(!prov->IsConnected());
-
-	TITLE("Connect                                ");
-	TEST(prov->Connect(gConnectionString));
-
-	TITLE("Connect status                         ");
-	TEST(prov->IsConnected());
-
-	TITLE("Disconnected IsConnected()             ");
+    //disconnect
 	prov->Disconnect();
-	TEST(!prov->IsConnected());
+	REQUIRE_FALSE(prov->IsConnected());
 
-	TITLE("Reconnect                              ");
-	TEST(prov->Connect(gConnectionString));
+	//reconnect
+	REQUIRE(prov->Connect(TESTS_CONENCTION_STRING));
 
 	//cleanup
 	prov->Disconnect();
 	delete prov;
-	return true;
 }

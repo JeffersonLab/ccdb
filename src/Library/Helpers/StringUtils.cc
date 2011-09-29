@@ -197,7 +197,10 @@ std::string ccdb::StringUtils::Format(const char *va_(fmt), ...)
 #include <stdlib.h>
 #include <stdarg.h>
 
-char * make_message(const char *fmt, ...) {
+
+//______________________________________________________________________________
+char * make_message(const char *fmt, ...) 
+{
         /* Guess we need no more than 100 bytes. */
         int n, size = 100;
         char *p, *np;
@@ -229,6 +232,7 @@ char * make_message(const char *fmt, ...) {
 }
 
 
+//_____________________________________________________________________________________________________________
 int ccdb::StringUtils::Replace(const string& pattern, const string& replace, const string& source, string &out)
 {
     int matches = 0;
@@ -246,6 +250,8 @@ int ccdb::StringUtils::Replace(const string& pattern, const string& replace, con
     return matches;
 }
 
+
+//___________________________________________________________________________________________________
 string ccdb::StringUtils::Replace(const string& pattern, const string& replace, const string& source)
 {
     string out("");
@@ -253,16 +259,22 @@ string ccdb::StringUtils::Replace(const string& pattern, const string& replace, 
     return out;
 }
 
+
+//______________________________________________________________
 string ccdb::StringUtils::ExtractDirectory( const string& path )
 {
     return path.substr( 0, path.find_last_of( '/' )  ); //will get directory without final /
 }
 
+
+//_______________________________________________________________
 string ccdb::StringUtils::ExtractObjectname( const string& path )
 {
     return path.substr( path.find_last_of( '/' ) +1 );
 }
 
+
+//______________________________________________________________________________
 string ccdb::StringUtils::CombinePath( const string& left, const string& right )
 {
     if(right.length()==0) return left;
@@ -296,6 +308,9 @@ string ccdb::StringUtils::CombinePath( const string& left, const string& right )
     return result+right;
 }
 
+
+
+//______________________________________________________________________________
 bool ccdb::StringUtils::WildCardCheck( const char* pattern, const char* source )
 {   
     char *cp, *mp;
@@ -343,12 +358,15 @@ bool ccdb::StringUtils::WildCardCheck( const char* pattern, const char* source )
 }
 
 
+//___________________________________________________________________________________________________________
 std::vector<std::string> ccdb::StringUtils::Split( const std::string &s, const string& delimiters /*= " "*/ )
 {
     std::vector<std::string> elems;
     return Split(s, elems, delimiters);
 }
 
+
+//________________________________________________________________________________________________________________________
 vector<string> & ccdb::StringUtils::Split( const string& str, vector<string>& tokens, const string& delimiters /*= " "*/ )
 {
     // Skip delimiters at beginning.
@@ -370,49 +388,177 @@ vector<string> & ccdb::StringUtils::Split( const string& str, vector<string>& to
 }
 
 
-
+//______________________________________________________________________________
 int ccdb::StringUtils::ParseInt( const string& source, bool *result/*=NULL*/  )
 {
     return atoi(source.c_str()); //ugly isn't it?
 }
 
+
+//______________________________________________________________________________
 unsigned int ccdb::StringUtils::ParseUInt( const string& source, bool *result/*=NULL*/  )
 {
     return static_cast<unsigned int>(atoi(source.c_str())); //ugly isn't it?
 }
 
+
+//______________________________________________________________________________
 long ccdb::StringUtils::ParseLong( const string& source, bool *result/*=NULL*/  )
 {
     return atol(source.c_str()); //ugly isn't it?
 }
 
+
+//______________________________________________________________________________
 unsigned long ccdb::StringUtils::ParseULong( const string& source, bool *result/*=NULL*/  )
 {
     return static_cast<unsigned long>(atol(source.c_str())); //ugly isn't it?
 }
 
+
+//______________________________________________________________________________
 bool ccdb::StringUtils::ParseBool( const string& source, bool *result/*=NULL*/  )
 {
     if(source=="true") return true;
     if(source=="false") return false;
 
     return static_cast<bool>(atoi(source.c_str())!=0); //ugly isn't it?
-
 }
 
+//___________________________________________________________________________________
 double ccdb::StringUtils::ParseDouble( const string& source, bool *result/*=NULL*/  )
 {
     return atof(source.c_str()); //ugly isn't it?
 }
 
+//_______________________________________________________________________________________
 std::string ccdb::StringUtils::ParseString( const string& source, bool *result/*=NULL*/  )
 {
     return string(source);
 }
 
 
+//_______________________________________________________________________________________
 time_t ccdb::StringUtils::ParseUnixTime( const string& source, bool *result/*=NULL*/  )
 {   
     return static_cast<time_t>(ParseULong(source, result));
+}
+
+
+//______________________________________________________________________________
+std::vector<string> ccdb::StringUtils::LexicalSplit( const std::string& source )
+{
+    //
+
+    /** Splits string to lexical values.
+    *
+    * LexicalSplit treats:
+    * 1) "quoted values" as one value,
+    * 2) '#' not in the beginning of the file are treated as comments to the end of the line
+    * 3) skips all white space characters. All specification is in doc/ccdb_file_format.pdf
+    */
+    std::vector<string> tokens;
+    LexicalSplit(tokens, source);
+    return tokens;
+}
+//____________________________________________________________________________________________
+void ccdb::StringUtils::LexicalSplit( std::vector<string>& tokens, const std::string& source )
+{
+    //
+
+    /** Splits string to lexical values.
+    *
+    * LexicalSplit treats:
+    * 1) "quoted values" as one value,
+    * 2) '#' not in the beginning of the file are treated as comments to the end of the line
+    * 3) skips all white space characters. All specification is in doc/ccdb_file_format.pdf
+    * 
+    * @remark
+    * Handling inconsistencies and errors while readout parse time:
+    *  ?  No ending quote . If no ending “ is found, string value will be taken
+    *     until the end of line.
+    *  ?  Comment inside a string. Comment symbol inside the line is ignored. 
+    *     So if you have a record in the file “info #4” it will be read just
+    *     as “info #4” string
+    *  ?  Sticked string. In case of there is no spaces between symbols and
+    *     an quotes, all will be merged as one string. I.e.:
+    *     John" Smith" will be parsed as one value: "John Smith"
+    *     John" "Smith will be parsed as one value: "John Smith"
+    *     but be careful(!) not to forget to do a spaces between columns
+    *     5.14”Smith” will be parsed as one value “5.14Smith” that probably would
+    *     lead to errors if these were two different columns
+    *  ?  If data contains string fields they are taken into “...” characters. All “
+    *     inside string should be saved by \” symbol. All words and symbols
+    *     inside “...” will be interpreted as string entity.
+    *
+    */
+    //clear output
+    tokens.clear();
+    bool stringIsStarted = false; //Indicates that we meet '"' and looking for second one
+    bool isSlash = false; //indicates if \ sign is happen to shield the quote or anothe slash
+    std::string readValue="";
+    //iterate through string
+    for(size_t i=0; i<source.length(); i++)
+    {
+        if(CCDB_CHECK_CHAR_IS_BLANK(source[i]) && !stringIsStarted)
+        {
+            //we have a space! Is it a space that happens after value?
+            if(readValue.length()>0)
+            {
+                tokens.push_back(readValue);
+                readValue="";
+            }
+        }
+        else
+        {
+            //it is not a blank character!
+            if(source[i]=='\\' && stringIsStarted && i<(source.length()-1) && source[i+1]=='"')
+            {
+                //ok! we found a \" inside a string! Not a problem! At all!					
+
+                i++; //skip this \ symbol
+                readValue+=source[i]; //it is just one more symbol in value
+            }
+            else if(source[i]=='#' && !stringIsStarted) //lets check if it is a comment symbol that is not incide a string...
+            {
+                //it is a comment started...
+                //lets save what we collected for now if we collected
+                if(readValue.length()>0)
+                {
+                    tokens.push_back(readValue);
+                    readValue="";
+                }
+
+                //and put there the rest of the lint(all comment) if there is something to put
+                if(i<(source.length()-1))
+                {
+                    tokens.push_back(source.substr(i));
+
+                    //after that gentelment should exit
+                    return;
+                }
+            }
+            else if(source[i]=='"')
+            {
+
+                //it is a beginnig or ending  of a string 
+                //just set appropriate flag and continue
+                stringIsStarted = !stringIsStarted;
+            }
+            else
+            {
+                //it is just one more symbol in file
+                readValue+=source[i];
+            }
+        }
+
+        //last we have is to check that 
+        //it is not the end of the lint			
+        if(i==(source.length()-1) && readValue.length()>0)
+        {
+            tokens.push_back(readValue);
+            readValue="";
+        }
+    }
 }
 

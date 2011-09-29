@@ -1,11 +1,9 @@
 #pragma warning(disable:4800)
-#include "Tests/tests_macros.h"
-#include "CCDB/Console.h"
-#include "CCDB/Helpers/StringUtils.h"
+#include "Tests/catch.h"
+#include "Tests/tests.h"
+
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/Directory.h"
-#include "CCDB/Helpers/WorkUtils.h"
-#include "CCDB/Helpers/StopWatch.h"
 #include "CCDB/Model/Variation.h"
 
 using namespace std;
@@ -16,26 +14,22 @@ using namespace ccdb;
  *
  * @return true if test passed
  */
-bool test_DMySQLDataProvider_RunRanges()
+TEST_CASE("CCDB/MySQLDataProvider/RunRanges","RunRanges tests")
 {
-	TESTS_INIT(" - - -   DMySQLDataProvider   R U N   R A N G E S   - - - ")
-	DMySQLDataProvider *prov = new DMySQLDataProvider();
-	if(!prov->Connect(gConnectionString)) return false;
 	
-
+	MySQLDataProvider *prov = new MySQLDataProvider();
+	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
 
     // GET RUN-RANGE TEST
     //----------------------------------------------------
-    gConsole.WriteLine(Console::cBrightWhite, "\n[ Get run-range testing ]");
-  
+    
     //Get run range by name, test "all" run range	
-	DRunRange *rrange = prov->GetRunRange(CCDB_ALL_RUNRANGE_NAME);
-	TITLE("Get default runrange by name"); TEST(rrange!=NULL);
+	RunRange *rrange = prov->GetRunRange(CCDB_ALL_RUNRANGE_NAME);
+	REQUIRE(rrange!=NULL);
 	
 	//Get run range by min and max run values
 	rrange = prov->GetRunRange(0, 2000);
-	TITLE("Get runrange by range"); TEST(rrange!=NULL);
-
+	REQUIRE(rrange!=NULL);
 
 
     // NON EXISTENT RUN RANGE
@@ -51,9 +45,7 @@ bool test_DMySQLDataProvider_RunRanges()
         rrange = prov->GetRunRange(0, 2001);
     }
 
-    TITLE("Get not existant runrange by range"); TEST(rrange==NULL);
-
-
+    REQUIRE(rrange==NULL);
 
     // GET OR CREATE RUNRANGE
     //----------------------------------------------------
@@ -61,22 +53,17 @@ bool test_DMySQLDataProvider_RunRanges()
     //Get or create run-range is the main function to get RunRange without name
     // 0-2001 should be absent or deleted so this function will create run-range
     rrange = prov->GetOrCreateRunRange(0, 2001); 
-    TITLE("Get or create run range"); TEST(rrange!=NULL);
-    TITLE("Check created run has valid Id"); TEST(rrange->GetId()!=0);
+    REQUIRE(rrange!=NULL);
+    REQUIRE(rrange->GetId()!=0);
 
     //this time the run range should be just loaded
     rrange = prov->GetOrCreateRunRange(0, 2001); 
-    TITLE("Get or create run range 2"); TEST(rrange!=NULL);
-
+    REQUIRE(rrange!=NULL);
 
 
     // DELETE RUN-RANGE TEST
     //----------------------------------------------------
-    gConsole.WriteLine(Console::cBrightWhite, "\n[ Delete run-range testing ]");
-
     bool result = prov->DeleteRunRange(rrange);
-    TITLE("Delete run range"); TEST(result)
-	
-	return true;
+    REQUIRE(result)
 	
 }

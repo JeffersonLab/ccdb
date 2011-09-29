@@ -517,6 +517,8 @@ Assignment * Calibration::GetAssignment( const string& namepath )
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
     Assignment* assigment = NULL;
+    if(!this->IsConnected()) throw std::logic_error("Calibration class is not connected to data source. Connect to the data source first");
+
     Lock();
     if(result.WasParsedTime)
     {   

@@ -1,12 +1,11 @@
 #pragma warning(disable:4800)
-#include "Tests/tests_macros.h"
-#include "CCDB/Console.h"
-#include "CCDB/Helpers/StringUtils.h"
+#include "Tests/catch.h"
+#include "Tests/tests.h"
+
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/Directory.h"
-#include "Model/ConstantsTypeColumn.h"
-#include "CCDB/Helpers/WorkUtils.h"
-#include "CCDB/Helpers/StopWatch.h"
+#include "CCDB/Model/ConstantsTypeColumn.h"
+#include "CCDB/Model/ConstantsTypeTable.h"
 
 using namespace std;
 using namespace ccdb;
@@ -16,42 +15,37 @@ using namespace ccdb;
  *
  * @return true if test passed
  */
-bool test_DMySQLDataProvider_TypeTables()
+TEST_CASE("CCDB/MySQLDataProvider/TypeTables","TypeTables tests")
 {
-	TESTS_INIT(" - - -   DMySQLDataProvider   T Y P E   T A B L E S   - - - ")
-	DMySQLDataProvider *prov = new DMySQLDataProvider();
-	if(!prov->Connect(gConnectionString)) return false;
+	
+	MySQLDataProvider *prov = new MySQLDataProvider();
+	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
+
     bool result;
 	
     //TYPE TABLE BASICS
     //======================================================
     //basic get type table functional
 
-    CONSOLE.WriteLine(Console::cBrightWhite, "\n[ Type tables getting ]");
-	
     //get type table from DB
-	DConstantsTypeTable *table = prov->GetConstantsTypeTable("/test/test_vars/test_table", true);
-    TITLE("Get type table"); TEST(table!=NULL);
+	ConstantsTypeTable *table = prov->GetConstantsTypeTable("/test/test_vars/test_table", true);
+    REQUIRE(table!=NULL);
 	
 	//print type table
-	gConsole.WriteLine(Console::cBrightCyan, "\nCheck returned table details");
-	PrintConstantsTypeTable(table);
-	gConsole.WriteLine();
 	delete table; //cleanup
 	
 	//get all tables from the directory.
-    vector<DConstantsTypeTable *> tables;
+    vector<ConstantsTypeTable *> tables;
     result = prov->GetConstantsTypeTables(tables, "/test/test_vars", false); //we dont need to load colums for each table, so we place last argument "false"
 	
     //test we've got
-	TITLE("Get type tables for directory");  TEST(result);
-	TITLE("1 or more tables returned");      TEST(tables.size()>0);
+	REQUIRE(result);
+	REQUIRE(tables.size()>0);
 
 	//second implementation of getting type tables from the directory	
 	tables = prov->GetConstantsTypeTables("/test/test_vars", false);
 
-	TITLE("Get type tables for directory 2"); TEST(tables.size());
-
+	REQUIRE(tables.size());
 
 
     //SEARCH TYPE TABLES
@@ -63,17 +57,15 @@ bool test_DMySQLDataProvider_TypeTables()
     //now lets get all tables from the directory.
 	result = prov->SearchConstantsTypeTables(tables, "t??t_tab*");
 
-	TITLE("Search type tables for directory"); TEST(result);
-	TITLE("1 or more tables returned"); TEST(tables.size()>0);
+	REQUIRE(result);
+	REQUIRE(tables.size()>0);
 
     //Search table in the specified path
     tables = prov->SearchConstantsTypeTables("*", "/test/test_vars",true);
-    TITLE("1 or more tables returned"); TEST(tables.size()>0);
+    REQUIRE(tables.size()>0);
 	
 	//create new type table
 	//-------------------------------------------------------------------------------------
-	CONSOLE.WriteLine(Console::cBrightWhite, "\n[ Type tables create/update/delete ]");
-	
 	table = prov->GetConstantsTypeTable("/test/test_vars/new_table");
 	if(table!=NULL)
 	{
@@ -83,7 +75,7 @@ bool test_DMySQLDataProvider_TypeTables()
 		delete table;
 	}
 	
-	table = new DConstantsTypeTable();
+	table = new ConstantsTypeTable();
 	table->SetName("new_table");
 	table->SetComment("This is temporary created table for test reasons");
 	table->SetNRows(5);
@@ -97,34 +89,30 @@ bool test_DMySQLDataProvider_TypeTables()
 	table->AddColumn(column);
 	table->SetDirectory(prov->GetDirectory("/test/test_vars"));
 	
-	//print this table
-	gConsole.WriteLine(Console::cBrightCyan, "\nCheck creting table details");
-	PrintConstantsTypeTable(table);
-	gConsole.WriteLine();
-	
+
 	//create table
 	result = prov->CreateConstantsTypeTable(table);
-	TITLE("Add table to database"); TEST(result);
+	REQUIRE(result);
 	delete table;
 	
 	//check that it was correctly created
-	TITLE("Get created type table from DB");
+	//Get created type table from DB
 	table = prov->GetConstantsTypeTable("/test/test_vars/new_table", true);
-	TEST(table!=NULL);
+	REQUIRE(table!=NULL);
 	
 	//test of fields
-	TITLE("Test 'name'");         TEST(table->GetName()=="new_table");
-	TITLE("Test 'full path'");    TEST_STEP(table->GetFullPath()=="/test/test_vars/new_table");
-	TITLE("Test 'comment'");      TEST_STEP(table->GetComment()=="This is temporary created table for test reasons");
-	TITLE("Test columns number"); TEST(table->GetColumns().size()==3);
-	TITLE("Test column name");    TEST(table->GetColumns()[0]->GetName() =="px");
-	TITLE("Test column type");    TEST(table->GetColumns()[0]->GetTypeString() == "double");
-	TITLE("Test number of rows"); TEST(table->GetNRows()==5);
+    REQUIRE(table->GetName()=="new_table");
+    REQUIRE(table->GetFullPath()=="/test/test_vars/new_table");
+    REQUIRE(table->GetComment()=="This is temporary created table for test reasons");
+	REQUIRE(table->GetColumns().size()==3);
+	REQUIRE(table->GetColumns()[0]->GetName() =="px");
+	REQUIRE(table->GetColumns()[0]->GetTypeString() == "double");
+	REQUIRE(table->GetNRows()==5);
 	delete table;
 	
 	//Ok! Now lets update table
 	//----------------------------------------------------------------------------
-	CONSOLE.WriteLine(Console::cBrightWhite, "\n[ Type tables update ]");
+
 	table = prov->GetConstantsTypeTable("/test/test_vars/edited_table");
 	if(table!=NULL)
 	{
@@ -133,57 +121,47 @@ bool test_DMySQLDataProvider_TypeTables()
 		prov->DeleteConstantsTypeTable(table);
 		delete table;
 	}
-	TITLE("Get type table to update from DB");
+	
+    //Get type table to update from DB
 	table = prov->GetConstantsTypeTable("/test/test_vars/new_table", true);
-	TEST(table!=NULL);
+	REQUIRE(table!=NULL);
 	
 	//set new values
 	table->SetName("edited_table");
 	table->SetComment("New comment");
 	table->SetNRows(3); //this value change will be ignored! 
 	
-	//do update
-	TITLE("Test update type table");
-	TEST(prov->UpdateConstantsTypeTable(table));
+	//Test update type table
+	REQUIRE(prov->UpdateConstantsTypeTable(table));
 	delete table;
 	
 	//check that it was correctly updated
-	TITLE("Get updated type table from DB");
+    //Get updated type table from DB
 	table = prov->GetConstantsTypeTable("/test/test_vars/edited_table", true);
-	TEST(table!=NULL);
+	REQUIRE(table!=NULL);
 	
-	//test of fields
-	TITLE("Test 'full path'");    TEST_STEP(table->GetFullPath()=="/test/test_vars/edited_table");
-	TITLE("Test 'comment'");      TEST_STEP(table->GetComment()=="New comment");
-	TITLE("Test columns number"); TEST(table->GetColumns().size()==3);
-	TITLE("Test column name");    TEST(table->GetColumns()[0]->GetName() =="px");
-	TITLE("Test column type");    TEST(table->GetColumns()[0]->GetTypeString() == "double");
-	TITLE("Test number of rows not changed"); TEST(table->GetNRows()==5);
-	
-	//print it
-	gConsole.WriteLine(Console::cBrightCyan, "\nCheck created table details");
-	PrintConstantsTypeTable(table);
-	gConsole.WriteLine();
+    //test of fields
+    REQUIRE(table->GetFullPath()=="/test/test_vars/edited_table");
+	REQUIRE(table->GetComment()=="New comment");
+	REQUIRE(table->GetColumns().size()==3);
+	REQUIRE(table->GetColumns()[0]->GetName() =="px");
+	REQUIRE(table->GetColumns()[0]->GetTypeString() == "double");
+	REQUIRE(table->GetNRows()==5);
 	delete table;
 	
 	//Ok! Now lets delete table
 	//----------------------------------------------------------------------------
-	CONSOLE.WriteLine(Console::cBrightWhite, "\n[ Type tables delete ]");
 	
-	
-	TITLE("Get updated type table from DB");
+	//Get updated type table from DB
 	table = prov->GetConstantsTypeTable("/test/test_vars/edited_table", true);
-	TEST(table!=NULL);
+	REQUIRE(table!=NULL);
 	
-	TITLE("Deleting table");
-	TEST(prov->DeleteConstantsTypeTable(table));
+	//Deleting table
+	REQUIRE(prov->DeleteConstantsTypeTable(table));
 	
-	TITLE("Check no table in DB");
+	//Check no table in DB
 	table = prov->GetConstantsTypeTable("/test/test_vars/edited_table", true);
-	TEST(table==NULL);
-	
-	
+	REQUIRE(table==NULL);
 
 	delete prov;//with all objects...
-	return true;
 }

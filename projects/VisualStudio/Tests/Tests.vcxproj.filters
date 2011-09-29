@@ -12,20 +12,8 @@
     <ClInclude Include="..\..\..\include\Tests\tests.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\Tests\tests_macros.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Tests\benchmark_PreparedStatements.cc">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Tests\benchmark_Providers.cc">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Tests\mainTests.cc">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\Tests\test_Console.cc">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -50,9 +38,6 @@
     <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_RunRanges.cc">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_RunRangesVariations.cc">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_TypeTables.cc">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -68,10 +53,7 @@
     <ClCompile Include="..\..\..\src\Tests\test_UserAPI.cc">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Tests\catch.cc">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\Tests\catch2.cc">
+    <ClCompile Include="..\..\..\src\Tests\tests.cc">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>

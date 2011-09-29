@@ -1,4 +1,4 @@
-#ifndef _StringUtils_
+﻿#ifndef _StringUtils_
 #define _StringUtils_
 
 #ifdef WIN32
@@ -189,84 +189,61 @@ public:
 		s.erase( s.find_last_not_of(whitespace) + 1U );
 	}
 	
-    static std::vector<string> SplitStringToData(const std::string& source)
-    {
-        std::vector<string> tokens;
-        SplitStringToData(tokens, source);
-        return tokens;
-    }
+    /** Splits string to lexical values.
+     *
+     * LexicalSplit treats:
+     * 1) "quoted values" as one value,
+     * 2) '#' not in the beginning of the file are treated as comments to the end of the line
+     * 3) skips all white space characters. All specification is in doc/ccdb_file_format.pdf
+     * 
+     * @remark
+     * Handling inconsistencies and errors while readout parse time:
+     *  ●  No ending quote . If no ending “ is found, string value will be taken
+     *     until the end of line.
+     *  ●  Comment inside a string. Comment symbol inside the line is ignored. 
+     *     So if you have a record in the file “info #4” it will be read just
+     *     as “info #4” string
+     *  ●  Sticked string. In case of there is no spaces between symbols and
+     *     an quotes, all will be merged as one string. I.e.:
+     *     John" Smith" will be parsed as one value: "John Smith"
+     *     John" "Smith will be parsed as one value: "John Smith"
+     *     but be careful(!) not to forget to do a spaces between columns
+     *     5.14”Smith” will be parsed as one value “5.14Smith” that probably would
+     *     lead to errors if these were two different columns
+     *  ●  If data contains string fields they are taken into “...” characters. All “
+     *     inside string should be saved by \” symbol. All words and symbols
+     *     inside “...” will be interpreted as string entity.
+     *
+     */
+    static std::vector<string> LexicalSplit(const std::string& source);
 	
-	static void SplitStringToData(std::vector<string>& tokens, const std::string& source)
-	{
-		//clear output
-		tokens.clear();
-		bool stringIsStarted = false; //Indicates that we meet '"' and looking for second one
-		bool isSlash = false; //indicates if \ sign is happen to shield the quote or anothe slash
-		std::string readValue="";
-		//iterate through string
-		for(size_t i=0; i<source.length(); i++)
-		{
-			if(CCDB_CHECK_CHAR_IS_BLANK(source[i]) && !stringIsStarted)
-			{
-				//we have a space! Is it a space that happens after value?
-				if(readValue.length()>0)
-				{
-					tokens.push_back(readValue);
-					readValue="";
-				}
-			}
-			else
-			{
-				//it is not a blank character!
-				if(source[i]=='\\' && stringIsStarted && i<(source.length()-1) && source[i+1]=='"')
-				{
-					//ok! we found a \" inside a string! Not a problem! At all!					
-					
-					i++; //skip this \ symbol
-					readValue+=source[i]; //it is just one more symbol in value
-				}
-				else if(source[i]=='#' && !stringIsStarted) //lets check if it is a comment symbol that is not incide a string...
-				{
-					//it is a comment started...
-					//lets save what we collected for now if we collected
-					if(readValue.length()>0)
-					{
-						tokens.push_back(readValue);
-						readValue="";
-					}
-					
-					//and put there the rest of the lint(all comment) if there is something to put
-					if(i<(source.length()-1))
-					{
-						tokens.push_back(source.substr(i));
-						
-						//after that gentelment should exit
-						return;
-					}
-				}
-				else if(source[i]=='"')
-				{
-					
-					//it is a beginnig or ending  of a string 
-					//just set appropriate flag and continue
-					stringIsStarted = !stringIsStarted;
-				}
-				else
-				{
-					//it is just one more symbol in file
-					readValue+=source[i];
-				}
-			}
-			
-			//last we have is to check that 
-			//it is not the end of the lint			
-			if(i==(source.length()-1) && readValue.length()>0)
-			{
-				tokens.push_back(readValue);
-				readValue="";
-			}
-		}
-	}
+      /** Splits string to lexical values.
+     *
+     * LexicalSplit treats:
+     * 1) "quoted values" as one value,
+     * 2) '#' not in the beginning of the file are treated as comments to the end of the line
+     * 3) skips all white space characters. All specification is in doc/ccdb_file_format.pdf
+     * 
+     * @remark
+     * Handling inconsistencies and errors while readout parse time:
+     *  ●  No ending quote . If no ending “ is found, string value will be taken
+     *     until the end of line.
+     *  ●  Comment inside a string. Comment symbol inside the line is ignored. 
+     *     So if you have a record in the file “info #4” it will be read just
+     *     as “info #4” string
+     *  ●  Sticked string. In case of there is no spaces between symbols and
+     *     an quotes, all will be merged as one string. I.e.:
+     *     John" Smith" will be parsed as one value: "John Smith"
+     *     John" "Smith will be parsed as one value: "John Smith"
+     *     but be careful(!) not to forget to do a spaces between columns
+     *     5.14”Smith” will be parsed as one value “5.14Smith” that probably would
+     *     lead to errors if these were two different columns
+     *  ●  If data contains string fields they are taken into “...” characters. All “
+     *     inside string should be saved by \” symbol. All words and symbols
+     *     inside “...” will be interpreted as string entity.
+     *
+     */
+	static void LexicalSplit(std::vector<string>& tokens, const std::string& source);
 
 	/** @brief Prints object to string
 	 *

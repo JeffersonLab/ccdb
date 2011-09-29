@@ -209,7 +209,6 @@ protected:
 	bool mProviderIsLocked;     ///If provider 
 	int mDefaultRun;			///Default run number
     string mDefaultVariation;	///Default variation
-    string mConnectionString;	///Connection string to database
 };
 
 }

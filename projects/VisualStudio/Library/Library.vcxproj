@@ -41,7 +41,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Library\Calibration.cc" />
     <ClCompile Include="..\..\..\src\Library\CalibrationGenerator.cc" />
-    <ClCompile Include="..\..\..\src\Library\CccdbError.cc" />
+    <ClCompile Include="..\..\..\src\Library\CCDBError.cc" />
     <ClCompile Include="..\..\..\src\Library\Console.cc" />
     <ClCompile Include="..\..\..\src\Library\GlobalMutex.cc" />
     <ClCompile Include="..\..\..\src\Library\Helpers\PathUtils.cc" />

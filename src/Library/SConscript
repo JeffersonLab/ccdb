@@ -1,0 +1,52 @@
+
+Import('env')
+
+#TODO move to normal debug\release modes
+
+#debugcflags = ['-W1', '-GX', '-EHsc', '-D_DEBUG', '/MDd']   #extra compile flags for debug
+#releasecflags = ['-O2', '-EHsc', '-DNDEBUG', '/MD']         #extra compile flags for release
+#env.Append(CCFLAGS='-g')
+
+
+#Configure environment to create ccdb_library
+
+lib_target  = "ccdb"
+lib_sources = [
+    
+    #some global objects    
+	"Console.cc",
+	"Log.cc",
+	"CCDBError.cc",
+	"GlobalMutex.cc",
+	
+	#user api
+	"Calibration.cc",
+	"CalibrationGenerator.cc",
+	"MySQLCalibration.cc",
+	
+	#helper classes
+	"Helpers/StringUtils.cc",
+	"Helpers/PathUtils.cc",
+	"Helpers/WorkUtils.cc",
+	
+	#model and provider
+	"Model/ObjectsOwner.cc",
+	"Model/StoredObject.cc",
+	"Model/Assignment.cc",
+	"Model/ConstantsTypeColumn.cc",
+	"Model/ConstantsTypeTable.cc",
+	"Model/Directory.cc",
+	"Model/EventRange.cc",
+	"Model/RunRange.cc",
+	"Model/Variation.cc",
+	"Providers/DataProvider.cc",
+	"Providers/FileDataProvider.cc",
+	"Providers/MySQLConnectionInfo.cc",
+	"Providers/MySQLDataProvider.cc",
+	]
+
+env.ParseConfig('mysql_config --libs --cflags')
+
+#Making library
+lib = env.SharedLibrary(target = lib_target, source = lib_sources)
+env.Install('#lib', lib)

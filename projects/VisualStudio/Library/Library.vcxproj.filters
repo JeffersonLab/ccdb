@@ -96,9 +96,6 @@
     <ClInclude Include="..\..\..\include\CCDB\Model\StoredObject.h">
       <Filter>Model\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\CCDB\Helpers\PathUtils.h">
-      <Filter>Helpers\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\include\CCDB\Helpers\StopWatch.h">
       <Filter>Helpers\Headers</Filter>
     </ClInclude>
@@ -126,11 +123,11 @@
     <ClInclude Include="..\..\..\include\CCDB\Log.h">
       <Filter>Globals\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Helpers\PathUtils.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Library\Helpers\PathUtils.cc">
-      <Filter>Helpers\Sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\Library\Helpers\StringUtils.cc">
       <Filter>Helpers\Sources</Filter>
     </ClCompile>
@@ -185,9 +182,6 @@
     <ClCompile Include="..\..\..\src\Library\MySQLCalibration.cc">
       <Filter>UserApi\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Library\CccdbError.cc">
-      <Filter>Globals\Sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\Library\Console.cc">
       <Filter>Globals\Sources</Filter>
     </ClCompile>
@@ -195,6 +189,12 @@
       <Filter>Globals\Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Library\Log.cc">
+      <Filter>Globals\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Helpers\PathUtils.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\CCDBError.cc">
       <Filter>Globals\Sources</Filter>
     </ClCompile>
   </ItemGroup>

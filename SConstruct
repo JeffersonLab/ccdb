@@ -45,7 +45,7 @@ default_env = Environment(
     #JAVACCOMSTR = compile_source_message,
     
     #>> CCDB related default staff <<
-    CPPPATH = ['#include', 'src'],
+    CPPPATH = ['#include', '#src'],
     ENV = os.environ,
 )
 
@@ -59,6 +59,8 @@ env = default_env.Clone()
 env.Repository('src')
 
 #Attach SConsctipts
-SConscript('src/SConscript', 'env', variant_dir='tmp', duplicate=0)
-SConscript('swig/SConscript', 'env', variant_dir='tmp/swig', duplicate=0)
+SConscript('src/Library/SConscript', 'env', variant_dir='tmp/Library', duplicate=0)
+SConscript('src/Tests/SConscript', 'env', variant_dir='tmp/Tests', duplicate=0)
+SConscript('src/Benchmarks/SConscript', 'env', variant_dir='tmp/Benchmarks', duplicate=0)
+#SConscript('swig/SConscript', 'env', variant_dir='tmp/swig', duplicate=0)
 

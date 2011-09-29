@@ -1,0 +1,35 @@
+##
+ # Tests SConstcipt files
+ #
+ ##
+
+Import('env')
+
+#TODO move to normal debug\release modes
+
+#debugcflags = ['-W1', '-GX', '-EHsc', '-D_DEBUG', '/MDd']   #extra compile flags for debug
+#releasecflags = ['-O2', '-EHsc', '-DNDEBUG', '/MD']         #extra compile flags for release
+#env.Append(CCFLAGS='-g')
+
+
+#Configure environment to create tests
+test_sources = [
+    "tests.cc",
+	#"test_Console.cc",
+	"test_MySQLProvider_Assignments.cc",
+	"test_MySQLProvider_Connection.cc",
+	"test_MySQLProvider.cc",
+	"test_MySQLProvider_Directories.cc",
+	"test_MySQLProvider_Other.cc",
+	"test_MySQLProvider_RunRanges.cc",
+	"test_MySQLProvider_TypeTables.cc",
+	"test_MySQLProvider_Variations.cc",
+	"test_StringUtils.cc",
+	"test_PathUtils.cc",
+	"test_ModelObjects.cc",
+	"test_UserAPI.cc",
+	]
+
+#Making tests
+ccdb_tests_program = env.Program('tests_ccdb', source = test_sources, LIBS=["ccdb"], LIBPATH='#lib')
+ccdb_tests_install = env.Install('#bin', ccdb_tests_program)

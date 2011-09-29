@@ -1,12 +1,12 @@
 #pragma warning(disable:4800)
-#include "Tests/tests_macros.h"
+#include "Tests/tests.h"
+#include "Tests/catch.h"
+
 #include "CCDB/Console.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
-#include "CCDB/Model/Directory.h"
-#include "CCDB/Helpers/WorkUtils.h"
-#include "CCDB/Helpers/StopWatch.h"
 #include "CCDB/Model/Variation.h"
+#include "CCDB/Model/Directory.h"
 
 using namespace std;
 using namespace ccdb;
@@ -16,67 +16,59 @@ using namespace ccdb;
  *
  * @return true if test passed
  */
-bool test_DMySQLDataProvider_Assignments()
+TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 {
 	bool result;
-	TESTS_INIT(" - - -   DMySQLDataProvider   A S S I G N M E N T S   - - - ")
-	DDataProvider *prov = new DMySQLDataProvider();
-	if(!prov->Connect(gConnectionString)) return false;
+	
+	DataProvider *prov = new MySQLDataProvider();
+	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
 
 	//GET ASSIGNMENTS TESTS
 	//----------------------------------------------------
-	gConsole.WriteLine(Console::cBrightWhite, "\n[ Get Assignment testing ]");
-
 	//lets start with simple cases. 
 	//Get FULL assignment by table and name
 	
-	DAssignment * assignment = prov->GetAssignmentFull(100,"/test/test_vars/test_table");
+	Assignment * assignment = prov->GetAssignmentFull(100,"/test/test_vars/test_table");
 	
-	TITLE("Get Assignment");   TEST(assignment!=NULL);
+	REQUIRE(assignment!=NULL);
 
 	//Check that everything is loaded
-	TITLE("Have variation");  TEST(assignment->GetVariation() != NULL);
-	TITLE("Test Run Range");  TEST(assignment->GetRunRange()  != NULL);
-	TITLE("Test type table"); TEST(assignment->GetTypeTable() != NULL);	
-	TITLE("Test columns ");   TEST(assignment->GetTypeTable()->GetColumns().size()>0);
-	
-	//print to gConsole data of the assignment
-	PrintAssignmentVertical(gConsole, assignment);
+	REQUIRE(assignment->GetVariation() != NULL);
+	REQUIRE(assignment->GetRunRange()  != NULL);
+	REQUIRE(assignment->GetTypeTable() != NULL);	
+	REQUIRE(assignment->GetTypeTable()->GetColumns().size()>0);
 	
 	//Ok! Lets get all assigments for current types table
-	
-	vector<DAssignment *> assignments;
+	vector<Assignment *> assignments;
 	result = prov->GetAssignments(assignments, "/test/test_vars/test_table", 100);
 	
-	TITLE("Assignments were selected with no errors"); TEST(result);	
-	TITLE("One or more assignments were selected");    TEST(assignments.size()>0);
+	REQUIRE(result);	
+	REQUIRE(assignments.size()>0);
 	
 	//save number of asignments
 	int selectedAssignments = assignments.size();
 	dbkey_t lastId = assignment->GetId();
 	dbkey_t lastDataVaultId = assignment->GetDataVaultId();
-	gConsole.WriteLine("Selected %i assignments; Last id %i; Last dataVault id %i",selectedAssignments, lastId, lastDataVaultId);
-	
+
+
 	//Lets try create assignments testing from copy assignment
-	gConsole.WriteLine(Console::cBrightWhite, "\n[ Copy Assignment testing ]");
-	
+
 	//simple copy
 	result = prov->CreateAssignment(assignment);
-	TITLE("Create assignment from previous one"); TEST(result);	
+	REQUIRE(result);	
 
 	//test what we will get
 	result = prov->GetAssignments(assignments, "/test/test_vars/test_table", 100);
-	TITLE("Assignments were selected ");       TEST(result);	
-	TITLE("Number of assignments increased");  TEST(assignments.size()==(selectedAssignments+1));
-	TITLE("New Id is set");                    TEST(lastId!= assignment->GetId());
-	TITLE("New data vault Id is set");         TEST(lastDataVaultId!= assignment->GetDataVaultId());
-	TITLE("Directory test");                   TEST(assignment->GetTypeTable()->GetColumns().size());
+	REQUIRE(result);	
+	REQUIRE(assignments.size()==(selectedAssignments+1));
+	REQUIRE(lastId!= assignment->GetId());
+	REQUIRE(lastDataVaultId!= assignment->GetDataVaultId());
+	REQUIRE(assignment->GetTypeTable()->GetColumns().size());
 	
 	//Lets print table
 	vector<vector<string> > tabeled_values = assignment->GetData();
-	TITLE("Test rows exists");   TEST(tabeled_values.size()>0);	
-	TITLE("Test cells exists");  TEST(tabeled_values[0].size()>0);	
-	TITLE("Decode blob");        TEST(DAssignment::DecodeBlobSeparator("30e-2") == "30e-2");	
+	REQUIRE(tabeled_values.size()>0);	
+	REQUIRE(tabeled_values[0].size()>0);	
+	REQUIRE(Assignment::DecodeBlobSeparator("30e-2") == "30e-2");	
 	
-	return true;
 }

@@ -1,5 +1,6 @@
 #pragma warning(disable:4800)
-#include "Tests/tests_macros.h"
+#include "Tests/catch.h"
+#include "Tests/tests.h"
 
 #include "CCDB/Console.h"
 #include "CCDB/MySQLCalibration.h"
@@ -25,133 +26,81 @@ void test_UserAPI_PrintData(const map<string,int> & data);
  *
  * @return true if test passed
  */
-bool test_UserAPI()
+TEST_CASE("CCDB/UserAPI","tests")
 {
 	bool result;
-	TESTS_INIT(" - - -   U S E R   A P I   - - - ")
+	
 	DataProvider *prov = new MySQLDataProvider();
-	if(!prov->Connect(gConnectionString)) return false;
+	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
+
 
 	//U S I N G   U S E R   A P I   D I R E C T L Y
 	//----------------------------------------------------
-	gConsole.WriteLine(Console::cBrightWhite, "\n[ Creating DMySQLCalibration directly ]");
 
     MySQLCalibration *calib = new MySQLCalibration(100);
     result = false;
-    try
-    {
-        result = calib->Connect(gConnectionString);
-    }
-    catch (std::exception &e)
-    {
-    	gConsole.WriteLine("Exception was caught %s", e.what());
-    }
-    TITLE("DMySQLCalibration connected");  TEST(result);
 
+    REQUIRE_NOTHROW(result = calib->Connect(TESTS_CONENCTION_STRING));
+    REQUIRE(result);
+    REQUIRE(calib->GetConnectionString() == TESTS_CONENCTION_STRING);
     
     //get data as table of strings
     //----------------------------------------------------
     vector<vector<string> > tabledValues;
-    try
-    {
-        result = calib->GetCalib(tabledValues, "/test/test_vars/test_table");
-    }
-    catch (exception &e)
-    {
-    	gConsole.WriteLine("Exception was caught %s", e.what());
-    }
-    
-    TITLE("Data read");          TEST(tabledValues.size()>0);
-    TITLE("Test rows exists");   TEST(tabledValues.size()==2);	
-    TITLE("Test cells exists");  TEST(tabledValues[0].size()==3);
+    REQUIRE_NOTHROW(result = calib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+    REQUIRE(tabledValues.size()>0);
+    REQUIRE(tabledValues.size()==2);
+    REQUIRE(tabledValues[0].size()==3);
 
+    
     //test of getting data without / in the beginning
     //----------------------------------------------------
-
     tabledValues.clear();
-    try
-    {
-        result = calib->GetCalib(tabledValues, "test/test_vars/test_table");
-    }
-    catch (exception &e)
-    {
-        gConsole.WriteLine("Exception was caught %s", e.what());
-    }
+    REQUIRE_NOTHROW(result = calib->GetCalib(tabledValues, "test/test_vars/test_table"));
+    REQUIRE(tabledValues.size()>0);
 
-    TITLE("No starting / data read");          TEST(tabledValues.size()>0);
+    
+    //test of get all namepaths
+    //----------------------------------------------------
+    vector<string> paths;
+    REQUIRE_NOTHROW(calib->GetListOfNamepaths(paths));
+    REQUIRE(paths.size()>0);
 
-
-    int rowsNum = tabledValues.size();
-    int columnsNum = tabledValues[0].size(); //rawTableValues[0] - size was checked in GetCalib
-       
-    //print values
-    for (int rowIter = 0; rowIter < rowsNum; rowIter++)
-    {   
-        for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
-        {
-            gConsole.Write("| %-8s ", tabledValues[rowIter][columnsIter].c_str());
-        }
-        gConsole.WriteLine("|");
-    }
-
-
-
-    /*
-
-	//lets start with simple cases. 
-	//Get FULL assignment by table and name
-	
-	DAssignment * assignment = prov->GetAssignmentFull(100,"/test/test_vars/test_table");
-	
-	TITLE("Get Assignment");   TEST(assignment!=NULL);
-
-	//Check that everything is loaded
-	TITLE("Have variation");  TEST(assignment->GetVariation() != NULL);
-	TITLE("Test Run Range");  TEST(assignment->GetRunRange()  != NULL);
-	TITLE("Test type table"); TEST(assignment->GetTypeTable() != NULL);	
-	TITLE("Test columns ");   TEST(assignment->GetTypeTable()->GetColumns().size()>0);
-	
-	//print to gConsole data of the assignment
-	PrintAssignmentVertical(gConsole, assignment);
-	
-	//Ok! Lets get all assigments for current types table
-	
-	vector<DAssignment *> assignments;
-	result = prov->GetAssignments(assignments, "/test/test_vars/test_table", 100);
-	
-	TITLE("Assignments were selected with no errors"); TEST(result);	
-	TITLE("One or more assignments were selected");    TEST(assignments.size()>0);
-	
-	//save number of asignments
-	int selectedAssignments = assignments.size();
-	dbkey_t lastId = assignment->GetId();
-	dbkey_t lastDataVaultId = assignment->GetDataVaultId();
-	gConsole.WriteLine("Selected %i assignments; Last id %i; Last dataVault id %i",selectedAssignments, lastId, lastDataVaultId);
-	
-	//Lets try create assignments testing from copy assignment
-	gConsole.WriteLine(Console::cBrightWhite, "\n[ Copy Assignment testing ]");
-	
-	//simple copy
-	result = prov->CreateAssignment(assignment);
-	TITLE("Create assignment from previus one"); TEST(result);	
-
-	//test what we will get
-	result = prov->GetAssignments(assignments, "/test/test_vars/test_table", 100);
-	TITLE("Assignments were selected ");       TEST(result);	
-	TITLE("Number of assignments increased");  TEST(assignments.size()==(selectedAssignments+1));
-	TITLE("New Id is set");                    TEST(lastId!= assignment->GetId());
-	TITLE("New data vault Id is set");         TEST(lastDataVaultId!= assignment->GetDataVaultId());
-	TITLE("Directory test");                   TEST(assignment->GetTypeTable()->GetColumns().size());
-	
-	//Lets print table
-	vector<vector<string> > tabeled_values = assignment->GetData();
-	TITLE("Test rows exists");       TEST(tabeled_values.size()>0);	
-	TITLE("Test cells exists");       TEST(tabeled_values[0].size()>0);	
-	TITLE("Decode blob");       TEST(DAssignment::DecodeBlobSeparator("30e-2") == "30e-2");	
-	
-	return true;*/
+    
 }
 
+TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
+{
+    //Now lets check if user forget to connect...
+    Calibration *calib = new MySQLCalibration(100);
+
+    //We are not connected... So lets check it! 
+    REQUIRE_FALSE(calib->IsConnected());
+
+    //Ok.. next we will try to get data from not opened calibrations
+    // This should result some logic error. 
+     vector<vector<string> > tabledValues;
+    REQUIRE_THROWS(calib->GetCalib(tabledValues, "test/test_vars/test_table"));
+
+    cout<<"The next errors are right errors"<<endl;
+    //Now we will connect to improper source...
+    REQUIRE_FALSE(calib->Connect("ha ha ha"));
+    REQUIRE_FALSE(calib->Connect("mysql://muuuu ha ha ha"));
+    
+    //Ok, lets connect at last...
+    bool result;
+    REQUIRE_NOTHROW(result = calib->Connect(TESTS_CONENCTION_STRING));
+    REQUIRE(result);
+
+    //And then lets connect once more to the same string...
+    REQUIRE_NOTHROW(result = calib->Connect(TESTS_CONENCTION_STRING));
+    REQUIRE(result);
+
+    //And then lets connect once more to another string...
+    REQUIRE_THROWS(result = calib->Connect("mysql://muuuu ha ha ha"));
+
+}
+/*
 //______________________________________________________________________________
 void test_UserAPI_PrintData(const vector<vector<string> > & data)
 {
@@ -229,3 +178,4 @@ void test_UserAPI_PrintData(const map<string,int> & data)
     }
     gConsole.WriteLine("|");
 }
+*/

@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3E64C06E-02CC-4183-92B2-6012CB975413}</ProjectGuid>
+    <ProjectGuid>{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>CCDBTests</RootNamespace>
+    <RootNamespace>Benchmarks</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -39,7 +39,6 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -56,69 +55,49 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libmysql.lib;mysqlclient.lib;zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR)\lib\opt;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR)\lib\opt;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libmysql.lib;mysqlclient.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <CustomBuildStep>
-      <Command>echo %MYSQL_CONNECTOR%</Command>
-    </CustomBuildStep>
-    <PreBuildEvent>
-      <Command>echo $(MYSQL_CONNECTOR)</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files %28x86%29\MySQL\MySQL Connector C 6.0.2\include;$(CCDB_HOME)/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MYSQL_CONNECTOR)/include;$(CCDB_HOME)/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\MySQL\MySQL Connector C 6.0.2\lib\opt;$(CCDB_HOME)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libmysql.lib;mysqlclient.lib;zlib.lib;pthreadVC2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR)\lib\opt;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libmysql.lib;mysqlclient.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\Library\Library.vcxproj">
       <Project>{ff2376e7-5637-46a4-ae1b-a083d7588552}</Project>
-      <Private>true</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\include\Tests\tests.h" />
+    <ClInclude Include="..\..\..\include\Benchmarks\benchmarks.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\Tests\tests.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_Console.cc">
+    <ClCompile Include="..\..\..\src\Benchmarks\benchmark_PreparedStatements.cc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Tests\test_ModelObjects.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Assignments.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Connection.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Directories.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Other.cc">
+    <ClCompile Include="..\..\..\src\Benchmarks\benchmark_Providers.cc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_RunRanges.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_TypeTables.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_MySQLProvider_Variations.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_PathUtils.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_StringUtils.cc" />
-    <ClCompile Include="..\..\..\src\Tests\test_UserAPI.cc" />
+    <ClCompile Include="..\..\..\src\Benchmarks\benchmark_UserAPI.cc" />
+    <ClCompile Include="..\..\..\src\Benchmarks\benchmarks.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

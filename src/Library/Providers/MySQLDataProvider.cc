@@ -60,7 +60,9 @@ bool ccdb::MySQLDataProvider::Connect( std::string connectionString )
 	}
 						
 	//try to connect
-	return Connect(connection);
+    bool result = Connect(connection);
+    if(result) mConnectionString = connectionString;
+    return result;
 }
 
 bool ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
@@ -70,7 +72,7 @@ bool ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
 	//check if we are connected
 	if(IsConnected())
 	{
-		Error(CCDB_ERROR_CONNECTION_ALREADY_OPENED, "DMySQLDataProvider::Connect(DMySQLConnectionInfo)", "Connection already opened");
+		Error(CCDB_ERROR_CONNECTION_ALREADY_OPENED, "MySQLDataProvider::Connect(MySQLConnectionInfo)", "Connection already opened");
 		return false;
 	}
 
@@ -99,12 +101,13 @@ bool ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
 		0))								//flags (none)
 	{
 		string errStr = ComposeMySQLError("mysql_real_connect()");
-		Error(CCDB_ERROR_CONNECTION_EXTERNAL_ERROR,"bool DMySQLDataProvider::Connect(DMySQLConnectionInfo)",errStr.c_str());
+		Error(CCDB_ERROR_CONNECTION_EXTERNAL_ERROR,"bool MySQLDataProvider::Connect(MySQLConnectionInfo)",errStr.c_str());
 
 		mMySQLHnd=NULL;		//some compilers dont set NULL after delete
 		return false;
 	}
 	mIsConnected = true;
+    
 	return true;
 }
 
