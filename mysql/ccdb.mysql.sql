@@ -20,8 +20,7 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`runRanges` (
   `runMax` INT NOT NULL ,
   `comment` TEXT NULL DEFAULT NULL ,
   PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `run search` (`runMin` ASC, `runMax` ASC) )
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) )
 ENGINE = MyISAM;
 
 

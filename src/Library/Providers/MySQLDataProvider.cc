@@ -1468,6 +1468,41 @@ Variation* ccdb::MySQLDataProvider::GetVariation( const string& name )
 	return result;
 }
 
+dbkey_t ccdb::MySQLDataProvider::GetVariationId( const string& name )
+{
+    ClearErrors(); //Clear error in function that can produce new ones
+
+    //check that maybe we have this variation id by the last request?
+    if(name == mLastVariationName) return mLastVariationId;
+
+    string query = "SELECT	`id` FROM `variations` WHERE `name`= \"%s\";";
+    query = StringUtils::Format(query.c_str(), name.c_str());
+
+
+    //query this
+    if(!QuerySelect(query))
+    {
+        //TODO report error
+        return (dbkey_t)-1;
+    }
+
+    //Ok! We querried our run range! lets catch it! 
+    if(!FetchRow())
+    {
+        //nothing was selected
+        return (dbkey_t)-1;
+    }
+
+    //ok lets read the data...
+    dbkey_t result = ReadULong(0);
+
+    //save variation so maybe we don't need to query it next time
+    mLastVariationName = name;
+    mLastVariationId = result;
+
+    FreeMySQLResult();
+    return result;
+}
 bool ccdb::MySQLDataProvider::CreateVariation( Variation *variation )
 {
 	ClearErrors(); //Clear error in function that can produce new ones
@@ -1582,23 +1617,26 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 		return NULL;
 	}
 
+    //get variation id
+    int varId = GetVariationId( variation );
+
 	//ok now we must build our mighty query...
     //TODO this is not optimized request. The request could be optimized.
 	string query=
         "SELECT `assignments`.`id` AS `asId`, "
         "`constantSets`.`vault` AS `blob` "
         "FROM  `assignments` "
+        "USE INDEX (id_UNIQUE) "
         "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
-        "INNER JOIN `variations` ON `assignments`.`variationId`= `variations`.`id` "
         "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
         "WHERE  `runRanges`.`runMin` <= '%i' "
         "AND `runRanges`.`runMax` >= '%i' "
-        "AND `variations`.`name`=\"%s\" "
+        "AND `assignments`.`variationId`= '%i' "
         "AND `constantSets`.`constantTypeId` ='%i' "
         "ORDER BY `assignments`.`id` DESC "
         "LIMIT 1 ";
 
-	query=StringUtils::Format(query.c_str(), run, run, variation.c_str(), table->GetId());
+	query=StringUtils::Format(query.c_str(), run, run, varId, table->GetId());
 	//query this
 	if(!QuerySelect(query))
 	{
@@ -1660,29 +1698,31 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	ConstantsTypeTable *table = GetConstantsTypeTable(path, true);
 	if(!table)
 	{
-		//TODO report error
 		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetAssignmentShort", "No type table with this path was found");
 		return NULL;
 	}
+
+    //get variation id
+    int varId = GetVariationId( variation );
 
 	//ok now we must build our mighty query...
 	string query=
         "SELECT `assignments`.`id` AS `asId`, "
         "`constantSets`.`vault` AS `blob` "
         "FROM  `assignments` "
+        "USE INDEX (id_UNIQUE) "
         "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
-        "INNER JOIN `variations` ON `assignments`.`variationId`= `variations`.`id` "
         "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
         "WHERE  `runRanges`.`runMin` <= '%i' "
         "AND `runRanges`.`runMax` >= '%i' "
-        "AND `variations`.`name`=\"%s\" "
+        "AND `assignments`.`variationId`= '%i' "
         "AND (UNIX_TIMESTAMP(`assignments`.`created`) <= '%lu') "
         "AND `constantSets`.`constantTypeId` ='%i' "
         "ORDER BY `assignments`.`id` DESC "
         "LIMIT 1 ";
 		
 
-	query=StringUtils::Format(query.c_str(), run,run, variation.c_str(), time, table->GetId());
+	query=StringUtils::Format(query.c_str(), run,run, varId, time, table->GetId());
 	
 	//query this
 	if(!QuerySelect(query))

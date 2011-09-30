@@ -10,9 +10,6 @@
 #define TESTS_CONENCTION_STRING "mysql://ccdb_user@127.0.0.1:3306 ccdb"
 #endif
 
-
-
-
 #include "CCDB/Console.h"
 #include "CCDB/Helpers/StopWatch.h"
 

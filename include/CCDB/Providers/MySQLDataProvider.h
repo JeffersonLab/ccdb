@@ -955,7 +955,9 @@ private:
 	bool mIsStoredObjectOwner;
 	Assignment* FetchAssignment(ConstantsTypeTable *table);
 	virtual void FetchAssignment(Assignment* assignment, ConstantsTypeTable *table);
-	
+
+  
+
 	/******* D I R E C T O R I E S   W O R K *******/ 
 	vector<Directory *>  mDirectories;
 	map<dbkey_t,Directory *> mDirectoriesById;
@@ -978,6 +980,10 @@ private:
 	
 	string mLastShortQuerry;  //full text of last short assignment query
 	
+    //VARIATIONs WORK
+    dbkey_t GetVariationId( const string& name ); ///Gets mysql record Id for specified variation name
+    dbkey_t mLastVariationId;                     ///Last requested variation ID. Used for caching
+    string mLastVariationName;                    ///Last requested variation name. Used for caching
 	
 
 };
