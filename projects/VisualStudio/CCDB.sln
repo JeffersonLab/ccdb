@@ -14,10 +14,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Benchmarks", "Benchmarks\Benchmarks.vcxproj", "{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF983026-1744-4F84-B52A-3797F2A4BADE}"
-	ProjectSection(SolutionItems) = preProject
-		Performance3.psess = Performance3.psess
-		Performance5.psess = Performance5.psess
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -9,6 +9,7 @@
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/WorkUtils.h"
 #include "CCDB/Helpers/StopWatch.h"
+#include "winpthreads.h"
 
 using namespace std;
 using namespace ccdb;
@@ -19,7 +20,7 @@ void test_UserAPI_PrintData(const vector<vector<double> > & data);
 void test_UserAPI_PrintData(const vector<map<string,double> > & data);
 void test_UserAPI_PrintData(const vector<int> & data);
 void test_UserAPI_PrintData(const map<string,int> & data);
-
+ 
 /** ********************************************************************* 
  * @brief Test of CCDB USER API work
  *
@@ -43,29 +44,62 @@ bool benchmark_UserAPI()
     BENCHMARK_FINISH("10000 plain reads in ");
 
     return true;
-	////U S I N G   U S E R   A P I   D I R E C T L Y
-	////----------------------------------------------------
+}
 
- //   MySQLCalibration *calib = new MySQLCalibration(100);
- //   result = false;
+typedef struct 
+{
+    int id;
+} parm;
 
- //   REQUIRE_NOTHROW(result = calib->Connect(TESTS_CONENCTION_STRING));
- //   REQUIRE(result);
- //   
- //   //get data as table of strings
- //   //----------------------------------------------------
- //   
- //   REQUIRE_NOTHROW(result = );
- //   REQUIRE(tabledValues.size()>0);
- //   REQUIRE(tabledValues.size()==2);
- //   REQUIRE(tabledValues[0].size()==3);
+void *hello(void *arg)
+{
+    parm *p=(parm *)arg;
+    BENCHMARK_INIT();
 
- //   
- //   //test of getting data without / in the beginning
- //   //----------------------------------------------------
- //   tabledValues.clear();
- //   REQUIRE_NOTHROW(result = calib->GetCalib(tabledValues, "test/test_vars/test_table"));
- //   REQUIRE(tabledValues.size()>0);
+    vector<vector<string> > tabledValues;
+    MySQLCalibration *calib = new MySQLCalibration(100);
+    if(!calib->Connect(TESTS_CONENCTION_STRING)) return false;
+
+    BENCHMARK_START("1000 plain read of /test/test_vars/test_table");
+    for (int i=0; i<1000; i++)
+    {
+        calib->GetCalib(tabledValues, "/test/test_vars/test_table");
+    }
+    BENCHMARK_FINISH("1000 plain reads in ");
+    return (NULL);
+}
+bool banchmark_UserAPIMultithread()
+{
+    bool result;
+    pthread_t *threads;
+    pthread_attr_t pthread_custom_attr;
+    parm *p;
+
+    int n = 5;
+    int i =0; 
+    BENCHMARK_INIT();
+    BENCHMARK_START("Total is 10000 plain read of /test/test_vars/test_table");
+    threads = (pthread_t *) malloc (n*sizeof(*threads));
+    pthread_attr_init(&pthread_custom_attr);
+
+    p=(parm *)malloc(sizeof(parm)*n);
+    /* Start up thread */
+
+    for (i=0; i<n; i++)
+    {
+        p[i].id=i;
+        pthread_create(&threads[i], &pthread_custom_attr, hello, (void *)(p+i));
+    }
+
+    /* Synchronize the completion of each thread. */
+
+    for (i=0; i<n; i++)
+    {
+        pthread_join(threads[i],NULL);
+    }
+    free(p);
+    BENCHMARK_FINISH("10000 plain reads in ");
+    return true;
 }
 
 /*

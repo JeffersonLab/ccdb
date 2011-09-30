@@ -173,9 +173,6 @@
     <ClCompile Include="..\..\..\src\Library\Providers\MySQLDataProvider.cc">
       <Filter>Providers\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Library\Calibration.cc">
-      <Filter>UserApi\Sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\Library\CalibrationGenerator.cc">
       <Filter>UserApi\Sources</Filter>
     </ClCompile>
@@ -196,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\Library\CCDBError.cc">
       <Filter>Globals\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Calibration.cc">
+      <Filter>UserApi\Headers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -57,6 +57,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR)\lib\opt;</AdditionalLibraryDirectories>
       <AdditionalDependencies>libmysql.lib;mysqlclient.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

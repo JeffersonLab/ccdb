@@ -49,6 +49,8 @@ std::string gConnectionString;
 bool benchmark_UserAPI();
 //bool benchmark_Providers();             //providers benchmark
 //bool benchmark_PreparedStatements();    //prepared statements benchmark
+bool banchmark_UserAPIMultithread();
+
 
 /**
  * Run various benchmarks
@@ -56,7 +58,8 @@ bool benchmark_UserAPI();
 bool RunBenchmarks()
 {
     bool result = true;
-    result = result && benchmark_UserAPI();       //providers benchmark
+   // result = result && benchmark_UserAPI();       //providers benchmark
+    banchmark_UserAPIMultithread();
   //  result = result && benchmark_Providers();       //providers benchmark
     //result = result && benchmark_PreparedStatements();
 

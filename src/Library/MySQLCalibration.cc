@@ -55,6 +55,7 @@ bool MySQLCalibration::Connect( std::string connectionString )
 	 * @param connectionString the Connection String
 	 * @return true if connected
 	 */
+    Lock();
 
     //Create provider if needed
     if(mProvider == NULL)
@@ -65,6 +66,7 @@ bool MySQLCalibration::Connect( std::string connectionString )
         }
         else
         {
+            Unlock();
             //Invalid DMySQLCalibration usage 
             throw std::logic_error((const char*)ERRMSG_INVALID_CONNECT_USAGE);
         }
@@ -73,9 +75,11 @@ bool MySQLCalibration::Connect( std::string connectionString )
     //Maybe we are connected?
     if(mProvider->IsConnected())
     {
+        Unlock();
+
         //But where we connected to?
         if(mProvider->GetConnectionString() == connectionString)
-        {
+        {   
             return true;
         }
         else
@@ -89,11 +93,13 @@ bool MySQLCalibration::Connect( std::string connectionString )
     //but can we connect or not?
     if(mProviderIsLocked)
     {
+        Unlock();
         throw std::logic_error(ERRMSG_CONECT_LOCKED);
     }
 
-    return mProvider->Connect(connectionString);
-
+    bool result = mProvider->Connect(connectionString);
+    Unlock();
+    return result;
     //TODO decide maybe to throw an exception here?
 }
 

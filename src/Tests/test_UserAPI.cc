@@ -10,6 +10,7 @@
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/WorkUtils.h"
 #include "CCDB/Helpers/StopWatch.h"
+#include "CCDB/Log.h"
 
 using namespace std;
 using namespace ccdb;
@@ -71,6 +72,11 @@ TEST_CASE("CCDB/UserAPI","tests")
 
 TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
 {
+    //The next tests will give some errors
+    //So lets suppress error logging to stdout
+
+    Log::SetLevel(0);
+    
     //Now lets check if user forget to connect...
     Calibration *calib = new MySQLCalibration(100);
 
@@ -98,6 +104,9 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
 
     //And then lets connect once more to another string...
     REQUIRE_THROWS(result = calib->Connect("mysql://muuuu ha ha ha"));
+
+    //Reenable logging
+    Log::SetLevel(4);
 
 }
 /*
