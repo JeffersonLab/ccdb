@@ -7,6 +7,8 @@
 
 #include "CCDB/Globals.h"
 #include "CCDB/Providers/DataProvider.h"
+#include "CCDB/PthreadMutex.h"
+#include "CCDB/PthreadSyncObject.h"
 
 using namespace std;
 
@@ -192,9 +194,10 @@ protected:
      * @remark the function is threadsafe
      * 
      * @parameter [in] namepath -  full namepath is /path/to/data:run:variation:time but usually it is only /path/to/data
+     * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
      * @return   DAssignment *
      */
-    virtual Assignment * GetAssignment(const string& namepath);
+    virtual Assignment * GetAssignment(const string& namepath, bool loadColumns=true);
 
     virtual void Lock();   ///Thread mutex lock for multithreaded operations
     virtual void Unlock(); ///Thread mutex Unlock lock for multithreaded operations
@@ -209,6 +212,7 @@ protected:
 	bool mProviderIsLocked;     ///If provider 
 	int mDefaultRun;			///Default run number
     string mDefaultVariation;	///Default variation
+    PthreadMutex * mReadMutex;
 };
 
 }

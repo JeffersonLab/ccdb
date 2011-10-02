@@ -75,7 +75,7 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
     //The next tests will give some errors
     //So lets suppress error logging to stdout
 
-    Log::SetLevel(0);
+    Log::SetErrorLevel(0);
     
     //Now lets check if user forget to connect...
     Calibration *calib = new MySQLCalibration(100);
@@ -106,7 +106,7 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
     REQUIRE_THROWS(result = calib->Connect("mysql://muuuu ha ha ha"));
 
     //Reenable logging
-    Log::SetLevel(4);
+    Log::SetErrorLevel(4);
 
 }
 /*

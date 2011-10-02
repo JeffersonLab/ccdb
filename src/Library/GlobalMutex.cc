@@ -6,7 +6,7 @@
 using namespace std;
 using namespace ccdb;
 
-//pthread_mutex_t ccdb::DCCDBGlobalMutex::mReadConstsMutex;	///read constants mutex posix
+
 
 // Global static pointer used to ensure a single instance of the class.
 CCDBGlobalMutex* ccdb::CCDBGlobalMutex::mInstance = NULL; 
@@ -35,6 +35,13 @@ ccdb::CCDBGlobalMutex::CCDBGlobalMutex()
 	{
 		fprintf(stderr, "CreateMutex ccdb::DCCDBGlobalMutex::ReadConstsMutex error: %d\n", result);
 	}
+
+    result = pthread_mutex_init(&mReadConstsMutex, NULL);
+
+    if (result != 0) 
+    {
+        fprintf(stderr, "CreateMutex ccdb::DCCDBGlobalMutex::ReadConstsMutex error: %d\n", result);
+    }
 }
 
 
@@ -71,14 +78,14 @@ void ccdb::CCDBGlobalMutex::ReadConstantsRelease()
 //______________________________________________________________________________
 void ccdb::CCDBGlobalMutex::LogLock()
 {
-	fprintf(stderr, "Not implemented ccdb::DCCDBGlobalMutex::LogLock()");
+	Lock(&mLogMutex);
 }
 
 
 //______________________________________________________________________________
 void ccdb::CCDBGlobalMutex::LogRelease()
 {
-	fprintf(stderr, "Not implemented ccdb::DCCDBGlobalMutex::LogRelease()");
+	Release(&mLogMutex);
 }
 
 
@@ -102,6 +109,7 @@ unsigned int ccdb::CCDBGlobalMutex::GetCurrentThreadId()
 ccdb::CCDBGlobalMutex::~CCDBGlobalMutex()
 {
 	pthread_mutex_destroy(&mReadConstsMutex);
+    pthread_mutex_destroy(&mLogMutex);
 }
 
 

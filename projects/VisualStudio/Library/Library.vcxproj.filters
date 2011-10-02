@@ -126,6 +126,18 @@
     <ClInclude Include="..\..\..\include\CCDB\Helpers\PathUtils.h">
       <Filter>Helpers\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\IMutex.h">
+      <Filter>Globals\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\ISyncObject.h">
+      <Filter>Globals\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\PthreadMutex.h">
+      <Filter>Globals\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\PthreadSyncObject.h">
+      <Filter>Globals\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Library\Helpers\StringUtils.cc">
@@ -194,8 +206,20 @@
     <ClCompile Include="..\..\..\src\Library\CCDBError.cc">
       <Filter>Globals\Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\IMutex.cc">
+      <Filter>Globals\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\PthreadSyncObject.cc">
+      <Filter>Globals\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\ISyncObject.cc">
+      <Filter>Globals\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\PthreadMutex.cc">
+      <Filter>Globals\Sources</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\Library\Calibration.cc">
-      <Filter>UserApi\Headers</Filter>
+      <Filter>UserApi\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

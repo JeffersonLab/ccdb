@@ -1591,7 +1591,7 @@ bool ccdb::MySQLDataProvider::DeleteVariation( Variation *variation )
 //	A S S I G N M E N T S
 //----------------------------------------------------------------------------------------
 	
-Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, const string& variation)
+Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, const string& variation, bool loadColumns /*=true*/)
 {
     /** @brief Get Assignment with data blob only
      *
@@ -1609,7 +1609,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	if(!CheckConnection("DMySQLDataProvider::GetAssignmentShort(int run, const string& path, const string& variation)")) return NULL;
 
 	//get table! 
-	ConstantsTypeTable *table = GetConstantsTypeTable(path, true);
+	ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
 	if(!table)
 	{
 		//TODO report error
@@ -1676,7 +1676,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 }
 
 
-Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variation)
+Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variation, bool loadColumns /*=true*/)
 {
     /** @brief Get specified by creation time version of Assignment with data blob only.
      *
@@ -1695,7 +1695,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	if(!CheckConnection("DMySQLDataProvider::GetAssignmentShort( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
 	
 	//get table! 
-	ConstantsTypeTable *table = GetConstantsTypeTable(path, true);
+	ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
 	if(!table)
 	{
 		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetAssignmentShort", "No type table with this path was found");

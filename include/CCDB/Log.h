@@ -89,11 +89,11 @@ public:
     
     static void SetUseColors(bool useIt);
 
-    static void SetLevel(int level)
+    static void SetErrorLevel(int level)
     {
         //0-fatal, 1 - error, 2 - warning, 3 - message, 4 - verbose
-        if(level<0 || level>4) return;
-        mLevel = level;     
+        if(level<-1 || level>4) return;
+        mErrorLevel = level;
     }
 protected:
 
@@ -101,15 +101,12 @@ private:
     Log() {};                              /// Private it can  not be called
     Log(Log const&) {};                    /// copy constructor is private
     Log& operator=(Log const&) {};         /// assignment operator is private
-    static Console msConsole;              /// standart output console
+    static Console msConsole;              /// standard output console
     static Console msErrorConsole;         /// output for error reporting
     static Console msMessageConsole;       /// Console for messages
-    static Console msVerboseConsole;       /// consold efor verbose messages
+    static Console msVerboseConsole;       /// console for verbose messages
     static int msLastError;
-    static int mLevel; //0-fatal, 1 - error, 2 - warning, 3 - message, 4 - verbose
-    
-
-
+    static int mErrorLevel; //0-fatal, 1 - error, 2 - warning, 3 - message, 4 - verbose
 };
 }
 #endif // _Log_

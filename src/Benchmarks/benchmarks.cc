@@ -48,9 +48,9 @@ std::string gConnectionString;
 
 bool benchmark_UserAPI();
 //bool benchmark_Providers();             //providers benchmark
-//bool benchmark_PreparedStatements();    //prepared statements benchmark
+bool benchmark_PreparedStatements();    //prepared statements benchmark
 bool banchmark_UserAPIMultithread();
-
+bool benchmark_String();
 
 /**
  * Run various benchmarks
@@ -58,8 +58,9 @@ bool banchmark_UserAPIMultithread();
 bool RunBenchmarks()
 {
     bool result = true;
-   // result = result && benchmark_UserAPI();       //providers benchmark
+    //result = result && benchmark_UserAPI();       //providers benchmark
     banchmark_UserAPIMultithread();
+    //benchmark_String();
   //  result = result && benchmark_Providers();       //providers benchmark
     //result = result && benchmark_PreparedStatements();
 
@@ -88,7 +89,7 @@ int main (int argc,char *argv[])
         if(args[i]=="--nocolors"   || args[i]=="-c") { gConsole.SetUseColors(false); Log::SetUseColors(false);}
         if(args[i]=="--pause"      || args[i]=="-p") runPause = true;
         if(args[i]=="--help"       || args[i]=="-h") PrintHelp();
-        if(args[i]=="--verbose"    || args[i]=="-v") Log::SetLevel(4);
+        if(args[i]=="--verbose"    || args[i]=="-v") Log::SetErrorLevel(4);
         if(args[i]=="--server"     || args[i]=="-s") 
         {
             if(i>= (args.size()-1)) PrintHelp(); //check if we have argument after

@@ -2,12 +2,13 @@
 #define benchmark_PreparedStatements_h__
 
 #include <string.h>
+#include <my_global.h>
 #include <mysql.h>
-#include "CCDB/IO/Console.h"
-#include "CCDB/Helpers/DStopWatch.h"
+#include "CCDB/Console.h"
+#include "CCDB/Helpers/StopWatch.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
-#include "CCDB/Model/DAssignment.h"
-#include "Tests/tests_macros.h"
+#include "CCDB/Model/Assignment.h"
+#include "Benchmarks/benchmarks.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
 
 
@@ -34,18 +35,19 @@ char select_query[]=
     "SELECT `assignments`.`id` AS `asId`, "
     "`constantSets`.`vault` AS `blob` "
     "FROM  `assignments` "
+    "USE INDEX (id_UNIQUE) "
     "INNER JOIN `runranges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
-    "INNER JOIN `variations` ON `assignments`.`variationId`= `variations`.`id` "
     "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
     "WHERE  `runRanges`.`runMin` <= ? "
     "AND `runRanges`.`runMax` >= ? "
-    "AND `variations`.`name`=? "
+    "AND  `assignments`.`variationId` =? "
     "AND `constantSets`.`constantTypeId` = ? "
     "ORDER BY `assignments`.`id` DESC "
     "LIMIT 1 ";
 
 MYSQL *mysql;
 unsigned long table_id = 1;
+unsigned int variationId=1;
 unsigned long variation_leng = 7;
 char * variation = "default";
 
@@ -138,11 +140,10 @@ bool PreparedQueriesInit()
     in_binds[1].length= 0;
 
     /* STRING PARAM */
-    in_binds[2].buffer_type= MYSQL_TYPE_STRING;
-    in_binds[2].buffer= (char *)variation;
-    in_binds[2].buffer_length= 250;
-    in_binds[2].is_null= 0;
-    in_binds[2].length= &variation_leng;
+    in_binds[2].buffer_type= MYSQL_TYPE_LONG;
+    in_binds[2].buffer= &variationId;
+    in_binds[1].is_null= 0;
+    in_binds[1].length= 0;
 
     /* Type tables ID */
     in_binds[3].buffer_type= MYSQL_TYPE_LONG;
@@ -202,9 +203,9 @@ bool benchmark_PreparedStatements()
 
     BENCHMARK_START("Get assignment prepared statements benchmark");
     /* Execute the SELECT query */
-    for (int i=0; i<1000; i++)
+    for (int i=0; i<10000; i++)
     {
-        prov->GetConstantsTypeTable("/test/test_vars/test_table");
+        prov->GetConstantsTypeTable("/test/test_vars/test_table",false);
 
         if (mysql_stmt_execute(stmt))
         {

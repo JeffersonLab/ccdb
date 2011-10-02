@@ -22,6 +22,8 @@
     <ClInclude Include="..\..\..\include\CCDB\Helpers\StringUtils.h" />
     <ClInclude Include="..\..\..\include\CCDB\Helpers\Varargs.h" />
     <ClInclude Include="..\..\..\include\CCDB\Helpers\WorkUtils.h" />
+    <ClInclude Include="..\..\..\include\CCDB\IMutex.h" />
+    <ClInclude Include="..\..\..\include\CCDB\ISyncObject.h" />
     <ClInclude Include="..\..\..\include\CCDB\Log.h" />
     <ClInclude Include="..\..\..\include\CCDB\Model\Assignment.h" />
     <ClInclude Include="..\..\..\include\CCDB\Model\ConstantsTypeColumn.h" />
@@ -37,6 +39,8 @@
     <ClInclude Include="..\..\..\include\CCDB\Providers\FileDataProvider.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLConnectionInfo.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLDataProvider.h" />
+    <ClInclude Include="..\..\..\include\CCDB\PthreadMutex.h" />
+    <ClInclude Include="..\..\..\include\CCDB\PthreadSyncObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Library\Calibration.cc" />
@@ -47,6 +51,8 @@
     <ClCompile Include="..\..\..\src\Library\Helpers\PathUtils.cc" />
     <ClCompile Include="..\..\..\src\Library\Helpers\StringUtils.cc" />
     <ClCompile Include="..\..\..\src\Library\Helpers\WorkUtils.cc" />
+    <ClCompile Include="..\..\..\src\Library\IMutex.cc" />
+    <ClCompile Include="..\..\..\src\Library\ISyncObject.cc" />
     <ClCompile Include="..\..\..\src\Library\Log.cc" />
     <ClCompile Include="..\..\..\src\Library\Model\Assignment.cc" />
     <ClCompile Include="..\..\..\src\Library\Model\ConstantsTypeColumn.cc" />
@@ -62,6 +68,8 @@
     <ClCompile Include="..\..\..\src\Library\Providers\FileDataProvider.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\MySQLConnectionInfo.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\MySQLDataProvider.cc" />
+    <ClCompile Include="..\..\..\src\Library\PthreadMutex.cc" />
+    <ClCompile Include="..\..\..\src\Library\PthreadSyncObject.cc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FF2376E7-5637-46A4-AE1B-A083D7588552}</ProjectGuid>

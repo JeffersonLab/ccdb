@@ -36,12 +36,12 @@ bool benchmark_UserAPI()
     MySQLCalibration *calib = new MySQLCalibration(100);
     if(!calib->Connect(TESTS_CONENCTION_STRING)) return false;
 
-    BENCHMARK_START("10000 plain read of /test/test_vars/test_table");
-    for (int i=0; i<10000; i++)
+    BENCHMARK_START("20000 plain read of /test/test_vars/test_table");
+    for (int i=0; i<20000; i++)
     {
         calib->GetCalib(tabledValues, "/test/test_vars/test_table");
     }
-    BENCHMARK_FINISH("10000 plain reads in ");
+    BENCHMARK_FINISH("20000 plain reads in ");
 
     return true;
 }
@@ -58,16 +58,18 @@ void *hello(void *arg)
 
     vector<vector<string> > tabledValues;
     MySQLCalibration *calib = new MySQLCalibration(100);
-    if(!calib->Connect(TESTS_CONENCTION_STRING)) return false;
+    if(!calib->Connect(TESTS_CONENCTION_STRING)) return NULL;
 
     BENCHMARK_START("1000 plain read of /test/test_vars/test_table");
-    for (int i=0; i<1000; i++)
+    for (int i=0; i<2000; i++)
     {
         calib->GetCalib(tabledValues, "/test/test_vars/test_table");
     }
     BENCHMARK_FINISH("1000 plain reads in ");
     return (NULL);
 }
+
+
 bool banchmark_UserAPIMultithread()
 {
     bool result;

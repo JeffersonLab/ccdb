@@ -23,7 +23,7 @@ namespace ccdb
 {
 
 /** 
- * This class is obsolete concept of constants reading syncronization
+ * This class is obsolete concept of constants reading synchronization
  * Don't use it. It will be deleted. 
  * With time...
  *                                                                     
@@ -54,6 +54,7 @@ private:
 	static CCDBGlobalMutex* mInstance;					    ///Main and only singleton instance
 
 	pthread_mutex_t mReadConstsMutex;	    ///read constants mutex posix
+    pthread_mutex_t mLogMutex;	    ///read constants mutex posix
 
 	void Lock(pthread_mutex_t * mutex);     ///locks mutex by handle
 	void Release(pthread_mutex_t * mutex);  ///releases mutex by handle

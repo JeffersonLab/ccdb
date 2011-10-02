@@ -32,5 +32,8 @@
     <ClCompile Include="..\..\..\src\Benchmarks\benchmarks.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Benchmarks\benchmark_String.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

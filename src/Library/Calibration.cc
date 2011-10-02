@@ -18,6 +18,7 @@ Calibration::Calibration()
     mProviderIsLocked = false; //by default we assume that we own the provider
     mDefaultRun = 0;
     mDefaultVariation = "default";
+    mReadMutex = new PthreadMutex(new PthreadSyncObject());
 }
 
 
@@ -30,6 +31,9 @@ Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/ )
 	mDefaultVariation = defaultVariation;
     mProvider = NULL;
     mProviderIsLocked = false; //by default we assume that we own the provider
+    PthreadSyncObject * x = NULL;
+    x = new PthreadSyncObject();
+    mReadMutex = new PthreadMutex(x);
 }
 
 
@@ -39,6 +43,7 @@ Calibration::~Calibration()
     //Destructor
 
     if(!mProviderIsLocked && mProvider!=NULL) delete mProvider;
+    if(mReadMutex) delete mReadMutex;
 }
 
 
@@ -80,7 +85,7 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
 
   
 
-    Assignment* assignment = GetAssignment(namepath);
+    Assignment* assignment = GetAssignment(namepath, true);
 
     if(assignment == NULL) return false; //TODO possibly exception throwing?
 
@@ -190,7 +195,7 @@ bool Calibration::GetCalib( vector< vector<string> > &values, const string & nam
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
     
-    Assignment* assigment = GetAssignment(namepath);
+    Assignment* assigment = GetAssignment(namepath, false);
     
     if(assigment == NULL) 
     {
@@ -294,7 +299,7 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
     
-    Assignment* assignment = GetAssignment(namepath);
+    Assignment* assignment = GetAssignment(namepath, true);
     
 
     if(assignment == NULL) 
@@ -416,7 +421,7 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
      */
 
     
-    Assignment* assignment = GetAssignment(namepath);
+    Assignment* assignment = GetAssignment(namepath, false);
     
     if(assignment == NULL) return false; //TODO possibly exception throwing?
 
@@ -502,7 +507,7 @@ string Calibration::GetConnectionString() const
 
 
 //______________________________________________________________________________
-Assignment * Calibration::GetAssignment( const string& namepath )
+Assignment * Calibration::GetAssignment( const string& namepath , bool loadColumns/*=true*/)
 {
     /** @brief Gets the assignment from provider using namepath
      * namepath is the common ccdb request; @see GetCalib
@@ -519,16 +524,18 @@ Assignment * Calibration::GetAssignment( const string& namepath )
     Assignment* assigment = NULL;
     if(!this->IsConnected()) throw std::logic_error("Calibration class is not connected to data source. Connect to the data source first");
 
-    Lock();
+    
+    //Lock();Unlock();
+    mReadMutex->Lock();
     if(result.WasParsedTime)
     {   
-        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation);
+        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation, loadColumns);
     }
     else
     {
-        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation);
+        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation, loadColumns);
     }
-    Unlock();
+    mReadMutex->Release();
     return assigment;
 
 }

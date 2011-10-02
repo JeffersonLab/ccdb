@@ -586,9 +586,10 @@ public:
      * @param [in] run - run number
      * @param [in] path - object path
      * @param [in] variation - variation name
+     * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
      * @return DAssignment object or NULL if no assignment is found or error
      */
-	virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation="default");
+	virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation="default", bool loadColumns=true);
 	
 	
 	 /** @brief Get specified by creation time version of Assignment with data blob only.
@@ -600,9 +601,10 @@ public:
      * @param [in] path - object path
      * @param [in] time - timestamp, data that is equal or earlier in time than that timestamp is returned
      * @param [in] variation - variation name
+     * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
      * @return new DAssignment object or 
      */
-    virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default");
+    virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns=true);
     
      /** @brief Get specified version of Assignment with data blob only
      *
