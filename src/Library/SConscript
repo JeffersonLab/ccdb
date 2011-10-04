@@ -18,6 +18,10 @@ lib_sources = [
 	"Log.cc",
 	"CCDBError.cc",
 	"GlobalMutex.cc",
+	"IMutex.cc",
+	"ISyncObject.cc",
+	"PthreadMutex.cc",
+	"PthreadSyncObject.cc",
 	
 	#user api
 	"Calibration.cc",

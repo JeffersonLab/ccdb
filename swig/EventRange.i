@@ -1,17 +1,17 @@
 /*
- * DAssignment.h
+ * Assignment.h
  *
  *  Created on: Sep 15, 2010
  *      Author: romanov
  */
 %{
-#include "Model/DEventRange.h"
+#include "CCDB/Model/EventRange.h"
 using namespace ccdb;
 using namespace std;
 %}
 
 
-class DEventRange : public DStoredObject
+class EventRange : public StoredObject
 {
 
     %rename(_GetId) GetId() const;
@@ -31,8 +31,8 @@ class DEventRange : public DStoredObject
 	 
 
 public:
-    DEventRange();
-    virtual ~DEventRange(void);
+    EventRange();
+    virtual ~EventRange(void);
 
     dbkey_t GetId() const;
     void SetId(    dbkey_t val) ;

@@ -1,6 +1,6 @@
 %{
 
-#include "Model/ConstantsTypeColumn.h"
+#include "CCDB/Model/ConstantsTypeColumn.h"
 using namespace ccdb;
 using namespace std;
 %}
@@ -30,7 +30,7 @@ class ConstantsTypeColumn{
     %rename(_SetType) SetType(std::string);
 
     %rename(_GetTypeTable) GetTypeTable() const;
-    %rename(_SetTypeTable) SetTypeTable(DConstantsTypeTable *);
+    %rename(_SetTypeTable) SetTypeTable(ConstantsTypeTable *);
     
     %rename(_GetOrder) GetOrder() const;
 public:
@@ -73,7 +73,7 @@ public:
      */
     static std::string TypeToString(DColumnTypes val);
 
-    ConstantsTypeColumn(DObjectsOwner * owner=NULL, DDataProvider *provider=NULL);    ///Constructor
+    ConstantsTypeColumn(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);    ///Constructor
     virtual ~ConstantsTypeColumn();                    ///Destructor
 
     dbkey_t            GetId() const;                        ///get database table uniq id;
@@ -93,7 +93,7 @@ public:
 
     /** @brief Gets id of constant type record this column is related to
      *
-     * The function check the related DConstantsTypeTable referense and returns its Id
+     * The function check the related ConstantsTypeTable referense and returns its Id
      * if the ref is NULL, it will use mDBTypeTableId
      * Use this function instead of @see GetDBTypeTableId() for most of the cases
      * @return   DB Id of the database table
@@ -129,8 +129,8 @@ public:
     void            SetType(std::string val);                ///Sets type of column
     
 
-    DConstantsTypeTable * GetTypeTable() const;
-    void SetTypeTable(DConstantsTypeTable * val);
+    ConstantsTypeTable * GetTypeTable() const;
+    void SetTypeTable(ConstantsTypeTable * val);
     unsigned int GetOrder() const { return mOrder; }
     
 	%pythoncode%{

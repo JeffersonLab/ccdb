@@ -1,11 +1,11 @@
 %{
 
-#include "Model/DRunRange.h"
+#include "CCDB/Model/RunRange.h"
 using namespace ccdb;
 %}
 
 
-class DRunRange
+class RunRange
 {
     
     %rename(_GetId) GetId() const;
@@ -32,10 +32,10 @@ class DRunRange
     %rename(_SetModifiedTime) SetModifiedTime(time_t);
     
 public:
-    DRunRange();
+    RunRange();
     
 
-    virtual ~DRunRange();
+    virtual ~RunRange();
     
     int            GetId() const;        //! Database id
     int            GetMax() const;        ///

@@ -1,16 +1,16 @@
 /*
- * DAssignment.h
+ * Assignment.h
  *
  *  Created on: Sep 15, 2010
  *      Author: romanov
  */
 %{
-#include "Model/DAssignment.h"
+#include "CCDB/Model/Assignment.h"
 using namespace ccdb;
 using namespace std;
 %}
 
-class DAssignment{
+class Assignment{
 
     %rename(get_db_variation_id) GetVariationId() const;
     %rename(set_db_variation_id) SetVariationId(unsigned int);
@@ -28,16 +28,16 @@ class DAssignment{
     %rename(set_db_requested_run) SetRequestedRun(int);
 
     %rename(_GetRunRange) GetRunRange() const;
-    %rename(_SetRunRange) SetRunRange(DRunRange *);
+    %rename(_SetRunRange) SetRunRange(RunRange *);
 
     %rename(_GetEventRange) GetEventRange() const;
-    %rename(_SetEventRange) SetEventRange(DEventRange *);
+    %rename(_SetEventRange) SetEventRange(EventRange *);
 
     %rename(_GetVariation) GetVariation() const;
-    %rename(_SetVariation) SetVariation(DVariation *);
+    %rename(_SetVariation) SetVariation(Variation *);
 
     %rename(_GetTypeTable) GetTypeTable() const;
-    %rename(_SetTypeTable) SetTypeTable(DConstantsTypeTable*);
+    %rename(_SetTypeTable) SetTypeTable(ConstantsTypeTable*);
 
     %rename(_GetId) GetId() const;
     %rename(_SetId) SetId(int);
@@ -62,8 +62,8 @@ class DAssignment{
 	
 	
 public:
-    DAssignment(DObjectsOwner * owner=NULL, DDataProvider *provider=NULL);
-    virtual ~DAssignment();
+    Assignment(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);
+    virtual ~Assignment();
 
 
 
@@ -82,14 +82,14 @@ public:
     int     GetRequestedRun() const;        /// Run than was requested for user
     void SetRequestedRun(int val);          /// Run than was requested for user
 
-    DRunRange *    GetRunRange() const;     /// Run range object, is NULL if not set
-    void SetRunRange(DRunRange * val);      /// Run range object, is NULL if not set
+    RunRange *    GetRunRange() const;     /// Run range object, is NULL if not set
+    void SetRunRange(RunRange * val);      /// Run range object, is NULL if not set
 
-    DEventRange * GetEventRange() const;    /// Event range object, is NULL if not set
-    void SetEventRange(DEventRange * val);  /// Event range object, is NULL if not set
+    EventRange * GetEventRange() const;    /// Event range object, is NULL if not set
+    void SetEventRange(EventRange * val);  /// Event range object, is NULL if not set
 
-    DVariation * GetVariation() const;      /// Variation object, is NULL if not set
-    void SetVariation(DVariation * val);    /// Variation object, is NULL if not set
+    Variation * GetVariation() const;      /// Variation object, is NULL if not set
+    void SetVariation(Variation * val);    /// Variation object, is NULL if not set
 
     int    GetId() const;
     void SetId(int val);
@@ -113,8 +113,8 @@ public:
 	std::vector<std::vector<std::string> > GetData() const; 
     
     
-    void SetTypeTable(DConstantsTypeTable* typeTable);
-    DConstantsTypeTable* GetTypeTable() const;
+    void SetTypeTable(ConstantsTypeTable* typeTable);
+    ConstantsTypeTable* GetTypeTable() const;
     
     %pythoncode%{
     __swig_getmethods__["run_range"] = _GetRunRange

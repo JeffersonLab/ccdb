@@ -36,6 +36,7 @@ from ProviderBase import ProviderBase
 from MySQLProvider import MySQLProvider
 from ccdb_pyllapi import Variation, Directory, RunRange, Assignment, ConstantsTypeColumn, ConstantsTypeTable, StringStringMap, StringVectorVector, StringVector
 from TextFileDOM import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
+from ccdb.ccdb_pyllapi import Variation
 
 #the default ccdb logger
 logger = logging.getLogger("ccdb")

@@ -1,16 +1,16 @@
 %{
 
-#include "Model/DConstantsTypeTable.h"
+#include "CCDB/Model/ConstantsTypeTable.h"
 using namespace ccdb;
 using namespace std;
 %}
 
 
 
-class DConstantsTypeTable
+class ConstantsTypeTable
 {   
     %rename(_GetDirectory) GetDirectory() const;
-    %rename(_SetDirectory) SetDirectory(DDirectory *);
+    %rename(_SetDirectory) SetDirectory(Directory *);
 
     %rename(set_directory_id) SetDirectoryId(int);
     %rename(get_directory_id) GetDirectoryId() const;
@@ -54,11 +54,11 @@ class DConstantsTypeTable
     %rename(_GetColumnTypeStrings) GetColumnTypeStrings() const;
 	 
 public:
-    DConstantsTypeTable();
-    virtual ~DConstantsTypeTable();
+    ConstantsTypeTable();
+    virtual ~ConstantsTypeTable();
       
-    void            SetDirectory(DDirectory *directory); /// Parent directory    reference
-    DDirectory *    GetDirectory() const;                 /// Parent directory    reference
+    void            SetDirectory(Directory *directory); /// Parent directory    reference
+    Directory *    GetDirectory() const;                 /// Parent directory    reference
 
     void            SetDirectoryId(int directoryId);     /// Parent directory id
     int             GetDirectoryId() const;              /// Parent directory id
@@ -130,7 +130,7 @@ public:
      * @param name
      * @param type
      */
-    void DConstantsTypeTable::AddColumn( const std::string& name, const std::string& type );
+    void ConstantsTypeTable::AddColumn( const std::string& name, const std::string& type );
 
     /** @brief RemoveColumn with order
      *
@@ -199,7 +199,7 @@ public:
 
 private:
     
-    DConstantsTypeTable(const DConstantsTypeTable& rhs);    
-    DConstantsTypeTable& operator=(const DConstantsTypeTable& rhs);
+    ConstantsTypeTable(const ConstantsTypeTable& rhs);    
+    ConstantsTypeTable& operator=(const ConstantsTypeTable& rhs);
 };
 

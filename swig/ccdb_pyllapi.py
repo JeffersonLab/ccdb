@@ -257,117 +257,6 @@ class Directory:
 Directory_swigregister = _ccdb_pyllapi.Directory_swigregister
 Directory_swigregister(Directory)
 
-class DataProvider:
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, DataProvider, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, DataProvider, name)
-    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
-    __repr__ = _swig_repr
-    __swig_destroy__ = _ccdb_pyllapi.delete_DataProvider
-    __del__ = lambda self : None;
-    def Connect(self, *args): return _ccdb_pyllapi.DataProvider_Connect(self, *args)
-    def Disconnect(self): return _ccdb_pyllapi.DataProvider_Disconnect(self)
-    def IsConnected(self): return _ccdb_pyllapi.DataProvider_IsConnected(self)
-    def GetConnectionString(self): return _ccdb_pyllapi.DataProvider_GetConnectionString(self)
-    def GetDirectory(self, *args): return _ccdb_pyllapi.DataProvider_GetDirectory(self, *args)
-    def GetRootDirectory(self): return _ccdb_pyllapi.DataProvider_GetRootDirectory(self)
-    def SearchDirectories(self, *args): return _ccdb_pyllapi.DataProvider_SearchDirectories(self, *args)
-    def MakeDirectory(self, *args): return _ccdb_pyllapi.DataProvider_MakeDirectory(self, *args)
-    def UpdateDirectory(self, *args): return _ccdb_pyllapi.DataProvider_UpdateDirectory(self, *args)
-    def DeleteDirectory(self, *args): return _ccdb_pyllapi.DataProvider_DeleteDirectory(self, *args)
-    def GetConstantsTypeTable(self, *args): return _ccdb_pyllapi.DataProvider_GetConstantsTypeTable(self, *args)
-    def GetConstantsTypeTables(self, *args): return _ccdb_pyllapi.DataProvider_GetConstantsTypeTables(self, *args)
-    def SearchConstantsTypeTables(self, *args): return _ccdb_pyllapi.DataProvider_SearchConstantsTypeTables(self, *args)
-    def CountConstantsTypeTables(self, *args): return _ccdb_pyllapi.DataProvider_CountConstantsTypeTables(self, *args)
-    def LoadColumns(self, *args): return _ccdb_pyllapi.DataProvider_LoadColumns(self, *args)
-    def CreateConstantsTypeTable(self, *args): return _ccdb_pyllapi.DataProvider_CreateConstantsTypeTable(self, *args)
-    def UpdateConstantsTypeTable(self, *args): return _ccdb_pyllapi.DataProvider_UpdateConstantsTypeTable(self, *args)
-    def DeleteConstantsTypeTable(self, *args): return _ccdb_pyllapi.DataProvider_DeleteConstantsTypeTable(self, *args)
-    def CreateRunRange(self, *args): return _ccdb_pyllapi.DataProvider_CreateRunRange(self, *args)
-    def GetRunRanges(self, *args): return _ccdb_pyllapi.DataProvider_GetRunRanges(self, *args)
-    def GetRunRange(self, *args): return _ccdb_pyllapi.DataProvider_GetRunRange(self, *args)
-    def GetOrCreateRunRange(self, *args): return _ccdb_pyllapi.DataProvider_GetOrCreateRunRange(self, *args)
-    def UpdateRunRange(self, *args): return _ccdb_pyllapi.DataProvider_UpdateRunRange(self, *args)
-    def DeleteRunRange(self, *args): return _ccdb_pyllapi.DataProvider_DeleteRunRange(self, *args)
-    def GetVariation(self, *args): return _ccdb_pyllapi.DataProvider_GetVariation(self, *args)
-    def GetVariations(self, *args): return _ccdb_pyllapi.DataProvider_GetVariations(self, *args)
-    def CreateVariation(self, *args): return _ccdb_pyllapi.DataProvider_CreateVariation(self, *args)
-    def UpdateVariation(self, *args): return _ccdb_pyllapi.DataProvider_UpdateVariation(self, *args)
-    def DeleteVariation(self, *args): return _ccdb_pyllapi.DataProvider_DeleteVariation(self, *args)
-    def GetAssignmentShort(self, *args): return _ccdb_pyllapi.DataProvider_GetAssignmentShort(self, *args)
-    def GetAssignmentShortByVersion(self, *args): return _ccdb_pyllapi.DataProvider_GetAssignmentShortByVersion(self, *args)
-    def GetAssignmentFull(self, *args): return _ccdb_pyllapi.DataProvider_GetAssignmentFull(self, *args)
-    def CreateAssignment(self, *args): return _ccdb_pyllapi.DataProvider_CreateAssignment(self, *args)
-    def GetAssignments(self, *args): return _ccdb_pyllapi.DataProvider_GetAssignments(self, *args)
-    def UpdateAssignment(self, *args): return _ccdb_pyllapi.DataProvider_UpdateAssignment(self, *args)
-    def DeleteAssignment(self, *args): return _ccdb_pyllapi.DataProvider_DeleteAssignment(self, *args)
-    def FillAssignment(self, *args): return _ccdb_pyllapi.DataProvider_FillAssignment(self, *args)
-    def GetNErrors(self): return _ccdb_pyllapi.DataProvider_GetNErrors(self)
-    def GetErrors(self): return _ccdb_pyllapi.DataProvider_GetErrors(self)
-    def GetLastError(self): return _ccdb_pyllapi.DataProvider_GetLastError(self)
-    def Error(self, *args): return _ccdb_pyllapi.DataProvider_Error(self, *args)
-    def Warning(self, *args): return _ccdb_pyllapi.DataProvider_Warning(self, *args)
-    def ValidateName(self, *args): return _ccdb_pyllapi.DataProvider_ValidateName(self, *args)
-    def GetLogUserName(self): return _ccdb_pyllapi.DataProvider_GetLogUserName(self)
-    def SetLogUserName(self, *args): return _ccdb_pyllapi.DataProvider_SetLogUserName(self, *args)
-DataProvider_swigregister = _ccdb_pyllapi.DataProvider_swigregister
-DataProvider_swigregister(DataProvider)
-
-class MySQLDataProvider(DataProvider):
-    __swig_setmethods__ = {}
-    for _s in [DataProvider]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, MySQLDataProvider, name, value)
-    __swig_getmethods__ = {}
-    for _s in [DataProvider]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
-    __getattr__ = lambda self, name: _swig_getattr(self, MySQLDataProvider, name)
-    __repr__ = _swig_repr
-    def __init__(self): 
-        this = _ccdb_pyllapi.new_MySQLDataProvider()
-        try: self.this.append(this)
-        except: self.this = this
-    __swig_destroy__ = _ccdb_pyllapi.delete_MySQLDataProvider
-    __del__ = lambda self : None;
-    def Connect(self, *args): return _ccdb_pyllapi.MySQLDataProvider_Connect(self, *args)
-    def IsConnected(self): return _ccdb_pyllapi.MySQLDataProvider_IsConnected(self)
-    def Disconnect(self): return _ccdb_pyllapi.MySQLDataProvider_Disconnect(self)
-    def GetDirectory(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetDirectory(self, *args)
-    def GetRootDirectory(self): return _ccdb_pyllapi.MySQLDataProvider_GetRootDirectory(self)
-    def SearchDirectories(self, *args): return _ccdb_pyllapi.MySQLDataProvider_SearchDirectories(self, *args)
-    def MakeDirectory(self, *args): return _ccdb_pyllapi.MySQLDataProvider_MakeDirectory(self, *args)
-    def UpdateDirectory(self, *args): return _ccdb_pyllapi.MySQLDataProvider_UpdateDirectory(self, *args)
-    def DeleteDirectory(self, *args): return _ccdb_pyllapi.MySQLDataProvider_DeleteDirectory(self, *args)
-    def GetConstantsTypeTable(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetConstantsTypeTable(self, *args)
-    def GetConstantsTypeTables(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetConstantsTypeTables(self, *args)
-    def SearchConstantsTypeTables(self, *args): return _ccdb_pyllapi.MySQLDataProvider_SearchConstantsTypeTables(self, *args)
-    def CountConstantsTypeTables(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CountConstantsTypeTables(self, *args)
-    def CreateConstantsTypeTable(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateConstantsTypeTable(self, *args)
-    def UpdateConstantsTypeTable(self, *args): return _ccdb_pyllapi.MySQLDataProvider_UpdateConstantsTypeTable(self, *args)
-    def DeleteConstantsTypeTable(self, *args): return _ccdb_pyllapi.MySQLDataProvider_DeleteConstantsTypeTable(self, *args)
-    def LoadColumns(self, *args): return _ccdb_pyllapi.MySQLDataProvider_LoadColumns(self, *args)
-    def CreateColumn(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateColumn(self, *args)
-    def CreateColumns(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateColumns(self, *args)
-    def CreateRunRange(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateRunRange(self, *args)
-    def GetRunRange(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetRunRange(self, *args)
-    def GetOrCreateRunRange(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetOrCreateRunRange(self, *args)
-    def GetRunRanges(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetRunRanges(self, *args)
-    def UpdateRunRange(self, *args): return _ccdb_pyllapi.MySQLDataProvider_UpdateRunRange(self, *args)
-    def DeleteRunRange(self, *args): return _ccdb_pyllapi.MySQLDataProvider_DeleteRunRange(self, *args)
-    def GetVariation(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetVariation(self, *args)
-    def GetVariations(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetVariations(self, *args)
-    def CreateVariation(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateVariation(self, *args)
-    def UpdateVariation(self, *args): return _ccdb_pyllapi.MySQLDataProvider_UpdateVariation(self, *args)
-    def DeleteVariation(self, *args): return _ccdb_pyllapi.MySQLDataProvider_DeleteVariation(self, *args)
-    def GetAssignmentShort(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetAssignmentShort(self, *args)
-    def GetAssignmentFull(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetAssignmentFull(self, *args)
-    def CreateAssignment(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateAssignment(self, *args)
-    def GetAssignments(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetAssignments(self, *args)
-    def UpdateAssignment(self, *args): return _ccdb_pyllapi.MySQLDataProvider_UpdateAssignment(self, *args)
-    def DeleteAssignment(self, *args): return _ccdb_pyllapi.MySQLDataProvider_DeleteAssignment(self, *args)
-    def FillAssignment(self, *args): return _ccdb_pyllapi.MySQLDataProvider_FillAssignment(self, *args)
-MySQLDataProvider_swigregister = _ccdb_pyllapi.MySQLDataProvider_swigregister
-MySQLDataProvider_swigregister(MySQLDataProvider)
-
 class ConstantsTypeTable:
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, ConstantsTypeTable, name, value)
@@ -653,6 +542,117 @@ class Assignment:
 
 Assignment_swigregister = _ccdb_pyllapi.Assignment_swigregister
 Assignment_swigregister(Assignment)
+
+class DataProvider:
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, DataProvider, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, DataProvider, name)
+    def __init__(self, *args, **kwargs): raise AttributeError("No constructor defined - class is abstract")
+    __repr__ = _swig_repr
+    __swig_destroy__ = _ccdb_pyllapi.delete_DataProvider
+    __del__ = lambda self : None;
+    def Connect(self, *args): return _ccdb_pyllapi.DataProvider_Connect(self, *args)
+    def Disconnect(self): return _ccdb_pyllapi.DataProvider_Disconnect(self)
+    def IsConnected(self): return _ccdb_pyllapi.DataProvider_IsConnected(self)
+    def GetConnectionString(self): return _ccdb_pyllapi.DataProvider_GetConnectionString(self)
+    def GetDirectory(self, *args): return _ccdb_pyllapi.DataProvider_GetDirectory(self, *args)
+    def GetRootDirectory(self): return _ccdb_pyllapi.DataProvider_GetRootDirectory(self)
+    def SearchDirectories(self, *args): return _ccdb_pyllapi.DataProvider_SearchDirectories(self, *args)
+    def MakeDirectory(self, *args): return _ccdb_pyllapi.DataProvider_MakeDirectory(self, *args)
+    def UpdateDirectory(self, *args): return _ccdb_pyllapi.DataProvider_UpdateDirectory(self, *args)
+    def DeleteDirectory(self, *args): return _ccdb_pyllapi.DataProvider_DeleteDirectory(self, *args)
+    def GetConstantsTypeTable(self, *args): return _ccdb_pyllapi.DataProvider_GetConstantsTypeTable(self, *args)
+    def GetConstantsTypeTables(self, *args): return _ccdb_pyllapi.DataProvider_GetConstantsTypeTables(self, *args)
+    def SearchConstantsTypeTables(self, *args): return _ccdb_pyllapi.DataProvider_SearchConstantsTypeTables(self, *args)
+    def CountConstantsTypeTables(self, *args): return _ccdb_pyllapi.DataProvider_CountConstantsTypeTables(self, *args)
+    def LoadColumns(self, *args): return _ccdb_pyllapi.DataProvider_LoadColumns(self, *args)
+    def CreateConstantsTypeTable(self, *args): return _ccdb_pyllapi.DataProvider_CreateConstantsTypeTable(self, *args)
+    def UpdateConstantsTypeTable(self, *args): return _ccdb_pyllapi.DataProvider_UpdateConstantsTypeTable(self, *args)
+    def DeleteConstantsTypeTable(self, *args): return _ccdb_pyllapi.DataProvider_DeleteConstantsTypeTable(self, *args)
+    def CreateRunRange(self, *args): return _ccdb_pyllapi.DataProvider_CreateRunRange(self, *args)
+    def GetRunRanges(self, *args): return _ccdb_pyllapi.DataProvider_GetRunRanges(self, *args)
+    def GetRunRange(self, *args): return _ccdb_pyllapi.DataProvider_GetRunRange(self, *args)
+    def GetOrCreateRunRange(self, *args): return _ccdb_pyllapi.DataProvider_GetOrCreateRunRange(self, *args)
+    def UpdateRunRange(self, *args): return _ccdb_pyllapi.DataProvider_UpdateRunRange(self, *args)
+    def DeleteRunRange(self, *args): return _ccdb_pyllapi.DataProvider_DeleteRunRange(self, *args)
+    def GetVariation(self, *args): return _ccdb_pyllapi.DataProvider_GetVariation(self, *args)
+    def GetVariations(self, *args): return _ccdb_pyllapi.DataProvider_GetVariations(self, *args)
+    def CreateVariation(self, *args): return _ccdb_pyllapi.DataProvider_CreateVariation(self, *args)
+    def UpdateVariation(self, *args): return _ccdb_pyllapi.DataProvider_UpdateVariation(self, *args)
+    def DeleteVariation(self, *args): return _ccdb_pyllapi.DataProvider_DeleteVariation(self, *args)
+    def GetAssignmentShort(self, *args): return _ccdb_pyllapi.DataProvider_GetAssignmentShort(self, *args)
+    def GetAssignmentShortByVersion(self, *args): return _ccdb_pyllapi.DataProvider_GetAssignmentShortByVersion(self, *args)
+    def GetAssignmentFull(self, *args): return _ccdb_pyllapi.DataProvider_GetAssignmentFull(self, *args)
+    def CreateAssignment(self, *args): return _ccdb_pyllapi.DataProvider_CreateAssignment(self, *args)
+    def GetAssignments(self, *args): return _ccdb_pyllapi.DataProvider_GetAssignments(self, *args)
+    def UpdateAssignment(self, *args): return _ccdb_pyllapi.DataProvider_UpdateAssignment(self, *args)
+    def DeleteAssignment(self, *args): return _ccdb_pyllapi.DataProvider_DeleteAssignment(self, *args)
+    def FillAssignment(self, *args): return _ccdb_pyllapi.DataProvider_FillAssignment(self, *args)
+    def GetNErrors(self): return _ccdb_pyllapi.DataProvider_GetNErrors(self)
+    def GetErrors(self): return _ccdb_pyllapi.DataProvider_GetErrors(self)
+    def GetLastError(self): return _ccdb_pyllapi.DataProvider_GetLastError(self)
+    def Error(self, *args): return _ccdb_pyllapi.DataProvider_Error(self, *args)
+    def Warning(self, *args): return _ccdb_pyllapi.DataProvider_Warning(self, *args)
+    def ValidateName(self, *args): return _ccdb_pyllapi.DataProvider_ValidateName(self, *args)
+    def GetLogUserName(self): return _ccdb_pyllapi.DataProvider_GetLogUserName(self)
+    def SetLogUserName(self, *args): return _ccdb_pyllapi.DataProvider_SetLogUserName(self, *args)
+DataProvider_swigregister = _ccdb_pyllapi.DataProvider_swigregister
+DataProvider_swigregister(DataProvider)
+
+class MySQLDataProvider(DataProvider):
+    __swig_setmethods__ = {}
+    for _s in [DataProvider]: __swig_setmethods__.update(getattr(_s,'__swig_setmethods__',{}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, MySQLDataProvider, name, value)
+    __swig_getmethods__ = {}
+    for _s in [DataProvider]: __swig_getmethods__.update(getattr(_s,'__swig_getmethods__',{}))
+    __getattr__ = lambda self, name: _swig_getattr(self, MySQLDataProvider, name)
+    __repr__ = _swig_repr
+    def __init__(self): 
+        this = _ccdb_pyllapi.new_MySQLDataProvider()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _ccdb_pyllapi.delete_MySQLDataProvider
+    __del__ = lambda self : None;
+    def Connect(self, *args): return _ccdb_pyllapi.MySQLDataProvider_Connect(self, *args)
+    def IsConnected(self): return _ccdb_pyllapi.MySQLDataProvider_IsConnected(self)
+    def Disconnect(self): return _ccdb_pyllapi.MySQLDataProvider_Disconnect(self)
+    def GetDirectory(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetDirectory(self, *args)
+    def GetRootDirectory(self): return _ccdb_pyllapi.MySQLDataProvider_GetRootDirectory(self)
+    def SearchDirectories(self, *args): return _ccdb_pyllapi.MySQLDataProvider_SearchDirectories(self, *args)
+    def MakeDirectory(self, *args): return _ccdb_pyllapi.MySQLDataProvider_MakeDirectory(self, *args)
+    def UpdateDirectory(self, *args): return _ccdb_pyllapi.MySQLDataProvider_UpdateDirectory(self, *args)
+    def DeleteDirectory(self, *args): return _ccdb_pyllapi.MySQLDataProvider_DeleteDirectory(self, *args)
+    def GetConstantsTypeTable(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetConstantsTypeTable(self, *args)
+    def GetConstantsTypeTables(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetConstantsTypeTables(self, *args)
+    def SearchConstantsTypeTables(self, *args): return _ccdb_pyllapi.MySQLDataProvider_SearchConstantsTypeTables(self, *args)
+    def CountConstantsTypeTables(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CountConstantsTypeTables(self, *args)
+    def CreateConstantsTypeTable(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateConstantsTypeTable(self, *args)
+    def UpdateConstantsTypeTable(self, *args): return _ccdb_pyllapi.MySQLDataProvider_UpdateConstantsTypeTable(self, *args)
+    def DeleteConstantsTypeTable(self, *args): return _ccdb_pyllapi.MySQLDataProvider_DeleteConstantsTypeTable(self, *args)
+    def LoadColumns(self, *args): return _ccdb_pyllapi.MySQLDataProvider_LoadColumns(self, *args)
+    def CreateColumn(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateColumn(self, *args)
+    def CreateColumns(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateColumns(self, *args)
+    def CreateRunRange(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateRunRange(self, *args)
+    def GetRunRange(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetRunRange(self, *args)
+    def GetOrCreateRunRange(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetOrCreateRunRange(self, *args)
+    def GetRunRanges(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetRunRanges(self, *args)
+    def UpdateRunRange(self, *args): return _ccdb_pyllapi.MySQLDataProvider_UpdateRunRange(self, *args)
+    def DeleteRunRange(self, *args): return _ccdb_pyllapi.MySQLDataProvider_DeleteRunRange(self, *args)
+    def GetVariation(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetVariation(self, *args)
+    def GetVariations(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetVariations(self, *args)
+    def CreateVariation(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateVariation(self, *args)
+    def UpdateVariation(self, *args): return _ccdb_pyllapi.MySQLDataProvider_UpdateVariation(self, *args)
+    def DeleteVariation(self, *args): return _ccdb_pyllapi.MySQLDataProvider_DeleteVariation(self, *args)
+    def GetAssignmentShort(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetAssignmentShort(self, *args)
+    def GetAssignmentFull(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetAssignmentFull(self, *args)
+    def CreateAssignment(self, *args): return _ccdb_pyllapi.MySQLDataProvider_CreateAssignment(self, *args)
+    def GetAssignments(self, *args): return _ccdb_pyllapi.MySQLDataProvider_GetAssignments(self, *args)
+    def UpdateAssignment(self, *args): return _ccdb_pyllapi.MySQLDataProvider_UpdateAssignment(self, *args)
+    def DeleteAssignment(self, *args): return _ccdb_pyllapi.MySQLDataProvider_DeleteAssignment(self, *args)
+    def FillAssignment(self, *args): return _ccdb_pyllapi.MySQLDataProvider_FillAssignment(self, *args)
+MySQLDataProvider_swigregister = _ccdb_pyllapi.MySQLDataProvider_swigregister
+MySQLDataProvider_swigregister(MySQLDataProvider)
 
 class AssignmentVector:
     __swig_setmethods__ = {}

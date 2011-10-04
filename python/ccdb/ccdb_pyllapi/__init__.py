@@ -22,4 +22,4 @@
 
 from ccdb_pyllapi import *
 
-__all__ = ["ccdb_pyllapi"]
+__all__ = ["ccdb_pyllapi", "Variation", "Directory", "RunRange", "Assignment", "ConstantsTypeColumn", "ConstantsTypeTable", "StringStringMap", "StringVectorVector", "StringVector"]

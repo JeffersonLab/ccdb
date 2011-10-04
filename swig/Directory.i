@@ -17,16 +17,16 @@
 using namespace ccdb;
 %}
 
-%typemap(csclassmodifiers) DDirectory "public partial class"
+%typemap(csclassmodifiers) Directory "public partial class"
 
 
 
-class DDirectory
+class Directory
 {
     
     %rename(_GetParentDirectory) GetParentDirectory();    
     %rename(_GetSubdirectories) GetSubdirectories();    
-    %rename(add_subdirectory) AddSubdirectory(DDirectory *);    
+    %rename(add_subdirectory) AddSubdirectory(Directory *);    
     %rename(dispose_subdirectories) DisposeSubdirectories();
 
     %rename(_GetId) GetId() const;            
@@ -56,21 +56,21 @@ class DDirectory
 
 public:
 
-    DDirectory(); ///Default constructor
+    Directory(); ///Default constructor
 
-    virtual ~DDirectory(); ///Destructor
+    virtual ~Directory(); ///Destructor
     
     /**
      * @brief Get
      * @return pointer to parent directory. NULL if there is no parent directory
      */
-    DDirectory* GetParentDirectory();
+    Directory* GetParentDirectory();
     
     /**
      * @brief Gets the vector of pointers to subdirectories
      * @return vector of pointers to subdirectories
      */
-    const vector<DDirectory*>& GetSubdirectories();
+    const std::vector<Directory*>& GetSubdirectories();
     
     /**
      * @brief Adds a subdirectory of this directory
@@ -80,7 +80,7 @@ public:
      * 
      * @param subDirectory Child directory to be added
      */
-    void AddSubdirectory(DDirectory *subdirectory);
+    void AddSubdirectory(Directory *subdirectory);
     
     /**
      * @brief deletes all subdirectories recursively
@@ -149,6 +149,6 @@ protected:
      * So one uses only AddSubdirecrory to generate directories structure
      * @param parent Parent directory. Might be NULL if No parent is present
      */
-    void SetParent(DDirectory *parent);
+    void SetParent(Directory *parent);
     
 };

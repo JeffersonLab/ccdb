@@ -1,13 +1,55 @@
 import distutils.sysconfig
 import os;
+import re
+import sys
 
-os.system("make -f $CCDB_HOME/swig/SwigPython.make");
+#==== SWIGSharedLibrary ================================
+def SWIGSharedLibrary(env, library, sources, **args):
+  swigre = re.compile('(.*).i')
+  if env.WhereIs('swig') is None:
+    sourcesbis = []
+    for source in sources:
+      cName = swigre.sub(r'\1_wrap.c', source)
+      cppName = swigre.sub(r'\1_wrap.cxx', source)
+      if os.path.exists(cName):
+        sourcesbis.append(cName)
+      elif os.path.exists(cppName):
+        sourcesbis.append(cppName)
+      else:
+        sourcesbis.append(source)
+  else:
+    sourcesbis = sources
+  if 'SWIGFLAGS' in args:
+    args['SWIGFLAGS'] += ['-python']
+  else:
+    args['SWIGFLAGS'] = ['-python'] + env['SWIGFLAGS']
+  args['SHLIBPREFIX']=""
+  if sys.version >= '2.5':
+    args['SHLIBSUFFIX']=".pyd"
+ 
+  cat=env.SharedLibrary(library, sourcesbis, **args)
+  return cat
+#==== end of SWIGSharedLibrary ========================= 
 
-#Import('default_env')
+#os.system("make -f $CCDB_HOME/swig/SwigPython.make");
+
+Import('default_env')
 
 #Create environment
-#pyllapi_env = default_env.Clone()
+pyllapi_env = default_env.Clone()
+pyllapi_env['BUILDERS']['PythonModule'] = SWIGSharedLibrary
+pyllapi_env.ParseConfig('mysql_config --libs --cflags')
+pyllapi_env.ParseConfig('python-config --cflags --libs')
 #pyllapi_env.Command("echo $CCDB_CMD")
+pyllapi_lib = pyllapi_env.PythonModule('_ccdb_pyllapi', ['ccdb_pyllapi.i'], 
+                                       SWIGFLAGS=['-c++', '-classic'], 
+                                       LIBS=["ccdb"], 
+                                       LIBPATH='#lib')
+
+pyllapi_env.Append(CPPPATH = ['#include', '#src'])
+pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so', pyllapi_lib)
+pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/ccdb_pyllapi.py','ccdb_pyllapi.py')#Glob('#moo/*'))
+
 #Define sources and target
 #pyllapi_target  = "pyllapi"
 
@@ -55,7 +97,7 @@ os.system("make -f $CCDB_HOME/swig/SwigPython.make");
 #pyllapi_lib = pyllapi_env.SharedLibrary(target = pyllapi_target, source = pyllapi_sources)
 
 #Installing 
-#pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so', pyllapi_lib)
+pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so', pyllapi_lib)
 
 #Default(pyllapi_lib)
 

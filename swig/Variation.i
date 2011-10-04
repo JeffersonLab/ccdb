@@ -1,6 +1,6 @@
 %{
 
-#include "CCDB/Model/	Variation.h"
+#include "CCDB/Model/Variation.h"
 using namespace ccdb;
 using namespace std;
 %}
@@ -26,8 +26,8 @@ class Variation{
     %rename(_SetDescription) SetDescription(std::string);
 
 public:
-    DVariation();
-    virtual ~DVariation();
+    Variation();
+    virtual ~Variation();
 
     unsigned int GetId();
     void SetId(dbkey_t val);

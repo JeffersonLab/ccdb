@@ -153,7 +153,7 @@ bool DataProvider::RecursiveDeleteTypeTable( ConstantsTypeTable *dir )
      *  this function is against the philosofy "No delete. Any change by adding New"
      *
      */
-    std::cerr<<"RecursiveDeleteTypeTable( DConstantsTypeTable *dir ) is not implemented"<<endl;
+    std::cerr<<"RecursiveDeleteTypeTable( ConstantsTypeTable *dir ) is not implemented"<<endl;
     return false;
 }
 

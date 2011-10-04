@@ -9,7 +9,11 @@
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/WorkUtils.h"
 #include "CCDB/Helpers/StopWatch.h"
+#ifdef WIN32
 #include "winpthreads.h"
+#else //posix
+#include <pthread.h>
+#endif
 
 using namespace std;
 using namespace ccdb;

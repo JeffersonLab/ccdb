@@ -9,8 +9,6 @@
 
 namespace ccdb
 {
-
-
     class ISyncObject
     {
     public:

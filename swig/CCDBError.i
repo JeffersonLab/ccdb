@@ -1,11 +1,11 @@
 %{
-#include "DCCDBError.h"
+#include "CCDBError.h"
 %}
 \
 
-class DCCDBError {
+class CCDBError {
 public:
-	DCCDBError();
+	CCDBError();
 
 	/** @brief gets source of an error 
 	*@return mSource
@@ -27,12 +27,12 @@ public:
 	*/
 	void SetMessage(std::string val);
 
-	/** @brief gets error id @see DCCDBGobals.h
+	/** @brief gets error id @see CCDBGobals.h
 	*@return mId
 	*/
 	int GetId() const;
 
-	/** @brief sets error id @see DCCDBGobals.h
+	/** @brief sets error id @see CCDBGobals.h
 	*@param [in] mId
 	*/
 	void SetId(int val);

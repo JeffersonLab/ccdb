@@ -239,7 +239,7 @@ public:
     /** @brief Gets ConstantsType information from the DB
      *
      * @param  [in] path absolute path of the type table
-     * @return new object of DConstantsTypeTable
+     * @return new object of ConstantsTypeTable
      */
     virtual ConstantsTypeTable * GetConstantsTypeTable(const string& path, bool loadColumns=false)=0;
 
@@ -247,7 +247,7 @@ public:
      *
      * @param  [in] name name of ConstantsTypeTable
      * @param  [in] parentDir directory that contains type table
-     * @return new object of DConstantsTypeTable
+     * @return new object of ConstantsTypeTable
      */
     virtual ConstantsTypeTable * GetConstantsTypeTable(const string& name, Directory *parentDir, bool loadColumns=false)=0;
 
@@ -255,7 +255,7 @@ public:
      *
      * @param  [in] name name of ConstantsTypeTable
      * @param  [in] parentDir directory that contains type table
-     * @return new object of DConstantsTypeTable
+     * @return new object of ConstantsTypeTable
      */
     virtual bool GetConstantsTypeTables(vector<ConstantsTypeTable *>& typeTables,const string& parentDirPath, bool loadColumns=false) =0;
 
@@ -311,7 +311,7 @@ public:
      * 2) if not owned - just leaved on user control
      * @param  pattern
      * @param  parentPath
-     * @return vector<DConstantsTypeTable *>
+     * @return vector<ConstantsTypeTable *>
      */
     virtual vector<ConstantsTypeTable *> SearchConstantsTypeTables(const string& pattern, const string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 )=0;
     

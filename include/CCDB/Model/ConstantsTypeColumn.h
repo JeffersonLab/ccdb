@@ -12,7 +12,7 @@
 #include <string>
 #include "CCDB/Globals.h"
 #include "CCDB/Model/StoredObject.h"
-//#include "Model/DConstantsTypeTable.h"
+//#include "Model/ConstantsTypeTable.h"
 
 using namespace std;
 
@@ -81,7 +81,7 @@ public:
 
 	/** @brief Gets id of constant type record this column is related to
 	 *
-	 * The function check the related DConstantsTypeTable referense and returns its Id
+	 * The function check the related ConstantsTypeTable referense and returns its Id
 	 * if the ref is NULL, it will use mDBTypeTableId
 	 * Use this function instead of @see GetDBTypeTableId() for most of the cases
 	 * @return   DB Id of the database table

@@ -510,7 +510,7 @@ bool ccdb::MySQLDataProvider::GetConstantsTypeTables( vector<ConstantsTypeTable 
 	//and directory
 	Directory *dir = GetDirectory(parentDirPath);
 	//probably one may wish to check dir to be !=NULL,
-	//but such check is in GetConstantsTypeHeaders( DDirectory *parentDir, vector<DConstantsTypeTable *>& consts );
+	//but such check is in GetConstantsTypeHeaders( DDirectory *parentDir, vector<ConstantsTypeTable *>& consts );
 	return GetConstantsTypeTables(resultTypeTables, dir);
 }
 
@@ -1187,7 +1187,7 @@ bool ccdb::MySQLDataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, C
 {
 	ClearErrors(); //Clear error in function that can produce new ones
 
-	if(!CheckConnection("DMySQLDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, DConstantsTypeTable* table, int take, int startWith)")) return false;
+	if(!CheckConnection("DMySQLDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, ConstantsTypeTable* table, int take, int startWith)")) return false;
 	
 	//validate table
 	if(!table || !table->GetId())
@@ -1331,7 +1331,7 @@ bool ccdb::MySQLDataProvider::GetVariations(vector<Variation*>& resultVariations
 {
 	ClearErrors(); //Clear error in function that can produce new ones
 
-	if(!CheckConnection("DMySQLDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, DConstantsTypeTable* table, int take, int startWith)")) return false;
+	if(!CheckConnection("DMySQLDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, ConstantsTypeTable* table, int take, int startWith)")) return false;
 	
 	//validate table
 	if(!table || !table->GetId())

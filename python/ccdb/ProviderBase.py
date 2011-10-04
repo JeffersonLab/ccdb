@@ -172,7 +172,7 @@ class ProviderBase(object):
     ## @brief Gets ConstantsType information from the DB
     #
     # @param  [in] path absolute path of the type table
-    # @return new object of DConstantsTypeTable
+    # @return new object of ConstantsTypeTable
     #/
     def get_type_table(self, exact_path, load_columns = True):
         return self._provider.GetConstantsTypeTable(exact_path, load_columns)
@@ -204,7 +204,7 @@ class ProviderBase(object):
     # 2) if not owned - just leaved on user control
     # @param  pattern
     # @param  parentPath
-    # @return vector<DConstantsTypeTable *>
+    # @return vector<ConstantsTypeTable *>
     #/
     def search_type_tables(self, pattern, parentPath = "", loadColumns=True, take=0, startWith=0):
         "@brief Searches for type tables that matches the patten"

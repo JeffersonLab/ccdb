@@ -4,47 +4,37 @@
 %apply unsigned int { dbkey_t };
 %apply unsigned long { time_t };
 
-
 %include "std_string.i"
 %apply const std::string& {std::string* foo};
+/*%apply const string& {std::string* foo};*/
 %include "std_map.i"
 
 %include "std_vector.i"
 
-/* renaming objects! */
-%rename(RunRange) DRunRange;
-%rename(Variation) DVariation;
-%rename(Directory) DDirectory;
-%rename(DataProvider) DDataProvider;
-%rename(MySQLDataProvider) DMySQLDataProvider;
-%rename(ConstantsTypeTable) DConstantsTypeTable;
-%rename(ConstantsTypeColumn) ConstantsTypeColumn;
-%rename(Assignment) DAssignment;
 
-
-%include "DRunRange.i"
-%include "DVariation.i"
-%include "DDirectory.i"
-%include "DDataProvider.i"
-%include "DMySQLDataProvider.i"
-%include "DConstantsTypeTable.i"
+%include "RunRange.i"
+%include "Variation.i"
+%include "Directory.i"
+%include "ConstantsTypeTable.i"
 %include "ConstantsTypeColumn.i"
-%include "DAssignment.i"
+%include "Assignment.i"
+%include "DataProvider.i"
+%include "MySQLDataProvider.i"
 
 
 %{
-#include "DCCDBGlobals.h"
+#include "CCDB/Globals.h"
 /*#define #define SWIG_FILE_WITH_INIT
-#include "Model/DRunRange.h"
+#include "Model/RunRange.h"
 using namespace ccdb;*/
-	
 %}
 
 
 using namespace std;
-%template(AssignmentVector) vector<DAssignment *>;
-%template(DirectoryVector) vector<DDirectory *>;
-%template(ConstantsTypeTableVector) vector<DConstantsTypeTable *>;
+
+%template(AssignmentVector) vector<Assignment *>;
+%template(DirectoryVector) vector<Directory *>;
+%template(ConstantsTypeTableVector) vector<ConstantsTypeTable *>;
 %template(ConstantsTypeColumnVector) vector<ConstantsTypeColumn *>;
 %template(StringVector) std::vector<std::string>;
 %template(StringVectorVector) std::vector<std::vector<std::string> >;
@@ -52,4 +42,4 @@ using namespace std;
 %template(StringStringMapVector) std::vector<std::map<std::string,std::string> >;
 /* Let's just grab the original header file here */
 
-//%include "../source/Model/DRunRange.h"
+//%include "../source/Model/RunRange.h"

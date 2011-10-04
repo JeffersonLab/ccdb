@@ -80,15 +80,6 @@ if __name__ == "__main__":
 		    print time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(asgmnt.created_time))
 		    print asgmnt.variation.name
 		    print asgmnt.type_table.full_path
-
-
-		
-		
-		
-		
-	    
-            
-            
         
     else:
         print "data was inconsistant"

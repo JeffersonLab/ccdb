@@ -28,7 +28,7 @@ bool benchmark_Providers()
 	}
 	BENCHMARK_FINISH("1000 times GetAssignmentShort");
 	/*
-	vector<DConstantsTypeTable*> tables;
+	vector<ConstantsTypeTable*> tables;
 	BENCHMARK_START("Get tables from directory");
 	for(int i=0; i<1000; i++)
 	{
