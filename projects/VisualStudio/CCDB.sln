@@ -66,7 +66,6 @@ Global
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.Release|Any CPU.ActiveCfg = Release|Win32
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.Release|Win32.ActiveCfg = Release|Win32
-		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.Release|Win32.Build.0 = Release|Win32
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.Release|x64.ActiveCfg = Release|Win32
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.Release|x86.ActiveCfg = Release|Win32
 		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|Any CPU.ActiveCfg = Debug|Win32
