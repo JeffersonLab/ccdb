@@ -99,8 +99,8 @@ xml_dirs_names = [f.attributes["name"].value for f in dirs_xmldoc.getElementsByT
 import argparse
  
 parser = argparse.ArgumentParser(description='Converts existing svn HallD collibrations to CCDB callibrations.')
-parser.add_argument('-r','--rehearsal', action="store_true", default=False, help='Run script to view what will be done. Script will run everything, but instead of invoking ccdbcmd commands, they will be printed on screen') 
-parser.add_argument('-e','--execute', action="store_true", default=False, help='Run script and execute ccdbcmd commands')
+parser.add_argument('-r','--rehearsal', action="store_true", default=False, help='Run script to view what will be done. Script will run everything, but instead of invoking ccdb commands, they will be printed on screen') 
+parser.add_argument('-e','--execute', action="store_true", default=False, help='Run script and execute ccdb commands')
 parser.add_argument('-v','--verbose', action="store_true", default=False, help='Print additional info')
 result = parser.parse_args()
 #(execute_commands, is_reharsal) = result
@@ -170,7 +170,7 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
 
         #create table command
         table_path = (ccdb_parent_path + "/" + table_name).replace("//","/")
-        create_table_command = 'ccdbcmd ' + ccdbcmd_opts +' mktbl  {0} -r {1} {2} "#{3}"'
+        create_table_command = 'ccdb ' + ccdbcmd_opts +' mktbl  {0} -r {1} {2} "#{3}"'
         create_table_command = create_table_command.format(table_path, nrows, columns_create_command, "")
 
         print "    Create command"
@@ -201,7 +201,7 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
             for i in range(min(len(dom.column_names),50)):
                 print "{:>35}     {}".format(dom.column_names[i], dom.rows[0][i])
 
-        add_command = "ccdbcmd " + ccdbcmd_opts + " add  --c-comments "
+        add_command = "ccdb " + ccdbcmd_opts + " add  --c-comments "
         if(is_name_value_format) : add_command += "--name-value "
         add_command += table_path +" -v default -r 0- " + data_file_path
         print add_command
@@ -258,7 +258,7 @@ def process_directories(home_dir):
 def create_directory(dir_name, parent_path):
     path = (parent_path + "/" + dir_name).replace("//","/")
     print "creating ccdb directory: " + path
-    command = "ccdbcmd " + ccdbcmd_opts + " mkdir " + path
+    command = "ccdb " + ccdbcmd_opts + " mkdir " + path
     print command
     if(execute_ccdb_commands): os.system(command)
 

@@ -25,7 +25,7 @@ def create_util_instance():
 #*********************************************************************
 class Cat(ConsoleUtilBase):
     """Show assignment data by ID"""
-    
+
     # ccdb utility class descr part 
     #------------------------------
     command = "cat"
@@ -44,7 +44,7 @@ class Cat(ConsoleUtilBase):
     show_header = True
     show_comments = False
     show_date = False
-    
+
 #----------------------------------------
 #   process 
 #----------------------------------------  
@@ -54,10 +54,10 @@ class Cat(ConsoleUtilBase):
 
         assert self.context != None
         provider = self.context.provider
-        
+
         isinstance(provider, MySQLProvider)
-        
-    
+
+
         #process arguments
         self.raw_table_path = ""
         self.variation = ""
@@ -66,37 +66,36 @@ class Cat(ConsoleUtilBase):
         self.show_header = True
         self.show_comments = False
         self.show_date = False
-    
+
         self.ass_id = 0
-    
+
         if not len(args):
             print "Please provide ID for assignment. Use help cat to get more information"
             return 1
 
         if not self.process_arguments(args):
             return 1
-	
-	    #if self.run == -1: 
-	    #    self.run = self.context.current_run
-	        
-	    #if not self.validate():
-	    #    return 1
-	    
-	    #correct path
+
+            #if self.run == -1: 
+            #    self.run = self.context.current_run
+
+            #if not self.validate():
+            #    return 1
+
+            #correct path
             #self.table_path = self.context.prepare_path(self.raw_table_path)
-	    
-	    #check xuch table really exists
-	    #table = provider.get_type_table(self.table_path, False)
-	    #if not table:
-	    #    logging.warning("Type table %s not found in the DB"% self.table_path)
-	    #    return 1
-	    
-	    #assignment = provider.get_assignment(self.table_path, self.run)
+
+            #check xuch table really exists
+            #table = provider.get_type_table(self.table_path, False)
+            #if not table:
+            #    logging.warning("Type table %s not found in the DB"% self.table_path)
+            #    return 1
+
+            #assignment = provider.get_assignment(self.table_path, self.run)
         assignment = Assignment()
-        
+
         assignment.db_id = self.ass_id
-        print self.ass_id
-	
+
         if provider.fill_assignment(assignment):
             self.print_assignment_vertical(assignment, self.show_header, self.show_borders)
         else:
@@ -104,7 +103,7 @@ class Cat(ConsoleUtilBase):
             return 1
 
         return 0
-	    
+
 #----------------------------------------
 #   process_arguments 
 #----------------------------------------  
@@ -126,7 +125,7 @@ class Cat(ConsoleUtilBase):
             self.show_date = True
         if ("-nt" in args) or ("--no-time" in args):
             self.show_date = False
-    
+
         #parse loop
         i=0
         token = ""
@@ -149,7 +148,7 @@ class Cat(ConsoleUtilBase):
                     except ValueError:
                         log.warning("cannot read run from %s command"%(token))
                     return false
-                
+
             else:    #!token.startswith('-')
                 #it probably must be a type table path
                 try:
@@ -159,8 +158,8 @@ class Cat(ConsoleUtilBase):
                     print "Cannot parse argument"
 
         return True
-    
-    
+
+
 #----------------------------------------
 #   validate 
 #----------------------------------------  
@@ -168,27 +167,27 @@ class Cat(ConsoleUtilBase):
         if not self.raw_table_path: return False
         return True
 
-    
+
 #----------------------------------------
 #   print_help 
 #----------------------------------------
     def print_help(self):
         "Prints help of the command"
-        
+
         print """Show data values for assigment. use assigment ID from the vers
 	-b  or --borders      - Switch show borders on of off
 	-nb or --no-borders
-		
+
 	-h  or --header        - Show header on/off
 	-nh or --no-header
-	
+
 	-c  or --comments     - Show comments on/off
 	-nc or --no-comments
-	
+
 	-t  or --time         - Show time
 	-nt or --no-time
-	
-    
+
+
     """
 
 #----------------------------------------
@@ -206,12 +205,12 @@ class Cat(ConsoleUtilBase):
         columnNames = table.get_column_names()
         columnTypes = table.get_column_types()
         data = assignment.data_list
-       
+
         columnsNum = len(columnNames)
-       
+
         assert len(columnNames) == len(columnTypes)
         assert (len(data) % columnsNum) == 0
-       
+
         minLength = 10
         columnLengths = [10 for i in range(columnsNum)]
         totalDataLength = 0
@@ -222,19 +221,19 @@ class Cat(ConsoleUtilBase):
                 columnLengths[i] = len(columnNames[i])
             else:
                 columnLengths[i] = minLength
-        	
+
             totalDataLength += columnLengths[i];
 
         #this is our cap, if we need it.... 
         cap = "+" + (totalDataLength + 3 * columnsNum - 1)*"-" + "+"
 
-	    #print header if needed
+            #print header if needed
         if printHeader:
 
             #cap?
             if displayBorders:
                 print Theme.AsgmtBorder + cap
-        	
+
             #names line
             for i in range(0, columnsNum):
                 sys.stdout.write(Theme.AsgmtBorder + border + Theme.Reset)

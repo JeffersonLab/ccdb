@@ -108,6 +108,34 @@ bool banchmark_UserAPIMultithread()
     return true;
 }
 
+bool benchmark_AllHallDConstants()
+{
+    bool result;
+
+    BENCHMARK_INIT();
+
+  
+    MySQLCalibration *calib = new MySQLCalibration(100);
+    if(!calib->Connect(TESTS_CONENCTION_STRING)) return false;
+    vector<string> namepathes;
+    calib->GetListOfNamepaths(namepathes);
+
+    vector<vector<string> > tabledValues;
+    long valuesCount = 0;
+    BENCHMARK_START("20000 plain read of /test/test_vars/test_table");
+    for (int i=0; i<namepathes.size(); i++)
+    {
+        calib->GetCalib(tabledValues, namepathes[i]);
+        if(tabledValues.size()>0)
+        {
+            valuesCount+=tabledValues.size() * tabledValues[0].size();
+        }
+    }
+    cout<<"totas constants  "<<valuesCount<<endl;
+    BENCHMARK_FINISH("20000 plain reads in ");
+
+    return true;
+}
 /*
 //______________________________________________________________________________
 void test_UserAPI_PrintData(const vector<vector<string> > & data)

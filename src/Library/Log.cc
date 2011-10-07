@@ -38,49 +38,49 @@ void Log::Error(int errorCode, const string& module, const string& message)
 {
     if(mErrorLevel<1)return;
     
-    CCDBGlobalMutex::Instance()->LogLock();
+    //CCDBGlobalMutex::Instance()->LogLock();
 	msLastError=errorCode;
 	msConsole.Write(Console::cBrightRed, "Error [%i]: ", errorCode);
 	msConsole.Write(Console::cBrightWhite, "in [");
 	msConsole.Write(Console::cCyan, "%s", module.c_str());
 	msConsole.Write(Console::cBrightWhite, "] ");
 	msConsole.WriteLine("%s ", message.c_str());
-    CCDBGlobalMutex::Instance()->LogRelease();
+    // CCDBGlobalMutex::Instance()->LogRelease();
 }
 
 void Log::Warning( int errorCode, const string& module, const string& message )
 {
     if(mErrorLevel<2) return;
 
-    CCDBGlobalMutex::Instance()->LogLock();
+    //CCDBGlobalMutex::Instance()->LogLock();
 	msConsole.Write(Console::cBrightRed, "Error [%i]: ", errorCode);
 	msConsole.Write(Console::cBrightWhite, "in [");
 	msConsole.Write(Console::cCyan, "%s", module.c_str());
 	msConsole.Write(Console::cBrightWhite, "] ");
 	msConsole.WriteLine("%s ", message.c_str());
-    CCDBGlobalMutex::Instance()->LogRelease();
+    //CCDBGlobalMutex::Instance()->LogRelease();
 }
 
 void Log::Message( const string& message )
 {
     if(mErrorLevel<3) return;
 
-    CCDBGlobalMutex::Instance()->LogLock();
+   // CCDBGlobalMutex::Instance()->LogLock();
 	msConsole.WriteLine("%s ", message.c_str());
-    CCDBGlobalMutex::Instance()->LogRelease();
+    //CCDBGlobalMutex::Instance()->LogRelease();
 }
 
 void Log::Verbose( const string& module, const string& message )
 {
 	if(mErrorLevel < 4) return;
 	
-    CCDBGlobalMutex::Instance()->LogLock();
+   // CCDBGlobalMutex::Instance()->LogLock();
 	msConsole.Write("Verbose ");
 	msConsole.Write(Console::cBrightWhite, "[");
 	msConsole.Write(Console::cCyan, "%s", module.c_str());
 	msConsole.Write(Console::cBrightWhite, "] ");
 	msConsole.WriteLine("%s ", message.c_str());
-    CCDBGlobalMutex::Instance()->LogRelease();
+   // CCDBGlobalMutex::Instance()->LogRelease();
 
 }
 

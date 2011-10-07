@@ -518,7 +518,6 @@ class ProviderBase(object):
         #maybe it is a dom?
         if isinstance(data, ccdb.TextFileDOM):
             rows = data.rows
-            print len(rows)
         else:
             #it should be list than...
             rows = data

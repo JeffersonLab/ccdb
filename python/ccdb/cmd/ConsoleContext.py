@@ -30,6 +30,7 @@ class ConsoleContext:
     _current_run = 0
     prefix = None
     words = []
+    _ls = None
     
 
 
@@ -98,6 +99,8 @@ class ConsoleContext:
     @is_interactive.setter
     def is_interactive(self, value):
         self._is_interactive = value
+        
+    
 
 #=====================================================================================
 #------------------ P L U G I N   M A N A G E M E N T  -------------------------------
@@ -118,6 +121,8 @@ class ConsoleContext:
                 if util:
                     self._utils[util.command]=util;
                     util.context = self
+                    if util.command == "ls":
+                        self._ls = util
             except AttributeError, ex:
                 if self.verbose >= VerboseModes.Debug:
                     print "      " + repr(ex)
@@ -247,6 +252,8 @@ class ConsoleContext:
             print util.name + " uses the database and there is no connection yet. Trying to connect..."
             print "   Connection string is: " + Theme.Accent, self.connection_string
 
+        if self._prov.is_connected : return #connected anyway...
+        
         #connecting
         result = self._prov.connect(self.connection_string)
         if not result:
@@ -346,6 +353,33 @@ class ConsoleContext:
         print matches
         print longest_match_length
 
+
+#--------------------------------
+# generate_completition_words      
+#--------------------------------     
+    def generate_completition_words(self, prefix):
+        
+        # find all words that start with this prefix
+        self.matching_words = [  w 
+                                 for w in self.words 
+                                 if w.startswith(prefix)]
+        
+        #get name pathes
+        try:
+            self.check_connection(self._ls)
+            result = self._ls.get_name_pathes(prefix)
+            
+            if result == None or (len(result[0]) ==0 and len(result[1])==0):
+                result = self._ls.get_name_pathes(prefix + "*")    
+                if result == None : return;
+            self.matching_words.extend(result[0])
+            self.matching_words.extend(result[1])
+            
+        except Exception as ex:
+            log.debug("error getting completition paths: " + ex.message)
+        
+    
+    
 #--------------------------------
 #       complete
 #--------------------------------        
@@ -358,11 +392,10 @@ class ConsoleContext:
         #colorama.pause()
         
         if prefix != self.prefix:
-            # we have a new prefix!
-            # find all words that start with this prefix
-            self.matching_words = [  w 
-                                     for w in self.words 
-                                     if w.startswith(prefix)]
+            #get new completions
+            self.generate_completition_words(prefix)
+            
+            #self.matching_words.append(
             self.prefix = prefix
             
         else:

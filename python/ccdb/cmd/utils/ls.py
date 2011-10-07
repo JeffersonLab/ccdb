@@ -136,6 +136,92 @@ class List(ConsoleUtilBase):
             print "Can't find the directory"
 
 
+
+
+
+    def get_name_pathes(self, path):
+        
+        self.rawentry = path
+        assert self.context != None
+        provider = self.context.provider;
+        assert isinstance(provider, MySQLProvider)
+
+        #PREPARE DIRS
+        #---------------------------
+
+        #correct ending /
+        if self.rawentry.endswith("/"):
+            self.rawentry = self.rawentry[:-1]
+
+        #local or absolute path?
+        if not self.rawentry.startswith("/"):
+            self.rawentry = posixpath.join(self.context.current_path , self.rawentry)
+
+        #normalize
+        self.rawentry = posixpath.normpath(self.rawentry)
+        
+        table_list = []
+        dir_list = []
+        
+        
+        
+        #SEARCH LOGIC
+        #---------------------------
+
+        #brute assumption that user has entered a simple dir path
+        self.parent_dir = provider.get_directory(self.rawentry)
+        self.parent_path = self.rawentry
+        self.pattern = ""
+        self.parent_dir
+
+        if not self.parent_dir:
+            #we have not find the directory by brute rawentry.
+            #but maybe it is just /path/plus*some*pattern
+            (head, tale) = posixpath.split(self.rawentry)
+            self.parent_path = head
+            self.pattern = tale
+            
+            if(is_debug_verbose()):
+                print "new path: "
+                print "   ", self.parent_path
+                if len(self.pattern): print "pattern: ", self.pattern
+
+            #try to find such dir once more
+            self.parent_dir = provider.get_directory(self.parent_path)
+
+        #found a directory
+        if self.parent_dir:
+            assert isinstance(self.parent_dir, Directory)
+            assert isinstance(self.context.provider, MySQLProvider)
+
+            if(is_debug_verbose()):
+                print "full path: \n   ", self.parent_dir.full_path
+                if len(self.pattern): print "pattern: ", self.pattern
+            
+            #part 1 directories for this path
+            subdirs = []
+            if self.pattern == "":
+                subdirs = self.parent_dir.subdirs
+            else:
+                subdirs = self.context.provider.search_directories(self.pattern, self.parent_path)
+           
+            #fill list of directory names
+            dir_list = [subdir.name for subdir in subdirs]
+            
+            #part 2 is tables for this path
+            tables = []
+            if self.pattern == "":
+                tables = self.context.provider.get_type_tables(self.parent_dir)
+            else:
+                tables = self.context.provider.search_type_tables(self.pattern, self.parent_path)
+                        
+            #fill list of tables
+            table_list=[table.name for table in tables]
+            
+        else:
+            return None
+        return (dir_list, table_list)
+
     def print_directory_tree(self, directory, printFullPath, level):
         """prints a full tree of directories
             This is recursive function"""

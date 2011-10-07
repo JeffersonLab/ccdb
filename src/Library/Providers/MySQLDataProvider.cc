@@ -740,6 +740,12 @@ bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTab
 			return false;
 		}
 	}
+    else
+    {
+        //In this case we will need mDirectoriesById
+        //maybe we need to update our directories?
+        UpdateDirectoriesIfNeeded();
+    }
 	    
 	//Ok, lets cleanup result list
 	if(typeTables.size()>0)
@@ -753,10 +759,8 @@ bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTab
 		}
 	}
 	typeTables.clear(); //we clear the consts. Considering that some one else  should handle deletion
-    
 
 	string limitAddon = PrepareLimitInsertion(take, startWith);
-
     
 	//combine query
 	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `name` LIKE '%s' %s ORDER BY `name` %s;",
