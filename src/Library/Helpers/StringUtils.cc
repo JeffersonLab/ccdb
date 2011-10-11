@@ -259,57 +259,6 @@ string ccdb::StringUtils::Replace(const string& pattern, const string& replace, 
     return out;
 }
 
-
-//______________________________________________________________
-string ccdb::StringUtils::ExtractDirectory( const string& path )
-{
-    return path.substr( 0, path.find_last_of( '/' )  ); //will get directory without final /
-}
-
-
-//_______________________________________________________________
-string ccdb::StringUtils::ExtractObjectname( const string& path )
-{
-    return path.substr( path.find_last_of( '/' ) +1 );
-}
-
-
-//______________________________________________________________________________
-string ccdb::StringUtils::CombinePath( const string& left, const string& right )
-{
-    if(right.length()==0) return left;
-    if(left.length()==0)  return right;
-    char separator = '/';
-    string result = left;
-    bool needAddSeparator = false;
-    char leftLast = left[left.length()-1];
-    char rightFirst = right[0];
-
-    if((leftLast == separator) && (rightFirst == separator))
-    {
-        //it is a situation we have both "left/ + /right" 
-        //so erase one of them
-        result.erase(result.length());
-
-        //needAddSeparator should be false by default so we dont touch it
-    }
-    else if((leftLast != separator) && (rightFirst != separator))
-    {
-        //it is a situation we have "left + right"
-        //needs separator
-        needAddSeparator = true;
-    }
-
-    //The last case (leftLast != separator) || (rightFirst != separator)
-    //gives us needAddSeparator = false, but it is false by default
-
-
-    if(needAddSeparator) result += separator; 
-    return result+right;
-}
-
-
-
 //______________________________________________________________________________
 bool ccdb::StringUtils::WildCardCheck( const char* pattern, const char* source )
 {   

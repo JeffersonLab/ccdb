@@ -37,11 +37,12 @@ from MySQLProvider import MySQLProvider
 from ccdb_pyllapi import Variation, Directory, RunRange, Assignment, ConstantsTypeColumn, ConstantsTypeTable, StringStringMap, StringVectorVector, StringVector
 from TextFileDOM import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
 from ccdb.ccdb_pyllapi import Variation
+import PathUtils
 
 #the default ccdb logger
 logger = logging.getLogger("ccdb")
 
-__all__ = ["MySQLProvider", "ProviderBase", "ccdb_pyllapi", "TextFileDOM"]
+__all__ = ["MySQLProvider", "ProviderBase", "ccdb_pyllapi", "TextFileDOM", "PathUtils"]
 
 INFINITE_RUN = 2147483647
 

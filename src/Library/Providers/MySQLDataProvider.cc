@@ -8,6 +8,7 @@
 #include "CCDB/Globals.h"
 #include "CCDB/Log.h"
 #include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
 #include "CCDB/Model/RunRange.h"
@@ -247,7 +248,7 @@ bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const str
 	}
 
 	//maybe such directory already exists?
-	string fullPath = StringUtils::CombinePath(parentDir->GetFullPath() ,name);
+	string fullPath = PathUtils::CombinePath(parentDir->GetFullPath() ,name);
 	Directory * dir = GetDirectory(fullPath.c_str());
 	if(dir)
 	{
@@ -478,7 +479,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 	}
 	
 	//Ok set a full path for this constant...
-	result->SetFullPath(StringUtils::CombinePath(parentDir->GetFullPath(), result->GetName()));
+	result->SetFullPath(PathUtils::CombinePath(parentDir->GetFullPath(), result->GetName()));
 
 	
 	FreeMySQLResult();
@@ -491,7 +492,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable(const string& path, bool loadColumns/*=false*/ )
 {
 	//get directory path
-	string dirPath = StringUtils::ExtractDirectory(path);
+	string dirPath = PathUtils::ExtractDirectory(path);
 	
 	//and directory
 	Directory *dir = GetDirectory(dirPath.c_str());
@@ -499,7 +500,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable(const string
 	//but such check is in GetConstantsTypeHeader(const char* name, DDirectory *parentDir);
 	
 	//retrieve name of our constant table 
-	string name = StringUtils::ExtractObjectname(path);
+	string name = PathUtils::ExtractObjectname(path);
 	
 	//get it from db etc...
 	return GetConstantsTypeTable(name.c_str(), dir, loadColumns);
@@ -630,7 +631,7 @@ bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *tabl
 	}
 
 	//ok... maybe directory with such name exist? 
-	Directory *tmpDir = GetDirectory(StringUtils::CombinePath(table->GetDirectory()->GetFullPath(), table->GetName()) );
+	Directory *tmpDir = GetDirectory(PathUtils::CombinePath(table->GetDirectory()->GetFullPath(), table->GetName()) );
 	if(tmpDir)
 	{	
 		//error? Warning?
@@ -2518,7 +2519,7 @@ void ccdb::MySQLDataProvider::BuildDirectoryDependences()
 		}
 
 		//creating full path for this directory
-		string fullpath = StringUtils::CombinePath(dir->GetParentDirectory()->GetFullPath(), dir->GetName());
+		string fullpath = PathUtils::CombinePath(dir->GetParentDirectory()->GetFullPath(), dir->GetName());
 		dir->SetFullPath(fullpath);
 
 

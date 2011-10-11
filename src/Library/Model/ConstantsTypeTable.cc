@@ -8,6 +8,7 @@
 
 #include "CCDB/Model/ConstantsTypeTable.h"
 #include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/Helpers/PathUtils.h"
 
 namespace ccdb {
 	class DConstantsType;
@@ -178,7 +179,7 @@ void ConstantsTypeTable::SetDirectory(Directory *fDirectory)
 	 //now this name affects full path...
 	if(mDirectory!=NULL)	
 	{
-		mFullPath.assign(StringUtils::CombinePath(mDirectory->GetFullPath(), mName));
+		mFullPath.assign(PathUtils::CombinePath(mDirectory->GetFullPath(), mName));
 	}
 	else
 	{
@@ -217,7 +218,7 @@ void ConstantsTypeTable::SetName(const string& name)
 	//now this name affects full path...
 	if(mDirectory!=NULL)	
 	{
-		mFullPath.assign(StringUtils::CombinePath(mDirectory->GetFullPath(), name));
+		mFullPath.assign(PathUtils::CombinePath(mDirectory->GetFullPath(), name));
 	}
 	else
 	{

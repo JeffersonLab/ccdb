@@ -155,6 +155,7 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
                 }
                 time.tm_year = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
+            
             if(delimCount ==2) //it was a month
             {
                 if(tmpStr.length()!=2) //it is an error with lengtn of year
@@ -162,8 +163,29 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
                     if(succsess!=NULL) succsess = false;
                     return 0;
                 }
+
                 time.tm_mon = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
+
+                //#check for 30 day month
+                if((time.tm_mon == 9)||(time.tm_mon == 10)||(time.tm_mon == 4)||(time.tm_mon == 6))
+                {
+                     time.tm_mday = 30;
+                }
+
+                //February...
+                if(time.tm_mon == 2)
+                {
+                    if( time.tm_year % 4 == 0 &&  time.tm_year % 100 != 0 || time.tm_year % 400 == 0)
+                    {
+                        time.tm_mday = 29;
+                    }
+                    else
+                    {
+                        time.tm_mday = 28;
+                    }
+                }
             }
+
             if(delimCount ==3) //it was a day
             {
                 if(tmpStr.length()!=2) //it is an error with lengtn of day
@@ -173,6 +195,7 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
                 }
                 time.tm_mday = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
+
             if(delimCount ==4) //it was a hour
             {
                 if(tmpStr.length()!=2) //it is an error with lengtn
@@ -182,6 +205,7 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
                 }
                 time.tm_hour = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
+            
             if(delimCount ==5) //it was a min
             {
                 if(tmpStr.length()!=2) //it is an error with lengtn of min
@@ -191,6 +215,7 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
                 }
                 time.tm_min = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
+            
             if(delimCount ==6) //it was a sec
             {
                 if(tmpStr.length()!=2) //it is an error with lengtn of sec
@@ -313,8 +338,6 @@ string & ccdb::PathUtils::MakeAbsolute( string &path )
 
     if(IsAbsolute(path)) path.insert(0,1,'/');
     return path;
-
-
 }
 //______________________________________________________________________________
 bool ccdb::PathUtils::IsAbsolute( const string &path )

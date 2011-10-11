@@ -114,32 +114,6 @@ public:
 	 */
 	static string	Replace(const string& pattern, const string& replace, const string& source);
 
-	/** @brief Extracts Directory from object path
-	 *
-	 *	in /dir/subdir/object will return /dir/subdir
-	 *
-	 * @param     const string & path
-	 * @return   std::string
-	 */
-	static string	ExtractDirectory( const string& path );
-
-	/** @brief Extract Objectname from object path
-	 *
-	 * @param     const string & path
-	 * @return   std::string
-	 */
-	static string	ExtractObjectname( const string& path );
-
-	/** @brief Combines two parts of path
-	 *
-	 * will hande /path/sub/ + /path/right etc.
-	 *
-	 * @param     const string & left
-	 * @param     const string & right
-	 * @return   std::string
-	 */
-	static string	CombinePath( const string& left, const string& right );
-
 	/** @brief search pattern in source using * and ?
 	 *
 	 * @param pattern
