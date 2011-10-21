@@ -56,9 +56,9 @@
     <Compile Include="ccdb\cmd\utils\usage.py" />
     <Compile Include="ccdb\cmd\utils\vers.py" />
     <Compile Include="ccdb\cmd\__init__.py" />
+    <Compile Include="ccdb\PathUtils.py" />
     <Compile Include="ccdb_pyllapi.py" />
     <Compile Include="ccdb\MySQLProvider.py" />
-    <Compile Include="ccdb\NamePath.py" />
     <Compile Include="ccdb\ProviderBase.py" />
     <Compile Include="ccdb\TextFileDOM.py" />
     <Compile Include="ccdb\__init__.py" />

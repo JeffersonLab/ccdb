@@ -34,7 +34,6 @@ TEST_CASE("CCDB/UserAPI","tests")
 	DataProvider *prov = new MySQLDataProvider();
 	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
 
-
 	//U S I N G   U S E R   A P I   D I R E C T L Y
 	//----------------------------------------------------
 
@@ -66,8 +65,6 @@ TEST_CASE("CCDB/UserAPI","tests")
     vector<string> paths;
     REQUIRE_NOTHROW(calib->GetListOfNamepaths(paths));
     REQUIRE(paths.size()>0);
-
-    
 }
 
 TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
@@ -75,7 +72,7 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
     //The next tests will give some errors
     //So lets suppress error logging to stdout
 
-    Log::SetErrorLevel(0);
+    Log::SetErrorLevel(0); //suppress errors printing
     
     //Now lets check if user forget to connect...
     Calibration *calib = new MySQLCalibration(100);
@@ -88,7 +85,7 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
      vector<vector<string> > tabledValues;
     REQUIRE_THROWS(calib->GetCalib(tabledValues, "test/test_vars/test_table"));
 
-    cout<<"The next errors are right errors"<<endl;
+    
     //Now we will connect to improper source...
     REQUIRE_FALSE(calib->Connect("ha ha ha"));
     REQUIRE_FALSE(calib->Connect("mysql://muuuu ha ha ha"));
@@ -106,8 +103,7 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
     REQUIRE_THROWS(result = calib->Connect("mysql://muuuu ha ha ha"));
 
     //Reenable logging
-    Log::SetErrorLevel(4);
-
+    Log::SetErrorLevel(3); //restore logging
 }
 /*
 //______________________________________________________________________________

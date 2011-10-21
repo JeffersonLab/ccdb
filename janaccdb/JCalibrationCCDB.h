@@ -8,7 +8,7 @@
 
 #include <JANA/jerror.h>
 #include <JANA/JCalibration.h>
-#include <UserAPI/MySQLCalibration.h>
+#include <CCDB/MySQLCalibration.h>
 #include <JANA/JStreamLog.h>
 
 using namespace std;

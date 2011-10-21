@@ -20,7 +20,8 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`runRanges` (
   `runMax` INT NOT NULL ,
   `comment` TEXT NULL DEFAULT NULL ,
   PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) )
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
+  INDEX `run search` (`runMin` ASC, `runMax` ASC) )
 ENGINE = MyISAM;
 
 
@@ -34,13 +35,14 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`variations` (
   `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
   `name` VARCHAR(100) NOT NULL DEFAULT 'default' ,
-  `parentId` INT NOT NULL DEFAULT 1 ,
   `description` VARCHAR(255) NULL ,
   `authorId` INT NULL DEFAULT 1 ,
   `comment` TEXT NULL DEFAULT NULL ,
+  `parentId` INT NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`id`) ,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `name_search` USING HASH (`name` ASC) )
+  INDEX `name_search` USING HASH (`name` ASC) ,
+  INDEX `fk_variations_variations1` (`parentId` ASC) )
 ENGINE = MyISAM;
 
 
@@ -245,9 +247,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `parentId`, `description`, `authorId`, `comment`) VALUES (1, NULL, 'NULL', 'default', 1, 'Default variation', NULL, 'Default variation');
-INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `parentId`, `description`, `authorId`, `comment`) VALUES (2, NULL, 'NULL', 'mc', 1, 'Mone-Carlo variations', NULL, 'Monte-Carlo specific variation');
-INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `parentId`, `description`, `authorId`, `comment`) VALUES (3, NULL, 'NULL', 'test', 1, 'Test variation', NULL, 'Variation for software test');
+INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`) VALUES (1, NULL, 'NULL', 'default', 'Default variation', NULL, 'Default variation', 0);
+INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`) VALUES (2, NULL, 'NULL', 'mc', 'Mone-Carlo variations', NULL, 'Monte-Carlo specific variation', 0);
+INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`) VALUES (3, NULL, 'NULL', 'test', 'Test variation', NULL, 'Variation for software test', 0);
 
 COMMIT;
 

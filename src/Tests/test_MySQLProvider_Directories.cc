@@ -4,6 +4,7 @@
 
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/Directory.h"
+#include "CCDB/Log.h"
 
 #include <iostream>
 
@@ -51,7 +52,8 @@ TEST_CASE("CCDB/MySQLDataProvider/Directories","Directories tests")
 	REQUIRE(prov->MakeDirectory("constants","/test/testdir","My constants"));
 
 	//refuse to create existing directory
-    cout<<"The next error messages are good error messages..."<<endl;
+    Log::SetErrorLevel(0); //suppress log messages
+
 	REQUIRE_FALSE(prov->MakeDirectory("constants","/test/testdir","My constants"));
 
 	//create subdirectory
@@ -71,4 +73,5 @@ TEST_CASE("CCDB/MySQLDataProvider/Directories","Directories tests")
     REQUIRE(prov->DeleteDirectory("/test/testdir/variables"));
     REQUIRE(prov->DeleteDirectory("/test/testdir/my_vars"));
     REQUIRE(prov->DeleteDirectory("/test/testdir"));
+    Log::SetErrorLevel(3); //suppress log messages
 }
