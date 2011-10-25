@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 
+#include "CCDB/Providers/IAuthentication.h"
 #include "CCDB/Model/ObjectsOwner.h"
 #include "CCDB/Model/Assignment.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
@@ -962,7 +963,7 @@ public:
     //	L O G G I N G
     //----------------------------------------------------------------------------------------
     std::string GetLogUserName() const { return mLogUserName; }		 ///User name for logging
-    void SetLogUserName(std::string val) { mLogUserName = val; } ///User name for logging
+    void SetLogUserName(std::string val) { mLogUserName = val; }     ///User name for logging
 
     
     
@@ -989,6 +990,9 @@ protected:
     std::string mLogUserName; ///User name
 
     std::string mConnectionString; ///Connection string that was used on last successfull connect.
+
+    IAuthentication * mAuthentication;
+
 };
 }
 #endif // _DDataProvider_

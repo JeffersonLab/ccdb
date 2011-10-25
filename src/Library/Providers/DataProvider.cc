@@ -1,9 +1,11 @@
 #include <stdio.h>
 
+
 #include "CCDB/Providers/DataProvider.h"
 #include "CCDB/Log.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Globals.h"
+#include "CCDB/Providers/EnvironmentAuthentication.h"
 
 using namespace ccdb;
 using namespace std;
@@ -17,6 +19,8 @@ DataProvider::DataProvider(void):
     mMaximumErrorsToHold(100)
 {
     //Constructor
+    mAuthentication = new EnvironmentAuthentication();
+    mLogUserName = mAuthentication->GetLogin();
 
 	ClearErrorsOnFunctionStart();
     mConnectionString="";

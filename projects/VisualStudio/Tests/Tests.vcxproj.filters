@@ -56,5 +56,8 @@
     <ClCompile Include="..\..\..\src\Tests\tests.cc">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_Authentication.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

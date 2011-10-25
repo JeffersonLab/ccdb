@@ -28,6 +28,7 @@ test_sources = [
 	"test_PathUtils.cc",
 	"test_ModelObjects.cc",
 	"test_UserAPI.cc",
+	"test_Authentication.cc",
 	]
 
 #Making tests

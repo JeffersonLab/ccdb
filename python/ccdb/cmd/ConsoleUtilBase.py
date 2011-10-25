@@ -10,12 +10,13 @@ class ConsoleUtilBase:
     help_util = False
 
     def print_help(self):
-        "Prints help of the command"
+        """@brief Prints help of the command"""
+
         print "Help is not defined for command " + self.command
 
     def print_usage(self):
         "Prints usage of the command"
-        print "Usage is not defined for command " + self.command
+        print "@brief Usage is not defined for command " + self.command
 
     def print_examples(self):
         "Prints examples of the command usage"

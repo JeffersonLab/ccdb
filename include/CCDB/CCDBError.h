@@ -90,8 +90,8 @@ private:
 	unsigned int mThreadId;
 	
 
-	CCDBError(CCDBError const&) {};					// copy constructor is private
-	CCDBError& operator=(CCDBError const&) {};		// assignment operator is private
+	CCDBError(CCDBError const&);					    // copy constructor is private
+	CCDBError& operator=(CCDBError const&);		// assignment operator is private
 };
 }
 #endif // _DCcdbError_

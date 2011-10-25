@@ -91,8 +91,19 @@ Or you can add next lines to your .bashrc
      sudo echo max_allowed_packet=32M >> /etc/my.cnf 
 
 
-
-  T E S T
+	 
+  U S E R   N A M E 
+=====================================
+ 
+ In order to log changes CCDB needs your user name. It is HIGHLY DESIRED, you 
+ set in your startup script CCDB_USER variable to be your CUE login.
+ 
+##INCERT INTO .bashrc:
+ 
+     export CCDB_USER=<your CUE login>
+ 
+ 
+ 
 ===========
  To test the CCDB installed correctly you might go to $CCDB_HOME/bin directory and run ./test 
 

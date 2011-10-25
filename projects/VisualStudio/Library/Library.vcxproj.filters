@@ -138,6 +138,12 @@
     <ClInclude Include="..\..\..\include\CCDB\PthreadSyncObject.h">
       <Filter>Globals\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Providers\EnvironmentAuthentication.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Providers\IAuthentication.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Library\Helpers\StringUtils.cc">
@@ -220,6 +226,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\Library\Calibration.cc">
       <Filter>UserApi\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Providers\EnvironmentAuthentication.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Providers\IAuthentication.cc">
+      <Filter>Providers\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

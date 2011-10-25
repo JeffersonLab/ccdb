@@ -36,7 +36,9 @@
     <ClInclude Include="..\..\..\include\CCDB\Model\Variation.h" />
     <ClInclude Include="..\..\..\include\CCDB\MySQLCalibration.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\DataProvider.h" />
+    <ClInclude Include="..\..\..\include\CCDB\Providers\EnvironmentAuthentication.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\FileDataProvider.h" />
+    <ClInclude Include="..\..\..\include\CCDB\Providers\IAuthentication.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLConnectionInfo.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLDataProvider.h" />
     <ClInclude Include="..\..\..\include\CCDB\PthreadMutex.h" />
@@ -65,7 +67,9 @@
     <ClCompile Include="..\..\..\src\Library\Model\Variation.cc" />
     <ClCompile Include="..\..\..\src\Library\MySQLCalibration.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\DataProvider.cc" />
+    <ClCompile Include="..\..\..\src\Library\Providers\EnvironmentAuthentication.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\FileDataProvider.cc" />
+    <ClCompile Include="..\..\..\src\Library\Providers\IAuthentication.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\MySQLConnectionInfo.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\MySQLDataProvider.cc" />
     <ClCompile Include="..\..\..\src\Library\PthreadMutex.cc" />
