@@ -48,7 +48,7 @@ public:
 protected:
 private:
 	CCDBGlobalMutex();										/// Private so that it can  not be called
-	CCDBGlobalMutex(CCDBGlobalMutex const&){};			/// copy constructor is private
+	CCDBGlobalMutex(CCDBGlobalMutex const&){};			// / copy constructor is private
 	CCDBGlobalMutex& operator=(CCDBGlobalMutex const&);	/// assignment operator is private
 		
 	static CCDBGlobalMutex* mInstance;					    ///Main and only singleton instance

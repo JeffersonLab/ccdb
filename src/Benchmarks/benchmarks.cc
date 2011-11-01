@@ -59,8 +59,8 @@ bool RunBenchmarks()
 {
     bool result = true;
     //result = result && benchmark_UserAPI();       //providers benchmark
-    //banchmark_UserAPIMultithread();
-    benchmark_AllHallDConstants();
+    banchmark_UserAPIMultithread();
+    //benchmark_AllHallDConstants();
     //benchmark_String();
   //  result = result && benchmark_Providers();       //providers benchmark
     //result = result && benchmark_PreparedStatements();

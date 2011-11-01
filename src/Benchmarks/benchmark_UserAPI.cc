@@ -64,12 +64,12 @@ void *hello(void *arg)
     MySQLCalibration *calib = new MySQLCalibration(100);
     if(!calib->Connect(TESTS_CONENCTION_STRING)) return NULL;
 
-    BENCHMARK_START("2000 plain read of /test/test_vars/test_table");
-    for (int i=0; i<2000; i++)
+    BENCHMARK_START("1200 plain read of /test/test_vars/test_table");
+    for (int i=0; i<1200; i++)
     {
         calib->GetCalib(tabledValues, "/test/test_vars/test_table");
     }
-    BENCHMARK_FINISH("2000 plain reads in ");
+    BENCHMARK_FINISH("1200 plain reads in ");
     return (NULL);
 }
 
@@ -81,7 +81,7 @@ bool banchmark_UserAPIMultithread()
     pthread_attr_t pthread_custom_attr;
     parm *p;
 
-    int n = 5;
+    int n = 8;
     int i =0; 
     BENCHMARK_INIT();
     BENCHMARK_START("Total is 10000 plain read of /test/test_vars/test_table");

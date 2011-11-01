@@ -69,12 +69,9 @@ public:
 	 */
 	virtual bool IsConnected();
 
-
-
 private:
     MySQLCalibration(const MySQLCalibration& rhs);
     MySQLCalibration& operator=(const MySQLCalibration& rhs);
-    
 };
 
 }
