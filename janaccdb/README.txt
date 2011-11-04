@@ -7,30 +7,19 @@ Steps to run JANA with CCDB:
 PREPARE CCDB
 ============
 
-To run JANA with ccdb one should:
+1. Install CCDB. Follow the instructions of file install.linux.txt located in 
+   the CCDB_HOME directory. 
 
-1. Install CCDB. Follow the instructions of file install.linux.txt 
-   located in the CCDB_HOME directory. 
-
-   Don't forget to setup CCDB in environment
-   in the terminal where are you going to run JANA with CCDB.
+   (!) Don't forget to setup CCDB in environment in the terminal you going 
+   to run JANA with CCDB in.
 
 
-2. Load database dump to your mysql database
+2. If you haven't done so on CCDB install, Load HallD database dump to your 
+   mysql database
 
-## RUN CODE:
+##RUN CODE:
 
-    mysql -u ccdb_user < ccdb_calib_dump.mysql
-
-
-3) test everything is ready 
-
-## RUN CODE:
-    
-    ccdbcmd ls --dump-tree
-
-This command will print a directory tree as a test.
-    
+      mysql -u root -p ccdb <$CCDB_HOME/mysql/halld-11-02-2011.mysql.sql
 
 
 PREPARE JANA
@@ -38,16 +27,16 @@ PREPARE JANA
 
 1) copy $CCDB_HOME/janaccdb to Jana plugins directory
 
-     cp $CCDB_HOME/janaccdb $JANA_HOME/src/plugins
+     cp -r $CCDB_HOME/janaccdb $JANA_HOME/src/plugins
 
 
 2) modify $JANA_HOME/src/plugins/Makefile, add 'janaccdb' to DIRS string
 
-     nano $CCDB_HOME/src/plugins/Makefile
+     nano $JANA_HOME/src/plugins/Makefile
      DIRS := janadot janactl ... janaccdb
 
 
-3) make JANA 
+3) Rebuild jana JANA 
 
 
 
