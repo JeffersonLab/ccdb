@@ -65,14 +65,19 @@ Or you can add next lines to your .bashrc
 
       mysql -u root -p <$CCDB_HOME/mysql/ccdb.mysql.sql
 
-
+ Database ccdb will be created and filled with tables and default records.
  
- Database ccdb will be created and filled with tables and records
-  
+ HallD constants are stored in halld-<MM-DD-YYY>.mysql.sql file. To fill the 
+ database with the latest Hall D constants:
+
+ ##RUN CODE:
+
+      mysql -u root -p <$CCDB_HOME/mysql/halld-11-02-2011.mysql.sql
+ 
  By default CCDB tries to connect by using 'ccdb_user' user name with no password 
  So You might whant to create such user or specify connection string explicitly later
 
- To create the user for development purposes use sql command like this 
+ To create the user for development purposes use sql command like this
 
 ##RUN CODE:
 
@@ -98,22 +103,20 @@ Or you can add next lines to your .bashrc
   U S E R   N A M E 
 =====================================
  
- In order to log changes CCDB needs your user name. It is HIGHLY DESIRED, you 
- set in your startup script CCDB_USER variable to be your CUE login.
+ In order to log changes it is HIGHLY desirable to let CCDB know yout CUE user
+ name. If your CUE user is not the same as $USER variable, please define
+ CCDB_USER environment variable as your CUE username.
  
 ##INCERT INTO .bashrc:
  
      export CCDB_USER=<your CUE login>
- 
- 
- 
-===========
+
  To test the CCDB installed correctly you might go to $CCDB_HOME/bin directory and run ./test 
 
 ##RUN CODE:
 
      cd $CCDB_HOME/bin
-     ./ccdb_tests -t
+     ./tests_ccdb
 
 You should see ccdb unit test running and successfully complete.
 
@@ -122,7 +125,7 @@ To test python is working you may run ccdbcmd
 
 #RUN CODE:
 
-     ccdbcmd -I
+     ccdbcmd -i
 
 interactive ccdb shell should be started
 
