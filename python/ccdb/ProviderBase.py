@@ -8,7 +8,7 @@ import os
 import ccdb.ccdb_pyllapi
 import logging
 
-from NamePath import PathObject, PathObjectType
+from PathUtils import PathObject, PathObjectType
 
 log = logging.getLogger("ccdb.provider")
 
