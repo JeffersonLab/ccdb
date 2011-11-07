@@ -10,12 +10,11 @@ PREPARE CCDB
 1. Install CCDB. Follow the instructions of file install.linux.txt located in 
    the CCDB_HOME directory. 
 
-   (!) Don't forget to setup CCDB in environment in the terminal you going 
+   (!) Don't forget to setup CCDB in environment in the terminal you are going 
    to run JANA with CCDB in.
 
 
-2. If you haven't done so on CCDB install, Load HallD database dump to your 
-   mysql database
+2. If you haven't done so, Load HallD database dump to your mysql database
 
 ##RUN CODE:
 
@@ -51,7 +50,7 @@ RUN ANALYSIS
 
 2) Now it is possible to run analysis adding --plugin=janaccdb, like:
 
-      hd_root --plugin=phys_tree --plugin=janaccdb hdgeant_smeared.hddm
+      hd_root --plugin=cdc_hists --plugin=janaccdb hdgeant_smeared.hddm
 
 
 
