@@ -83,7 +83,7 @@ Or you can add next lines to your .bashrc
 
      mysql -u root -p 
      CREATE USER ccdb_user;
-     GRANT ALL PRIVILEGES ON ccdb.* TO 'ccdb_user'@'localhost' WITH GRANT OPTION;
+     GRANT ALL PRIVILEGES ON ccdb.* TO 'ccdb_user'@'localhost';
      exit;
 
 
