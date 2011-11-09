@@ -18,7 +18,7 @@ PREPARE CCDB
 
 ##RUN CODE:
 
-      mysql -u root -p ccdb <$CCDB_HOME/mysql/halld-11-02-2011.mysql.sql
+      mysql -u root -p ccdb <$CCDB_HOME/mysql/halld-11-09-2011.mysql.sql
 
 
 PREPARE JANA

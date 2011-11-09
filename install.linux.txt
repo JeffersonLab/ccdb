@@ -72,7 +72,7 @@ Or you can add next lines to your .bashrc
 
  ##RUN CODE:
 
-      mysql -u root -p <$CCDB_HOME/mysql/halld-11-02-2011.mysql.sql
+      mysql -u root -p <$CCDB_HOME/mysql/halld-11-09-2011.mysql.sql
  
  By default CCDB tries to connect by using 'ccdb_user' user name with no password 
  So You might whant to create such user or specify connection string explicitly later
