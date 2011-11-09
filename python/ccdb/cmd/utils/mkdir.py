@@ -63,3 +63,4 @@ class MakeDirectory(ConsoleUtilBase):
         
         if not result: print "Failed to create directory"
         else: print "Directory " + name + Theme.Success + " created" + Theme.Reset
+        
