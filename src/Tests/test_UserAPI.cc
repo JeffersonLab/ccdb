@@ -57,7 +57,26 @@ TEST_CASE("CCDB/UserAPI","tests")
     //----------------------------------------------------
     tabledValues.clear();
     REQUIRE_NOTHROW(result = calib->GetCalib(tabledValues, "test/test_vars/test_table"));
+    REQUIRE(result);
     REQUIRE(tabledValues.size()>0);
+
+    //test of getting data as map
+    //----------------------------------------------------
+    map<string, string> mappedValues;
+    REQUIRE_NOTHROW(result = calib->GetCalib(mappedValues, "test/test_vars/test_table"));
+    REQUIRE(result);
+    REQUIRE(mappedValues.size()>0);
+
+    //test of getting data without / in the beginning
+    //----------------------------------------------------
+    map<string, string> vectorOfMapsdValues;
+    REQUIRE_NOTHROW(result = calib->GetCalib(vectorOfMapsdValues, "test/test_vars/test_table"));
+    REQUIRE(result);
+    REQUIRE(vectorOfMapsdValues.size()>0);
+    vectorOfMapsdValues.clear();
+    REQUIRE_NOTHROW(result = calib->GetCalib(vectorOfMapsdValues, "CDC/cdc_drift"));
+    REQUIRE(result);
+    REQUIRE(vectorOfMapsdValues.size()>0);
 
     
     //test of get all namepaths

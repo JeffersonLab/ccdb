@@ -56,7 +56,7 @@ bool ccdb::MySQLDataProvider::Connect( std::string connectionString )
 	//try to parse connection string
 	if(!ParseConnectionString(connectionString, connection))
 	{
-		Error(CCDB_ERROR_PARSE_CONNECTION_STRING, "DMySQLDataProvider::Connect()", "Error parse mysql string");
+		Error(CCDB_ERROR_PARSE_CONNECTION_STRING, "MySQLDataProvider::Connect()", "Error parse mysql string");
 		return false;
 	}
 						
@@ -79,14 +79,14 @@ bool ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
 
 
 	//verbose...
-	Log::Verbose("ccdb::DMySQLDataProvider::Connect", StringUtils::Format("Connecting to database:\n UserName: %s \n Password: %i symbols \n HostName: %s Database: %s Port: %i",
+	Log::Verbose("ccdb::MySQLDataProvider::Connect", StringUtils::Format("Connecting to database:\n UserName: %s \n Password: %i symbols \n HostName: %s Database: %s Port: %i",
 					connection.UserName.c_str(), connection.Password.length(), connection.HostName.c_str(), connection.Database.c_str(), connection.Port) );
 					
 	//init connection variable
 	if(mMySQLHnd == NULL)mMySQLHnd = mysql_init(NULL);
 	if(mMySQLHnd == NULL)
 	{
-		Error(CCDB_ERROR_CONNECTION_INITIALIZATION, "DMySQLDataProvider::Connect(DMySQLConnectionInfo)", "mysql_init() returned NULL, probably memory allocation problem");
+		Error(CCDB_ERROR_CONNECTION_INITIALIZATION, "MySQLDataProvider::Connect(DMySQLConnectionInfo)", "mysql_init() returned NULL, probably memory allocation problem");
 		return false;
 	}
 	
@@ -235,7 +235,7 @@ bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const str
 
 	if(!ValidateName(name))
 	{
-		Error(CCDB_ERROR_INVALID_OBJECT_NAME,"ccdb::DMySQLDataProvider::MakeDirectory", "Object name format is invalid.");
+		Error(CCDB_ERROR_INVALID_OBJECT_NAME,"ccdb::MySQLDataProvider::MakeDirectory", "Object name format is invalid.");
 		return false;
 	}
 
@@ -243,7 +243,7 @@ bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const str
 	Directory * parentDir = GetDirectory(parentDirFullPath);
 	if(parentDir == NULL)
 	{
-		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"DMySQLDataProvider::MakeDirectory", "Provider is not connected to MySQL.");
+		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::MakeDirectory", "Provider is not connected to MySQL.");
 		return false;
 	}
 
@@ -252,7 +252,7 @@ bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const str
 	Directory * dir = GetDirectory(fullPath.c_str());
 	if(dir)
 	{
-		Error(CCDB_ERROR_DIRECTORY_EXISTS,"DMySQLDataProvider::MakeDirectory", "Such directory already exists");
+		Error(CCDB_ERROR_DIRECTORY_EXISTS,"MySQLDataProvider::MakeDirectory", "Such directory already exists");
 		return false;
 	}
 	
@@ -262,7 +262,7 @@ bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const str
 	{
 		delete tmpTable; 
 		//error? Warning?
-		Error(CCDB_ERROR_TABLE_EXISTS,"DMySQLDataProvider::MakeDirectory", "Table with this name already exists");
+		Error(CCDB_ERROR_TABLE_EXISTS,"MySQLDataProvider::MakeDirectory", "Table with this name already exists");
 		return false;
 	}
 	//building such query
@@ -321,7 +321,7 @@ bool ccdb::MySQLDataProvider::UpdateDirectory( Directory *dir )
 	if(dir->GetId() <= 0 )
 	{
 		//TODO: report error
-		Error(CCDB_ERROR_DIRECTORY_INVALID_ID,"DMySQLDataProvider::UpdateDirectory", "Id <= 0");
+		Error(CCDB_ERROR_DIRECTORY_INVALID_ID,"MySQLDataProvider::UpdateDirectory", "Id <= 0");
 		return false;
 	}
 
@@ -340,7 +340,7 @@ bool ccdb::MySQLDataProvider::DeleteDirectory( const string& fullPath )
 	Directory *dir = GetDirectory(fullPath);
 	if(!dir)
 	{
-		Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"DMySQLDataProvider::DeleteDirectory", "Directory not found with this path");
+		Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"MySQLDataProvider::DeleteDirectory", "Directory not found with this path");
 		return false;
 	}
 	return DeleteDirectory(dir);
@@ -353,7 +353,7 @@ bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
 	//check not NULL
 	if(dir==NULL)
 	{
-		Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"DMySQLDataProvider::DeleteDirectory", "Directory not found with this path");
+		Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"MySQLDataProvider::DeleteDirectory", "Directory not found with this path");
 		return false;
 	}
 
@@ -361,7 +361,7 @@ bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
 	if(dir->GetId()<=0)
 	{
 		//TODO: ERROR report
-		Error(CCDB_ERROR_DIRECTORY_INVALID_ID,"DMySQLDataProvider::DeleteDirectory", "Directory invalid id");
+		Error(CCDB_ERROR_DIRECTORY_INVALID_ID,"MySQLDataProvider::DeleteDirectory", "Directory invalid id");
 
 		return false;
 	}
@@ -369,7 +369,7 @@ bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
 	if(dir->GetSubdirectories().size()>0)
 	{
 		//TODO error, have children
-		Error(CCDB_ERROR_DELETE_NONEMPTY,"DMySQLDataProvider::DeleteDirectory", "Directory contains subdirectory");
+		Error(CCDB_ERROR_DELETE_NONEMPTY,"MySQLDataProvider::DeleteDirectory", "Directory contains subdirectory");
 		return false;
 	}
 	
@@ -381,7 +381,7 @@ bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
 	if(mReturnedRowsNum > 0)
 	{
 		//TODO warning
-		Error(CCDB_ERROR_DELETE_NONEMPTY,"DMySQLDataProvider::DeleteDirectory", "Directory contains type tables");
+		Error(CCDB_ERROR_DELETE_NONEMPTY,"MySQLDataProvider::DeleteDirectory", "Directory contains type tables");
 		return false;
 	}
 	string affectedIds;
@@ -424,7 +424,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 	if(parentDir == NULL || parentDir->GetId()<=0)
 	{
 		//error
-		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"DMySQLDataProvider::GetConstantsTypeTable", "Parent directory is null or have invalid ID");
+		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::GetConstantsTypeTable", "Parent directory is null or have invalid ID");
 		return NULL;
 	}
 
@@ -432,7 +432,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 	if(!IsConnected())
 	{
 		//error !not connect
-		Error(CCDB_ERROR_NOT_CONNECTED,"DMySQLDataProvider::GetConstantsTypeTable", "Provider is not connected to MySQL.");
+		Error(CCDB_ERROR_NOT_CONNECTED,"MySQLDataProvider::GetConstantsTypeTable", "Provider is not connected to MySQL.");
 		return NULL;
 	}
 	
@@ -473,7 +473,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 	if(result->GetName() == "")
 	{
 		//TODO error, name should be not null and not empty
-		Error(CCDB_ERROR_TYPETABLE_HAS_NO_NAME,"DMySQLDataProvider::GetConstantsTypeTable", "");
+		Error(CCDB_ERROR_TYPETABLE_HAS_NO_NAME,"MySQLDataProvider::GetConstantsTypeTable", "");
 		delete result;
 		return NULL;
 	}
@@ -523,7 +523,7 @@ bool ccdb::MySQLDataProvider::GetConstantsTypeTables(  vector<ConstantsTypeTable
 	if((parentDir == NULL || parentDir->GetId()<=0) && (parentDir!=mRootDir))
 	{
 		//TODO error
-		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"DMySQLDataProvider::GetConstantsTypeTables", "Parent directory is null or has invald ID");
+		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::GetConstantsTypeTables", "Parent directory is null or has invald ID");
 		return NULL;
 	}
 	
@@ -589,34 +589,34 @@ bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *tabl
 	if(table == NULL)
 	{
 		//TODO error? Warning?
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::CreateConstantsTypeTable", "Type table is null or invalid");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::CreateConstantsTypeTable", "Type table is null or invalid");
 		return false;
 	}
 
 	if(table->GetDirectory() == NULL)
 	{
 		//TODO error? Warning?
-		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"DMySQLDataProvider::CreateConstantsTypeTable", "Directory pointer is NULL for this type table object");
+		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::CreateConstantsTypeTable", "Directory pointer is NULL for this type table object");
 		return false;
 	}
 
 	if(table->GetColumns().size() <=0)
 	{
 		//TODO error? Warning?
-		Error(CCDB_ERROR_TABLE_NO_COLUMNS,"DMySQLDataProvider::CreateConstantsTypeTable", "No colums for this type table object. Cant create");
+		Error(CCDB_ERROR_TABLE_NO_COLUMNS,"MySQLDataProvider::CreateConstantsTypeTable", "No colums for this type table object. Cant create");
 		return false;
 	}
 
 	if(!ValidateName(table->GetName()))
 	{
 		//TODO error? Warning?
-		Error(CCDB_ERROR_INVALID_OBJECT_NAME,"DMySQLDataProvider::CreateConstantsTypeTable", "Name has invalid format");
+		Error(CCDB_ERROR_INVALID_OBJECT_NAME,"MySQLDataProvider::CreateConstantsTypeTable", "Name has invalid format");
 		return false;
 	}
 	if(!table->GetNRows())
 	{
 		//TODO error? Warning?
-		Error(CCDB_ERROR_TABLE_NO_ROWS,"DMySQLDataProvider::CreateConstantsTypeTable", "Nomber of rows is equal to 0");
+		Error(CCDB_ERROR_TABLE_NO_ROWS,"MySQLDataProvider::CreateConstantsTypeTable", "Nomber of rows is equal to 0");
 		return false;
 	}
 
@@ -626,7 +626,7 @@ bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *tabl
 	{
 		delete tmpTable; 
 		//error? Warning?
-		Error(CCDB_ERROR_TABLE_EXISTS,"DMySQLDataProvider::CreateConstantsTypeTable", "Table with this name already exists");
+		Error(CCDB_ERROR_TABLE_EXISTS,"MySQLDataProvider::CreateConstantsTypeTable", "Table with this name already exists");
 		return false;
 	}
 
@@ -635,7 +635,7 @@ bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *tabl
 	if(tmpDir)
 	{	
 		//error? Warning?
-		Error(CCDB_ERROR_DIRECTORY_EXISTS,"DMySQLDataProvider::CreateConstantsTypeTable", "There is a directory with such name");
+		Error(CCDB_ERROR_DIRECTORY_EXISTS,"MySQLDataProvider::CreateConstantsTypeTable", "There is a directory with such name");
 		return false;
 	}
 
@@ -737,7 +737,7 @@ bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTab
 		{
 			//request was made for directory that doestn exits
 			//TODO place warning or not?
-			Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"DMySQLDataProvider::SearchConstantsTypeTables", "Path to search is not found");
+			Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"MySQLDataProvider::SearchConstantsTypeTables", "Path to search is not found");
 			return false;
 		}
 	}
@@ -833,21 +833,21 @@ bool ccdb::MySQLDataProvider::UpdateConstantsTypeTable( ConstantsTypeTable *tabl
 	if(!table || !table->GetId())
 	{
 		//TODO warning
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::UpdateConstantsTypeTable", "Type table is null or have wrong ID");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::UpdateConstantsTypeTable", "Type table is null or have wrong ID");
 		return false;
 	}
 	
 	if(!table->GetDirectory())
 	{
 		//TODO warning
-		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"DMySQLDataProvider::UpdateConstantsTypeTable", "Directory is NULL for the table");
+		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::UpdateConstantsTypeTable", "Directory is NULL for the table");
 		return false;
 	}
 	
 	if(!ValidateName(table->GetName()))
 	{
 		//done error
-		Error(CCDB_ERROR_INVALID_OBJECT_NAME,"DMySQLDataProvider::UpdateConstantsTypeTable", "Table name is incorect. Only letters, digits and '_' are allowed. ");
+		Error(CCDB_ERROR_INVALID_OBJECT_NAME,"MySQLDataProvider::UpdateConstantsTypeTable", "Table name is incorect. Only letters, digits and '_' are allowed. ");
 		return false;
 	}
 	
@@ -856,7 +856,7 @@ bool ccdb::MySQLDataProvider::UpdateConstantsTypeTable( ConstantsTypeTable *tabl
 	if(existingTable!=NULL && existingTable->GetId()!=table->GetId())
 	{
 		//error
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::UpdateConstantsTypeTable", "Another table whith such name is found");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::UpdateConstantsTypeTable", "Another table whith such name is found");
 		return false;
 	}
 	
@@ -893,7 +893,7 @@ bool ccdb::MySQLDataProvider::DeleteConstantsTypeTable( ConstantsTypeTable *tabl
 	if(table == NULL || table->GetId() <=0)
 	{
 		//TODO error? Warning?
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::DeleteConstantsTypeTable", "Type table is null or have wrong ID");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::DeleteConstantsTypeTable", "Type table is null or have wrong ID");
 		return false;
 	}
 	
@@ -975,14 +975,14 @@ bool ccdb::MySQLDataProvider::CreateColumns(ConstantsTypeTable* table)
 	if(tableId <=0)
 	{
 		//TODO WARNING try to create columns without table key
-		Error(CCDB_ERROR_INVALID_ID,"DMySQLDataProvider::CreateColumns", "Type table has wrong DB ID");
+		Error(CCDB_ERROR_INVALID_ID,"MySQLDataProvider::CreateColumns", "Type table has wrong DB ID");
 		return false; 
 	}
 
 	if(table->GetColumns().size() <=0)
 	{
 		//TODO WARNING try to create columns without columns
-		Error(CCDB_ERROR_TABLE_NO_COLUMNS,"DMySQLDataProvider::CreateColumns", "Table have no columns or colums are not loaded");
+		Error(CCDB_ERROR_TABLE_NO_COLUMNS,"MySQLDataProvider::CreateColumns", "Table have no columns or colums are not loaded");
 		return false; 
 	}
 	
@@ -1011,7 +1011,7 @@ bool ccdb::MySQLDataProvider::LoadColumns( ConstantsTypeTable* table )
 	if(table->GetId()<=0)
 	{
 		//TODO error
-		Error(CCDB_ERROR_INVALID_ID,"DMySQLDataProvider::LoadColumns", "Type table has wrong ID");
+		Error(CCDB_ERROR_INVALID_ID,"MySQLDataProvider::LoadColumns", "Type table has wrong ID");
 		return false;
 	}
 		
@@ -1109,7 +1109,7 @@ RunRange* ccdb::MySQLDataProvider::GetRunRange( int min, int max, const string& 
 	if(mReturnedRowsNum>1)
 	{
 		//TODO warning not uniq row
-		Error(CCDB_ERROR,"DMySQLDataProvider::GetRunRange", "Run range with such min, max and name is not alone in the DB");
+		Error(CCDB_ERROR,"MySQLDataProvider::GetRunRange", "Run range with such min, max and name is not alone in the DB");
 	}
 
 	FreeMySQLResult();
@@ -1153,7 +1153,7 @@ RunRange* ccdb::MySQLDataProvider::GetRunRange( const string& name )
 	if(mReturnedRowsNum>1)
 	{
 		//warning not uniq row
-		Error(CCDB_ERROR,"DMySQLDataProvider::GetRunRange", "Run range with such name is not alone in the DB");
+		Error(CCDB_ERROR,"MySQLDataProvider::GetRunRange", "Run range with such name is not alone in the DB");
 	}
 
 	FreeMySQLResult();
@@ -1192,13 +1192,13 @@ bool ccdb::MySQLDataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, C
 {
 	ClearErrors(); //Clear error in function that can produce new ones
 
-	if(!CheckConnection("DMySQLDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, ConstantsTypeTable* table, int take, int startWith)")) return false;
+	if(!CheckConnection("MySQLDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, ConstantsTypeTable* table, int take, int startWith)")) return false;
 	
 	//validate table
 	if(!table || !table->GetId())
 	{
 		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetRunRanges", "Type table is null or have invalid id");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetRunRanges", "Type table is null or have invalid id");
 		return false;
 	}
 	//variation handle
@@ -1281,7 +1281,7 @@ bool ccdb::MySQLDataProvider::DeleteRunRange(RunRange* run)
 	if(!run || run->GetId() <=0)
 	{
 		//TODO error;
-		Error(CCDB_ERROR_RUNRANGE_INVALID,"DMySQLDataProvider::DeleteRunRange", "Runrange is null or have invalid ID");
+		Error(CCDB_ERROR_RUNRANGE_INVALID,"MySQLDataProvider::DeleteRunRange", "Runrange is null or have invalid ID");
 		return false;
 	}
 	string assCountQuery = StringUtils::Format("SELECT `id` FROM `assignments` WHERE `runRangeId`='%i' LIMIT 1",run->GetId() );
@@ -1293,7 +1293,7 @@ bool ccdb::MySQLDataProvider::DeleteRunRange(RunRange* run)
 	if(mReturnedRowsNum > 0)
 	{
 		//TODO warning
-		Error(CCDB_ERROR_DELETE_NONEMPTY,"DMySQLDataProvider::DeleteRunRange", "There is assigment that linked to this runrange. Impossible to delete it");
+		Error(CCDB_ERROR_DELETE_NONEMPTY,"MySQLDataProvider::DeleteRunRange", "There is assigment that linked to this runrange. Impossible to delete it");
 		return false;
 	}
 	FreeMySQLResult();
@@ -1314,7 +1314,7 @@ bool ccdb::MySQLDataProvider::UpdateRunRange(RunRange* run)
 	if(run==NULL || run->GetId()<=0) 
 	{
 		//TODO error
-		Error(CCDB_ERROR_RUNRANGE_INVALID,"DMySQLDataProvider::UpdateRunRange", "Run range is null or has wrong id");
+		Error(CCDB_ERROR_RUNRANGE_INVALID,"MySQLDataProvider::UpdateRunRange", "Run range is null or has wrong id");
 		return false;
 	}
 
@@ -1336,13 +1336,13 @@ bool ccdb::MySQLDataProvider::GetVariations(vector<Variation*>& resultVariations
 {
 	ClearErrors(); //Clear error in function that can produce new ones
 
-	if(!CheckConnection("DMySQLDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, ConstantsTypeTable* table, int take, int startWith)")) return false;
+	if(!CheckConnection("MySQLDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, ConstantsTypeTable* table, int take, int startWith)")) return false;
 	
 	//validate table
 	if(!table || !table->GetId())
 	{
 		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetVariations", "Type table is null or empty");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetVariations", "Type table is null or empty");
 		return false;
 	}
 	
@@ -1542,7 +1542,7 @@ bool ccdb::MySQLDataProvider::UpdateVariation( Variation *variation )
 	if(!variation || variation->GetId()<=0)
 	{
 		//TODO warning
-		Error(CCDB_ERROR_VARIATION_INVALID,"DMySQLDataProvider::UpdateVariation", "Variation is NULL or has bad ID so update operations cant be done");
+		Error(CCDB_ERROR_VARIATION_INVALID,"MySQLDataProvider::UpdateVariation", "Variation is NULL or has bad ID so update operations cant be done");
 		return false;
 	}
 	
@@ -1567,7 +1567,7 @@ bool ccdb::MySQLDataProvider::DeleteVariation( Variation *variation )
 	if(!variation || variation->GetId()<=0)
 	{
 		//TODO warning
-		Error(CCDB_ERROR_VARIATION_INVALID,"DMySQLDataProvider::DeleteVariation", "Variation is NULL or has bad ID so delete operations cant be done");
+		Error(CCDB_ERROR_VARIATION_INVALID,"MySQLDataProvider::DeleteVariation", "Variation is NULL or has bad ID so delete operations cant be done");
 		return false;
 	}
 	
@@ -1611,14 +1611,14 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 
 	ClearErrors(); //Clear errors in function that can produce new ones ;)
 
-	if(!CheckConnection("DMySQLDataProvider::GetAssignmentShort(int run, const string& path, const string& variation)")) return NULL;
+	if(!CheckConnection("MySQLDataProvider::GetAssignmentShort(int run, const string& path, const string& variation)")) return NULL;
 
 	//get table! 
 	ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
 	if(!table)
 	{
 		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetAssignmentShort", StringUtils::Format("Table with the name '%s' was not found", path.c_str()));
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetAssignmentShort", StringUtils::Format("Table with the name '%s' was not found", path.c_str()));
 		return NULL;
 	}
 
@@ -1645,8 +1645,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	//query this
 	if(!QuerySelect(query))
 	{
-		//TODO report error
-
+		//Error report is in QuerySelect
 		return NULL;
 	}
 
@@ -1654,6 +1653,8 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	if(!FetchRow())
 	{
 		//nothing was selected
+        Error(CCDB_ERROR_NO_ASSIGMENT,"MySQLDataProvider::GetAssignmentShort(int, const string&, const string&)", 
+            StringUtils::Format("No data was selected. Table '%s' for run='%i',  and variation='%s' ", path.c_str(), run, variation.c_str()));
 		return NULL;
 	}
 
@@ -1673,7 +1674,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	if(mReturnedRowsNum>1)
 	{
 		//TODO warning not uniq row
-		Error(CCDB_ERROR,"DMySQLDataProvider::GetAssignmentShort", "Many variations return instead of one");
+		Error(CCDB_ERROR,"MySQLDataProvider::GetAssignmentShort", "Many variations return instead of one");
 	}
 
 	FreeMySQLResult();
@@ -1697,13 +1698,13 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 
 	ClearErrors(); //Clear error in function that can produce new ones
 
-	if(!CheckConnection("DMySQLDataProvider::GetAssignmentShort( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
+	if(!CheckConnection("MySQLDataProvider::GetAssignmentShort( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
 	
 	//get table! 
 	ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
 	if(!table)
 	{
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetAssignmentShort", "No type table with this path was found");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetAssignmentShort", "No type table with this path was found");
 		return NULL;
 	}
 
@@ -1739,7 +1740,8 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	//Ok! We querried our run range! lets catch it! 
 	if(!FetchRow())
 	{
-		//nothing was selected
+		Error(CCDB_ERROR_NO_ASSIGMENT,"MySQLDataProvider::GetAssignmentShort(int, const string&, time_t, const string&)", 
+            StringUtils::Format("No data was selected. Table '%s' for run='%i', timestampt='%ui' and variation='%s' ", path.c_str(), run, time, variation.c_str()));
 		return NULL;
 	}
 
@@ -1783,14 +1785,14 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByVersion(int run, const 
 
 	ClearErrors(); //Clear error in function that can produce new ones
 
-	if(!CheckConnection("DMySQLDataProvider::GetAssignmentShort( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
+	if(!CheckConnection("MySQLDataProvider::GetAssignmentShort( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
 	
 	//get table! 
 	ConstantsTypeTable *table = GetConstantsTypeTable(path, true);
 	if(!table)
 	{
 		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetAssignmentShort", "No type table with this path was found");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetAssignmentShort", "No type table with this path was found");
 		return NULL;
 	}
 
@@ -1870,7 +1872,7 @@ bool ccdb::MySQLDataProvider::CreateAssignment(Assignment *assignment )
     if(!assignment->GetRunRange())           {cout<<"!assignment->GetRunRange()"<<endl;           return false;}
     if(!assignment->GetRunRange()->GetId())  
     {
-        Error(CCDB_ERROR_RUNRANGE_INVALID,"DMySQLDataProvider::CreateAssignment(DAssignment *assignment)", StringUtils::Format("Runrange is null or have invalid ID. ID is: %i" + assignment->GetRunRange()->GetId()));
+        Error(CCDB_ERROR_RUNRANGE_INVALID,"MySQLDataProvider::CreateAssignment(DAssignment *assignment)", StringUtils::Format("Runrange is null or have invalid ID. ID is: %i" + assignment->GetRunRange()->GetId()));
         return false;
     }
     if(!assignment->GetVariation())          {cout<<"!assignment->GetVariation()"<<endl;          return false;}
@@ -1880,7 +1882,7 @@ bool ccdb::MySQLDataProvider::CreateAssignment(Assignment *assignment )
 	if(table == NULL || !table->GetId())
 	{
 		//TODO warning
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::CreateAssignment", "Table is NULL or has wrong id");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::CreateAssignment", "Table is NULL or has wrong id");
 		return false;
 	}
 
@@ -1972,7 +1974,7 @@ Assignment* ccdb::MySQLDataProvider::CreateAssignment(const std::vector<std::vec
 	if(variation == NULL)
 	{
 		 //TODO error message
-		Error(CCDB_ERROR_VARIATION_INVALID,"DMySQLDataProvider::CreateAssignment", "Variation is NULL or has improper ID");
+		Error(CCDB_ERROR_VARIATION_INVALID,"MySQLDataProvider::CreateAssignment", "Variation is NULL or has improper ID");
 		return NULL;
 	}
 	 
@@ -1980,7 +1982,7 @@ Assignment* ccdb::MySQLDataProvider::CreateAssignment(const std::vector<std::vec
 	if(!table)
 	{
 		//TODO error message
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::CreateAssignment", "Type table is NULL or has improper ID");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::CreateAssignment", "Type table is NULL or has improper ID");
 		return NULL;
 	}
 	 
@@ -1988,7 +1990,7 @@ Assignment* ccdb::MySQLDataProvider::CreateAssignment(const std::vector<std::vec
 	if(data.size()!= table->GetNRows())
 	{
 		 //error message
-		Error(CCDB_ERROR_DATA_INCONSISTANT,"DMySQLDataProvider::CreateAssignment", 
+		Error(CCDB_ERROR_DATA_INCONSISTANT,"MySQLDataProvider::CreateAssignment", 
               StringUtils::Format("Number of rows is inconsistent. Rows in table definition: %i, actual rows number %i",table->GetNRows(), data.size()));
 		return NULL;
 	}
@@ -2001,7 +2003,7 @@ Assignment* ccdb::MySQLDataProvider::CreateAssignment(const std::vector<std::vec
 		if(row.size() != table->GetNColumns())
 		{
 			//TODO error handle
-			Error(CCDB_ERROR_DATA_INCONSISTANT, "DMySQLDataProvider::CreateAssignment", 
+			Error(CCDB_ERROR_DATA_INCONSISTANT, "MySQLDataProvider::CreateAssignment", 
                     StringUtils::Format("Number of columns is inconsistent. Row with inconsistency (zero based): %i , columns by table definition: %i, actual columns number %i",rowIter, table->GetNColumns(), row.size()));
 			return NULL;
 		}
@@ -2047,7 +2049,7 @@ Assignment* ccdb::MySQLDataProvider::CreateAssignment(const std::vector<std::vec
 
 Assignment* ccdb::MySQLDataProvider::GetAssignmentFull( int run, const string& path, const string& variation )
 {
-	if(!CheckConnection("DMySQLDataProvider::GetAssignmentFull(int run, cconst string& path, const string& variation")) return NULL;
+	if(!CheckConnection("MySQLDataProvider::GetAssignmentFull(int run, cconst string& path, const string& variation")) return NULL;
 	vector<Assignment *> assigments;
 	if(!GetAssignments(assigments, path, run,run, "", variation, 0, 0, 0, 1, 0))
 	{
@@ -2063,7 +2065,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentFull( int run, const string& p
 Assignment* ccdb::MySQLDataProvider::GetAssignmentFull( int run, const string& path,int version, const string& variation/*= "default"*/)
 {
 
-	if(!CheckConnection("DMySQLDataProvider::GetAssignmentFull( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
+	if(!CheckConnection("MySQLDataProvider::GetAssignmentFull( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
 	
 	//get table! 
 	vector<Assignment *> assigments;
@@ -2082,14 +2084,14 @@ bool ccdb::MySQLDataProvider::GetAssignments( vector<Assignment *> &assingments,
 {
 	ClearErrors(); //Clear error in function that can produce new ones
 
-	if(!CheckConnection("DMySQLDataProvider::GetAssignments( ... )")) return false;
+	if(!CheckConnection("MySQLDataProvider::GetAssignments( ... )")) return false;
 
 	//get table! 
 	ConstantsTypeTable *table = GetConstantsTypeTable(path, true);
 	if(!table)
 	{
 		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::GetAssignments", "Type table was not found");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetAssignments", "Type table was not found");
 		return false;
 	}
 
@@ -2219,7 +2221,7 @@ bool ccdb::MySQLDataProvider::UpdateAssignment(Assignment* assignment)
 {
 	Error(
 		CCDB_ERROR_NOT_IMPLEMENTED, 
-		"DMySQLDataProvider::UpdateAssignment(DAssignment* assignment)",
+		"MySQLDataProvider::UpdateAssignment(DAssignment* assignment)",
 		"Method is not implemented");
 	return false;
 }
@@ -2232,7 +2234,7 @@ bool ccdb::MySQLDataProvider::DeleteAssignment(Assignment* assignment)
 	if(!assignment->GetId())
 	{
 		//todo error
-		Error(CCDB_ERROR_ASSIGMENT_INVALID_ID,"DMySQLDataProvider::DeleteAssignment", "!assignment->GetId()");
+		Error(CCDB_ERROR_ASSIGMENT_INVALID_ID,"MySQLDataProvider::DeleteAssignment", "!assignment->GetId()");
 		return false;
 	}
 	
@@ -2240,7 +2242,7 @@ bool ccdb::MySQLDataProvider::DeleteAssignment(Assignment* assignment)
 	if(!assignment->GetDataVaultId())
 	{
 		//todo error 
-		Error(CCDB_ERROR_ASSIGMENT_INVALID_ID,"DMySQLDataProvider::DeleteAssignment", "!assignment->GetDataVaultId()");
+		Error(CCDB_ERROR_ASSIGMENT_INVALID_ID,"MySQLDataProvider::DeleteAssignment", "!assignment->GetDataVaultId()");
 		return false;
 	}
 	
@@ -2248,7 +2250,7 @@ bool ccdb::MySQLDataProvider::DeleteAssignment(Assignment* assignment)
 	if(!assignment->GetTypeTable() || !assignment->GetTypeTable()->GetId())
 	{
 		//todo error 
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::DeleteAssignment", "Type table is null or has improper id");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::DeleteAssignment", "Type table is null or has improper id");
 		return false;
 	}
 	
@@ -2298,7 +2300,7 @@ bool ccdb::MySQLDataProvider::FillAssignment(Assignment* assignment)
 	if(assignment == NULL || !assignment->GetId())
 	{
 		//todo report errors
-		Error(CCDB_ERROR_ASSIGMENT_INVALID,"DMySQLDataProvider::FillAssignment", "ASSIGnMENt is NULL or has improper ID so update operations cant be done");
+		Error(CCDB_ERROR_ASSIGMENT_INVALID,"MySQLDataProvider::FillAssignment", "ASSIGnMENt is NULL or has improper ID so update operations cant be done");
 		return false;
 	}
 	
@@ -2371,7 +2373,7 @@ bool ccdb::MySQLDataProvider::FillAssignment(Assignment* assignment)
 	if(mDirectoriesById.find(directoryId) == mDirectoriesById.end())
 	{
 		//todo report errors
-		Error(CCDB_ERROR,"DMySQLDataProvider::FillAssignment", "Cannot find directory locally by ID taken from database");
+		Error(CCDB_ERROR,"MySQLDataProvider::FillAssignment", "Cannot find directory locally by ID taken from database");
 		return false;
 	}
 
@@ -2380,7 +2382,7 @@ bool ccdb::MySQLDataProvider::FillAssignment(Assignment* assignment)
 	ConstantsTypeTable * table = GetConstantsTypeTable(typeTableName, parent, true);
 	if(!table)
 	{
-		Error(CCDB_ERROR_NO_TYPETABLE,"DMySQLDataProvider::FillAssignment", "Type table was not loaded");
+		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::FillAssignment", "Type table was not loaded");
 		return false;
 	}
 
@@ -2506,7 +2508,7 @@ void ccdb::MySQLDataProvider::BuildDirectoryDependences()
 			else
 			{
 				//TODO : ADD error, parent Id not found
-				Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"DMySQLDataProvider::BuildDirectoryDependences", "Parent directory with wrong id");
+				Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::BuildDirectoryDependences", "Parent directory with wrong id");
 				continue; //we have to stop operate this directory...
 			}
 		}
@@ -2681,7 +2683,7 @@ bool ccdb::MySQLDataProvider::IsNullOrUnreadable( int fieldNum )
 	if(mReturnedFieldsNum<=fieldNum)
 	{
 		//Add error, we have less fields than fieldNum
-		Error(CCDB_WARNING_MYSQL_FIELD_NUM,"DMySQLDataProvider::IsNullOrUnreadable", "we have less fields than fieldNum");
+		Error(CCDB_WARNING_MYSQL_FIELD_NUM,"MySQLDataProvider::IsNullOrUnreadable", "we have less fields than fieldNum");
 		return true;
 	}
 
@@ -2762,7 +2764,7 @@ time_t ccdb::MySQLDataProvider::ReadUnixTime( int fieldNum )
 
 bool ccdb::MySQLDataProvider::QuerySelect(const char* query)
 {
-	if(!CheckConnection("DMySQLDataProvider::QuerySelect")) return false;
+	if(!CheckConnection("MySQLDataProvider::QuerySelect")) return false;
 	
 	//do we have some results we need to free?
 	if(mResult!=NULL)
@@ -2774,7 +2776,7 @@ bool ccdb::MySQLDataProvider::QuerySelect(const char* query)
 	if(mysql_query(mMySQLHnd, query))
 	{
 		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_SELECT,"ccdb::DMySQLDataProvider::QuerySelect()",errStr.c_str());
+		Error(CCDB_ERROR_MYSQL_SELECT,"ccdb::MySQLDataProvider::QuerySelect()",errStr.c_str());
 		return false;
 	}
 
@@ -2784,7 +2786,7 @@ bool ccdb::MySQLDataProvider::QuerySelect(const char* query)
 	if(!mResult)
 	{
 		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_SELECT,"ccdb::DMySQLDataProvider::QuerySelect()",errStr.c_str());
+		Error(CCDB_ERROR_MYSQL_SELECT,"ccdb::MySQLDataProvider::QuerySelect()",errStr.c_str());
 
 			
 		mReturnedRowsNum = 0;
@@ -2810,7 +2812,7 @@ bool ccdb::MySQLDataProvider::QuerySelect(const string& query )
 
 bool ccdb::MySQLDataProvider::QueryInsert( const char* query )
 {
-	if(!CheckConnection("DMySQLDataProvider::QueryCustom")) return false;
+	if(!CheckConnection("MySQLDataProvider::QueryCustom")) return false;
 		
 	//do we have some results we need to free?
 	if(mResult!=NULL)
@@ -2822,7 +2824,7 @@ bool ccdb::MySQLDataProvider::QueryInsert( const char* query )
 	if(mysql_query(mMySQLHnd, query))
 	{
 		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_SELECT,"ccdb::DMySQLDataProvider::QueryInsert()",errStr.c_str());
+		Error(CCDB_ERROR_MYSQL_SELECT,"ccdb::MySQLDataProvider::QueryInsert()",errStr.c_str());
 		return false;
 	}
 
@@ -2846,7 +2848,7 @@ bool ccdb::MySQLDataProvider::QueryInsert( const string& query )
 
 bool ccdb::MySQLDataProvider::QueryUpdate( const char* query )
 {
-	if(!CheckConnection("DMySQLDataProvider::QueryCustom")) return false;
+	if(!CheckConnection("MySQLDataProvider::QueryCustom")) return false;
 	
 	//do we have some results we need to free?
 	if(mResult!=NULL)
@@ -2859,7 +2861,7 @@ bool ccdb::MySQLDataProvider::QueryUpdate( const char* query )
 	{
 		//TODO: error report
 		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_UPDATE,"ccdb::DMySQLDataProvider::QueryUpdate()",errStr.c_str());
+		Error(CCDB_ERROR_MYSQL_UPDATE,"ccdb::MySQLDataProvider::QueryUpdate()",errStr.c_str());
 		return false;
 	}
 
@@ -2875,7 +2877,7 @@ bool ccdb::MySQLDataProvider::QueryUpdate( const string& query ) /*/Do "Update" 
 
 bool ccdb::MySQLDataProvider::QueryDelete( const char* query )
 {
-	if(!CheckConnection("DMySQLDataProvider::QueryCustom")) return false;
+	if(!CheckConnection("MySQLDataProvider::QueryCustom")) return false;
 	
 	//do we have some results we need to free?
 	if(mResult!=NULL)
@@ -2887,7 +2889,7 @@ bool ccdb::MySQLDataProvider::QueryDelete( const char* query )
 	{
 		//TODO: error report
 		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_DELETE,"ccdb::DMySQLDataProvider::QueryDelete()",errStr.c_str());
+		Error(CCDB_ERROR_MYSQL_DELETE,"ccdb::MySQLDataProvider::QueryDelete()",errStr.c_str());
 		return false;
 	}
 
@@ -2903,7 +2905,7 @@ bool ccdb::MySQLDataProvider::QueryDelete( const string& query )
 
 bool ccdb::MySQLDataProvider::QueryCustom( const string& query )
 {
-	if(!CheckConnection("DMySQLDataProvider::QueryCustom")) return false;
+	if(!CheckConnection("MySQLDataProvider::QueryCustom")) return false;
 
 	//do we have some results we need to free?
 	if(mResult!=NULL)
@@ -2914,7 +2916,7 @@ bool ccdb::MySQLDataProvider::QueryCustom( const string& query )
 	if(mysql_query(mMySQLHnd, query.c_str()))
 	{
 		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_CUSTOM_QUERY,"ccdb::DMySQLDataProvider::QueryCustom( string query )",errStr.c_str());
+		Error(CCDB_ERROR_MYSQL_CUSTOM_QUERY,"ccdb::MySQLDataProvider::QueryCustom( string query )",errStr.c_str());
 		return false;
 	}
 	return true;

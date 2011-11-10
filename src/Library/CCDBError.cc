@@ -163,7 +163,10 @@ mKeys[1250] = "CCDB_ERROR_ASSIGMENT_INVALID_ID";
 mDescriptions[1260] = "ASSIGMEN is NULL or has improper ID so update operations cant be done"; 
 mKeys[1260] = "CCDB_ERROR_ASSIGMENT_INVALID"; 
 
-mDescriptions[1270] = "ASSIGMEN is NULL or has improper ID so update operations cant be done"; 
-mKeys[1270] = "CCDB_ERROR_DATA_INCONSISTANT"; 
+mDescriptions[1270] = "ASSIGMEN datastorage returned no assignment that corresponds to this request";
+mKeys[1270] = "CCDB_ERROR_NO_ASSIGMENT";
+
+mDescriptions[1280] = "ASSIGMEN is NULL or has improper ID so update operations cant be done"; 
+mKeys[1280] = "CCDB_ERROR_DATA_INCONSISTANT"; 
 }
 

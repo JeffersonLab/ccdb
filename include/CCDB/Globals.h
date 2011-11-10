@@ -131,8 +131,11 @@ typedef int dbkey_t;
 //ASSIGMEN is NULL or has improper ID so update operations cant be done
 #define CCDB_ERROR_ASSIGMENT_INVALID 1260
 
+//ASSIGMEN datastorage returned no assignment that corresponds to this request 
+#define CCDB_ERROR_NO_ASSIGMENT 1270
+
 //ASSIGMEN is NULL or has improper ID so update operations cant be done
-#define CCDB_ERROR_DATA_INCONSISTANT 1270
+#define CCDB_ERROR_DATA_INCONSISTANT 1280
 
 /*----------------------------------------------------------------------------------------------------
  *  SYSTEM DEFINE

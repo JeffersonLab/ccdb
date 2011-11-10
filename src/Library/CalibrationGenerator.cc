@@ -43,7 +43,7 @@ Calibration* CalibrationGenerator::MakeMySQLCalibration( const std::string & con
     }
 
     //Ok, we have to create calibration
-    //but lets see, maybe we at least have a DMySQLDataProvider for this connectionString
+    //but lets see, maybe we at least have a MySQLDataProvider for this connectionString
     MySQLDataProvider *provider = NULL;
     if(mProvidersByUrl.find(connectionString) != mProvidersByUrl.end())
     {

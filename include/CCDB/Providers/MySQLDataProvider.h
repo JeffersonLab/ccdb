@@ -1,5 +1,5 @@
-#ifndef _DMySQLDataProvider_
-#define _DMySQLDataProvider_
+#ifndef _MySQLDataProvider_
+#define _MySQLDataProvider_
 
 #ifdef WIN32
 #include <winsock.h>
@@ -991,4 +991,4 @@ private:
 };
 }
 
-#endif //_DMySQLDataProvider_
+#endif //_MySQLDataProvider_
