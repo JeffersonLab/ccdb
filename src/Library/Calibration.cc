@@ -535,10 +535,7 @@ Assignment * Calibration::GetAssignment( const string& namepath , bool loadColum
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
     Assignment* assigment = NULL;
     if(!this->IsConnected()) throw std::logic_error("Calibration class is not connected to data source. Connect to the data source first");
-
-    cout<<"janaccdb CCDB Assignment * Calibration::GetAssignment( const string& namepath , bool loadColumns/*=true*/)"<<endl;
-    cout<<"janaccdb GetAssignment run "<<run<<" variation "<<variation<<endl;
-
+    
     //Lock();Unlock();
     mReadMutex->Lock();
     if(result.WasParsedTime)

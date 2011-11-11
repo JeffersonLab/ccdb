@@ -166,12 +166,12 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         for xml_column in xml_columns:
             column_name = xml_column.attributes['name'].value
             column_type = xml_column.attributes['type'].value
-            if(is_verbose): print "      {:<35} ({})".format(column_name, column_type)
-            columns_create_command+=' "{}({})"'.format(column_name, column_type)
+            if(is_verbose): print "      {:<35} = {}".format(column_name, column_type)
+            columns_create_command+=' "{}={}"'.format(column_name, column_type)
 
         #create table command
         table_path = (ccdb_parent_path + "/" + table_name).replace("//","/")
-        create_table_command = 'ccdb ' + ccdbcmd_opts +' mktbl  {0} -r {1} {2} "#{3}"'
+        create_table_command = 'ccdb ' + ccdbcmd_opts +' mktbl  --no-quantity {0} -r {1} {2} "#{3}"'
         create_table_command = create_table_command.format(table_path, nrows, columns_create_command, "")
 
         print "    Create command"
