@@ -1,10 +1,13 @@
 #include <stdexcept>
 #include <assert.h>
+#include <iostream>
 
 #include "CCDB/Calibration.h"
 #include "CCDB/GlobalMutex.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Helpers/PathUtils.h"
+
+using namespace std;
 
 namespace ccdb
 {
@@ -83,20 +86,29 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
 	 * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
 	 */
 
-  
+   
+    
 
     Assignment* assignment = GetAssignment(namepath, true);
-
-    if(assignment == NULL) return false; //TODO possibly exception throwing?
+        
+    if(assignment == NULL) 
+    {
+            cout<<"CCDB GetCalib assignment is null "<<assignment<<endl;
+            return false; //TODO possibly exception throwing?
+    }
 
     //Get data
+    
     assert(values.empty());
+
+    
     assignment->GetMappedData(values);
 
     //check data, get columns 
     if(values.size() == 0){
         throw std::logic_error("DMySQLCalibration::GetCalib( vector< map<string, string> >&, const string&). Data has no rows. Zero rows are not supposed to be.");
     }
+    return true;
 }
 
 
@@ -523,7 +535,6 @@ Assignment * Calibration::GetAssignment( const string& namepath , bool loadColum
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
     Assignment* assigment = NULL;
     if(!this->IsConnected()) throw std::logic_error("Calibration class is not connected to data source. Connect to the data source first");
-
     
     //Lock();Unlock();
     mReadMutex->Lock();

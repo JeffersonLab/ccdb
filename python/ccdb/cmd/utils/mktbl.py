@@ -11,7 +11,7 @@ log = logging.getLogger("ccdb.cmd.utils.mktbl")
 
 #ccdbcmd module interface
 def create_util_instance():
-    if is_debug_verbose(): print "      registring MakeTable"
+    log.debug("      registring MakeTable")
     return MakeTable()
 
 
@@ -29,6 +29,9 @@ class MakeTable(ConsoleUtilBase):
     short_descr = "Create constants type table"
     uses_db = True
     
+#----------------------------------------
+#   __init__ 
+#---------------------------------------- 
     def __init__(self):
         self.columns = {}
         self.unparsed_columns = []
@@ -42,8 +45,11 @@ class MakeTable(ConsoleUtilBase):
         self.table_parent_path = ""
         self.table_path = ""
         self.table_path_set = False
+        self.no_columns_quantity=False
     
-    
+#--------------------------------------------------------------------------------
+#   reset_on_process - sets values to be ready for new process function
+#--------------------------------------------------------------------------------     
     def reset_on_process(self):
         self.columns = {}
         self.unparsed_columns = []
@@ -57,18 +63,19 @@ class MakeTable(ConsoleUtilBase):
         self.table_parent_path = ""
         self.table_path = ""
         self.table_path_set = False
+        self.no_columns_quantity=False
         #set interactive mode as context by default
         self.interactive = self.context.is_interactive
         
 
-    # process this command
-    #------------------------------
+#----------------------------------------
+#   process - processes commands
+#----------------------------------------   
     def process(self, args):
         
         #>oO debug      
-        if is_debug_verbose():
-            print "\n\n\n" + Theme.Accent + " MakeTable " + Theme.Reset + "module is processing..."
-            print args
+        log.debug("Cat is gained a control over the process.")
+        log.debug("   " + " ".join(args))
         
         #reset all needed variables
         self.reset_on_process()
@@ -96,7 +103,10 @@ class MakeTable(ConsoleUtilBase):
         #create table
         self.do_create_type()
         
-             
+
+#----------------------------------------
+#   process - processes commands
+#----------------------------------------              
     def interactive_mode(self):
         if not self.table_path_set:
             self.table_name = raw_input("Enter table name :")
@@ -104,7 +114,11 @@ class MakeTable(ConsoleUtilBase):
             self.table_path = posixpath.join(self.table_parent_path, self.table_name)
         if not self.comment_set:
             self.comment = raw_input("Enter comment :")
-        
+
+
+#----------------------------------------
+#   process - processes commands
+#----------------------------------------         
     def do_create_type(self):
         if is_debug_verbose():
             print "writing to database..." 
@@ -125,9 +139,10 @@ class MakeTable(ConsoleUtilBase):
         #    column.SetType(pycolumn["type"])
         #    table.AddColumn(column)
 
-        
-    # process input arguments
-    #------------------------------    
+
+#----------------------------------------------
+#   process_arguments - process input arguments
+#----------------------------------------------
     def process_arguments(self, args):
         """@brief process input arguments
         
@@ -160,7 +175,12 @@ class MakeTable(ConsoleUtilBase):
                             self.rows_set = False
                             
                         i+=1
-                        
+
+                #no columns quantity 
+                if token == "-nq" or token.startswith("--no-quantity"):
+                    self.no_columns_quantity=True
+                    continue
+
                 #interactive mode
                 if token == "-i" or token == "--interactive":
                     self.interactive = True
@@ -229,28 +249,30 @@ class MakeTable(ConsoleUtilBase):
         result["type"] = "double" #default type
         result["name"] = ""       #no name
         result["quantity"] = 1    #column quantity
-        
+        result["no_columns_quantity"] = self.no_columns_quantity
+
         #regular expression that matches strings like this
         # <quantity><name>(<type>) or <quantity>(<pretype>)<name>
-        preg = "(?P<quantity>^[0-9]*)(\\((?P<pretype>.*)\\))*(?P<name>[0-9a-zA-Z_]+)*(\\((?P<type>.*)\\))*"
+        
+        preg = "(?P<quantity>^[0-9]*)(?P<name>[0-9a-zA-Z_]+)*(=(?P<type>.*))*"
+        if self.no_columns_quantity:
+            preg = "(?P<name>[0-9a-zA-Z_]+)*(=(?P<type>.*))*"
+        
         m = re.match(preg, value)
         
         #fill results
-        if(m.group("quantity")):
+        if not self.no_columns_quantity and m.group("quantity"):
             try:
                 result["quantity"] = int(m.group("quantity"))
             except ValueError:
                 pass
-        
-        if(m.group("pretype")):
-            result["type"] = m.group("pretype")
-        
+                        
         if(m.group("type")):
             result["type"] = m.group("type")
         
         if(m.group("name")):
             result["name"] = m.group("name")
-        
+              
         return result
             
             
@@ -276,9 +298,8 @@ columns format:
       <name1> <name2> ... <nameN>   -   create N columns, with names name1 ... nameN of type double (by default)
 
     full format for each column:
-       <quantity><name><start_index>(<type>) 
-    or
-       <quantity>(<type>)<name><start_index>
+       <quantity><name><start_index>=<type> 
+
     where: 
        quantity - number of columns with such name
        type     - type of the column (int, double, string)
@@ -287,16 +308,21 @@ columns format:
 
     It is simple! Just look at examples:
     1) 'x  y  z'   -   create 3 columns with names "x", "y", "z". The type is considered to be 'double' by default
-    2) 'index(int) digit(double) descr(string)' - create 3 columns: 'index', 'digit' and 'descr' of types int, double and string
+    2) 'index=int digit=double descr=string' - create 3 columns: 'index', 'digit' and 'descr' of types int, double and string
     
     Imagine, one needs to create 50 columns for 50 channels?
     3) '50channel'        -  create 50 columns channel0,channel1, ..., channel49. The type is considered to be 'double' by default
-    4) '50channel(int)'   -  create 50 columns channel0,channel1, ..., channel49 of type (int)
+    4) '50channel=int'    -  create 50 columns channel0,channel1, ..., channel49 of type (int)
     
     The last one is change start index of auto naming the colums
     5) '50channel1'    -  create 50 columns channel1,channel1, ..., channel50
-    6) '3item_15(long) - create item_15, item_16, item_17 of type long
- 
+    6) '3item_15=long - create item_15, item_16, item_17 of type long
+       /   \    \   \__________
+      /     \    \             \           
+ <quantity><name><start_index>=<type> 
+
+    * You can disable quantity logic with --no-quantity flag (see --no-quantity details) 
+
 examples:
 
     1) mktbl /test/mytable x y z 
@@ -305,15 +331,17 @@ examples:
     2) mktbl /test/mytable -r 2 x y z #"This is comment for my table"
         the same as in first example, but with 2 rows and comment      
     
-    3) mktbl /test/table2 5val_2(int)
-       creates in a directory "/test" a table with name "table2" with 5 columns "val_2", "val_3" ... "val_6" of type (int)
+    3) mktbl /test/table2 5val2=int
+       creates in a directory "/test" a table with name "table2" with 5 columns "val2", "val3" ... "val6" of type int.
 
 keys:
-    -r <N> or  --rows <N>     Sets number of rows
-    -c <N> or  --columns <N>  Sets number of columns
-    -I     or  --interactive  Interactively ask information that is not provided (rows number, comments)
-                              (This option is switched ON by default if ccdbcmd is in interactive mode)
-    
+    -r <N> or  --rows <N>       Number of rows
+    -c <N> or  --columns <N>    Number of columns
+    -I     or  --interactive    Interactively ask information that is not provided (rows number, comments)
+                                (This option is switched ON by default if ccdbcmd is in interactive mode)
+    -nq    or  --no-quantity    if set digits before column names will be NOT treated as quantities
+                                i.e  mktbl ... 10val      - creates 10 columns named val0 ... val9
+                                     mktbl -nq ... 10val  - creates 1 column named 10val
             """
         
     # print validation table

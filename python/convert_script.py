@@ -78,14 +78,7 @@ rules_dir = os.environ['JANA_CALIB_RULES']
 rules_xml_dir = os.path.join(rules_dir, 'xml')
 
 
-#-----------------------------
-# *** PRINT CONFIGURATION  ***
-#-----------------------------
-print "CCDB path:      " + ccdb_dir
-print "CCDB options:   " + ccdbcmd_opts
-print "SVN calib:      " + calib_dir
-print "Converse rules: " + rules_dir
-print "Cnv. rules xml: " + rules_xml_dir
+
 
 #-----------------------------
 # ***    PARSE XML DIRS    ***
@@ -109,6 +102,14 @@ execute_ccdb_commands = result.execute
 is_reharsal = result.rehearsal
 is_verbose = result.verbose
 
+#-----------------------------
+# *** PRINT CONFIGURATION  ***
+#-----------------------------
+print "CCDB path:      " + ccdb_dir
+print "CCDB options:   " + ccdbcmd_opts
+print "SVN calib:      " + calib_dir
+print "Converse rules: " + rules_dir
+print "Cnv. rules xml: " + rules_xml_dir
 print " execute_commands " + repr(execute_ccdb_commands)
 print " is_reharsal " + repr(is_reharsal)
 print " is verbose " + repr(is_verbose)
@@ -165,12 +166,12 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         for xml_column in xml_columns:
             column_name = xml_column.attributes['name'].value
             column_type = xml_column.attributes['type'].value
-            if(is_verbose): print "      {:<35} ({})".format(column_name, column_type)
-            columns_create_command+=' "{}({})"'.format(column_name, column_type)
+            if(is_verbose): print "      {:<35} = {}".format(column_name, column_type)
+            columns_create_command+=' "{}={}"'.format(column_name, column_type)
 
         #create table command
         table_path = (ccdb_parent_path + "/" + table_name).replace("//","/")
-        create_table_command = 'ccdb ' + ccdbcmd_opts +' mktbl  {0} -r {1} {2} "#{3}"'
+        create_table_command = 'ccdb ' + ccdbcmd_opts +' mktbl  --no-quantity {0} -r {1} {2} "#{3}"'
         create_table_command = create_table_command.format(table_path, nrows, columns_create_command, "")
 
         print "    Create command"
@@ -215,36 +216,46 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
 #-----------------------------------------------------"
 # process_directories
 #-----------------------------------------------------"
-def process_directories(home_dir):
+def process_directories(processing_dir):
     """ Create all directories according to rules_xml_dir"""
     
     print
-    print "-----------------------------------------------------"
-    print "Entered directory  " + home_dir
-    print "-----------------------------------------------------"
-    sub_dirs = [f for f in os.listdir(home_dir) if os.path.isdir(os.path.join(home_dir, f))]    
-    if not len(sub_dirs): return
-
-    ccdb_parent_path = home_dir[len(rules_xml_dir):].replace("\\","/")
-    print "CCDB parent path that corresponds to this directory: "
-    print ccdb_parent_path
+    print "----------------------------------------------------------------------------------------------------------"
+    print "Entered directory  " + processing_dir
+    print "----------------------------------------------------------------------------------------------------------"
+    print
+    
+    #get ccdb directory that corresponds to this directory
+    ccdb_dir = processing_dir[len(rules_xml_dir):].replace("\\","/")
+    print processing_dir[len(rules_xml_dir):]
+    print "  CCDB parent path that corresponds to this directory: "
+    print "  " + ccdb_dir
     print
 
-    #get files
-    sub_files = [f for f in os.listdir(home_dir) if os.path.isfile(os.path.join(home_dir, f))]
-    
-    #iterate through files and process xml files
+    #get all xml files in the directory
+    sub_files = [f 
+                 for f in os.listdir(processing_dir) 
+                 if os.path.isfile(os.path.join(processing_dir, f)) and f.endswith(".xml")
+                 ]
+    print "  Found " + repr(len(sub_files)) + " files"
+
+    #iterate and process xml files
     for filename in sub_files:
-        if not filename.endswith(".xml"): continue
-        process_file(home_dir, filename, ccdb_parent_path)
+        process_file(processing_dir, filename, ccdb_dir)
 
     
-    print "Scanning for subdirectories"
+    print "  Scanning for subdirectories"
+    sub_dirs = [dir 
+                for dir in os.listdir(processing_dir) 
+                if os.path.isdir(os.path.join(processing_dir, dir)) and not dir == '.svn'
+                ]
+    
+    if not len(sub_dirs): return
+
     for directory in sub_dirs:
-        if directory == '.svn': continue
-        print "found subdirectory " + directory
-        create_directory(directory, ccdb_parent_path)
-        process_directories(os.path.join(home_dir, directory))
+        print "  found subdirectory " + directory
+        create_directory(directory, ccdb_dir)
+        process_directories(os.path.join(processing_dir, directory))
 
 
     #print "Xml dir names"
@@ -261,9 +272,11 @@ def create_directory(dir_name, parent_path):
     command = "ccdb " + ccdbcmd_opts + " mkdir " + path
     print command
     if(execute_ccdb_commands): os.system(command)
+    print "here"
 
 
 if execute_ccdb_commands or is_reharsal:
+    
     process_directories(rules_xml_dir);
 
     
