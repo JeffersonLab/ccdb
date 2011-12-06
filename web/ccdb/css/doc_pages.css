@@ -1,0 +1,22 @@
+#search_documents
+{
+    position:absolute;
+    left:50%;
+    margin-left:250px;
+    margin-top:70px;
+    top: 27px;
+}
+
+
+root { 
+    display: block;
+}
+
+#d_header {
+  height: 50px;
+}
+
+#d_body div.content div.center{
+  width: 970px;
+}
+

@@ -43,8 +43,8 @@ class CcdbWebInstaller:
 #------------------------------------    
     def __init__(self):
         if "CCDB_HOME" in os.environ:
-            self.ccdb_home = os.path.join(os.environ["CCDB_HOME"], "web")
-            self.web_source_path = os.path.join(ccdb_home, "web")
+            self.ccdb_home = os.environ["CCDB_HOME"]
+            self.web_source_path = os.path.join(self.ccdb_home, "web")
         else:
             print "CCDB_HOME is not set!"
 
@@ -56,8 +56,8 @@ class CcdbWebInstaller:
         #*** COPY SITE FILES ***
         print "1. Copy html folder"
 
-        all_source = os.path.join(self.source_path, "ccdb", "*")
-        all_cgi = os.path.join(self.source_path, "cgi-bin", "*")
+        all_source = os.path.join(self.web_source_path, "ccdb", "*")
+        all_cgi = os.path.join(self.web_source_path, "cgi-bin", "*")
 
         print all_source
         os.system("cp -rf " + all_source + " " + self.dest_html_dir)
@@ -66,7 +66,7 @@ class CcdbWebInstaller:
         #*** COPY LIBRARY 
         if self.copy_library:
             print "1.2 Copy libccdb.so"
-            full_lib_path = os.path.join(self.ccdb_home,"lib", library_file_name)
+            full_lib_path = os.path.join(self.ccdb_home,"lib", self.library_file_name)
             os.system("cp -rf " + full_lib_path + " " + self.dest_cgi_dir)
 
         #*** USE RIGHT CONFIG FILES ***
@@ -106,6 +106,6 @@ class CcdbWebInstaller:
         print self.dest_html_dir
         print
         print "Site source directory:"
-        print self.source_path
+        print self.web_source_path
         print
 

@@ -1,0 +1,13 @@
+This manual asserts that ccdb is set and database is configured
+
+S T E P   1   -  M A K E
+==========================
+
+ make ccdb library for your system. 
+ scons            - makes ccdb library located $CCDB_HOME/lib and test executable located in $CCDB_HOME/bin
+
+
+##RUN CODE:
+
+    cd $CCDB_HOME
+    scons web=1

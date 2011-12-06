@@ -1,0 +1,94 @@
+[onload;file='header.html';getbody]
+
+<!-- CONTENT PART -->
+<div class="center">
+  <h1>Table data</h1>
+   
+
+ <!-- SCRIPTS AND STYLES PART -->
+  <style type="text/css" title="currentStyle">
+    @import "[var.cfg_root]/js/data_tables/css/demo_page.css";
+    @import "[var.cfg_root]/js/data_tables/css/demo_table.css";
+  </style>
+  <script type="text/javascript" language="javascript" src="[var.cfg_root]/js/data_tables/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+	
+		$.ajax({
+          type: 'POST',
+          url: '[onshow.cfg_data_provider_url]?op=data&request=[onshow.data_request]',
+          data: '',
+          cache: false,
+          dataType: "json",
+          success: function(result3) {
+		    
+			//*******************************
+			// FILL COMMENTS
+			//*******************************
+			$('#table_comments').html(result3.aaComments);
+			
+			//*******************************
+			// FILL TABLE
+			//*******************************
+		  	thead = "<tr>"
+			for(var head_index in result3.aaColumns){
+				thead +='<td>' + result3.aaColumns[head_index] + '</td>'
+			}
+			thead +="</tr>"
+		  	$('#example thead').append(thead);
+			$('#example tfoot').append(thead);
+			
+			
+			content ="";
+			
+            //your stuff here
+			for(var row_index in result3.aaData){
+				content+="<tr>";
+				for(var column_index in result3.aaData[row_index]){
+					content += "<td>";
+					content += result3.aaData[row_index][column_index];
+					content += "</td>";
+				}
+      			content+="</tr>";
+   			}
+			
+			alert(content);
+			//add content
+			$('#example tbody').append(content);
+			$('#example').dataTable({"bSort": false});
+			
+          },
+        });
+        
+        //data tables setup
+        /*var oTable = $('#example').dataTable( {
+	        "bProcessing": true,
+            "sAjaxSource": "[onshow.cfg_data_provider_url]?op=data&request=/test:default::",
+            "bDeferRender": true
+		} ); //data tables setup end*/
+	} );
+  </script>
+  <!-- END SCRIPTS AND STYLES PART -->
+
+
+  <!-- COMMENTS -->
+  <h3>Comments:</h3>
+  <div id="table_comments"></div>
+  <br><br>
+  <!-- COMMENTS -->
+  <!-- DATA TABLE -->
+  <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+   <thead>
+    </thead>
+    <tbody>
+    </tbody>
+	<tfoot>
+    </tfoot>
+  </table>
+  <!-- END DATA TABLE -->
+
+</div>
+<div class="right">
+           
+</div>
+[onload;file='footer.html';getbody]

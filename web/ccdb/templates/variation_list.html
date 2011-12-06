@@ -1,0 +1,81 @@
+[onload;file='header.html';getbody]
+<div class="center">
+  <h1>Test template</h1>
+  <!-- SCRIPTS AND STYLES PART -->
+  <style type="text/css" title="currentStyle">
+    @import "[var.cfg_root]/js/data_tables/css/demo_page.css";
+    @import "[var.cfg_root]/js/data_tables/css/demo_table.css";
+  </style>
+  <script type="text/javascript" language="javascript" src="[var.cfg_root]/js/data_tables/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+	
+		$(".cub").click(function(){
+			$(".cub").attr("style":"background:blue");
+		});
+        
+        //data tables setup
+        var oTable = $('#example').dataTable( {
+	        "bProcessing": true,
+            "sAjaxSource": "[onshow.cfg_data_provider_url]?op=data&request=[onshow.data_request]",
+            "bDeferRender": true,
+            "aoColumnDefs": [
+                { "sClass": "center", "aTargets": [2] },
+                { "sClass": "center", "aTargets": [3] },
+                {
+                    "fnRender": function ( oObj ) {
+                        var url = "/show_data.php?request=[onshow.directory_path]:" 
+                            + oObj.aData[0] +":" //run number
+                            + oObj.aData[2] +":" //variation
+                            + oObj.aData[4];     //timestampt
+                    
+                            //return "<a href='" + url +'">Show data</a>';
+                            return "[ <a href='"+url+"'>Values</a> ] ";
+                      },
+                      "aTargets": [ 5 ],
+                      "sClass": "center"
+                 },
+                 { "bVisible": false, "aTargets": [4] }
+            ]
+		} ); //data tables setup end
+	} );
+  </script>
+  <!-- END SCRIPTS AND STYLES PART -->
+
+
+  <!-- COMMENTS -->
+  <div class = "cub" style="width:100px; height:100px; background:red">
+  </div>
+  <div class = "cub" style="width:100px; height:100px; background:green">
+  </div>
+
+  <!-- COMMENTS -->
+  <!-- DATA TABLEi -->
+  <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+    <thead>
+      <tr>
+        <th width="10%">Run min</th>
+        <th width="10%">Run max</th>
+        <th width="25%">Variation</th>
+        <th width="25%">Commit time</th>
+        <th width="15%">Time</th>
+        <th width="15%">Controls</th>
+      </tr>
+    </thead>
+    <tbody>
+		
+    </tbody>
+	<tfoot>
+      <tr>
+        <th>Run min</th>
+        <th>Run max</th>
+        <th>Variation</th>
+        <th>Commit time</th>
+        <th>Time</th>
+        <th>Controls</th>
+      </tr>
+    </tfoot>
+  </table>
+  <!-- END DATA TABLE -->
+</div>
+[onload;file='footer.html';getbody]
