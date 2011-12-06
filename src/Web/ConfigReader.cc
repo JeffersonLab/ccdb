@@ -1,10 +1,10 @@
 // ConfigFile.cpp
 
-#include "Web/DConfigReader.h"
+#include "Web/ConfigReader.h"
 
 using std::string;
 
-DConfigReader::DConfigReader( string filename, string delimiter,
+ConfigReader::ConfigReader( string filename, string delimiter,
                         string comment, string sentry )
 	: myDelimiter(delimiter), myComment(comment), mySentry(sentry)
 {
@@ -18,14 +18,14 @@ DConfigReader::DConfigReader( string filename, string delimiter,
 }
 
 
-DConfigReader::DConfigReader()
+ConfigReader::ConfigReader()
 	: myDelimiter( string(1,'=') ), myComment( string(1,'#') )
 {
 	// Construct a ConfigFile without a file; empty
 }
 
 
-void DConfigReader::remove( const string& key )
+void ConfigReader::remove( const string& key )
 {
 	// Remove key and its value
 	myContents.erase( myContents.find( key ) );
@@ -33,7 +33,7 @@ void DConfigReader::remove( const string& key )
 }
 
 
-bool DConfigReader::keyExists( const string& key ) const
+bool ConfigReader::keyExists( const string& key ) const
 {
 	// Indicate whether key is found
 	mapci p = myContents.find( key );
@@ -42,7 +42,7 @@ bool DConfigReader::keyExists( const string& key ) const
 
 
 /* static */
-void DConfigReader::trim( string& s )
+void ConfigReader::trim( string& s )
 {
 	// Remove leading and trailing whitespace
 	static const char whitespace[] = " \n\t\v\r\f";
@@ -51,10 +51,10 @@ void DConfigReader::trim( string& s )
 }
 
 
-std::ostream& operator<<( std::ostream& os, const DConfigReader& cf )
+std::ostream& operator<<( std::ostream& os, const ConfigReader& cf )
 {
 	// Save a ConfigFile to os
-	for( DConfigReader::mapci p = cf.myContents.begin();
+	for( ConfigReader::mapci p = cf.myContents.begin();
 	     p != cf.myContents.end();
 		 ++p )
 	{
@@ -65,7 +65,7 @@ std::ostream& operator<<( std::ostream& os, const DConfigReader& cf )
 }
 
 
-std::istream& operator>>( std::istream& is, DConfigReader& cf )
+std::istream& operator>>( std::istream& is, ConfigReader& cf )
 {
 	// Load a ConfigFile from is
 	// Read in keys and values, keeping internal whitespace
@@ -115,7 +115,7 @@ std::istream& operator>>( std::istream& is, DConfigReader& cf )
 				terminate = true;
 				
 				string nlcopy = nextline;
-				DConfigReader::trim(nlcopy);
+				ConfigReader::trim(nlcopy);
 				if( nlcopy == "" ) continue;
 				
 				nextline = nextline.substr( 0, nextline.find(comm) );
@@ -125,15 +125,15 @@ std::istream& operator>>( std::istream& is, DConfigReader& cf )
 					continue;
 				
 				nlcopy = nextline;
-				DConfigReader::trim(nlcopy);
+				ConfigReader::trim(nlcopy);
 				if( nlcopy != "" ) line += "\n";
 				line += nextline;
 				terminate = false;
 			}
 			
 			// Store key and value
-			DConfigReader::trim(key);
-			DConfigReader::trim(line);
+			ConfigReader::trim(key);
+			ConfigReader::trim(line);
 			cf.myContents[key] = line;  // overwrites if key is repeated
 		}
 	}

@@ -5,33 +5,31 @@ import sys
 
 #==== SWIGSharedLibrary ================================
 def SWIGSharedLibrary(env, library, sources, **args):
-  swigre = re.compile('(.*).i')
-  if env.WhereIs('swig') is None:
-    sourcesbis = []
-    for source in sources:
-      cName = swigre.sub(r'\1_wrap.c', source)
-      cppName = swigre.sub(r'\1_wrap.cxx', source)
-      if os.path.exists(cName):
-        sourcesbis.append(cName)
-      elif os.path.exists(cppName):
-        sourcesbis.append(cppName)
-      else:
-        sourcesbis.append(source)
-  else:
-    sourcesbis = sources
-  if 'SWIGFLAGS' in args:
-    args['SWIGFLAGS'] += ['-python']
-  else:
-    args['SWIGFLAGS'] = ['-python'] + env['SWIGFLAGS']
-  args['SHLIBPREFIX']=""
-  if sys.version >= '2.5':
-    args['SHLIBSUFFIX']=".pyd"
+	swigre = re.compile('(.*).i')
+	if env.WhereIs('swig') is None:
+		sourcesbis = []
+		for source in sources:
+			cName = swigre.sub(r'\1_wrap.c', source)
+			cppName = swigre.sub(r'\1_wrap.cxx', source)
+			if os.path.exists(cName):
+				sourcesbis.append(cName)
+			elif os.path.exists(cppName):
+				sourcesbis.append(cppName)
+			else:
+				sourcesbis.append(source)
+	else:
+		sourcesbis = sources
+	if 'SWIGFLAGS' in args:
+		args['SWIGFLAGS'] += ['-python']
+	else:
+		args['SWIGFLAGS'] = ['-python'] + env['SWIGFLAGS']
+	args['SHLIBPREFIX']=""
+	if sys.version >= '2.5':
+		args['SHLIBSUFFIX']=".pyd"
  
-  cat=env.SharedLibrary(library, sourcesbis, **args)
-  return cat
+	cat=env.SharedLibrary(library, sourcesbis, **args)
+	return cat
 #==== end of SWIGSharedLibrary ========================= 
-
-#os.system("make -f $CCDB_HOME/swig/SwigPython.make");
 
 Import('default_env')
 
@@ -40,64 +38,33 @@ pyllapi_env = default_env.Clone()
 pyllapi_env['BUILDERS']['PythonModule'] = SWIGSharedLibrary
 pyllapi_env.ParseConfig('mysql_config --libs --cflags')
 pyllapi_env.ParseConfig('python-config --cflags --libs')
-#pyllapi_env.Command("echo $CCDB_CMD")
-pyllapi_lib = pyllapi_env.PythonModule('_ccdb_pyllapi', ['ccdb_pyllapi.i'], 
-                                       SWIGFLAGS=['-c++', '-classic'], 
-                                       LIBS=["ccdb"], 
-                                       LIBPATH='#lib')
+	
+#Read user flag for using swig or not
+use_swig = int(ARGUMENTS.get("swig",0))
+
+if use_swig==1:
+	print "Building CCDB using SWIG conversion"
+	
+	#Setup environment
+	
+	#pyllapi_env.Command("echo $CCDB_CMD")
+	pyllapi_lib = pyllapi_env.PythonModule('_ccdb_pyllapi', ['ccdb_pyllapi.i'], 
+										SWIGFLAGS=['-c++', '-classic'], 
+										LIBS=["ccdb"], 
+										LIBPATH='#lib')
+	pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so', pyllapi_lib)
+	pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/ccdb_pyllapi.py','ccdb_pyllapi.py')#Glob('#moo/*'))
+	pyllapi_env.InstallAs('#swig/ccdb_pyllapi_wrap.cc','ccdb_pyllapi_wrap.cc')
+	pyllapi_env.InstallAs('#swig/ccdb_pyllapi.py','ccdb_pyllapi.py')
+else:
+	print "Skipping SWIG wrapper generation. Use 'scons ... swig=1' to enable it"
+	pyllapi_lib = pyllapi_env.SharedLibrary('_ccdb_pyllapi', ['ccdb_pyllapi_wrap.cc'], LIBS=["ccdb"], LIBPATH='#lib')
 
 pyllapi_env.Append(CPPPATH = ['#include', '#src'])
-pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so', pyllapi_lib)
-pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/ccdb_pyllapi.py','ccdb_pyllapi.py')#Glob('#moo/*'))
 
-#Define sources and target
-#pyllapi_target  = "pyllapi"
-
-#pyllapi_sources = ["ccdb_pyllapi.i"]
-
-#vars = distutils.sysconfig.get_config_vars('CC', 'CXX', 'OPT', 'BASECFLAGS', 'CCSHARED', 'LDSHARED', 'SO')
-
-
-#for i in range(len(vars)):
-#    if vars[i] is None:
-#        vars[i] = ""
-#(cc, cxx, opt, basecflags, ccshared, ldshared, so_ext) = vars
-#print vars
-#pyllapi_env.ParseConfig('mysql_config --libs --cflags')
-#pyllapi_env.ParseConfig('python-config --cflags --libs')
-
-#pyllapi_lib = pyllapi_env.SharedLibrary("pyllapi",
-#                    ["ccdb_pyllapi_wrap.cxx"],
-                    #LIBS=['mkdparse', 'dparse'],
-                    #LIBPATH=["../"],
-##                    CC=cc,
-#                    SHLINK=ldshared,
-#                    SHLINKFLAGS=[],
-#                    SHLIBPREFIX="",
-#                    SHLIBSUFFIX=so_ext,
-#                    #CPPPATH=[distutils.sysconfig.get_python_inc(), '#include', 'src'],
-#                    CPPDEFINES={"SWIG_GLOBAL":None},
-#                    CPPFLAGS=basecflags + " " + opt)
-                    
-#if type(pyllapi_lib) == type([]): pyllapi_lib = pyllapi_lib[0]
-#dp1 = Install(os.path.join(tool_prefix, "lib"), "dparser.py")
-#dp2 = Install(os.path.join(tool_prefix, "lib"), lib)
-#Depends(dp1, dp2)
-
-#Setup addintional dependencies
-
-
-#pyllapi_env.Append(CCFLAGS='-g')
-#pyllapi_env.Append(CCFLAGS='-fPIC')
-#pyllapi_env.Append(SWIGFLAGS=['-c++', '-classic', '-python'])
-#pyllapi_env.Append(CPPPATH=[distutils.sysconfig.get_python_inc()])
-#pyllapi_env.Append(SHLIBPREFIX="")
-
-#Making library
-#pyllapi_lib = pyllapi_env.SharedLibrary(target = pyllapi_target, source = pyllapi_sources)
 
 #Installing 
 pyllapi_env.InstallAs('#python/ccdb/ccdb_pyllapi/_ccdb_pyllapi.so', pyllapi_lib)
 
-#Default(pyllapi_lib)
+
 

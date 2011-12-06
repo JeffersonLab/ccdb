@@ -78,27 +78,27 @@ class Empty(ConsoleUtilBase):
 
         if not self.process_arguments(args):
             return 1
-	
-	    #if self.run == -1: 
-	    #    self.run = self.context.current_run
-	        
-	    #if not self.validate():
-	    #    return 1
-	    
-	    #correct path
+            
+            #if self.run == -1: 
+            #    self.run = self.context.current_run
+                
+            #if not self.validate():
+            #    return 1
+            
+            #correct path
             #self.table_path = self.context.prepare_path(self.raw_table_path)
-	    
-	    #check xuch table really exists
-	    #table = provider.get_type_table(self.table_path, False)
-	    #if not table:
-	    #    logging.warning("Type table %s not found in the DB"% self.table_path)
-	    #    return 1
-	    
-	    #assignment = provider.get_assignment(self.table_path, self.run)
+            
+            #check xuch table really exists
+            #table = provider.get_type_table(self.table_path, False)
+            #if not table:
+            #    logging.warning("Type table %s not found in the DB"% self.table_path)
+            #    return 1
+            
+            #assignment = provider.get_assignment(self.table_path, self.run)
         assignment = Assignment()
         assignment.db_id = self.ass_id
         print self.ass_id
-	
+
         if provider.fill_assignment(assignment):
             self.print_assignment_vertical(assignment, self.show_header, self.show_borders)
         else:
@@ -106,7 +106,7 @@ class Empty(ConsoleUtilBase):
             return 1
 
         return 0
-	    
+
 #----------------------------------------
 #   process_arguments 
 #----------------------------------------  

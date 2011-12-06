@@ -95,6 +95,7 @@ class Cat(ConsoleUtilBase):
         assignment = Assignment()
 
         assignment.db_id = self.ass_id
+        
 
         if provider.fill_assignment(assignment):
             self.print_assignment_vertical(assignment, self.show_header, self.show_borders)

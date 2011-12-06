@@ -1,0 +1,16 @@
+
+Import('env')
+
+#Making web cgi sctipt if user set web=1
+build_web = int(ARGUMENTS.get("web",0))
+
+if build_web==1:
+	print "Website will be built"
+	env2 = env.Clone()	
+	ccdb_web_program = env2.Program('ccdb_cgi', source = ["mainWeb.cc", "HttpContext.cc", "ConfigReader.cc"], LIBS=["ccdb","mysqlclient"], LIBPATH='#lib', LINKFLAGS="--static -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl", CPPPATH = ['#include', '#src', '/usr/include/mysql', ])
+	env2.ParseConfig('mysql_config --libs')
+	
+	
+	env2.Install('#web/cgi-bin', ccdb_web_program)
+else:
+	print "Website will be skipped. Use 'scons ... web=1' to build website cgi scripts "

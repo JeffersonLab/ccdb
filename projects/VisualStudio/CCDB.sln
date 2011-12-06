@@ -32,8 +32,10 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "web", "..\..\web\", "{757B4
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "33087"
+		VWDPort = "4187"
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WebCgi", "WebCgi\WebCgi.vcxproj", "{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -132,6 +134,20 @@ Global
 		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|Win32.ActiveCfg = Debug|Any CPU
 		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|x64.ActiveCfg = Debug|Any CPU
 		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|x86.ActiveCfg = Debug|Any CPU
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Win32.Build.0 = Debug|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|x64.ActiveCfg = Debug|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|x86.ActiveCfg = Debug|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|Any CPU.ActiveCfg = Release|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|Win32.ActiveCfg = Release|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|Win32.Build.0 = Release|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|x64.ActiveCfg = Release|Win32
+		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

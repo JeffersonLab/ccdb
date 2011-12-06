@@ -62,6 +62,7 @@ env.Repository('src')
 SConscript('src/Library/SConscript', 'env', variant_dir='tmp/Library', duplicate=0)
 SConscript('src/Tests/SConscript', 'env', variant_dir='tmp/Tests', duplicate=0)
 SConscript('src/Benchmarks/SConscript', 'env', variant_dir='tmp/Benchmarks', duplicate=0)
+SConscript('src/Web/SConscript', 'env', variant_dir='tmp/Web', duplicate=0)
 SConscript('swig/SConscript', 'env', variant_dir='tmp/swig', duplicate=0)
 #SConscript('swig/SConscript', 'env', variant_dir='tmp/swig', duplicate=0)
 

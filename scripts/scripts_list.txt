@@ -1,0 +1,6 @@
+halld_convert_from_svn - scripts to convert current HallD svn calibration files to CCDB
+
+
+find_ccdb_usages - script connects to ccdb and get list of namepathes, then it searches 
+                       in the given directory to find all usages of constants in the code
+

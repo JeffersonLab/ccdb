@@ -1,46 +1,47 @@
-#include "Web/DHttpContext.h"
+
 #pragma warning(disable: 4996)
 
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
-#include "Web/DConfigReader.h"
-#include "Providers/DataProvider.h"
-#include "Providers/DMySQLDataProvider.h"
-#include "Model/DDirectory.h"
-#include "Log.h"
+#include "Web/ConfigReader.h"
+#include "Web/HttpContext.h"
+#include "CCDB/Providers/DataProvider.h"
+#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Model/Directory.h"
+#include "CCDB/Log.h"
 
 using namespace std;
 using namespace ccdb;
 
 // Global static pointer used to ensure a single instance of the class.
-DHttpContext* ccdb::DHttpContext::mInstance = NULL; 
+HttpContext* ccdb::HttpContext::mInstance = NULL; 
 	
 /** This function is called to create an instance of the class.
 Calling the constructor publicly is not allowed. The constructor
 is private and is only called by this Instance function.
 */
-DHttpContext* ccdb::DHttpContext::Instance()
+HttpContext* ccdb::HttpContext::Instance()
 {
    if (!mInstance)   // Only allow one instance of class to be generated.
-	  mInstance = new DHttpContext();
+	  mInstance = new HttpContext();
    return mInstance;
 }
 
 
-ccdb::DHttpContext::DHttpContext()
+ccdb::HttpContext::HttpContext()
 {
 	InitializeGet(mGet);
 	InitializePost(mPost);
 	mConnectionString = "None";
-	DConfigReader reader("ccdb.inp");	
+	ConfigReader reader("ccdb.inp");	
 	reader.readInto(mConnectionString, "ConnectionString");
 	Log::SetUseColors(false);
 	
 }
 
 
-void ccdb::DHttpContext::ProcessRequest()
+void ccdb::HttpContext::ProcessRequest()
 {
 	//TODO: Implement method
 	cout<<"Content-Type: text/html"<<endl<<endl;
@@ -97,7 +98,7 @@ void ccdb::DHttpContext::ProcessRequest()
 
 }
 
-void ccdb::DHttpContext::OpAjaxDirectoryList()
+void ccdb::HttpContext::OpAjaxDirectoryList()
 {
 	DataProvider *prov = new MySQLDataProvider();
 	
@@ -130,7 +131,7 @@ void ccdb::DHttpContext::OpAjaxDirectoryList()
 	delete prov;
 }
 
-void ccdb::DHttpContext::InitializePost( std::map <std::string, std::string> &Post )
+void ccdb::HttpContext::InitializePost( std::map <std::string, std::string> &Post )
 {
 	//TODO: Implement method
 
@@ -185,7 +186,7 @@ void ccdb::DHttpContext::InitializePost( std::map <std::string, std::string> &Po
 	}
 }
 
-void ccdb::DHttpContext::InitializeGet( std::map <std::string, std::string> &values )
+void ccdb::HttpContext::InitializeGet( std::map <std::string, std::string> &values )
 {
 	//TODO: Implement method
 
@@ -232,7 +233,7 @@ void ccdb::DHttpContext::InitializeGet( std::map <std::string, std::string> &val
 	}
 }
 
-std::string ccdb::DHttpContext::UrlDecode( const string& str )
+std::string ccdb::HttpContext::UrlDecode( const string& str )
 {
 	//TODO: Implement method
 
@@ -275,7 +276,7 @@ std::string ccdb::DHttpContext::UrlDecode( const string& str )
 	return temp;
 }
 
-void ccdb::DHttpContext::PrintVariables()
+void ccdb::HttpContext::PrintVariables()
 {
 	
 	//TODO: Implement method
@@ -288,15 +289,15 @@ void ccdb::DHttpContext::PrintVariables()
 
 }
 
-void ccdb::DHttpContext::ProcessOperation()
+void ccdb::HttpContext::ProcessOperation()
 {
 }
 
-void ccdb::DHttpContext::RenderResponse()
+void ccdb::HttpContext::RenderResponse()
 {
 }
 
-void ccdb::DHttpContext::WriteResponse(const string& content)
+void ccdb::HttpContext::WriteResponse(const string& content)
 {
 }
 

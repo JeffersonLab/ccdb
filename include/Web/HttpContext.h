@@ -1,5 +1,5 @@
-#ifndef DHttpContext_h__
-#define DHttpContext_h__
+#ifndef HttpContext_h__
+#define HttpContext_h__
 
 
 #include <string>
@@ -12,14 +12,14 @@ namespace ccdb
 
 
 
-class DHttpContext
+class HttpContext
 {
 public:
 /** @brief Singleton instance of console context
 	 *
 	 * @return   DConsoleContext* instance
 	 */
-	static DHttpContext* Instance();
+	static HttpContext* Instance();
 	void ProcessRequest();
 	
 	void PrintVariables();
@@ -32,9 +32,9 @@ public:
 	void OpAjaxDirectoryList();
 protected:
 private:
-	DHttpContext();										// Private so that it can  not be called
-	DHttpContext(DHttpContext const&){};				// copy constructor is private
-	DHttpContext& operator=(DHttpContext const&);		// assignment operator is private
+	HttpContext();										// Private so that it can  not be called
+	HttpContext(HttpContext const&){};				// copy constructor is private
+	HttpContext& operator=(HttpContext const&);		// assignment operator is private
 	
 	string mHeader; //Header definitions
 	void ProcessOperation();//processes request set variables;
@@ -43,10 +43,10 @@ private:
 	std::map <std::string, std::string> mGet;
 	std::map <std::string, std::string> mPost;
 	string mConnectionString;
-	static DHttpContext* mInstance;						//Main and only singleton instance
+	static HttpContext* mInstance;						//Main and only singleton instance
 	
 };
 }
-#endif // DHttpContext_h__
+#endif // HttpContext_h__
 
 

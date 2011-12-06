@@ -69,16 +69,18 @@ TEST_CASE("CCDB/UserAPI","tests")
 
     //test of getting data without / in the beginning
     //----------------------------------------------------
-    map<string, string> vectorOfMapsdValues;
+    vector<map<string, string> > vectorOfMapsdValues;
     REQUIRE_NOTHROW(result = calib->GetCalib(vectorOfMapsdValues, "test/test_vars/test_table"));
     REQUIRE(result);
     REQUIRE(vectorOfMapsdValues.size()>0);
+
     vectorOfMapsdValues.clear();
-    REQUIRE_NOTHROW(result = calib->GetCalib(vectorOfMapsdValues, "CDC/cdc_drift"));
+    REQUIRE_NOTHROW(result = calib->GetCalib(vectorOfMapsdValues, "test/test_vars/test_table"));
     REQUIRE(result);
     REQUIRE(vectorOfMapsdValues.size()>0);
 
     
+
     //test of get all namepaths
     //----------------------------------------------------
     vector<string> paths;
@@ -120,6 +122,8 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
 
     //And then lets connect once more to another string...
     REQUIRE_THROWS(result = calib->Connect("mysql://muuuu ha ha ha"));
+
+    
 
     //Reenable logging
     Log::SetErrorLevel(3); //restore logging

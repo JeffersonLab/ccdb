@@ -55,7 +55,7 @@ Or you can add next lines to your .bashrc
 
  ##RUN CODE:
 
-      mysql -u root -p ccdb <$CCDB_HOME/mysql/halld-11-09-2011.mysql.sql
+      mysql -u root -p ccdb <$CCDB_HOME/mysql/halld-11-10-2011.mysql.sql
  
  By default CCDB tries to connect by using 'ccdb_user' user name with no password 
  So You might whant to create such user or specify connection string explicitly later
@@ -66,7 +66,7 @@ Or you can add next lines to your .bashrc
 
      mysql -u root -p 
      CREATE USER ccdb_user;
-     GRANT ALL PRIVILEGES ON ccdb.* TO 'ccdb_user'@'localhost' WITH GRANT OPTION;
+     GRANT ALL PRIVILEGES ON ccdb.* TO 'ccdb_user'@'localhost';
      exit;
 
 
@@ -78,28 +78,19 @@ Or you can add next lines to your .bashrc
  
      sudo echo max_allowed_packet=32M >> /etc/my.cnf 
 	 
- (If you encounter an error "Found option without preceding group in config file: /etc/my.cnf" while running mysql after that, 
- open file /etc/my.cnf with editor and add [mysqld] before max_allowed_packet)
+ (If you encounter an error while running mysql after that:
+  "Found option without preceding group in config file: /etc/my.cnf"
+  open file /etc/my.cnf and add [mysqld] prior max_allowed_packet)
 
 
 	 
-  U S E R   N A M E 
-=====================================
- 
- In order to log changes it is HIGHLY desirable to let CCDB know yout CUE user
- name. If your CUE user is not the same as $USER variable, please define
- CCDB_USER environment variable as your CUE username.
- 
-##INCERT INTO .bashrc:
- 
-     export CCDB_USER=<your CUE login>
-
- To test the CCDB installed correctly you might go to $CCDB_HOME/bin directory and run ./test 
+  A F T E R   I N S T A L L
+===========================
+ To test the CCDB installed correctly one might run tests_ccdb 
 
 ##RUN CODE:
 
-     cd $CCDB_HOME/bin
-     ./tests_ccdb
+     . $CCDB_HOME/bin/tests_ccdb
 
 You should see ccdb unit test running and successfully complete.
 
@@ -112,6 +103,16 @@ To test python is working you may run ccdbcmd
 
 interactive ccdb shell should be started
 
+ In order to log changes it is HIGHLY desirable to let CCDB know yout CUE user
+ name. If your CUE user is not the same as $USER variable, please define
+ CCDB_USER environment variable as your CUE username.
+ 
+##INCERT INTO .bashrc:
+ 
+     export CCDB_USER=<your CUE login>
+
+ 
+Instructions of building website is in $CCDB_HOME/web/install.txt
 
 
   I N S T A L L   O N   F E D O R A
@@ -132,6 +133,7 @@ If you haven't configured mysql server:
 
 
 
+ 
   C O N T A C T S
 ===================
 Any questions, suggestions or discussions:

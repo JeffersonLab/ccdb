@@ -56,3 +56,6 @@ env.ParseConfig('mysql_config --libs --cflags')
 #Making library
 lib = env.SharedLibrary(target = lib_target, source = lib_sources)
 env.Install('#lib', lib)
+
+static_lib = env.StaticLibrary(target = lib_target, source = lib_sources)
+env.Install('#lib', static_lib)

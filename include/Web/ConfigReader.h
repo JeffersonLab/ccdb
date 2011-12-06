@@ -51,7 +51,7 @@
 
 using std::string;
 
-class DConfigReader {
+class ConfigReader {
 // Data
 protected:
 	string myDelimiter;  // separator between key and value
@@ -64,11 +64,11 @@ protected:
 
 // Methods
 public:
-	DConfigReader( string filename,
+	ConfigReader( string filename,
 	            string delimiter = "=",
 	            string comment = "#",
 				string sentry = "EndConfigFile" );
-	DConfigReader();
+	ConfigReader();
 	
 	// Search for key and read value or optional default value
 	template<class T> T read( const string& key ) const;  // call as read<T>
@@ -94,8 +94,8 @@ public:
 		{ string old = myComment;  myComment = s;  return old; }
 	
 	// Write or read configuration
-	friend std::ostream& operator<<( std::ostream& os, const DConfigReader& cf );
-	friend std::istream& operator>>( std::istream& is, DConfigReader& cf );
+	friend std::ostream& operator<<( std::ostream& os, const ConfigReader& cf );
+	friend std::istream& operator>>( std::istream& is, ConfigReader& cf );
 	
 protected:
 	template<class T> static string T_as_string( const T& t );
@@ -118,7 +118,7 @@ public:
 
 /* static */
 template<class T>
-string DConfigReader::T_as_string( const T& t )
+string ConfigReader::T_as_string( const T& t )
 {
 	// Convert from a T to a string
 	// Type T must support << operator
@@ -130,7 +130,7 @@ string DConfigReader::T_as_string( const T& t )
 
 /* static */
 template<class T>
-T DConfigReader::string_as_T( const string& s )
+T ConfigReader::string_as_T( const string& s )
 {
 	// Convert from a string to a T
 	// Type T must support >> operator
@@ -143,7 +143,7 @@ T DConfigReader::string_as_T( const string& s )
 
 /* static */
 template<>
-inline string DConfigReader::string_as_T<string>( const string& s )
+inline string ConfigReader::string_as_T<string>( const string& s )
 {
 	// Convert from a string to a string
 	// In other words, do nothing
@@ -153,7 +153,7 @@ inline string DConfigReader::string_as_T<string>( const string& s )
 
 /* static */
 template<>
-inline bool DConfigReader::string_as_T<bool>( const string& s )
+inline bool ConfigReader::string_as_T<bool>( const string& s )
 {
 	// Convert from a string to a bool
 	// Interpret "false", "F", "no", "n", "0" as false
@@ -171,7 +171,7 @@ inline bool DConfigReader::string_as_T<bool>( const string& s )
 
 
 template<class T>
-T DConfigReader::read( const string& key ) const
+T ConfigReader::read( const string& key ) const
 {
 	// Read the value corresponding to key
 	mapci p = myContents.find(key);
@@ -181,7 +181,7 @@ T DConfigReader::read( const string& key ) const
 
 
 template<class T>
-T DConfigReader::read( const string& key, const T& value ) const
+T ConfigReader::read( const string& key, const T& value ) const
 {
 	// Return the value corresponding to key or given default value
 	// if key is not found
@@ -192,7 +192,7 @@ T DConfigReader::read( const string& key, const T& value ) const
 
 
 template<class T>
-bool DConfigReader::readInto( T& var, const string& key ) const
+bool ConfigReader::readInto( T& var, const string& key ) const
 {
 	// Get the value corresponding to key and store in var
 	// Return true if key is found
@@ -205,7 +205,7 @@ bool DConfigReader::readInto( T& var, const string& key ) const
 
 
 template<class T>
-bool DConfigReader::readInto( T& var, const string& key, const T& value ) const
+bool ConfigReader::readInto( T& var, const string& key, const T& value ) const
 {
 	// Get the value corresponding to key and store in var
 	// Return true if key is found
@@ -221,7 +221,7 @@ bool DConfigReader::readInto( T& var, const string& key, const T& value ) const
 
 
 template<class T>
-void DConfigReader::add( string key, const T& value )
+void ConfigReader::add( string key, const T& value )
 {
 	// Add a key with given value
 	string v = T_as_string( value );

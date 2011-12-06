@@ -104,10 +104,12 @@ class MakeTable(ConsoleUtilBase):
         self.do_create_type()
         
 
-#----------------------------------------
-#   process - processes commands
-#----------------------------------------              
+#------------------------------------------
+#   interactive_mode - run interactive mode
+#------------------------------------------            
     def interactive_mode(self):
+        "asks data in interactive mode"
+
         if not self.table_path_set:
             self.table_name = raw_input("Enter table name :")
             self.table_parent_path = raw_input("Enter table parent path: ")
@@ -116,10 +118,12 @@ class MakeTable(ConsoleUtilBase):
             self.comment = raw_input("Enter comment :")
 
 
-#----------------------------------------
-#   process - processes commands
-#----------------------------------------         
+#---------------------------------
+#   do_create_type - creates table
+#---------------------------------
     def do_create_type(self):
+        "finally this function creates table"
+
         if is_debug_verbose():
             print "writing to database..." 
             
@@ -205,8 +209,9 @@ class MakeTable(ConsoleUtilBase):
                     self.unparsed_columns.append(token)
                     
     
-    # parse columns 
-    #------------------------------ ----------
+#--------------------------------------------------
+#   parse_columns - parse columns part of arguments
+#--------------------------------------------------
     def parse_columns(self, unparsed_columns):
         """ parse columns part of arguments """
         
@@ -240,8 +245,9 @@ class MakeTable(ConsoleUtilBase):
         return columns
             
     
-    # parse each column argument record
-    #-----------------------------------
+#----------------------------------------------
+#   parse_column - parse each column
+#----------------------------------------------
     def parse_column(self, value):
         """parse each column argument record"""
         
@@ -276,8 +282,9 @@ class MakeTable(ConsoleUtilBase):
         return result
             
             
-    # print help
-    #-----------------------------------
+#----------------------------------------------
+#   print_help - prints help for MakeTable
+#----------------------------------------------
     def print_help(self):
         "prints help for MakeTable"
         
@@ -339,13 +346,14 @@ keys:
     -c <N> or  --columns <N>    Number of columns
     -I     or  --interactive    Interactively ask information that is not provided (rows number, comments)
                                 (This option is switched ON by default if ccdbcmd is in interactive mode)
-    -nq    or  --no-quantity    if set digits before column names will be NOT treated as quantities
-                                i.e  mktbl ... 10val      - creates 10 columns named val0 ... val9
-                                     mktbl -nq ... 10val  - creates 1 column named 10val
+    -nq    or  --no-quantity    if set digits before column names are NOT treated as quantities
+                                i.e  mktbl ... 10val      - creates 10 columns named 'val0' ... 'val9'
+                                     mktbl -nq ... 10val  - creates 1 column named '10val'
             """
         
-    # print validation table
-    #--------------------------
+#----------------------------------------------
+#   print_validation - PRINTS VALIDATION TABLE
+#----------------------------------------------
     def print_validation(self):
         #basic values: name rows columns path
         print
