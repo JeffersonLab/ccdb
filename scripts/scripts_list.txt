@@ -2,5 +2,9 @@ halld_convert_from_svn - scripts to convert current HallD svn calibration files 
 
 
 find_ccdb_usages - script connects to ccdb and get list of namepathes, then it searches 
-                       in the given directory to find all usages of constants in the code
+                   in the given directory to find all usages of constants in the code
+					   
+					   
+install_web_site - scripts to automate website installation from $CCDB_HOME web folder to 
+                   real server folders.
 
