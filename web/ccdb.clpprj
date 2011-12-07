@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="D:\Projects\Share\ccdb\trunk\web\ccdb.clpprj">
-	<settings><PM_URL><![CDATA[D:\Projects\Share\ccdb\trunk\web\]]></PM_URL><PM_HOME_URL><![CDATA[D:\Projects\Share\ccdb\trunk\web\]]></PM_HOME_URL><PM_LIBS><![CDATA[]]></PM_LIBS><PM_FTP_CONNECTION><![CDATA[]]></PM_FTP_CONNECTION><PM_FTP_DIR><![CDATA[]]></PM_FTP_DIR><PM_FTP_UPLOAD_ON_SAVE><![CDATA[INT:0]]></PM_FTP_UPLOAD_ON_SAVE></settings><removed value=";"/><added value=""/><dplmenupath>
+	<settings><PM_URL><![CDATA[D:\Projects\Share\ccdb\trunk\web\]]></PM_URL><PM_HOME_URL><![CDATA[D:\Projects\Share\ccdb\trunk\web\]]></PM_HOME_URL><PM_LIBS><![CDATA[]]></PM_LIBS><PM_FTP_CONNECTION><![CDATA[]]></PM_FTP_CONNECTION><PM_FTP_DIR><![CDATA[]]></PM_FTP_DIR><PM_FTP_UPLOAD_ON_SAVE><![CDATA[INT:0]]></PM_FTP_UPLOAD_ON_SAVE></settings><removed value=";D:\Projects\Share\ccdb\trunk\web\ccdb\php.ini;D:\Projects\Share\ccdb\trunk\web\ccdb\robots.txt;D:\Projects\Share\ccdb\trunk\web\ccdb\templates\Codelobster0.php;"/><added value=""/><dplmenupath>
 	</dplmenupath><smartyassings>
 	</smartyassings><codestructure>
-		<csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb.clpprj" crc="-1186200385">
-		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\variations_list.html" crc="-418434107">
-			<jstree>
-				<treenode node="document;JS:JS Var Name;6;10;14;10;34;;;v;;r;;d-1,-1;;b0,0;;m">
-				</treenode>
-				<treenode node="oObj;JS:JS Var Name;43;25;47;25;34;;;v;;r;;d-1,-1;;b0,0;;m">
-				</treenode>
-				<treenode node="oTable;JS:JS Var Name;12;17;18;17;34;;;v;;r;;d-1,-1;;b0,0;;m">
-				</treenode>
-				<treenode node="url;JS:JS Var Name;28;26;31;26;34;;;v;;r;;d-1,-1;;b0,0;;m">
-				</treenode>
-			</jstree>
+		<csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb.clpprj" crc="160707730">
+		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\variation_list.html" crc="-418434107">
+		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\variation_info.html" crc="-1338131819">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\test.html" crc="-1338131819">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\table_versions.html" crc="-716851026">
 			<jstree>
@@ -66,10 +57,12 @@
 				<treenode node="document;JS:JS Var Name;7;15;15;15;34;;;v;;r;;d-1,-1;;b0,0;;m">
 				</treenode>
 			</jstree>
+		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\logs.html" crc="-1338131819">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\header.html" crc="-2005553000">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\footer.html" crc="153937810">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\docs.html" crc="-1178817622">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\directory_not_found.html" crc="269456826">
+		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\templates\directory_info.html" crc="-1338131819">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\plugins\resource.mysqls.php" crc="226687163">
 			<phptree>
 				<treenode node="Smarty_Resource_Mysqls;Php:Class Name;0;25;1;61;34;;;vSmarty_Resource_Custom;;c;;r;;d60,25;;b0,0;;m">
@@ -2265,7 +2258,7 @@
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\js\jquery-1.4.1.min.js" crc="1275735629">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\js\jquery-1.4.1-vsdoc.js" crc="-980542549">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\css\highlight.pack.js" crc="-2033388255">
-		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\variations_list.php" crc="2126806900">
+		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\variation_list.php" crc="449530326">
 			<phptree>
 				<treenode node="./config.php;Php:Php Include;14;2;26;2;34;;;v;;r;;d-1,-1;;b0,0;;m">
 				</treenode>
@@ -2276,6 +2269,7 @@
 				<treenode node="TBS;Php:Var Name;0;8;4;8;34;clsTinyButStrong;;v;;r;;d-1,-1;;b0,0;;m">
 				</treenode>
 			</phptree>
+		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\variation_info.php" crc="1604745361">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\tbs_us_manual.htm" crc="1298191306">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\table_versions.php" crc="520901805">
 			<phptree>
@@ -2292,6 +2286,7 @@
 				<treenode node="TBS;Php:Var Name;4;7;8;7;34;clsTinyButStrong;;v;;r;;d-1,-1;;b0,0;;m">
 				</treenode>
 			</phptree>
+		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\table_info.php" crc="1604745361">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\table_data.php" crc="-529927227">
 			<phptree>
 				<treenode node="./config.php;Php:Php Include;14;2;26;2;34;;;v;;r;;d-1,-1;;b0,0;;m">
@@ -2310,8 +2305,6 @@
 				<treenode node="_REQUEST;Php:Var Name;4;1;13;1;34;;;v;;r;;d-1,-1;;b0,0;;m">
 				</treenode>
 			</phptree>
-		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\robots.txt" crc="1119601120">
-		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\php.ini" crc="847790670">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\objects_list.php" crc="1009154754">
 			<phptree>
 				<treenode node="./config.php;Php:Php Include;14;2;26;2;34;;;v;;r;;d-1,-1;;b0,0;;m">
@@ -2321,6 +2314,7 @@
 				<treenode node="TBS;Php:Var Name;0;6;4;6;34;clsTinyButStrong;;v;;r;;d-1,-1;;b0,0;;m">
 				</treenode>
 			</phptree>
+		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\logs.php" crc="1604745361">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\internal_doc.html" crc="-143290975">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\internal.html" crc="-1460014797">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\index2.html" crc="-301454835">
@@ -2340,6 +2334,7 @@
 				<treenode node="/header.php;Php:Php Include;14;2;25;2;34;;;v;;r;;d-1,-1;;b0,0;;m">
 				</treenode>
 			</phptree>
+		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\directory_info.php" crc="1604745361">
 		</csfile><csfile name="D:\Projects\Share\ccdb\trunk\web\ccdb\config.php" crc="-391470451">
 			<phptree>
 				<treenode node="cfg_data_provider_url;Php:Var Name;0;1;22;1;34;;;v;;r;;d-1,-1;;b0,0;;m">
