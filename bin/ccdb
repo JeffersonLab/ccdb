@@ -1,4 +1,4 @@
-#!python
+#!/user/bin/python
 #python
 
 if __name__ == "__main__":

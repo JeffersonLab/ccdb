@@ -1,0 +1,33 @@
+#!/apps/python/python-2.7.1/bin/python
+# this is a common ccdb shell runner file designed for ifarml64
+# In 2011 ifarml64 has python 2.4 by default, so we have to use 
+# /apps/python/python-2.7.1/bin/python executable
+#
+# also we set connection string by default for halldweb1 mysql database
+
+if __name__ == "__main__":
+
+	#set connection string
+	from os import environ
+	if not 'CCDB_CONNECTION' in environ:
+		environ['CCDB_CONNECTION']='mysql://ccdb_user@halldweb1'
+		
+    import ccdb
+    import ccdb.ccdb_pyllapi
+    ccdb.init_ccdb_console()
+
+    
+    
+    
+    
+    
+        
+
+
+
+
+
+
+
+
+
