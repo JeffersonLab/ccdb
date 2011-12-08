@@ -7,10 +7,10 @@
 
 if __name__ == "__main__":
 
-	#set connection string
-	from os import environ
-	if not 'CCDB_CONNECTION' in environ:
-		environ['CCDB_CONNECTION']='mysql://ccdb_user@halldweb1'
+    #set connection string
+    from os import environ
+    if not 'CCDB_CONNECTION' in environ:
+        environ['CCDB_CONNECTION']='mysql://ccdb_user@halldweb1'
 		
     import ccdb
     import ccdb.ccdb_pyllapi
