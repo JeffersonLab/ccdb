@@ -10,6 +10,7 @@ if build_web==1:
 	env2.ParseConfig('mysql_config --libs --cflags')
 	#ccdb_web_program = env2.Program('ccdb_cgi', source = ["mainWeb.cc", "HttpContext.cc", "ConfigReader.cc"], LIBS=["ccdb","mysqlclient"], LIBPATH='#lib', LINKFLAGS="--static -lmysqlclient -lpthread -lz -lm -lrt -lssl -lcrypto -ldl", CPPPATH = ['#include', '#src', '/usr/include/mysql', ])
 	ccdb_web_program = env2.Program('ccdb_cgi', source = ["mainWeb.cc", "HttpContext.cc", "ConfigReader.cc"], LIBS=["ccdb"])
+        env2.Append(LIBPATH='#lib')
 	
 	
 	
