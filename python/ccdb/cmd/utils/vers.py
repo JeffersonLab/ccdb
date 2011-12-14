@@ -64,10 +64,10 @@ class Versions(ConsoleUtilBase):
         #correct path
         self.table_path = self.context.prepare_path(self.raw_table_path)
         
-        #check xuch table really exists
+        #check such table really exists
         table = provider.get_type_table(self.table_path, False)
         if not table:
-            logging.warning("Type table %s not found in the DB"% self.table_path)
+            log.warning("Type table %s not found in the DB"% self.table_path)
             return 1
         
         assignments = provider.get_assignments(self.table_path, self.run)

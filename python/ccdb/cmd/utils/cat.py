@@ -9,6 +9,7 @@ from ccdb import MySQLProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
+from ccdb.PathUtils import ParseRequestResult, parse_request
 
 log = logging.getLogger("ccdb.cmd.utils.cat")
 
@@ -38,12 +39,14 @@ class Cat(ConsoleUtilBase):
     rawentry = "/"      #object path with possible pattern, like /mole/*
     path = "/"          #parent path
     raw_table_path = ""
-    variation = ""
-    run = -1
+    use_ass_id = False
+    ass_id = 0
+
     show_borders = True
     show_header = True
     show_comments = False
     show_date = False
+    request = ParseRequestResult()
 
 #----------------------------------------
 #   process 
@@ -53,20 +56,14 @@ class Cat(ConsoleUtilBase):
         log.debug("   " + " ".join(args))
 
         assert self.context != None
-        provider = self.context.provider
-
-        isinstance(provider, MySQLProvider)
-
-
-        #process arguments
+                
+        #reset arguments on each process        
         self.raw_table_path = ""
-        self.variation = ""
-        self.run = -1
         self.show_borders = True
         self.show_header = True
         self.show_comments = False
         self.show_date = False
-
+        self.request = ParseRequestResult()
         self.ass_id = 0
 
         if not len(args):
@@ -92,10 +89,11 @@ class Cat(ConsoleUtilBase):
             #    return 1
 
             #assignment = provider.get_assignment(self.table_path, self.run)
-        assignment = Assignment()
-
-        assignment.db_id = self.ass_id
-        
+        assignment = None
+        if self.use_ass_id:
+            assignment = self.get_assignment_by_id(self.ass_id)
+        else:
+            assignment = self.get_assignment_by_request(self.request)
 
         if provider.fill_assignment(assignment):
             self.print_assignment_vertical(assignment, self.show_header, self.show_borders)
@@ -105,6 +103,50 @@ class Cat(ConsoleUtilBase):
 
         return 0
 
+#----------------------------------------
+#   gets assignment by database id
+#----------------------------------------  
+    def get_assignment_by_id(self, id):
+        """gets assignment by database id"""
+
+        provider = self.context.provider
+        assert isinstance(provider, MySQLProvider)
+
+        assignment = Assignment()
+        assignment.db_id = id
+        if not provider.fill_assignment(assignment): return None
+        return assignment
+
+#----------------------------------------
+#   gets assignment by parsed request
+#----------------------------------------  
+    def get_assignment_by_request(self, request):
+        """gets assignment by parsed request"""
+        
+        provider = self.context.provider
+        isinstance(provider, MySQLProvider)
+        isinstance(request, ParseRequestResult)
+
+        if not request.WasParsedVariation:
+            request.Variation = "default"
+
+        if not request.WasParsedRunNumber:
+            request.RunNumber = self.context.current_run
+
+        #correct path
+        self.table_path = self.context.prepare_path(self.request.Path)
+        
+        #check such table really exists
+        table = provider.get_type_table(self.table_path, False)
+        if not table:
+            log.warning("    Type table %s not found in the DB"% self.table_path)
+            return Null
+        
+        assignments = provider.get_assignments(self.table_path, self.request.RunNumber, self.request.Variation, self.request.Time, 1,0)
+        if assignments and len(assignments)>0:
+            return assignments[0]
+        log.warning("    Error getting assignment for the table %s"% self.table_path)
+    
 #----------------------------------------
 #   process_arguments 
 #----------------------------------------  
@@ -139,24 +181,40 @@ class Cat(ConsoleUtilBase):
                 #variation
                 if token == "-v" or token.startswith("--variation"):
                     if i<len(args):
-                        self.variation = args[i]
+                        self.request.Variation = args[i].strip()
+                        self.request.WasParsedPath = True
                         i+=1
 
                 #runrange
                 if token == "-r" or token == "--run":
                     try:
-                        self.run = int(args[i])
+                         self.request.RunNumber = int(args[i].strip())
+                         self.request.WasParsedRunNumber = True
+                         i+=1
                     except ValueError:
-                        log.warning("cannot read run from %s command"%(token))
-                    return false
+                        log.warning("    Cannot read run from {} command".format(token))
+                        return False
+                    
+                
+                #get assignment by id
+                if token == "--id" and i < len(args):
+                    token = args[i].strip()
+                    i+=1
+                    try:
+                        self.ass_id = int(token)
+                        log.debug("    The assigment DB ID is... " + repr(self.ass_id));
+                    except ValueError:
+                        print "Cannot parse argument: {}".format(token)
+                        return False
 
             else:    #!token.startswith('-')
-                #it probably must be a type table path
-                try:
-                    self.ass_id = int(token)
-                    log.debug("The id is... " + repr(self.ass_id));
-                except ValueError:
-                    print "Cannot parse argument"
+                #it probably must be a request or just a table name
+                if ':' in token:                             #it is a request
+                    self.request = parse_request(token)
+                else:                                        #it is a table path
+                    self.request.Path = token
+                    self.request.WasParsedPath = True
+               
 
         return True
 

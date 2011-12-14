@@ -46,9 +46,7 @@ class Dump(ConsoleUtilBase):
         #self.context.
         assert isinstance(provider, MySQLProvider)
         
-        print "Dump is not implemented now"
-        
-       
+        self.context.process("cat   --no-borders --no-header --comments --time")
 
 
     def print_directory_tree(self, directory, printFullPath, level):

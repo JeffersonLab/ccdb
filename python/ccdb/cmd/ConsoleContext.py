@@ -214,7 +214,42 @@ class ConsoleContext:
         
         if self._is_interactive:
             self.interactive_loop()
-   
+
+#--------------------------------
+#   executes text as command    
+#--------------------------------           
+    def process_command(self, command_line):
+        """tries to execute a line of text"""
+
+        # execute shell command if input starts with '!'
+        if command_line.startswith('!'):
+            command_line = command_line[1:]
+            try:     
+                os.system(command_line)
+            except:
+                pass
+            return #all is done  
+                                   
+        #split command to arguments
+        tokens = shlex.split(command_line)
+
+        #validate
+        if len(tokens) == 0: return;
+
+        #get our command
+        command = tokens[0]
+                
+        if self.verbose >= VerboseModes.Debug:
+            print "command is : ", command
+            print tokens
+        
+        #get command arguments
+        arguments = []
+        if len(tokens) > 1:
+            arguments = tokens[1:]
+                        
+        return self.process_command(command, arguments)
+
 #--------------------------------
 #       
 #--------------------------------        
@@ -285,8 +320,9 @@ class ConsoleContext:
             pass #eat it
         
         #readline..set_completion_display_matches_hook(self.show_completions)
-#readline.set_completion_display_matches_hook([function])
-#Set or remove the completion display function. If function is specified, it will be used as the new completion display function; if omitted or None, any completion display function already installed is removed. The completion display function is called as function(substitution, [matches], longest_match_length) once each time matches need to be displayed.
+        #readline.set_completion_display_matches_hook([function])
+
+        #Set or remove the completion display function. If function is specified, it will be used as the new completion display function; if omitted or None, any completion display function already installed is removed. The completion display function is called as function(substitution, [matches], longest_match_length) once each time matches need to be displayed.
         #begin user commands read loop
         command = ""
         while 1:
@@ -302,37 +338,16 @@ class ConsoleContext:
             except KeyboardInterrupt:
                 if self.verbose: print "Break sequence recieved. Ending interactive loop"
                 break
+
+            colorama.resume()
                                 
             # exit if user wishes so    
             if user_input in ("quit", "q", "exit"):
                 break #quit!
             
-            # execute shell command if input starts with '!'
-            if user_input.startswith('!'):
-                user_input = user_input[1:]
-                try:     
-                    os.system(user_input)
-                except:
-                    pass
-                continue #skip to next command     
-                                   
-                    
-            tokens = shlex.split(user_input)
+            #process user input
+            self.process_command(user_input)            
             
-            if len(tokens) > 0:
-                command = tokens[0]
-                
-                if self.verbose >= VerboseModes.Debug:
-                    print "command is : ", command
-                    print tokens
-                
-                arguments = []
-                if len(tokens) > 1:
-                    arguments = tokens[1:]
-                
-                colorama.resume()
-                
-                self.process_command(command, arguments)
         #loop ended
         try:
             readline.write_history_file()

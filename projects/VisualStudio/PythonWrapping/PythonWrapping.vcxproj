@@ -87,7 +87,7 @@ echo PYTHON_INCLUDE: %PYTHON_INCLUDE%
 echo PYTHON_LIB: %PYTHON_LIB% 
 echo on 
 swig.exe -c++ -classic -python %(FullPath) </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName)_wrap.cxx;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(InputName)_wrap.cc;%(Outputs)</Outputs>
     </CustomBuild>
     <None Include="..\..\..\swig\Assignment.i" />
     <None Include="..\..\..\swig\CCDBError.i" />
@@ -106,7 +106,7 @@ swig.exe -c++ -classic -python %(FullPath) </Command>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\swig\ccdb_pyllapi_wrap.cxx" />
+    <ClCompile Include="..\..\..\swig\ccdb_pyllapi_wrap.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

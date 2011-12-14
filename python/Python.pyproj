@@ -25,6 +25,7 @@
   <ItemGroup>
     <Compile Include="ccdbcmd.py" />
     <Compile Include="ccdb\ccdb_pyllapi\ccdb_pyllapi.py" />
+    <Compile Include="ccdb\ccdb_pyllapi\test_model.py" />
     <Compile Include="ccdb\ccdb_pyllapi\__init__.py" />
     <Compile Include="ccdb\cmd\colorama\ansi.py" />
     <Compile Include="ccdb\cmd\colorama\ansitowin32.py" />
@@ -62,7 +63,6 @@
     <Compile Include="ccdb\ProviderBase.py" />
     <Compile Include="ccdb\TextFileDOM.py" />
     <Compile Include="ccdb\__init__.py" />
-    <Compile Include="convert_script.py" />
     <Compile Include="runme.py" />
     <Compile Include="tests.py" />
   </ItemGroup>
