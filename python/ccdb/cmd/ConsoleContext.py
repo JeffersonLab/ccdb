@@ -1,6 +1,7 @@
 import os, re, os.path, imp, sys
 import ccdb.cmd
 import logging
+import shlex
 
 #from ccdb.ccdb_pyllapi import MySQLDataProvider
 from ccdb.MySQLProvider import MySQLProvider
@@ -218,7 +219,7 @@ class ConsoleContext:
 #--------------------------------
 #   executes text as command    
 #--------------------------------           
-    def process_command(self, command_line):
+    def process_command_line(self, command_line):
         """tries to execute a line of text"""
 
         # execute shell command if input starts with '!'
@@ -346,7 +347,7 @@ class ConsoleContext:
                 break #quit!
             
             #process user input
-            self.process_command(user_input)            
+            self.process_command_line(user_input)            
             
         #loop ended
         try:

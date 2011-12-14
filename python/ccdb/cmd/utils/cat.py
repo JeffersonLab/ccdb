@@ -95,7 +95,7 @@ class Cat(ConsoleUtilBase):
         else:
             assignment = self.get_assignment_by_request(self.request)
 
-        if provider.fill_assignment(assignment):
+        if assignment:
             self.print_assignment_vertical(assignment, self.show_header, self.show_borders)
         else:
             print "Cannot fill data for assignment with this ID"
@@ -140,9 +140,10 @@ class Cat(ConsoleUtilBase):
         table = provider.get_type_table(self.table_path, False)
         if not table:
             log.warning("    Type table %s not found in the DB"% self.table_path)
-            return Null
+            return None
         
-        assignments = provider.get_assignments(self.table_path, self.request.RunNumber, self.request.Variation, self.request.Time, 1,0)
+        print " {} {} {} {} ".format(self.table_path, self.request.RunNumber, self.request.Variation, self.request.Time)
+        assignments = provider.get_assignments(self.table_path, self.request.RunNumber, self.request.Variation, self.request.Time)
         if assignments and len(assignments)>0:
             return assignments[0]
         log.warning("    Error getting assignment for the table %s"% self.table_path)
