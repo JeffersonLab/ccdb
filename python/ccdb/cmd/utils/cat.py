@@ -130,7 +130,8 @@ class Cat(ConsoleUtilBase):
         if not request.WasParsedVariation:
             request.Variation = "default"
 
-        if not request.WasParsedRunNumber:
+        
+        if request.WasParsedRunNumber == -1:
             request.RunNumber = self.context.current_run
 
         #correct path
