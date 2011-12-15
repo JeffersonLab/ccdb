@@ -26,16 +26,17 @@ class ParseRequestResult:
     """
 
     RunNumber = -1 	       # Run number
-    WasParsedRunNumber=-1      # true if Run number was non empty
     IsInvalidRunNumber = False # true if was an error parsing runnumber
     Path=""                    # Object path
     WasParsedPath=False        # true if Path was nonempty
     Variation="";              # Variation name
-    WasParsedVariation=False   # true if variation was not empty
     Time = 0                   # Time stampt
-    WasParsedTime = False      # true if time stampt was not empty
+    Time = 0                   # Time stampt
     TimeString = ""            # Original string with time
-
+    WasParsedTime = False      # true if time stampt was not empty
+    WasParsedRunNumber=False   # true if Run number was non empty
+    WasParsedVariation=False   # true if variation was not empty
+    
 
 #______________________________________________________________________________
 def extract_dir(path = ""):

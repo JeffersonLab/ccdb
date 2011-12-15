@@ -2,6 +2,7 @@ import posixpath
 import logging
 import time
 import sys
+import os
 
 import ccdb
 from ccdb.ccdb_pyllapi import Directory, ConstantsTypeTable, ConstantsTypeColumn, Variation, Assignment
@@ -41,6 +42,10 @@ class Cat(ConsoleUtilBase):
     raw_table_path = ""
     use_ass_id = False
     ass_id = 0
+    print_horisontal = True
+    user_request_print_horisontal = False
+    user_request_print_vertical = False
+
 
     show_borders = True
     show_header = True
@@ -65,6 +70,8 @@ class Cat(ConsoleUtilBase):
         self.show_date = False
         self.request = ParseRequestResult()
         self.ass_id = 0
+        self.user_request_print_horisontal = False
+        self.user_request_print_vertical = False
 
         if not len(args):
             print "Please provide ID for assignment. Use help cat to get more information"
@@ -96,7 +103,22 @@ class Cat(ConsoleUtilBase):
             assignment = self.get_assignment_by_request(self.request)
 
         if assignment:
-            self.print_assignment_vertical(assignment, self.show_header, self.show_borders)
+            #now we have to know, how to print an assignment
+            data = assignment.data
+            if len(data)!=0 and len(data[0])!=0:
+                if self.user_request_print_horisontal:
+                    self.print_assignment_horizontal(assignment, self.show_header, self.show_borders)
+                elif self.user_request_print_vertical:
+                    self.print_assignment_vertical(assignment, self.show_header, self.show_borders)
+                else:
+                    if len(data) == 1 and len(data[0])>3:
+                        self.print_assignment_vertical(assignment, self.show_header, self.show_borders)
+                    else:
+                        self.print_assignment_horizontal(assignment, self.show_header, self.show_borders)
+
+                
+            else:
+                log.warning("Assignment contains no data")
         else:
             print "Cannot fill data for assignment with this ID"
             return 1
@@ -114,6 +136,7 @@ class Cat(ConsoleUtilBase):
 
         assignment = Assignment()
         assignment.db_id = id
+        
         if not provider.fill_assignment(assignment): return None
         return assignment
 
@@ -131,7 +154,7 @@ class Cat(ConsoleUtilBase):
             request.Variation = "default"
 
         
-        if request.WasParsedRunNumber == -1:
+        if not request.WasParsedRunNumber:
             request.RunNumber = self.context.current_run
 
         #correct path
@@ -142,12 +165,16 @@ class Cat(ConsoleUtilBase):
         if not table:
             log.warning("    Type table %s not found in the DB"% self.table_path)
             return None
-        
-        print " {} {} {} {} ".format(self.table_path, self.request.RunNumber, self.request.Variation, self.request.Time)
+                
         assignments = provider.get_assignments(self.table_path, self.request.RunNumber, self.request.Variation, self.request.Time)
         if assignments and len(assignments)>0:
             return assignments[0]
-        log.warning("    Error getting assignment for the table %s"% self.table_path)
+        
+        #if we here there were no assignments selected
+        log.warning("    There is no data for table {}, run {}, variation '{}'".format(self.table_path, self.request.RunNumber, self.request.Variation))
+        if request.WasParsedTime:
+            log.warning("    on ".format(self.request.TimeString))
+        return None
     
 #----------------------------------------
 #   process_arguments 
@@ -170,6 +197,10 @@ class Cat(ConsoleUtilBase):
             self.show_date = True
         if ("-nt" in args) or ("--no-time" in args):
             self.show_date = False
+        if ("-ph" in args) or ("--horizontal" in args):
+            self.user_request_print_horisontal = True
+        if ("-pa" in args) or ("--vertical" in args):
+            self.user_request_print_vertical = True
 
         #parse loop
         i=0
@@ -200,10 +231,12 @@ class Cat(ConsoleUtilBase):
                 
                 #get assignment by id
                 if token == "--id" and i < len(args):
+                    
                     token = args[i].strip()
                     i+=1
                     try:
                         self.ass_id = int(token)
+                        self.use_ass_id = True
                         log.debug("    The assigment DB ID is... " + repr(self.ass_id));
                     except ValueError:
                         print "Cannot parse argument: {}".format(token)
@@ -235,11 +268,11 @@ class Cat(ConsoleUtilBase):
     def print_help(self):
         "Prints help of the command"
 
-        print """Show data values for assigment. use assigment ID from the vers
+        print """Show data values for assigment.
 	-b  or --borders      - Switch show borders on of off
 	-nb or --no-borders
 
-	-h  or --header        - Show header on/off
+	-h  or --header       - Show header on/off
 	-nh or --no-header
 
 	-c  or --comments     - Show comments on/off
@@ -248,13 +281,18 @@ class Cat(ConsoleUtilBase):
 	-t  or --time         - Show time
 	-nt or --no-time
 
+        -ph or --horizontal   - Print table horizontally
+        -pa or --vertical     - Print table vertically
+        If no '--horizontal' or '--vertical' is given - the layout of table will be determined automatically: vertical layout if table has only 1 row and more than 3 columns otherwise horizontal
+
+        --id show table by database ID. One can obtain ID by 'vers <table path>' command
 
     """
 
 #----------------------------------------
 #   print_assignment_vertical 
 #---------------------------------------- 	
-    def print_assignment_vertical(self, assignment, printHeader=True, displayBorders=True):
+    def print_assignment_horizontal(self, assignment, printHeader=True, displayBorders=True):
         assert isinstance(assignment, Assignment)
 
         border = " "
@@ -331,3 +369,124 @@ class Cat(ConsoleUtilBase):
         #final cap?
         if displayBorders:
             print Theme.AsgmtBorder + cap
+
+
+
+#----------------------------------------
+#   print_assignment_horizontal
+#---------------------------------------- 	
+    def print_assignment_vertical(self, assignment, printHeader=True, displayBorders=True):
+        """print columns vertically and rows horizontally""" 
+
+        isinstance(assignment, ccdb.ccdb_pyllapi.Assignment)
+        
+        border = " "
+        if displayBorders: border = "|"
+
+        table = assignment.type_table
+        isinstance(table, ConstantsTypeTable)
+
+        columnNames = table.get_column_names()
+        columnTypes = table.get_column_types()
+        data = assignment.data
+        
+        if len(data)==0 :return
+        if len(data[0])==0:return
+        assert len(columnNames) == len(columnTypes)
+        assert len(data[0]) == len(columnNames)
+
+        #present data as columns, each column has cells
+        columns = []
+        headerColumnsAdded = 0
+        if printHeader:
+            columns.append(columnNames)
+            columns.append(columnTypes)
+            headerColumnsAdded = 2
+        
+        for row in data:
+            columns.append([])
+        
+        #fill data to columns
+        for rowI in range(0,len(data)):
+            for colI in range (0,len(data[rowI])):
+                columns[rowI + headerColumnsAdded].append(data[rowI][colI])
+
+               
+        #    
+        #    
+
+        
+        columnLengths = [len(max(column, key=len)) for column in columns]
+        totalLength =0
+        for length in columnLengths: totalLength+=length
+
+        
+        
+        #totalDataLength = 0
+
+        ##determine column length
+        #for i in range(0, columnsNum):
+        #    if len(columnNames[i]) > minLength:
+        #        columnLengths[i] = len(columnNames[i])
+        #    else:
+        #        columnLengths[i] = minLength
+
+        #    totalDataLength += columnLengths[i];
+
+        #this is our cap, if we need it.... 
+        cap = "+" + (totalLength + 3 * len(columns) - 2)*"-" + "+"
+
+        #print header if needed
+        
+
+            #names line
+        #    for i in range(0, columnsNum):
+        #        sys.stdout.write(Theme.AsgmtBorder + border + Theme.Reset)
+        #        frmt = " %%-%is "%columnLengths[i]
+        #        sys.stdout.write(Theme.AsgmtHead + frmt%columnNames[i] + Theme.Reset)
+#
+ #           print Theme.AsgmtBorder + border + Theme.Reset #last border
+
+        #    #types line
+        #    for i in range(0, columnsNum):
+        #        sys.stdout.write(Theme.AsgmtBorder + border + Theme.Reset)
+        #        frmt = " %%-%is "%columnLengths[i]
+        #        sys.stdout.write(Theme.AsgmtType + frmt%columnTypes[i] + Theme.Reset)
+        #    print Theme.AsgmtBorder + border + Theme.Reset #last border
+
+        ##cap?
+        if displayBorders:
+            print Theme.AsgmtBorder + cap + Theme.Reset
+
+        ##data line by line
+        #columnIter = 0
+        rowI=0; colI=0;
+
+        for rowI in range(0, len(columns[0])):
+            sys.stdout.write(Theme.AsgmtBorder + border + Theme.Reset)
+
+            for colI in range(0, len(columns)):
+                #place data
+                dataItem = columns[colI][rowI]
+                frmt = " %%-%is "%columnLengths[colI]
+                if colI==0 and printHeader:
+                    sys.stdout.write(Theme.AsgmtHead + frmt%dataItem + Theme.Reset)
+                elif colI==1 and printHeader:
+                    sys.stdout.write(Theme.AsgmtType + '('+(frmt%dataItem).strip()+')' + Theme.Reset)
+                    sys.stdout.write(Theme.AsgmtBorder + border + Theme.Reset)
+                else:
+                    sys.stdout.write(Theme.AsgmtValue + frmt%dataItem + Theme.Reset)
+
+
+            sys.stdout.write(Theme.AsgmtBorder + border + Theme.Reset + os.linesep)
+        
+
+        #    #new line?
+        #    if columnIter == columnsNum:
+        #        columnIter = 0
+        #        print Theme.AsgmtBorder + border + Theme.Reset
+
+
+        ##final cap?
+        if displayBorders:
+            print Theme.AsgmtBorder + cap + Theme.Reset
