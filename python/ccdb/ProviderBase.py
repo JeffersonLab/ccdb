@@ -291,7 +291,17 @@ class ProviderBase(object):
     # @return bool true if success
     #/
     def delete_type_table(self, type_table):
-        return self._provider.DeleteConstantsTypeTable(table)
+        """
+            @brief Deletes constant type table
+            
+            Deletes constant type table. 
+            The type table will not be deleted if any assignment for this table exists
+            Used should delete assignments first and only than delete the type table.
+            
+            @param   table table info
+            @return bool true if success
+        """
+        return self._provider.DeleteConstantsTypeTable(type_table)
     
 #----------------------------------------------------------------------------------------
 #	R U N   R A N G E S

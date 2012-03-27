@@ -115,10 +115,10 @@ interactive ccdb shell should be started
 Instructions of building website is in $CCDB_HOME/web/install.txt
 
 
-  I N S T A L L   O N   F E D O R A
-====================================
-
-This manual was tested on Fedora 14, Fedora 15, RHEL 6
+  F E D O R A   D E P E N D E N C I E S
+=======================================
+The packages needed to compile CCDB for Fedora:
+(Tested on Fedora 14, Fedora 15, RHEL 6)
 
 ##RUN CODE:
 
@@ -131,6 +131,15 @@ If you haven't configured mysql server:
      service mysqld start
      mysqladmin -u root -h password 'your-password'
 
+
+   U B U N T U   D E P E N D E N C I E S
+=====================================
+
+The packages needed to compile CCDB for Ubuntu:
+(tested on ubuntu 11.10, mint 12)
+
+##RUN CODE:
+	 apt-get install mysql-server scons python-dev libmysqlclient-dev
 
 
  

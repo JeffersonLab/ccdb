@@ -77,7 +77,7 @@ StringUtils
 \begin_layout Standard
 String operations are one of the most messy headaches that exists in the
  C++.
- Not the string operations by them selfs, but that the std:string has a
+ Not the string operations by themselves, but that the std:string has a
  very limited possibilities, so Everybody reinventing the wheel in their
  own way.
  Almost each notable framework has its own way of dealing with strings.

@@ -163,9 +163,9 @@ public:
     __swig_setmethods__["full_path"] = _SetFullPath
     full_path  = property(_GetFullPath, _SetFullPath)
     
-    __swig_getmethods__["db_id"] = _SetId
-    __swig_setmethods__["db_id"] = _GetId
-    db_id  = property(_SetId, _GetId)
+    __swig_getmethods__["db_id"] = _GetId
+    __swig_setmethods__["db_id"] = _SetId
+    db_id  = property(_GetId, _SetId)
     
     __swig_getmethods__["name"] = _GetName
     __swig_setmethods__["name"] = _SetName

@@ -196,7 +196,7 @@ Commands overview
 This table is printed if one executes "ccdbcmd help"
 
 +----------+-------------------+------------------------------------------------
-|(command) | (name)            | (description):
+|(command) | (name)            |   (description):
 +----------+-------------------+------------------------------------------------
 |  info    |   Info            |   Prints extended information about an object
 |  vers    |   Versions        |   Show versions of data for the specified table
@@ -253,15 +253,40 @@ DATA REQUESTS
 <a id="ch_requests">
 
 
-How do *cat* and *dump* commands know what data table version to use?
+
 Full form of the request is 
 
     </path/to/data>:<run>:<variation>:<time>
 
-One may ommit any part of the request excep name-path:
+SUch full form of the request is an unique composite key to the particular data values.
+
+But most of the cases one would like to specify only the part of this information. 
+
+One may ommit any part of the request except name-path:
 * /path/to/data - just path to data, no run, variation and timestamp specified
 * /path/to/data::mc - no run or date specified
 * /path/to/data:::2029 - only path and date(year)
+
+As it is shown in the examples above If one wants to specify path and variation but use 
+the default run one skips the run number and leave its place like "::"  
+
+So 
+
+                   +-- variation
+                   |
+                   |
+   /path/to/data::mc
+                ^
+                |
+                +-- place where run number should be
+
+
+
+And the request 
+/path/to/data:::2029 
+means that we specify path and date but leave the run nubmer and the variation 
+to be set by default. What does this default means? We will discuss it in "DEFAULT VALUES" chapter. 
+
 
 The time is parsed as any part of:
 
@@ -269,15 +294,30 @@ The time is parsed as any part of:
 
 Any non digit character may be used as separator instead of ':' and '-'
 
-One could place only part of the string, the latest date for this part will be 
-returned. I.e. if the given time is "2011" - (it means the year 2011), it will 
+so all these data lines are the same
+    *2029/06/17-22:03:05* 
+    *2029-06-17-22-03-05* 
+    *2029/06/17:22/03/05* 
+    *2029a06b17c22d03e05* 
+
+
+One can ommit any part of the string from the right, the latest date for this part will be 
+returned. Example: "2011" - (this means the year 2011), it will 
 be interpreted as 2011:12:31-23:59:59 timestamp so the latest constants for 
 year 2011 will be returned.
 
 
 
 
+DEFAULT VALUES
+==============
 
+
+There are two general cases of using the requests:
+1. In physics software reads out constants
+2. When one manages constants with ccdb console, python or by other means. 
+
+In the first case most probably the software will provide 
 
 
 

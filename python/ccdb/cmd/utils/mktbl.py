@@ -74,7 +74,7 @@ class MakeTable(ConsoleUtilBase):
     def process(self, args):
         
         #>oO debug      
-        log.debug("Cat is gained a control over the process.")
+        log.debug("MakeTable is gained a control over the process.")
         log.debug("   " + " ".join(args))
         
         #reset all needed variables
@@ -82,7 +82,6 @@ class MakeTable(ConsoleUtilBase):
         
         #process arguments
         self.process_arguments(args)
-        
         
         if self.interactive:
             self.interactive_mode()
@@ -196,6 +195,7 @@ class MakeTable(ConsoleUtilBase):
                 if token.startswith("#"):
                     #everething next are comments
                     self.comment += " ".join( args[i-1:])
+                    self.comment = self.comment[1:]        # remove '#' sign in the beginning
                     self.comment_set = True
                     break #break the loop since everething next are comment
                 

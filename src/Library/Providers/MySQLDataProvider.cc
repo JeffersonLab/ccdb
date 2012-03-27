@@ -896,17 +896,27 @@ bool ccdb::MySQLDataProvider::DeleteConstantsTypeTable( ConstantsTypeTable *tabl
 		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::DeleteConstantsTypeTable", "Type table is null or have wrong ID");
 		return false;
 	}
-	
+	mReturnedRowsNum = 0;
+    
 	string assCountQuery = StringUtils::Format(" SELECT `id` FROM `constantSets` WHERE `constantTypeId`='%i' LIMIT 1", table->GetId() );
+    
 	if(!QuerySelect(assCountQuery)) 
 	{	
+
+        Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::DeleteConstantsTypeTable", "Not found constants");
 		return false;
 	}
+
+    //Free mysql result
 	if(mReturnedRowsNum > 0)
 	{
+        Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::DeleteConstantsTypeTable", "found constants");
+
+        FreeMySQLResult();
 		return false;
 	}
-	FreeMySQLResult();
+    FreeMySQLResult();
+	
 	
 
 	string query = StringUtils::Format("DELETE FROM `typeTables` WHERE `id` = %i ;", table->GetId());

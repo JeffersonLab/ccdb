@@ -59,7 +59,6 @@ class List(ConsoleUtilBase):
             self.print_directory_tree(self.parent_dir, True, 0)
             return
 
-
         if len(args) > 0:
             self.rawentry = args[0]
         else:

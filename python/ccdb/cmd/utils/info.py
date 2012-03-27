@@ -2,7 +2,9 @@ import posixpath
 import logging
 import time
 
-from ccdb.ccdb_pyllapi import Directory, ConstantsTypeTable, ConstantsTypeColumn, Variation
+import ccdb;
+from ccdb.ccdb_pyllapi import Directory, ConstantsTypeColumn, Variation
+from ccdb import ConstantsTypeTable
 from ccdb import MySQLProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
@@ -159,7 +161,7 @@ class Info(ConsoleUtilBase):
         print " Columns    :  " + Theme.Accent + repr(table.ncolumns)
         print " Created    :  " + time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(table.created_time))
         print " Modified   :  " + time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(table.modified_time))
-        
+        print " DB Id      :  " + repr(table._GetId())
         print "+------------------------------------------+"
         print "| Columns info                             |"
         print "+------------------------------------------+"
