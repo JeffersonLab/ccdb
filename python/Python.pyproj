@@ -63,6 +63,7 @@
     <Compile Include="ccdb\ProviderBase.py" />
     <Compile Include="ccdb\TextFileDOM.py" />
     <Compile Include="ccdb\__init__.py" />
+    <Compile Include="example_delete_table.py" />
     <Compile Include="runme.py" />
     <Compile Include="tests.py" />
   </ItemGroup>
