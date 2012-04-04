@@ -1,5 +1,8 @@
 ccdb -i
 
+mkdir geometry
+mkdir geometry/drift_chamber
+
 cd /geometry/drift_chamber
 
 mktbl region_parms -r 3 region=int nsuperlayers=int dist2tgt frontgap midgap backgap # core parameters describing the DC geometry per region (three rows: regions: 1, 2, 3). nsuperlayers is the number of superlayers in the region. dist2tgt is the distance from the target to the first guard wire in the closest superlayer. frontgap is the distance between the upstream gas bag and the first guard wire layer. midgap is the distance between the last guard wire layer of the closest superlayer to the target and the first guard wire layer of the next superlayer. midgap is the distance between the last guard wire layer of a region and the downstream gas bag.
@@ -8,6 +11,23 @@ mktbl superlayer_parms -r 6 superlayer=int nsenselayers=int thopen thtilt thster
 
 mktbl layer_parms -r 36 layer=int nsensewires=int nguardwires=int # core parameters describing the DC geometry per layer (36 rows: superlayers 1,2,...36). nsensewires is the number of sense wires in each layer. nguardwires is the number of guard wires in each layer.
 
+
+mkdir /calibration/electromagnetic_calorimeter
+cd /calibration/electromagnetic_calorimeter
+
+mktbl
+
+
+System: EC
+directory: "Sector" - integer, size 6, will be 1 to 6
+directory: "Part":  string, size 2, will be "INNER" or "OUTER"
+directory: "View": string, size 3, will be "U", "V", or "W"
+directory: "eff", float, size 36, will be between 0 and 1
+
+System: FTOF
+directory: "Sector" - integer, size 6, will be 1 to 6
+directory: "Part":  string, size 3, will be "1a", "1b" or "2b"
+directory: "eff", float, size variable (depends on 1a, 1b or 2b), will be between 0 and 1
 
 Index: python/ccdb/cmd/ConsoleContext.py
 ===================================================================
