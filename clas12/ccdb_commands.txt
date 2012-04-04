@@ -1,0 +1,21 @@
+ccdb -i
+
+cd /geometry/drift_chamber
+
+mktbl region_parms -r 3 region=int nsuperlayers=int dist2tgt frontgap midgap backgap # core parameters describing the DC geometry per region (three rows: regions: 1, 2, 3). nsuperlayers is the number of superlayers in the region. dist2tgt is the distance from the target to the first guard wire in the closest superlayer. frontgap is the distance between the upstream gas bag and the first guard wire layer. midgap is the distance between the last guard wire layer of the closest superlayer to the target and the first guard wire layer of the next superlayer. midgap is the distance between the last guard wire layer of a region and the downstream gas bag.
+
+mktbl superlayer_parms -r 6 superlayer=int nsenselayers=int thopen thtilt thster thmin wpdist xdist # core parameters describing the DC geometry per superlayer (six rows: superlayers 1,2,...6). nsenselayers is the number of layers containing sense wires. thopen is the opening angle between endplate planes. thtilt is the tilt relative to z. thster is the stereo angle of the wires  where the angle of rotation is about the normal to the wire plane. thmin is the polar angle to the first guard wire\'s mid-point where the wire mid-point is the intersection of the wire with the chamber mid-plane. wpdist is the distance between the wire planes. xdist is the distance between the line of intersection of the two end-plate planes and the target position.
+
+mktbl layer_parms -r 36 layer=int nsensewires=int nguardwires=int # core parameters describing the DC geometry per layer (36 rows: superlayers 1,2,...36). nsensewires is the number of sense wires in each layer. nguardwires is the number of guard wires in each layer.
+
+
+Index: python/ccdb/cmd/ConsoleContext.py
+===================================================================
+--- python/ccdb/cmd/ConsoleContext.py   (revision 961)
++++ python/ccdb/cmd/ConsoleContext.py   (working copy)
+@@ -22,7 +22,7 @@
+     """
+     _utils = {}
+     _verbose = VerboseModes.No
+-    _connectionString = "mysql://ccdb_user@localhost"
++    _connectionString = "mysql://clasuser@clasdb.jlab.org clas12"
