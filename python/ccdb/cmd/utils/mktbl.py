@@ -88,7 +88,7 @@ class MakeTable(ConsoleUtilBase):
         
         #lets parse columns
         self.columns = self.parse_columns(self.unparsed_columns)
-        
+                
         #set name
         self.table_path = self.context.prepare_path(self.table_path)
         (self.table_parent_path, self.table_name) = posixpath.split(self.table_path)
@@ -215,7 +215,7 @@ class MakeTable(ConsoleUtilBase):
     def parse_columns(self, unparsed_columns):
         """ parse columns part of arguments """
         
-        columns = {}
+        columns = []
         for unparsed_column in unparsed_columns:
             parse_result = self.parse_column(unparsed_column)
             if parse_result:
@@ -238,10 +238,10 @@ class MakeTable(ConsoleUtilBase):
                             pass
             
                     for i in range(start_index, start_index + parse_result["quantity"]):
-                        columns[parse_result["name"]+repr(i)] = parse_result["type"]
+                        columns.append((parse_result["name"]+repr(i), parse_result["type"]))
                         
                 else:
-                    columns[parse_result["name"]] = parse_result["type"]
+                    columns.append((parse_result["name"], parse_result["type"]))
         return columns
             
     
@@ -369,7 +369,7 @@ keys:
         print
         print "Columns: "
         print "   (type)    : (name)"
-        for colname, coltype in self.columns.items():
+        for (colname, coltype) in self.columns:
             print "   " + Theme.Type + "%-10s"%coltype + Theme.Reset + ": "+ colname
         print 
         #comment

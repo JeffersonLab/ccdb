@@ -61,12 +61,12 @@ public:
 
     /** @brief Converts  DColumnTypes to string
      *
-     * cIntColumn     => int       
-     * cUIntColumn     => uint       
-     * cLongColumn     => long    
-     * cULongColumn     => ulong   
-     * cDoubleColumn =>    double  
-     * cBoolColumn     => bool       
+     * cIntColumn    => int       
+     * cUIntColumn   => uint       
+     * cLongColumn   => long    
+     * cULongColumn  => ulong   
+     * cDoubleColumn => double  
+     * cBoolColumn   => bool       
      * cStringColumn => std::string 
      * @param     val
      * @return   ccdb::ConstantsTypeColumn::DColumnTypes
@@ -74,22 +74,22 @@ public:
     static std::string TypeToString(DColumnTypes val);
 
     ConstantsTypeColumn(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);    ///Constructor
-    virtual ~ConstantsTypeColumn();                    ///Destructor
+    virtual ~ConstantsTypeColumn();                  ///Destructor
 
-    dbkey_t            GetId() const;                        ///get database table uniq id;
-    void            SetId(dbkey_t val);                    ///set database table uniq id;
+    dbkey_t            GetId() const;                ///get database table uniq id;
+    void            SetId(dbkey_t val);              ///set database table uniq id;
 
-    std::string            GetName() const;                    ///get name
-    void            SetName(string val);                ///set name
+    std::string            GetName() const;          ///get name
+    void            SetName(string val);             ///set name
 
-    std::string            GetComment() const;                    ///get comment
-    void            SetComment(std::string val);        ///set comment
+    std::string            GetComment() const;       ///get comment
+    void            SetComment(std::string val);     ///set comment
 
-    time_t            GetCreatedTime() const;                ///get mCreatedTime time
-    void            SetCreatedTime(time_t val);            ///set mCreatedTime time 
+    time_t            GetCreatedTime() const;        ///get mCreatedTime time
+    void            SetCreatedTime(time_t val);      ///set mCreatedTime time 
 
-    time_t            GetModifiedTime() const;            ///get mModifiedTime time
-    void            SetModifiedTime(time_t val);        ///set mModifiedTime time
+    time_t            GetModifiedTime() const;       ///get mModifiedTime time
+    void            SetModifiedTime(time_t val);     ///set mModifiedTime time
 
     /** @brief Gets id of constant type record this column is related to
      *

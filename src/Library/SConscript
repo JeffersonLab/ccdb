@@ -1,5 +1,5 @@
 
-Import('env')
+Import('envс')
 
 #TODO move to normal debug\release modes
 
@@ -7,6 +7,7 @@ Import('env')
 #releasecflags = ['-O2', '-EHsc', '-DNDEBUG', '/MD']         #extra compile flags for release
 #env.Append(CCFLAGS='-g')
 
+#env = default_env.Clone()
 
 #Configure environment to create ccdb_library
 

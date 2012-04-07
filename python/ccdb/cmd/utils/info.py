@@ -39,6 +39,7 @@ class Info(ConsoleUtilBase):
     rawentry = "/"       #object path with possible pattern, like /mole/*
     path = "/"    #parent path
     
+    
 #----------------------------------------
 #   process 
 #----------------------------------------  
@@ -92,6 +93,7 @@ class Info(ConsoleUtilBase):
         
         #everything is fine!
         return 0
+        
             
 #----------------------------------------
 #   process_arguments 
@@ -146,6 +148,7 @@ class Info(ConsoleUtilBase):
         print directory.comment
         print
         
+        
 #----------------------------------------
 #   print_type_table 
 #----------------------------------------        
@@ -168,10 +171,12 @@ class Info(ConsoleUtilBase):
         #columns info 
         print
         print "Columns info "
-        print " (type)    : (name)"
+        print "N.  (type)    : (name)"
+        columns = [column for column in table.columns]        
         for column in table.columns:
             isinstance(column, ConstantsTypeColumn)
-            print " " + Theme.Type + "%-10s"%column.column_type + Theme.Reset + ": "+ column.name
+            print " " + repr(column.order).ljust(3)+" " + Theme.Type + "%-10s"%column.column_type + Theme.Reset + ": "+ column.name
+           
         print 
         print "+------------------------------------------+"
         #comment

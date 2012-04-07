@@ -707,9 +707,10 @@ ConstantsTypeTable* ccdb::MySQLDataProvider::CreateConstantsTypeTable( const str
 	for(; iter != columns.end(); iter++)
 	{
 		table->AddColumn(iter->first, ConstantsTypeColumn::StringToType(iter->second));
+		//cout<<iter->first<<" "<<iter->second<<endl;
 	}
 	table->SetDirectory(parentDir);
-
+	
 	if(CreateConstantsTypeTable(table)) return table;
 	else return NULL;
 }

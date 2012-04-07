@@ -23,11 +23,11 @@ Name=ccdb_pyllapi
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0]
 ClassName=TProjectFileNode
-FileName=D:\AProjects\CCDB\ccdb\python\ccdb\ccdb_pyllapi\__init__.py
+FileName=..\..\python\ccdb\ccdb_pyllapi\__init__.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node1]
 ClassName=TProjectFileNode
-FileName=D:\AProjects\CCDB\ccdb\python\ccdb\ccdb_pyllapi\ccdb_pyllapi.py
+FileName=D:\Science\CCDB\python\ccdb\ccdb_pyllapi\ccdb_pyllapi.py
 
 [Project\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0\ChildNodes\Node0\ChildNodes]
 Count=2
