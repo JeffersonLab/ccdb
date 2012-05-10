@@ -1,5 +1,5 @@
 
-Import('envс')
+Import('env')
 
 #TODO move to normal debug\release modes
 
