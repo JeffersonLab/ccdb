@@ -1,4 +1,4 @@
-CCDB basic concepts and ccdb to manage CCDB contents
+CCDB basic usage concepts and ccdb console tool for managing CCDB contents
 
 
 
@@ -13,19 +13,22 @@ LIST OF CONTENTS
 
 
 
-BASIC USAGE               
-===========
+BASIC USAGE. GETTING STARTED
+============================
+
 <a id="ch_basics"/>
 
-ccdb co could be use as interactive shell or just like command shell tool. 
+CCDB provides console tool for introspectiong and managing constants database. 
+One can run it by 'ccdb' command. Console tools could be used as interactive shell 
+or just like command shell tool. 
 
 Usage from command line is:
    
-     ccdbcmd <ccdb arguents> command <command arguments>
+     ccdb <ccdb arguents> command <command arguments>
 
 Usage as interactive shell:
     
-     ccdbcmd <ccdb arguments> -i 
+     ccdb <ccdb arguments> -i 
      > command1 
      > command2 
      > ...
@@ -35,7 +38,7 @@ Usage as interactive shell:
 ### Example 1. Command line:
 
                 (1)                           (2)  (3)
-      ccdbcmd -c "mysql://john@localhost:999" ls /TOF/params
+      ccdb -c "mysql://john@localhost:999" ls /TOF/params
 
 1. *-c* "mysql://john@localhost" - sets the ccdb connection string. 
    If no *-c*  flag is given, ccdb will try CCDB_CONNECTION environment 
@@ -45,7 +48,7 @@ Usage as interactive shell:
 2. *ls* - is a ccdb command which returns a list of directories and tables
      that belongs to directory '/TOF/params'
 
-3  */TOF/params* is the argument of ls command. Like a posix shell.
+3  */TOF/params* is the argument of ls command. Like a posix shell ls.
 
 
 ### Example 2. Interactive:
@@ -64,17 +67,15 @@ Usage as interactive shell:
 2. 'ls /TOF/params' - the result is exactly the same as in Example 1. 
     One stays in the interactive shell after the execution.
 
-3. 'help' command provides what commands are ready to use and how to use them
+3. 'help' command provides list of commands and how to use each of them
 
-4. executing next commands will reproduce Example 1 once more. 
+4. executing next commands will reproduce Example 1 step by step. 
 
-5. ccdbcmd interactive mode have the concept of a current working directory,
+5. The same as in posix shell, ccdb interactive mode have the current working directory,
    with relative and absolute pathes. *pwd* command will show the current
    working directory.    
 
-
 6. to exit interactive mode enter 'q', 'quit' or press ^D
-
 
 Since ccdb objects have /name/paths and many other things that looks like 
 POSIX file system, the commands are very posix-shell-like. 
@@ -87,7 +88,7 @@ CONNECTION
 
 CCDB uses the connection strings to specify a data source. 
 The generic format of a conection string is:
-<protocol>://<protocol specified string>
+<protocol>://<datasource specified string>
 
 *MySQL connection string:*
 
@@ -103,7 +104,7 @@ CCDB connection defaults:
 * database - ccdb
 
 
-How ccdbcmd gets the connection string:
+How ccdb gets the connection string:
 
 1. The default connection string is  **"mysql://ccdb_user@localhost ccdb"**
 
@@ -165,9 +166,10 @@ Commands consistancy
 
 Command arguments are choosen to be consistant with other commands. Some flags 
 and argument formats means the same across all commands. 
-What are these flags? Some commands may be applied for different objects. 
+What are these flags? There are several types of "objects" in ccdb. Like
+directories, variation, run nuber. Some commands may be applied for different objects. 
 For example 'info' command may be executed against directory, table or variation
-There are flags to identify objects for all such commands:
+There are unified flags to identify objects for all commands:
 
 *  *-v* - Variation
 *  *-t* - Data table
@@ -362,7 +364,6 @@ Example:
 > cat /path/to/data     # all commands will get constants for run 100
 > run                   # you can check what run is set by default
 100
-
 
 C++ API section will overview how to set defult run 
 
