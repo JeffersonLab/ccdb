@@ -3,6 +3,8 @@
 if ( ! $?CCDB_HOME ) then
     echo "Error: CCDB_HOME not set, should point to location of this script"
     exit 1
+else
+    setenv CCDB_HOME `pwd`
 endif
 if (! $?LD_LIBRARY_PATH) then
     setenv LD_LIBRARY_PATH $CCDB_HOME/lib
