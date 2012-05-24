@@ -223,9 +223,8 @@ class ConstantsTable
      * not for floats!!! Use only integers or strings. The
      * "string for floats" usage is OK, but not recommended.
      *
-     * To use string method, you must cast the second argument
-     * explicitly:
-     *   table.row("dist2tgt", string("348.09"))
+     * example:
+     *   table.row("dist2tgt", "348.09")
      *
      * \return row index associated with the value val
      **/
@@ -244,6 +243,14 @@ class ConstantsTable
         throw std::logic_error(ss.str());
     }
 
+    /** \brief specialization for char* (converting to string)
+     *
+     **/
+    unsigned int row(const string& colname, const char* val)
+    {
+        string val_str(val);
+        return row<string>(colname, val_str);
+    }
 
 };
 
