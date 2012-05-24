@@ -1,22 +1,45 @@
+
+####### to remove all constantSets that are of type "superlayer" run this MySQL command:
+
+delete from constantSets using constantSets,typeTables where typeTables.id=constantSets.constantTypeId and typeTables.name='superlayer';
+
+
 ccdb -i
 
 mkdir geometry
-mkdir geometry/drift_chamber
+mkdir geometry/dc
 
-cd /geometry/drift_chamber
+cd /geometry/dc
 
-mktbl region_parms -r 3 region=int nsuperlayers=int dist2tgt frontgap midgap backgap # core parameters describing the DC geometry per region (three rows: regions: 1, 2, 3). nsuperlayers is the number of superlayers in the region. dist2tgt is the distance from the target to the first guard wire in the closest superlayer. frontgap is the distance between the upstream gas bag and the first guard wire layer. midgap is the distance between the last guard wire layer of the closest superlayer to the target and the first guard wire layer of the next superlayer. midgap is the distance between the last guard wire layer of a region and the downstream gas bag.
+mktbl region -r 3 region=int nsuperlayers=int dist2tgt frontgap midgap backgap thopen thtilt xdist # core parameters describing the DC geometry per region (three rows: regions: 1, 2, 3). nsuperlayers is the number of superlayers in the region. dist2tgt is the distance from the target to the first guard wire in the closest superlayer. frontgap is the distance between the upstream gas bag and the first guard wire layer. midgap is the distance between the last guard wire layer of the closest superlayer to the target and the first guard wire layer of the next superlayer. midgap is the distance between the last guard wire layer of a region and the downstream gas bag. thopen is the opening angle between endplate planes. thtilt is the tilt relative to z. xdist is the distance between the line of intersection of the two end-plate planes and the target position.
 
-mktbl superlayer_parms -r 6 superlayer=int nsenselayers=int thopen thtilt thster thmin wpdist xdist # core parameters describing the DC geometry per superlayer (six rows: superlayers 1,2,...6). nsenselayers is the number of layers containing sense wires. thopen is the opening angle between endplate planes. thtilt is the tilt relative to z. thster is the stereo angle of the wires  where the angle of rotation is about the normal to the wire plane. thmin is the polar angle to the first guard wire\'s mid-point where the wire mid-point is the intersection of the wire with the chamber mid-plane. wpdist is the distance between the wire planes. xdist is the distance between the line of intersection of the two end-plate planes and the target position.
+mktbl superlayer -r 6 superlayer=int nsenselayers=int thster thmin wpdist # core parameters describing the DC geometry per superlayer (six rows: superlayers 1,2,...6). nsenselayers is the number of layers containing sense wires. thster is the stereo angle of the wires  where the angle of rotation is about the normal to the wire plane. thmin is the polar angle to the first guard wire\'s mid-point where the wire mid-point is the intersection of the wire with the chamber mid-plane. wpdist is the distance between the wire planes.
 
-mktbl layer_parms -r 36 layer=int nsensewires=int nguardwires=int # core parameters describing the DC geometry per layer (36 rows: superlayers 1,2,...36). nsensewires is the number of sense wires in each layer. nguardwires is the number of guard wires in each layer.
+mktbl layer -r 36 layer=int nsensewires=int nguardwires=int # core parameters describing the DC geometry per layer (36 rows: superlayers 1,2,...36). nsensewires is the number of sense wires in each layer. nguardwires is the number of guard wires in each layer.
 
 
-mkdir /calibration/electromagnetic_calorimeter
-cd /calibration/electromagnetic_calorimeter
+add /geometry/dc/region  clas12/geometry.dc.region.init.txt
+add /geometry/dc/superlayer  clas12/geometry.dc.superlayer.init.txt
+add /geometry/dc/layer  clas12/geometry.dc.layer.init.txt
 
-mktbl
 
+mkdir /calibration/ec
+cd /calibration/ec
+
+
+mkdir /calibration
+mkdir /calibration/ec
+
+mktbl /calibration/ec/efficiency -r 36 sector=int part=string view=string efficiency # The efficiency of the individual paddles in the EC. This is a value from 0 to 1.
+
+add /calibration/ec/efficiency clas12/calibration.ec.efficiency.init.txt
+
+
+mkdir /calibration/ftof
+
+mktbl /calibration/ftof/efficiency -r 552 sector=int part=string paddle=int efficiency # The efficiency of the individual paddles in the FTOF. This is a value from 0 to 1.
+
+add /calibration/ftof/efficiency clas12/calibration.ftof.efficiency.init.txt
 
 System: EC
 directory: "Sector" - integer, size 6, will be 1 to 6
@@ -27,6 +50,8 @@ directory: "eff", float, size 36, will be between 0 and 1
 System: FTOF
 directory: "Sector" - integer, size 6, will be 1 to 6
 directory: "Part":  string, size 3, will be "1a", "1b" or "2b"
+23, 58, 11
+
 directory: "eff", float, size variable (depends on 1a, 1b or 2b), will be between 0 and 1
 
 Index: python/ccdb/cmd/ConsoleContext.py
@@ -39,3 +64,30 @@ Index: python/ccdb/cmd/ConsoleContext.py
      _verbose = VerboseModes.No
 -    _connectionString = "mysql://ccdb_user@localhost"
 +    _connectionString = "mysql://clasuser@clasdb.jlab.org clas12"
+
+
+
+
+
+## calibration/ftof/pedestals
+
+cd /calibration/ftof
+mkdir pedestals
+cd /calibration/ftof/pedestals
+mktbl sector1 -r 58 paddle=int left right # pedestal values for FTOF sector 1 (left and right PMTs)
+mktbl sector2 -r 58 paddle=int left right # pedestal values for FTOF sector 2 (left and right PMTs)
+mktbl sector3 -r 58 paddle=int left right # pedestal values for FTOF sector 3 (left and right PMTs)
+mktbl sector4 -r 58 paddle=int left right # pedestal values for FTOF sector 4 (left and right PMTs)
+mktbl sector5 -r 58 paddle=int left right # pedestal values for FTOF sector 5 (left and right PMTs)
+mktbl sector6 -r 58 paddle=int left right # pedestal values for FTOF sector 6 (left and right PMTs)
+
+
+
+
+
+
+
+
+
+
+
