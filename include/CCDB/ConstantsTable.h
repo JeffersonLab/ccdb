@@ -13,6 +13,7 @@ namespace ccdb
 
 using std::string;
 using std::stringstream;
+using std::vector;
 
 /** \brief ConstantsTable is a conatiner class for any constants
  *  set. It will connect to the database when load_constants()
@@ -117,7 +118,6 @@ class ConstantsTable
             conn = conn_str;
         }
 
-        cout << "connection string: " << conn << endl;
         MySQLCalibration calib(100);
         calib.Connect(conn);
 
@@ -171,6 +171,15 @@ class ConstantsTable
     string coltype(const string& colname)
     {
         return coltype(find_column(colname));
+    }
+
+    /** \brief specialization of coltype() for const char*
+     *
+     * \return the column type of the column identified by colname
+     **/
+    string coltype(const char* colname)
+    {
+        return coltype(string(colname));
     }
 
     /** \return vector<T=double> of a column identified by the
@@ -248,8 +257,7 @@ class ConstantsTable
      **/
     unsigned int row(const string& colname, const char* val)
     {
-        string val_str(val);
-        return row<string>(colname, val_str);
+        return row<string>(colname, string(val));
     }
 
 };
