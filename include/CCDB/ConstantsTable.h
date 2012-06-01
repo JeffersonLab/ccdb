@@ -196,6 +196,8 @@ class ConstantsTable
         {
             ret.push_back(lexical_cast<T>(values.at(row_index).at(col_index)));
         }
+
+        return ret;
     }
 
     /** \brief finds the element in the table associated with column
