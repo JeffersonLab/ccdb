@@ -1,0 +1,175 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{epstopdf}
+
+\title{A Program to Estimate Resolution for Charged Particles in GlueX \\
+~\\
+\large GlueX-doc-1015-v2
+}
+\author{Mark M.\ Ito, Dmitry A. \ Romanov \\
+Thomas Jefferson National Accelerator Facility \\
+12000 Jefferson Avenue \\
+Newport News, VA 23606
+}
+\date{June 15, 2012}
+
+% global parameters
+\textwidth=6.5in
+\oddsidemargin=0in % use built-in offset of 1 inch for left margin
+\evensidemargin=0in % ditto for even pages
+\textheight=9in
+\topmargin=0in
+\headheight=0in % no headers in this document
+\headsep=0in
+
+\begin{document}
+
+\bibliographystyle{plain}
+
+\maketitle
+
+\begin{abstract}
+This note contains a documentation of the CCDB package. A package for storing and managing calibration constants database.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+
+\begin{figure}
+  % Requires \usepackage{graphicx}
+  \includegraphics[width=\textwidth]{ccdb_overall_tasks.eps}\\
+  \caption{CCDB area of usage}\label{fig:ccdb_overall_tasks}
+\end{figure}
+
+CCDB stores data as tables with columns and rows. CCDB supports:
+\begin{itemize}
+\item \textbf{Naming}. Each table is identified by path-name;
+\item \textbf{Versioning}. Each table may has many versions of data;
+\item \textbf{Branching}. So called "variations" allows to use branches of data;
+\end{itemize}
+
+As a management tool and as a data provider CCDB allows:
+\begin{itemize}
+\item C++ User API. Allows an easy access to CCDB data from C++.
+\item JANA API. An integration to JANA framework.
+\item Python API. Allows acessing and managing CCDB from python.
+\item Command line tools. Tools to manage CCDB data from the shell.
+\item Web interface.
+\end{itemize}
+An illustration of this list one can see on pic \ref{fig:ccdb_overall_tasks}.
+
+\section{Basic concepts}\label{sec:using}
+
+
+\small
+\begin{verbatim}
+      SUBROUTINE REZEST_FDC_CDC(P, LAMBDA, M,
+     X     DP_OVER_P, DPHI_TOT, DTHETA_TOT)
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C
+C This routine estimates the resolution in GlueX for charged particles
+C in tranverse momentum, azimuthal angle, and polar angle.
+C
+C Input arguments, all REAL*4
+C
+C     P        Magnitude of total momentum (GeV/c)
+C     LAMBDA   Dip angle, difference in polar angle in lab between track
+C              and pi/2 (i. e., 90 degrees) (radians)
+C     M        Mass of the particle (GeV/c^2)
+C
+C Output arguments, all REAL*4
+C
+C     DP_OVER_P  Relative resolution in transverse momentum
+C                ("sigma_{p_t}/p_t")
+C     DPHI_TOT   Resolution in azimuthal angle ("sigma_phi")
+C     DTHETA_TOT Resolution in polar angle ("sigma_theta")
+C
+C The routine combines the measurements in the FDC and CDC where
+C appropriate. Parameters describing the geometry and materials are
+C defined in the routine REZEST_COMPONENTS which appears below.
+C
+\end{verbatim}
+\normalsize
+
+\subsection{Getting the code}
+
+Two methods:
+
+\begin{enumerate}
+\item Get the tar ball from
+\begin{center}
+{\tt http://www.jlab.org/$\sim$marki/misc/rezest.tar}
+\end{center}
+\item Check it out from the subversion repository with the command
+\begin{center}
+{\tt svn checkout
+ https://halldsvn.jlab.org/repos/trunk/home/marki/gluex/rezest}
+\end{center}
+\end{enumerate}
+
+\subsection{Building the files}
+
+There is a simple makefile in the directory:
+
+\begin{verbatim}
+> cd <rezest directory>
+> make
+gfortran -g   -c -o rezest.o rezest.F
+gfortran -g   -c -o rezest_fdc_cdc.o rezest_fdc_cdc.F
+ar rcv librezest.a rezest.o rezest_fdc_cdc.o
+a - rezest.o
+a - rezest_fdc_cdc.o
+gfortran -g   -c -o rezest_point.o rezest_point.F
+gfortran -o rezest_point rezest_point.o -L. -lrezest
+gfortran -g   -c -o rezest_point_comp.o rezest_point_comp.F
+gfortran -o rezest_point_comp rezest_point_comp.o -L. -lrezest
+\end{verbatim}
+
+This creates three files that you care about:
+
+\begin{enumerate}
+\item {\tt librezest.a}: the object library
+\item {\tt rezest\_point}: a binary
+\item {\tt rezest\_point\_comp}: a binary
+\end{enumerate}
+
+\subsection{Using the files}
+
+\section{Conclusions}
+
+The plots show reasonable agreement with the HDGEANT
+results. Agreement is generally at the 20\% level, in some places
+better, in others as poor as a factor of 2.
+
+One area where the simple model can breaks down is in the
+straight-line approximation for the trajectories for particles with
+very low transverse momentum. As a result predictions for extreme
+forward angles are suspect. We have already pointed out a problem with
+this approximation in estimating the contribution of curvature
+resolution to azimuthal angular resolution in
+Section~\ref{sec:curve-angle}.  Also since the measurement are assumed
+to be equally spaced in both the FDC and the CDC, some of the features
+in resolution visible in the transition polar angle region between the
+two detectors is not reproduced; the real detector does not have a
+smooth loss of CDC hits and a smooth gain of FDC hits as the polar
+angle moves forward as does the model used in the estimates.
+
+The most profitable use of these routines is probably not in
+predicting the absolute level of resolutions in the detector, but in
+predicting relative changes in resolution as detector parameters are
+changed. The former requires a more detailed modeling of the detector
+but also requires a greater effort whenever a new design is
+proposed. This resolution estimator ({\tt REZEST}) is useful in
+exploring the parameter space during the optimation process.
+
+\appendix
+
+\section{Some useful equations}\label{app:algebra}
+
+
+\bibliography{ccdb_doc}
+
+\end{document}
