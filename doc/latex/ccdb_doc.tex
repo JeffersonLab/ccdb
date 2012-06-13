@@ -2,6 +2,8 @@
 
 \usepackage{graphicx}
 \usepackage{epstopdf}
+\usepackage{listings}
+\usepackage{parskip}
 
 \title{A Program to Estimate Resolution for Charged Particles in GlueX \\
 ~\\
@@ -38,137 +40,433 @@ This note contains a documentation of the CCDB package. A package for storing an
 \section{Introduction}
 
 
-\begin{figure}
-  % Requires \usepackage{graphicx}
-  \includegraphics[width=\textwidth]{ccdb_overall_tasks.eps}\\
-  \caption{CCDB area of usage}\label{fig:ccdb_overall_tasks}
-\end{figure}
+%\begin{figure}
+%  \includegraphics[width=\textwidth]{ccdb_overall_tasks.eps}\\
+%  \caption{CCDB area of usage}\label{fig:ccdb_overall_tasks}
+%
+%\end{figure}
 
-CCDB stores data as tables with columns and rows. CCDB supports:
+Calibration Constants Database (CCDB) aims the next goals:
+\begin{itemize}
+\item Storing calibration constants.
+\item Managing calibrations.
+\item API for JANA, plain C++, Python.
+\item Additional Logging, import, export data.
+\end{itemize}
+
+
+CCDB stores data as tables with columns and rows. As a data storage CCDB supports:
 \begin{itemize}
 \item \textbf{Naming}. Each table is identified by path-name;
 \item \textbf{Versioning}. Each table may has many versions of data;
 \item \textbf{Branching}. So called "variations" allows to use branches of data;
 \end{itemize}
 
+
 As a management tool and as a data provider CCDB allows:
 \begin{itemize}
 \item C++ User API. Allows an easy access to CCDB data from C++.
 \item JANA API. An integration to JANA framework.
-\item Python API. Allows acessing and managing CCDB from python.
+\item Python API. Allows accessing and managing CCDB from python language.
 \item Command line tools. Tools to manage CCDB data from the shell.
 \item Web interface.
 \end{itemize}
-An illustration of this list one can see on pic \ref{fig:ccdb_overall_tasks}.
-
-\section{Basic concepts}\label{sec:using}
 
 
-\small
+
+\section{Basic concepts}\label{sec:basic_concepts}
+
+
+CCDB basic usage concepts and ccdb console tool for managing CCDB contents
+
+
+\section{CCDB command line tutorial}\label{sec:console_tools_tutorial}
+
+This section is a tutorial of using CCDB command line tools.
+
+
+\subsection {Getting started}
+
+CCDB provides command line tools which is useful for introspection and 
+management of constants database. One can run it by typing 'ccdb' command. 
+'ccdb' has two modes: it can be used as an interactive shell or as 
+single line command.\\
+
+
+Usage from command line:
 \begin{verbatim}
-      SUBROUTINE REZEST_FDC_CDC(P, LAMBDA, M,
-     X     DP_OVER_P, DPHI_TOT, DTHETA_TOT)
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C
-C This routine estimates the resolution in GlueX for charged particles
-C in tranverse momentum, azimuthal angle, and polar angle.
-C
-C Input arguments, all REAL*4
-C
-C     P        Magnitude of total momentum (GeV/c)
-C     LAMBDA   Dip angle, difference in polar angle in lab between track
-C              and pi/2 (i. e., 90 degrees) (radians)
-C     M        Mass of the particle (GeV/c^2)
-C
-C Output arguments, all REAL*4
-C
-C     DP_OVER_P  Relative resolution in transverse momentum
-C                ("sigma_{p_t}/p_t")
-C     DPHI_TOT   Resolution in azimuthal angle ("sigma_phi")
-C     DTHETA_TOT Resolution in polar angle ("sigma_theta")
-C
-C The routine combines the measurements in the FDC and CDC where
-C appropriate. Parameters describing the geometry and materials are
-C defined in the routine REZEST_COMPONENTS which appears below.
-C
-\end{verbatim}
-\normalsize
-
-\subsection{Getting the code}
-
-Two methods:
-
-\begin{enumerate}
-\item Get the tar ball from
-\begin{center}
-{\tt http://www.jlab.org/$\sim$marki/misc/rezest.tar}
-\end{center}
-\item Check it out from the subversion repository with the command
-\begin{center}
-{\tt svn checkout
- https://halldsvn.jlab.org/repos/trunk/home/marki/gluex/rezest}
-\end{center}
-\end{enumerate}
-
-\subsection{Building the files}
-
-There is a simple makefile in the directory:
-
-\begin{verbatim}
-> cd <rezest directory>
-> make
-gfortran -g   -c -o rezest.o rezest.F
-gfortran -g   -c -o rezest_fdc_cdc.o rezest_fdc_cdc.F
-ar rcv librezest.a rezest.o rezest_fdc_cdc.o
-a - rezest.o
-a - rezest_fdc_cdc.o
-gfortran -g   -c -o rezest_point.o rezest_point.F
-gfortran -o rezest_point rezest_point.o -L. -lrezest
-gfortran -g   -c -o rezest_point_comp.o rezest_point_comp.F
-gfortran -o rezest_point_comp rezest_point_comp.o -L. -lrezest
+     ccdb <ccdb arguents> command <command arguments>
 \end{verbatim}
 
-This creates three files that you care about:
+
+Usage as interactive shell:
+\begin{verbatim}
+     ccdb <ccdb arguments> -i
+     > command1
+     > command2
+     > ...
+     > q
+\end{verbatim}
+
+
+Example 1. Command line:
+\begin{verbatim}
+                (1)                           (2)  (3)
+      ccdb -c "mysql://john@localhost:999" ls /TOF/params
+
+\end{verbatim}
+
 
 \begin{enumerate}
-\item {\tt librezest.a}: the object library
-\item {\tt rezest\_point}: a binary
-\item {\tt rezest\_point\_comp}: a binary
+  \item -c mysql://john@localhost - sets the ccdb connection string. If no -c flag is given, ccdb will try CCDB\_CONNECTION environment variable, then use default connection string. The connection strings are described in the connections chapter
+
+  \item  ls - is a ccdb command which returns a list of directories and tables
+         that belongs to directory '/TOF/params'
+
+  \item  /TOF/params - is the argument of ls command. Like a posix shell ls.
 \end{enumerate}
 
-\subsection{Using the files}
+Example 2. Interactive:
 
-\section{Conclusions}
+\begin{verbatim}
+      ccdbcmd -i -c "mysql://john@localhost:999"               (1)
+      > ls /TOF/params                                         (2)
+      > help                                                   (3)
+      > cd /TOF                                                (4)
+      > cd params
+      > ls
+      > pwd                                                    (5)
+      > q                                                      (6)
+\end{verbatim}
 
-The plots show reasonable agreement with the HDGEANT
-results. Agreement is generally at the 20\% level, in some places
-better, in others as poor as a factor of 2.
 
-One area where the simple model can breaks down is in the
-straight-line approximation for the trajectories for particles with
-very low transverse momentum. As a result predictions for extreme
-forward angles are suspect. We have already pointed out a problem with
-this approximation in estimating the contribution of curvature
-resolution to azimuthal angular resolution in
-Section~\ref{sec:curve-angle}.  Also since the measurement are assumed
-to be equally spaced in both the FDC and the CDC, some of the features
-in resolution visible in the transition polar angle region between the
-two detectors is not reproduced; the real detector does not have a
-smooth loss of CDC hits and a smooth gain of FDC hits as the polar
-angle moves forward as does the model used in the estimates.
+\begin{enumerate}
+  \item flag '-i'  will start ccdb in interactive mode.
 
-The most profitable use of these routines is probably not in
-predicting the absolute level of resolutions in the detector, but in
-predicting relative changes in resolution as detector parameters are
-changed. The former requires a more detailed modeling of the detector
-but also requires a greater effort whenever a new design is
-proposed. This resolution estimator ({\tt REZEST}) is useful in
-exploring the parameter space during the optimation process.
+  \item 'ls /TOF/params' - the result of the is exactly the same as in Example 1.
+         One stays in the interactive shell after the execution.
 
-\appendix
+  \item 'help' command provides list of commands and how to use each of them
 
-\section{Some useful equations}\label{app:algebra}
+  \item executing next commands will reproduce Example 1 step by step.
 
+  \item  The same as in posix shell, ccdb interactive mode have the current working directory,
+         with relative and absolute pathes. pwd command will show the current
+         working directory.
+
+  \item to exit interactive mode enter 'q', 'quit' or press ctrl+D
+\end{enumerate}
+
+Since ccdb objects have /name/paths and many other things that looks like
+POSIX file system, the commands are very posix-shell-like.
+
+
+\subsection{Connection}\label{sec:connection}
+
+
+CCDB uses so called "connection strings" to specify a data source.
+The generic format of a connection string is:
+\begin{verbatim}
+    <protocol>://<datasource specified string>
+\end{verbatim}
+
+MySQL connection string:
+\begin{verbatim}
+mysql://<username>:<password>@<server_address>:<port> <database>
+\end{verbatim}
+
+One may omit any part except "mysql://" and "<server\_address>". The default
+values will be used.
+
+CCDB MySQL connection defaults:
+\begin{itemize}
+  \item username - ccdb\_user
+  \item password - no password
+  \item port - default MySQL port (now is 3306)
+  \item database - ccdb
+\end{itemize}
+
+
+Here is the order of how ccdb gets the connection string:
+\begin{enumerate}
+  \item The default connection string is  \textbf{"mysql://ccdb\_user@localhost ccdb"}
+
+  \item if \textbf{CCDB\_CONNECTION} environment variable is set it is used overwriting
+        the default connection string
+
+  \item if -c or --connection flag is given in command promt it is used overwriting
+        all other.
+\end{enumerate}
+
+Example 3. Connection string 1:
+
+\begin{verbatim}
+        "mysql://john@localhost:999"
+\end{verbatim}
+
+
+\begin{itemize}
+  \item MySQL server on 'localhost' using port 999
+  \item user is 'john' with no password
+  \item the database is 'ccdb' by default
+\end{itemize}
+
+Example 4. Simple connection string:
+\begin{verbatim}	
+	"mysql://localhost"
+\end{verbatim}
+
+\begin{itemize}
+  \item MySQL server on localhost using port 3306 (default)
+  \item user is 'ccdb\_user' with no password (default)
+  \item the database is 'ccdb' (default)
+\end{itemize}
+
+
+Example 5. Full connection string:
+\begin{verbatim}	
+        "mysql://smith:hHjD83f@192.168.1.3:4444 ccdb_database"
+\end{verbatim}
+
+It tells ccdbcmd to connect to:
+\begin{itemize}
+  \item MySQL server  on '192.168.1.3' using port 4444
+  \item user is 'smith' with password 'hHjD83f'
+  \item the database is 'ccdb\_database'
+\end{itemize}
+
+
+\subsection{Help system}
+
+The ccdb is designed to be a self descriptive. By using 'help' 'usage' and 'example' commands
+one could get all the commands and how to use them.
+
+By using 'howto' command one could get tutorials for typical situations.
+
+\subsection{Commands}
+
+\subsubsection{Commands consistency}
+
+Command keys are consistent. This means that some flags and argument formats
+are the same across all commands. There are unified flags to identify objects for all commands:
+\begin{itemize}
+  \item \textbf{-v} - Variation
+  \item \textbf{-t} - Data table
+  \item \textbf{-r} - Run or run-range
+  \item \textbf{-d} - Directory
+\end{itemize}
+
+For example 'info' command may be executed against directory, table or variation.
+Example 6. Info command:
+\begin{verbatim}
+      ccdb -i
+      > info -v default                                          (1)
+	  > info -r all                                              (2)
+	  > info -d /TOF                                             (3)
+	  > info -t /TOF/params                                      (4)
+	  > info /TOF/params                                         (5)
+\end{verbatim}
+
+1. Get information about "default" variation
+2. Get information about "all" runrange. "all" runrange is [0, infinite\_run]
+3. Get information about "/TOF" directory.
+4. Get information about "/TOF/params" type table
+5. By default '*info*' treat non flag argument as a name of a table.
+
+\subsubsection{Commands overview}
+
+This table is printed if one executes "ccdb help"
+\begin{table}[position specifier]
+\centering
+\begin{tabular}{| l | l | l |}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  info   & Info          & Prints extended information about an object \\
+  vers   & Versions      & Show versions of data for the specified table \\
+  run    & CurrentRun    & Gets or sets current working run \\
+  dump   & Dump          & Dumps data table to a file \\
+  show   & Show          & Shows type table data \\
+  mkdir  & MakeDirectory & Create directory \\
+  pwd    & PrintWorkDir  & Prints working directory \\
+  cd     & ChangeDir     & Change current directory \\
+  add    & AddData       & Add data constants \\
+  mktbl  & MakeTable     & Create constants type table \\
+  cat    & Cat           & Show assignment data by ID \\
+  ls     & List          & List objects in a given directory \\
+  \hline
+\end{tabular}
+\caption{List of ccdb commands}
+\label{tab:commands}
+\end{table}
+
+Assuming that user is in interactive mode, one may categorize the commands:
+
+
+\emph{To navigate directories}
+pwd - prints curent directory
+cd  - switch to specified directory
+ls  - list objects in the directory (wildcards are allowed)
+mkdir - creates directory
+
+Example 7. Directory commands overview:
+\begin{verbatim}
+    > pwd
+    /
+	> cd /TOF
+	> ls
+    table1  table2
+	> mkdir constants
+	> ls con*
+    constants
+\end{verbatim}
+
+
+
+\textbf{Get information about objects}
+\begin{itemize}
+  \item \textbf{info} - gets information about objects (use -v -r -d flags), see example 6.
+  \item \textbf{vers} - gets all versions of the table
+  \item \textbf{cat}  - displays values
+  \item \textbf{dump} - same as cat but dumps files to disk
+  \item \textbf{logs} - see logs information
+\end{itemize}
+
+
+\textbf{Manage objects}
+\begin{itemize}
+  \item \textbf{mkdir} - creates directory
+  \item \textbf{mktbl} - creates data table
+  \item \textbf{add} - adds data from text file to table
+        (variation and runranges are created automatically by add command)
+\end{itemize}
+
+
+\subsection{Data requests}
+
+There are two problems related to data access which CCDB tries to sove:
+1. Getting constants should be as easy as to say "Give this constants for June 2011"
+2. There should be one way to give an unique key for every set of data.
+
+The first thing that comes to mind when one hears "unique key" might be
+using incremental indexes. But CCDB is database independent. Indexes
+which are good to use with databases become uneasy for standalone ACSII files.
+Moreover, moving indexes from one database to another might be a problem.
+And, last but not least, indexes are good for machines. If an operator
+has an index 1114211 it tells nothing to him and could be easily
+mistaken with 1142111 which belong to absolutely another data set.
+
+CCDB uses so called "Requests" to solve both of the problems.
+The full form of the request is an "unique composite key" for
+the particular data values.
+
+Full form of the request is
+\begin{verbatim}
+    </path/to/data>:<run>:<variation>:<time>
+\end{verbatim}
+
+To get the data user can specify only a part of the request.
+The minimal request to get the data is just /path/to/data
+One may omit any part of the request except for name-path.
+
+Lets look at examples:
+\begin{itemize}
+  \item /path/to/data - just path to data, no run, variation or timestamp is specified
+  \item /path/to/data::mc - no run specified, variation is "mc", no date is specified
+  \item /path/to/data:::2029 - only the path and the date(year) are specified
+\end{itemize}
+
+As shown in the examples above, to specify a path and a variation but to use default run
+ one skips the run number and leave its place like "::":
+
+So
+\begin{verbatim}
+                   +-- variation
+                   |
+                   |
+   /path/to/data::mc
+                ^
+                |
+                +-- place where run number should be
+\end{verbatim}
+
+
+And the request '/path/to/data:::2029' means that we specify a path and a date
+but leave a run number and a variation to be set by default.
+What does word 'default' means? We will discuss it in "DEFAULT VALUES" chapter.
+
+The time is parsed as:
+
+    \textbf{YYYY:MM:DD-hh:mm:ss}
+
+Any non digit character may be used as separator instead of ':' and '-'
+
+so all these data lines are the same
+\begin{verbatim}
+    2029/06/17-22:03:05
+    2029-06-17-22-03-05
+    2029/06/17:22/03/05
+    2029a06b17c22d03e05
+\end{verbatim}
+
+One can omit any part of the time string starting from the right, this the latest date for this
+part will be returned.
+
+Examples:
+
+"2011" - (this means the year 2011), it will be interpreted as 2011/12/31-23:59:59 timestamp
+so the latest constants for year 2011 will be returned.
+
+
+"2012/05/21" - it will be interpreted as 2012/05/21-23:59:59 meaning to be the latest
+constants for 21 May 2012
+
+CCDB searches the closest constants before or equal to timestamp provided.
+
+
+\subsection{Default values and priorities}
+
+There are two general cases of using the requests:
+1. In physics software to read out constants
+2. When one manages constants (with ccdb console, python or other).
+
+In the first case most probably the software will provide the run number being processed.
+Also, most probably, the software should allow to set the variation to prefer for the analysis.
+
+So, CCDB defaults and priorities (1 - highest)
+
+%Run number:
+\textbf{Run number:}
+1. Run number specified in a request
+(if you use "/path/to/data:100" request, constants for run 100 will be returned dependless of the run being processed)
+2. Software set global default run number.
+(if 10200 run is being processed and you use "/path/to/data" data for run \# 10200 will be returned)
+3. 0 - (means run number 0).
+
+%Variation
+\textbf{Variation:}
+1. Variation specified in a request
+(if you use "/path/to/data::mc" request, constants for variation mc will be used)
+2. Global preferred variation set by software.
+(...)
+3. the "default" variation.
+
+
+%Time stamp
+\textbf{Timestamp:}
+1. Request specified time will be used
+2. Current time
+
+
+When one uses ccdb console tool in interactive mode, one can set the default run number by running 'run' command
+
+Example:
+\begin{verbatim}
+> run 100
+> cat /path/to/data     # all commands will get constants for run 100
+> run                   # you can check what run is set by default
+100
+\end{verbatim}
+C++ API section will overview how to set defult run
 
 \bibliography{ccdb_doc}
 
