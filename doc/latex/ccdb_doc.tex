@@ -89,11 +89,72 @@ As a management tool and as a data provider CCDB allows:
 CCDB basic usage concepts and ccdb console tool for managing CCDB contents
 
 
+% Data structure
+%******************************************************************************
+\subsection{Data structure}
+
+
+
+% Namepath
+%******************************************************************************
+\subsection{Namepath}
+The desired set of values is identified by name. The name string is unique 
+across all detector systems. The convention already implemented in the GlueX 
+code base is to use a forward slash(/) notation to specify a hierarchical 
+namepath. 
+
+For example:
+\begin{verbatim}
+/FDC/driftvelocity/timewalk_parameters
+\end{verbatim}
+
+This allows implementors of individual detector systems to to specify a 
+hierarchy with as much or little depth as is needed given their complexity.
+The "/FDC/driftvelocity/timewalk\_parameters" parameters may have members 
+identified by either name or position. For example, it may contain 3 values: 
+"slope", "offset", and "exponent". By contrast, a set of constants with a 
+namepath "/FDC/CathodeStrips/pedestals" may have 100 values identified simply 
+as "0", "1", "2", "3", ...
+
+\textbf{Namepath format}:\\
+Allowed symbols are a-z, A-Z, 0-9, \_ and -. There is no space or special symbols
+allowed in the namespath. Such considerations simplifies the console management
+and database validation of namepath objects.
+
+% Variations
+%******************************************************************************
+\subsection{Variation}
+The CCDB includes a \textit{variation} feature. The variation is a sort 
+of data branching, making a "shallow copy" of a complete set of calibration 
+constants (i.e. one that refers to constants without actually copying them). 
+
+The variation is to be used primarily to create a new set of constants based
+on another set, but with a few changes. A variation is identified as a string. 
+The primary purpose of a variation is to allow testing of new constants or
+alternative sets of constants that don't disturb the main trunk and don't 
+require copying a complete set.
+
+Specifying a is optional for end-users. If no variation is specified, then a
+"\textit{default}" variation is used. It is assumed that the default variation 
+will be used to hold the best available constants at any point in time. 
+
+Each variation is stored in the CCDB with information regarding another 
+variation upon which it is based. This basis variation may specify the default variation.
+
+Each set of constants in the CCDB includes a variation string that is used to
+specify which variation those specific constants are valid for.
+
+\textbf{Variations format}:\\
+Allowed symbols are a-z, A-Z, 0-9, \_ and -. There is no space or special symbols
+allowed in variation name. Such considerations simplifies the console management
+and database validation of variation names.
+
+
 % Data requests
 %******************************************************************************
 \subsection{Data requests}
 
-There are two problems related to data access which CCDB tries to sove:
+There are two problems related to data access, CCDB tries to solve:
 \begin{enumerate}
   \item Getting constants should be as easy as to say 
         "Give me this constants for June 2011"
