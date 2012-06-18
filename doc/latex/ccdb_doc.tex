@@ -94,7 +94,6 @@ CCDB basic usage concepts and ccdb console tool for managing CCDB contents
 \subsection{Data structure}
 
 
-
 % Namepath
 %******************************************************************************
 \subsection{Namepath}
@@ -120,6 +119,7 @@ as "0", "1", "2", "3", ...
 Allowed symbols are a-z, A-Z, 0-9, \_ and -. There is no space or special symbols
 allowed in the namespath. Such considerations simplifies the console management
 and database validation of namepath objects.
+
 
 % Variations
 %******************************************************************************
@@ -223,8 +223,8 @@ so all these data lines are the same
     2029a06b17c22d03e05
 \end{verbatim}
 
-One can omit any part of the time string starting from the right, this the latest date for this
-part will be returned.
+One can omit any part of the time string starting from the right, this the latest 
+date for this part will be returned.
 
 Examples:
 
@@ -233,10 +233,26 @@ Examples:
 2011 will be returned.
 
 
-"2012/05/21" - it will be interpreted as 2012/05/21-23:59:59 meaning to be the latest
-constants for 21 May 2012
+"2012/05/21" - it will be interpreted as 2012/05/21-23:59:59 meaning to be the 
+latest constants for 21 May 2012
 
 CCDB searches the closest constants before or equal to timestamp provided.
+
+
+% Examples
+%******************************************************************************
+\subsection{Examples}
+
+This chapter will provide users with practical examples of all above. 
+Text is to be written.  
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.8\textwidth]{pics/variations_example1}
+  \caption{Variations basic usage}
+\end{figure}
+
+
 
 
 % Default values
@@ -259,7 +275,8 @@ So, CCDB defaults and priorities (1 - highest)
 %Run number:
 \textbf{Run number:}
 1. Run number specified in a request
-(if you use "/path/to/data:100" request, constants for run 100 will be returned dependless of the run being processed)
+(if you use "/path/to/data:100" request, constants for run 100 will be returned 
+dependless of the run being processed)
 2. Software set global default run number.
 (if 10200 run is being processed and you use "/path/to/data" data for run \# 10200 will be returned)
 3. 0 - (means run number 0).
@@ -366,6 +383,52 @@ It tells ccdbcmd to connect to:
   \item the database is 'ccdb\_database'
 \end{itemize}
 
+
+% Update and delete operations
+%******************************************************************************
+\subsection{Update and delete operations}
+
+CCDB follows two principles in terms of updating and deleting:
+\begin{enumerate}
+\item Don't delete anything.
+\item Updates are done by '\textit{adding new}'.
+\end{enumerate}
+
+If one wants to \textit{update} the values of some table, it is done by 
+\textit{adding a new} set of constants. The software will use more recent set 
+of data by default. 
+
+If one wants to change the number of columns of the table (or columns 
+specification), it is done by adding a new table with a new name. 
+
+For example. If one wants to change the format of a table:
+\begin{verbatim}
+/FDC/driftvelocity/timewalk_parameters
+\end{verbatim}
+One should create a new table with right format:
+\begin{verbatim}
+/FDC/driftvelocity/timewalk_parameters2
+\end{verbatim}
+
+CCDB doesn't provide any tools for deleting \textbf{\textit{non empty}} tables 
+or directories, changing their names or specifications at user level. 
+
+There is a strong reason for this limitation. 
+If CCDB is used to hold calibration constants, then some code should exist for 
+each data set. At least somewhere at some point of time. So deleting  
+or changing something (the number of rows in a table for example) will lead to 
+corruption of the code. The worst case scenario is when such changes don't
+lead to immediate crush but produce weird hard-to-determine bugs somewhere in 
+deep parts of an offline software.
+
+(Deleting an empty table is OK - there is no data so no code behind it)
+
+
+If one really need to delete some constants, this should be done at 
+\textit{administrative level}. This means that is should be discussed, users 
+should be notified about changes, and the changes should be tested. 
+Thus deleting the constants shouldn't become a normal every day experience 
+for users.
 
 %==============================================================================
 %    C O M M A N D   L I N E   T U T O R I A L
