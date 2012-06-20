@@ -638,8 +638,38 @@ Example 7. Directory commands overview:
 \section{CCDB command line tutorial}\label{sec:cpp}
 
 
+%C++ Overview
 %******************************************************************************
 \subsection{C++ Overview}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.3\textwidth]{pics/cpp_api_levels}
+  \caption{C++ API levels}
+  \label{pic:cpp_api_levels}
+\end{figure}
+
+CCDB C++ library consist of separate levels (see fig. \ref{pic:cpp_api_levels}).
+\begin{itemize}
+\item \textbf{C++ User API} - This level is \textit{most probably what any user}, 
+      who is not bound to JANA, \textit{needs}. The API provides simple 
+      functionality of getting  constants. It automates connections number, 
+      multithreading, data source selection, etc.
+      
+\item \textbf{Low level API} - provides all sorts of low level functionality for 
+       managing data and CCDB internals. This level considered to be internal 
+       and could be interesting only in terms further development of CCDB. 
+       Regular users should not use any classes from this level       
+       \footnote{Low level API is subject to change for better CCDB performance 
+                 and stability. The changes are done without any 
+                 remorse towards user's code which is happened to use Low 
+                 level API elements. That is the reason why Low level API 
+                 should be kept separated and used only in CCDB higher level
+                 classes}. 
+       
+\item \textbf{JANA API} - There is a JANA API on top of Users C++ API. This 
+      level integrates CCDB and JANA framework. 
+\end{itemize}
 
 
 %******************************************************************************
@@ -655,6 +685,9 @@ The \textbf{Calibration} is used to get constants.
 The \textbf{CalibrationGenerator} is used to get \textbf{Calibration} instance. 
 
 
+
+
+The reasons for that comes from intention 
 \bibliography{ccdb_doc}
 
 \end{document}
