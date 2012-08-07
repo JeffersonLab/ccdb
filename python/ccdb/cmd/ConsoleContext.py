@@ -22,7 +22,7 @@ class ConsoleContext:
     """
     _utils = {}
     _verbose = VerboseModes.No
-    _connectionString = "mysql://ccdb_user@localhost"
+    _connectionString = "mysql://clasuser@clasdb.jlab.org clas12"
     _provider = MySQLProvider()
     _current_path="/"
     anononymous_user_name = "anonymous"
