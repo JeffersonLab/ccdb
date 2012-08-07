@@ -1,0 +1,2 @@
+#& nsectors nregions
+6 3
