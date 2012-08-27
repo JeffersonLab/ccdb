@@ -144,6 +144,10 @@
     <ClInclude Include="..\..\..\include\CCDB\Providers\IAuthentication.h">
       <Filter>Providers\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Providers\SQLiteDataProvider.h">
+      <Filter>Providers\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SQLite\sqlite3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Library\Helpers\StringUtils.cc">
@@ -233,5 +237,9 @@
     <ClCompile Include="..\..\..\src\Library\Providers\IAuthentication.cc">
       <Filter>Providers\Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Providers\SQLiteDataProvider.cc">
+      <Filter>Providers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SQLite\sqlite3.c" />
   </ItemGroup>
 </Project>

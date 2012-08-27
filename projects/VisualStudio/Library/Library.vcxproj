@@ -41,8 +41,10 @@
     <ClInclude Include="..\..\..\include\CCDB\Providers\IAuthentication.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLConnectionInfo.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLDataProvider.h" />
+    <ClInclude Include="..\..\..\include\CCDB\Providers\SQLiteDataProvider.h" />
     <ClInclude Include="..\..\..\include\CCDB\PthreadMutex.h" />
     <ClInclude Include="..\..\..\include\CCDB\PthreadSyncObject.h" />
+    <ClInclude Include="..\SQLite\sqlite3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Library\Calibration.cc" />
@@ -72,8 +74,10 @@
     <ClCompile Include="..\..\..\src\Library\Providers\IAuthentication.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\MySQLConnectionInfo.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\MySQLDataProvider.cc" />
+    <ClCompile Include="..\..\..\src\Library\Providers\SQLiteDataProvider.cc" />
     <ClCompile Include="..\..\..\src\Library\PthreadMutex.cc" />
     <ClCompile Include="..\..\..\src\Library\PthreadSyncObject.cc" />
+    <ClCompile Include="..\SQLite\sqlite3.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FF2376E7-5637-46A4-AE1B-A083D7588552}</ProjectGuid>
@@ -109,8 +113,10 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;SQLITE;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(MYSQL_CONNECTOR)\include;$(CCDB_HOME)/include</AdditionalIncludeDirectories>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -131,8 +137,10 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(CCDB_HOME)/include;C:\Program Files %28x86%29\MySQL\MySQL Connector C 6.0.2\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;SSQLITE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CCDB_HOME)/include;$(MYSQL_CONNECTOR)/include</AdditionalIncludeDirectories>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,7 +149,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>C:\Program Files %28x86%29\MySQL\MySQL Connector C 6.0.2\lib\opt;$(CCDB_HOME)\lib;$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR)/lib/opt;$(CCDB_HOME)\lib;$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libmysql.lib;mysqlclient.lib;zlib.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
