@@ -178,8 +178,7 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         print "    Create command"
         print "    " + create_table_command
 #        print "    " + create_table_command[0:50]+" ... "
-        if(execute_ccdb_commands): 
-            
+        if(execute_ccdb_commands):
             (code, response) = get_status_output(create_table_command)
             print code, response
         
@@ -211,7 +210,9 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         add_command += table_path +" -v default -r 0- " + data_file_path
         print add_command
         
-        if(execute_ccdb_commands): os.system(add_command)
+        if(execute_ccdb_commands):
+            (code, response) = get_status_output(add_command)
+            print code, response
         print "  ============================================="
         print "  Finished with file "
         
@@ -275,7 +276,9 @@ def create_directory(dir_name, parent_path):
     print "creating ccdb directory: " + path
     command = "ccdb " + ccdbcmd_opts + " mkdir " + path
     print command
-    if(execute_ccdb_commands): os.system(command)
+    if(execute_ccdb_commands):
+        (code, response) = get_status_output(command)
+        print code, response
     print "here"
 
 
