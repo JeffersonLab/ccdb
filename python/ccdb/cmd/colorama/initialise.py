@@ -19,6 +19,12 @@ def resume():
     sys.stdout = new_stdout
     sys.stderr = new_stderr
 
+def off():
+    global new_stdout
+    global new_stderr
+    sys.stdout = new_stdout = orig_stdout
+    new_stderr = new_stderr = orig_stderr
+
 
 def reset_all():
     AnsiToWin32(orig_stdout).reset_all()
