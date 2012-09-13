@@ -6,7 +6,7 @@ import os
 import os.path
 import sys
 import ccdb
-import commands
+import subprocess
 
 dom = xml.dom.minidom.getDOMImplementation();
 #dom = xml.dom.dom()
@@ -179,7 +179,8 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         print "    " + create_table_command
 #        print "    " + create_table_command[0:50]+" ... "
         if(execute_ccdb_commands): 
-            (code, response) = os.system(create_table_command)
+            
+            (code, response) = get_status_output(create_table_command)
             print code, response
         
         print
@@ -277,6 +278,14 @@ def create_directory(dir_name, parent_path):
     if(execute_ccdb_commands): os.system(command)
     print "here"
 
+
+def get_status_output(cmd, input=None, cwd=None, env=None):
+    pipe = subprocess.Popen(cmd, shell=True, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=STDOUT)
+    (output, errout) = pipe.communicate(input=input)
+    #assert not errout
+    status = pipe.returncode
+    return (status, output)
+    
 
 if execute_ccdb_commands or is_reharsal:
     
