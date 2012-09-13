@@ -280,7 +280,7 @@ def create_directory(dir_name, parent_path):
 
 
 def get_status_output(cmd):
-    pipe = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE. universal_newlines=True)
+    pipe = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, universal_newlines=True)
     (output, errout) = pipe.communicate(None)
     #assert not errout
     status = pipe.returncode
