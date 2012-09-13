@@ -279,9 +279,9 @@ def create_directory(dir_name, parent_path):
     print "here"
 
 
-def get_status_output(cmd, input=None, cwd=None, env=None):
-    pipe = subprocess.Popen(cmd, shell=True, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=STDOUT)
-    (output, errout) = pipe.communicate(input=input)
+def get_status_output(cmd):
+    pipe = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE. universal_newlines=True)
+    (output, errout) = pipe.communicate(None)
     #assert not errout
     status = pipe.returncode
     return (status, output)
