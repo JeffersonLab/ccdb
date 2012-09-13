@@ -6,6 +6,7 @@ import os
 import os.path
 import sys
 import ccdb
+import commands
 
 dom = xml.dom.minidom.getDOMImplementation();
 #dom = xml.dom.dom()
@@ -177,7 +178,9 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         print "    Create command"
         print "    " + create_table_command
 #        print "    " + create_table_command[0:50]+" ... "
-        if(execute_ccdb_commands): os.system(create_table_command)
+        if(execute_ccdb_commands): 
+            (code, response) = os.system(create_table_command)
+            print code, response
         
         print
         print "  Filling data "
