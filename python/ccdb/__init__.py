@@ -64,7 +64,8 @@ def init_ccdb_console():
 
     if "--no-color" in sys.argv:
         #no colors for output
-        cmd.colorama.init(False, False, False, False)
+        #cmd.colorama.init(False, False, False, False)
+        pass
     else:
         #colors are ON
         cmd.colorama.init(autoreset=True)
