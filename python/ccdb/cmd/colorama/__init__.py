@@ -1,4 +1,4 @@
-from .initialise import init, reset_all, pause, resume
+from .initialise import init, reset_all, pause, resume, off
 from .ansi import Fore, Back, Style
 from .ansitowin32 import AnsiToWin32
 
