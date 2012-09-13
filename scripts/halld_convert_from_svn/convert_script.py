@@ -183,7 +183,7 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         if(execute_ccdb_commands):
             (code, response) = get_status_output(create_table_command)
             print code, response
-            if code!=0 or "error" in response or "failed" in response: exit("Convertion aborted")
+            if code!=0 or "error" in response or "failed" in response: exit("Conversion aborted")
         
         print
         print "  Filling data "
@@ -216,7 +216,7 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         if(execute_ccdb_commands):
             (code, response) = get_status_output(add_command)
             print code, response
-            if code!=0 or "error" in response or "failed" in response: exit("Convertion aborted")
+            if code!=0 or "error" in response or "failed" in response: exit("Conversion aborted")
 
         print "  ============================================="
         print "  Finished with file "
@@ -284,7 +284,7 @@ def create_directory(dir_name, parent_path):
     if(execute_ccdb_commands):
         (code, response) = get_status_output(command)
         print code, response
-        if code!=0 or "error" in response or "failed" in response: exit("Convertion aborted")
+        if code!=0 or "error" in response or "failed" in response: exit("Conversion aborted")
     print "here"
 
 
