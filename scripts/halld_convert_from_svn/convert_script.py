@@ -96,13 +96,15 @@ parser = argparse.ArgumentParser(description='Converts existing svn HallD collib
 parser.add_argument('-r','--rehearsal', action="store_true", default=False, help='Run script to view what will be done. Script will run everything, but instead of invoking ccdb commands, they will be printed on screen') 
 parser.add_argument('-e','--execute', action="store_true", default=False, help='Run script and execute ccdb commands')
 parser.add_argument('-v','--verbose', action="store_true", default=False, help='Print additional info')
+parser.add_argument('-c','--colorless', action="store_true", default=True, help='Use colors for output')
+
 result = parser.parse_args()
 #(execute_commands, is_reharsal) = result
 
 execute_ccdb_commands = result.execute
 is_reharsal = result.rehearsal
 is_verbose = result.verbose
-
+if result.colorless: ccdbcmd_opts = ccdbcmd_opts+" --no-color"
 #-----------------------------
 # *** PRINT CONFIGURATION  ***
 #-----------------------------
