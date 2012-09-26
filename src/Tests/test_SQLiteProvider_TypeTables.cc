@@ -61,14 +61,14 @@ TEST_CASE("CCDB/SQLiteDataProvider/TypeTables","TypeTables tests")
 	
     //search tables are good too
     //now lets get all tables from the directory.
-	//result = prov->SearchConstantsTypeTables(tables, "t??t_tab*");
+	result = prov->SearchConstantsTypeTables(tables, "t??t_tab*");
 
-	//REQUIRE(result);
-	//REQUIRE(tables.size()>0);
+	REQUIRE(result);
+	REQUIRE(tables.size()>0);
 
     //Search table in the specified path
-    //tables = prov->SearchConstantsTypeTables("*", "/test/test_vars",true);
-    //REQUIRE(tables.size()>0);
+    tables = prov->SearchConstantsTypeTables("*", "/test/test_vars",true);
+    REQUIRE(tables.size()>0);
 	
 	//create new type table
 	//-------------------------------------------------------------------------------------

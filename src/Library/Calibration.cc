@@ -571,19 +571,21 @@ void Calibration::Unlock()
 //______________________________________________________________________________
 void Calibration::GetListOfNamepaths( vector<string> &namepaths )
 {
-     /** @brief Get list of all type tables with full path
-      *
-      * @parameter [in] vector<string> & namepaths
-      * @return   void
-      */
+   /** @brief Get list of all type tables with full path
+    *
+    * @parameter [in] vector<string> & namepaths
+    * @return   void
+    */
+
     vector<ConstantsTypeTable*> tables;
     if(!mProvider->SearchConstantsTypeTables(tables, "*"))
     {
-        throw logic_error("Error selecting all type tables"); 
+        throw logic_error("Error selecting all type tables");
     }
+
     for (int i=0; i< tables.size(); i++)
     {
-        // we use substr(1) because JANA users await list 
+        // we use substr(1) because JANA users await list
         // without '/' in the beginning of each string,
         // while GetFullPath() returns strings that start with '/'
         namepaths.push_back(tables[i]->GetFullPath().substr(1));

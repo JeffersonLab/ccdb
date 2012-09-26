@@ -784,105 +784,113 @@ ConstantsTypeTable* ccdb::SQLiteDataProvider::CreateConstantsTypeTable( const st
 
 bool ccdb::SQLiteDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath /*= ""*/, bool loadColumns/*=false*/, int take/*=0*/, int startWith/*=0 */ )
 {
-	//ClearErrors(); //Clear error in function that can produce new ones
+	char funcName[] = "bool ccdb::SQLiteDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath /*= ""*/, bool loadColumns/*=false*/, int take/*=0*/, int startWith/*=0 */ )";
 
-	//// in SQLite compared to wildcards % is * and _ is 
-	//// convert it. 
-	//string likePattern = WilcardsToLike(pattern);
- //   
-	////do we need to search only in specific directory?
-	//string parentAddon(""); 		//this is addon to query indicates this
-	//Directory *parentDir = NULL; //will need it anyway later
-	//if(parentPath!="")
-	//{	//we should care about parent path!
-	//	if(parentDir = GetDirectory(parentPath.c_str()))
-	//	{
-	//		parentAddon = StringUtils::Format(" AND `directoryId` = '%i'", parentDir->GetId());
-	//	}
-	//	else
-	//	{
-	//		//request was made for directory that doestn exits
-	//		//TODO place warning or not?
-	//		Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"SQLiteDataProvider::SearchConstantsTypeTables", "Path to search is not found");
-	//		return false;
-	//	}
-	//}
- //   else
- //   {
- //       //In this case we will need mDirectoriesById
- //       //maybe we need to update our directories?
- //       UpdateDirectoriesIfNeeded();
- //   }
-	//    
-	////Ok, lets cleanup result list
-	//if(typeTables.size()>0)
-	//{
-	//	vector<ConstantsTypeTable *>::iterator iter = typeTables.begin();
-	//	while(iter != typeTables.end())
-	//	{
-	//		ConstantsTypeTable *obj = *iter;
-	//		if(IsOwner(obj) ) delete obj;		//delete objects if this provider is owner
-	//		iter++;	
-	//	}
-	//}
-	//typeTables.clear(); //we clear the consts. Considering that some one else  should handle deletion
+	ClearErrors(); //Clear error in function that can produce new ones
 
-	//string limitAddon = PrepareLimitInsertion(take, startWith);
- //   
-	////combine query
-	//string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `name` LIKE '%s' %s ORDER BY `name` %s;",
-	//	likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
- //       
-	//if(!QuerySelect(query))
-	//{
-	//	//no report error
-	//	return NULL;
-	//}
+	// in SQLite compared to wildcards % is * and _ is convert it.
+	string likePattern = WilcardsToLike(pattern);
 
- //   
-	////Ok! We queried our directories! lets catch them! 
-	//while(FetchRow())
-	//{
-	//	//ok lets read the data...
-	//	ConstantsTypeTable *result = new ConstantsTypeTable(this, this);
+	//do we need to search only in specific directory?
+	string parentAddon(""); 		//this is addon to query indicates this
+	Directory *parentDir = NULL; //will need it anyway later
+	if(parentPath!="")
+	{	//we should care about parent path!
+		if(parentDir = GetDirectory(parentPath.c_str()))
+		{
+			parentAddon = StringUtils::Format(" AND `directoryId` = '%i'", parentDir->GetId());
+		}
+		else
+		{
+			Error(CCDB_ERROR_DIRECTORY_NOT_FOUND, funcName, "Path to search is not found");
+			return false;
+		}
+	}
+    else
+    {
+        //In this case we will need mDirectoriesById
+        //maybe we need to update our directories?
+        UpdateDirectoriesIfNeeded();
+    }
+    
+	//Ok, lets cleanup result list
+	if(typeTables.size()>0)
+	{
+		vector<ConstantsTypeTable *>::iterator iter = typeTables.begin();
+		while(iter != typeTables.end())
+		{
+			ConstantsTypeTable *obj = *iter;
+			if(IsOwner(obj) ) delete obj;		//delete objects if this provider is owner
+			iter++;	
+		}
+	}
+	typeTables.clear(); //we clear the consts. Considering that some one else  should handle deletion
 
-	//	result->SetId(ReadULong(0));
-	//	result->SetCreatedTime(ReadUnixTime(1));
-	//	result->SetModifiedTime(ReadUnixTime(2));
-	//	result->SetName(ReadString(3));
-	//	result->SetDirectoryId(ReadULong(4));
-	//	result->SetNRows(ReadInt(5));
-	//	result->SetNColumnsFromDB(ReadInt(6));
-	//	result->SetComment(ReadString(7));
+	string limitAddon = PrepareLimitInsertion(take, startWith);
+	
+	//combine query
+	string query = StringUtils::Format("SELECT `id`, strftime('%%s', `created`, 'localtime')  as `created`, strftime('%%s', `modified`, 'localtime') as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM typeTables WHERE name LIKE '%s' ESCAPE '\\' %s ORDER BY `name` %s;",
+		likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
+       
+	// prepare the SQL statement from the command line
+	int result = sqlite3_prepare_v2(mDatabase, query.c_str(), -1, &mStatement, 0);
+	if( result ) { ComposeSQLiteError(funcName); sqlite3_finalize(mStatement); return NULL; }
 
- //       if(parentDir) //we already may have parrent directory
- //       {
-	//	    result->SetDirectory(parentDir);
- //       }
- //       else //Or we should find it...
- //       {
- //           result->SetDirectory(mDirectoriesById[result->GetDirectoryId()]);
- //       }
+	mQueryColumns = sqlite3_column_count(mStatement);
 
-	//	SetObjectLoaded(result); //set object flags that it was just loaded from DB
-	//	
-	//	typeTables.push_back(result);
-	//}
+	// execute the statement
+	ConstantsTypeTable *table = NULL;
+	do
+	{
+		result = sqlite3_step(mStatement);
 
- //   //Load COLUMNS if needed...
-	//if(loadColumns)
- //   {
- //       for (int i=0; i< typeTables.size(); i++)
- //       {
- //           LoadColumns(typeTables[i]);
- //       }   
- //   }
- //   
-	//FreeSQLiteResult();
-	//
-	//return true;
+		switch( result )
+		{
+		case SQLITE_DONE:
+			break;
+		case SQLITE_ROW:
+			table = new ConstantsTypeTable(this, this);
+			table->SetId(ReadULong(0));
+			table->SetCreatedTime(ReadUnixTime(1));
+			table->SetModifiedTime(ReadUnixTime(2));
+			table->SetName(ReadString(3));
+			table->SetDirectoryId(ReadULong(4));
+			table->SetNRows(ReadInt(5));
+			table->SetNColumnsFromDB(ReadInt(6));
+			table->SetComment(ReadString(7));
 
-	return false;
+			if(parentDir) //we already may have parrent directory
+			{
+			    table->SetDirectory(parentDir);
+			}
+			else //Or we should find it...
+			{
+				table->SetDirectory(mDirectoriesById[table->GetDirectoryId()]);
+			}
+
+			SetObjectLoaded(table); //set object flags that it was just loaded from DB
+			
+			typeTables.push_back(table);
+			break;
+		default:
+			fprintf(stderr, "Error: %d : %s\n",  result, sqlite3_errmsg(mDatabase));
+			break;
+		}
+	}
+	while(result==SQLITE_ROW);
+
+	// finalize the statement to release resources
+	sqlite3_finalize(mStatement);
+
+    //Load COLUMNS if needed...
+	if(loadColumns)
+    {
+        for (int i=0; i< typeTables.size(); i++)
+        {
+            LoadColumns(typeTables[i]);
+        }   
+    }
+ 	return true;
 }
 
 
