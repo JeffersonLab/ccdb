@@ -37,6 +37,10 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	REQUIRE(assignment->GetRunRange()  != NULL);
 	REQUIRE(assignment->GetTypeTable() != NULL);	
 	REQUIRE(assignment->GetTypeTable()->GetColumns().size()>0);
+	vector<vector<string> > tabeled_values = assignment->GetData();
+	REQUIRE(tabeled_values.size()==2);	
+	REQUIRE(tabeled_values[0].size()==3);	
+	REQUIRE(tabeled_values[0][0] == "1");
 	
 	//Ok! Lets get all assigments for current types table
 	vector<Assignment *> assignments;
@@ -66,7 +70,7 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	REQUIRE(assignment->GetTypeTable()->GetColumns().size());
 	
 	//Lets print table
-	vector<vector<string> > tabeled_values = assignment->GetData();
+	tabeled_values = assignment->GetData();
 	REQUIRE(tabeled_values.size()>0);	
 	REQUIRE(tabeled_values[0].size()>0);	
 	REQUIRE(Assignment::DecodeBlobSeparator("30e-2") == "30e-2");	

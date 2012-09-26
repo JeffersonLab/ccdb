@@ -318,9 +318,14 @@ The generic format of a connection string is:
     <protocol>://<datasource specified string>
 \end{verbatim}
 
+SQLite connection string:
+\begin{verbatim}
+sqlite://<path to sqlite db file>
+\end{verbatim}
+
 MySQL connection string:
 \begin{verbatim}
-mysql://<username>:<password>@<server_address>:<port> <database>
+mysql://<username>:<password>@<server_address>:<port>/<database>
 \end{verbatim}
 
 One may omit any part except "mysql://" and "<server\_address>". The default
@@ -373,7 +378,7 @@ Example 4. Simple connection string:
 
 Example 5. Full connection string:
 \begin{verbatim}	
-        "mysql://smith:hHjD83f@192.168.1.3:4444 ccdb_database"
+        "mysql://smith:hHjD83f@192.168.1.3:4444/ccdb_database"
 \end{verbatim}
 
 It tells ccdbcmd to connect to:

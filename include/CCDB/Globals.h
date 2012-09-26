@@ -58,14 +58,17 @@ typedef int dbkey_t;
 // on unconnected provider
 #define CCDB_ERROR_NOT_CONNECTED 1050
 
+//Query prepare statement error
+#define CCDB_ERROR_QUERY_PREPARE 1055
+
 //Error in select query execution in mysql
-#define CCDB_ERROR_MYSQL_SELECT 1060
+#define CCDB_ERROR_QUERY_SELECT 1060
 
 //Error in update query execution in mysql
 #define CCDB_ERROR_MYSQL_UPDATE 1070
 
 //Error in insert query execution in mysql
-#define CCDB_ERROR_MYSQL_INSERT 1080
+#define CCDB_ERROR_QUERY_INSERT 1080
 
 //Error in delete query execution in mysql
 #define CCDB_ERROR_MYSQL_DELETE 1090
@@ -74,7 +77,7 @@ typedef int dbkey_t;
 #define CCDB_ERROR_MYSQL_CUSTOM_QUERY 1100
 
 //we have less fields than fieldNum
-#define CCDB_WARNING_MYSQL_FIELD_NUM 5010
+#define CCDB_WARNING_DBRESULT_FIELD_INDEX 5010
 
 //My sql result was not cleaned after last query
 #define CCDB_WARNING_RESULT_NOT_CLEANED 5020

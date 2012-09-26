@@ -4,7 +4,7 @@
 
 #include "CCDB/Console.h"
 #include "CCDB/Helpers/StringUtils.h"
-#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Providers/SQLiteDataProvider.h"
 #include "CCDB/Model/Variation.h"
 #include "CCDB/Model/Directory.h"
 
@@ -16,12 +16,12 @@ using namespace ccdb;
  *
  * @return true if test passed
  */
-TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
+TEST_CASE("CCDB/SQLiteDataProvider/Assignments","Assignments tests")
 {
 	bool result;
 	
-	DataProvider *prov = new MySQLDataProvider();
-	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
+	DataProvider *prov = new SQLiteDataProvider();
+	if(!prov->Connect(TESTS_SQLITE_STRING)) return;
 
 	//GET ASSIGNMENTS TESTS
 	//----------------------------------------------------
@@ -37,6 +37,9 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	REQUIRE(assignment->GetRunRange()  != NULL);
 	REQUIRE(assignment->GetTypeTable() != NULL);	
 	REQUIRE(assignment->GetTypeTable()->GetColumns().size()>0);
+	vector<vector<string> > tabeled_values = assignment->GetData();
+	REQUIRE(tabeled_values.size()==2);	
+	REQUIRE(tabeled_values[0].size()==3);	
 	
 	//Ok! Lets get all assigments for current types table
 	vector<Assignment *> assignments;
@@ -54,21 +57,21 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	//Lets try create assignments testing from copy assignment
 
 	//simple copy
-	result = prov->CreateAssignment(assignment);
-	REQUIRE(result);	
+	//result = prov->CreateAssignment(assignment);
+	//REQUIRE(result);	
 
 	//test what we will get
-	result = prov->GetAssignments(assignments, "/test/test_vars/test_table", 100);
-	REQUIRE(result);	
-	REQUIRE(assignments.size()==(selectedAssignments+1));
-	REQUIRE(lastId!= assignment->GetId());
-	REQUIRE(lastDataVaultId!= assignment->GetDataVaultId());
-	REQUIRE(assignment->GetTypeTable()->GetColumns().size());
+	//result = prov->GetAssignments(assignments, "/test/test_vars/test_table", 100);
+	//REQUIRE(result);	
+	//REQUIRE(assignments.size()==(selectedAssignments+1));
+	//REQUIRE(lastId!= assignment->GetId());
+	//REQUIRE(lastDataVaultId!= assignment->GetDataVaultId());
+	//REQUIRE(assignment->GetTypeTable()->GetColumns().size());
 	
 	//Lets print table
-	vector<vector<string> > tabeled_values = assignment->GetData();
-	REQUIRE(tabeled_values.size()>0);	
-	REQUIRE(tabeled_values[0].size()>0);	
+	//vector<vector<string> > tabeled_values = assignment->GetData();
+	//REQUIRE(tabeled_values.size()>0);	
+	//REQUIRE(tabeled_values[0].size()>0);	
 	REQUIRE(Assignment::DecodeBlobSeparator("30e-2") == "30e-2");	
 	
 }

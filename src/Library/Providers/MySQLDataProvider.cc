@@ -167,7 +167,7 @@ bool ccdb::MySQLDataProvider::ParseConnectionString(std::string conStr, MySQLCon
 	//ok, now we have only "address:port database" part of the string
 
 	//1) deal with database;
-	int whitePos=conStr.find(' ');
+	int whitePos=conStr.find('/');
 	if(whitePos!=string::npos)
 	{
 		connection.Database = conStr.substr(whitePos+1);
@@ -209,6 +209,7 @@ void ccdb::MySQLDataProvider::Disconnect()
 	}
 }
 
+
 bool ccdb::MySQLDataProvider::CheckConnection( const string& errorSource/*=""*/ )
 {
 	ClearErrors(); //Clear error in function that can produce new ones
@@ -220,7 +221,6 @@ bool ccdb::MySQLDataProvider::CheckConnection( const string& errorSource/*=""*/ 
 		return false;
 	}
 	return true;
-
 }
 #pragma endregion Connection
 
@@ -301,15 +301,7 @@ bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const str
 
 Directory* ccdb::MySQLDataProvider::GetDirectory( const string& path )
 {
-	//maybe we need to update our directories?
-	UpdateDirectoriesIfNeeded();
-	
-	//search full path
-	map<string, Directory*>::iterator it = mDirectoriesByFullPath.find(string(path));
-
-	//found?
-	if(it == mDirectoriesByFullPath.end()) return NULL; //not found
-	return it->second; //found
+	return DataProvider::GetDirectory(path);
 }
 
 
@@ -335,15 +327,7 @@ bool ccdb::MySQLDataProvider::UpdateDirectory( Directory *dir )
 
 bool ccdb::MySQLDataProvider::DeleteDirectory( const string& fullPath )
 {
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	Directory *dir = GetDirectory(fullPath);
-	if(!dir)
-	{
-		Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"MySQLDataProvider::DeleteDirectory", "Directory not found with this path");
-		return false;
-	}
-	return DeleteDirectory(dir);
+	return DataProvider::DeleteDirectory(fullPath);
 }
 
 bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
@@ -402,20 +386,159 @@ bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
 	return result;
 }
 
+bool ccdb::MySQLDataProvider::SearchDirectories( vector<Directory *>& resultDirectories, const string& searchPattern, const string& parentPath/*=""*/,  int take/*=0*/, int startWith/*=0*/ )
+{	
+	UpdateDirectoriesIfNeeded(); //do we need to update directories?
+
+	resultDirectories.clear();
+
+	// in MYSQL compared to wildcards % is * and _ is 
+	// convert it. 
+	string likePattern = WilcardsToLike(searchPattern);
+	
+	//do we need to search only in specific directory?
+	string parentAddon(""); //this is addon to query indicates this
+	if(parentPath!="")
+	{	//we should care about parent path
+		
+		//If parent directory is "/" this should work too, because it have an id=0
+		//and tabeles in db wich doesnt have parents should have parentId=0
+		
+		Directory *parentDir;
+		if(parentDir = GetDirectory(parentPath.c_str()))
+		{
+			parentAddon = StringUtils::Format(" AND `parentId` = '%i'", parentDir->GetId());
+		}
+		else
+		{
+			//request was made for directory that doestn exits
+			//TODO place warning or not?
+			return false;
+		}
+	}
+
+	string limitAddon = PrepareLimitInsertion(take, startWith);
+
+	//combine query
+	string query = StringUtils::Format("SELECT `id` FROM `directories` WHERE name LIKE \"%s\" %s %s;",
+		likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
+	
+	//do query!
+	if(!QuerySelect(query))
+	{
+		return false;
+	}
+	
+	//Ok! We queried our directories! lets catch them! 
+	while(FetchRow())
+	{
+		dbkey_t id = ReadIndex(0); //read db index key
+
+		//search for such index
+		map<dbkey_t,Directory *>::iterator dirIter = mDirectoriesById.find(id);
+		if(dirIter != mDirectoriesById.end())
+		{
+			resultDirectories.push_back(dirIter->second);
+		}
+		else
+		{
+			//TODO it is some error situation! It cant happend!
+		}
+	}
+
+	FreeMySQLResult();
+
+	return true;
+}
+
+bool ccdb::MySQLDataProvider::LoadDirectories()
+{
+	//
+	if(IsConnected())
+	{
+		if(!QuerySelect("SELECT `id`, `name`, `parentId`, UNIX_TIMESTAMP(`directories`.`modified`) as `updateTime`, `comment` FROM `directories`"))
+		{
+			//TODO: report error
+			return false;
+		}
+
+		//clear diretory arrays
+		mDirectories.clear();
+		mDirectoriesById.clear();
+
+		//clear root directory (delete all directory structure objects)
+		mRootDir->DisposeSubdirectories(); 
+		mRootDir->SetFullPath("/");
+
+		//Ok! We querryed our directories! lets catch them! 
+		while(FetchRow())
+		{
+			Directory *dir = new Directory(this, this);
+			dir->SetId(ReadIndex(0));					// `id`, 
+			dir->SetName(ReadString(1));			// `name`, 
+			dir->SetParentId(ReadInt(2));			// `parentId`, 
+			dir->SetModifiedTime(ReadUnixTime(3));	// UNIX_TIMESTAMP(`directories`.`updateTime`) as `updateTime`, 
+			dir->SetComment(ReadString(4));			// `comment`
+
+			mDirectories.push_back(dir);
+			mDirectoriesById[dir->GetId()] = dir;
+		}
+
+		BuildDirectoryDependencies(); //
+
+		mDirsAreLoaded=true;
+	}
+	return false;
+}
+
+
+//______________________________________________________________________________
+vector<Directory *> ccdb::MySQLDataProvider::SearchDirectories( const string& searchPattern, const string& parentPath/*=""*/, int startWith/*=0*/, int select/*=0*/ )
+{
+    /** @brief SearchDirectories
+     *
+     * Searches directories that matches the pattern 
+     * inside parent directory with path @see parentPath 
+     * or globally through all type tables if parentPath is empty
+     * The pattern might contain
+     * '*' - any character sequence 
+     * '?' - any single character
+     *
+     * paging could be done with @see startWith  @see take
+     * startWith=0 and take=0 means select all records;
+     *
+     * objects that are contained in vector<DDirectory *>& resultDirectories will be
+     * 1) if this provider owned - deleted (@see ReleaseOwnership)
+     * 2) if not owned - just leaved on user control
+     * @param  [in]  searchPattern      Pattern to search
+     * @param  [in]  parentPath         Parent path. If NULL search through all directories
+     * @param  [in]  startRecord        record number to start with
+     * @param  [in]  selectRecords      number of records to select. 0 means select all records
+     * @return list of 
+     */
+
+	return DataProvider::SearchDirectories(searchPattern, parentPath, startWith, select);
+}
+
 #pragma endregion Directories
 
 
+#pragma region ObjectOwnerMethods
 
 bool ccdb::MySQLDataProvider::IsStoredObjectsOwner()
 {
 	return mIsStoredObjectOwner;
 }
 
+
 void ccdb::MySQLDataProvider::IsStoredObjectsOwner(bool flag)
 {
 	mIsStoredObjectOwner = flag;
 }
 
+#pragma endregion ObjectOwnerMethods
+
+#pragma region Type Tables
 ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const string& name, Directory *parentDir,bool loadColumns/*=false*/ )
 {
 	ClearErrors(); //Clear error in function that can produce new ones
@@ -489,31 +612,23 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 	return result;
 }
 
+//______________________________________________________________________________
 ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable(const string& path, bool loadColumns/*=false*/ )
 {
-	//get directory path
-	string dirPath = PathUtils::ExtractDirectory(path);
-	
-	//and directory
-	Directory *dir = GetDirectory(dirPath.c_str());
-	//probably one may wish to check dir to be !=NULL,
-	//but such check is in GetConstantsTypeHeader(const char* name, DDirectory *parentDir);
-	
-	//retrieve name of our constant table 
-	string name = PathUtils::ExtractObjectname(path);
-	
-	//get it from db etc...
-	return GetConstantsTypeTable(name.c_str(), dir, loadColumns);
+	return DataProvider::GetConstantsTypeTable(path, loadColumns);
 }
+
 
 bool ccdb::MySQLDataProvider::GetConstantsTypeTables( vector<ConstantsTypeTable *>& resultTypeTables, const string&  parentDirPath, bool loadColumns/*=false*/ )
 {
 	//and directory
 	Directory *dir = GetDirectory(parentDirPath);
+
 	//probably one may wish to check dir to be !=NULL,
 	//but such check is in GetConstantsTypeHeaders( DDirectory *parentDir, vector<ConstantsTypeTable *>& consts );
 	return GetConstantsTypeTables(resultTypeTables, dir);
 }
+
 
 bool ccdb::MySQLDataProvider::GetConstantsTypeTables(  vector<ConstantsTypeTable *>& resultTypeTables, Directory *parentDir, bool loadColumns/*=false*/)
 {
@@ -565,12 +680,14 @@ bool ccdb::MySQLDataProvider::GetConstantsTypeTables(  vector<ConstantsTypeTable
 	return true;
 }
 
+
 vector<ConstantsTypeTable *> ccdb::MySQLDataProvider::GetConstantsTypeTables( const string& parentDirPath, bool loadColumns/*=false*/ )
 {
 	vector<ConstantsTypeTable *> tables;
 	GetConstantsTypeTables(tables, parentDirPath, loadColumns);
 	return tables;
 }
+
 
 vector<ConstantsTypeTable *> ccdb::MySQLDataProvider::GetConstantsTypeTables( Directory *parentDir, bool loadColumns/*=false*/ )
 {
@@ -580,6 +697,7 @@ vector<ConstantsTypeTable *> ccdb::MySQLDataProvider::GetConstantsTypeTables( Di
 		return tables;
 	
 }
+
 
 bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *table )
 {
@@ -691,10 +809,12 @@ bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *tabl
 	return true;
 }
 
+
 ConstantsTypeTable* ccdb::MySQLDataProvider::CreateConstantsTypeTable( const string& name, const string& parentPath, int rowsNumber, map<string, string> columns, const string& comments /*=""*/ )
 {
 	return CreateConstantsTypeTable(name, GetDirectory(parentPath), rowsNumber, columns, comments);
 }
+
 
 ConstantsTypeTable* ccdb::MySQLDataProvider::CreateConstantsTypeTable( const string& name, Directory *parentDir, int rowsNumber, map<string, string> columns, const string& comments /*=""*/ )
 {
@@ -714,7 +834,6 @@ ConstantsTypeTable* ccdb::MySQLDataProvider::CreateConstantsTypeTable( const str
 	if(CreateConstantsTypeTable(table)) return table;
 	else return NULL;
 }
-
 
 
 bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath /*= ""*/, bool loadColumns/*=false*/, int take/*=0*/, int startWith/*=0 */ )
@@ -816,8 +935,8 @@ bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTab
 	FreeMySQLResult();
 	
 	return true;
-
 }
+
 
 std::vector<ConstantsTypeTable *> ccdb::MySQLDataProvider::SearchConstantsTypeTables( const string& pattern, const string& parentPath /*= ""*/, bool loadColumns/*=false*/, int take/*=0*/, int startWith/*=0 */ )
 {
@@ -886,6 +1005,7 @@ bool ccdb::MySQLDataProvider::UpdateConstantsTypeTable( ConstantsTypeTable *tabl
 	return true;
 }
 
+
 bool ccdb::MySQLDataProvider::DeleteConstantsTypeTable( ConstantsTypeTable *table )
 {
 	ClearErrors(); //Clear error in function that can produce new ones
@@ -943,6 +1063,7 @@ bool ccdb::MySQLDataProvider::DeleteConstantsTypeTable( ConstantsTypeTable *tabl
 	return true;
 }
 
+
 bool ccdb::MySQLDataProvider::CreateColumn(ConstantsTypeColumn* column)
 {
 
@@ -972,6 +1093,8 @@ bool ccdb::MySQLDataProvider::CreateColumn(ConstantsTypeColumn* column)
 	
 	return true;
 }
+
+
 bool ccdb::MySQLDataProvider::CreateColumns(ConstantsTypeTable* table)
 {
 /** @brief Loads columns for the table
@@ -1057,10 +1180,10 @@ bool ccdb::MySQLDataProvider::LoadColumns( ConstantsTypeTable* table )
 	FreeMySQLResult();
 
 	return true;
-
-
 }
+#pragma endregion Type Tables
 
+#pragma region Run ranges
 bool ccdb::MySQLDataProvider::CreateRunRange( RunRange *run )
 {
 	ClearErrors(); //Clear error in function that can produce new ones
@@ -1084,6 +1207,7 @@ bool ccdb::MySQLDataProvider::CreateRunRange( RunRange *run )
 
 	return true;
 }
+
 
 RunRange* ccdb::MySQLDataProvider::GetRunRange( int min, int max, const string& name /*= ""*/ )
 {
@@ -1125,8 +1249,8 @@ RunRange* ccdb::MySQLDataProvider::GetRunRange( int min, int max, const string& 
 
 	FreeMySQLResult();
 	return result;
-
 }
+
 
 RunRange* ccdb::MySQLDataProvider::GetRunRange( const string& name )
 {
@@ -1170,6 +1294,7 @@ RunRange* ccdb::MySQLDataProvider::GetRunRange( const string& name )
 	FreeMySQLResult();
 	return result;
 }
+
 
 RunRange* ccdb::MySQLDataProvider::GetOrCreateRunRange( int min, int max, const string& name/*=""*/, const string& comment/*=""*/ )
 {
@@ -1285,6 +1410,7 @@ bool ccdb::MySQLDataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, C
 	return true;
 }
 
+
 bool ccdb::MySQLDataProvider::DeleteRunRange(RunRange* run)
 {
 	ClearErrors(); //Clear errors in function that can produce new ones
@@ -1342,6 +1468,9 @@ bool ccdb::MySQLDataProvider::UpdateRunRange(RunRange* run)
 
 }
 
+#pragma endregion Run ranges
+
+#pragma region Variations
 
 bool ccdb::MySQLDataProvider::GetVariations(vector<Variation*>& resultVariations, ConstantsTypeTable* table, int run, int take, int startWith)
 {
@@ -1519,6 +1648,8 @@ dbkey_t ccdb::MySQLDataProvider::GetVariationId( const string& name )
     FreeMySQLResult();
     return result;
 }
+
+
 bool ccdb::MySQLDataProvider::CreateVariation( Variation *variation )
 {
 	ClearErrors(); //Clear error in function that can produce new ones
@@ -1603,10 +1734,13 @@ bool ccdb::MySQLDataProvider::DeleteVariation( Variation *variation )
 	return result;
 }
 
+#pragma endregion Variations
+
 //----------------------------------------------------------------------------------------
 //	A S S I G N M E N T S
 //----------------------------------------------------------------------------------------
-	
+
+#pragma region Assignment
 Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, const string& variation, bool loadColumns /*=true*/)
 {
     /** @brief Get Assignment with data blob only
@@ -2061,33 +2195,13 @@ Assignment* ccdb::MySQLDataProvider::CreateAssignment(const std::vector<std::vec
 Assignment* ccdb::MySQLDataProvider::GetAssignmentFull( int run, const string& path, const string& variation )
 {
 	if(!CheckConnection("MySQLDataProvider::GetAssignmentFull(int run, cconst string& path, const string& variation")) return NULL;
-	vector<Assignment *> assigments;
-	if(!GetAssignments(assigments, path, run,run, "", variation, 0, 0, 0, 1, 0))
-	{
-		return NULL;
-	}
-	
-	if(assigments.size()<=0) return NULL;
-	
-	return *assigments.begin();
-	
+	return DataProvider::GetAssignmentFull(run, path, variation);
 }
 
 Assignment* ccdb::MySQLDataProvider::GetAssignmentFull( int run, const string& path,int version, const string& variation/*= "default"*/)
 {
-
 	if(!CheckConnection("MySQLDataProvider::GetAssignmentFull( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
-	
-	//get table! 
-	vector<Assignment *> assigments;
-	if(!GetAssignments(assigments, path, run,run, "", variation, 0, 0, 1, 1, version))
-	{
-		return NULL;
-	}
-
-	if(assigments.size()<=0) return NULL;
-
-	return *assigments.begin();
+	return DataProvider::GetAssignmentFull(run, path, variation);
 }
 
 
@@ -2449,193 +2563,9 @@ void ccdb::MySQLDataProvider::FetchAssignment(Assignment* assignment, ConstantsT
 	if(IsOwner(table)) table->SetOwner(assignment);
 }
 
+#pragma endregion Assignment
 
-
-bool ccdb::MySQLDataProvider::LoadDirectories()
-{
-	//
-	if(IsConnected())
-	{
-		if(!QuerySelect("SELECT `id`, `name`, `parentId`, UNIX_TIMESTAMP(`directories`.`modified`) as `updateTime`, `comment` FROM `directories`"))
-		{
-			//TODO: report error
-			return false;
-		}
-
-		//clear diretory arrays
-		mDirectories.clear();
-		mDirectoriesById.clear();
-
-		//clear root directory (delete all directory structure objects)
-		mRootDir->DisposeSubdirectories(); 
-		mRootDir->SetFullPath("/");
-
-		//Ok! We querryed our directories! lets catch them! 
-		while(FetchRow())
-		{
-			Directory *dir = new Directory(this, this);
-			dir->SetId(ReadIndex(0));					// `id`, 
-			dir->SetName(ReadString(1));			// `name`, 
-			dir->SetParentId(ReadInt(2));			// `parentId`, 
-			dir->SetModifiedTime(ReadUnixTime(3));	// UNIX_TIMESTAMP(`directories`.`updateTime`) as `updateTime`, 
-			dir->SetComment(ReadString(4));			// `comment`
-
-			mDirectories.push_back(dir);
-			mDirectoriesById[dir->GetId()] = dir;
-		}
-
-		BuildDirectoryDependences(); //
-
-		mDirsAreLoaded=true;
-	}
-	return false;
-}
-
-void ccdb::MySQLDataProvider::BuildDirectoryDependences()
-{
-	// this method is supposed to be called after new directories are loaded, but dont have hierarchical structure
-
-	//clear the full path dictionary
-	mDirectoriesByFullPath.clear();
-	mDirectoriesByFullPath[mRootDir->GetFullPath()] = mRootDir;
-
-	//begin loop through the directories
-	vector<Directory *>::iterator dirIter = mDirectories.begin();
-	for(;dirIter < mDirectories.end(); dirIter++)
-	{
-		// retrieve parent id 
-		// and check if it have parent directory
-		Directory *dir = *dirIter; //(*dirIter) cool it is C++, baby
-
-		if(dir->GetParentId() >0)
-		{
-			//this directory must have a parent! so now search it
-			map<int,Directory *>::iterator parentDirIter = mDirectoriesById.find(dir->GetParentId()) ;
-			if(parentDirIter!=mDirectoriesById.end())
-			{
-				//We found parent
-				parentDirIter->second->AddSubdirectory(*dirIter);
-			}
-			else
-			{
-				//TODO : ADD error, parent Id not found
-				Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::BuildDirectoryDependences", "Parent directory with wrong id");
-				continue; //we have to stop operate this directory...
-			}
-		}
-		else
-		{
-			// this directory doesn't have parent 
-			// (means it doesn't have parentId so it lays in root directory)
-			// so we place it to root directory
-			mRootDir->AddSubdirectory(*dirIter);
-		}
-
-		//creating full path for this directory
-		string fullpath = PathUtils::CombinePath(dir->GetParentDirectory()->GetFullPath(), dir->GetName());
-		dir->SetFullPath(fullpath);
-
-
-		//add to our full path map
-		mDirectoriesByFullPath[dir->GetFullPath()] = dir;
-	}
-}
-
-Directory*const ccdb::MySQLDataProvider::GetRootDirectory()
-{
-	UpdateDirectoriesIfNeeded();
-	return mRootDir;
-}
-
-bool ccdb::MySQLDataProvider::CheckDirectoryListActual()
-{
-	//TODO: method should check the database if the directories was updated in DB. Now it only checks if directories were loaded
-
-	if(!mDirsAreLoaded) return false; //directories are not loaded
-
-	return !mNeedCheckDirectoriesUpdate; 
-}
-
-bool ccdb::MySQLDataProvider::UpdateDirectoriesIfNeeded()
-{	
-	//Logic to check directories...
-	//if(!CheckDirectoryListActual()) return LoadDirectories(); //TODO check braking links
-	//repairing it
-	if(!mDirsAreLoaded) return LoadDirectories();
-	return true;
-}
-
-bool ccdb::MySQLDataProvider::SearchDirectories( vector<Directory *>& resultDirectories, const string& searchPattern, const string& parentPath/*=""*/,  int take/*=0*/, int startWith/*=0*/ )
-{	
-	UpdateDirectoriesIfNeeded(); //do we need to update directories?
-
-	resultDirectories.clear();
-
-	// in MYSQL compared to wildcards % is * and _ is 
-	// convert it. 
-	string likePattern = WilcardsToLike(searchPattern);
-	
-	//do we need to search only in specific directory?
-	string parentAddon(""); //this is addon to query indicates this
-	if(parentPath!="")
-	{	//we should care about parent path
-		
-		//If parent directory is "/" this should work too, because it have an id=0
-		//and tabeles in db wich doesnt have parents should have parentId=0
-		
-		Directory *parentDir;
-		if(parentDir = GetDirectory(parentPath.c_str()))
-		{
-			parentAddon = StringUtils::Format(" AND `parentId` = '%i'", parentDir->GetId());
-		}
-		else
-		{
-			//request was made for directory that doestn exits
-			//TODO place warning or not?
-			return false;
-		}
-	}
-
-	string limitAddon = PrepareLimitInsertion(take, startWith);
-
-	//combine query
-	string query = StringUtils::Format("SELECT `id` FROM `directories` WHERE name LIKE \"%s\" %s %s;",
-		likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
-	
-	//do query!
-	if(!QuerySelect(query))
-	{
-		return false;
-	}
-	
-	//Ok! We queried our directories! lets catch them! 
-	while(FetchRow())
-	{
-		dbkey_t id = ReadIndex(0); //read db index key
-
-		//search for such index
-		map<dbkey_t,Directory *>::iterator dirIter = mDirectoriesById.find(id);
-		if(dirIter != mDirectoriesById.end())
-		{
-			resultDirectories.push_back(dirIter->second);
-		}
-		else
-		{
-			//TODO it is some error situation! It cant happend!
-		}
-	}
-
-	FreeMySQLResult();
-
-	return true;
-}
-
-vector<Directory *> ccdb::MySQLDataProvider::SearchDirectories( const string& searchPattern, const string& parentPath/*=""*/, int startWith/*=0*/, int select/*=0*/ )
-{
-	vector<Directory *> result;
-	SearchDirectories(result, searchPattern, parentPath, startWith, select);
-	return result;
-}
+#pragma region Misc
 
 std::string ccdb::MySQLDataProvider::WilcardsToLike( const string& str )
 {	
@@ -2682,7 +2612,7 @@ std::string ccdb::MySQLDataProvider::PrepareCommentForInsert( const string& comm
 
 }
 
-
+#pragma endregion Misc
 
 #pragma region MySQL_Field_Operations
 
@@ -2694,7 +2624,7 @@ bool ccdb::MySQLDataProvider::IsNullOrUnreadable( int fieldNum )
 	if(mReturnedFieldsNum<=fieldNum)
 	{
 		//Add error, we have less fields than fieldNum
-		Error(CCDB_WARNING_MYSQL_FIELD_NUM,"MySQLDataProvider::IsNullOrUnreadable", "we have less fields than fieldNum");
+		Error(CCDB_WARNING_DBRESULT_FIELD_INDEX,"MySQLDataProvider::IsNullOrUnreadable", "we have less fields than fieldNum");
 		return true;
 	}
 
@@ -2787,7 +2717,7 @@ bool ccdb::MySQLDataProvider::QuerySelect(const char* query)
 	if(mysql_query(mMySQLHnd, query))
 	{
 		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_SELECT,"ccdb::MySQLDataProvider::QuerySelect()",errStr.c_str());
+		Error(CCDB_ERROR_QUERY_SELECT,"ccdb::MySQLDataProvider::QuerySelect()",errStr.c_str());
 		return false;
 	}
 
@@ -2797,7 +2727,7 @@ bool ccdb::MySQLDataProvider::QuerySelect(const char* query)
 	if(!mResult)
 	{
 		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_SELECT,"ccdb::MySQLDataProvider::QuerySelect()",errStr.c_str());
+		Error(CCDB_ERROR_QUERY_SELECT,"ccdb::MySQLDataProvider::QuerySelect()",errStr.c_str());
 
 			
 		mReturnedRowsNum = 0;
@@ -2835,7 +2765,7 @@ bool ccdb::MySQLDataProvider::QueryInsert( const char* query )
 	if(mysql_query(mMySQLHnd, query))
 	{
 		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_SELECT,"ccdb::MySQLDataProvider::QueryInsert()",errStr.c_str());
+		Error(CCDB_ERROR_QUERY_INSERT,"ccdb::MySQLDataProvider::QueryInsert()",errStr.c_str());
 		return false;
 	}
 

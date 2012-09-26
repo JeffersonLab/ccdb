@@ -95,7 +95,9 @@ public:
 
 	//----------------------------------------------------------------------------------------
 	//	D I R E C T O R Y   M A N G E M E N T
-	//----------------------------------------------------------------------------------------
+	//----------------------------------------------------------------------------------------    
+    #pragma region Direcotry management
+
 	/** @brief Gets directory by its full path
 	*
 	* @param   Full path of the directory
@@ -103,14 +105,6 @@ public:
 	*/
 	virtual Directory* GetDirectory(const string& path);
 	
-	/** @brief return reference to root directory
-	 * 
-	 * @warning User should not delete this object 
-	 *
-	 * @return    DDirectory object pointer
-	 */
-	virtual Directory * const GetRootDirectory();
-
 	/** @brief Searches for directory 
 	 *
 	 * Searches directories that matches the pattern 
@@ -187,18 +181,17 @@ public:
 	virtual bool UpdateDirectory(Directory *dir);
 
 	/**
-	 * @brief Deletes directory using parent path
-	 *
-	 *	"/" - root directory can't be deleted
-	 *
-	 * @warning in current realization, if operation succeeded 
-	 * the directories structure will be rebuilded. This mean that 
-	 * (!) all previous pointers to DDirectories except Root Directory
-	 * will become deleted => unusable
-	 * 
-	 * @param  [in] path Path of the directory. 
-	 * @return true if no errors 
-	 */
+     * @brief Deletes directory using parent path
+     *
+     * Root directory ("/") can't be deleted
+     *
+     * @warning if operation is succeeded the directories structure will be rebuilded. 
+     * This mean that (!) all previous pointers to Directory objects except Root Directory
+     * will become deleted => unusable
+     * 
+     * @param  [in] path Path of the directory. 
+     * @return true if no errors 
+     */
 	virtual bool DeleteDirectory(const string& fullPath);
 
 	/**
@@ -216,14 +209,14 @@ public:
 	 */
 	virtual bool DeleteDirectory(Directory *dir);
 		
-	/** @brief Load directories
-	 *
+	/** @brief Reads all directories from DB
+     * 
 	 * Explicitly forces to load directories from DB and build directory structure
 	 * (!) At this implementation all existing directories references will be deleted, 
 	 * thus  references to them will become broken
 	 * @return   bool
 	 */
-	bool LoadDirectories(); ///Reads all directories from DB
+	virtual bool LoadDirectories();
 
 	/** @brief Indicates ether we check each "GetDirectory" and other functions 
 	 * that directories could be updated or not
@@ -246,10 +239,13 @@ public:
 	 * @return   void
 	 */
 	void SetCheckDirectoriesUpdate(bool val) { mNeedCheckDirectoriesUpdate = val; }
+
+    #pragma endregion Direcotry management
 	
-	//----------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------
 	//	C O N S T A N T   T Y P E   T A B L E
 	//----------------------------------------------------------------------------------------
+    #pragma region Constant type table
 
 	/** @brief Gets ConstantsType information from the DB
 	 *
@@ -444,11 +440,13 @@ public:
 	 * @return vector of constants
 	 */
 	virtual bool CreateColumns(ConstantsTypeTable* table);
-	
+
+	#pragma endregion Constant type table
 
 	//----------------------------------------------------------------------------------------
 	//	R U N   R A N G E S
 	//----------------------------------------------------------------------------------------
+    #pragma region Run ranges
 
 	/** @brief Creates RunRange in db
 	 *
@@ -514,10 +512,14 @@ public:
 	 * @return true if no errors and run range deleted
 	 */
 	virtual bool DeleteRunRange(RunRange* run);
-	
+
+	#pragma endregion Run ranges
+
 	//----------------------------------------------------------------------------------------
 	//	V A R I A T I O N
 	//----------------------------------------------------------------------------------------
+    #pragma region Variation
+
 	/** @brief Load variation by name
 	 * 
 	 * @param     const char * name
@@ -574,10 +576,14 @@ public:
 	 * @return   bool
 	 */
 	virtual bool DeleteVariation(Variation *variation);
-	
+
+	#pragma endregion Variation
+
 	//----------------------------------------------------------------------------------------
 	//	A S S I G N M E N T S
 	//----------------------------------------------------------------------------------------
+    #pragma region Assignments
+
 	/** @brief Get Assignment with data blob only
      *
      * This function is optimized for fast data retrieving and is assumed to be performance critical;
@@ -854,7 +860,14 @@ public:
 	 * @return true if success and assignment was filled with data
 	 */
 	virtual bool FillAssignment(Assignment* assignment);
-	
+
+	#pragma endregion Assignments
+        
+    //----------------------------------------------------------------------------------------
+    //	L O G
+    //----------------------------------------------------------------------------------------
+    #pragma region Log
+
 protected:
 	
 	/** @brief Adds Log Record to db
@@ -884,6 +897,13 @@ protected:
 	 * @return   dbkey_t
 	 */
 	dbkey_t GetUserId(string userName);
+
+    #pragma endregion Log 
+
+    //----------------------------------------------------------------------------------------
+    //	M Y   S Q L   S P E C I F I C
+    //----------------------------------------------------------------------------------------
+    #pragma region MySQL specific
 
 	virtual bool QuerySelect(const char* query);	///Do "select" queries 
 	virtual bool QuerySelect(const string& query);	///Do "select" queries 
@@ -923,9 +943,7 @@ protected:
 	double			ReadDouble(int fieldNum);	///Reads double from the last query row
 	string			ReadString(int fieldNum);	///Reads string from the last query row
 	time_t			ReadUnixTime(int fieldNum); ///Reads string from the last query row
-	void BuildDirectoryDependences();			///Builds directory relational structure. Used right at the end of RetriveDirectories().
-	bool CheckDirectoryListActual();			///Checks if directory list is actual i.e. nobody changed directories in database
-	bool UpdateDirectoriesIfNeeded();
+	
 	
 	/** @brief
 	 * Returns string "NULL" if comment is NULL otherwise 
@@ -944,12 +962,23 @@ protected:
 	virtual string WilcardsToLike(const string& str); ///Prepares search pattern for MySQL
 		
 	virtual string PrepareLimitInsertion(int take=0, int startWith=0);
-//---------------------------------------------------------------
-//  DEBBUGING AND OPTIMIZATION
-//----------------------------------------------------------------
-	string LastFullQuerry() const { return mLastFullQuerry; }
+    
+    #pragma endregion MySQL specific
+
+    //---------------------------------------------------------------
+    //  DEBBUGING AND OPTIMIZATION
+    //----------------------------------------------------------------
+    #pragma region Debug and optimization
+	
+    string LastFullQuerry() const { return mLastFullQuerry; }
 	string LastShortQuerry() const { return mLastShortQuerry; }
 
+    #pragma endregion Debug and optimization
+
+    //---------------------------------------------------------------
+    //  DEBBUGING AND OPTIMIZATION
+    //---------------------------------------------------------------
+    #pragma region Private
 private:
 	
 	
@@ -957,15 +986,7 @@ private:
 	bool mIsStoredObjectOwner;
 	Assignment* FetchAssignment(ConstantsTypeTable *table);
 	virtual void FetchAssignment(Assignment* assignment, ConstantsTypeTable *table);
-
-  
-
-	/******* D I R E C T O R I E S   W O R K *******/ 
-	vector<Directory *>  mDirectories;
-	map<dbkey_t,Directory *> mDirectoriesById;
-	map<string,Directory *> mDirectoriesByFullPath;
-	bool mDirsAreLoaded; 
-	bool mNeedCheckDirectoriesUpdate; //Do we need to check each time iff directories are updated or not
+	
 	
 	bool mHaveUnfreeResults; 			//indicates that we have some unfree results from mysql, that must be freed 
 	MYSQL_RES *mResult;					//result from last queue
@@ -974,7 +995,6 @@ private:
 	MYSQL_ULONG mReturnedFieldsNum;		//number of returned fields from last SELECT query
 	MYSQL_ULONG mReturnedAffectedRows;	//number of affected rows from last INSERT, DELETE, UPDATE queries
 	MYSQL_ULONG mLastInsertedId;		//number of last id
-	Directory *mRootDir;				//root dir
 	bool mIsConnected;					//indicates connection to db
 	static bool mMySqlIsInitialized;	//flag that mysql is initialized
 
@@ -987,6 +1007,8 @@ private:
     dbkey_t mLastVariationId;                     ///Last requested variation ID. Used for caching
     string mLastVariationName;                    ///Last requested variation name. Used for caching
 	
+
+#pragma endregion Private
 
 };
 }

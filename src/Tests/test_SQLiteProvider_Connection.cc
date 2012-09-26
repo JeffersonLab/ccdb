@@ -3,7 +3,7 @@
 #include "Tests/tests.h"
 
 #include "CCDB/Console.h"
-#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Providers/SQLiteDataProvider.h"
 #include "CCDB/Model/Directory.h"
 
 using namespace std;
@@ -16,24 +16,26 @@ bool test_DMySQLDataProviderConnection();  //Test basic connection
  *
  * @return true if test passed
  */
-TEST_CASE("CCDB/MySQLDataProvider/Connection","Connection tests")
+TEST_CASE("CCDB/SQLiteDataProvider/Connection","Connection tests")
 {
-	MySQLDataProvider *prov = new MySQLDataProvider();
+	
+
+	SQLiteDataProvider *prov = new SQLiteDataProvider();
 
 	//Pre Connection
 	REQUIRE_FALSE(prov->IsConnected());
     
     //Connection
-	REQUIRE(prov->Connect(TESTS_CONENCTION_STRING));
+	REQUIRE(prov->Connect(TESTS_SQLITE_STRING));
 	REQUIRE(prov->IsConnected());
-    REQUIRE(prov->GetConnectionString() == TESTS_CONENCTION_STRING);
+    REQUIRE(string(prov->GetConnectionString()) == string(TESTS_SQLITE_STRING));
 
     //disconnect
 	prov->Disconnect();
 	REQUIRE_FALSE(prov->IsConnected());
 
 	//reconnect
-	REQUIRE(prov->Connect(TESTS_CONENCTION_STRING));
+	REQUIRE(prov->Connect(TESTS_SQLITE_STRING));
 
 	//cleanup
 	prov->Disconnect();

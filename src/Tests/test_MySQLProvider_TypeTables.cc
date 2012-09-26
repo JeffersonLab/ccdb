@@ -30,7 +30,14 @@ TEST_CASE("CCDB/MySQLDataProvider/TypeTables","TypeTables tests")
     //get type table from DB
 	ConstantsTypeTable *table = prov->GetConstantsTypeTable("/test/test_vars/test_table", true);
     REQUIRE(table!=NULL);
-	
+	REQUIRE(table->GetColumns().size() == 3);
+	REQUIRE(table->GetNColumns() == 3);
+	REQUIRE(table->GetName() == "test_table");
+	REQUIRE(table->GetFullPath() == "/test/test_vars/test_table");
+	REQUIRE(table->GetDirectory() != NULL);
+	REQUIRE(table->GetDirectory()->GetName() == "test_vars");
+	REQUIRE(table->GetColumns()[0]->GetName() == string("x"));
+
 	//print type table
 	delete table; //cleanup
 	

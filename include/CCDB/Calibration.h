@@ -19,6 +19,15 @@ class Calibration {
 
 public:
     Calibration(); ///< Default constructor
+
+	/** @brief Ctor takes default run number and default variation
+	 *
+	 *  The default run number and default variation are used when no run or variation
+	 *  is explicitly defined in user request. 
+	 *
+	 * @param defaultRun       [in] Sets default run number
+	 * @param defaultVariation [in] Sets default variation
+	 */
     Calibration(int defaultRun, string defaultVariation="default");
     virtual ~Calibration();
 
@@ -31,11 +40,11 @@ public:
      *
      * The examples of the Connection Strings are:
      *
-     * @see DMySQLCalibration
-     * mysql://<username>:<password>@<mysql.address>:<port> <database>
+     * @see MySQLCalibration
+     * mysql://<username>:<password>@<mysql.address>:<port>/<database>
      *
-     * @see DFileCalibration
-     * file://<path to the Calib parent directory>
+     * @see SQLiteCalibration
+     * sqlite://<path to sqlite file>
      *
      * @param connectionString the Connection String
      * @return true if connected

@@ -148,6 +148,9 @@
       <Filter>Providers\Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\SQLite\sqlite3.h" />
+    <ClInclude Include="..\..\..\include\CCDB\SQLiteCalibration.h">
+      <Filter>UserApi\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Library\Helpers\StringUtils.cc">
@@ -241,5 +244,8 @@
       <Filter>Providers\Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\SQLite\sqlite3.c" />
+    <ClCompile Include="..\..\..\src\Library\SQLiteCalibration.cc">
+      <Filter>UserApi\Sources</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

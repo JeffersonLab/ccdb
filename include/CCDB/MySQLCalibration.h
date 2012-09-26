@@ -6,7 +6,7 @@
 
 #define ERRMSG_INVALID_CONNECT_USAGE "Invalid DMySQLCalibration usage. Using DMySQLCalibration::Connect method with provider == NULL and ProviderIsLocked==true." 
 #define ERRMSG_CONECTED_TO_ANOTHER "The connection is open to another source. DCalibration is already connected using another connection string" 
-#define ERRMSG_CONECT_LOCKED "Can't connect, provider is locked. The provider is in locked state, this means that it is controlled somwere else, and many DCalibrations may relay on it."
+#define ERRMSG_CONECT_LOCKED "Can't connect, provider is locked. The provider is in locked state, this means that it is controlled somwere else, and many Calibrations may relay on it."
 using namespace std;
 
 namespace ccdb
@@ -16,9 +16,13 @@ class MySQLCalibration: public Calibration
 {
     
 public:
-       	/** @brief    DMySQLCalibration
+     /** @brief Ctor takes default run number and default variation
 	 *
-	 * @return   
+	 *  The default run number and default variation are used when no run or variation
+	 *  is explicitly defined in user request. 
+	 *
+	 * @param defaultRun       [in] Sets default run number
+	 * @param defaultVariation [in] Sets default variation
 	 */
     MySQLCalibration(int defaultRun, string defaultVariation="default");
 
@@ -35,23 +39,23 @@ public:
 	virtual ~MySQLCalibration();
 
 	/**
-	 * @brief Connects to database using connection string
-	 * 
-	 * Connects to database using connection string
-	 * the Connection String generally has form: 
-	 * <type>://<needed information to access data>
-	 *
-	 * The examples of the Connection Strings are:
-	 *
-	 * @see DMySQLCalibration
-	 * mysql://<username>:<password>@<mysql.address>:<port> <database>
-	 *
-	 * @see DFileCalibration
-	 * file://<path to the Calib parent directory>
-	 * 
-	 * @param connectionString the Connection String
-	 * @return true if connected
-	 */
+     * @brief Connects to database using connection string
+     *
+     * Connects to database using connection string
+     * the Connection String generally has form:
+     * <type>://<needed information to access data>
+     *
+     * The examples of the Connection Strings are:
+     *
+     * @see MySQLCalibration
+     * mysql://<username>:<password>@<mysql.address>:<port>/<database>
+     *
+     * @see SQLiteCalibration
+     * sqlite://<path to sqlite file>
+     *
+     * @param connectionString the Connection String
+     * @return true if connected
+     */
 	virtual bool Connect(std::string connectionString);
 
 	/**

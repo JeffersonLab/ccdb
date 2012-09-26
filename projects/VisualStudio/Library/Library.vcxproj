@@ -41,9 +41,12 @@
     <ClInclude Include="..\..\..\include\CCDB\Providers\IAuthentication.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLConnectionInfo.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLDataProvider.h" />
-    <ClInclude Include="..\..\..\include\CCDB\Providers\SQLiteDataProvider.h" />
+    <ClInclude Include="..\..\..\include\CCDB\Providers\SQLiteDataProvider.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\..\include\CCDB\PthreadMutex.h" />
     <ClInclude Include="..\..\..\include\CCDB\PthreadSyncObject.h" />
+    <ClInclude Include="..\..\..\include\CCDB\SQLiteCalibration.h" />
     <ClInclude Include="..\SQLite\sqlite3.h" />
   </ItemGroup>
   <ItemGroup>
@@ -74,27 +77,33 @@
     <ClCompile Include="..\..\..\src\Library\Providers\IAuthentication.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\MySQLConnectionInfo.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\MySQLDataProvider.cc" />
-    <ClCompile Include="..\..\..\src\Library\Providers\SQLiteDataProvider.cc" />
+    <ClCompile Include="..\..\..\src\Library\Providers\SQLiteDataProvider.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\Library\PthreadMutex.cc" />
     <ClCompile Include="..\..\..\src\Library\PthreadSyncObject.cc" />
+    <ClCompile Include="..\..\..\src\Library\SQLiteCalibration.cc" />
     <ClCompile Include="..\SQLite\sqlite3.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FF2376E7-5637-46A4-AE1B-A083D7588552}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CCDBLibrary</RootNamespace>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -114,7 +123,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;SQLITE;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MYSQL_CONNECTOR)\include;$(CCDB_HOME)/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MYSQL_CONNECTOR)\include;$(CCDB_HOME)/include;$(SolutionDir)/SQLite;</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>
@@ -126,7 +135,7 @@
       <AdditionalDependencies>libmysql.lib;mysqlclient.lib;zlib.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(CCDB_HOME)\lib;$(MYSQL_CONNECTOR)\lib\opt</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR)/lib/opt;$(CCDB_HOME)\lib;$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -137,8 +146,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;SSQLITE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(CCDB_HOME)/include;$(MYSQL_CONNECTOR)/include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;SQLITE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CCDB_HOME)/include;$(SolutionDir)/SQLite;$(MYSQL_CONNECTOR)/include</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>

@@ -61,7 +61,7 @@ public:
     virtual ~DataProvider(void);
     
     //----------------------------------------------------------------------------------------
-    //	C O N N E C T I O N
+    //  C O N N E C T I O N
     //----------------------------------------------------------------------------------------
 
     /**
@@ -98,9 +98,10 @@ public:
     virtual std::string GetConnectionString();
 
     //----------------------------------------------------------------------------------------
-    //	D I R E C T O R Y   M A N G E M E N T
+    //  D I R E C T O R Y   M A N G E M E N T
     //----------------------------------------------------------------------------------------
-    
+    #pragma region Directory managemend
+
     /** @brief Gets directory by its full path
     *
     * @param   Full path of the directory
@@ -110,11 +111,13 @@ public:
 
     /** @brief return reference to root directory
      * 
+     * Root directory contains all other directories. It is not stored in any database
+     *
      * @warning User should not delete this object 
      *
      * @return   DDirectory object pointer
      */
-    virtual Directory * const GetRootDirectory()=0;
+    virtual Directory * const GetRootDirectory();
 
     /** @brief Searches for directory 
      *
@@ -132,11 +135,11 @@ public:
      * 1) if this provider owned - deleted (@see ReleaseOwnership)
      * 2) if not owned - just leaved on user control
      *
-     * @param  [out] resultDirectories	search result
-     * @param  [in]  searchPattern		Pattern to search
-     * @param  [in]  parentPath			Parent path. If NULL search through all directories
-     * @param  [in]  startRecord		record number to start with
-     * @param  [in]  selectRecords		number of records to select. 0 means select all records
+     * @param  [out] resultDirectories  search result
+     * @param  [in]  searchPattern      Pattern to search
+     * @param  [in]  parentPath         Parent path. If NULL search through all directories
+     * @param  [in]  startRecord        record number to start with
+     * @param  [in]  selectRecords      number of records to select. 0 means select all records
      * @return bool true if there were error (even if 0 directories found) 
      */
     virtual bool SearchDirectories(vector<Directory *>& resultDirectories, const string& searchPattern, const string& parentPath="", int take=0, int startWith=0)=0;
@@ -157,10 +160,10 @@ public:
      * objects that are contained in vector<DDirectory *>& resultDirectories will be
      * 1) if this provider owned - deleted (@see ReleaseOwnership)
      * 2) if not owned - just leaved on user control
-     * @param  [in]  searchPattern		Pattern to search
-     * @param  [in]  parentPath			Parent path. If NULL search through all directories
-     * @param  [in]  startRecord		record number to start with
-     * @param  [in]  selectRecords		number of records to select. 0 means select all records
+     * @param  [in]  searchPattern      Pattern to search
+     * @param  [in]  parentPath         Parent path. If NULL search through all directories
+     * @param  [in]  startRecord        record number to start with
+     * @param  [in]  selectRecords      number of records to select. 0 means select all records
      * @return list of 
      */
     virtual vector<Directory *> SearchDirectories(const string& searchPattern, const string& parentPath="", int take=0, int startWith=0);
@@ -187,7 +190,7 @@ public:
      * (!) all previous pointers to DDirectory objects except Root Directory
      * will become deleted => unusable
      * 
-     * @param  dir		Directory to update
+     * @param  dir      Directory to update
      * @return   bool
      */
     virtual bool UpdateDirectory(Directory *dir)=0;
@@ -195,29 +198,28 @@ public:
     /**
      * @brief Deletes directory using parent path
      *
-     *	"/" - root directory can't be deleted
+     *  Root directory ("/") can't be deleted
      *
-     * @warning in current realization, if operation succeeded 
-     * the directories structure will be rebuilded. This mean that 
-     * (!) all previous pointers to DDirectories except Root Directory
+     * @warning if operation is succeeded the directories structure will be rebuilded. 
+     * This mean that (!) all previous pointers to Directory objects except Root Directory
      * will become deleted => unusable
      * 
      * @param  [in] path Path of the directory. 
      * @return true if no errors 
      */
-    virtual bool DeleteDirectory(const string& fullPath)=0;
+    virtual bool DeleteDirectory(const string& fullPath);
 
     /**
      * @brief Deletes directory using directory object
      *
-     *	"/" cant be deleted
+     *  "/" cant be deleted
      *
      * @warning in current realization, if operation succeeded 
      * the directories structure will be rebuilded. This mean that 
      * (!) all previous pointers to DDirectories except Root Directory
      * will become deleted => unusable
      *
-     * @param  [in] dir	Directory to Delete
+     * @param  [in] dir Directory to Delete
      * @return true if no errors 
      */
     virtual bool DeleteDirectory(Directory *dir) =0;
@@ -231,18 +233,34 @@ public:
      */
     virtual bool RecursiveDeleteDirectory(Directory *dir);
 
-
-    //----------------------------------------------------------------------------------------
-    //	C O N S T A N T   T Y P E   T A B L E
-    //----------------------------------------------------------------------------------------
-
+    protected:
     
+    /** @brief Reads all directories from DB
+     * 
+	 * Explicitly forces to load directories from DB and build directory structure
+	 * (!) At this implementation all existing directories references will be deleted, 
+	 * thus  references to them will become broken
+	 * @return   bool
+	 */
+	virtual bool LoadDirectories() = 0;
+
+    virtual void BuildDirectoryDependencies();  /// Builds directory relational structure. Used right at the end of RetriveDirectories().
+    virtual bool CheckDirectoryListActual();    /// Checks if directory list is actual i.e. nobody changed directories in database
+    virtual bool UpdateDirectoriesIfNeeded();   /// Update directories structure if this is required
+
+    #pragma endregion Directory managemend
+    //----------------------------------------------------------------------------------------
+    //  C O N S T A N T   T Y P E   T A B L E
+    //----------------------------------------------------------------------------------------
+	#pragma region Type tables
+
+    public:
     /** @brief Gets ConstantsType information from the DB
      *
      * @param  [in] path absolute path of the type table
      * @return new object of ConstantsTypeTable
      */
-    virtual ConstantsTypeTable * GetConstantsTypeTable(const string& path, bool loadColumns=false)=0;
+    virtual ConstantsTypeTable * GetConstantsTypeTable(const string& path, bool loadColumns=false);
 
     /** @brief Gets ConstantsType information from the DB
      *
@@ -338,7 +356,7 @@ public:
     virtual bool CreateConstantsTypeTable(ConstantsTypeTable *table)=0;
     
     /** @brief Creates constant table in database
-     * 	
+     *  
      * Creates  constants type table in database and returns reference to
      * created table if operation is succeeded (NULL otherwise)
      * 
@@ -352,17 +370,17 @@ public:
      *     @see ccdb::ConstantsTypeColumn::StringToType
      *     Thus <"px", "">, <"py", ""> will create two double typed columns
      * 
-     * @param [in] name			name of the new constants type table 
+     * @param [in] name         name of the new constants type table 
      * @param [in] parentPath   parent directory path
      * @param [in] rowsNumber  Number of rows
      * @param [in] columns     a map fo "name", "type" pairs
-     * @param [in] comments		description for this type table
+     * @param [in] comments     description for this type table
      * @return NULL if failed, pointer to created object otherwise
      */
     virtual ConstantsTypeTable* CreateConstantsTypeTable(const string& name, const string& parentPath, int rowsNumber, map<string, string> columns, const string& comments ="") =0;
     
     /** @brief Creates constant table in database
-     * 	
+     *  
      * Creates  constants type table in database and returns reference to
      * created table if operation is succeeded (NULL otherwise)
      * 
@@ -376,11 +394,11 @@ public:
      *     @see ccdb::ConstantsTypeColumn::StringToType
      *     Thus <"px", "">, <"py", ""> will create two double typed columns
      * 
-     * @param [in] name			name of the new constants type table 
+     * @param [in] name         name of the new constants type table 
      * @param [in] parentDir   parent directory
      * @param [in] rowsNumber  Number of rows
      * @param [in] columns     a map fo "name", "type" pairs
-     * @param [in] comments		description for this type table
+     * @param [in] comments     description for this type table
      * @return NULL if failed, pointer to created object otherwise
      */
     virtual ConstantsTypeTable* CreateConstantsTypeTable(const string& name, Directory *parentDir, int rowsNumber, map<string, string> columns, const string& comments ="")=0;
@@ -420,8 +438,10 @@ public:
      */
     virtual bool RecursiveDeleteTypeTable(ConstantsTypeTable *dir);
     
+	#pragma endregion Type tables
+
     //----------------------------------------------------------------------------------------
-    //	R U N   R A N G E S
+    //  R U N   R A N G E S
     //----------------------------------------------------------------------------------------
 
     /** @brief Creates RunRange in db
@@ -446,10 +466,10 @@ public:
      * @brief Searches all run ranges associated with this type table
      * 
      * @param [out] resultRunRanges result run ranges
-     * @param [in]  table		table to search run ranges in
-     * @param [in]  variation	variation to search, if not set all variations will be selected
-     * @param [in]  take			how many records to take
-     * @param [in]  startWith	start record to take
+     * @param [in]  table       table to search run ranges in
+     * @param [in]  variation   variation to search, if not set all variations will be selected
+     * @param [in]  take            how many records to take
+     * @param [in]  startWith   start record to take
      * @return 
      */
     virtual bool GetRunRanges(vector<RunRange *>& resultRunRanges, ConstantsTypeTable *table, const string& variation="", int take=0, int startWith=0 )=0;
@@ -458,10 +478,10 @@ public:
      * @brief Searches all run ranges associated with this type table
      * 
      * @param [out] resultRunRanges result run ranges
-     * @param [in]  table		table to search run ranges in
-     * @param [in]  variation	variation to search, if not set all variations will be selected
-     * @param [in]  take			how many records to take
-     * @param [in]  startWith	start record to take
+     * @param [in]  table       table to search run ranges in
+     * @param [in]  variation   variation to search, if not set all variations will be selected
+     * @param [in]  take            how many records to take
+     * @param [in]  startWith   start record to take
      * @return 
      */
     virtual bool GetRunRanges(vector<RunRange *>& resultRunRanges, const string& typeTablePath, const string& variation="",int take=0, int startWith=0 );
@@ -512,7 +532,7 @@ public:
     virtual bool RecursiveDeleteRunRange(RunRange *dir);
 
     //----------------------------------------------------------------------------------------
-    //	V A R I A T I O N
+    //  V A R I A T I O N
     //----------------------------------------------------------------------------------------
     /** @brief Get variation by name
      *
@@ -591,8 +611,9 @@ public:
     virtual bool RecursiveDeleteVariation(Variation *dir);
     
     //----------------------------------------------------------------------------------------
-    //	A S S I G N M E N T S
+    //  A S S I G N M E N T S
     //----------------------------------------------------------------------------------------
+	#pragma region Assignments
 
     /** @brief Get Assignment with data blob only
      *
@@ -676,7 +697,7 @@ public:
      */
     virtual bool CreateAssignment(Assignment *assignment) = 0;
     
-        /** @brief Creates Assignment using related object
+    /** @brief Creates Assignment using related object
      *
      * Creates Assignment using related object.
      * 
@@ -688,10 +709,10 @@ public:
      * -- If no variation with such name found
      * 
      * @brief 
-     * @param data  		by rows and columns
-     * @param runMin		run range minimum
+     * @param data          by rows and columns
+     * @param runMin        run range minimum
      * @param runMax     run range maximum
-     * @param variationName	name of variation
+     * @param variationName name of variation
      * @param comments   comments
      * @return NULL if failed, DAssignment reference if success
      */
@@ -709,9 +730,9 @@ public:
      * -- If no variation with such name found
      * 
      * @brief 
-     * @param data  		by rows and columns
+     * @param data          by rows and columns
      * @param runRangeName
-     * @param variation	name of vaiation
+     * @param variation name of vaiation
      * @param comments   comments
      * @return NULL if failed, DAssignment reference if success
      */
@@ -751,13 +772,13 @@ public:
      *       paging parameters
      * 
      * @param [out] assingments result assignment list
-     * @param [in] path		  path of type table
-     * @param [in] run		  specified range. If not set all ranges
+     * @param [in] path       path of type table
+     * @param [in] run        specified range. If not set all ranges
      * @param [in] variation  variation, if not set, all variations
-     * @param [in] date		  nearest date
-     * @param [in] sortBy	  sortby order
+     * @param [in] date       nearest date
+     * @param [in] sortBy     sortby order
      * @param [in] startWith  record to start with
-     * @param [in] take		  records to select
+     * @param [in] take       records to select
      * @return true if no errors (even if no assignments was selected)
      */
     virtual bool GetAssignments(vector<Assignment *> &assingments,const string& path, int runMin, int runMax, const string& runRangeName, const string& variation, time_t beginTime, time_t endTime, int sortBy=0, int take=0, int startWith=0)=0;
@@ -895,8 +916,10 @@ public:
      */
     virtual bool FillAssignment(Assignment* assignment)=0;
     
+	#pragma endregion Assignments
+
     //----------------------------------------------------------------------------------------
-    //	E R R O R   H A N D L I N G 
+    //  E R R O R   H A N D L I N G 
     //----------------------------------------------------------------------------------------
     /**
      * @brief Get number of errors 
@@ -925,8 +948,8 @@ public:
     /** @brief Logs error 
     *
     * @param errorCode Error codes see DCCDBGlobals.h
-    * @param module	Caller should specify method name here
-    * @param message	Message of the error
+    * @param module Caller should specify method name here
+    * @param message    Message of the error
     * @return   void
     */
     virtual void Error(int errorCode, const std::string& module, const std::string& message);
@@ -934,8 +957,8 @@ public:
     /** @brief Logs error 
     *
     * @param errorCode Error codes see DCCDBGlobals.h
-    * @param module	Caller should specify method name here
-    * @param message	Message of the error
+    * @param module Caller should specify method name here
+    * @param message    Message of the error
     * @return   void
     */
     virtual void Warning(int errorCode, const std::string& module, const std::string& message);
@@ -947,7 +970,7 @@ public:
     virtual void ClearErrors();
     
     //----------------------------------------------------------------------------------------
-    //	O T H E R   F U N C T I O N S
+    //  O T H E R   F U N C T I O N S
     //----------------------------------------------------------------------------------------
     
     /** @brief Validates name for constant type table or directory or column
@@ -957,12 +980,10 @@ public:
      */
     bool ValidateName(const string& name);
 
-
-
     //----------------------------------------------------------------------------------------
-    //	L O G G I N G
+    //  L O G G I N G
     //----------------------------------------------------------------------------------------
-    std::string GetLogUserName() const { return mLogUserName; }		 ///User name for logging
+    std::string GetLogUserName() const { return mLogUserName; }      ///User name for logging
     void SetLogUserName(std::string val) { mLogUserName = val; }     ///User name for logging
 
     
@@ -975,21 +996,31 @@ protected:
      */
     void SetObjectLoaded(StoredObject* obj);
     
+    /******* D I R E C T O R I E S   W O R K *******/ 
+    vector<Directory *>  mDirectories;
+    map<dbkey_t,Directory *> mDirectoriesById;
+    map<string,Directory *>  mDirectoriesByFullPath;
+    bool mDirsAreLoaded;                 //Directories are loaded from database
+    bool mNeedCheckDirectoriesUpdate;    //Do we need to check each time iff directories are updated or not
+    Directory *mRootDir;                ///root directory. This directory contains all other directories. It is not stored in databases
+
     
-    /** @brief Clear error state on start of each function that emits error
+    /** 
+        @brief Clear error state on start of each function that emits error
      */
     virtual void ClearErrorsOnFunctionStart();
     
-    vector<int> mErrorCodes;		///vector of last errors
-    vector<CCDBError *> mErrors;	///errors 
-    
-    int mLastError;		///last error
-    
-    const int mMaximumErrorsToHold; ///=100 Maximum errors to hold in @see mLastErrors
-    
-    std::string mLogUserName; ///User name
+    vector<int> mErrorCodes;         ///vector of last errors
 
-    std::string mConnectionString; ///Connection string that was used on last successfull connect.
+    vector<CCDBError *> mErrors;     ///errors 
+    
+    int mLastError;                  ///last error
+    
+    const int mMaximumErrorsToHold;  ///=100 Maximum errors to hold in @see mLastErrors
+    
+    std::string mLogUserName;        ///User name
+
+    std::string mConnectionString;   ///Connection string that was used on last successfull connect.
 
     IAuthentication * mAuthentication;
 

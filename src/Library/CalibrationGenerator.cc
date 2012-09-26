@@ -3,13 +3,14 @@
 
 #include "CCDB/CalibrationGenerator.h"
 #include "CCDB/MySQLCalibration.h"
+#include "CCDB/SQLiteCalibration.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Providers/SQLiteDataProvider.h"
 
 using namespace std;
 
 namespace ccdb
 {
-
 
 //______________________________________________________________________________
 CalibrationGenerator::CalibrationGenerator()
@@ -44,19 +45,41 @@ Calibration* CalibrationGenerator::MakeMySQLCalibration( const std::string & con
 
     //Ok, we have to create calibration
     //but lets see, maybe we at least have a MySQLDataProvider for this connectionString
-    MySQLDataProvider *provider = NULL;
+    DataProvider *provider = NULL;
     if(mProvidersByUrl.find(connectionString) != mProvidersByUrl.end())
     {
-        provider = static_cast<MySQLDataProvider *>(mProvidersByUrl[connectionString]);
+        provider = static_cast<DataProvider *>(mProvidersByUrl[connectionString]);
 
         //lets see the provider is connected... if not it is useless
         if(provider!= NULL && !provider->IsConnected()) provider = NULL;
     }
 
+	bool isMySql = false; //if false SQlite provider is used
+
     if(provider == NULL)
     {
-        //Ok now... we have to create provider... 
-        MySQLDataProvider *provider = new MySQLDataProvider();
+		int typePos = connectionString.find("mysql://");
+		if(typePos!=string::npos)
+		{
+			//It is mysql
+			provider = new MySQLDataProvider();
+			isMySql = true;
+		}
+		else
+		{
+			//is it sqlite then?
+			int typePos = connectionString.find("sqlite://");
+			if(typePos!=string::npos)
+			{
+				provider = new SQLiteDataProvider();
+				isMySql = false;
+			}
+			else
+			{
+				//something wrong here!!!
+				throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now ");
+			}
+		}        
 
         //and connect it
         if(!provider->Connect(connectionString))
@@ -85,7 +108,7 @@ Calibration* CalibrationGenerator::MakeMySQLCalibration( const std::string & con
 
 
     //now we create calibration
-    MySQLCalibration * calib = new MySQLCalibration();
+    Calibration * calib = (isMySql)? static_cast<Calibration*>(new MySQLCalibration()): static_cast<Calibration*>(new SQLiteCalibration());
     calib->UseProvider(provider, true);
     
     //add it to arrays
@@ -110,13 +133,15 @@ string CalibrationGenerator::GetCalibrationHash( const std::string & connectionS
     strstrm<<connectionString<<run<<variation;
     return strstrm.str();
 }
+
+
 //______________________________________________________________________________
 bool CalibrationGenerator::CheckOpenable( const std::string & str)
 {
-    //
     //right now we have only one provider, so it is simple
-    MySQLConnectionInfo info;
-    return MySQLDataProvider::ParseConnectionString(str,info);
+	if(str.find("mysql://")!= string::npos) return true;
+	if(str.find("sqlite://")!= string::npos) return true;
+    return false;
 }
 
 

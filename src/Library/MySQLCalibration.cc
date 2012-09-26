@@ -11,26 +11,19 @@ namespace ccdb
 
 //______________________________________________________________________________
 MySQLCalibration::MySQLCalibration()
-{
-	
-	
-	
+{	
 }
+
 //______________________________________________________________________________
 MySQLCalibration::MySQLCalibration( int defaultRun, string defaultVariation/*="default"*/ )
     :Calibration(defaultRun,defaultVariation)
 {
-    //
-
-
 }
-
 
 
 //______________________________________________________________________________
 MySQLCalibration::~MySQLCalibration()
-{
-    
+{   
 }
 
 
@@ -134,7 +127,6 @@ bool MySQLCalibration::IsConnected()
 	 */
     if(mProvider==NULL) return false;
     return mProvider->IsConnected();
-
 }
 
 }

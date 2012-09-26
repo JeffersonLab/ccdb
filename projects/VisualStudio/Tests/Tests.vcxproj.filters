@@ -59,5 +59,20 @@
     <ClCompile Include="..\..\..\src\Tests\test_Authentication.cc">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_SQLiteProvider_Connection.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_SQLiteProvider_Directories.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_SQLiteProvider_TypeTables.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_SQLiteProvider_Assignments.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_SQLiteProvider_Variations.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

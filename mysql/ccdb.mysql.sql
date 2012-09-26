@@ -1,6 +1,6 @@
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 DROP SCHEMA IF EXISTS `ccdb` ;
 CREATE SCHEMA IF NOT EXISTS `ccdb` DEFAULT CHARACTER SET latin1 ;
@@ -13,8 +13,8 @@ DROP TABLE IF EXISTS `ccdb`.`runRanges` ;
 
 CREATE  TABLE IF NOT EXISTS `ccdb`.`runRanges` (
   `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
+  `created` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
+  `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   `name` VARCHAR(45) NULL DEFAULT '' ,
   `runMin` INT NOT NULL ,
   `runMax` INT NOT NULL ,
@@ -32,8 +32,8 @@ DROP TABLE IF EXISTS `ccdb`.`variations` ;
 
 CREATE  TABLE IF NOT EXISTS `ccdb`.`variations` (
   `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
+  `created` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
+  `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   `name` VARCHAR(100) NOT NULL DEFAULT 'default' ,
   `description` VARCHAR(255) NULL ,
   `authorId` INT NULL DEFAULT 1 ,
@@ -42,7 +42,7 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`variations` (
   PRIMARY KEY (`id`) ,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
   INDEX `name_search` USING HASH (`name` ASC) ,
-  INDEX `fk_variations_variations1` (`parentId` ASC) )
+  INDEX `fk_variations_variations1_idx` (`parentId` ASC) )
 ENGINE = MyISAM;
 
 
@@ -60,7 +60,7 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`directories` (
   `authorId` INT NULL DEFAULT 1 ,
   `comment` TEXT NULL DEFAULT NULL ,
   PRIMARY KEY (`id`) ,
-  INDEX `fk_directories_directories1` (`parentId` ASC) ,
+  INDEX `fk_directories_directories1_idx` (`parentId` ASC) ,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) )
 ENGINE = MyISAM;
 
@@ -83,7 +83,7 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`typeTables` (
   `comments` TEXT NULL DEFAULT NULL ,
   PRIMARY KEY (`id`, `nRows`) ,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `fk_constantTypes_directories1` (`directoryId` ASC) )
+  INDEX `fk_constantTypes_directories1_idx` (`directoryId` ASC) )
 ENGINE = MyISAM;
 
 
@@ -100,7 +100,7 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`constantSets` (
   `constantTypeId` INT NOT NULL ,
   PRIMARY KEY (`id`) ,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `fk_constantSets_constantTypes1` (`constantTypeId` ASC) )
+  INDEX `fk_constantSets_constantTypes1_idx` (`constantTypeId` ASC) )
 ENGINE = MyISAM;
 
 
@@ -138,10 +138,10 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`assignments` (
   `authorId` INT NULL DEFAULT 1 ,
   `comment` TEXT NULL ,
   PRIMARY KEY (`id`) ,
-  INDEX `fk_assignments_variations1` (`variationId` ASC) ,
-  INDEX `fk_assignments_runRanges1` (`runRangeId` ASC) ,
-  INDEX `fk_assignments_constantSets1` (`constantSetId` ASC) ,
-  INDEX `fk_assignments_eventRanges1` (`eventRangeId` ASC) ,
+  INDEX `fk_assignments_variations1_idx` (`variationId` ASC) ,
+  INDEX `fk_assignments_runRanges1_idx` (`runRangeId` ASC) ,
+  INDEX `fk_assignments_constantSets1_idx` (`constantSetId` ASC) ,
+  INDEX `fk_assignments_eventRanges1_idx` (`eventRangeId` ASC) ,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
   INDEX `date_sort_index` USING BTREE (`created` DESC) )
 ENGINE = MyISAM;
@@ -163,7 +163,7 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`columns` (
   `comment` TEXT NULL DEFAULT NULL ,
   PRIMARY KEY (`id`) ,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `fk_columns_constantTypes1` (`typeId` ASC) )
+  INDEX `fk_columns_constantTypes1_idx` (`typeId` ASC) )
 ENGINE = MyISAM;
 
 
@@ -189,7 +189,7 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`variations_has_tags` (
   `variations_id` INT NOT NULL ,
   `tags_id` INT NOT NULL ,
   PRIMARY KEY (`variations_id`, `tags_id`) ,
-  INDEX `fk_variations_has_tags_tags1` (`tags_id` ASC) )
+  INDEX `fk_variations_has_tags_tags1_idx` (`tags_id` ASC) )
 ENGINE = MyISAM;
 
 
@@ -247,9 +247,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`) VALUES (1, NULL, 'NULL', 'default', 'Default variation', NULL, 'Default variation', 0);
-INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`) VALUES (2, NULL, 'NULL', 'mc', 'Mone-Carlo variations', NULL, 'Monte-Carlo specific variation', 0);
-INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`) VALUES (3, NULL, 'NULL', 'test', 'Test variation', NULL, 'Variation for software test', 0);
+INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`) VALUES (1, NULL, NULL, 'default', 'Default variation', NULL, 'Default variation', 0);
+INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`) VALUES (2, NULL, NULL, 'mc', 'Mone-Carlo variations', NULL, 'Monte-Carlo specific variation', 0);
+INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`) VALUES (3, NULL, NULL, 'test', 'Test variation', NULL, 'Variation for software test', 0);
 
 COMMIT;
 
@@ -282,6 +282,7 @@ USE `ccdb`;
 INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (1, NULL, NULL, '1.11|1.991211|10.002|2.001|2.9912|20.111', 1);
 INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (2, NULL, NULL, '1.0|2.0|3.0|4.0|5.0|6.0', 1);
 INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (3, NULL, NULL, '1|2|3', 2);
+INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (4, NULL, NULL, '1|2|3|4|5|6', 1);
 
 COMMIT;
 
@@ -299,9 +300,10 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (1, NULL, NULL, 1, 1, NULL, 1, NULL, 'Test assignment for software tests');
-INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (2, NULL, NULL, 3, 2, NULL, 1, NULL, 'Test assignment for software tests 2');
-INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (3, NULL, NULL, 2, 1, NULL, 2, NULL, 'Test assignment for software tests 3');
+INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (1, '1348627634', '1348627634', 1, 1, NULL, 1, NULL, 'Test assignment for software tests');
+INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (2, NULL, NULL, 3, 2, NULL, 2, NULL, 'Test assignment for software tests 2');
+INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (3, NULL, NULL, 2, 1, NULL, 3, NULL, 'Test assignment for software tests 3');
+INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (4, NULL, NULL, 1, 1, NULL, 4, NULL, 'Test assignment for software tests 4');
 
 COMMIT;
 

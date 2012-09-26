@@ -6,8 +6,11 @@
 
 #ifndef WIN32
 #define TESTS_CONENCTION_STRING "mysql://ccdb_user@127.0.0.1:3306 ccdb"
+#define TESTS_SQLITE_STRING "sqlite://$CCDB_HOME/ccdb.sqlite"
+
 #else
 #define TESTS_CONENCTION_STRING "mysql://ccdb_user@127.0.0.1:3306 ccdb"
+#define TESTS_SQLITE_STRING "sqlite://..\\..\\..\\mysql\\ccdb.sqlite"
 #endif
 
 

@@ -12,6 +12,7 @@ So... You have to install next software (all is free and mostly open source). Ch
 
 *  [Python 2.7 x86](http://www.python.org/ftp/python/2.7.2/python-2.7.2.msi)
 *  [pyreadline for windows](https://launchpad.net/pyreadline/+download)
+*  [MySQL-python-1.2.3.win32-py2.7] (http://sourceforge.net/projects/mysql-python/files/latest/download)
 *  [Python tools for VS2010](http://pytools.codeplex.com/releases) - to open VS2010 python project
 *  [MySQL community server](http://dev.mysql.com/downloads/mysql/)
 *  [MySQL Connector C x86](http://dev.mysql.com/downloads/connector/c/)

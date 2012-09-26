@@ -223,19 +223,19 @@ class Empty(ConsoleUtilBase):
                 columnLengths[i] = len(columnNames[i])
             else:
                 columnLengths[i] = minLength
-        	
+
             totalDataLength += columnLengths[i];
 
         #this is our cap, if we need it.... 
         cap = "+" + (totalDataLength + 3 * columnsNum - 1)*"-" + "+"
 
-	    #print header if needed
+        #print header if needed
         if printHeader:
 
             #cap?
             if displayBorders:
                 print Theme.AsgmtBorder + cap
-        	
+
             #names line
             for i in range(0, columnsNum):
                 sys.stdout.write(Theme.AsgmtBorder + border + Theme.Reset)
