@@ -30,10 +30,10 @@ class ParseRequestResult:
     Path=""                    # Object path
     WasParsedPath=False        # true if Path was nonempty
     Variation="";              # Variation name
-    Time = 0                   # Time stampt
-    Time = 0                   # Time stampt
+    Time = 0                   # Time stamp
+    Time = 0                   # Time stamp
     TimeString = ""            # Original string with time
-    WasParsedTime = False      # true if time stampt was not empty
+    WasParsedTime = False      # true if time stamp was not empty
     WasParsedRunNumber=False   # true if Run number was non empty
     WasParsedVariation=False   # true if variation was not empty
     
@@ -93,7 +93,7 @@ def parse_time(timeStr="-1"):
     #scan all symbols
     for symbol in workStr:
 
-        if symbol >= '0' and symbol <= '9':  # Check if it is number
+        if '0' <= symbol <= '9':  # Check if it is number
             tmpStr = tmpStr + symbol
             lastIsDigit = True
 
@@ -114,7 +114,7 @@ def parse_time(timeStr="-1"):
                 if month in [9, 4, 6, 10]:
                     day = 30
                 if month == 2:
-                    if year % 4 == 0 and  time.year % 100 != 0 or time.year % 400 == 0:
+                    if year % 4 == 0 and  year % 100 != 0 or year % 400 == 0:
                         day = 29
                     else:
                         day = 28
@@ -184,7 +184,7 @@ def parse_request( requestStr="" ):
     colonCount=0
     runStr ="";
     for symbol in requestStr:
-        if(symbol!=':'):
+        if symbol!=':':
             #it is not a colon so we add this symbol somewhere
 
             #it is a path
