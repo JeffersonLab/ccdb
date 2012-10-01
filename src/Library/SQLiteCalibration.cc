@@ -78,7 +78,7 @@ bool SQLiteCalibration::Connect( std::string connectionString )
         else
         {
             //The connection is open to another source. Invalid DSQLiteCalibration usage 
-            throw std::logic_error(ERRMSG_CONECTED_TO_ANOTHER);
+            throw std::logic_error(ERRMSG_CONNECTED_TO_ANOTHER);
         }
     }
 
@@ -87,7 +87,7 @@ bool SQLiteCalibration::Connect( std::string connectionString )
     if(mProviderIsLocked)
     {
         Unlock();
-        throw std::logic_error(ERRMSG_CONECT_LOCKED);
+        throw std::logic_error(ERRMSG_CONNECT_LOCKED);
     }
 
     bool result = mProvider->Connect(connectionString);
@@ -111,7 +111,7 @@ void SQLiteCalibration::Disconnect()
     //but can we connect or not?
     if(mProviderIsLocked)
     {
-        throw std::logic_error(ERRMSG_CONECT_LOCKED); //TODO ERRMSG_DISCONECT_LOCKED
+        throw std::logic_error(ERRMSG_CONNECT_LOCKED); //TODO ERRMSG_DISCONECT_LOCKED
     }
 
     mProvider->Disconnect();

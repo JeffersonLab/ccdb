@@ -28,6 +28,7 @@ lib_sources = [
 	"Calibration.cc",
 	"CalibrationGenerator.cc",
 	"MySQLCalibration.cc",
+    "SQLiteCalibration.cc",
 	
 	#helper classes
 	"Helpers/StringUtils.cc",
@@ -48,8 +49,12 @@ lib_sources = [
 	"Providers/FileDataProvider.cc",
 	"Providers/MySQLConnectionInfo.cc",
 	"Providers/MySQLDataProvider.cc",
+    "Providers/SQLiteDataProvider.cc",
 	"Providers/IAuthentication.cc",
 	"Providers/EnvironmentAuthentication.cc",
+    
+    #sqlite embedding
+    "#src/SQLite/sqlite3.c"
 	]
 
 env.ParseConfig('mysql_config --libs --cflags')

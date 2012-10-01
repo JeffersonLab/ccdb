@@ -40,7 +40,12 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	vector<vector<string> > tabeled_values = assignment->GetData();
 	REQUIRE(tabeled_values.size()==2);	
 	REQUIRE(tabeled_values[0].size()==3);	
-	REQUIRE(tabeled_values[0][0] == "1");
+	REQUIRE(tabeled_values[0][0] == "2.2");
+	REQUIRE(tabeled_values[0][1] == "2.3");
+	REQUIRE(tabeled_values[0][2] == "2.4");
+	REQUIRE(tabeled_values[1][0] == "2.5");
+	REQUIRE(tabeled_values[1][1] == "2.6");
+	REQUIRE(tabeled_values[1][2] == "2.7");
 	
 	//Ok! Lets get all assigments for current types table
 	vector<Assignment *> assignments;

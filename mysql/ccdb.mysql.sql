@@ -77,11 +77,11 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`typeTables` (
   `name` VARCHAR(255) NOT NULL ,
   `directoryId` INT NOT NULL ,
   `nRows` INT NOT NULL DEFAULT 1 ,
-  `nColumns` INT NULL ,
+  `nColumns` INT NOT NULL ,
   `nAssignments` INT NOT NULL DEFAULT 0 ,
   `authorId` INT NULL DEFAULT 1 ,
   `comments` TEXT NULL DEFAULT NULL ,
-  PRIMARY KEY (`id`, `nRows`) ,
+  PRIMARY KEY (`id`) ,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
   INDEX `fk_constantTypes_directories1_idx` (`directoryId` ASC) )
 ENGINE = MyISAM;
@@ -130,7 +130,7 @@ DROP TABLE IF EXISTS `ccdb`.`assignments` ;
 CREATE  TABLE IF NOT EXISTS `ccdb`.`assignments` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
   `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
+  `modified` TIMESTAMP NULL DEFAULT 20070101000000 ,
   `variationId` INT NOT NULL ,
   `runRangeId` INT NULL ,
   `eventRangeId` INT NULL ,
@@ -226,6 +226,18 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`logs` (
 ENGINE = MyISAM;
 
 
+-- -----------------------------------------------------
+-- Table `ccdb`.`schemaVersions`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `ccdb`.`schemaVersions` ;
+
+CREATE  TABLE IF NOT EXISTS `ccdb`.`schemaVersions` (
+  `id` INT NOT NULL ,
+  `schemaVersion` INT NULL DEFAULT 1 ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
@@ -279,10 +291,10 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (1, NULL, NULL, '1.11|1.991211|10.002|2.001|2.9912|20.111', 1);
-INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (2, NULL, NULL, '1.0|2.0|3.0|4.0|5.0|6.0', 1);
-INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (3, NULL, NULL, '1|2|3', 2);
-INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (4, NULL, NULL, '1|2|3|4|5|6', 1);
+INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (1, '2012-07-30 23:48:42', '2012-07-30 23:48:42', '1.11|1.991211|10.002|2.001|2.9912|20.111', 1);
+INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (2, '2012-08-30 23:48:42', '2012-08-30 23:48:42', '1.0|2.0|3.0|4.0|5.0|6.0', 1);
+INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (3, '2012-09-30 23:48:42', '2012-09-30 23:48:42', '10|20|30', 2);
+INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (4, '2012-10-30 23:48:42', '2012-10-30 23:48:42', '2.2|2.3|2.4|2.5|2.6|2.7', 1);
 
 COMMIT;
 
@@ -300,10 +312,10 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (1, '1348627634', '1348627634', 1, 1, NULL, 1, NULL, 'Test assignment for software tests');
-INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (2, NULL, NULL, 3, 2, NULL, 2, NULL, 'Test assignment for software tests 2');
-INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (3, NULL, NULL, 2, 1, NULL, 3, NULL, 'Test assignment for software tests 3');
-INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (4, NULL, NULL, 1, 1, NULL, 4, NULL, 'Test assignment for software tests 4');
+INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (1, '2012-07-30 23:48:42', '2012-07-30 23:48:42', 1, 1, NULL, 1, NULL, 'Test assignment for software tests');
+INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (2, '2012-08-30 23:48:42', '2012-08-30 23:48:42', 3, 2, NULL, 2, NULL, 'Test assignment for software tests 2');
+INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (3, '2012-09-30 23:48:42', '2012-09-30 23:48:42', 2, 1, NULL, 3, NULL, 'Test assignment for software tests 3');
+INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (4, '2012-10-30 23:48:42', '2012-10-30 23:48:42', 1, 1, NULL, 4, NULL, 'Test assignment for software tests');
 
 COMMIT;
 
@@ -327,5 +339,14 @@ COMMIT;
 START TRANSACTION;
 USE `ccdb`;
 INSERT INTO `ccdb`.`authors` (`id`, `created`, `lastActionTime`, `name`) VALUES (1, NULL, NULL, 'anonymous');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `ccdb`.`schemaVersions`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `ccdb`;
+INSERT INTO `ccdb`.`schemaVersions` (`id`, `schemaVersion`) VALUES (1, 2);
 
 COMMIT;

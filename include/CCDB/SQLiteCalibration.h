@@ -4,9 +4,6 @@
 #include <string>
 #include "CCDB/Calibration.h"
 
-#define ERRMSG_INVALID_CONNECT_USAGE "Invalid DSQLiteCalibration usage. Using DSQLiteCalibration::Connect method with provider == NULL and ProviderIsLocked==true." 
-#define ERRMSG_CONECTED_TO_ANOTHER "The connection is open to another source. DCalibration is already connected using another connection string" 
-#define ERRMSG_CONECT_LOCKED "Can't connect, provider is locked. The provider is in locked state, this means that it is controlled somwere else, and many DCalibrations may relay on it."
 using namespace std;
 
 namespace ccdb

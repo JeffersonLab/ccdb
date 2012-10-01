@@ -1,8 +1,6 @@
 #ifndef _SQLiteDataProvider_
 #define _SQLiteDataProvider_
 
-#ifdef SQLITE
-
 #ifdef WIN32
 #include <winsock.h>
 #endif
@@ -972,5 +970,5 @@ private:
 
 };
 }
-#endif // SQLITE
+
 #endif //_SQLiteDataProvider_

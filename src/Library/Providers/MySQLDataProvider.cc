@@ -386,6 +386,7 @@ bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
 	return result;
 }
 
+
 bool ccdb::MySQLDataProvider::SearchDirectories( vector<Directory *>& resultDirectories, const string& searchPattern, const string& parentPath/*=""*/,  int take/*=0*/, int startWith/*=0*/ )
 {	
 	UpdateDirectoriesIfNeeded(); //do we need to update directories?
@@ -402,7 +403,7 @@ bool ccdb::MySQLDataProvider::SearchDirectories( vector<Directory *>& resultDire
 	{	//we should care about parent path
 		
 		//If parent directory is "/" this should work too, because it have an id=0
-		//and tabeles in db wich doesnt have parents should have parentId=0
+		//and tables in db which doesn't have parents should have parentId=0
 		
 		Directory *parentDir;
 		if(parentDir = GetDirectory(parentPath.c_str()))

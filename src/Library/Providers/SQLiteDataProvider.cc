@@ -1,4 +1,4 @@
-#ifdef SQLITE
+
 
 #include <stdlib.h>
 #include <iostream>
@@ -66,7 +66,7 @@ bool ccdb::SQLiteDataProvider::Connect( std::string connectionString )
 	}
 
 	//verbose...
-	Log::Verbose("ccdb::SQLiteDataProvider::Connect", StringUtils::Format("Connecting to database:\n %s", connectionString));
+	Log::Verbose("ccdb::SQLiteDataProvider::Connect", StringUtils::Format("Connecting to database:\n %s", connectionString.c_str()));
 	
 	//Try to open sqlite database
 	int result = sqlite3_open(connectionString.c_str(), &mDatabase);
@@ -2982,4 +2982,3 @@ int ccdb::SQLiteDataProvider::CountConstantsTypeTables(Directory *dir)
 	return 0;
 }
 
-#endif // SQLITE

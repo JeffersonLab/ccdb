@@ -1,3 +1,5 @@
+import collections
+
 __author__ = 'DmitryRa'
 
 import datetime
@@ -17,6 +19,12 @@ print sqlalchemy.__version__
 engine = create_engine('mysql://ccdb_user@127.0.0.1/ccdb')
 Base = declarative_base()
 
+#This thing separates cells in data blob
+blob_delimiter = "|"
+
+# if cell of data table is a string and the string already contains blob_delimiter
+# we have to encode blob_delimiter to blob_delimiter_replace on data write and decode it bach on data read
+blob_delimiter_replacement = "&delimiter;"
 
 class Directory(Base):
     __tablename__ = 'directories'
@@ -53,7 +61,7 @@ class TypeTable(Base):
     parent_dir_id = Column('directoryId',Integer, ForeignKey('directories.id'))
     parent_dir = relationship("Directory", backref=backref('type_tables', order_by=id))
     constant_sets = relationship("ConstantSet", backref=backref('type_table'))
-    columns = relationship("TypeTableColumns", order_by="TypeTableColumns.order", cascade="all, delete, delete-orphan", backref("type_table") )
+    columns = relationship("TypeTableColumn", order_by="TypeTableColumn.order", cascade="all, delete, delete-orphan", backref=backref("type_table") )
     rows_count = Column('nRows',Integer)
     _columns_count = Column('nColumns',Integer)
 
@@ -93,11 +101,36 @@ class TypeTableColumn(Base):
 class ConstantSet(Base):
     __tablename__ = 'constantSets'
     id = Column(Integer, primary_key=True)
-    vault = Column('vault', Text)
+    _vault = Column('vault', Text)
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
     assignment = relationship("Assignment", uselist=False, backref="constant_set")
     type_table_id = Column('constantTypeId',Integer, ForeignKey('typeTables.id'))
+
+    @property
+    def vault(self):
+        """
+        Text-blob with data as it is presented in database
+        :return: string with text-blob from db
+        :rtype:  string
+        """
+        return self._vault
+
+    @property
+    def data_list(self):
+        return blob_to_list(self._vault)
+
+    @data_list.setter
+    def data_list(self, list):
+        self._vault = list_to_blob(list)
+
+    @property
+    def data_table(self):
+        return list_to_table(self.data_list, self.type_table._columns_count)
+
+    @data_table.setter
+    def data_table(self, data):
+        self.data_list = list(gen_flatten_data(data))
 
 
     def __repr__(self):
@@ -127,6 +160,9 @@ class Assignment(Base):
               + " SET: " + repr (self.constant_set)
         print "      |"
         print "      +-->" + repr(self.constant_set.vault)
+        print "      +-->" + repr(self.constant_set.data_list)
+        print "      +-->" + repr(self.constant_set.data_table)
+
 
 
 class RunRange(Base):
@@ -157,6 +193,157 @@ class Variation(Base):
 
     def __repr__(self):
         return "<Variation {0} '{1}'>".format(self.id, self.name)
+
+#--------------------------------------------
+# flattens arrays of arrays to one array
+#--------------------------------------------
+def gen_flatten_data(data):
+    """
+    get generator that flattens 'arrays of arrays' to one array
+
+    :param data: List which probably contains sub-collections
+    :type data: []
+    :return: flattened list
+    :rtype: generator
+
+    example
+    >>>list(gen_flatten_data([[[1, 2, 3], [4, 5]], "abs"]))
+    [1, 2, 3, 4, 5, "abs"]
+
+    """
+    for el in data:
+        if isinstance(el, collections.Iterable) and not isinstance(el, basestring):
+            for sub in gen_flatten_data(el):
+                yield sub
+        else:
+            yield el
+
+
+#--------------------------------------------
+# flattens arrays of arrays to one array
+#--------------------------------------------
+def flatten_data(data):
+    """
+     flattens arrays of arrays to one array
+
+    :param data: List which probably contains sub-collections
+    :type data: []
+    :return: flattened list
+    :rtype: generator
+
+    example
+    >>>flatten_data([[[1, 2, 3], [4, 5]], "abs"])
+    [1, 2, 3, 4, 5, "abs"]
+
+    """
+    return list(gen_flatten_data(data))
+
+
+#--------------------------------------------
+# Get tabled data, convert it to string blob for db insertion
+#--------------------------------------------
+def list_to_blob(data):
+    """
+    Get tabled data, convert it to string blob for db insertion
+
+    if you have tabled data use gen_flatten_data to flatten data first
+
+
+    :param data: FLATTENED list of values
+    :type data: []
+    :return: string with text-blob for database insertion
+    :rtype: str
+
+    >>>list_to_blob([1,"2","str"])
+    "1|2|str"
+    >>>list_to_blob(["strings", "with|surprise"])
+    "strings|with&delimiter;surprise"
+    """
+    def prepare_item(item):
+        if not isinstance(item, basestring):
+            str = repr(item)
+        else:
+            str = item
+        return str.replace(blob_delimiter, blob_delimiter_replacement)
+
+    if len(data) == 0: return ""
+    if len(data) == 1: return prepare_item(data[0])
+
+    #this for data[:-1] makes result like a1|a2|a3
+    blob = ""
+    for item in data[:-1]:
+        blob += prepare_item(item) + blob_delimiter
+    blob+=prepare_item(data[-1])
+
+    return blob
+
+#--------------------------------------------
+# Get blob data and convert it to list decoding blob_delimiter
+#--------------------------------------------
+def blob_to_list(blob):
+    """
+    Get blob data and convert it to list decoding blob_delimiter
+
+    :param blob:
+    :type blob: str
+    :return:
+
+    >>>blob_to_list("1|2|str")
+    ["1","2","str"]
+
+    >>>blob_to_list("strings|with&delimiter;surprise")
+    ["strings", "with|surprise"]
+    """
+    splits = blob.split(blob_delimiter)
+    items = []
+    for item in splits:
+        items.append(item.replace(blob_delimiter_replacement, blob_delimiter))
+    return items
+
+#--------------------------------------------
+# Converts flat array to tabled array
+#--------------------------------------------
+
+def list_to_table(data, col_count):
+    """
+    Converts flat array to tabled array
+
+    :param data: flat list with data
+    :type data: []
+    :param col_count:number of columns
+    :type col_count: int
+    :return: tabled data
+    :rtype:[]
+
+
+    >>> list_to_table([1,2,3,4,5,6], 3)
+    [[1,2,3],[4,5,6]]
+    """
+
+    if len(data) % col_count != 0:
+        message = "Cannot convert list to table."\
+                + "The total number of cells ({0}) is not compatible with the number of columns ({1})"\
+                .format(len(data), col_count)
+        raise ValueError(message)
+
+    row_count = len(data) / col_count
+    #cpp way
+    table = []
+    for row_i in range(row_count):
+        row = []
+        for col_i in range(col_count): row.append(data[row_i*col_count + col_i])
+        table.append(row)
+    return table
+
+
+
+
+
+
+
+
+def decode_data(data):
+    pass
 
 
 if __name__=="__main__":

@@ -1,5 +1,7 @@
 import shlex
 
+__all__ = ["TextFileDOM"]
+
 #*********************************************************************
 #   Class TextFileDOM - store information of text data files         *
 #                                                                    *
@@ -100,7 +102,8 @@ def read_ccdb_text_file(file_name):
 #---------------------------------------- 
 def read_namevalue_text_file(file_name, replace_c_comments = False):
     """
-        @param replace_c_comments - if file contains // - 'C' style comments, replace them by # first
+    :param replace_c_comments: - if file contains // - 'C' style comments, replace them by # first
+    :type replace_c_comments: bool
     """
     dom = TextFileDOM()    
     try:

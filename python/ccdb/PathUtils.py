@@ -29,7 +29,7 @@ class ParseRequestResult:
     IsInvalidRunNumber = False # true if was an error parsing runnumber
     Path=""                    # Object path
     WasParsedPath=False        # true if Path was nonempty
-    Variation="";              # Variation name
+    Variation=""               # Variation name
     Time = 0                   # Time stamp
     Time = 0                   # Time stamp
     TimeString = ""            # Original string with time
@@ -45,7 +45,7 @@ def extract_dir(path = ""):
 
 #______________________________________________________________________________
 def extract_name(path=""):
-    return posixpath.basename(path);
+    return posixpath.basename(path)
 
 
 #______________________________________________________________________________
@@ -74,7 +74,6 @@ def parse_time(timeStr="-1"):
     #the function is ported from C++ dont be surprise by struct_time
     
     #default result
-    succsess = True
     year=2037
     month = 12
     day = 31
@@ -88,7 +87,7 @@ def parse_time(timeStr="-1"):
 
     workStr=timeStr + ' '    #we appended a work string for one more non digit symbol
                              #so the logic behind would work in any case
-    lastIsDigit=False;       #last symbol was digit
+    lastIsDigit=False        #last symbol was digit
 
     #scan all symbols
     for symbol in workStr:
@@ -103,7 +102,7 @@ def parse_time(timeStr="-1"):
             #it was a year
             if delimCount == 1:  
                 if len(tmpStr) !=4: raise ValueError("The year length !=4")    #it is an error with lengtn of year
-                year = int(tmpStr);                                      #since in tm the year is from 1900
+                year = int(tmpStr)                                             #since in tm the year is from 1900
 
             #it was a month
             if delimCount == 2: 
@@ -140,8 +139,8 @@ def parse_time(timeStr="-1"):
                 if len(tmpStr) !=2:  raise ValueError("The sec length !=2") #it is an error with lengtn of sec
                 second = int(tmpStr)
 
-            #clear temp string for the next digit seria
-            tmpStr="";
+            #clear temp string for the next digits
+            tmpStr=""
 
         else:
             tmpStr="" #in this case we clear temp string too
@@ -169,20 +168,20 @@ def parse_request( requestStr="" ):
     """
 
     #Set the default parameters
-    result = ParseRequestResult();
-    result.RunNumber=0;	              # Run number
-    result.WasParsedRunNumber=False;  # true if Run number was non empty
-    result.IsInvalidRunNumber=False;  # true if was an error parsing runnumber
-    result.Path = "";                 # Object path
-    result.WasParsedPath=False;       # true if Path was nonempty
-    result.Variation="";              # Variation name
-    result.WasParsedVariation=False;  # true if variation was not empty
-    result.Time=0;                    # Time stamp
-    result.WasParsedTime=False;       # true if time stamp was not empty
-    result.TimeString="";             # Original string with time
+    result = ParseRequestResult()
+    result.RunNumber=0	              # Run number
+    result.WasParsedRunNumber=False   # true if Run number was non empty
+    result.IsInvalidRunNumber=False   # true if was an error parsing runnumber
+    result.Path = ""                  # Object path
+    result.WasParsedPath=False        # true if Path was nonempty
+    result.Variation=""               # Variation name
+    result.WasParsedVariation=False   # true if variation was not empty
+    result.Time=0                     # Time stamp
+    result.WasParsedTime=False        # true if time stamp was not empty
+    result.TimeString=""              # Original string with time
 
     colonCount=0
-    runStr ="";
+    runStr =""
     for symbol in requestStr:
         if symbol!=':':
             #it is not a colon so we add this symbol somewhere
@@ -240,7 +239,7 @@ def MakeAbsolute(path=""):
     */"""
 
     if IsAbsolute(path): return '/' + path
-    return path;
+    return path
 
 
 #______________________________________________________________________________

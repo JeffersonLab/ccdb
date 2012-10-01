@@ -3,7 +3,7 @@ Documentation for this module.
 
 More details.
 """
-
+import collections
 
 import os
 import re
@@ -14,7 +14,7 @@ import sqlalchemy.orm
 from sqlalchemy import desc
 
 from Model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
-
+import TextFileDOM
 
 import posixpath
 
@@ -443,7 +443,7 @@ class AlchemyProvider(object):
 
         #does parent directory specified?
         parent_dir = None
-        if dir_obj_or_path != None:
+        if dir_obj_or_path is not None:
             if not self._are_dirs_loaded: self._load_dirs()
 
             if isinstance(dir_obj_or_path, str) and dir_obj_or_path != "":
@@ -453,8 +453,8 @@ class AlchemyProvider(object):
                 parent_dir = dir_obj_or_path
 
         #add parent directory to query
-        if parent_dir != None:
-            query.filter(TypeTable.dir_id == parent_dir.id)
+        if parent_dir is not None:
+            query.filter(TypeTable.parent_dir_id == parent_dir.id)
 
         #add limits to query
         if limit !=0: query = query.limit(limit)
@@ -517,6 +517,9 @@ class AlchemyProvider(object):
         "Creates constant table in database"
         #return self._provider.CreateConstantsTypeTable(name, parentPath, rowsNumber, columns, comments)
 
+        assert len(columns) >0
+        assert rowsNumber > 0
+
         if not self._are_dirs_loaded: self._load_dirs()
 
         if isinstance(dir_obj_or_path, str):
@@ -536,7 +539,10 @@ class AlchemyProvider(object):
             column = TypeTableColumn()
             column.name = columns[key]
             column.order = i
+            column.type_table = table
             table.columns.append(column)
+            self.session.add(table)
+        table._columns_count = len(columns)
 
         self.session.add(table)
         self.session.commit()
@@ -824,28 +830,11 @@ class AlchemyProvider(object):
                 .order_by(desc(Assignment.id)).limit(1).one()
 
 
-    ## @brief Creates Assignment using related object
-    #
-    # @warning since composing a "NEW" DAssignment is complex operation
-    #          it is suggested to use other reloads of this function for users
-    #          for creating "new" assignments.
-    #          This function is not set as "protected" only to provide easy "copy" operations
-    #
-    # This function assumes that all needed data is already contained in assignment
-    # object. Including correct type table and data blob.
-    #
-    # The function is powerful to copy assignment. For example from one variation to another.
-    #
-    # The function changes DAssignment object by setting Id and DataVaultId by new values
-    #
-    # @param    DAssignment * assignment
-    # @return   DAssignment* adjusted with Id-s of objects and etc
-    #/
     #------------------------------------------------
     # Creates Assignment using related object
     #------------------------------------------------
     def copy_assignment(self, asssignment):
-        return self._provider.CreateAssignment(assignment)
+        raise NotImplementedError("copy_assignment is not implemented")
 
 
     ## @brief Creates Assignment using related object
@@ -869,46 +858,46 @@ class AlchemyProvider(object):
     #/
     #------------------------------------------------
     #------------------------------------------------
-    def create_assignment(self, data, path, min_run, max_run, variation, comment):
-        table = self.get_type_table(path);
-        if not table:
-            log.warning("Table : " + path + " - was not found. ")
-            log.debug(self, data, path, min_run, max_run, variation, comment)
-            return None
-
-        assert isinstance(table, ccdb.ConstantsTypeTable)
-
-        rows = None
+    def create_assignment(self, data, path, min_run, max_run, variation_name, comment):
 
         #maybe it is a dom?
-        if isinstance(data, ccdb.TextFileDOM):
+        if isinstance(data, TextFileDOM.TextFileDOM):
             rows = data.rows
         else:
             #it should be list than...
+            assert isinstance(data, [])
             rows = data
 
+        #get objects
+        table = self.get_type_table(path) #TODO create path_or_table variable
+        variation = self.get_variation(variation_name) #TODO create variation_name_or_obj instead of variation_name
+        run_range = self.get_or_create_run_range(min_run, max_run)
+
+        #validate data.. a little =)
+        if len(data) == 0: raise ValueError("Try to create variation with data length = 0. Fill data prior inserting into database")
+        if not isinstance(data[0], []):
+            #the data is plain list, like [1,2,3,4,5,6]
+            rows_count = len(data) / table._columns_count
+
+
+        #construct assignment
+        assignment = Assignment()
+        assignment.constant_set = ConstantSet()
+        assignment.constant_set.type_table_id = table.id
+        assignment.constant_set.type_table = table
+        assignment.run_range = run_range
+        assignment.run_range_id = run_range.id
+        assignment.variation = variation
+        assignment.variation_id = variation.id
+
+
+
+        assignment.constant_set.data_table = rows
+
+
+
         #finally checking data type and that there is at least one row and column
-        if (not isinstance(rows, list)) or\
-           (not len(rows)) or\
-           (not isinstance(rows[0], list)) or\
-           (not len(rows[0])):
-            log.warning("Data type is wrong in python function")
-            return None
 
-        #Create StringVectorVector for C++ wrapped function
-        rows_vector = ccdb.StringVectorVector()
-        for row in rows:
-            cells_vector = ccdb.StringVector()
-            for cell in row:
-                if isinstance(cell, str):
-                    cells_vector.push_back(cell)
-                else:
-                    cells_vector.push_back(repr(cell))
-            rows_vector.push_back(cells_vector)
-        print "rows " +repr(rows_vector.size())
-        #do the job
-
-        return self._provider.CreateAssignment(rows_vector, path, min_run, max_run, variation, comment)
 
 
     ## @brief Creates Assignment using related object
@@ -1026,8 +1015,6 @@ class AlchemyProvider(object):
     #/
     def fill_assignment(self, assignment):
         return self._provider.FillAssignment(assignment)
-
-    def prepare_assignment_data(self):
 
 
 #----------------------------------------------------------------------------------------

@@ -5,6 +5,7 @@ import os
 import os.path
 import sys
 from Model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
+from Model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
 
 from AlchemyProvider import AlchemyProvider
 
@@ -37,9 +38,9 @@ class AlchemyProviderTest(unittest.TestCase):
 
         #simple get directory
         dir = self.provider.get_directory("/test")
-        assert(dir != None)
-        assert(dir.path == "/test")
-        assert(dir.name == "test")
+        self.assertIsNotNone(dir)
+        self.assertMultiLineEqual(dir.path, "/test")
+        self.assertMultiLineEqual(dir.name, "test")
 
         #search directories
         dirs = self.provider.search_directories("t??t_va*", "/test")
@@ -102,6 +103,7 @@ class AlchemyProviderTest(unittest.TestCase):
         print "==> start MySQL type tables tests"
         self.universal_type_tables()
 
+    #noinspection PyBroadException
     def universal_type_tables(self):
         pass
         table = self.provider.get_type_table("/test/test_vars/test_table")
@@ -131,6 +133,65 @@ class AlchemyProviderTest(unittest.TestCase):
         #now lets get all tables from the directory.
         tables = self.provider.search_type_tables("*", "/test/test_vars")
         assert len(tables) >0
+
+        #CREATE AND DELETE
+
+        try:
+            #if such type table already extsts.. probably from last failed test...
+            #we haven't test it yet, but we should try to delete it
+            table = self.provider.get_type_table("/test/test_vars/new_table")
+            self.provider.delete_type_table(table)
+        except:
+            pass
+
+        table = self.provider.create_type_table(
+                    name = "new_table",
+                    dir_obj_or_path = "/test/test_vars",
+                    rowsNumber = 5,
+                    columns={"c":"double", "a":"double", "b":"int"},
+                    comments = "This is temporary created table for test reasons")
+
+        table = self.provider.get_type_table("/test/test_vars/new_table")
+        self.assertEqual(table.rows_count, 5)
+        self.assertEqual(table._columns_count, 3)
+        self.assertEqual(table.name, "new_table")
+        self.assertEqual(table.columns[0].name, "c")
+        self.assertEqual(table.columns[1].name, "a")
+        self.assertEqual(table.columns[2].name, "b")
+        self.assertEqual(table.comments, "This is temporary created table for test reasons")
+
+        #delete
+        self.provider.delete_type_table(table)
+        self.assertRaises(ValueError, self.provider.delete_type_table, table)
+
+
+    def test_gen_flatten_data(self):
+        source = [[1,2],[3,"444"]]
+        result = list(gen_flatten_data(source))
+        assert result[0] == 1
+        assert result[1] == 2
+        assert result[2] == 3
+        assert result[3] == "444"
+
+
+    def test_list_to_blob(self):
+        self.assertMultiLineEqual("1|2|33", list_to_blob([1,2,"33"]))
+        self.assertMultiLineEqual("strings|with&delimiter;surprise", list_to_blob(["strings", "with|surprise"]))
+
+
+    def test_blob_to_list(self):
+        self.assertItemsEqual(["1","2","str"], blob_to_list("1|2|str"))
+        self.assertItemsEqual(["strings", "with|surprise"], blob_to_list("strings|with&delimiter;surprise"))
+
+
+    def test_list_to_table(self):
+        self.assertRaises(ValueError, list_to_table, [1,2,3], 2)
+        self.assertItemsEqual([[1,2,3],[4,5,6]], list_to_table([1,2,3,4,5,6], 3))
+
+
+
+
+
 
 
 

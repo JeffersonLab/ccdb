@@ -275,14 +275,14 @@ void ccdb::Assignment::GetData(std::vector<std::vector<std::string> >& data) con
 string ccdb::Assignment::DecodeBlobSeparator(string str)
 {
 	
-	return StringUtils::Replace("&delimeter;", CCDB_DATA_BLOB_DELIMETER, str);
+	return StringUtils::Replace("&delimiter;", CCDB_DATA_BLOB_DELIMETER, str);
 }
 
 
 //______________________________________________________________________________
 string ccdb::Assignment::EncodeBlobSeparator(string str)
 {
-	return StringUtils::Replace(CCDB_DATA_BLOB_DELIMETER, "&delimeter;", str);
+	return StringUtils::Replace(CCDB_DATA_BLOB_DELIMETER, "&delimiter;", str);
 }
 
 
