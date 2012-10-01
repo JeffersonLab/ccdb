@@ -513,7 +513,7 @@ class AlchemyProvider(object):
     #/
     #------------------------------------------------
     #------------------------------------------------
-    def create_type_table(self, name, dir_obj_or_path, rowsNumber, columns, comments =""):
+    def create_type_table(self, name, dir_obj_or_path, rowsNumber, columns, comment =""):
         "Creates constant table in database"
         #return self._provider.CreateConstantsTypeTable(name, parentPath, rowsNumber, columns, comments)
 
@@ -530,24 +530,25 @@ class AlchemyProvider(object):
 
         table = TypeTable()
         table.name = name
-        table.comment = comments
+        table.comment = comment
         table.rows_count = rowsNumber
         table.parent_dir = parent_dir
         table.parent_dir_id = parent_dir.id
 
-        for i, key in enumerate(columns):
+        for i, (name,type) in enumerate(columns):
             column = TypeTableColumn()
-            column.name = columns[key]
+            column.name = name
             column.order = i
-            column.type_table = table
+            column.column_type = type
+            #column.type_table = table
             table.columns.append(column)
-            self.session.add(table)
+            #self.session.add(table)
         table._columns_count = len(columns)
 
         self.session.add(table)
         self.session.commit()
 
-        return self._provider.CreateConstantsTypeTable(table)
+        return table
 
 
     #------------------------------------------------

@@ -27,95 +27,76 @@ CalibrationGenerator::~CalibrationGenerator()
 //______________________________________________________________________________
 Calibration* CalibrationGenerator::MakeCalibration( const std::string & connectionString, int run, const std::string& context )
 {
-	return MakeMySQLCalibration(connectionString, run, context);
-}
+	//hash of requested variation
+	string calibHash = GetCalibrationHash(connectionString, run, context);
 
+	//first we look maybe we already have such a calibration
+	if(mCalibrationsByHash.find(calibHash) != mCalibrationsByHash.end())
+	{
+		return mCalibrationsByHash[calibHash];
+	}
 
-//______________________________________________________________________________
-Calibration* CalibrationGenerator::MakeMySQLCalibration( const std::string & connectionString, int run, const std::string& variation )
-{
-    //hash of requested variation
-    string calibHash = GetCalibrationHash(connectionString, run, variation);
-
-    //first we look maybe we already have such a calibration
-    if(mCalibrationsByHash.find(calibHash) != mCalibrationsByHash.end())
-    {
-        return mCalibrationsByHash[calibHash];
-    }
-
-    //Ok, we have to create calibration
-    //but lets see, maybe we at least have a MySQLDataProvider for this connectionString
-    DataProvider *provider = NULL;
-    if(mProvidersByUrl.find(connectionString) != mProvidersByUrl.end())
-    {
-        provider = static_cast<DataProvider *>(mProvidersByUrl[connectionString]);
-
-        //lets see the provider is connected... if not it is useless
-        if(provider!= NULL && !provider->IsConnected()) provider = NULL;
-    }
-
-	bool isMySql = false; //if false SQlite provider is used
-
-    if(provider == NULL)
-    {
-		int typePos = connectionString.find("mysql://");
-		if(typePos!=string::npos)
-		{
-			//It is mysql
-			provider = new MySQLDataProvider();
-			isMySql = true;
+	//is it sqlite or mysql
+	bool isMySql = false; //if false SQlite provider is used		
+	if(connectionString.find("mysql://")==0)
+	{		
+		isMySql = true;  //It is mysql
+	}
+	else
+	{
+		//It should be sqlite, but lets check then...
+		if(connectionString.find("sqlite://")!=0)
+		{	
+			//something wrong here!!!
+			throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now. The connection string: " + connectionString);
 		}
-		else
+	}
+
+	//Ok, we have to create calibration
+	//but lets see, maybe we at least have a DataProvider for this connectionString
+	DataProvider *provider = NULL;
+	if(mProvidersByUrl.find(connectionString) != mProvidersByUrl.end())
+	{
+		provider = static_cast<DataProvider *>(mProvidersByUrl[connectionString]);
+
+		//lets see the provider is connected... if not it is useless
+		if(provider!= NULL && !provider->IsConnected()) provider = NULL;
+	}
+
+	//Create a new provider if no old one
+	if(provider == NULL)
+	{
+		provider =  (isMySql)?  (DataProvider *)new MySQLDataProvider() : (DataProvider *)new SQLiteDataProvider();
+
+		//and connect it
+		if(!provider->Connect(connectionString))
 		{
-			//is it sqlite then?
-			int typePos = connectionString.find("sqlite://");
-			if(typePos!=string::npos)
+			//error hangling...
+			vector<CCDBError *> errors = provider->GetErrors();
+			string message;
+			for(int i=0; i< errors.size(); i++)
 			{
-				provider = new SQLiteDataProvider();
-				isMySql = false;
+				message = errors[i]->GetMessage() + " in ";
+				message += errors[i]->GetErrorKey() + " in ";
+				message += errors[i]->GetSource() + " in ";
+				message += errors[i]->GetDescription() + " in ";
 			}
-			else
-			{
-				//something wrong here!!!
-				throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now ");
-			}
-		}        
+			delete provider;
+			throw std::logic_error(message.c_str());
+		}
 
-        //and connect it
-        if(!provider->Connect(connectionString))
-        {
-            //error hangling...
-            vector<CCDBError *> errors = provider->GetErrors();
-            string message;
-            for(int i=0; i< errors.size(); i++)
-            {
-                message = errors[i]->GetMessage();
-                message += " in ";
-                message += errors[i]->GetErrorKey();
-                message += " in ";
-                message += errors[i]->GetSource();
-                message += " in ";
-                message += errors[i]->GetDescription();
-                message += " in ";
-            }
+		mProvidersByUrl[connectionString] = provider;
+	}
+	
+	//now we create calibration
+	Calibration * calib = (isMySql)? static_cast<Calibration*>(new MySQLCalibration()): static_cast<Calibration*>(new SQLiteCalibration());
+	calib->UseProvider(provider, true);
 
-            delete provider;
-            throw std::logic_error(message.c_str());
-        }
+	//add it to arrays
+	mCalibrationsByHash[calibHash] = calib;
+	mCalibrations.push_back(calib);
 
-        mProvidersByUrl[connectionString] = provider;
-    }
-
-
-    //now we create calibration
-    Calibration * calib = (isMySql)? static_cast<Calibration*>(new MySQLCalibration()): static_cast<Calibration*>(new SQLiteCalibration());
-    calib->UseProvider(provider, true);
-    
-    //add it to arrays
-    mCalibrationsByHash[calibHash] = calib;
-    mCalibrations.push_back(calib);
-
-	return NULL;
+	return calib;
 }
 
 
@@ -143,7 +124,6 @@ bool CalibrationGenerator::CheckOpenable( const std::string & str)
 	if(str.find("sqlite://")!= string::npos) return true;
     return false;
 }
-
 
 }
 

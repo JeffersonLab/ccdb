@@ -9,7 +9,7 @@
 
 #include <JANA/jerror.h>
 #include <JANA/JCalibration.h>
-#include <CCDB/MySQLCalibration.h>
+#include "CCDB/CalibrationGenerator.h"
 #include <JANA/JStreamLog.h>
 #define CCDB_DEBUG_OUTPUT
 using namespace std;
@@ -32,7 +32,7 @@ namespace jana
         JCalibrationCCDB(string url, int run, string context="default"):
 	        JCalibration(url, run, context)
 	    {
-		    mCalibration = new ccdb::MySQLCalibration(run, context);
+		    mCalibration = new ccdb::CalibrationGenerator(run, context);
 		    try
             {
                 if(!mCalibration->Connect(url))
@@ -196,7 +196,7 @@ namespace jana
     private:
         JCalibrationCCDB(); // prevent use of default constructor
 
-        ccdb::MySQLCalibration * mCalibration;  //Underlaying CCDB user api class 
+        ccdb::Calibration * mCalibration;  //Underlaying CCDB user api class 
         
         //std::string mConnectionString;           // connection string
     };

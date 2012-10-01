@@ -6,17 +6,15 @@ import datetime
 import posixpath
 
 import sqlalchemy
-from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Text, DateTime
+from sqlalchemy.schema import Column, ForeignKey
+from sqlalchemy.types import Integer, String, Text, DateTime, Enum
 from sqlalchemy.orm import sessionmaker, reconstructor
-from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy import desc
+from sqlalchemy.sql.expression import desc
 
 
 print sqlalchemy.__version__
-engine = create_engine('mysql://ccdb_user@127.0.0.1/ccdb')
 Base = declarative_base()
 
 #This thing separates cells in data blob
@@ -86,6 +84,7 @@ class TypeTableColumn(Base):
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
     order = Column(Integer)
+    column_type = Column('columnType', Enum('int', 'uint','long','ulong','double','string','bool'))
     type_table_id = Column('typeId',Integer, ForeignKey('typeTables.id'))
 
 
@@ -351,6 +350,8 @@ if __name__=="__main__":
     root_dir.path = '/'
     root_dir.name = ''
     root_dir.id = 0
+
+    engine = sqlalchemy.create_engine('mysql://ccdb_user@127.0.0.1/ccdb')
 
     def structure_dirs(dirs):
         """

@@ -6,6 +6,7 @@ import os.path
 import sys
 from Model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
 from Model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
+import sqlalchemy.orm.exc
 
 from AlchemyProvider import AlchemyProvider
 
@@ -35,7 +36,6 @@ class AlchemyProviderTest(unittest.TestCase):
         """
         test of directories work dependless of database
         """
-
         #simple get directory
         dir = self.provider.get_directory("/test")
         self.assertIsNotNone(dir)
@@ -148,8 +148,8 @@ class AlchemyProviderTest(unittest.TestCase):
                     name = "new_table",
                     dir_obj_or_path = "/test/test_vars",
                     rowsNumber = 5,
-                    columns={"c":"double", "a":"double", "b":"int"},
-                    comments = "This is temporary created table for test reasons")
+                    columns=[("c","double"), ("a","double"), ("b","int")],
+                    comment = "This is temporary created table for test reasons")
 
         table = self.provider.get_type_table("/test/test_vars/new_table")
         self.assertEqual(table.rows_count, 5)
@@ -158,11 +158,121 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEqual(table.columns[0].name, "c")
         self.assertEqual(table.columns[1].name, "a")
         self.assertEqual(table.columns[2].name, "b")
-        self.assertEqual(table.comments, "This is temporary created table for test reasons")
+        self.assertEqual(table.comment, "This is temporary created table for test reasons")
 
         #delete
         self.provider.delete_type_table(table)
-        self.assertRaises(ValueError, self.provider.delete_type_table, table)
+        self.assertRaises(sqlalchemy.orm.exc.NoResultFound, self.provider.get_type_table, "/test/test_vars/new_table")
+
+
+    def test_run_ranges(self):
+        self.provider.connect(self.sqlite_connection_str)
+        print "==> start SQLite run ranges tests"
+        self.universal_run_ranges_tests()
+
+        self.provider.connect(self.mysql_connection_str)
+        print "==> start MySQL run ranges tests"
+        self.universal_run_ranges_tests()
+
+    def universal_run_ranges_tests(self):
+
+        # GET RUN-RANGE TEST
+        #----------------------------------------------------
+
+        #Get run range by name, test "all" run range
+        rr = self.provider.get_named_run_range("all")
+        self.assertIsNotNone(rr)
+
+        #Get run range by min and max run values
+        rr = self.provider.get_run_range(0, 2000)
+        self.assertIsNotNone(rr)
+
+        # NON EXISTENT RUN RANGE
+        #----------------------------------------------------
+        #Get run range that is not defined
+        try:
+            rr = self.provider.get_run_range(0, 2001)
+
+            #oh... such run range exists? It shouldn't be... Maybe it is left because of the last tests...
+            print "WARNING provider.get_run_range(0, 2001) found run range (should not be there)"
+            print "trying to delete rrange and run the test one more time... "
+            self.provider.delete_run_range(rr) #(!) <-- test of this function is further
+            rr = self.provider.get_run_range(0, 2001)
+
+        except sqlalchemy.orm.exc.NoResultFound:
+            pass; #test passed
+
+
+        # GET OR CREATE RUNRANGE
+        #----------------------------------------------------
+
+        #Get or create run-range is the main function to get RunRange without name
+        # 0-2001 should be absent or deleted so this function will create run-range
+        rr = self.provider.get_or_create_run_range(0, 2001);
+        self.assertIsNotNone(rr)
+        self.assertNotEquals(rr.id, 0)
+        self.assertEquals(rr.min, 0)
+        self.assertEquals(rr.max, 2001)
+
+        # DELETE RUN-RANGE TEST
+        #----------------------------------------------------
+        self.provider.delete_run_range(rr)
+        self.assertRaises(sqlalchemy.orm.exc.NoResultFound, self.provider.get_run_range, 0, 2001)
+
+    def test_variations(self):
+        self.provider.connect(self.sqlite_connection_str)
+        print "==> start SQLite variations tests"
+        self.universal_variations_tests()
+
+        self.provider.connect(self.mysql_connection_str)
+        print "==> start MySQL variations tests"
+        self.universal_variations_tests()
+
+    def universal_variations_tests(self):
+        # GET VARIATION TEST
+        #----------------------------------------------------
+
+        #Get run range by name, test "all" run range
+        v = self.provider.get_variation("default")
+        self.assertIsNotNone(v)
+
+        #Get variations by type table
+        v = self.provider.get_run_range(0, 2000)
+        table = self.provider.get_type_table("/test/test_vars/test_table")
+        vs = self.provider.get_variations(table)
+        self.assertIsNotNone(vs)
+        self.assertNotEquals(len(vs), 0)
+
+        # NON EXISTENT RUN RANGE
+        #----------------------------------------------------
+        #Get run range that is not defined
+        try:
+            v = self.provider.get_variation("abra_kozyabra")
+
+            #oh... such run range exists? It shouldn't be... Maybe it is left because of the last tests...
+            print "WARNING provider.get_variation('abra_kozyabra') found but should not be there"
+            print "trying to delete variation and run the test one more time... "
+            self.provider.delete_variation(v) #(!) <-- test of this function is further
+            v = self.provider.get_variation("abra_kozyabra")
+
+        except sqlalchemy.orm.exc.NoResultFound:
+            pass; #test passed
+
+
+        # create variation
+        #----------------------------------------------------
+
+        #Get or create run-range is the main function to get RunRange without name
+        # 0-2001 should be absent or deleted so this function will create run-range
+        v = self.provider.create_variation("abra_kozyabra")
+        self.assertIsNotNone(v)
+        self.assertNotEquals(v.id, 0)
+        self.assertEquals(v.name, "abra_kozyabra")
+
+        # DELETE RUN-RANGE TEST
+        #----------------------------------------------------
+        self.provider.delete_variation(v)
+        self.assertRaises(sqlalchemy.orm.exc.NoResultFound, self.provider.get_variation, "abra_kozyabra")
 
 
     def test_gen_flatten_data(self):

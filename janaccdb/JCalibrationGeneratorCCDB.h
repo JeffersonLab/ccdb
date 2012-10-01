@@ -36,10 +36,10 @@ namespace jana
          */
         double CheckOpenable(std::string url, int run, std::string context)   ///< Test probability of opening the given calibration
         { 
-            std::cout<<"CheckOpenable "<<"url "<<url<<" run "<<run<< " context "<<context<< " url.find(mysql://) "<< url.find("mysql://")<<std::endl;
-
-            if(url.find("mysql://")!=0)  return 0.0;
-            return 0.99;
+            //std::cout<<"CheckOpenable "<<"url "<<url<<" run "<<run<< " context "<<context<< " url.find(mysql://) "<< url.find("mysql://")<<std::endl;
+			if(url.find("sqlite://")==0) return 0.99;
+			if(url.find("mysql://")==0) return 0.99;
+            return 0.0;
         } 
 
         /** @brief MakeJCalibration

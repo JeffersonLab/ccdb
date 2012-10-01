@@ -44,8 +44,7 @@ public:
      * @return   string
      */
     virtual string GetCalibrationHash(const std::string & connectionString, int run, const std::string& variation);
-private:
-	virtual Calibration* MakeMySQLCalibration(const std::string & connectionString, int run, const std::string& context); ///< Instantiate an JCalibration object (subclass)
+private:	
 	CalibrationGenerator(const CalibrationGenerator& rhs);
 	CalibrationGenerator& operator=(const CalibrationGenerator& rhs);
 	std::vector<Calibration *> mCalibrations;					///Created Calibrations

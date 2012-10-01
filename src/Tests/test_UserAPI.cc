@@ -13,6 +13,7 @@
 #include "CCDB/Helpers/WorkUtils.h"
 #include "CCDB/Helpers/StopWatch.h"
 #include "CCDB/Log.h"
+#include "CCDB/CalibrationGenerator.h"
 
 using namespace std;
 using namespace ccdb;
@@ -189,11 +190,35 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
     //And then lets connect once more to another string...
     REQUIRE_THROWS(result = calib->Connect("mysql://muuuu ha ha ha"));
 
-    
-
     //Reenable logging
     Log::SetErrorLevel(3); //restore logging
 }
+
+TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get calibrations")
+{
+	CalibrationGenerator* gen = new CalibrationGenerator();
+	Calibration* sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, "default");
+	REQUIRE(static_cast<SQLiteCalibration*>(sqliteCalib)!=NULL);
+	REQUIRE(sqliteCalib->IsConnected());
+	vector<vector<string> > tabledValues;
+	REQUIRE_NOTHROW(sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+	REQUIRE(tabledValues.size()>0);
+	REQUIRE(tabledValues.size()==2);
+	REQUIRE(tabledValues[0].size()==3);
+
+	Calibration* sqliteCalib2 = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, "default");
+	REQUIRE(sqliteCalib == sqliteCalib2);
+
+	Calibration* mysqlCalib  = gen->MakeCalibration(TESTS_CONENCTION_STRING, 100, "default");
+	REQUIRE(static_cast<MySQLCalibration*>(mysqlCalib)!=NULL);
+	REQUIRE(sqliteCalib->IsConnected());
+	REQUIRE_NOTHROW(sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+	REQUIRE(tabledValues.size()>0);
+	REQUIRE(tabledValues.size()==2);
+	REQUIRE(tabledValues[0].size()==3);
+
+}
+
 /*
 //______________________________________________________________________________
 void test_UserAPI_PrintData(const vector<vector<string> > & data)
