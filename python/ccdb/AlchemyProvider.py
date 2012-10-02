@@ -8,11 +8,11 @@ import collections
 import os
 import re
 import logging
+from datetime import datetime
 from scipy.stats.mstats_basic import variation
 import sqlalchemy
 import sqlalchemy.orm
-from sqlalchemy import desc
-
+from sqlalchemy.sql.expression import desc
 from Model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
 import TextFileDOM
 
@@ -799,17 +799,19 @@ class AlchemyProvider(object):
 #	A S S I G N M E N T S
 #----------------------------------------------------------------------------------------
 
-
-    ## @brief
-    #
-    # @param     int run
-    # @param     path to constant path
-    # @return NULL if no assignment is found or error
-    #/
     #------------------------------------------------
-    # Get last Assignment with all related objects
+    # Get last Assignment that matches parameters
     #------------------------------------------------
     def get_assignment(self, run, path_or_table, variation):
+        """
+        Gets the latest assignment that matches the parameters
+
+        :param run: run number
+        :param path_or_table: string with name path of table or Table object
+        :param variation: name of the variation or variation object
+        :return: latest assignment that matches the parameters
+        :rtype: Assignment
+        """
 
         if isinstance(path_or_table, str):
             table = self.get_type_table(path_or_table)
@@ -827,9 +829,75 @@ class AlchemyProvider(object):
                 .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation)\
                 .filter(Variation.name == variation_name)\
                 .filter(TypeTable.id==table.id)\
-                .filter(RunRange.min<=1000).filter(RunRange.max>=1000)\
-                .order_by(desc(Assignment.id)).limit(1).one()
+                .filter(RunRange.min<=run).filter(RunRange.max>=run)\
+                .order_by(desc(Assignment.id))
 
+        return query.limit(1).one()
+
+
+    #------------------------------------------------
+    # get list of assignments
+    #------------------------------------------------
+    def get_assignments(self, path_or_table, run = -1, variation = "", date_and_time = None, limit= 0, offset = 0):
+        """
+        returns list of assignments
+
+        Variation: if variation is not empty string the assignments for specified variation will be returned
+        otherwise all variations will be accepted
+
+        Date: if date is not None, assignments which are earlier than this date will be returned
+        otherwise returned assignments will be not filtered by date
+
+        Paging: paging could be done with  @see take ans @see startWith
+        take=0, startWith=0 means select all records;
+
+        :param run: specified run. If run <0, filter does not apply
+        :param path_or_table: path to table or table
+        :param variation: specified variation. If "", filter is not applied
+        :param date_and_time:
+        :param limit:
+        :param offset:
+        :return:
+        """
+
+        #TODO do for named run
+
+        if isinstance(path_or_table, str):
+            table = self.get_type_table(path_or_table)
+        else:
+            assert isinstance(path_or_table, TypeTable)
+            table = path_or_table
+
+        #build query
+        query = self.session.query(Assignment)\
+        .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation)\
+        .filter(TypeTable.id==table.id)
+
+        #filter varitation
+        if isinstance(variation, str):
+            if variation!="":
+                query = query.filter(Variation.name == variation)
+        else:
+            assert isinstance(variation, Variation)
+            query = query.filter(Variation.name == variation.name)
+
+        #filter by run
+        if run >= 0:
+            query = query.filter(RunRange.min<=run).filter(RunRange.max>=run)
+
+        #filter by date and time
+        if not date_and_time is None:
+            assert isinstance(datetime, datetime)
+            query = query.filter(ConstantSet.created <= datetime)
+
+        #sort query
+        query = query.order_by(desc(Assignment.id))
+
+        #limits
+        if limit  !=0: query = query.limit(limit)
+        if offset !=0: query = query.offset(offset)
+
+        return query.all()
 
     #------------------------------------------------
     # Creates Assignment using related object
@@ -838,35 +906,36 @@ class AlchemyProvider(object):
         raise NotImplementedError("copy_assignment is not implemented")
 
 
-    ## @brief Creates Assignment using related object
-    #
-    # Creates Assignment using related object.
-    #
-    # Validation:
-    # If no such run range found, the new will be created (with no name)
-    # No action will be done (and NULL will be returned):
-    # -- If no type table with such path exists
-    # -- If data is inconsistent with columns number and rows number
-    # -- If no variation with such name found
-    #
-    # @brief
-    # @param data  		by rows and columns
-    # @param runMin		run range minimum
-    # @param runMax     run range maximum
-    # @param variationName	name of variation
-    # @param comments   comments
-    # @return NULL if failed, DAssignment reference if success
-    #/
+
     #------------------------------------------------
+    # Creates Assignment
     #------------------------------------------------
     def create_assignment(self, data, path, min_run, max_run, variation_name, comment):
+        """
+        Validation:
+        If no such run range found, the new will be created (with no name)
+        No action will be done (and NULL will be returned):
+        -- If no type table with such path exists
+        -- If data is inconsistent with columns number and rows number
+        -- If no variation with such name found
+
+        :param data: tabled data or textfiledom
+        :param path: table path
+        :param min_run:
+        :param max_run:
+        :param variation_name:
+        :param comment:
+        :return: created assignment
+        :rtype: Assignment
+
+        """
 
         #maybe it is a dom?
         if isinstance(data, TextFileDOM.TextFileDOM):
             rows = data.rows
         else:
             #it should be list than...
-            assert isinstance(data, [])
+            assert isinstance(data, list)
             rows = data
 
         #get objects
@@ -875,11 +944,11 @@ class AlchemyProvider(object):
         run_range = self.get_or_create_run_range(min_run, max_run)
 
         #validate data.. a little =)
-        if len(data) == 0: raise ValueError("Try to create variation with data length = 0. Fill data prior inserting into database")
-        if not isinstance(data[0], []):
+        if len(rows) == 0: raise ValueError("Try to create variation with data length = 0. Fill data prior inserting into database")
+        if not isinstance(rows[0], list):
             #the data is plain list, like [1,2,3,4,5,6]
             rows_count = len(data) / table._columns_count
-
+            raise NotImplementedError() #TODO check and implement this branch
 
         #construct assignment
         assignment = Assignment()
@@ -890,132 +959,54 @@ class AlchemyProvider(object):
         assignment.run_range_id = run_range.id
         assignment.variation = variation
         assignment.variation_id = variation.id
-
-
-
         assignment.constant_set.data_table = rows
+        self.session.add(assignment)
+        self.session.commit()
+        return assignment
 
 
-
-        #finally checking data type and that there is at least one row and column
-
-
-
-    ## @brief Creates Assignment using related object
-    #
-    # Creates Assignment using related object.
-    #
-    # Validation:
-    # If no such run range found, the new will be created (with no name)
-    # No action will be done (and false will be returned):
-    # -- If no type table with such path exists
-    # -- If data is inconsistant with columns number and rows number
-    # -- If no variation with such name found
-    #
-    # @brief
-    # @param data  		by rows and columns
-    # @param runRangeName
-    # @param variation	name of vaiation
-    # @param comments   comments
-    # @return NULL if failed, DAssignment reference if success
-    #/
-    #virtual DAssignment* CreateAssignment(const vector<vector<string> > &data, const string& path, const string& runRangeName, const string& variationName, const string& comments);
-
-
-    ##
-    # @brief Get assigments for particular run
-    #
-    # returns vector of assignments
-    # Variation: if variation is not empty string the assignments for specified variation will be returned
-    #            otherwise all variations will be accepted
-    #
-    # Date: if date is not 0, assignments which are earlier than this date will be returned
-    #       otherwise returned assignments will be not filtered by date
-    #
-    # Paging: paging could be done with  @see take ans @see startWith
-    #         take=0, startWith=0 means select all records;
-    #
-    #
-    # @param [in]  path
-    # @param [in]  run
-    # @param [in]  variation
-    # @param [in]  date
-    # @param [in]  take
-    # @param [in]  startWith
-    # @return assingments
-    #/
     #------------------------------------------------
-    #------------------------------------------------
-    def get_assignments(self, path, run, variation = "default", unix_time_stamp =0, take=0, start_with=0):
-        result = self._provider.GetAssignments(path, run, variation, unix_time_stamp, take, start_with)
-        return [asg for asg in result]
-
-
-    ##
-    # @brief Get assigments for particular run
-    #
-    # returns vector of assignments
-    # Variation: if variation is not emty string the assignments for specified variation will be returned
-    #            otherwise all variations will be accepted
-    #
-    # Date: if date is not 0, assignments wich are earlier than this date will be returned
-    #       otherwise returned assignments will be not filtred by date
-    #
-    # Paging: paging could be done with  @see take ans @see startWith
-    #         take=0, startWith=0 means select all records;
-    #
-    #
-    # @param [out] assingments
-    # @param [in]  path
-    # @param [in]  run
-    # @param [in]  variation
-    # @param [in]  date
-    # @param [in]  take
-    # @param [in]  startWith
-    # @return
-    #/
-    #virtual vector<DAssignment *> GetAssignments(const string& path, const string& runName, const string& variation="", time_t date=0, int take=0, int startWith=0)=0;
-
-    ##
-    # @brief the function updates assignment comments
-    # @param assignment
-    # @return
-    #/
-    #------------------------------------------------
+    # updates assignment comments
     #------------------------------------------------
     def update_assignment(self, assignment):
         self.session.commit()
 
 
-    ##
-    # @brief Deletes assignment
-    # @param assignment object to delete. Must have valid ID
-    # @return true if success
-    #/
+    #------------------------------------------------
+    # Deletes assignment
+    #------------------------------------------------
     def delete_assignment(self, assignment_obj):
+        """
+         Deletes assignment
+
+        :param assignment_obj: assignment object to delete. Must have valid ID
+        """
         self.session.delete(assignment_obj)
         self.session.commit()
 
 
-    ##
-    # @brief Fill assignment with data if it has proper ID
-    #
-    # The function actually gets assignment by ID.
-    #
-    # A problem: is that for DB providers the id is assignment->GetId().
-    #            For file provider the id is probably a type table full path
-    # A solution:
-    #    is to have this function that accepts DAssignment* assignment.
-    #    DAssignment* assignment incapsulates the id (one way or another)
-    #    And each provider could check if this DAssignment have valid Id,
-    #    fill assignment with data and return true.
-    #    Or just return "false" if something goes wrong;
-    #
-    # @param [in, out] assignment to fill
-    # @return true if success and assignment was filled with data
-    #/
+    #------------------------------------------------
+    # fill_assignment
+    #------------------------------------------------
     def fill_assignment(self, assignment):
-        return self._provider.FillAssignment(assignment)
+        """
+         @brief Fill assignment with data if it has proper ID
+
+         The function actually gets assignment by ID.
+
+         A problem: is that for DB providers the id is assignment->GetId().
+                    For file provider the id is probably a type table full path
+         A solution:
+            is to have this function that accepts DAssignment* assignment.
+            DAssignment* assignment incapsulates the id (one way or another)
+            And each provider could check if this DAssignment have valid Id,
+            fill assignment with data and return true.
+            Or just return "false" if something goes wrong;
+        :param assignment:
+        :return:
+        """
+        #TODO decide is it useless or not
+        raise NotImplementedError()
 
 
 #----------------------------------------------------------------------------------------

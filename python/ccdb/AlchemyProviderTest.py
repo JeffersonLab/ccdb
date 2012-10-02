@@ -275,6 +275,44 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertRaises(sqlalchemy.orm.exc.NoResultFound, self.provider.get_variation, "abra_kozyabra")
 
 
+    def test_assignments(self):
+        self.provider.connect(self.sqlite_connection_str)
+        print "==> start SQLite assignments tests"
+        self.universal_assignments_tests()
+
+        self.provider.connect(self.mysql_connection_str)
+        print "==> start MySQL assignments tests"
+        self.universal_assignments_tests()
+
+
+    def universal_assignments_tests(self):
+
+        assignment = self.provider.get_assignment(100, "/test/test_vars/test_table", "default")
+        self.assertIsNotNone(assignment)
+
+        #Check that everything is loaded
+        tabledData = assignment.constant_set.data_table
+
+        self.assertEquals(len(tabledData),2)
+        self.assertEquals(len(tabledData[0]),3)
+        self.assertEquals(tabledData[0][0], "2.2")
+        self.assertEquals(tabledData[0][1], "2.3")
+        self.assertEquals(tabledData[0][2], "2.4")
+        self.assertEquals(tabledData[1][0], "2.5")
+        self.assertEquals(tabledData[1][1], "2.6")
+        self.assertEquals(tabledData[1][2], "2.7")
+
+        #Ok! Lets get all assigments for current types table
+        assignments = self.provider.get_assignments("/test/test_vars/test_table")
+        self.assertNotEquals(len(assignments), 0)
+
+        assignment = self.provider.create_assignment([[0,1,2],[3,4,5]],"/test/test_vars/test_table", 0, 1000, "default","Test assignment")
+        assignment.print_deps()
+
+        self.provider.delete_assignment(assignment)
+
+
+
     def test_gen_flatten_data(self):
         source = [[1,2],[3,"444"]]
         result = list(gen_flatten_data(source))

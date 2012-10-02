@@ -103,7 +103,7 @@ class ConstantSet(Base):
     _vault = Column('vault', Text)
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
-    assignment = relationship("Assignment", uselist=False, backref="constant_set")
+    assignment = relationship("Assignment", uselist=False, back_populates="constant_set")
     type_table_id = Column('constantTypeId',Integer, ForeignKey('typeTables.id'))
 
     @property
@@ -143,6 +143,7 @@ class Assignment(Base):
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
     constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'))
+    constant_set = relationship("ConstantSet", uselist=False, back_populates="assignment")
     run_range_id = Column('runRangeId',Integer, ForeignKey('runRanges.id'))
     run_range = relationship("RunRange", backref=backref('assignments'))
     variation_id = Column('variationId',Integer, ForeignKey('variations.id'))
