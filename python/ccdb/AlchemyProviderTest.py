@@ -312,7 +312,6 @@ class AlchemyProviderTest(unittest.TestCase):
         self.provider.delete_assignment(assignment)
 
 
-
     def test_gen_flatten_data(self):
         source = [[1,2],[3,"444"]]
         result = list(gen_flatten_data(source))

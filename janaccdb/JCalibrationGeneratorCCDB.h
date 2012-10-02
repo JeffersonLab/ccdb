@@ -6,6 +6,7 @@
 #include <string>
 #include "JCalibrationCCDB.h"
 #include <iostream>
+#include "CCDB/CalibrationGenerator.h"
 
 // Place everything in JANA namespace
 namespace jana
@@ -16,7 +17,9 @@ namespace jana
     public:
         
         /** @brief empty ctor       */
-        JCalibrationGeneratorCCDB(){}
+        JCalibrationGeneratorCCDB(){
+			mGenerator = new ccdb::CalibrationGenerator();
+		}
 
         /** @brief destructor               */
         virtual ~JCalibrationGeneratorCCDB(){}
@@ -37,8 +40,7 @@ namespace jana
         double CheckOpenable(std::string url, int run, std::string context)   ///< Test probability of opening the given calibration
         { 
             //std::cout<<"CheckOpenable "<<"url "<<url<<" run "<<run<< " context "<<context<< " url.find(mysql://) "<< url.find("mysql://")<<std::endl;
-			if(url.find("sqlite://")==0) return 0.99;
-			if(url.find("mysql://")==0) return 0.99;
+			if(ccdb::CalibrationGenerator::CheckOpenable(url)) return 0.99;			
             return 0.0;
         } 
 
@@ -51,9 +53,13 @@ namespace jana
          */
         JCalibration* MakeJCalibration(std::string url, int run, std::string context) ///< Instantiate an JCalibration object
         {
-            return new JCalibrationCCDB(url,run,context);
+            return new JCalibrationCCDB(mGenerator->MakeCalibration(url,run,context), url,run,context);
         }
+	private:
+		//CCDB calibration generator object
+		ccdb::CalibrationGenerator *mGenerator;
     };
+	
 
 } // Close JANA namespace
 #endif // JCalibrationGeneratorCCDB_h__

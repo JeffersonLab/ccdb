@@ -30,7 +30,7 @@ public:
 	 * @parameter [in] const std::string &
 	 * @return   bool
 	 */
-	virtual bool CheckOpenable(const std::string &str); ///< Instantiate an JCalibration object (subclass)
+	static bool CheckOpenable(const std::string &str); ///< Instantiate an JCalibration object (subclass)
     
     /** @brief gets string hash based on  connectionString, run, and variation
      *

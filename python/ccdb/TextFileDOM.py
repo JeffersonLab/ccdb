@@ -14,22 +14,23 @@ class TextFileDOM(object):
         self.metas={}
         self.rows=[] #each row should consist of [] - column item
         self.column_names=[]
-        self.inconsistant_reason=""
+        self.inconsistent_reason=""
     
     @property
     def data_is_consistant(self):
-        self.inconsistant_reason = ""
+        #TODO refactor typo
+        self.inconsistent_reason = ""
         if not self.has_data: 
-            self.inconsistant_reason = "File has no data"
+            self.inconsistent_reason = "File has no data"
             return False
         
         columns_length = len(self.rows[0])
         for row in self.rows:
             if len(row) != columns_length: 
-                self.inconsistant_reason = "Columns length mistmatch"
+                self.inconsistent_reason = "Columns length mistmatch"
                 return False
         if len(self.column_names) != columns_length:
-            self.inconsistant_reason = "Column names number mistmatch with data colums number"
+            self.inconsistent_reason = "Column names number mistmatch with data colums number"
             return True
         #if we are here, everything is good
         return True

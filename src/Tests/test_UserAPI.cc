@@ -217,6 +217,10 @@ TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get ca
 	REQUIRE(tabledValues.size()==2);
 	REQUIRE(tabledValues[0].size()==3);
 
+	//Check openable tests
+	REQUIRE(CalibrationGenerator::CheckOpenable(TESTS_CONENCTION_STRING));
+	REQUIRE(CalibrationGenerator::CheckOpenable(TESTS_SQLITE_STRING));
+	REQUIRE_FALSE(CalibrationGenerator::CheckOpenable("abra_kadabra://protocol"));
 }
 
 /*

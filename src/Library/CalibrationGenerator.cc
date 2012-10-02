@@ -1,5 +1,5 @@
 #include <iostream>
-#include <strstream>
+#include <sstream>
 
 #include "CCDB/CalibrationGenerator.h"
 #include "CCDB/MySQLCalibration.h"
@@ -110,7 +110,7 @@ string CalibrationGenerator::GetCalibrationHash( const std::string & connectionS
      //will not be created once again but already created DCalibration is returned;
 
     //right now our hash will be just a summ of strings
-    strstream strstrm;
+    ostringstream strstrm;
     strstrm<<connectionString<<run<<variation;
     return strstrm.str();
 }
@@ -119,9 +119,9 @@ string CalibrationGenerator::GetCalibrationHash( const std::string & connectionS
 //______________________________________________________________________________
 bool CalibrationGenerator::CheckOpenable( const std::string & str)
 {
-    //right now we have only one provider, so it is simple
-	if(str.find("mysql://")!= string::npos) return true;
-	if(str.find("sqlite://")!= string::npos) return true;
+    //Check through known connections
+	if(str.find("mysql://")== 0) return true;
+	if(str.find("sqlite://")== 0) return true;
     return false;
 }
 

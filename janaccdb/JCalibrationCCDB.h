@@ -9,9 +9,9 @@
 
 #include <JANA/jerror.h>
 #include <JANA/JCalibration.h>
-#include "CCDB/CalibrationGenerator.h"
+#include "CCDB/Calibration.h"
 #include <JANA/JStreamLog.h>
-#define CCDB_DEBUG_OUTPUT
+
 using namespace std;
 using namespace jana;
 
@@ -29,16 +29,16 @@ namespace jana
          * @parameter [in] run - run number
          * @parameter [in] context - variation
          */
-        JCalibrationCCDB(string url, int run, string context="default"):
-	        JCalibration(url, run, context)
+        JCalibrationCCDB(ccdb::Calibration* calib, string url, int run, string context="default"):
+	        JCalibration(calib->GetConnectionString(), run, context)
 	    {
-		    mCalibration = new ccdb::CalibrationGenerator(run, context);
+		    mCalibration = calib;
 		    try
             {
-                if(!mCalibration->Connect(url))
-                {
-                    jerr<<"janaccdb Cannot connect to MySQL Database"<<endl;
-                }
+                //if(!mCalibration->Connect(url))
+                //{
+                    //jerr<<"janaccdb Cannot connect to MySQL Database"<<endl;
+                //}
 
             }
             catch (...)
@@ -89,8 +89,8 @@ namespace jana
                 //>oO CCDB debug output
                 #ifdef CCDB_DEBUG_OUTPUT
                 string result_str((result)?string("loaded"):string("failure"));
-                cout<<"janaccdb"<<endl;
-                cout<<"janaccdb REQUEST map<string, string> request = \""<<namepath<<"\" result = "<<result_str<<endl;
+                cout<<"CCDB::janaccdb"<<endl;
+                cout<<"CCDB::janaccdb REQUEST map<string, string> request = \""<<namepath<<"\" result = "<<result_str<<endl;
                 if(result)
                 {
                     string first_value(" --NAN-- ");
@@ -99,7 +99,7 @@ namespace jana
                         map<string, string>::const_iterator iter = svals.begin();
                         first_value.assign(iter->second);
                     }
-                    cout<<"janaccdb selected name-values count = '"<<svals.size()<<"' first_value '"<<first_value<<"'"<<endl;
+                    cout<<"CCDB::janaccdb selected name-values count = '"<<svals.size()<<"' first_value '"<<first_value<<"'"<<endl;
                 }
                 #endif  //>end of  CCDB debug output
 
@@ -109,8 +109,8 @@ namespace jana
             {
                 //>oO CCDB debug output
                 #ifdef CCDB_DEBUG_OUTPUT
-                cout <<"janaccdb Exception caught at GetCalib(string namepath, map<string, string> &svals, int event_number=0)"<<endl;
-                cout <<"janaccdb what = "<<ex.what()<<endl;
+                cout <<"CCDB::janaccdb Exception caught at GetCalib(string namepath, map<string, string> &svals, int event_number=0)"<<endl;
+                cout <<"CCDB::janaccdb what = "<<ex.what()<<endl;
                 #endif //end of CCDB debug output
 
                 return true; //JANA has false - if success and true if error
@@ -135,8 +135,8 @@ namespace jana
                  //>oO CCDB debug output
                  #ifdef CCDB_DEBUG_OUTPUT
                  string result_str((result)?string("true"):string("false"));
-                 cout<<"janaccdb"<<endl;
-                 cout<<"janaccdb REQUEST vector<map<string, string>> request = \""<<namepath<<"\" result = "<<result_str<<endl;
+                 cout<<"CCDB::janaccdb"<<endl;
+                 cout<<"CCDB::janaccdb REQUEST vector<map<string, string>> request = \""<<namepath<<"\" result = "<<result_str<<endl;
                  if(result)
                  {
                      string first_value(" --NAN-- ");
@@ -146,7 +146,7 @@ namespace jana
                          first_value.assign(iter->second);
                      }
 
-                     cout<<"janaccdb selected rows = '"<<vsvals.size() <<"' selected columns = '"<<(int)((vsvals.size()>0)? vsvals[0].size() :0)
+                     cout<<"CCDB::janaccdb selected rows = '"<<vsvals.size() <<"' selected columns = '"<<(int)((vsvals.size()>0)? vsvals[0].size() :0)
                          <<"' first value = '"<<first_value<<"'"<<endl;
                  }
                  #endif  //end of CCDB debug output
@@ -158,8 +158,8 @@ namespace jana
             {
                 //>oO CCDB debug output
                 #ifdef CCDB_DEBUG_OUTPUT
-                cout <<"janaccdb Exception caught at GetCalib(string namepath, map<string, string> &svals, int event_number=0)"<<endl;
-                cout <<"janaccdb what = "<<ex.what()<<endl;
+                cout <<"CCDB::janaccdb Exception caught at GetCalib(string namepath, map<string, string> &svals, int event_number=0)"<<endl;
+                cout <<"CCDB::janaccdb what = "<<ex.what()<<endl;
                 #endif
 
                 return true; //JANA has false - if success and true if error, CCDB otherwise
@@ -174,8 +174,6 @@ namespace jana
          */
         void GetListOfNamepaths(vector<string> &namepaths)
         {
-            
-            //
             try
             {  
                 mCalibration->GetListOfNamepaths(namepaths);
@@ -185,9 +183,8 @@ namespace jana
 
                 //some ccdb debug output
                 #ifdef CCDB_DEBUG_OUTPUT
-                jerr<<"janaccdb Exception cought at GetListOfNamepaths(vector<string> &namepaths). What = "<< ex.what()<<endl;
+                cout<<"CCDB::janaccdb Exception cought at GetListOfNamepaths(vector<string> &namepaths). What = "<< ex.what()<<endl;
                 #endif
-
             }
         }
 
