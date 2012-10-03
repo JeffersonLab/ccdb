@@ -10,6 +10,7 @@ import re
 import logging
 from datetime import datetime
 from scipy.stats.mstats_basic import variation
+
 import sqlalchemy
 import sqlalchemy.orm
 from sqlalchemy.sql.expression import desc
@@ -35,6 +36,7 @@ class AlchemyProvider(object):
         self.root_dir.name = ''
         self.root_dir.id = 0
         self.path_name_regex = re.compile('^[\w\-_]+$', re.IGNORECASE)
+        self._user_name = "anonymous"
 
 
 #----------------------------------------------------------------------------------------
@@ -1031,8 +1033,8 @@ class AlchemyProvider(object):
 #----------------------------------------------------------------------------------------
     @property
     def log_user_name(self):
-        return self._provider.GetLogUserName()
+        return self._user_name
 
     @log_user_name.setter
     def log_user_name(self, user_name):
-        self._provider.SetLogUserName(user_name)
+        self._user_name = user_name

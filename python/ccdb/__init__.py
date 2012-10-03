@@ -26,23 +26,25 @@ import os
 import sys
 import logging
 
+
 from cmd import set_verbose, get_verbose, VerboseModes, Theme
 from cmd import ConsoleContext
 
 import cmd.colorama
-import ccdb_pyllapi
+#import ccdb_pyllapi
 
-from ProviderBase import ProviderBase
-from MySQLProvider import MySQLProvider
-from ccdb_pyllapi import Variation, Directory, RunRange, Assignment, ConstantsTypeColumn, ConstantsTypeTable, StringStringMap, StringVectorVector, StringVector
+
+#from ProviderBase import ProviderBase
+#from MySQLProvider import MySQLProvider
+#from ccdb_pyllapi import Variation, Directory, RunRange, Assignment, ConstantsTypeColumn, ConstantsTypeTable, StringStringMap, StringVectorVector, StringVector
 from TextFileDOM import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
-from ccdb.ccdb_pyllapi import Variation
+#from ccdb.ccdb_pyllapi import Variation
 import PathUtils
 
 #the default ccdb logger
 logger = logging.getLogger("ccdb")
 
-__all__ = ["MySQLProvider", "ProviderBase", "ccdb_pyllapi", "TextFileDOM", "PathUtils"]
+#__all__ = ["MySQLProvider", "ProviderBase", "ccdb_pyllapi", "TextFileDOM", "PathUtils"]
 
 INFINITE_RUN = 2147483647
 
@@ -81,15 +83,20 @@ def init_ccdb_console():
     #logger.info("Initialising ccdb package...")
 
     #create console context
-    context = ConsoleContext();
+    context = ConsoleContext()
 
-    #PROCESS ENVIRONMENT VARIABLES
+    #CONNECTION STRING
     #------------------------------
+
+    #this is default connection string (for a fallback)
+    context.connection_string = "mysql://ccdb_user@localhost/ccdb"
 
     #connection string
     if "CCDB_CONNECTION" in os.environ.keys():
         context.connection_string =  os.environ["CCDB_CONNECTION"]
         logger.debug("Set connection string from $CCDB_CONNECTION :" + context.connection_string)
+
+    #connection string in in command line arguments ( by -c or --connection) is processed by context.process(sys.argv)
 
     if "CCDB_USER" in os.environ.keys():
         context.user_name =  os.environ["CCDB_USER"]        
@@ -100,7 +107,7 @@ def init_ccdb_console():
     #------------------------------
 
     #initialize console context
-    modules = context.register_utilities();
+    context.register_utilities();
 
     #start processor
     context.process(sys.argv)    

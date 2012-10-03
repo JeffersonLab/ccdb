@@ -2,8 +2,8 @@ import sys
 import posixpath
 import logging
 
-from ccdb.ccdb_pyllapi import Directory, ConstantsTypeTable
-from ccdb import MySQLProvider
+from ccdb.Model import Directory, TypeTable
+from ccdb.AlchemyProvider import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
@@ -12,7 +12,7 @@ log = logging.getLogger("ccdb.cmd.utils.ls")
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registring ListUtil")
+    log.debug("      registering ListUtil")
     return List()
 
 #*********************************************************************
@@ -31,7 +31,7 @@ class List(ConsoleUtilBase):
 
     #variables for each process
 
-    rawentry = "/"       #object path with possible pattern, like /mole/*
+    raw_entry = "/"       #object path with possible pattern, like /mole/*
     parent_path = "/"    #parent path
     parent_dir = None    # @type parent_dir DDirectory
     pattern = ""         #pattern on the end of parent path like file?*
@@ -40,12 +40,9 @@ class List(ConsoleUtilBase):
         log.debug("ListUtil is gained a control over the process.")
         log.debug("Arguments: " + " ".join(args))
         
-        assert self.context != None
-        provider = self.context.provider;
-        assert isinstance(provider, MySQLProvider)
-        
-        # @type provider DMySQLDataProvider
+        assert self.context is not None
         provider = self.context.provider
+        assert isinstance(provider, AlchemyProvider)
 
         #PARSE ARGUMENTS
         #-------------------------------
@@ -60,37 +57,24 @@ class List(ConsoleUtilBase):
             return
 
         if len(args) > 0:
-            self.rawentry = args[0]
+            self.raw_entry = args[0]
         else:
-            self.rawentry = self.context.current_path
+            self.raw_entry = self.context.current_path
 
-        #PREPARE DIRS
-        #---------------------------
-
-        #correct ending /
-        if self.rawentry.endswith("/"):
-            self.rawentry = self.rawentry[:-1]
-
-        #local or absolute path?
-        if not self.rawentry.startswith("/"):
-            self.rawentry = posixpath.join(self.context.current_path , self.rawentry)
-
-        #normalize
-        self.rawentry = posixpath.normpath(self.rawentry)
+        #prepare path
+        self.raw_entry = self.prepare_path(self.raw_entry)
         
         #SEARCH LOGIC
-        #---------------------------
 
         #brute assumption that user has entered a simple dir path
-        self.parent_dir = provider.get_directory(self.rawentry)
-        self.parent_path = self.rawentry
+        self.parent_dir = provider.get_directory(self.raw_entry)
+        self.parent_path = self.raw_entry
         self.pattern = ""
-        self.parent_dir
 
         if not self.parent_dir:
             #we have not find the directory by brute rawentry.
             #but maybe it is just /path/plus*some*pattern
-            (head, tale) = posixpath.split(self.rawentry)
+            (head, tale) = posixpath.split(self.raw_entry)
             self.parent_path = head
             self.pattern = tale
             
@@ -105,20 +89,19 @@ class List(ConsoleUtilBase):
         #found a directory
         if self.parent_dir:
             assert isinstance(self.parent_dir, Directory)
-            assert isinstance(self.context.provider, MySQLProvider)
 
             if(is_debug_verbose()):
                 print "full path: \n   ", self.parent_dir.full_path
                 if len(self.pattern): print "pattern: ", self.pattern
             
             #part 1 directories for this path
-            subdirs = []
+            sub_dirs = []
             if self.pattern == "":
-                subdirs = self.parent_dir.subdirs
+                sub_dirs = self.parent_dir.sub_dirs
             else:
-                subdirs = self.context.provider.search_directories(self.pattern, self.parent_path)
+                sub_dirs = self.context.provider.search_directories(self.pattern, self.parent_path)
            
-            for subdir in subdirs:
+            for subdir in sub_dirs:
                 print Theme.Directories + subdir.name + "    "
             
             #part 2 is tables for this path
@@ -135,29 +118,14 @@ class List(ConsoleUtilBase):
             print "Can't find the directory"
 
 
-
-
-
     def get_name_pathes(self, path):
-        
-        self.rawentry = path
-        assert self.context != None
-        provider = self.context.provider;
-        assert isinstance(provider, MySQLProvider)
+        self.raw_entry = path
+        assert self.context is not None
+        provider = self.context.provider
+        assert isinstance(provider, AlchemyProvider)
 
-        #PREPARE DIRS
-        #---------------------------
-
-        #correct ending /
-        if self.rawentry.endswith("/"):
-            self.rawentry = self.rawentry[:-1]
-
-        #local or absolute path?
-        if not self.rawentry.startswith("/"):
-            self.rawentry = posixpath.join(self.context.current_path , self.rawentry)
-
-        #normalize
-        self.rawentry = posixpath.normpath(self.rawentry)
+        #prepare path
+        self.raw_entry = self.prepare_path(self.raw_entry)
         
         table_list = []
         dir_list = []
@@ -168,15 +136,14 @@ class List(ConsoleUtilBase):
         #---------------------------
 
         #brute assumption that user has entered a simple dir path
-        self.parent_dir = provider.get_directory(self.rawentry)
-        self.parent_path = self.rawentry
+        self.parent_dir = provider.get_directory(self.raw_entry)
+        self.parent_path = self.raw_entry
         self.pattern = ""
-        self.parent_dir
 
         if not self.parent_dir:
             #we have not find the directory by brute rawentry.
             #but maybe it is just /path/plus*some*pattern
-            (head, tale) = posixpath.split(self.rawentry)
+            (head, tale) = posixpath.split(self.raw_entry)
             self.parent_path = head
             self.pattern = tale
             
@@ -191,21 +158,21 @@ class List(ConsoleUtilBase):
         #found a directory
         if self.parent_dir:
             assert isinstance(self.parent_dir, Directory)
-            assert isinstance(self.context.provider, MySQLProvider)
+            assert isinstance(self.context.provider, AlchemyProvider)
 
             if(is_debug_verbose()):
                 print "full path: \n   ", self.parent_dir.full_path
                 if len(self.pattern): print "pattern: ", self.pattern
             
             #part 1 directories for this path
-            subdirs = []
+            sub_dirs = []
             if self.pattern == "":
-                subdirs = self.parent_dir.subdirs
+                sub_dirs = self.parent_dir.sub_dirs
             else:
-                subdirs = self.context.provider.search_directories(self.pattern, self.parent_path)
+                sub_dirs = self.context.provider.search_directories(self.pattern, self.parent_path)
            
             #fill list of directory names
-            dir_list = [subdir.name for subdir in subdirs]
+            dir_list = [subdir.name for subdir in sub_dirs]
             
             #part 2 is tables for this path
             tables = []
@@ -221,6 +188,32 @@ class List(ConsoleUtilBase):
             return None
         return (dir_list, table_list)
 
+
+    def prepare_path(self, path):
+        """
+        prepares path:
+            makes path absolute if it is relative
+            removes path artifacts like / in the end, /../ in the middle etc.
+
+        :param path: raw uncoocked path
+        :type path: str
+        :return: Well done path
+        :rtype: str
+        """
+        #correct ending /
+
+        if path.endswith("/"):
+            path = path[:-1]
+
+        #local or absolute path?
+        if not path.startswith("/"):
+            path = posixpath.join(self.context.current_path , path)
+
+        #normalize
+        path = posixpath.normpath(path)
+
+        return path
+
     def print_directory_tree(self, directory, printFullPath, level):
         """prints a full tree of directories
             This is recursive function"""
@@ -232,9 +225,9 @@ class List(ConsoleUtilBase):
             print directory.full_path
 
         #print subdirectories recursively
-        subDirs = directory.subdirs
-        if len(subDirs)>0:
-            for subDir in subDirs:
+        sub_dirs = directory.sub_dirs
+        if len(sub_dirs)>0:
+            for subDir in sub_dirs:
                 self.print_directory_tree(subDir, printFullPath, level+1)
 
     def print_help(self):

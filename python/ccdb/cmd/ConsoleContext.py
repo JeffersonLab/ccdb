@@ -4,14 +4,17 @@ import logging
 import shlex
 
 #from ccdb.ccdb_pyllapi import MySQLDataProvider
-from ccdb.MySQLProvider import MySQLProvider
+#from ccdb.MySQLProvider import MySQLProvi
+#import sqlalchemy
+
+from ccdb.AlchemyProvider import AlchemyProvider
 from Theme import Theme
 import colorama
 import readline
 from Globals import get_verbose, VerboseModes
 import posixpath
 
-log = logging.getLogger("ccdb.cmd.ccontext")
+log = logging.getLogger("ccdb.cmd.console_context")
 
 class ConsoleContext:
     """
@@ -20,25 +23,22 @@ class ConsoleContext:
     This class uses console_utitilities from utils directories
 
     """
-    _utils = {}
-    _verbose = VerboseModes.No
-    _connectionString = "mysql://ccdb_user@localhost"
-    _provider = MySQLProvider()
-    _current_path="/"
-    anononymous_user_name = "anonymous"
-    _user_name = anononymous_user_name
-    _is_interactive = False
-    _current_run = 0
+
+    anonymous_user_name = "anonymous"
     prefix = None
     words = []
-    _ls = None
-    
-
 
     def __init__(self):
         self.verbose = get_verbose()
-        self._prov = MySQLProvider()
+        self._prov = AlchemyProvider()
         self._is_interactive = False
+        self._user_name = self.anonymous_user_name
+        self._is_interactive = False
+        self._current_run = 0
+        self._utils = {}
+        self._current_path="/"
+        self._ls=None
+        self._connection_string = ""
 
     #prop verbose
     #_______________________
@@ -56,11 +56,11 @@ class ConsoleContext:
     
     @property
     def connection_string(self):
-        return self._connectionString
+        return self._connection_string
 
     @connection_string.setter
     def connection_string(self, str):
-        self._connectionString = str
+        self._connection_string = str
 
     @property
     def provider(self):
@@ -73,25 +73,28 @@ class ConsoleContext:
     @current_path.setter
     def current_path(self, newPath):
         self._current_path = newPath
-        
-    ##property current_run
-    #_______________________
-    def _get_current_run(self):
-        """Sets or gets verbose behaviour for this class"""
+
+    @property
+    def current_run(self):
+        """
+        Sets or gets verbose behaviour for this class
+        :rtype: int
+        """
         return self._current_run
-    
-    def _set_current_run(self, isTrue):
-        self._current_run = isTrue;
-    current_run = property(_get_current_run, _set_current_run)
+
+    @current_run.setter
+    def current_run(self, new_run):
+        self._current_run = new_run
+
 
     @property
     def user_name(self):
         return self._user_name
 
     @user_name.setter
-    def usef_name(self, name):
+    def user_name(self, name):
         self._user_name = name
-        self._prov.SetUserName(name)
+        self._prov.log_user_name = name
     
     @property 
     def is_interactive(self):
@@ -101,7 +104,6 @@ class ConsoleContext:
     def is_interactive(self, value):
         self._is_interactive = value
         
-    
 
 #=====================================================================================
 #------------------ P L U G I N   M A N A G E M E N T  -------------------------------
@@ -110,11 +112,14 @@ class ConsoleContext:
 #--------------------------------
 #       
 #--------------------------------
-    def register_utilities(self, path = None):
-        """ Function to auto find and registe utilites"""
-        if path == None: path = os.path.join(ccdb.cmd.__path__[0],"utils")
-        modules = []
+    def register_utilities(self, path = ""):
+        """ Function to auto find and register utilities"""
+        if path == "": path = os.path.join(ccdb.cmd.__path__[0],"utils")
+
+        #search modules
         modules = self.search_utils(path)
+
+        #register each module
         for module in modules:
             try:
                 registerFunc = getattr(module, "create_util_instance")
@@ -128,23 +133,26 @@ class ConsoleContext:
                 if self.verbose >= VerboseModes.Debug:
                     print "      " + repr(ex)
 
-        if self.verbose >= VerboseModes.Debug:
-            print "Utils registred in directory %s are:"%(path,)
-            print "%-10s %-15s %s:"%("(command)", "(name)", "(description)")
-            print "\n".join(["%-10s %-15s %s" % (command, util.name, util.short_descr) for command, util in self._utils.items()])
+
+        log.debug("Utils found and registered in directory {0} are:".format(path))
+        log.debug("%-10s %-15s %s:"%("(command)", "(name)", "(description)"))
+        log.debug("\n".join(["%-10s %-15s %s" % (command, util.name, util.short_descr) for command, util in self._utils.items()]))
 
 
-#--------------------------------
-#       
-#--------------------------------            
+    #--------------------------------
+    #
+    #--------------------------------
     def search_utils(self, path):
-        """Load plugin from directory and return list of modules"""
+        """Load plugins from directory and return list of modules
+
+
+        :rtype: []
+        """
         
         #>oO debud output
-        if self.verbose >= VerboseModes.Debug:
-            print Theme.Title + "searching modules in dircory:"
-            print "   " + Theme.Directories + path
-        
+        log.debug("searching modules in directory:")
+        log.debug("   " + Theme.Directories + path)
+
         #get list of files and module names
         files = os.listdir( path )
         test = re.compile(".py$", re.IGNORECASE)
@@ -167,13 +175,14 @@ class ConsoleContext:
                 continue
 
         return modules
-    
-#--------------------------------
-#       
-#--------------------------------
+
+
+    #--------------------------------
+    #
+    #--------------------------------
     def process(self, args, startIndex=1):
 
-        #check if there is enough argumens...
+        #check if there is enough arguments...
         if len(args) < (startIndex+1):
             self.print_general_usage()
             return
@@ -195,11 +204,11 @@ class ConsoleContext:
                     self.connection_string = workargs[i]
                     i+=1
                     
-                elif (token == "-I" or token == "-i" or token == "--interactive"):
+                elif token == "-I" or token == "-i" or token == "--interactive":
                     #it is an interactive mode
                     self._is_interactive = True
                     
-                elif (token == "-r" or token == "--run"):
+                elif token == "-r" or token == "--run":
                     #working run
                     try:
                         self.current_run = int(workargs[i])
@@ -216,9 +225,10 @@ class ConsoleContext:
         if self._is_interactive:
             self.interactive_loop()
 
-#--------------------------------
-#   executes text as command    
-#--------------------------------           
+
+    #--------------------------------
+    #   executes text as command
+    #--------------------------------
     def process_command_line(self, command_line):
         """tries to execute a line of text"""
 
@@ -251,9 +261,10 @@ class ConsoleContext:
                         
         return self.process_command(command, arguments)
 
-#--------------------------------
-#       
-#--------------------------------        
+
+    #--------------------------------
+    #
+    #--------------------------------
     def process_command(self, command, commandArgs):
         
         #>oO debug
@@ -280,9 +291,9 @@ class ConsoleContext:
         return util.process(commandArgs)            
 
 
-#--------------------------------
-#       
-#--------------------------------       
+    #--------------------------------
+    #
+    #--------------------------------
     def check_connection(self, util):
         if(self.verbose):
             print util.name + " uses the database and there is no connection yet. Trying to connect..."
@@ -291,16 +302,15 @@ class ConsoleContext:
         if self._prov.is_connected : return #connected anyway...
         
         #connecting
-        result = self._prov.connect(self.connection_string)
-        if not result:
-            #not connected
-            print "CCDB provider unable to connect. Aborting command"
+        try:
+            self._prov.connect(self.connection_string)
+        except:
+            log.critical("CCDB provider unable to connect to {0}. Aborting command".format(self.connection_string))
             return False
-        else:
-            #connected
-            if(self.verbose):
-                print "   Connection " + Theme.Success + " successfull "
-            return True
+
+        #connected
+        log.debug("   Connection " + Theme.Success + " successfull ")
+        return True
             
 
 #--------------------------------
@@ -334,10 +344,10 @@ class ConsoleContext:
             try:
                 user_input=raw_input( self.current_path +"> ")
             except EOFError:
-                if self.verbose: print "EOF sequence recieved. Ending interactive loop"
+                if self.verbose: print "EOF sequence received. Ending interactive loop"
                 break
             except KeyboardInterrupt:
-                if self.verbose: print "Break sequence recieved. Ending interactive loop"
+                if self.verbose: print "Break sequence received. Ending interactive loop"
                 break
 
             colorama.resume()
@@ -360,9 +370,9 @@ class ConsoleContext:
 #------------------------ C O M P L E T I O N ----------------------------------------
 #=====================================================================================
         
-#--------------------------------
-# show_completions      
-#-------------------------------- 
+    #--------------------------------
+    # show_completions
+    #--------------------------------
     def show_completions(self, substitution, matches, longest_match_length):
         print self
         print substitution
@@ -370,9 +380,9 @@ class ConsoleContext:
         print longest_match_length
 
 
-#--------------------------------
-# generate_completition_words      
-#--------------------------------     
+    #--------------------------------
+    # generate_completition_words
+    #--------------------------------
     def generate_completition_words(self, prefix):
         
         # find all words that start with this prefix
@@ -385,9 +395,9 @@ class ConsoleContext:
             self.check_connection(self._ls)
             result = self._ls.get_name_pathes(prefix)
             
-            if result == None or (len(result[0]) ==0 and len(result[1])==0):
+            if result is None or (len(result[0]) ==0 and len(result[1])==0):
                 result = self._ls.get_name_pathes(prefix + "*")    
-                if result == None : return;
+                if result is None : return;
             self.matching_words.extend(result[0])
             self.matching_words.extend(result[1])
             

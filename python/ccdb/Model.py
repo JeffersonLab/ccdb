@@ -13,8 +13,6 @@ from sqlalchemy.orm import sessionmaker, reconstructor
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql.expression import desc
 
-
-print sqlalchemy.__version__
 Base = declarative_base()
 
 #This thing separates cells in data blob
@@ -25,6 +23,10 @@ blob_delimiter = "|"
 blob_delimiter_replacement = "&delimiter;"
 
 class Directory(Base):
+    """
+    Represents CCDB directory object.
+    Directories may contain other directories or TypeTable objects
+    """
     __tablename__ = 'directories'
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
@@ -347,6 +349,9 @@ def decode_data(data):
 
 
 if __name__=="__main__":
+
+    print sqlalchemy.__version__
+
     root_dir = Directory()
     root_dir.path = '/'
     root_dir.name = ''

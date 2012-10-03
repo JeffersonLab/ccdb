@@ -1,7 +1,8 @@
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd.Theme import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
-from ccdb.ccdb_pyllapi import Directory
+from ccdb.Model import Directory
+
 import posixpath
 
 #ccdbcmd module interface
@@ -45,8 +46,6 @@ class ChangeDir(ConsoleUtilBase):
                 self.rawentry = self.rawentry[:-1]
         else:
             self.rawentry= "/"
-         
-       
         
         #local or absolute path?
         if not self.rawentry.startswith("/"):
