@@ -91,7 +91,7 @@ class List(ConsoleUtilBase):
             assert isinstance(self.parent_dir, Directory)
 
             if(is_debug_verbose()):
-                print "full path: \n   ", self.parent_dir.full_path
+                print "full path: \n   ", self.parent_dir.path
                 if len(self.pattern): print "pattern: ", self.pattern
             
             #part 1 directories for this path
@@ -161,7 +161,7 @@ class List(ConsoleUtilBase):
             assert isinstance(self.context.provider, AlchemyProvider)
 
             if(is_debug_verbose()):
-                print "full path: \n   ", self.parent_dir.full_path
+                print "full path: \n   ", self.parent_dir.path
                 if len(self.pattern): print "pattern: ", self.pattern
             
             #part 1 directories for this path
@@ -222,7 +222,7 @@ class List(ConsoleUtilBase):
         if not printFullPath:
             print "".join(["   " for i in range(0, level)]) + directory.name
         else:
-            print directory.full_path
+            print directory.path
 
         #print subdirectories recursively
         sub_dirs = directory.sub_dirs
