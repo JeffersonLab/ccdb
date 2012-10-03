@@ -9,7 +9,7 @@ import os
 import re
 import logging
 from datetime import datetime
-from scipy.stats.mstats_basic import variation
+
 
 import sqlalchemy
 import sqlalchemy.orm
