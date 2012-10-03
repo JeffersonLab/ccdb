@@ -304,8 +304,8 @@ class ConsoleContext:
         #connecting
         try:
             self._prov.connect(self.connection_string)
-        except:
-            log.critical("CCDB provider unable to connect to {0}. Aborting command".format(self.connection_string))
+        except Exception as ex:
+            log.critical("CCDB provider unable to connect to {0}. Aborting command. Exception details: {1}".format(self.connection_string, ex))
             return False
 
         #connected
