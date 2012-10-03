@@ -58,13 +58,17 @@ class AlchemyProvider(object):
         :type connection_string: str
         """
 
-        if connection_string == "":
-            if "CCDB_CONNECTION" in os.environ:
-                connection_string = os.environ["CCDB_CONNECTION"]
+        try:
+            self.engine = sqlalchemy.create_engine(connection_string)
+        except ImportError, err:
+            #sql alchemy uses MySQLdb by default. But it might be not install in the system
+            #in such case we fallback to mysqlconnector which is embedded in CCDB
+            if connection_string.startswith("mysql://") and "No module named MySQLdb" in repr(err):
+                log.debug("No module named MySQLdb occured. Fallback to mysqlconnector")
+                connection_string = connection_string.replace("mysql://", "mysql+mysqlconnector://")
             else:
-                raise ValueError("No CCDB_CONNECTION environment variable is set. No connection string to connect")
+                raise
 
-        self.engine = sqlalchemy.create_engine(connection_string)
         Session = sqlalchemy.orm.sessionmaker(bind=self.engine)
         self.session = Session()
         self._is_connected = True

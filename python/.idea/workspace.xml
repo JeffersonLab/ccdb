@@ -91,8 +91,11 @@
       <file leaf-file-name="AlchemyProvider.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ccdb/AlchemyProvider.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="62" selection-start="356" selection-end="356" vertical-scroll-proportion="-0.71985817">
-              <folding />
+            <state line="64" column="76" selection-start="1960" selection-end="1960" vertical-scroll-proportion="0.4716312">
+              <folding>
+                <element signature="e#78#96#0" expanded="true" />
+                <marker date="1349278853875" expanded="true" signature="624:936" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -176,12 +179,12 @@
         <option value="$PROJECT_DIR$/ccdb/AlchemyProviderTest.py" />
         <option value="$PROJECT_DIR$/ccdb/TextFileDOM.py" />
         <option value="$PROJECT_DIR$/ccdbcmd.py" />
-        <option value="$PROJECT_DIR$/ccdb/AlchemyProvider.py" />
         <option value="$PROJECT_DIR$/ccdb/cmd/ConsoleContext.py" />
         <option value="$PROJECT_DIR$/ccdb/__init__.py" />
         <option value="$PROJECT_DIR$/ccdb/Model.py" />
         <option value="$PROJECT_DIR$/ccdb/cmd/utils/ls.py" />
         <option value="$PROJECT_DIR$/ccdb/cmd/utils/cd.py" />
+        <option value="$PROJECT_DIR$/ccdb/AlchemyProvider.py" />
       </list>
     </option>
   </component>
@@ -727,8 +730,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ccdb/AlchemyProvider.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="62" selection-start="356" selection-end="356" vertical-scroll-proportion="-0.71985817">
-          <folding />
+        <state line="64" column="76" selection-start="1960" selection-end="1960" vertical-scroll-proportion="0.4716312">
+          <folding>
+            <element signature="e#78#96#0" expanded="true" />
+            <marker date="1349278853875" expanded="true" signature="624:936" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
