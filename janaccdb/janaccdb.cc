@@ -7,8 +7,6 @@
 
 #include <iostream>
 
-#define CCDB_DEBUG_OUTPUT
-
 // Routine used to create our DEventProcessor
 #include <JANA/JApplication.h>
 #include <JCalibrationGeneratorCCDB.h>

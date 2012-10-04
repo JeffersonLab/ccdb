@@ -30,7 +30,7 @@ class AddData(ConsoleUtilBase):
     name = "AddData"
     short_descr = "Add data constants"
     uses_db = True
-    d_i = "      "; #debug indent. Dont bother your mind what is this
+    d_i = "      " #debug indent. Dont bother your mind what is this
 
     #variables for each process
     rawentry = "/"   #object path with possible pattern, like /mole/*

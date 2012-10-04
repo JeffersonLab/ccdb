@@ -2,17 +2,16 @@ import posixpath
 import logging
 import time
 
-import ccdb;
-from ccdb.ccdb_pyllapi import Directory, ConstantsTypeColumn, Variation
-from ccdb import ConstantsTypeTable
-from ccdb import MySQLProvider
+import ccdb
+from ccdb import Directory, TypeTable, TypeTableColumn, Variation
+from ccdb import AlchemyProvider
+import sqlalchemy.exc
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
+from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.info")
-
-
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -49,7 +48,7 @@ class Info(ConsoleUtilBase):
 
         assert self.context != None
         provider = self.context.provider
-        isinstance(provider, MySQLProvider)
+        isinstance(provider, AlchemyProvider)
         
         #process arguments
         self.rawentry = ""
@@ -65,29 +64,28 @@ class Info(ConsoleUtilBase):
 
         #it is a type table
         if self.object_type == "type_table":
-            
-            self.type_table = provider.get_type_table(self.path, True)
-            if self.type_table:
+            try:
+                self.type_table = provider.get_type_table(self.path)
                 self.print_type_table(self.type_table)
-            else:
+            except NoResultFound:
                 log.warning("No type table with this path")
                 return 1
         
         #it is a directory
         if self.object_type == "directory":
-            parent_dir = provider.get_directory(self.path)
-            if(parent_dir):
+            try:
+                parent_dir = provider.get_directory(self.path)
                 self.print_directory(parent_dir)
-            else:
+            except KeyError: #TODO change KeyError to NoResultFound or something
                 log.warning("No directory with this path")
                 return 1
         
         #it is a variation
         if self.object_type == "variation":
-            variation = provider.get_variation(self.rawentry)
-            if(variation):
+            try:
+                variation = provider.get_variation(self.rawentry)
                 self.print_variation(variation)
-            else:
+            except NoResultFound:
                 log.warning("No variation with this name")
                 return 1
         
@@ -132,15 +130,15 @@ class Info(ConsoleUtilBase):
 #   print_directory 
 #----------------------------------------   
     def print_directory(self, directory):
-        isinstance(directory, Directory)
+        assert isinstance(directory, Directory)
         print " Name      :  " + Theme.Success +  directory.name
-        print " Full path :  " + directory.full_path
+        print " Full path :  " + directory.path
         try:
-            print " Created   :  " + time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(directory.created_time))
+            print " Created   :  " + directory.created.strftime("%Y-%m-%d %H-%M-%S")
         except:
             pass
         try:
-            print " Modified  :  " + time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(directory.modified_time))
+            print " Modified  :  " + directory.modified.strftime("%Y-%m-%d %H-%M-%S")
         except:
             pass
         #comment
@@ -154,28 +152,26 @@ class Info(ConsoleUtilBase):
 #----------------------------------------        
     def print_type_table(self, table):
         #basic values: name rows columns path
-        isinstance(table, ConstantsTypeTable)
+        assert isinstance(table, TypeTable)
         print "+------------------------------------------+"
         print "| Type table information                   |"
         print "+------------------------------------------+"
         print " Name       :  " + Theme.Success +  table.name
-        print " Full path  :  " + table.full_path
-        print " Rows       :  " + Theme.Accent + repr(table.nrows)
-        print " Columns    :  " + Theme.Accent + repr(table.ncolumns)
-        print " Created    :  " + time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(table.created_time))
-        print " Modified   :  " + time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(table.modified_time))
-        print " DB Id      :  " + repr(table._GetId())
+        print " Full path  :  " + table.path
+        print " Rows       :  " + Theme.Accent + repr(int(table.rows_count))
+        print " Columns    :  " + Theme.Accent + repr(int(table._columns_count))
+        print " Created    :  " + table.created.strftime("%Y-%m-%d %H-%M-%S")
+        print " Modified   :  " + table.modified.strftime("%Y-%m-%d %H-%M-%S")
+        print " DB Id      :  " + repr(int(table.id))
         print "+------------------------------------------+"
         print "| Columns info                             |"
         print "+------------------------------------------+"
         #columns info 
         print
         print "Columns info "
-        print "N.  (type)    : (name)"
-        columns = [column for column in table.columns]        
+        print " N.   (type)    : (name)"
         for column in table.columns:
-            isinstance(column, ConstantsTypeColumn)
-            print " " + repr(column.order).ljust(3)+" " + Theme.Type + "%-10s"%column.column_type + Theme.Reset + ": "+ column.name
+            print " " + repr(int(column.order)).ljust(4)+" " + Theme.Type + "%-10s"%column.type + Theme.Reset + ": "+ column.name
            
         print 
         print "+------------------------------------------+"
@@ -191,8 +187,9 @@ class Info(ConsoleUtilBase):
         #basic values: name rows columns path
         assert isinstance(variation, Variation)
         print " Name       :  " + variation.name
-        print " Created    :  " + time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(variation.created_time))
-        print " Modified   :  " + time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime(variation.modified_time))
+        print " Created    :  " + variation.created.strftime("%Y-%m-%d %H-%M-%S")
+        print " Modified   :  " + variation.modified.strftime("%Y-%m-%d %H-%M-%S")
+        print " DB Id      :  " + repr(int(variation.id))
         print " Comment:  "
         print
         print variation.comment

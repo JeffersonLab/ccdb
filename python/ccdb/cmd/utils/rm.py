@@ -2,11 +2,13 @@ import posixpath
 import logging
 import time
 
-from ccdb.ccdb_pyllapi import Directory, ConstantsTypeTable, ConstantsTypeColumn, Variation
-from ccdb import MySQLProvider
+
+from ccdb import Directory, TypeTable, TypeTableColumn, Variation
+from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
+from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.rm")
 
@@ -44,7 +46,7 @@ class Remove(ConsoleUtilBase):
 
         assert self.context != None
         provider = self.context.provider
-        isinstance(provider, MySQLProvider)
+        isinstance(provider, AlchemyProvider)
         
         #process arguments
         self.rawentry = ""
@@ -68,33 +70,29 @@ class Remove(ConsoleUtilBase):
 
         #it is a type table
         if self.object_type == "type_table":
-            
-            self.type_table = provider.get_type_table(self.path, True)
-            if self.type_table:
-                if not provider.delete_type_table(self.type_table):
-                    log.warning("Unable to delete type table")
-            else:
-                log.warning("No type table with this path")
+
+            try:
+                self.type_table = provider.get_type_table(self.path)
+                provider.delete_type_table(self.type_table)
+            except NoResultFound:
+                log.warning("No type table with this path: {0}".format(self.path))
                 return 1
         
         #it is a directory
         if self.object_type == "directory":
-            parent_dir = provider.get_directory(self.path)
-            if(parent_dir):
-                if not provider.delete_directory(self.type_table):
-                    log.warning("Unable to delete directory")
-            else:
+            try:
+                parent_dir = provider.get_directory(self.path)
+                provider.delete_directory(self.type_table)
+            except KeyError:
                 log.warning("No directory with this path")
                 return 1
         
         #it is a variation
         if self.object_type == "variation":
-            variation = provider.get_variation(self.rawentry)
-            if not variation:
-                log.warning("No variation with this name")
-                return 1
-
-            if not provider.delete_variation(variation):
+            try:
+                variation = provider.get_variation(self.rawentry)
+                provider.delete_variation(variation)
+            except NoResultFound:
                 log.warning("Unable to delete variation")
                 return 1
         

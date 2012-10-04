@@ -46,7 +46,7 @@ class Dump(ConsoleUtilBase):
         #self.context.
         assert isinstance(provider, MySQLProvider)
         
-        self.context.process("cat   --no-borders --no-header --comments --time")
+        self.context.process("cat --no-borders --no-header --comments --time" + " ".join(args))
 
 
     def print_directory_tree(self, directory, printFullPath, level):

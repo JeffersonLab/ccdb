@@ -30,8 +30,7 @@ class ParseRequestResult:
     Path=""                    # Object path
     WasParsedPath=False        # true if Path was nonempty
     Variation=""               # Variation name
-    Time = 0                   # Time stamp
-    Time = 0                   # Time stamp
+    Time = datetime.datetime.now() # Time stamp
     TimeString = ""            # Original string with time
     WasParsedTime = False      # true if time stamp was not empty
     WasParsedRunNumber=False   # true if Run number was non empty
@@ -66,9 +65,9 @@ def parse_time(timeStr="-1"):
        this function returns result as if it were 2011:12:31-23:59:59
        thus using such timestamp would get the latest constants for year 2011
 
-    @parameter [in] const string & timeString string to parse
-    @parameter [out] succsess true if success
-    @return   time_t
+    :parameter timeStr: timeString string to parse
+    :return: result time object
+    :rtype: datetime.datetime
     """
     
     #the function is ported from C++ dont be surprise by struct_time
@@ -145,9 +144,9 @@ def parse_time(timeStr="-1"):
         else:
             tmpStr="" #in this case we clear temp string too
     #//for    
-    time = datetime.datetime(year=year, month = month, day = day, hour = hour, minute = minute, second = second)
-    result = time_lib.mktime(time.timetuple())
-    return result
+    return datetime.datetime(year=year, month = month, day = day, hour = hour, minute = minute, second = second)
+    #result = time_lib.mktime(time.timetuple())
+    #return result
 
 
 #______________________________________________________________________________

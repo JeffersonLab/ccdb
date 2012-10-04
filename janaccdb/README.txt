@@ -54,6 +54,15 @@ RUN ANALYSIS
       hd_root --plugin=phys_tree --plugin=janaccdb hdgeant_smeared.hddm
 
 
+CCDB JANA PLUGIN DEBUG OUTPUT
+=============================
+building JANA with
+make CPPFLAGS=-DCCDB_DEBUG_OUTPUT
+
+will make janaccdb plugin to print explicit information of what is being done
+
+
+
 
 MORE DOCUMENTATION
 ==================

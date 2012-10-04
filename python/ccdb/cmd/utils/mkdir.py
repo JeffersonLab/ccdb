@@ -1,10 +1,13 @@
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd.Theme import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
-from ccdb.ccdb_pyllapi import Directory, MySQLDataProvider, DirectoryVector, ConstantsTypeTable
+from ccdb import Directory, AlchemyProvider, TypeTable
+import posixpath
+import logging
 
 import posixpath
 
+log = logging.getLogger("ccdb.cmd.utils.mkdir")
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -58,9 +61,10 @@ class MakeDirectory(ConsoleUtilBase):
         #try to create directory
         if is_debug_verbose():
             print "   creating directory. Name: ", name, " parent path: ", parent_path, " comment: ", comment
-            
-        result = self.context.provider.create_directory(name, parent_path, comment)
-        
-        if not result: print "Failed to create directory"
+
+        try:
+            self.context.provider.create_directory(name, parent_path, comment)
+        except Exception as ex:
+            log.warning("Failed to create directory. Exception message: {0}".format(ex))
         else: print "Directory " + name + Theme.Success + " created" + Theme.Reset
         

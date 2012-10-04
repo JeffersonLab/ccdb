@@ -39,6 +39,7 @@ class ConsoleContext:
         self._current_path="/"
         self._ls=None
         self._connection_string = ""
+        self.silent_exceptions = True #rethrow happened exceptions
 
     #prop verbose
     #_______________________
@@ -220,7 +221,12 @@ class ConsoleContext:
                 #looks like is is a command
                 command = token;
                 commandArgs = workargs[i:]
-                return self.process_command(command, commandArgs)
+                try:
+                    return self.process_command(command, commandArgs)
+                except Exception as ex:
+                    log.error(ex)
+                    if not self.silent_exceptions: raise
+                    else: return 1
         
         if self._is_interactive:
             self.interactive_loop()
@@ -258,8 +264,14 @@ class ConsoleContext:
         arguments = []
         if len(tokens) > 1:
             arguments = tokens[1:]
-                        
-        return self.process_command(command, arguments)
+
+        try:
+            return self.process_command(command, arguments)
+        except Exception as ex:
+            log.error(ex)
+            if not self.silent_exceptions: raise
+            else: return 1
+
 
 
     #--------------------------------
@@ -515,7 +527,7 @@ class ConsoleContext:
     def print_interactive_intro(self):
         print """
 +--------------------------+
-  CCDB shell v.0.1.2
+  CCDB shell v.0.5
   HallD JLab
 +--------------------------+
        """

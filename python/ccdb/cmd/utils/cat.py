@@ -5,8 +5,8 @@ import sys
 import os
 
 import ccdb
-from ccdb.ccdb_pyllapi import Directory, ConstantsTypeTable, ConstantsTypeColumn, Variation, Assignment
-from ccdb import MySQLProvider
+from ccdb import Directory, TypeTable, TypeTableColumn, Variation, Assignment
+from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
@@ -23,7 +23,6 @@ def create_util_instance():
 
 #*********************************************************************
 #   Class Cat - Show assignment data by ID                           *
-#                                                                    *
 #*********************************************************************
 class Cat(ConsoleUtilBase):
     """Show assignment data by ID"""
@@ -35,33 +34,42 @@ class Cat(ConsoleUtilBase):
     short_descr = "Show assignment data by ID"
     uses_db = True
 
-    # variables for each command process
-    #------------------------------------
-    rawentry = "/"      #object path with possible pattern, like /mole/*
-    path = "/"          #parent path
-    raw_table_path = ""
-    use_ass_id = False
-    ass_id = 0
-    print_horisontal = True
-    user_request_print_horisontal = False
-    user_request_print_vertical = False
-
-
+    #specific values
     show_borders = True
     show_header = True
     show_comments = False
     show_date = False
-    request = ParseRequestResult()
 
-#----------------------------------------
-#   process 
-#----------------------------------------  
+
+    def __init__(self):
+        # variables for each command process
+        #------------------------------------
+        self.raw_entry = "/"      #object path with possible pattern, like /mole/*
+        self.path = "/"          #parent path
+        self.raw_table_path = ""
+        self.use_ass_id = False
+        self.ass_id = 0
+        self.print_horisontal = True
+        self.user_request_print_horisontal = False
+        self.user_request_print_vertical = False
+        self.request = ParseRequestResult()
+
+
+    #----------------------------------------
+    #   process
+    #----------------------------------------
     def process(self, args):
+        """
+        Process this command
+        :param args:
+        :return: 0 if command was successful, value!=0 means command was not successfull
+        :rtype: int
+        """
         log.debug("Cat is gained a control over the process.")
         log.debug("   " + " ".join(args))
 
-        assert self.context != None
-                
+        assert self.context is not None
+
         #reset arguments on each process        
         self.raw_table_path = ""
         self.show_borders = True
@@ -74,7 +82,7 @@ class Cat(ConsoleUtilBase):
         self.user_request_print_vertical = False
 
         if not len(args):
-            print "Please provide ID for assignment. Use help cat to get more information"
+            print "Please provide ID for assignment. Use 'help cat' to get more information"
             return 1
 
         if not self.process_arguments(args):
@@ -104,7 +112,8 @@ class Cat(ConsoleUtilBase):
 
         if assignment:
             #now we have to know, how to print an assignment
-            data = assignment.data
+            data = assignment.constant_set.data_table
+
             if len(data)!=0 and len(data[0])!=0:
                 if self.user_request_print_horisontal:
                     self.print_assignment_horizontal(assignment, self.show_header, self.show_borders)
@@ -115,8 +124,6 @@ class Cat(ConsoleUtilBase):
                         self.print_assignment_vertical(assignment, self.show_header, self.show_borders)
                     else:
                         self.print_assignment_horizontal(assignment, self.show_header, self.show_borders)
-
-                
             else:
                 log.warning("Assignment contains no data")
         else:
@@ -127,18 +134,13 @@ class Cat(ConsoleUtilBase):
 
 #----------------------------------------
 #   gets assignment by database id
-#----------------------------------------  
+#----------------------------------------
     def get_assignment_by_id(self, id):
         """gets assignment by database id"""
 
         provider = self.context.provider
-        assert isinstance(provider, MySQLProvider)
-
-        assignment = Assignment()
-        assignment.db_id = id
-        
-        if not provider.fill_assignment(assignment): return None
-        return assignment
+        assert isinstance(provider, AlchemyProvider)
+        return self.context.provider.get_assignment_by_id(id)
 
 #----------------------------------------
 #   gets assignment by parsed request
@@ -147,7 +149,7 @@ class Cat(ConsoleUtilBase):
         """gets assignment by parsed request"""
         
         provider = self.context.provider
-        isinstance(provider, MySQLProvider)
+        isinstance(provider, AlchemyProvider)
         isinstance(request, ParseRequestResult)
 
         if not request.WasParsedVariation:
@@ -161,7 +163,7 @@ class Cat(ConsoleUtilBase):
         self.table_path = self.context.prepare_path(self.request.Path)
         
         #check such table really exists
-        table = provider.get_type_table(self.table_path, False)
+        table = provider.get_type_table(self.table_path)
         if not table:
             log.warning("    Type table %s not found in the DB"% self.table_path)
             return None
@@ -289,21 +291,34 @@ class Cat(ConsoleUtilBase):
 
     """
 
-#----------------------------------------
-#   print_assignment_vertical 
-#---------------------------------------- 	
+
+    #--------------------------------------------------------------------------------
+    #   print_assignment_vertical
+    #--------------------------------------------------------------------------------
     def print_assignment_horizontal(self, assignment, printHeader=True, displayBorders=True):
+        """
+        print table with assignment data horizontally
+
+        :param assignment : Assignment object ot print
+        :type assignment: Assignment
+
+        :param printHeader: print header with column information or not
+        :type printHeader: bool
+
+        :param displayBorders: print '|' borders or not
+        :type displayBorders: bool
+        """
         assert isinstance(assignment, Assignment)
 
         border = " "
         if displayBorders: border = "|"
 
-        table = assignment.type_table
-        assert isinstance(table, ConstantsTypeTable)
+        table = assignment.constant_set.type_table
+        assert isinstance(table, TypeTable)
 
-        columnNames = table.get_column_names()
-        columnTypes = table.get_column_types()
-        data = assignment.data_list
+        columnNames = [column.name  for column in table.columns]
+        columnTypes = [column.type  for column in table.columns]
+        data = assignment.constant_set.data_list
 
         columnsNum = len(columnNames)
 
@@ -372,23 +387,34 @@ class Cat(ConsoleUtilBase):
 
 
 
-#----------------------------------------
-#   print_assignment_horizontal
-#---------------------------------------- 	
+    #--------------------------------------------------------------------------------
+    #   print_assignment_horizontal
+    #--------------------------------------------------------------------------------
     def print_assignment_vertical(self, assignment, printHeader=True, displayBorders=True):
-        """print columns vertically and rows horizontally""" 
+        """
+        print columns vertically and rows horizontally
 
-        isinstance(assignment, ccdb.ccdb_pyllapi.Assignment)
+        :param assignment : Assignment object ot print
+        :type assignment: Assignment
+
+        :param printHeader: print header with column information or not
+        :type printHeader: bool
+
+        :param displayBorders: print '|' borders or not
+        :type displayBorders: bool
+        """
+
+        assert isinstance(assignment, Assignment)
         
         border = " "
         if displayBorders: border = "|"
 
-        table = assignment.type_table
-        isinstance(table, ConstantsTypeTable)
+        table = assignment.constant_set.type_table
+        isinstance(table, TypeTable)
 
-        columnNames = table.get_column_names()
-        columnTypes = table.get_column_types()
-        data = assignment.data
+        columnNames = [column.name  for column in table.columns]
+        columnTypes = [column.type  for column in table.columns]
+        data = assignment.constant_set.data_table
         
         if len(data)==0 :return
         if len(data[0])==0:return

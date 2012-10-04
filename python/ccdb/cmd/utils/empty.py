@@ -40,14 +40,16 @@ class Empty(ConsoleUtilBase):
     short_descr = "empty utility example"
     uses_db = True
 
-    # variables for each process
-    #------------------------------
-    rawentry = "/"      #object path with possible pattern, like /mole/*
-    path = "/"          #parent path
-    show_borders = True
-    show_header = True
-    show_comments = False
-    show_date = False
+
+    def __init(self):
+        # variables for each process
+        #------------------------------
+        self.raw_entry = "/"      #object path with possible pattern, like /mole/*
+        self.path = "/"           #parent path
+        self.show_borders = True
+        self.show_header = True
+        self.show_comments = False
+        self.show_date = False
     
 #----------------------------------------
 #   process 
@@ -150,7 +152,7 @@ class Empty(ConsoleUtilBase):
                         self.run = int(args[i])
                     except ValueError:
                         log.warning("cannot read run from %s command"%(token))
-                    return false
+                    return False
                 
                 else:
                     #it probably must be a type table path

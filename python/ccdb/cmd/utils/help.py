@@ -30,8 +30,8 @@ class HelpUtil(ConsoleUtilBase):
 
         if self.context:
             print "Available commands:"
-            print "  %-10s %-15s %s:"%("(command)", "(name)", "(description)")
-            print "  " + "\n  ".join(
+            print "   %-10s %-15s %s:"%("(command)", "(name)", "(description)")
+            print "   " + "\n  ".join(
                 ["%-10s %-15s %s" % (command, util.name, util.short_descr) 
                 for command, util 
                 in self.context.utils.items() 
@@ -55,25 +55,28 @@ class HelpUtil(ConsoleUtilBase):
                 self.print_help()
     
     help_text = """
-Callibration Constants Data Base (CCDB) console tools.
-Print "ccdbcmd -I" to start in interactive mode
+Calibration Constants Data Base (CCDB) command line tools.
+Print "ccdb -i" to start in interactive mode
 Usage:
     ccdb <general arguments> command <command arguments>
 
     print help <command> to see help for the command
     print usage <command> to see usage for the command
-    print example <command> to see examples for command
-    print howto add constants to get instruction
-    print howto - to het all available howtos"""
+
+    """
     flags_text = """
 
 Flags:
--I, -i or --interactive  Starts programm in interactive mode.
-    -d or --debug        Show verbose debug output
-    -s or --silent       Do not display any text. Will not work in interactive mode. 
+    -i or --interactive  Starts program in interactive mode. TRY IT(!)
+
+    -s or --silent       Do not display any text. Will not work in interactive mode.
+          --debug        Show verbose debug output
+          --raise        Process throws all exceptions it caught
           --no-color     No colored output
     -c <connection string>  or  --connection <connection string>
-                         Set connection string to server"""
+                         Set connection string to server
+
+                         """
     enveron_text = """     
 Environment:
     CCDB_USER       : should be set to perform any update operation 

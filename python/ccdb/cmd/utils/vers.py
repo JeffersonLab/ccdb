@@ -3,11 +3,12 @@ import logging
 import time
 
 import ccdb
-from ccdb.ccdb_pyllapi import Directory, ConstantsTypeTable, ConstantsTypeColumn, Variation
-from ccdb import MySQLProvider
+from ccdb import Directory, TypeTable, TypeTableColumn, Variation
+from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
 from ccdb.cmd import is_verbose, is_debug_verbose
+from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.vers")
 
@@ -43,9 +44,9 @@ class Versions(ConsoleUtilBase):
         log.debug("VersionsUtility is gained a control over the process.")
         log.debug("   " + " ".join(args))
 
-        assert self.context != None
+        assert self.context is not None
         provider = self.context.provider
-        isinstance(provider, MySQLProvider)
+        isinstance(provider, AlchemyProvider)
         
         #process arguments
         self.raw_table_path = ""
@@ -65,8 +66,9 @@ class Versions(ConsoleUtilBase):
         self.table_path = self.context.prepare_path(self.raw_table_path)
         
         #check such table really exists
-        table = provider.get_type_table(self.table_path, False)
-        if not table:
+        try:
+            table = provider.get_type_table(self.table_path)
+        except NoResultFound:
             log.warning("Type table %s not found in the DB"% self.table_path)
             return 1
         
@@ -78,9 +80,9 @@ class Versions(ConsoleUtilBase):
             if asgmnt.run_range.max == ccdb.INFINITE_RUN:
                 max_str="inf"
             
-            print " %-5i "%asgmnt.db_id +\
-                  " %-20s"%time.strftime("%Y-%m-%d_%H-%M-%S   ", time.localtime(asgmnt.created_time)) +\
-                  " %-20s"%time.strftime("%Y-%m-%d_%H-%M-%S   ", time.localtime(asgmnt.modified_time)) +" "+\
+            print " %-5i "%asgmnt.id +\
+                  " %-20s"%asgmnt.created.strftime("%Y-%m-%d_%H-%M-%S   ") +\
+                  " %-20s"%asgmnt.modified.strftime("%Y-%m-%d_%H-%M-%S   ") +" "+\
                   " %-14s "%asgmnt.variation.name +\
                   " %-25s "%(repr(asgmnt.run_range.min) + "-" + max_str )+\
                   asgmnt.comment[0:20].replace("\n"," ")
@@ -114,7 +116,7 @@ class Versions(ConsoleUtilBase):
                         self.run = int(args[i])
                     except ValueError:
                         log.warning("cannot read run from %s command"%(token))
-                        return false
+                        return False
                 
             else:
                 #it probably must be a type table path

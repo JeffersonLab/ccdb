@@ -32,7 +32,14 @@ namespace jana
         JCalibrationCCDB(ccdb::Calibration* calib, string url, int run, string context="default"):
 	        JCalibration(calib->GetConnectionString(), run, context)
 	    {
+
 		    mCalibration = calib;
+
+			#ifdef CCDB_DEBUG_OUTPUT
+			jout<<"CCDB::janaccdb created JCalibrationCCDB with connection string:" << calib->GetConnectionString()<< " run:"<<run<< " context:"<<context<<endl;
+
+			#endif
+
 		    try
             {
                 //if(!mCalibration->Connect(url))
@@ -134,7 +141,7 @@ namespace jana
 
                  //>oO CCDB debug output
                  #ifdef CCDB_DEBUG_OUTPUT
-                 string result_str((result)?string("true"):string("false"));
+                 string result_str((result)?string("loaded"):string("failure"));
                  cout<<"CCDB::janaccdb"<<endl;
                  cout<<"CCDB::janaccdb REQUEST vector<map<string, string>> request = \""<<namepath<<"\" result = "<<result_str<<endl;
                  if(result)

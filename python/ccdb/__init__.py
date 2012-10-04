@@ -37,7 +37,10 @@ import cmd.colorama
 #from ProviderBase import ProviderBase
 #from MySQLProvider import MySQLProvider
 #from ccdb_pyllapi import Variation, Directory, RunRange, Assignment, ConstantsTypeColumn, ConstantsTypeTable, StringStringMap, StringVectorVector, StringVector
-from TextFileDOM import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
+
+from .AlchemyProvider import AlchemyProvider
+from .Model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn
+from .TextFileDOM import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
 #from ccdb.ccdb_pyllapi import Variation
 import PathUtils
 
@@ -56,7 +59,10 @@ def init_ccdb_console():
     ch = logging.StreamHandler()
     ch.stream = sys.stdout
     logger.addHandler(ch)
-        
+
+    #create console context
+    context = ConsoleContext()
+
     # CHECK SOME COMMAND LINE KEYS
     #------------------------------
     if "--s" in sys.argv or "--silent" in sys.argv:
@@ -74,16 +80,19 @@ def init_ccdb_console():
         #colors are ON
         cmd.colorama.init(autoreset=True)
 
-    if "--debug" in sys.argv or "-dv" in sys.argv:
+    if "--debug" in sys.argv:
         set_verbose(VerboseModes.Debug)   
         logger.setLevel(logging.DEBUG)
         logger.debug("debugging verbose mode is " + Theme.Ok + " ON " + Theme.Reset + " value is " + repr(get_verbose()))
+
+    if "--raise" in sys.argv:
+        logger.debug("--raise flag found. The process will raise commands exceptions instead of humble notifications and non 0 result")
+        context.silent_exceptions = False
         
     #lets go
     #logger.info("Initialising ccdb package...")
 
-    #create console context
-    context = ConsoleContext()
+
 
     #CONNECTION STRING
     #------------------------------
@@ -107,7 +116,8 @@ def init_ccdb_console():
     #------------------------------
 
     #initialize console context
-    context.register_utilities();
+    context.register_utilities()
 
     #start processor
-    context.process(sys.argv)    
+    result = context.process(sys.argv)
+    if result: sys.exit(int(result))

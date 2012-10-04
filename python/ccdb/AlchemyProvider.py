@@ -841,6 +841,14 @@ class AlchemyProvider(object):
 
         return query.limit(1).one()
 
+    def get_assignment_by_id(self, id):
+        """
+
+        :param id: database id of the assignment
+        :return: Assignment by database Id
+        :rtype: Assignment
+        """
+        return self.session.query(Assignment).filter(Assignment.id == id).one()
 
     #------------------------------------------------
     # get list of assignments
@@ -894,8 +902,8 @@ class AlchemyProvider(object):
 
         #filter by date and time
         if not date_and_time is None:
-            assert isinstance(datetime, datetime)
-            query = query.filter(ConstantSet.created <= datetime)
+            assert isinstance(date_and_time, datetime)
+            query = query.filter(ConstantSet.created <= date_and_time)
 
         #sort query
         query = query.order_by(desc(Assignment.id))

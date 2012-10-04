@@ -86,7 +86,7 @@ class TypeTableColumn(Base):
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
     order = Column(Integer)
-    column_type = Column('columnType', Enum('int', 'uint','long','ulong','double','string','bool'))
+    type = Column('columnType', Enum('int', 'uint','long','ulong','double','string','bool'))
     type_table_id = Column('typeId',Integer, ForeignKey('typeTables.id'))
 
 
@@ -144,12 +144,14 @@ class Assignment(Base):
     id = Column(Integer, primary_key=True)
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
+    comment = Column(Text)
     constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'))
     constant_set = relationship("ConstantSet", uselist=False, back_populates="assignment")
     run_range_id = Column('runRangeId',Integer, ForeignKey('runRanges.id'))
     run_range = relationship("RunRange", backref=backref('assignments'))
     variation_id = Column('variationId',Integer, ForeignKey('variations.id'))
     variation = relationship("Variation", backref=backref('assignments'))
+
 
     def __repr__(self):
         return "<Assignment '{0}'>".format(self.id)
