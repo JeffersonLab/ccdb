@@ -128,11 +128,15 @@ class AlchemyProviderTest(unittest.TestCase):
 
         #basic search type table functional
         tables = self.provider.search_type_tables("t??t_tab*")
-        assert len(tables) > 0
+        self.assertNotEqual(len(tables), 0)
 
         #now lets get all tables from the directory.
         tables = self.provider.search_type_tables("*", "/test/test_vars")
-        assert len(tables) >0
+        self.assertNotEqual(len(tables),0)
+
+        #now lets get all tables from root directory.
+        tables = self.provider.search_type_tables("t*", "/")
+        self.assertEquals(len(tables),0)
 
         #CREATE AND DELETE
 

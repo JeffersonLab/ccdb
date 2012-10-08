@@ -9,8 +9,8 @@
 
 #include <JANA/jerror.h>
 #include <JANA/JCalibration.h>
-#include "CCDB/Calibration.h"
 #include <JANA/JStreamLog.h>
+#include <CCDB/Calibration.h>
 
 using namespace std;
 using namespace jana;
@@ -19,6 +19,9 @@ using namespace jana;
 namespace jana
 {
 
+	/** 
+	 *  Descendant of JCalibration class which allow to use CCDB as JANA calibration source
+	 */
     class JCalibrationCCDB : public JCalibration
     {
     public:
@@ -37,21 +40,7 @@ namespace jana
 
 			#ifdef CCDB_DEBUG_OUTPUT
 			jout<<"CCDB::janaccdb created JCalibrationCCDB with connection string:" << calib->GetConnectionString()<< " run:"<<run<< " context:"<<context<<endl;
-
 			#endif
-
-		    try
-            {
-                //if(!mCalibration->Connect(url))
-                //{
-                    //jerr<<"janaccdb Cannot connect to MySQL Database"<<endl;
-                //}
-
-            }
-            catch (...)
-            {
-    	        throw;
-            }
         }
 
 
@@ -97,7 +86,7 @@ namespace jana
                 #ifdef CCDB_DEBUG_OUTPUT
                 string result_str((result)?string("loaded"):string("failure"));
                 cout<<"CCDB::janaccdb"<<endl;
-                cout<<"CCDB::janaccdb REQUEST map<string, string> request = \""<<namepath<<"\" result = "<<result_str<<endl;
+                cout<<"CCDB::janaccdb REQUEST map<string, string> request = '"<<namepath<<"' result = "<<result_str<<endl;
                 if(result)
                 {
                     string first_value(" --NAN-- ");
@@ -143,11 +132,11 @@ namespace jana
                  #ifdef CCDB_DEBUG_OUTPUT
                  string result_str((result)?string("loaded"):string("failure"));
                  cout<<"CCDB::janaccdb"<<endl;
-                 cout<<"CCDB::janaccdb REQUEST vector<map<string, string>> request = \""<<namepath<<"\" result = "<<result_str<<endl;
+                 cout<<"CCDB::janaccdb REQUEST vector<map<string, string>> request = '"<<namepath<<"' result = "<<result_str<<endl;
                  if(result)
                  {
                      string first_value(" --NAN-- ");
-                     if(vsvals.size()>0 and vsvals[0].size()>0)
+                     if(vsvals.size()>0 && vsvals[0].size()>0)
                      {
                          map<string, string>::const_iterator iter = vsvals[0].begin();
                          first_value.assign(iter->second);
@@ -194,15 +183,11 @@ namespace jana
                 #endif
             }
         }
-
-
         
     private:
-        JCalibrationCCDB(); // prevent use of default constructor
-
-        ccdb::Calibration * mCalibration;  //Underlaying CCDB user api class 
+        JCalibrationCCDB();					// prevent use of default constructor
+        ccdb::Calibration * mCalibration;	///Underlaying CCDB user api class 
         
-        //std::string mConnectionString;           // connection string
     };
 
 } // Close JANA namespace

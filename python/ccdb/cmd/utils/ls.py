@@ -37,7 +37,7 @@ class List(ConsoleUtilBase):
     pattern = ""         #pattern on the end of parent path like file?*
 
     def process(self, args):
-        log.debug("ListUtil is gained a control over the process.")
+        log.debug("ListUtil gained control")
         log.debug("Arguments: " + " ".join(args))
         
         assert self.context is not None
@@ -67,32 +67,28 @@ class List(ConsoleUtilBase):
         #SEARCH LOGIC
 
         #brute assumption that user has entered a simple dir path
-        self.parent_dir = provider.get_directory(self.raw_entry)
-        self.parent_path = self.raw_entry
-        self.pattern = ""
-
-        if not self.parent_dir:
+        try:
+            self.parent_dir = provider.get_directory(self.raw_entry)
+        except KeyError:
             #we have not find the directory by brute rawentry.
             #but maybe it is just /path/plus*some*pattern
             (head, tale) = posixpath.split(self.raw_entry)
             self.parent_path = head
             self.pattern = tale
-            
-            if(is_debug_verbose()):
-                print "new path: "
-                print "   ", self.parent_path
-                if len(self.pattern): print "pattern: ", self.pattern
 
             #try to find such dir once more
-            self.parent_dir = provider.get_directory(self.parent_path)
+            try:
+                self.parent_dir = provider.get_directory(self.parent_path)
+            except KeyError:
+                self.parent_dir = None
 
         #found a directory
         if self.parent_dir:
             assert isinstance(self.parent_dir, Directory)
 
-            if(is_debug_verbose()):
-                print "full path: \n   ", self.parent_dir.path
-                if len(self.pattern): print "pattern: ", self.pattern
+            #>oO debug
+            log.debug("  path: {0}".format(self.parent_path))
+            if len(self.pattern): log.debug("  pattern: {0}".format(self.pattern))
             
             #part 1 directories for this path
             sub_dirs = []
@@ -129,8 +125,6 @@ class List(ConsoleUtilBase):
         
         table_list = []
         dir_list = []
-        
-        
         
         #SEARCH LOGIC
         #---------------------------

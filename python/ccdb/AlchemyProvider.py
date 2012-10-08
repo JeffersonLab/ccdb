@@ -43,17 +43,18 @@ class AlchemyProvider(object):
 #	C O N N E C T I O N
 #----------------------------------------------------------------------------------------
 
-    ##
-    # @brief Connects to database using connection string
-    #
-    # Connects to database using connection string
-    # connection string might be in form:
-    # mysql://<username>:<password>@<mysql.address>:<port> <database>
-    #
-    # @param connectionString: str "mysql://<username>:<password>@<mysql.address>:<port> <database>"
-    # @return True if connected
+
+    #------------------------------------------------
+    #  Connects to database using connection string
+    #------------------------------------------------
     def connect(self, connection_string = ""):
         """
+        Connects to database using connection string
+
+        onnection string might be in form:
+        mysql://<username>:<password>@<mysql.address>:<port> <database>
+        sqlite:///path/to/file.sqlite
+
         :param connection_string: connection string
         :type connection_string: str
         """
@@ -64,7 +65,7 @@ class AlchemyProvider(object):
             #sql alchemy uses MySQLdb by default. But it might be not install in the system
             #in such case we fallback to mysqlconnector which is embedded in CCDB
             if connection_string.startswith("mysql://") and "No module named MySQLdb" in repr(err):
-                log.debug("No module named MySQLdb occured. Fallback to mysqlconnector")
+                log.debug("No module named MySQLdb occurred. Fallback to mysql-connector")
                 connection_string = connection_string.replace("mysql://", "mysql+mysqlconnector://")
                 self.engine = sqlalchemy.create_engine(connection_string)
             else:
@@ -99,9 +100,6 @@ class AlchemyProvider(object):
         :rtype: bool
         """
         return self._is_connected
-
-
-
 
     #------------------------------------------------
     # Connection string that was used
@@ -186,6 +184,7 @@ class AlchemyProvider(object):
         :return: Directories to find
         :rtype: [] of Directory
         """
+
         if not self._are_dirs_loaded: self._load_dirs()
 
         searchPattern = searchPattern.replace("_", "\\_").replace("*","%").replace("?","_")
@@ -461,7 +460,7 @@ class AlchemyProvider(object):
 
         #add parent directory to query
         if parent_dir is not None:
-            query.filter(TypeTable.parent_dir_id == parent_dir.id)
+            query = query.filter(TypeTable.parent_dir_id == parent_dir.id)
 
         #add limits to query
         if limit !=0: query = query.limit(limit)

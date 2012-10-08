@@ -8,14 +8,9 @@ PREPARE CCDB
 ============
 
 1. Install CCDB. Follow the instructions of file install.linux.txt located in 
-   the CCDB_HOME directory. 
+   the $CCDB_HOME directory. 
 
-   (!) Don't forget to setup CCDB in environment in the terminal you going 
-   to run JANA with CCDB in.
-
-
-2. If you haven't done so on CCDB install, Load HallD database dump to your 
-   mysql database
+2. Don't forget to setup CCDB environment in a terminal you going to run JANA with CCDB
 
 ##RUN CODE:
 
@@ -36,7 +31,7 @@ PREPARE JANA
      DIRS := janadot janactl ... janaccdb
 
 
-3) Rebuild jana JANA 
+3) Rebuild JANA 
 
 
 
@@ -44,22 +39,23 @@ PREPARE JANA
 RUN ANALYSIS
 ============
 
-1) set JANA_CALIB_URL to your mysql connection
+1) Set JANA_CALIB_URL to mysql or sqlite connection
 
-      export JANA_CALIB_URL=mysql://ccdb_user@localhost
+      export JANA_CALIB_URL=sqlite:///path/to/gluex.sqlite
 
 
-2) Now it is possible to run analysis adding --plugin=janaccdb, like:
+2) Now it is possible to run analysis specifying --plugin=janaccdb, like:
 
       hd_root --plugin=phys_tree --plugin=janaccdb hdgeant_smeared.hddm
 
 
 CCDB JANA PLUGIN DEBUG OUTPUT
 =============================
-building JANA with
-make CPPFLAGS=-DCCDB_DEBUG_OUTPUT
+If one builds JANA with CCDB_DEBUG_OUTPUT preprocessor definition:
 
-will make janaccdb plugin to print explicit information of what is being done
+     make CPPFLAGS=-DCCDB_DEBUG_OUTPUT
+
+This makes janaccdb plugin to print explicit information to jout
 
 
 

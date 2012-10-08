@@ -31,7 +31,9 @@ class MakeDirectory(ConsoleUtilBase):
 
     def process(self, args):
         if is_debug_verbose():
-            print "MakeDirectory module is gained a control over the process."
+            log.debug("MakeDirectory module gained control")
+            log.debug("Arguments: " + " ".join(args))
+            print
             print args
         
         if not len(args): return 
