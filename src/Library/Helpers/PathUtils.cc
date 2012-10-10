@@ -240,7 +240,7 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
 
 
 //______________________________________________________________________________
-ccdb::DParseRequestResult ccdb::PathUtils::ParseRequest( const string& requestStr )
+ccdb::RequestParseResult ccdb::PathUtils::ParseRequest( const string& requestStr )
 {
     /** @brief    Parses request string and returns corresponding 
      * @see DParseRequestResult structure. 
@@ -258,7 +258,7 @@ ccdb::DParseRequestResult ccdb::PathUtils::ParseRequest( const string& requestSt
 	 */
 
     //Set default parameters
-    DParseRequestResult result;
+    RequestParseResult result;
     result.RunNumber=0;	              // Run number
     result.WasParsedRunNumber=false;  // true if Run number was non empty
     result.IsInvalidRunNumber=false;  // true if was an error parsing runnumber
@@ -346,6 +346,54 @@ bool ccdb::PathUtils::IsAbsolute( const string &path )
      */
     return (path.length()>0 && path[0]!='/');
 }
+
+//______________________________________________________________________________
+ccdb::ContextParseResult ccdb::PathUtils::ParseContext( const string& context )
+{
+	/** Parses JANA context string and returns ContextParseResult structure
+	 * 
+	 * JANA_CONTEXT is a string that may contain default values for CCDB. 
+	 * example of context string:
+	 * 'variation=default calibtime=2012'
+	 * parameters and values are separated by '=' (!) WITH NO SPACES
+	 */
+
+	ContextParseResult result;	
+	result.ConstantsTimeIsParsed = false;
+	result.VariationIsParsed = false;
+	
+	//check empty string
+	if(context.size()<=0) return result;
+
+	//split context to name=value pairs
+	vector<string> tokens = StringUtils::LexicalSplit(context);
+
+	//iterate through pairs
+	for(int i=0; i<tokens.size(); i++)
+	{
+		string token = tokens[i];
+
+		//variation is found?
+		if(token.find("variation=")==0)  //TODO move "variation=" to some define?
+		{
+			result.VariationIsParsed = true;
+			result.Variation = StringUtils::Replace("variation=","",token);
+			continue;
+		}
+
+		//calibtime is found?
+		if(token.find("calibtime=")==0)
+		{
+			result.ConstantsTimeIsParsed = true;
+			bool parseResult = false;
+			result.ConstantsTime = PathUtils::ParseTime(StringUtils::Replace("calibtime=","",token), &parseResult);
+			if(!parseResult) result.ConstantsTime = 0;
+		}
+	}
+
+	return result;
+}
+
 
 
 

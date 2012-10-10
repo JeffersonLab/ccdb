@@ -12,6 +12,7 @@
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/WorkUtils.h"
 #include "CCDB/Helpers/StopWatch.h"
+#include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Log.h"
 #include "CCDB/CalibrationGenerator.h"
 
@@ -221,6 +222,19 @@ TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get ca
 	REQUIRE(CalibrationGenerator::CheckOpenable(TESTS_CONENCTION_STRING));
 	REQUIRE(CalibrationGenerator::CheckOpenable(TESTS_SQLITE_STRING));
 	REQUIRE_FALSE(CalibrationGenerator::CheckOpenable("abra_kadabra://protocol"));
+
+
+	SECTION("Default Time", "Test that test vars are opened with default date")
+	{
+		
+		ContextParseResult res = PathUtils::ParseContext("variation=default calibtime=2012-08");
+		Calibration* sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime);
+		REQUIRE_NOTHROW(sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+		REQUIRE(tabledValues.size()>0);
+		REQUIRE(tabledValues.size()==2);
+		REQUIRE(tabledValues[0].size()==3);
+		REQUIRE(tabledValues[0][0]=="1.0");
+	}
 }
 
 /*

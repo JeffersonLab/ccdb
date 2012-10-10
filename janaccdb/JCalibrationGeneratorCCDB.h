@@ -8,6 +8,7 @@
 #include <JANA/jerror.h>
 #include <JANA/JCalibrationGenerator.h>
 #include <CCDB/CalibrationGenerator.h>
+#include <CCDB/Helpers/PathUtils.h>
 #include "JCalibrationCCDB.h"
 
 
@@ -65,10 +66,23 @@ namespace jana
         JCalibration* MakeJCalibration(std::string url, int run, std::string context) ///< Instantiate an JCalibration object
         {
 			#ifdef CCDB_DEBUG_OUTPUT
-			jout<<"CCDB::janaccdb MakeJCalibration "<<"url: '"<<url<<"' run: "<<run<< " context: "<<context<<std::endl;
+			jout<<"CCDB::janaccdb MakeJCalibration "<<"url: '"<<url<<"' run: "<<run<< " context: '"<<context<<"'"<<std::endl;
 			#endif
+			
+			//By default we have default variation and 0 time (means current time)
+			string varition("default");
+			time_t time = 0;
 
-            return new JCalibrationCCDB(mGenerator->MakeCalibration(url,run,context), url,run,context);
+			//Parse context
+			ccdb::ContextParseResult parseResult = ccdb::PathUtils::ParseContext(context);
+			if(parseResult.VariationIsParsed) varition = parseResult.Variation;
+			if(parseResult.ConstantsTimeIsParsed) time = parseResult.ConstantsTime;
+
+			//Get ccdb calibration object
+			ccdb::Calibration *calib = mGenerator->MakeCalibration(url,run,varition,time);
+
+			//Create jana calibration object from ccdb
+            return new JCalibrationCCDB(calib, url, run, context);
         }
 
 	private:

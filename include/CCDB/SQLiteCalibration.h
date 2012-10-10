@@ -21,7 +21,7 @@ public:
 	 * @param defaultRun       [in] Sets default run number
 	 * @param defaultVariation [in] Sets default variation
 	 */
-    SQLiteCalibration(int defaultRun, string defaultVariation="default");
+    SQLiteCalibration(int defaultRun, string defaultVariation="default", time_t defaultTime=0);
 
 	/** @brief Just a default ctor 
 	 */

@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <time.h>
 
 #include "CCDB/Globals.h"
 #include "CCDB/Providers/DataProvider.h"
@@ -33,7 +34,7 @@ public:
 	 * @param defaultRun       [in] Sets default run number
 	 * @param defaultVariation [in] Sets default variation
 	 */
-    Calibration(int defaultRun, string defaultVariation="default");
+    Calibration(int defaultRun, string defaultVariation="default", time_t defaultTime=0);
     virtual ~Calibration();
 
     /**
@@ -224,11 +225,13 @@ private:
 
 protected:
 
-    DataProvider *mProvider;    ///<Underlayed DDataProvider object
+    DataProvider *mProvider;    ///Underlayed DDataProvider object
     bool mProviderIsLocked;     ///If provider
     int mDefaultRun;            ///Default run number
     string mDefaultVariation;   ///Default variation
+	time_t mDefaultTime;        ///Set default time
     PthreadMutex * mReadMutex;
+	
 };
 
 }

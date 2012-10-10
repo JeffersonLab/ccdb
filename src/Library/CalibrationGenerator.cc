@@ -25,10 +25,19 @@ CalibrationGenerator::~CalibrationGenerator()
 
 
 //______________________________________________________________________________
-Calibration* CalibrationGenerator::MakeCalibration( const std::string & connectionString, int run, const std::string& context )
+Calibration* CalibrationGenerator::MakeCalibration( const std::string & connectionString, int run, const std::string& variation, const time_t time )
 {
+	/** @brief Creates @see Calibration by connectionString, run number and desirable variation
+	 *
+	 * @parameter [in] connectionString - Connection string to the data source
+	 * @parameter [in] int run - run number
+	 * @parameter [in] variation - desirable variation
+	 * @parameter [in] time - default time of constants
+	 * @return Calibration*
+	 */
+
 	//hash of requested variation
-	string calibHash = GetCalibrationHash(connectionString, run, context);
+	string calibHash = GetCalibrationHash(connectionString, run, variation,time);
 
 	//first we look maybe we already have such a calibration
 	if(mCalibrationsByHash.find(calibHash) != mCalibrationsByHash.end())
@@ -71,7 +80,7 @@ Calibration* CalibrationGenerator::MakeCalibration( const std::string & connecti
 		//and connect it
 		if(!provider->Connect(connectionString))
 		{
-			//error hangling...
+			//error handling...
 			vector<CCDBError *> errors = provider->GetErrors();
 			string message;
 			for(int i=0; i< errors.size(); i++)
@@ -89,7 +98,7 @@ Calibration* CalibrationGenerator::MakeCalibration( const std::string & connecti
 	}
 	
 	//now we create calibration
-	Calibration * calib = (isMySql)? static_cast<Calibration*>(new MySQLCalibration()): static_cast<Calibration*>(new SQLiteCalibration());
+	Calibration * calib = CreateCalibration(isMySql, provider, run, variation, time);
 	calib->UseProvider(provider, true);
 
 	//add it to arrays
@@ -99,9 +108,23 @@ Calibration* CalibrationGenerator::MakeCalibration( const std::string & connecti
 	return calib;
 }
 
+//______________________________________________________________________________
+Calibration* CalibrationGenerator::CreateCalibration( bool isMySQL, DataProvider *prov, int run, const std::string& variation, const time_t time )
+{	
+	if (isMySQL)
+	{
+		return new MySQLCalibration(run, variation, time);
+	}
+	else
+	{
+		return new SQLiteCalibration(run, variation, time);
+	}
+}
+
+
 
 //______________________________________________________________________________
-string CalibrationGenerator::GetCalibrationHash( const std::string & connectionString, int run, const std::string& variation )
+string CalibrationGenerator::GetCalibrationHash( const std::string & connectionString, int run, const std::string& variation, const time_t time )
 {   
      //gets string hash based on  connectionString, run, and variation
      //
@@ -111,7 +134,7 @@ string CalibrationGenerator::GetCalibrationHash( const std::string & connectionS
 
     //right now our hash will be just a summ of strings
     ostringstream strstrm;
-    strstrm<<connectionString<<run<<variation;
+    strstrm<<connectionString<<run<<variation<<time;
     return strstrm.str();
 }
 

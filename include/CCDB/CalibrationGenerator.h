@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <stdexcept>
+#include <time.h>
 
 #include "CCDB/Calibration.h"
 
@@ -13,17 +14,19 @@ class CalibrationGenerator {
 public:
 	/** @brief   default constructor*/
 	CalibrationGenerator();
+
 	/** @brief destructor	 */
 	virtual ~CalibrationGenerator();
 
-	/** @brief Creates @see DCalibration by connectionString, run number and desirable variation
+	/** @brief Creates @see Calibration by connectionString, run number and desirable variation
 	 *
 	 * @parameter [in] connectionString - Connection string to the data source
 	 * @parameter [in] int run - run number
 	 * @parameter [in] variation - desirable variation
-	 * @return   DCalibration*
+	 * @parameter [in] time - default time of constants
+	 * @return Calibration*
 	 */
-	virtual Calibration* MakeCalibration(const std::string & connectionString, int run, const std::string& variation); 
+	virtual Calibration* MakeCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time=0); 
 
 	/** @brief    CheckOpenable
 	 *
@@ -43,8 +46,13 @@ public:
      * @parameter [in] variation - desirable variation
      * @return   string
      */
-    virtual string GetCalibrationHash(const std::string & connectionString, int run, const std::string& variation);
+    virtual string GetCalibrationHash(const std::string & connectionString, int run, const std::string& variation, const time_t time);
+
+
 private:	
+
+	Calibration* CreateCalibration(bool isMySQL, DataProvider * prov, int run, const std::string& variation, const time_t time);
+
 	CalibrationGenerator(const CalibrationGenerator& rhs);
 	CalibrationGenerator& operator=(const CalibrationGenerator& rhs);
 	std::vector<Calibration *> mCalibrations;					///Created Calibrations

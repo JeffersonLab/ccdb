@@ -13,11 +13,11 @@
 using namespace std;
 using namespace ccdb;
 
-TEST_CASE("CCDB/PathUtils", "Path utilities path")
+TEST_CASE("CCDB/PathUtils", "Request parse")
 {
 
     string path("/my/value");
-    DParseRequestResult result= PathUtils::ParseRequest(path);
+    RequestParseResult result= PathUtils::ParseRequest(path);
 
     REQUIRE(result.Path == path);
     REQUIRE(result.WasParsedPath);
@@ -64,5 +64,25 @@ TEST_CASE("CCDB/PathUtils", "Path utilities path")
     //result.Time=0;                    // Time stamp
     //result.WasParsedTime=false;       // true if time stamp was not empty
     //result.TimeString="";             // Original string with time
+}
+
+
+TEST_CASE("CCDB/PathUtils", "Context parse")
+{
+	//empty string
+	ContextParseResult result = PathUtils::ParseContext("");
+	REQUIRE(result.ConstantsTimeIsParsed == false)
+	REQUIRE(result.VariationIsParsed == false)
+
+	//empty string 2
+	result = PathUtils::ParseContext(" ");
+	REQUIRE(result.ConstantsTimeIsParsed == false)
+	REQUIRE(result.VariationIsParsed == false)
+
+	result = PathUtils::ParseContext("variation=james time=2012");
+	REQUIRE(result.ConstantsTimeIsParsed == false)
+	REQUIRE(result.VariationIsParsed == true)
+	REQUIRE(result.Variation == "james")
+
 }
 #endif //test_StringUtils_h

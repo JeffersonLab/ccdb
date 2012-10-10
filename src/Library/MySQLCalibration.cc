@@ -15,8 +15,8 @@ MySQLCalibration::MySQLCalibration()
 }
 
 //______________________________________________________________________________
-MySQLCalibration::MySQLCalibration( int defaultRun, string defaultVariation/*="default"*/ )
-    :Calibration(defaultRun,defaultVariation)
+MySQLCalibration::MySQLCalibration( int defaultRun, string defaultVariation/*="default"*/, time_t defaultTime/*=0*/  )
+    :Calibration(defaultRun,defaultVariation, defaultTime)
 {
 }
 

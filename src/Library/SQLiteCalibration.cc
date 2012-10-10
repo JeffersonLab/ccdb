@@ -15,8 +15,8 @@ SQLiteCalibration::SQLiteCalibration()
 }
 
 //______________________________________________________________________________
-SQLiteCalibration::SQLiteCalibration( int defaultRun, string defaultVariation/*="default"*/ )
-    :Calibration(defaultRun,defaultVariation)
+SQLiteCalibration::SQLiteCalibration( int defaultRun, string defaultVariation/*="default"*/ , time_t defaultTime/*=0*/ )
+    :Calibration(defaultRun,defaultVariation, defaultTime)
 {
 }
 

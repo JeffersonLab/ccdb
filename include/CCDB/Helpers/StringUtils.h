@@ -39,14 +39,13 @@ namespace ccdb
 #define array_length(array) (sizeof (array) / sizeof (array)[0])
 
 
-struct DAssignmentRequest
+struct AssignmentRequest
 {
 	std::string Path;
-	        int RunNumber;
+	int         RunNumber;
 	std::string Variation;
-	     time_t Time;
+	time_t      Time;
 };
-
 
 class StringUtils
 {
@@ -219,6 +218,7 @@ public:
      */
 	static void LexicalSplit(std::vector<string>& tokens, const std::string& source);
 
+	 
 	/** @brief Prints object to string
 	 *
 	 * @param     obj Object to be converted to string. Should have << stream 

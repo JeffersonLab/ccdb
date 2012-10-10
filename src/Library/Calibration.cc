@@ -20,18 +20,21 @@ Calibration::Calibration()
     mProvider = NULL;
     mProviderIsLocked = false; //by default we assume that we own the provider
     mDefaultRun = 0;
+	mDefaultTime = 0;
     mDefaultVariation = "default";
     mReadMutex = new PthreadMutex(new PthreadSyncObject());
 }
 
 
 //______________________________________________________________________________
-Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/ )
+Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/, time_t defaultTime/*=0*/ )
 {	
     //Constructor 
 
 	mDefaultRun = defaultRun;
 	mDefaultVariation = defaultVariation;
+	mDefaultTime = defaultTime;
+
     mProvider = NULL;
     mProviderIsLocked = false; //by default we assume that we own the provider
     PthreadSyncObject * x = NULL;
@@ -530,18 +533,23 @@ Assignment * Calibration::GetAssignment( const string& namepath , bool loadColum
      * @return   DAssignment *
      */
 
-    DParseRequestResult result = PathUtils::ParseRequest(namepath);
+    RequestParseResult result = PathUtils::ParseRequest(namepath);
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
     Assignment* assigment = NULL;
     if(!this->IsConnected()) throw std::logic_error("Calibration class is not connected to data source. Connect to the data source first");
     
+	
     //Lock();Unlock();
     mReadMutex->Lock();
     if(result.WasParsedTime)
     {   
         assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation, loadColumns);
     }
+	else if (mDefaultTime>0)
+	{
+		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), mDefaultTime, variation, loadColumns);
+	}
     else
     {
         assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation, loadColumns);

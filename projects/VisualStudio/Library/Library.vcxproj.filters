@@ -247,5 +247,8 @@
     <ClCompile Include="..\..\..\src\Library\SQLiteCalibration.cc">
       <Filter>UserApi\Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Helpers\Stopwatch.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

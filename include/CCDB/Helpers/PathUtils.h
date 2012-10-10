@@ -26,9 +26,9 @@ using namespace std;
 
 namespace ccdb
 {
-    /// @brief DRequestParseResult is structure that represents parse result of
+    /// @brief RequestParseResult is structure that represents parse result of
     /// a string request. @see PathUtils::ParseRequest
-struct DParseRequestResult
+struct RequestParseResult
 {
 	int    RunNumber;	       /// Run number
 	bool   WasParsedRunNumber; /// true if Run number was non empty
@@ -40,6 +40,25 @@ struct DParseRequestResult
 	time_t Time;               /// Time stampt
 	bool   WasParsedTime;      /// true if time stampt was not empty
 	string TimeString;         /// Original string with time
+};
+
+/** @brief represents parse result of JANA context
+ * 
+ * context is given like 'variation=default time=2012'
+ */
+struct ContextParseResult
+{
+	std::string Variation;				/// Variation name
+	bool		VariationIsParsed;      /// true if variation was not empty
+	time_t      ConstantsTime;
+	bool        ConstantsTimeIsParsed;
+
+	/*ContextParseResult()
+	{
+	VariationIsParsed = false;
+	ConstantsTimeIsParsed = false;
+	}
+	~ContextParseResult();*/
 };
 
 
@@ -97,7 +116,7 @@ public:
 	 * @parameter [in] requestStr - user request
 	 * @return structure that represent user result
 	 */
-	static DParseRequestResult ParseRequest(const string& requestStr);
+	static RequestParseResult ParseRequest(const string& requestStr);
 
     /** @brief ParseTime
      * parses time as any part of
@@ -130,6 +149,14 @@ public:
      */
     static bool IsAbsolute(const string &path);
 
+	/** Parses JANA context string and returns ContextParseResult structure
+	 * 
+	 * JANA_CONTEXT is a string that may contain default values for CCDB. 
+	 * example of context string:
+	 * 'variation=default calibtime=2012'
+	 * parameters and values are separated by '=' (!) WITH NO SPACES
+	 */
+	static ContextParseResult ParseContext(const string& context);
 };
 }
 #endif // _PathUtils_

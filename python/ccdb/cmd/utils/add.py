@@ -13,7 +13,7 @@ log = logging.getLogger("ccdb.cmd.utils.add")
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registring AddData")
+    log.debug("      registering AddData")
     return AddData()
 
 

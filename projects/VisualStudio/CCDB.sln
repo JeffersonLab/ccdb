@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Library", "Library\Library.vcxproj", "{FF2376E7-5637-46A4-AE1B-A083D7588552}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxproj", "{3E64C06E-02CC-4183-92B2-6012CB975413}"
@@ -17,21 +17,57 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "web", "..\..\web\", "{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/web"
+		Debug.AspNetCompiler.Debug = "True"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.PhysicalPath = "..\..\web\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\web\"
 		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/web"
+		Debug.AspNetCompiler.VirtualPath = "/web"
+		Release.AspNetCompiler.Debug = "False"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.PhysicalPath = "..\..\web\"
 		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\web\"
 		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.VirtualPath = "/web"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		VWDPort = "64896"
+	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\web\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\web\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.VirtualPath = "/web"
 		Release.AspNetCompiler.Debug = "False"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.PhysicalPath = "..\..\web\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\web\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.VirtualPath = "/web"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		VWDPort = "4187"
+	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\web\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\web\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.VirtualPath = "/web"
+		Release.AspNetCompiler.Debug = "False"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.PhysicalPath = "..\..\web\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\web\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.VirtualPath = "/web"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		VWDPort = "4187"
 	EndProjectSection
 EndProject
@@ -51,20 +87,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|Win32.ActiveCfg = Debug|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|Win32.Build.0 = Debug|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|x64.ActiveCfg = Debug|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|x86.ActiveCfg = Debug|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|Any CPU.ActiveCfg = Release|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|Win32.ActiveCfg = Release|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|Win32.Build.0 = Release|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|x64.ActiveCfg = Release|Win32
-		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|x86.ActiveCfg = Release|Win32
 		{3E64C06E-02CC-4183-92B2-6012CB975413}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{3E64C06E-02CC-4183-92B2-6012CB975413}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{3E64C06E-02CC-4183-92B2-6012CB975413}.Debug|Mixed Platforms.Build.0 = Debug|Win32
@@ -89,30 +111,8 @@ Global
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.Release|Win32.ActiveCfg = Release|Win32
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.Release|x64.ActiveCfg = Release|Win32
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.Release|x86.ActiveCfg = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|x64.ActiveCfg = Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|x86.ActiveCfg = Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Any CPU.ActiveCfg = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Win32.ActiveCfg = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Win32.Build.0 = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|x64.ActiveCfg = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|x86.ActiveCfg = Release|Win32
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|Win32.ActiveCfg = Release|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|x64.ActiveCfg = Release|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|x86.ActiveCfg = Release|Any CPU
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Debug|Win32.ActiveCfg = Debug|Win32
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Debug|Win32.Build.0 = Debug|Win32
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Debug|x64.ActiveCfg = Debug|Win32
@@ -124,6 +124,16 @@ Global
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Release|Win32.Build.0 = Release|Win32
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Release|x64.ActiveCfg = Release|Win32
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Release|x86.ActiveCfg = Release|Win32
+		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|Win32.ActiveCfg = Release|Any CPU
+		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|x64.ActiveCfg = Release|Any CPU
+		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|x86.ActiveCfg = Release|Any CPU
 		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Debug|Win32.ActiveCfg = Debug|Any CPU
@@ -134,6 +144,17 @@ Global
 		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|Win32.ActiveCfg = Debug|Any CPU
 		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|x64.ActiveCfg = Debug|Any CPU
 		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|x86.ActiveCfg = Debug|Any CPU
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|x64.ActiveCfg = Debug|Win32
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|x86.ActiveCfg = Debug|Win32
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Any CPU.ActiveCfg = Release|Win32
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Win32.ActiveCfg = Release|Win32
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Win32.Build.0 = Release|Win32
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|x64.ActiveCfg = Release|Win32
+		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|x86.ActiveCfg = Release|Win32
 		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Mixed Platforms.Build.0 = Debug|Win32
@@ -147,6 +168,20 @@ Global
 		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|Win32.Build.0 = Release|Win32
 		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|x64.ActiveCfg = Release|Win32
 		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|x86.ActiveCfg = Release|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|Win32.Build.0 = Debug|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|x64.ActiveCfg = Debug|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Debug|x86.ActiveCfg = Debug|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|Any CPU.ActiveCfg = Release|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|Win32.ActiveCfg = Release|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|Win32.Build.0 = Release|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|x64.ActiveCfg = Release|Win32
+		{FF2376E7-5637-46A4-AE1B-A083D7588552}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

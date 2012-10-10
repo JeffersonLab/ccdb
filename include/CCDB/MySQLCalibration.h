@@ -20,8 +20,9 @@ public:
 	 *
 	 * @param defaultRun       [in] Sets default run number
 	 * @param defaultVariation [in] Sets default variation
+	 * @param defaultTime      [in] Sets default time for the coefficitnts
 	 */
-    MySQLCalibration(int defaultRun, string defaultVariation="default");
+    MySQLCalibration(int defaultRun, string defaultVariation="default", time_t defaultTime=0);
 
 	/** @brief    DMySQLCalibration
 	 *
