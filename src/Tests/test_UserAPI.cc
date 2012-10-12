@@ -11,7 +11,7 @@
 #include "CCDB/Model/Variation.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/WorkUtils.h"
-#include "CCDB/Helpers/StopWatch.h"
+#include "CCDB/Helpers/Stopwatch.h"
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Log.h"
 #include "CCDB/CalibrationGenerator.h"
