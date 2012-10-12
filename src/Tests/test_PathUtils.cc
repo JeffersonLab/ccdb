@@ -8,7 +8,7 @@
 
 #include <vector>
 #include <string>
-
+#include <time.h>
 
 using namespace std;
 using namespace ccdb;
@@ -64,6 +64,89 @@ TEST_CASE("CCDB/PathUtils", "Request parse")
     //result.Time=0;                    // Time stamp
     //result.WasParsedTime=false;       // true if time stamp was not empty
     //result.TimeString="";             // Original string with time
+}
+
+
+TEST_CASE("CCDB/PathUtils", "Time parse")
+{
+	//new year eve of 2011
+	tm time;
+	time.tm_year = 111; //+1900 = 2011
+	time.tm_mon = 11;
+	time.tm_mday = 31;
+	time.tm_hour = 23;
+	time.tm_min = 59;	
+	time.tm_sec = 59;	
+	time.tm_isdst = 0;
+
+	bool success; 
+	time_t tester = mktime(&time);
+	time_t result = PathUtils::ParseTime("2011", &success);
+	REQUIRE(tester == result);
+
+	time.tm_year = 111; //+1900 = 2011
+	time.tm_mon = 7; //since month [0-11]
+	time.tm_mday = 31;
+	time.tm_hour = 23;
+	time.tm_min = 59;	
+	time.tm_sec = 59;	
+	time.tm_isdst = 0;
+	tester = mktime(&time);
+	result = PathUtils::ParseTime("2011-08", &success);
+	REQUIRE(tester == result);
+	REQUIRE(success)
+
+	time.tm_year = 111; //+1900 = 2011
+	time.tm_mon = 7; //since month [0-11]
+	time.tm_mday = 17;
+	time.tm_hour = 23;
+	time.tm_min = 59;	
+	time.tm_sec = 59;	
+	time.tm_isdst = 0;
+	tester = mktime(&time);
+	result = PathUtils::ParseTime("2011-08-17", &success);
+	REQUIRE(tester == result);
+	REQUIRE(success)
+
+	time.tm_year = 111; //+1900 = 2011
+	time.tm_mon = 7; //since month [0-11]
+	time.tm_mday = 17;
+	time.tm_hour = 14;
+	time.tm_min = 30;	
+	time.tm_sec = 59;	
+	time.tm_isdst = 0;
+	tester = mktime(&time);
+	result = PathUtils::ParseTime("2011-08-17 14:30", &success);
+	REQUIRE(tester == result);
+	REQUIRE(success)
+
+	time.tm_year = 111; //+1900 = 2011
+	time.tm_mon = 7; //since month [0-11]
+	time.tm_mday = 17;
+	time.tm_hour = 14;
+	time.tm_min = 30;	
+	time.tm_sec = 20;	
+	time.tm_isdst = 0;
+	tester = mktime(&time);
+	result = PathUtils::ParseTime("2011-08-17 14:30:20", &success);
+	REQUIRE(tester == result);
+	REQUIRE(success)
+
+	time.tm_year = 112; //+1900 = 2011
+	time.tm_mon = 6;
+	time.tm_mday = 12;
+	time.tm_hour = 06;
+	time.tm_min = 30;	
+	time.tm_sec = 15;	
+	time.tm_isdst=false;
+	tester = mktime(&time);
+	result = PathUtils::ParseTime("2012 07 12 06:30:15", &success);
+	REQUIRE(tester == result);
+	REQUIRE(success)
+
+	//!sucsess
+	result = PathUtils::ParseTime("2011-08-17 14:30:", &success);
+	REQUIRE_FALSE(success)
 }
 
 

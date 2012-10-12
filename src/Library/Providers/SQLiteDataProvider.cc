@@ -1895,15 +1895,30 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
         "FROM  `assignments` "
         "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
         "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
-        "WHERE  `runRanges`.`runMin` <= '?1' "
-        "AND `runRanges`.`runMax` >= '?1' "
-        "AND `assignments`.`variationId`= '?2' "
-        "AND (strftime('%s', `assignments`.`created`, 'localtime') <= '?3') "
-        "AND `constantSets`.`constantTypeId` ='?4' "
+        "WHERE  `runRanges`.`runMin` <= ?1 "
+        "AND `runRanges`.`runMax` >= ?1 "
+        "AND `assignments`.`variationId`= ?2 "
+        "AND  `assignments`.`created` <= datetime(?3, 'unixepoch', 'localtime') "
+        "AND `constantSets`.`constantTypeId` =?4 "
         "ORDER BY `assignments`.`id` DESC "
         "LIMIT 1 ";
 		
-
+/*
+SELECT `assignments`.`id` AS `asId`,
+`constantSets`.`vault` AS `blob`,
+strftime('%s', `assignments`.`created`, 'localtime') AS `time`
+FROM  `assignments`
+INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id`
+INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id`
+WHERE  `runRanges`.`runMin` <= 100
+AND `runRanges`.`runMax` >= 100
+AND `assignments`.`variationId`= 1
+AND  strftime('%s', `assignments`.`created`, 'localtime') <= 1346475599
+AND `constantSets`.`constantTypeId` = 1
+ORDER BY `assignments`.`id` DESC
+LIMIT 1 ;
+AND  strftime('%s', `assignments`.`created`, 'localtime') <= 1346475599
+*/
 	// prepare the SQL statement from the command line
 	int result = sqlite3_prepare_v2(mDatabase, query, -1, &mStatement, 0);
 	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
@@ -1914,11 +1929,10 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
 	result = sqlite3_bind_int(mStatement, 2, varId);	/*`directoryId`*/
 	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
 	
-	result = sqlite3_bind_int64(mStatement, 4, time);	/*`directoryId`*/
+	result = sqlite3_bind_int64(mStatement, 3, time);	/*`directoryId`*/
 	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
-
-	
-	result = sqlite3_bind_int(mStatement, 3, table->GetId());	/*`directoryId`*/
+		
+	result = sqlite3_bind_int(mStatement, 4, table->GetId());	/*`directoryId`*/
 	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
 
 	mQueryColumns = sqlite3_column_count(mStatement);

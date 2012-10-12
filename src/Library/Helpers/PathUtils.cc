@@ -134,9 +134,9 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
     bool lastIsDigit;   //last symbol was digit
 
     //scan all symbols
-    for (size_t i=0; i<timeStr.size(); i++)
+    for (size_t i=0; i<workStr.size(); i++)
     {
-        char symbol = timeStr[i];
+        char symbol = workStr[i];
 
         if(symbol>='0'&&symbol<='9') //Check if it is number
         {
@@ -150,21 +150,21 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
             {
                 if(tmpStr.length()!=4) //it is an error with lengtn of year
                 {
-                    if(succsess!=NULL) succsess = false;
+                    if(succsess!=NULL) *succsess = false;
                     return 0;
                 }
-                time.tm_year = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
+                time.tm_year = StringUtils::ParseInt(tmpStr) - 1900;  //since in tm the year is from 1900
             }
             
             if(delimCount ==2) //it was a month
             {
                 if(tmpStr.length()!=2) //it is an error with lengtn of year
                 {
-                    if(succsess!=NULL) succsess = false;
+                    if(succsess!=NULL) *succsess = false;
                     return 0;
                 }
 
-                time.tm_mon = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
+                time.tm_mon = StringUtils::ParseInt(tmpStr) - 1;  // -1 becaouse months since January [0-11]
 
                 //#check for 30 day month
                 if((time.tm_mon == 9)||(time.tm_mon == 10)||(time.tm_mon == 4)||(time.tm_mon == 6))
@@ -190,7 +190,7 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
             {
                 if(tmpStr.length()!=2) //it is an error with lengtn of day
                 {
-                    if(succsess!=NULL) succsess = false;
+                    if(succsess!=NULL) *succsess = false;
                     return 0;
                 }
                 time.tm_mday = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
@@ -200,7 +200,7 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
             {
                 if(tmpStr.length()!=2) //it is an error with lengtn
                 {
-                    if(succsess!=NULL) succsess = false;
+                    if(succsess!=NULL) *succsess = false;
                     return 0;
                 }
                 time.tm_hour = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
@@ -210,7 +210,7 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
             {
                 if(tmpStr.length()!=2) //it is an error with lengtn of min
                 {
-                    if(succsess!=NULL) succsess = false;
+                    if(succsess!=NULL) *succsess = false;
                     return 0;
                 }
                 time.tm_min = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
@@ -220,12 +220,13 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
             {
                 if(tmpStr.length()!=2) //it is an error with lengtn of sec
                 {
-                    if(succsess!=NULL) succsess = false;
+                    if(succsess!=NULL) *succsess = false;
                     return 0;
                 }
                 time.tm_sec = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
             }
 
+			
             //clear temp string for the next digit seria
             tmpStr.clear();
         }
@@ -235,6 +236,7 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
         }
     }
     time_t result = mktime(&time);
+	if( result == -1 && succsess!=NULL) *succsess = false;
     return result;
 }
 

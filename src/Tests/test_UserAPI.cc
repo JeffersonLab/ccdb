@@ -197,12 +197,14 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
 
 TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get calibrations")
 {
+	bool result;
 	CalibrationGenerator* gen = new CalibrationGenerator();
 	Calibration* sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, "default");
 	REQUIRE(static_cast<SQLiteCalibration*>(sqliteCalib)!=NULL);
 	REQUIRE(sqliteCalib->IsConnected());
 	vector<vector<string> > tabledValues;
-	REQUIRE_NOTHROW(sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+	REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+	REQUIRE(result);
 	REQUIRE(tabledValues.size()>0);
 	REQUIRE(tabledValues.size()==2);
 	REQUIRE(tabledValues[0].size()==3);
@@ -213,7 +215,8 @@ TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get ca
 	Calibration* mysqlCalib  = gen->MakeCalibration(TESTS_CONENCTION_STRING, 100, "default");
 	REQUIRE(static_cast<MySQLCalibration*>(mysqlCalib)!=NULL);
 	REQUIRE(sqliteCalib->IsConnected());
-	REQUIRE_NOTHROW(sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+	REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+	REQUIRE(result);
 	REQUIRE(tabledValues.size()>0);
 	REQUIRE(tabledValues.size()==2);
 	REQUIRE(tabledValues[0].size()==3);
@@ -223,17 +226,29 @@ TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get ca
 	REQUIRE(CalibrationGenerator::CheckOpenable(TESTS_SQLITE_STRING));
 	REQUIRE_FALSE(CalibrationGenerator::CheckOpenable("abra_kadabra://protocol"));
 
-
-	SECTION("Default Time", "Test that test vars are opened with default date")
-	{
-		
+	//=== Default time ===
+	SECTION("Default Time SQLite", "Test that test vars are opened with default date")
+	{		
 		ContextParseResult res = PathUtils::ParseContext("variation=default calibtime=2012-08");
 		Calibration* sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime);
-		REQUIRE_NOTHROW(sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+		REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+		REQUIRE(result);
 		REQUIRE(tabledValues.size()>0);
 		REQUIRE(tabledValues.size()==2);
 		REQUIRE(tabledValues[0].size()==3);
-		REQUIRE(tabledValues[0][0]=="1.0");
+		REQUIRE(tabledValues[0][0]=="1.11");
+	}
+
+	SECTION("Default Time MySQL", "Test that test vars are opened with default date")
+	{		
+		ContextParseResult res = PathUtils::ParseContext("variation=default calibtime=2012-08");
+		Calibration* sqliteCalib = gen->MakeCalibration(TESTS_CONENCTION_STRING, 100, res.Variation, res.ConstantsTime);
+		REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+		REQUIRE(result);
+		REQUIRE(tabledValues.size()>0);
+		REQUIRE(tabledValues.size()==2);
+		REQUIRE(tabledValues[0].size()==3);
+		REQUIRE(tabledValues[0][0]=="1.11");
 	}
 }
 

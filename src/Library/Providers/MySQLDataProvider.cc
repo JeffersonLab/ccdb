@@ -1807,8 +1807,6 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	//ok lets read the data...
 	Assignment *result = new Assignment(this, this);
 	result->SetId( ReadIndex(0) );
-	//result->SetCreatedTime( ReadUnixTime(1) );
-	//result->SetModifiedTime( ReadUnixTime(2) );
 	result->SetRawData( ReadString(1) );
 	
 	//additional fill
@@ -1858,7 +1856,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
     int varId = GetVariationId( variation );
 
 	//ok now we must build our mighty query...
-	string query=
+	char format[]=
         "SELECT `assignments`.`id` AS `asId`, "
         "`constantSets`.`vault` AS `blob` "
         "FROM  `assignments` "
@@ -1868,13 +1866,13 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
         "WHERE  `runRanges`.`runMin` <= '%i' "
         "AND `runRanges`.`runMax` >= '%i' "
         "AND `assignments`.`variationId`= '%i' "
-        "AND (UNIX_TIMESTAMP(`assignments`.`created`) <= '%lu') "
+        "AND UNIX_TIMESTAMP(`assignments`.`created`) <= '%lld' "
         "AND `constantSets`.`constantTypeId` ='%i' "
         "ORDER BY `assignments`.`id` DESC "
         "LIMIT 1 ";
 		
-
-	query=StringUtils::Format(query.c_str(), run,run, varId, time, table->GetId());
+	char query[1000];
+	sprintf(query,format, run,run, varId, (long long)time, table->GetId());
 	
 	//query this
 	if(!QuerySelect(query))
@@ -1893,17 +1891,13 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 
 	//ok lets read the data...
 	Assignment *result = new Assignment(this, this);
-	result->SetId(ReadULong(0));
-	result->SetCreatedTime(ReadUnixTime(1));
-	result->SetModifiedTime(ReadUnixTime(2));
-	result->SetRunRangeId(ReadInt(3));
-	result->SetVariationId(ReadInt(4));
-	result->SetDataVaultId(ReadInt(5));
-	result->SetRawData(ReadString(6));
+	result->SetId( ReadIndex(0) );
+	result->SetRawData( ReadString(1) );
 	
 	//additional fill
 	result->SetRequestedRun(run);
 	result->SetTypeTable(table);
+	result->SetVariationId(varId);
 	
 	if(mReturnedRowsNum>1)
 	{
