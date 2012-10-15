@@ -15,19 +15,11 @@ Import('env')
 #Configure environment to create tests
 test_sources = [
     "tests.cc",
-	#"test_Console.cc",
-	"test_MySQLProvider_Assignments.cc",
-	"test_MySQLProvider_Connection.cc",
-	"test_MySQLProvider.cc",
-	"test_MySQLProvider_Directories.cc",
-	"test_MySQLProvider_Other.cc",
-	"test_MySQLProvider_RunRanges.cc",
-	"test_MySQLProvider_TypeTables.cc",
-	"test_MySQLProvider_Variations.cc",
+	#"test_Console.cc",	
 	"test_StringUtils.cc",
 	"test_PathUtils.cc",
 	"test_ModelObjects.cc",
-	"test_UserAPI.cc",
+	"test_NoMysqlUserAPI.cc",
 	"test_Authentication.cc",
     "test_SQLiteProvider_Assignments.cc",
 	"test_SQLiteProvider_Connection.cc",
@@ -35,6 +27,26 @@ test_sources = [
 	"test_SQLiteProvider_TypeTables.cc",
 	"test_SQLiteProvider_Variations.cc",
 	]
+	
+#Read user flag for using mysql dependencies or not
+if ARGUMENTS.get("mysql","yes")=="yes":
+	#User wants mysql!
+		
+	#model and provider
+	test_sources.extend([
+	"test_MySQLProvider_Assignments.cc",
+	"test_MySQLProvider_Connection.cc",
+	"test_MySQLProvider.cc",
+	"test_MySQLProvider_Directories.cc",
+	"test_MySQLProvider_Other.cc",
+	"test_MySQLProvider_RunRanges.cc",
+	"test_MySQLProvider_TypeTables.cc",
+	"test_MySQLProvider_Variations.cc"])
+	
+else:
+	print "CCDB is being build WITHOUT MySQL support. Use ''mysql=yes' flag to explicitly enable MySQL support"
+	
+	
 
 #Making tests
 ccdb_tests_program = env.Program('tests_ccdb', source = test_sources, LIBS=["ccdb"], LIBPATH='#lib')
