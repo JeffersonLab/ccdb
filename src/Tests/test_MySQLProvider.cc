@@ -1,5 +1,6 @@
 
 #pragma warning(disable:4800)
+#ifdef CCDB_MYSQL
 
 #include "Tests/catch.h"
 
@@ -17,3 +18,4 @@ TEST_CASE("CCDB/MySQLDataProvider","MySQLDataProvider base tests")
     REQUIRE(prov!=NULL);
     //REQUIRED_CATEGORY("CCDB/MySQLDataProvider/Connection");
 }
+#endif //ifdef CCDB_MYSQL

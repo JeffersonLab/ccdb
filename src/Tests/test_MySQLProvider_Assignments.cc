@@ -1,4 +1,5 @@
 #pragma warning(disable:4800)
+#ifdef CCDB_MYSQL
 #include "Tests/tests.h"
 #include "Tests/catch.h"
 
@@ -81,3 +82,4 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	REQUIRE(Assignment::DecodeBlobSeparator("30e-2") == "30e-2");	
 	
 }
+#endif //ifdef CCDB_MYSQL

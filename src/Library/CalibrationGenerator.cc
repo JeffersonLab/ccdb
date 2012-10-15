@@ -2,10 +2,13 @@
 #include <sstream>
 
 #include "CCDB/CalibrationGenerator.h"
-#include "CCDB/MySQLCalibration.h"
 #include "CCDB/SQLiteCalibration.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Providers/SQLiteDataProvider.h"
+
+#ifdef CCDB_MYSQL
+#include "CCDB/MySQLCalibration.h"
+#endif //CCDB_MYSQL
 
 using namespace std;
 
@@ -50,6 +53,10 @@ Calibration* CalibrationGenerator::MakeCalibration( const std::string & connecti
 	if(connectionString.find("mysql://")==0)
 	{		
 		isMySql = true;  //It is mysql
+		
+		#ifndef CCDB_MYSQL
+		throw std::logic_error("Cannot connect to MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using mysql=1 flag. The connection string: " + connectionString);
+		#endif //CCDB_MYSQL
 	}
 	else
 	{
@@ -111,9 +118,14 @@ Calibration* CalibrationGenerator::MakeCalibration( const std::string & connecti
 //______________________________________________________________________________
 Calibration* CalibrationGenerator::CreateCalibration( bool isMySQL, DataProvider *prov, int run, const std::string& variation, const time_t time )
 {	
+	
 	if (isMySQL)
 	{
-		return new MySQLCalibration(run, variation, time);
+		#ifdef CCDB_MYSQL
+			return new MySQLCalibration(run, variation, time);
+		#else
+			return NULL;
+		#endif //CCDB_MYSQL
 	}
 	else
 	{

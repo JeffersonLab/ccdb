@@ -1,4 +1,5 @@
 #pragma warning(disable:4800)
+#ifdef CCDB_MYSQL
 #include "Tests/catch.h"
 #include "Tests/tests.h"
 
@@ -67,3 +68,4 @@ TEST_CASE("CCDB/MySQLDataProvider/RunRanges","RunRanges tests")
     REQUIRE(result)
 	
 }
+#endif //ifdef CCDB_MYSQL
