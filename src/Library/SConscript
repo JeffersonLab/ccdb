@@ -27,14 +27,12 @@ lib_sources = [
 	#user api
 	"Calibration.cc",
 	"CalibrationGenerator.cc",
-	"MySQLCalibration.cc",
     "SQLiteCalibration.cc",
 	
 	#helper classes
 	"Helpers/StringUtils.cc",
 	"Helpers/PathUtils.cc",
 	"Helpers/WorkUtils.cc",
-    "Helpers/Stopwatch.cc",
 	
 	#model and provider
 	"Model/ObjectsOwner.cc",
@@ -48,8 +46,6 @@ lib_sources = [
 	"Model/Variation.cc",
 	"Providers/DataProvider.cc",
 	"Providers/FileDataProvider.cc",
-	"Providers/MySQLConnectionInfo.cc",
-	"Providers/MySQLDataProvider.cc",
     "Providers/SQLiteDataProvider.cc",
 	"Providers/IAuthentication.cc",
 	"Providers/EnvironmentAuthentication.cc",
@@ -58,7 +54,34 @@ lib_sources = [
     "#src/SQLite/sqlite3.c"
 	]
 
-env.ParseConfig('mysql_config --libs --cflags')
+#Read user flag for using mysql dependencies or not
+if ARGUMENTS.get("mysql","yes")=="yes":
+	#User wants mysql!
+	print "Building CCDB using MySQL dependencies"
+	print "To build CCDB without mysql dependencies. Run scons with 'mysql=no' flag"
+	print ""
+	
+	if not WhereIs("mysql_config"):
+		print 	"Can't find 'mysql_config' utility which is needed to build CCDB with MySQL support."
+		print 	"Two options is possible to build CCDB:"
+		print   "  1. Install mysql_config (RHEL has it in mysql-devel package)"
+		print   "  2. Build CCDB without MySQL dependencies (use 'mysql=no' scons flag)"
+		ExitNow()
+	
+	mysql_sources = [
+	#user api
+	"MySQLCalibration.cc",
+	
+	#model and provider
+	"Providers/MySQLConnectionInfo.cc",
+	"Providers/MySQLDataProvider.cc"]
+	
+	lib_sources.extend(mysql_sources)	
+	env.Append(CPPDEFINES='CCDB_MYSQL')
+	env.ParseConfig('mysql_config --libs --cflags')
+else:
+	print "CCDB is being build WITHOUT MySQL support. Use ''mysql=yes' flag to explicitly enable MySQL support"
+	
 
 #Making library
 lib = env.SharedLibrary(target = lib_target, source = lib_sources)

@@ -8,7 +8,7 @@ PREPARE CCDB
 ============
 
 1. Install CCDB. Follow the instructions of file install.linux.txt located in 
-   the $CCDB_HOME directory. 
+   the $CCDB_HOME directory
 
 2. Don't forget to setup CCDB environment in a terminal you going to run JANA with CCDB
 
@@ -32,7 +32,6 @@ PREPARE JANA
 
 
 3) Rebuild JANA 
-
 
 
 
