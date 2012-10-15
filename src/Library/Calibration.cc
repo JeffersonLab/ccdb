@@ -4,7 +4,7 @@
 
 #include "CCDB/Calibration.h"
 #include "CCDB/GlobalMutex.h"
-#include "CCDB/Providers/MySQLDataProvider.h"
+#include "CCDB/Providers/DataProvider.h"
 #include "CCDB/Helpers/PathUtils.h"
 
 using namespace std;
@@ -109,7 +109,7 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
 
     //check data, get columns 
     if(values.size() == 0){
-        throw std::logic_error("DMySQLCalibration::GetCalib( vector< map<string, string> >&, const string&). Data has no rows. Zero rows are not supposed to be.");
+        throw std::logic_error("Calibration::GetCalib( vector< map<string, string> >&, const string&). Data has no rows. Zero rows are not supposed to be.");
     }
     return true;
 }
@@ -330,7 +330,7 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
     //check data a little...
     if(rawTableValues.size() == 0)
     {
-        throw std::logic_error("DMySQLCalibration::GetCalib( map<string, string>&, const string&). Data has no rows. Zero rows are not supposed to be.");
+        throw std::logic_error("Calibration::GetCalib( map<string, string>&, const string&). Data has no rows. Zero rows are not supposed to be.");
     }
 
     //TODO should we check that rawTableValues have only one row?
@@ -446,10 +446,10 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
 
     //check data and check that the user will get what he ment...
     if(values.size() == 0)
-        throw std::logic_error("DMySQLCalibration::GetCalib(vector<string> &, const string &). Data has no rows. Zero rows are not supposed to be.");
+        throw std::logic_error("Calibration::GetCalib(vector<string> &, const string &). Data has no rows. Zero rows are not supposed to be.");
 
     if(values.size() != assignment->GetTypeTable()->GetNColumns())
-        throw std::logic_error("DMySQLCalibration::GetCalib(vector<string> &, const string &). logic_error: Calling of single row vector<dataType> version of GetCalib method on dataset that has more than one rows. Use GetCalib vector<vector<dataType> > instead.");
+        throw std::logic_error("Calibration::GetCalib(vector<string> &, const string &). logic_error: Calling of single row vector<dataType> version of GetCalib method on dataset that has more than one rows. Use GetCalib vector<vector<dataType> > instead.");
 }
 
 
