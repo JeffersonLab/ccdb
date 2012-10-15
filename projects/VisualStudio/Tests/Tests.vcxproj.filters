@@ -50,9 +50,6 @@
     <ClCompile Include="..\..\..\src\Tests\test_StringUtils.cc">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Tests\test_UserAPI.cc">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\Tests\tests.cc">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -72,6 +69,12 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Tests\test_SQLiteProvider_Variations.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_MySqlUserAPI.cc">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Tests\test_NoMysqlUserAPI.cc">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
