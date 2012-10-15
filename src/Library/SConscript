@@ -54,6 +54,10 @@ lib_sources = [
     "#src/SQLite/sqlite3.c"
 	]
 
+#additional variables
+env.Append(LIBS = ['pthread'])
+env.Append(CPPDEFINES = 'SQLITE_OMIT_LOAD_EXTENSION')
+
 #Read user flag for using mysql dependencies or not
 if ARGUMENTS.get("mysql","yes")=="yes":
 	#User wants mysql!
@@ -80,7 +84,7 @@ if ARGUMENTS.get("mysql","yes")=="yes":
 	env.Append(CPPDEFINES='CCDB_MYSQL')
 	env.ParseConfig('mysql_config --libs --cflags')
 else:
-	print "CCDB is being build WITHOUT MySQL support. Use ''mysql=yes' flag to explicitly enable MySQL support"
+	print "CCDB is being build WITHOUT MySQL support. Use 'mysql=yes' flag to explicitly enable MySQL support"
 	
 
 #Making library

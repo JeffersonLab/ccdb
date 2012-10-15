@@ -91,7 +91,7 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
 }
 
 
-TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get calibrations")
+TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to get calibrations")
 {
 	bool result;
 	CalibrationGenerator* gen = new CalibrationGenerator();

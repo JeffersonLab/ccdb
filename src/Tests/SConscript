@@ -43,10 +43,6 @@ if ARGUMENTS.get("mysql","yes")=="yes":
 	"test_MySQLProvider_TypeTables.cc",
 	"test_MySQLProvider_Variations.cc"])
 	
-else:
-	print "CCDB is being build WITHOUT MySQL support. Use ''mysql=yes' flag to explicitly enable MySQL support"
-	
-	
 
 #Making tests
 ccdb_tests_program = env.Program('tests_ccdb', source = test_sources, LIBS=["ccdb"], LIBPATH='#lib')
