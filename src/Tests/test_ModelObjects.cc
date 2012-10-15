@@ -9,7 +9,6 @@
 #include "CCDB/Console.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/WorkUtils.h"
-#include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/Directory.h"
 #include "CCDB/Model/Assignment.h"
 #include "CCDB/Model/RunRange.h"
