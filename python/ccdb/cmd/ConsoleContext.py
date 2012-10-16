@@ -536,6 +536,7 @@ class ConsoleContext:
         print "print " + Theme.Accent + "quit" + Theme.Reset + " or " + Theme.Accent + "q" + Theme.Reset +" to exit"
         print "print !<command> to execute shell command"
         print
+        print "You login as: '"+self._user_name+"'"
         
         
                 
