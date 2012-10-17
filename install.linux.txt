@@ -27,17 +27,37 @@ Or you can add next lines to your .bashrc
 ==========================
 
  make ccdb library for your system. 
- scons            - makes ccdb library located $CCDB_HOME/lib and test executable located in $CCDB_HOME/bin
-
+ There two options of building CCDB:
+ 1. With SQLite and MySQL support (default)
+ 2. With SQLite support only. 
+ 
+ Since MySql is supposed to be a main central database, MySQL is used by default. 
+ However compiling SQLite version only doesn't require any dependencies except pthread.
+ 
+ 1. To compile CCDB by default:
 
 ##RUN CODE:
 
     cd $CCDB_HOME
     scons
+    
+    
+ 2. To compile CCDB with no dependencies and SQLite support only
 
+##RUN CODE:
+
+    cd $CCDB_HOME
+    scons mysql=no
+    
 
   S T E P   3   -   M Y S Q L
 =============================
+ 
+ (!) SKIP this step if you are NOT going to install and develop MySQL CCDB 
+     database on Your computer. 
+    
+ (!) One should definately skip this step if one compiled CCDB with only SQLite support
+ 
 
  If You would like to install database on the local machine, you need to create
  a database (by default it is ment to be called ccdb). 
@@ -99,7 +119,7 @@ To test python is working you may run ccdbcmd
 
 #RUN CODE:
 
-     ccdbcmd -i
+     ccdb -i
 
 interactive ccdb shell should be started
 
