@@ -554,6 +554,27 @@ Assignment * Calibration::GetAssignment( const string& namepath , bool loadColum
     {
         assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation, loadColumns);
     }
+
+	//Try to fallback to default variation
+	if (assigment == NULL && variation!="default")
+	{
+		variation = "default";
+
+		//TODO fix this repeating code
+		if(result.WasParsedTime)
+		{   
+			assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation, loadColumns);
+		}
+		else if (mDefaultTime>0)
+		{
+			assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), mDefaultTime, variation, loadColumns);
+		}
+		else
+		{
+			assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation, loadColumns);
+		}
+
+	}
     mReadMutex->Release();
     return assigment;
 
