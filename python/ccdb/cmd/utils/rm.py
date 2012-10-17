@@ -6,15 +6,14 @@ import time
 from ccdb import Directory, TypeTable, TypeTableColumn, Variation
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
+from ccdb.cmd.themes import Theme
 from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.rm")
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registring Remove")
+    log.debug("      registering Remove")
     return Remove()
 
 

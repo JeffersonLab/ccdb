@@ -2,20 +2,19 @@ import posixpath
 import re
 import logging
 
-import ccdb
-from ccdb.cmd import is_verbose, is_debug_verbose, Theme, ConsoleUtilBase
-from ccdb.cmd.Theme import bool_color, print_bool
-
+from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd.themes import Theme, bool_color
 
 log = logging.getLogger("ccdb.cmd.utils.mktbl")
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registring MakeTable")
+    log.debug("      registering MakeTable")
     return MakeTable()
 
 
 #*********************************************************************
+#                                                                    *
 #   Class MakeTable - Create constants type table                    *
 #                                                                    *
 #*********************************************************************
@@ -94,10 +93,10 @@ class MakeTable(ConsoleUtilBase):
         (self.table_parent_path, self.table_name) = posixpath.split(self.table_path)
         
         #>oO debug
-        if is_debug_verbose(): self.print_settings_summary()
-        
-        if is_verbose() and not self.interactive:
-            self.print_validation()
+        if log.getEffectiveLevel() <= logging.DEBUG:
+            self.print_settings_summary()
+            if not self.interactive:
+                self.print_validation()
         
         #create table
         self.do_create_type()
@@ -117,35 +116,20 @@ class MakeTable(ConsoleUtilBase):
             self.comment = raw_input("Enter comment :")
 
 
-#---------------------------------
-#   do_create_type - creates table
-#---------------------------------
+    #----------------------------------------------
+    #   do_create_type - creates table
+    #----------------------------------------------
     def do_create_type(self):
-        "finally this function creates table"
+        """this function finally creates table"""
 
-        if is_debug_verbose():
-            print "writing to database..." 
-            
-        result = self.context.provider.create_type_table(self.table_name, self.table_parent_path, self.rows, self.columns, self.comment)
-        
-        if result:
-            print "saving table to database... " + Theme.Success + " completed"
-        else:
-            print "saving table to database... " + Theme.Fail + " failed"
-            
-        #table = ccdb.ccdb_pyllapi.ConstantsTypeTable()
-        #table.SetName(self.table_name)
-        #table.SetComment(self.comment)
-        #for pycolumn in self.columns:
-        #    column = ccdb.ccdb_pyllapi.ConstantsTypeColumn()
-        #    column.SetName(pycolumn["name"])
-        #    column.SetType(pycolumn["type"])
-        #    table.AddColumn(column)
+        log.debug("  write table to database...")
+        self.context.provider.create_type_table(self.table_name, self.table_parent_path, self.rows, self.columns, self.comment)
+        print "saving table to database... " + Theme.Success + " completed" + Theme.Reset
 
 
-#----------------------------------------------
-#   process_arguments - process input arguments
-#----------------------------------------------
+    #----------------------------------------------
+    #   process_arguments - process input arguments
+    #----------------------------------------------
     def process_arguments(self, args):
         """@brief process input arguments
         
@@ -245,9 +229,9 @@ class MakeTable(ConsoleUtilBase):
         return columns
             
     
-#----------------------------------------------
-#   parse_column - parse each column
-#----------------------------------------------
+    #----------------------------------------------
+    #   parse_column - parse each column
+    #----------------------------------------------
     def parse_column(self, value):
         """parse each column argument record"""
         
@@ -282,9 +266,9 @@ class MakeTable(ConsoleUtilBase):
         return result
             
             
-#----------------------------------------------
-#   print_help - prints help for MakeTable
-#----------------------------------------------
+    #----------------------------------------------
+    #   print_help - prints help for MakeTable
+    #----------------------------------------------
     def print_help(self):
         "prints help for MakeTable"
         
@@ -351,9 +335,9 @@ keys:
                                      mktbl -nq ... 10val  - creates 1 column named '10val'
             """
         
-#----------------------------------------------
-#   print_validation - PRINTS VALIDATION TABLE
-#----------------------------------------------
+    #----------------------------------------------
+    #   print_validation - PRINTS VALIDATION TABLE
+    #----------------------------------------------
     def print_validation(self):
         #basic values: name rows columns path
         print

@@ -2,17 +2,14 @@ import sys
 import posixpath
 import logging
 
-from ccdb.ccdb_pyllapi import Directory, ConstantsTypeTable
-from ccdb import MySQLProvider
+from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
 
 log = logging.getLogger("ccdb.cmd.utils.ls")
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registring Dump")
+    log.debug("      registering Dump")
     return Dump()
 
 
@@ -27,25 +24,15 @@ class Dump(ConsoleUtilBase):
     #------------------------------
     command = "dump"
     name = "Dump"
-    short_descr = "Dumps datat table to a file"
+    short_descr = "Dumps data table"
     uses_db = True
 
     #variables for each process
 
-    rawentry = "/"       #object path with possible pattern, like /mole/*
-    parent_path = "/"    #parent path
-    parent_dir = None    # @type parent_dir DDirectory
-    pattern = ""         #pattern on the end of parent path like file?*
-
     def process(self, args):
         log.debug("Dump is gained a control over the process.")
         log.debug("Arguments: " + " ".join(args))
-        
-        assert self.context != None
-        provider = self.context.provider;
-        #self.context.
-        assert isinstance(provider, MySQLProvider)
-        
+
         self.context.process("cat --no-borders --no-header --comments --time" + " ".join(args))
 
 

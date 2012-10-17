@@ -1,10 +1,11 @@
+import logging
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.Theme import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
+
+log = logging.getLogger("ccdb.cmd.utils.horse")
 
 #ccdbcmd module interface
 def create_util_instance():
-    if is_debug_verbose(): print "      registring Horse"
+    log.debug("      registering Horse")
     return Horse()
 
 
@@ -31,7 +32,7 @@ class Horse(ConsoleUtilBase):
             --young     - young horse
             --toy       - toy horse
             --solid     - solid looking horse
-            --portraint - portraint of a horse
+            --portrait - portrait of a horse
             --funny     - funny horse
             """
 
@@ -48,7 +49,7 @@ class Horse(ConsoleUtilBase):
                 horse = self.toy
             elif args[0] == "--solid":
                 horse = self.solid
-            elif args[0] == "--portraint":
+            elif args[0] == "--portrait":
                 horse = self.head
             elif args[0] == "--funny":
                 horse = self.horse3

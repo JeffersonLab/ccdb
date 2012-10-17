@@ -8,18 +8,20 @@ import collections
 import os
 import re
 import logging
+import path_utils
 from datetime import datetime
 
 
 import sqlalchemy
 import sqlalchemy.orm
 from sqlalchemy.sql.expression import desc
-from Model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
-import TextFileDOM
+from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
+import table_file
+
 
 import posixpath
 
-log = logging.getLogger("ccdb.AlchemyProvider")
+log = logging.getLogger("ccdb.provider")
 
 
 
@@ -37,6 +39,7 @@ class AlchemyProvider(object):
         self.root_dir.id = 0
         self.path_name_regex = re.compile('^[\w\-_]+$', re.IGNORECASE)
         self._user_name = "anonymous"
+        self._connection_string = ""
 
 
 #----------------------------------------------------------------------------------------
@@ -74,6 +77,7 @@ class AlchemyProvider(object):
         Session = sqlalchemy.orm.sessionmaker(bind=self.engine)
         self.session = Session()
         self._is_connected = True
+        self._connection_string = connection_string
 
         #since it is a new connection we need to rebuild directories
         self._are_dirs_loaded = False
@@ -212,8 +216,8 @@ class AlchemyProvider(object):
 
         :param new_dir_name: Name of the directory. May contain only A-Z, a-z,0-9, _, -,
         :type new_dir_name:str
-        :param parent_full_path: Path of the parent directory
-        :type parent_full_path: str
+        :param parent_dir_or_path: Path of the parent directory
+        :type parent_dir_or_path: str
         :param comment: comment on this dir. Might be None
         :type comment:
         :return: new created Directory
@@ -374,8 +378,6 @@ class AlchemyProvider(object):
         Gets TypeTable from the DB by absolute path
         :param exact_path: absolute path of the type table
         :type exact_path: str
-        :param load_columns:
-        :type load_columns: bool
         :return: TypeTable that matches this path
         :rtype: TypeTable
         """
@@ -397,7 +399,6 @@ class AlchemyProvider(object):
 
         :param dir_obj_or_path: directory or path to directory where to look
         :type dir_obj_or_path: str or Directory
-        :param loadColumns:
         :return: [] of TypeTables for the directory
         :rtype: [] of TypeTable
         """
@@ -674,7 +675,7 @@ class AlchemyProvider(object):
         """
         Deletes run range
 
-        :param run_range_obj: RunRange object to delete
+        :param run_range: RunRange object to delete
         :return: None
         """
         data_count = self.session.query(Assignment).filter(Assignment.run_range_id == run_range.id).count()
@@ -709,14 +710,37 @@ class AlchemyProvider(object):
     #------------------------------------------------
     # Searches all variations associated with this type table
     #------------------------------------------------
-    def get_variations(self, table_or_path, run = 0, limit = 0, offset = 0):
+    def get_variations(self, pattern=""):
+        """
+        Returns all variations associated with this type table
+
+        :return: list of variations
+        :rtype: [Variation]
+        """
+
+        #initial query
+        query = self.session.query(Variation)
+
+        if len(pattern):
+            #prepare search pattern for SQL
+            pattern = pattern.replace("_", "\\_").replace("*","%").replace("?","_")
+            query = query.filter(Variation.name.like(pattern, escape="\\"))
+
+        return query.all()
+
+    #------------------------------------------------
+    # Searches all variations associated with this type table
+    #------------------------------------------------
+    def search_variations(self, table_or_path, run = 0, name = None, limit = 0, offset = 0):
         """
         Searches all variations associated with this type table
 
         :param table_or_path: table table to search run ranges in
         :param run: specified run to search for, if run<0 searches for all run ranges
+        :param name: Name pattern. Wildcards allowed
         :param limit: how many records to take. 0 - take all records
         :param offset: offset of first record to take.
+        :
         :return: list of variations
         :rtype: [Variation]
         """
@@ -734,10 +758,11 @@ class AlchemyProvider(object):
         if run>=0: query = query.filter(RunRange.min<=run).filter(RunRange.max>=run)
         if limit>0: query = query.limit(limit)
         if offset>0: query = query.offset(offset)
+        if name and len(name):
+            name = name.replace("_", "\\_").replace("*","%").replace("?","_")
+            query = self.session.query(Variation).filter(Variation.name.like(name, escape="\\"))
+
         return query.all()
-
-
-
 
     #----------------------.--------------------------
     # Create variation by name
@@ -941,11 +966,10 @@ class AlchemyProvider(object):
         :param comment:
         :return: created assignment
         :rtype: Assignment
-
         """
 
         #maybe it is a dom?
-        if isinstance(data, TextFileDOM.TextFileDOM):
+        if isinstance(data, table_file.TextFileDOM):
             rows = data.rows
         else:
             #it should be list than...
@@ -961,7 +985,7 @@ class AlchemyProvider(object):
         if len(rows) == 0: raise ValueError("Try to create variation with data length = 0. Fill data prior inserting into database")
         if not isinstance(rows[0], list):
             #the data is plain list, like [1,2,3,4,5,6]
-            rows_count = len(data) / table._columns_count
+            #rows_count = len(data) / table._columns_count
             raise NotImplementedError() #TODO check and implement this branch
 
         #construct assignment

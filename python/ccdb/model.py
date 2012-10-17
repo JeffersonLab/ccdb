@@ -1,6 +1,6 @@
 import collections
 
-__author__ = 'DmitryRa'
+__author__ = 'Dimitry Romanov'
 
 import datetime
 import posixpath

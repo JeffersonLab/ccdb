@@ -1,12 +1,11 @@
-import sys
 import posixpath
 import logging
 
-from ccdb.Model import Directory, TypeTable
-from ccdb.AlchemyProvider import AlchemyProvider
+from ccdb.model import Directory
+from ccdb.provider import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
+
 
 log = logging.getLogger("ccdb.cmd.utils.ls")
 
@@ -29,12 +28,17 @@ class List(ConsoleUtilBase):
     short_descr = "List objects in a given directory"
     uses_db = True
 
-    #variables for each process
 
-    raw_entry = "/"       #object path with possible pattern, like /mole/*
-    parent_path = "/"    #parent path
-    parent_dir = None    # @type parent_dir DDirectory
-    pattern = ""         #pattern on the end of parent path like file?*
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        """Resets variables for each 'process'"""
+        self.raw_entry = "/"       #object path with possible pattern, like /mole/*
+        self.parent_path = "/"    #parent path
+        self.parent_dir = None    # @type parent_dir DDirectory
+        self.pattern = ""         #pattern on the end of parent path like file?*
+
 
     def process(self, args):
         log.debug("ListUtil gained control")
@@ -43,17 +47,26 @@ class List(ConsoleUtilBase):
         assert self.context is not None
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
+        self.reset()
 
         #PARSE ARGUMENTS
         #-------------------------------
+
+        #dump as tree
         if "--dump-tree" in args:
             self.parent_dir = provider.get_root_directory()
             self.print_directory_tree(self.parent_dir, False, 0)
             return
 
+        #dump as dump
         if "--dump" in args:
             self.parent_dir = provider.get_root_directory()
             self.print_directory_tree(self.parent_dir, True, 0)
+            return
+
+        #dump variations
+        if "-v" in args or "--variation" in args:
+            self.print_variations()
             return
 
         if len(args) > 0:
@@ -115,24 +128,30 @@ class List(ConsoleUtilBase):
 
 
     def get_name_pathes(self, path):
-        self.raw_entry = path
         assert self.context is not None
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
+        self.reset()
 
+        self.raw_entry = path
         #prepare path
+        log.debug("   get_name_pathes=> START ")
+        log.debug("   get_name_pathes=>  before prepare_path:  " + self.raw_entry)
+
         self.raw_entry = self.prepare_path(self.raw_entry)
-        
-        table_list = []
-        dir_list = []
+        log.debug("   get_name_pathes=>  after prepare_path:  " + self.raw_entry)
         
         #SEARCH LOGIC
         #---------------------------
 
         #brute assumption that user has entered a simple dir path
-        self.parent_dir = provider.get_directory(self.raw_entry)
-        self.parent_path = self.raw_entry
-        self.pattern = ""
+        try:
+            self.parent_dir = provider.get_directory(self.raw_entry)
+            self.parent_path = self.raw_entry
+            self.pattern = ""
+        except KeyError:
+            self.parent_dir = None
+            log.debug("   get_name_pathes=>  directory {0} not found.".format(self.raw_entry))
 
         if not self.parent_dir:
             #we have not find the directory by brute rawentry.
@@ -140,47 +159,42 @@ class List(ConsoleUtilBase):
             (head, tale) = posixpath.split(self.raw_entry)
             self.parent_path = head
             self.pattern = tale
-            
-            if(is_debug_verbose()):
-                print "new path: "
-                print "   ", self.parent_path
-                if len(self.pattern): print "pattern: ", self.pattern
+            log.debug("   get_name_pathes=>  searching parent directory as:")
+            log.debug("   get_name_pathes=>  new path: " + self.parent_path)
+            if len(self.pattern): log.debug("   get_name_pathes=> pattern: " + self.pattern)
 
             #try to find such dir once more
             self.parent_dir = provider.get_directory(self.parent_path)
 
         #found a directory
-        if self.parent_dir:
-            assert isinstance(self.parent_dir, Directory)
-            assert isinstance(self.context.provider, AlchemyProvider)
+        assert isinstance(self.parent_dir, Directory)
+        log.debug("   get_name_pathes=>  searching subdirectoris ")
+        log.debug("   get_name_pathes=>  full path: " +self.parent_dir.path)
+        if len(self.pattern): log.debug("    get_name_pathes=> pattern: " + self.pattern)
 
-            if(is_debug_verbose()):
-                print "full path: \n   ", self.parent_dir.path
-                if len(self.pattern): print "pattern: ", self.pattern
-            
-            #part 1 directories for this path
-            sub_dirs = []
-            if self.pattern == "":
-                sub_dirs = self.parent_dir.sub_dirs
-            else:
-                sub_dirs = self.context.provider.search_directories(self.pattern, self.parent_path)
-           
-            #fill list of directory names
-            dir_list = [subdir.name for subdir in sub_dirs]
-            
-            #part 2 is tables for this path
-            tables = []
-            if self.pattern == "":
-                tables = self.context.provider.get_type_tables(self.parent_dir)
-            else:
-                tables = self.context.provider.search_type_tables(self.pattern, self.parent_path)
-                        
-            #fill list of tables
-            table_list=[table.name for table in tables]
-            
+        #part 1 directories for this path
+        if self.pattern == "":
+            sub_dirs = self.parent_dir.sub_dirs
         else:
-            return None
-        return (dir_list, table_list)
+            sub_dirs = provider.search_directories(self.pattern, self.parent_path)
+
+        #fill list of directory names
+        dir_list = [subdir.name for subdir in sub_dirs]
+
+        log.debug("   get_name_pathes=>  found dirs:" + " ".join([d for d in dir_list]))
+
+        log.debug("   get_name_pathes=>  searching tables ")
+        #part 2 is tables for this path
+        tables = []
+        if self.pattern == "":
+            tables = self.context.provider.get_type_tables(self.parent_dir)
+        else:
+            tables = self.context.provider.search_type_tables(self.pattern, self.parent_path)
+
+        #fill list of tables
+        table_list=[table.name for table in tables]
+
+        return dir_list, table_list
 
 
     def prepare_path(self, path):
@@ -224,7 +238,17 @@ class List(ConsoleUtilBase):
             for subDir in sub_dirs:
                 self.print_directory_tree(subDir, printFullPath, level+1)
 
+    def print_variations(self):
+        variations = self.context.provider.get_variations()
+        for var in variations:
+            print var.name
+            #TODO more sophisticated output
+
+
+
     def print_help(self):
         "Prints help of the command"
         print "Displays directories and tables for current directory"
+
+
 

@@ -1,10 +1,12 @@
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.Theme import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
+
+import logging
+
+log = logging.getLogger("ccdb.cmd.utils.howto")
 
 #ccdbcmd module interface
 def create_util_instance():
-    if is_debug_verbose(): print "      registring HowTo"
+    log.debug("      registering HowTo")
     return HowTo()
 
 
@@ -21,13 +23,17 @@ class HowTo(ConsoleUtilBase):
     name = "HowTo"
     short_descr = "Prints howtos"
     help_util = True
-    
-    def print_help(ChangeDir):
-       print """ """ 
+
     # ---- end of print_help() ----
 
 
     def process(self, args):
-        if(is_debug_verbose()):
-            print "HowTo is gained a control over the process."
-            print " ".join(args)
+        log.debug("HowTo is gained a control over the process")
+        log.debug("  ".join(args))
+
+        print "No examples yet"
+
+    def print_help(ChangeDir):
+        print """
+        Prints cases for using the ccdb console tools
+        """

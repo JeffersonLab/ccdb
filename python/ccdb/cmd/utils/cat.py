@@ -9,15 +9,14 @@ from ccdb import Directory, TypeTable, TypeTableColumn, Variation, Assignment
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
-from ccdb.PathUtils import ParseRequestResult, parse_request
+from ccdb.path_utils import ParseRequestResult, parse_request
 
 log = logging.getLogger("ccdb.cmd.utils.cat")
 
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registring Cat")
+    log.debug("      registering Cat")
     return Cat()
 
 

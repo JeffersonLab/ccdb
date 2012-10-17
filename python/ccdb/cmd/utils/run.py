@@ -1,12 +1,11 @@
 import logging
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.Theme import Theme
 
 log = logging.getLogger("ccdb.cmd.utils.run")
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registring CurrentRun")
+    log.debug("      registering CurrentRun")
     return CurrentRun()
 
 
@@ -23,7 +22,7 @@ class CurrentRun(ConsoleUtilBase):
     name = "CurrentRun"
     short_descr = "gets or sets current working run"
     
-    def print_help(ChangeDir):
+    def print_help(self):
         print """ gets or sets current working run
         run (with no aguments) will display current working run
         run <run_number> will set current working run to this number
@@ -36,8 +35,8 @@ class CurrentRun(ConsoleUtilBase):
         log.debug("PrintWorkDir is gained a control over the process.")
         log.debug("  " + " ".join(args))
         
-        assert self.context != None
-                
+        assert self.context is not None
+
         if len(args):
             #set working run?
             try:

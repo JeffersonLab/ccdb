@@ -1,17 +1,13 @@
-import os, re, os.path, imp, sys
+import os, re, imp
 import ccdb.cmd
 import logging
 import shlex
+import posixpath
 
-#from ccdb.ccdb_pyllapi import MySQLDataProvider
-#from ccdb.MySQLProvider import MySQLProvi
-#import sqlalchemy
-
-from ccdb.AlchemyProvider import AlchemyProvider
-from Theme import Theme
+from ccdb import AlchemyProvider
+from .themes import Theme
 import colorama
 import readline
-from Globals import get_verbose, VerboseModes
 import posixpath
 
 log = logging.getLogger("ccdb.cmd.console_context")
@@ -29,7 +25,6 @@ class ConsoleContext:
     words = []
 
     def __init__(self):
-        self.verbose = get_verbose()
         self._prov = AlchemyProvider()
         self._is_interactive = False
         self._user_name = self.anonymous_user_name
@@ -48,7 +43,7 @@ class ConsoleContext:
         return self._verbose
     
     def _set_verbose(self, isTrue):
-        self._verbose = isTrue;
+        self._verbose = isTrue
     verbose = property(_get_verbose, _set_verbose)
 
     @property
@@ -126,14 +121,12 @@ class ConsoleContext:
                 registerFunc = getattr(module, "create_util_instance")
                 util = registerFunc()
                 if util:
-                    self._utils[util.command]=util;
+                    self._utils[util.command]=util
                     util.context = self
                     if util.command == "ls":
                         self._ls = util
             except AttributeError, ex:
-                if self.verbose >= VerboseModes.Debug:
-                    print "      " + repr(ex)
-
+                log.debug("Error registering module : " + repr(ex))
 
         log.debug("Utils found and registered in directory {0} are:".format(path))
         log.debug("%-10s %-15s %s:"%("(command)", "(name)", "(description)"))
@@ -152,7 +145,7 @@ class ConsoleContext:
         
         #>oO debud output
         log.debug("searching modules in directory:")
-        log.debug("   " + Theme.Directories + path)
+        log.debug("   " + Theme.Directories + path + Theme.Reset)
 
         #get list of files and module names
         files = os.listdir( path )
@@ -170,9 +163,8 @@ class ConsoleContext:
                 f, filename, desc = imp.find_module(m, [path])
                 modules.append( imp.load_module(m, f, filename, desc))
             except ImportError, ex:
-                if self.verbose >= VerboseModes.Debug:
-                    print "error importing module: "
-                    print "      " + repr(ex)
+                log.debug("Error importing module:")
+                log.debug("      " + repr(ex))
                 continue
 
         return modules
@@ -195,6 +187,7 @@ class ConsoleContext:
         i=0
         while i < len(workargs):
             token = workargs[i]
+            assert isinstance(token, str)
             i+=1
 
             if token.startswith('-'):
@@ -215,11 +208,11 @@ class ConsoleContext:
                         self.current_run = int(workargs[i])
                         log.info("Working run is %i", self.current_run)
                     except ValueError:
-                        log.warning("cannot read run from %s command"%(token))
+                        log.warning("cannot read run from %s command"% token)
                     i+=1
             else:
                 #looks like is is a command
-                command = token;
+                command = token
                 commandArgs = workargs[i:]
                 try:
                     return self.process_command(command, commandArgs)
@@ -241,7 +234,8 @@ class ConsoleContext:
         # execute shell command if input starts with '!'
         if command_line.startswith('!'):
             command_line = command_line[1:]
-            try:     
+            #noinspection PyBroadException
+            try:
                 os.system(command_line)
             except:
                 pass
@@ -256,9 +250,8 @@ class ConsoleContext:
         #get our command
         command = tokens[0]
                 
-        if self.verbose >= VerboseModes.Debug:
-            print "command is : ", command
-            print tokens
+        log.debug("command is : {0}".format(command))
+        log.debug(tokens)
         
         #get command arguments
         arguments = []
@@ -280,10 +273,9 @@ class ConsoleContext:
     def process_command(self, command, commandArgs):
         
         #>oO debug
-        if self.verbose >= VerboseModes.Debug:
-            print "Processing command: ", command
-            print "       commandArgs: "
-            print "\n".join(["                   " + arg for arg in commandArgs])
+        log.debug("Processing command: {0}".format(command))
+        log.debug("       commandArgs: ")
+        log.debug("\n".join(["                   " + arg for arg in commandArgs]))
         
         #try to find function...
         util = None
@@ -307,12 +299,10 @@ class ConsoleContext:
     #
     #--------------------------------
     def check_connection(self, util):
-        if(self.verbose):
-            print util.name + " uses the database and there is no connection yet. Trying to connect..."
-            print "   Connection string is: " + Theme.Accent, self.connection_string
-
         if self._prov.is_connected : return #connected anyway...
-        
+        log.debug(util.name + " uses the database and there is no connection yet. Trying to connect...")
+        log.debug("   Connection string is: " + Theme.Accent + self.connection_string + Theme.Reset)
+
         #connecting
         try:
             self._prov.connect(self.connection_string)
@@ -321,15 +311,15 @@ class ConsoleContext:
             return False
 
         #connected
-        log.debug("   Connection " + Theme.Success + " successfull ")
+        log.debug("   Connection " + Theme.Success + " successfull " + Theme.Reset)
         return True
             
 
-#--------------------------------
-#       
-#--------------------------------
+    #----------------------------------------------------
+    #       interactive_loop
+    #----------------------------------------------------
+    #noinspection PyBroadException
     def interactive_loop(self):
-        import shlex
         self.print_interactive_intro()
         #initialise autocomplete
         self.words = self._utils.keys()
@@ -345,21 +335,22 @@ class ConsoleContext:
         #readline..set_completion_display_matches_hook(self.show_completions)
         #readline.set_completion_display_matches_hook([function])
 
-        #Set or remove the completion display function. If function is specified, it will be used as the new completion display function; if omitted or None, any completion display function already installed is removed. The completion display function is called as function(substitution, [matches], longest_match_length) once each time matches need to be displayed.
-        #begin user commands read loop
-        command = ""
+        #Set or remove the completion display function. If function is specified, it will be used as the new completion
+        # display function; if omitted or None, any completion display function already installed is removed. The completion
+        # display function is called as function(substitution, [matches], longest_match_length) once each time matches need
+        # to be displayed.
+        # Begin user commands read loop
         while 1:
             colorama.pause()
             
             # read command from user
-            user_input=""
             try:
                 user_input=raw_input( self.current_path +"> ")
             except EOFError:
-                if self.verbose: print "EOF sequence received. Ending interactive loop"
+                log.debug("EOF sequence received. Ending interactive loop")
                 break
             except KeyboardInterrupt:
-                if self.verbose: print "Break sequence received. Ending interactive loop"
+                log.debug("Break sequence received. Ending interactive loop")
                 break
 
             colorama.resume()
@@ -398,23 +389,27 @@ class ConsoleContext:
     def generate_completition_words(self, prefix):
         
         # find all words that start with this prefix
-        self.matching_words = [  w 
-                                 for w in self.words 
-                                 if w.startswith(prefix)]
-        
-        #get name pathes
+        self.matching_words = [w for w in self.words if w.startswith(prefix)]
+
+
+        #get name patches
+        path_prefix = posixpath.join(self.current_path, prefix)
+        log.debug("getting path completion for: " + path_prefix)
         try:
             self.check_connection(self._ls)
-            result = self._ls.get_name_pathes(prefix)
-            
-            if result is None or (len(result[0]) ==0 and len(result[1])==0):
-                result = self._ls.get_name_pathes(prefix + "*")    
-                if result is None : return;
+            try:
+                result = self._ls.get_name_pathes(path_prefix)
+            except:
+                result = None
+
+            if result is None or ( len(result[0]) ==0 and len(result[1])==0 ):
+                result = self._ls.get_name_pathes(path_prefix + "*")
+
             self.matching_words.extend(result[0])
             self.matching_words.extend(result[1])
             
         except Exception as ex:
-            log.debug("error getting completition paths: " + ex.message)
+            log.debug("error getting competition paths: " + ex.message)
         
     
     
@@ -472,9 +467,9 @@ class ConsoleContext:
         return path
 
 
-#--------------------------------
-#  parse_run_range  
-#--------------------------------    
+    #--------------------------------
+    #  parse_run_range
+    #--------------------------------
     def parse_run_range(self, run_range_str):
         """ @brief parse run range string in form of <run_min>-<run-max>
 
@@ -500,17 +495,17 @@ class ConsoleContext:
         try:
             run_min = int(str_min)
             run_min_set = True
-        except ValueError as error:
+        except ValueError:
             self.run_min = 0
         
         #parse run max 
         try:
             run_max = int(str_max)
             run_max_set = True
-        except ValueError as error:
+        except ValueError:
             self.run_max = ccdb.INFINITE_RUN
         
-        return (run_min,  run_max, run_min_set, run_max_set)
+        return run_min, run_max, run_min_set, run_max_set
 
 
 #=====================================================================================

@@ -1,10 +1,5 @@
-#!/usr/bin/env python
+
 # -*- coding: utf-8 -*-
-#
-#       untitled.py
-#
-#       Copyright 2010 root <root@romanov-pcl1.jlab.org>
-#
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
@@ -20,38 +15,26 @@
 #       Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #       MA 02110-1301, USA.
 
-import glob
-import imp
+
 import os
 import sys
 import logging
 
+from .provider import AlchemyProvider
+from .model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn
+from .table_file import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
 
-from cmd import set_verbose, get_verbose, VerboseModes, Theme
-from cmd import ConsoleContext
-
-import cmd.colorama
-#import ccdb_pyllapi
-
-
-#from ProviderBase import ProviderBase
-#from MySQLProvider import MySQLProvider
-#from ccdb_pyllapi import Variation, Directory, RunRange, Assignment, ConstantsTypeColumn, ConstantsTypeTable, StringStringMap, StringVectorVector, StringVector
-
-from .AlchemyProvider import AlchemyProvider
-from .Model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn
-from .TextFileDOM import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
-#from ccdb.ccdb_pyllapi import Variation
-import PathUtils
 
 #the default ccdb logger
 logger = logging.getLogger("ccdb")
 
-#__all__ = ["MySQLProvider", "ProviderBase", "ccdb_pyllapi", "TextFileDOM", "PathUtils"]
-
 INFINITE_RUN = 2147483647
 
 def init_ccdb_console():
+    from .cmd.themes import Theme
+    from .cmd import ConsoleContext
+    import cmd.colorama
+
     # create logger
     logger = logging.getLogger("ccdb")
     
@@ -81,18 +64,13 @@ def init_ccdb_console():
         cmd.colorama.init(autoreset=True)
 
     if "--debug" in sys.argv:
-        set_verbose(VerboseModes.Debug)   
         logger.setLevel(logging.DEBUG)
-        logger.debug("debugging verbose mode is " + Theme.Ok + " ON " + Theme.Reset + " value is " + repr(get_verbose()))
+        logger.debug("debugging verbose mode is " + Theme.Ok + " ON " + Theme.Reset)
 
     if "--raise" in sys.argv:
         logger.debug("--raise flag found. The process will raise commands exceptions instead of humble notifications and non 0 result")
         context.silent_exceptions = False
         
-    #lets go
-    #logger.info("Initialising ccdb package...")
-
-
 
     #CONNECTION STRING
     #------------------------------
@@ -104,6 +82,17 @@ def init_ccdb_console():
     if "CCDB_CONNECTION" in os.environ.keys():
         context.connection_string =  os.environ["CCDB_CONNECTION"]
         logger.debug("Set connection string from $CCDB_CONNECTION :" + context.connection_string)
+    else:
+        #fallback to jana calib url
+        if "JANA_CALIB_URL" in os.environ.keys():
+            jana_url = os.environ["JANA_CALIB_URL"]
+            logger.debug("$CCDB_CONNECTION was not found. Found JANA_CALIB_URL ('"+jana_url+"'). Try use it")
+
+            if jana_url.startswith("mysql://") or jana_url.startswith("sqlite://"):
+                context.connection_string = jana_url
+            else:
+                logger.debug("JANA_CALIB_URL does not starts with mysql:// or sqlite://. Skipped")
+
 
     #connection string in in command line arguments ( by -c or --connection) is processed by context.process(sys.argv)
 

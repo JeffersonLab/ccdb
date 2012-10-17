@@ -1,15 +1,13 @@
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.Theme import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
-from ccdb.Model import Directory
-
+import logging
 import posixpath
+
+log = logging.getLogger("ccdb.cmd.utils.cd")
 
 #ccdbcmd module interface
 def create_util_instance():
-    if is_debug_verbose(): print "      registring ChangeDir"
+    log.debug("      registering ChangeDir")
     return ChangeDir()
-
 
 #*********************************************************************
 #   Class ChangeDir - Change current directory                       *
@@ -34,9 +32,8 @@ class ChangeDir(ConsoleUtilBase):
 
 
     def process(self, args):
-        if(is_debug_verbose()):
-            print "ChangeDir is gained a control over the process."
-            print " ".join(args)
+        log.debug("  ChangeDir is gained a control over the process.")
+        log.debug("    ".join(args))
         
         if len(args):
             self.rawentry = args[0]

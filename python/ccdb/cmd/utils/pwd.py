@@ -1,10 +1,13 @@
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.Theme import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
+from ccdb.cmd.themes import Theme
+
+import logging
+log = logging.getLogger("ccdb.cmd.utils.pwd")
+
 
 #ccdbcmd module interface
 def create_util_instance():
-    if is_debug_verbose(): print "      registring PrintWorkDir"
+    log.debug("      registering PrintWorkDir")
     return PrintWorkDir()
 
 
@@ -27,10 +30,7 @@ class PrintWorkDir(ConsoleUtilBase):
 
 
     def process(self, args):
-        if(is_debug_verbose()):
-            print "PrintWorkDir is gained a control over the process."
-            print " ".join(args)
-        
-        assert self.context != None
-
+        log.debug("  PrintWorkDir is gained a control over the process.")
+        log.debug("    ".join(args))
+        assert self.context is not None
         print self.context.current_path

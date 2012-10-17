@@ -1,5 +1,5 @@
-from ccdb.cmd import ConsoleContext
-import ccdb.cmd
+from .console_context import ConsoleContext
+
 
 class ConsoleUtilBase:
     "base class for console utility"

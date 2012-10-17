@@ -8,14 +8,13 @@ from ccdb import AlchemyProvider
 import sqlalchemy.exc
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
 from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.info")
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registring Info")
+    log.debug("      registering Info")
     return Info()
 
 

@@ -26,7 +26,6 @@ class Theme:
     Accent = Fore.BLUE + Style.BRIGHT
     Title = Style.BRIGHT
     Type = Fore.CYAN
-    
     AsgmtHead = Fore.BLUE + Style.BRIGHT
     AsgmtType = ""
     AsgmtValue = "" 

@@ -3,16 +3,21 @@ import logging
 import time
 
 import ccdb
-from ccdb.ccdb_pyllapi import Directory, ConstantsTypeTable, ConstantsTypeColumn, Variation
-from ccdb import MySQLProvider, TextFileDOM
+from ccdb import TextFileDOM
+from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
 
 log = logging.getLogger("ccdb.cmd.utils.add")
 
 #ccdbcmd module interface
 def create_util_instance():
+    """
+    This function is a module interface
+
+    :return: new AddData util
+    :rtype: AddData
+    """
     log.debug("      registering AddData")
     return AddData()
 
@@ -32,22 +37,18 @@ class AddData(ConsoleUtilBase):
     uses_db = True
     d_i = "      " #debug indent. Dont bother your mind what is this
 
-    #variables for each process
-    rawentry = "/"   #object path with possible pattern, like /mole/*
-    path = "/"       #parent path
-    
-#----------------------------------------
-#   process 
-#----------------------------------------  
-    def process(self, args):
-        log.debug(self.d_i + "---------------------------------------------")
-        log.debug(self.d_i + "AddData is gained a control over the process.")
-        log.debug(self.d_i + "args: " + " ".join(args))
+    def __init(self):
+        self.reset()
 
-        assert self.context != None
-        provider = self.context.provider
-        isinstance(provider, MySQLProvider)
-        
+    #----------------------------------------
+    #   process
+    #----------------------------------------
+    def reset(self):
+        """
+        Resets for new command
+        :return: None
+        """
+
         #set arguments to default
         self.raw_table_path = ""
         self.table_path = ""
@@ -60,19 +61,33 @@ class AddData(ConsoleUtilBase):
         self.is_namevalue_format = False
         self.no_comments = False
         self.c_comments = False   #file has '//'-style comments
+        self.rawentry = "/"   #object path with possible pattern, like /mole/*
+        self.path = "/"       #parent path
 
+
+    #----------------------------------------
+    #   process
+    #----------------------------------------
+    def process(self, args):
+        log.debug(self.d_i + "---------------------------------------------")
+        log.debug(self.d_i + "AddData is gained a control over the process.")
+        log.debug(self.d_i + "args: " + " ".join(args))
+
+        assert self.context is not None
+        provider = self.context.provider
+        assert isinstance(provider, AlchemyProvider)
+        
         #process arguments
         if not self.process_arguments(args):
-            log.debug(self.d_i + "process arguments " + Theme.Fail + "failed");
+            log.debug(self.d_i + "process arguments " + Theme.Fail + "failed")
             return 1
         
         #by "" user means default variation
-        if self.variation == "":
-            self.variation = "default"
+        if self.variation == "" : self.variation = "default"
         
         #validate what we've got
         if not self.validate():
-            log.debug(self.d_i + "arguments validation " + Theme.Fail + "failed");
+            log.debug(self.d_i + "arguments validation " + Theme.Fail + "failed")
             return 1
         
         #correct paths
@@ -93,7 +108,7 @@ class AddData(ConsoleUtilBase):
         #check what we've got
         assert isinstance(dom, TextFileDOM)     
         if not dom.data_is_consistant:
-            log.warning("Number of columns in rows are inconsisnsant in file")
+            log.warning("Number of columns in each row is inconsistent across the file")
             return 1
         
         if len(dom.comment_lines):
@@ -104,12 +119,7 @@ class AddData(ConsoleUtilBase):
         log.debug(self.d_i+"columns {0} rows {1} comment lines {2} metas {3}".format(len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
 
         #try to create
-        result = provider.create_assignment(dom, self.table_path, self.run_min, self.run_max, self.variation, self.comment)
-        
-        if not result: 
-            log.warn("Constants adding " +Theme.Fail+" error "+Theme.Reset)
-            return provider.get_last_error()
-        
+        provider.create_assignment(dom, self.table_path, self.run_min, self.run_max, self.variation, self.comment)
         log.info("Constants added " +Theme.Success+"successfully"+Theme.Reset)
         return 0
             
@@ -120,7 +130,7 @@ class AddData(ConsoleUtilBase):
         
         #parse loop
         i=0
-        token = ""
+
         while i < len(args):
             token = args[i].strip()
             i+=1
@@ -159,7 +169,7 @@ class AddData(ConsoleUtilBase):
                 
                 #skip comments 'no-comments' value
                 if token == "-n" or token == "--no-comments":
-                    self.no_comments = true
+                    self.no_comments = True
                 
                 #name-value file mode
                 if token == "--name-value":

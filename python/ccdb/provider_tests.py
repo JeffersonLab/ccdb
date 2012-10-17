@@ -2,13 +2,12 @@ __author__ = 'RomanovDA'
 
 import unittest
 import os
-import os.path
-import sys
-from Model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
-from Model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
+import path_utils
+from ccdb.model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
+from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
 import sqlalchemy.orm.exc
 
-from AlchemyProvider import AlchemyProvider
+from ccdb import AlchemyProvider
 
 class AlchemyProviderTest(unittest.TestCase):
 
@@ -69,12 +68,12 @@ class AlchemyProviderTest(unittest.TestCase):
         #cleanup directories
         #Ok, lets check if directory for the next text exists...
         dir = self.provider.create_directory("testdir", "/test")
-        assert dir != None
+        self.assertIsNotNone(dir)
 
         #create subdirectory
         constants_subdir = self.provider.create_directory("constants","/test/testdir","My constants")
-        assert constants_subdir!=None
-        assert constants_subdir.comment == "My constants"
+        self.assertIsNotNone(constants_subdir)
+        self.assertEqual(constants_subdir.comment, "My constants")
 
         #cannot recreate subdirectory
         self.assertRaises(ValueError, self.provider.create_directory, "constants","/test/testdir","My constants")
@@ -155,6 +154,8 @@ class AlchemyProviderTest(unittest.TestCase):
                     columns=[("c","double"), ("a","double"), ("b","int")],
                     comment = "This is temporary created table for test reasons")
 
+        self.assertIsNotNone(table)
+
         table = self.provider.get_type_table("/test/test_vars/new_table")
         self.assertEqual(table.rows_count, 5)
         self.assertEqual(table._columns_count, 3)
@@ -212,7 +213,7 @@ class AlchemyProviderTest(unittest.TestCase):
 
         #Get or create run-range is the main function to get RunRange without name
         # 0-2001 should be absent or deleted so this function will create run-range
-        rr = self.provider.get_or_create_run_range(0, 2001);
+        rr = self.provider.get_or_create_run_range(0, 2001)
         self.assertIsNotNone(rr)
         self.assertNotEquals(rr.id, 0)
         self.assertEquals(rr.min, 0)
@@ -243,9 +244,14 @@ class AlchemyProviderTest(unittest.TestCase):
         #Get variations by type table
         v = self.provider.get_run_range(0, 2000)
         table = self.provider.get_type_table("/test/test_vars/test_table")
-        vs = self.provider.get_variations(table)
+        vs = self.provider.search_variations(table)
         self.assertIsNotNone(vs)
         self.assertNotEquals(len(vs), 0)
+
+        #Get variations by name
+        vs = self.provider.get_variations("def*")
+        var_names = [var.name for var in vs]
+        self.assertIn("default", var_names)
 
         # NON EXISTENT RUN RANGE
         #----------------------------------------------------
@@ -277,6 +283,8 @@ class AlchemyProviderTest(unittest.TestCase):
         #----------------------------------------------------
         self.provider.delete_variation(v)
         self.assertRaises(sqlalchemy.orm.exc.NoResultFound, self.provider.get_variation, "abra_kozyabra")
+
+
 
 
     def test_assignments(self):
@@ -340,7 +348,13 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertItemsEqual([[1,2,3],[4,5,6]], list_to_table([1,2,3,4,5,6], 3))
 
 
+class PathUtilsTest(unittest.TestCase):
+    """Test of the path_util package"""
 
+    def validate_name_test(self):
+        self.assertTrue(path_utils.validate_name("this_is_variation2"))
+        self.assertFalse(path_utils.validate_name("this-is_variation2"))
+        self.assertFalse(path_utils.validate_name("this:isvariation2"))
 
 
 

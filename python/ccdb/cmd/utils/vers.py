@@ -1,20 +1,15 @@
-import posixpath
 import logging
-import time
-
 import ccdb
-from ccdb import Directory, TypeTable, TypeTableColumn, Variation
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
 from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.vers")
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registring AddData")
+    log.debug("      registering AddData")
     return Versions()
 
 
@@ -67,9 +62,9 @@ class Versions(ConsoleUtilBase):
         
         #check such table really exists
         try:
-            table = provider.get_type_table(self.table_path)
+            provider.get_type_table(self.table_path)
         except NoResultFound:
-            log.warning("Type table %s not found in the DB"% self.table_path)
+            log.warning("Type table %s not found in the DB", self.table_path)
             return 1
         
         assignments = provider.get_assignments(self.table_path, self.run)
@@ -79,7 +74,7 @@ class Versions(ConsoleUtilBase):
             max_str = repr(asgmnt.run_range.max)
             if asgmnt.run_range.max == ccdb.INFINITE_RUN:
                 max_str="inf"
-            
+            print asgmnt.run_range.min
             print " %-5i "%asgmnt.id +\
                   " %-20s"%asgmnt.created.strftime("%Y-%m-%d_%H-%M-%S   ") +\
                   " %-20s"%asgmnt.modified.strftime("%Y-%m-%d_%H-%M-%S   ") +" "+\
@@ -97,7 +92,7 @@ class Versions(ConsoleUtilBase):
         
         #parse loop
         i=0
-        token = ""
+
         while i < len(args):
             token = args[i].strip()
             i+=1
@@ -115,7 +110,7 @@ class Versions(ConsoleUtilBase):
                     try:
                         self.run = int(args[i])
                     except ValueError:
-                        log.warning("cannot read run from %s command"%(token))
+                        log.warning("cannot read run from %s command", token)
                         return False
                 
             else:
@@ -137,7 +132,7 @@ class Versions(ConsoleUtilBase):
 #   print_help 
 #----------------------------------------
     def print_help(self):
-        "Prints help of the command"
+        """Prints help of the command"""
           
         print """Show versions of data for specified type table
         vers /path/to/table

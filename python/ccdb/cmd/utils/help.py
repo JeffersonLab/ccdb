@@ -1,10 +1,12 @@
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.Theme import Theme
-from ccdb.cmd import is_verbose, is_debug_verbose
+from ccdb.cmd.themes import Theme
+import logging
+
+log = logging.getLogger("ccdb.cmd.utils.help")
 
 #ccdbcmd module interface
 def create_util_instance():
-    if is_debug_verbose(): print "      registring HelpUtil"
+    log.debug("      registering HelpUtil")
     return HelpUtil()
 
 
@@ -22,9 +24,9 @@ class HelpUtil(ConsoleUtilBase):
     short_descr = "Prints help for each util"
     help_util = True
 
-#----------------------------------------
-#   print_help 
-#----------------------------------------    
+    #----------------------------------------
+    #   print_help
+    #----------------------------------------
     def print_help(self):
         print self.help_text
 
@@ -40,9 +42,9 @@ class HelpUtil(ConsoleUtilBase):
         print self.enveron_text
 
 
-#----------------------------------------
-#   process 
-#----------------------------------------
+    #----------------------------------------
+    #   process
+    #----------------------------------------
     def process(self, args):
         if self.context:
             commands = self.context.utils.keys()
@@ -79,7 +81,7 @@ Flags:
                          """
     enveron_text = """     
 Environment:
-    CCDB_USER       : should be set to perform any update operation 
+    CCDB_USER       : user name. Should be set to perform any update operation
     CCDB_CONNECTION : might be set, containing a connection string to be automatically loaded"""
     
     

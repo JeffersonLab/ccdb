@@ -51,6 +51,7 @@ def extract_name(path=""):
 def join(left = "", right = "" ):
     return posixpath.join(left,right)
 
+
 #______________________________________________________________________________
 def parse_time(timeStr="-1"):
     """ @brief ParseTime
@@ -225,6 +226,16 @@ def parse_request( requestStr="" ):
             raise
 
     return result
+
+#______________________________________________________________________________
+def validate_name(name):
+    """ Checks if name is valid ccdb object name
+    :return: True if name is correct
+    :rtype: bool
+    """
+    import re
+    if re.match("[\w]", name) : return True # No match
+    return False
 
 
 #______________________________________________________________________________
