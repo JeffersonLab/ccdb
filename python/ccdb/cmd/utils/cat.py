@@ -361,6 +361,10 @@ class Cat(ConsoleUtilBase):
                 frmt = " %%-%is "%columnLengths[i]
                 sys.stdout.write(Theme.AsgmtType + frmt%columnTypes[i] + Theme.Reset)
             print Theme.AsgmtBorder + border + Theme.Reset #last border
+        else:
+            if self.show_comments:
+                pass
+
 
         #cap?
         if displayBorders:

@@ -1,4 +1,4 @@
-import os, re, imp
+import os, re, imp, sys
 import ccdb.cmd
 import logging
 import shlex
@@ -105,9 +105,9 @@ class ConsoleContext:
 #------------------ P L U G I N   M A N A G E M E N T  -------------------------------
 #=====================================================================================
 
-#--------------------------------
-#       
-#--------------------------------
+    #--------------------------------
+    #  register_utilities
+    #--------------------------------
     def register_utilities(self, path = ""):
         """ Function to auto find and register utilities"""
         if path == "": path = os.path.join(ccdb.cmd.__path__[0],"utils")
@@ -134,11 +134,10 @@ class ConsoleContext:
 
 
     #--------------------------------
-    #
+    # search_utils
     #--------------------------------
     def search_utils(self, path):
         """Load plugins from directory and return list of modules
-
 
         :rtype: []
         """
@@ -231,6 +230,8 @@ class ConsoleContext:
     def process_command_line(self, command_line):
         """tries to execute a line of text"""
 
+        log.debug("{0}Process command line: {1}{0}\\".format(os.linesep, command_line))
+
         # execute shell command if input starts with '!'
         if command_line.startswith('!'):
             command_line = command_line[1:]
@@ -249,22 +250,47 @@ class ConsoleContext:
 
         #get our command
         command = tokens[0]
-                
-        log.debug("command is : {0}".format(command))
-        log.debug(tokens)
-        
+        log.debug(" |- command is : {0}".format(command))
+        log.debug(" |- tokens : {0}".format(" ".join([ ("'"+t+"'") for t in tokens])))
+
+        #is there file redirect?
+        redir_to_file = False  #should we redirect to file?
+        redir_file = None      #file to redirect
+
+        if ">" in tokens and tokens.index(">") == len(tokens) - 2:
+            redir_fname = tokens[-1]
+            redir_to_file = True
+            redir_stream_backup = sys.stdout
+            tokens = tokens[:-2]
+
+            log.debug(" |- redirecting to file : {0}".format(redir_fname))
+
+            #open file
+            try:
+                redir_file = file(redir_fname, 'w')
+            except Exception as ex:
+                log.error("Cannot open file '{0}' {1} ".format(redir_fname, ex))
+                if not self.silent_exceptions: raise
+                else: return 1
+
+
         #get command arguments
         arguments = []
         if len(tokens) > 1:
             arguments = tokens[1:]
 
+        #execute everything
         try:
+            if redir_to_file: sys.stdout = redir_file
             return self.process_command(command, arguments)
         except Exception as ex:
             log.error(ex)
             if not self.silent_exceptions: raise
             else: return 1
-
+        finally:
+            if redir_to_file:
+                sys.stdout = redir_stream_backup
+                redir_file.close()
 
 
     #--------------------------------
@@ -275,14 +301,14 @@ class ConsoleContext:
         #>oO debug
         log.debug("Processing command: {0}".format(command))
         log.debug("       commandArgs: ")
-        log.debug("\n".join(["                   " + arg for arg in commandArgs]))
+        log.debug(" ".join(["                   " + arg for arg in commandArgs]))
         
         #try to find function...
         util = None
         try:
             util = self._utils[command]
         except KeyError:
-            print "command ", command," is unknown! please use help to see avalable commands"
+            print "Command ", command," is unknown! Please, use help to see avalable commands"
 
 
         if not util: return 1;
@@ -372,7 +398,8 @@ class ConsoleContext:
 #=====================================================================================
 #------------------------ C O M P L E T I O N ----------------------------------------
 #=====================================================================================
-        
+    #region Description
+
     #--------------------------------
     # show_completions
     #--------------------------------
@@ -444,6 +471,7 @@ class ConsoleContext:
         except IndexError:
             return None
 
+    #endregion
 
 #=====================================================================================
 #--------  G E T T I N G    O B J E C T S  -------------------------------------------

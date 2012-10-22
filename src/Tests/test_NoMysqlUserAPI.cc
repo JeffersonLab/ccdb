@@ -122,5 +122,15 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		REQUIRE(tabledValues.size()==2);
 		REQUIRE(tabledValues[0].size()==3);
 		REQUIRE(tabledValues[0][0]=="1.11");
+
+		//No such calibration exist in mc variation, but constants should fallback to default varitaion
+		res = PathUtils::ParseContext("variation=mc calibtime=2012-08");
+		sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime);
+		REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+		REQUIRE(result);
+		REQUIRE(tabledValues.size()>0);
+		REQUIRE(tabledValues.size()==2);
+		REQUIRE(tabledValues[0].size()==3);
+		REQUIRE(tabledValues[0][0]=="1.11");
 	}
 }

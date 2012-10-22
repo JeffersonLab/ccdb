@@ -5,43 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="32aa4994-6c06-41d2-8192-bcdf1d258f2a" name="Default" comment="">
-      <change type="DELETED" beforePath="C:\D\Science\CCDB\python\ccdb\ccdb_pyllapi\__init__.py" afterPath="" />
-      <change type="DELETED" beforePath="C:\D\Science\CCDB\python\ccdb\ccdb_pyllapi\ccdb_pyllapi.py" afterPath="" />
-      <change type="DELETED" beforePath="C:\D\Science\CCDB\python\ccdb\ccdb_pyllapi\ccdb_pyllapi_wrap.cc" afterPath="" />
-      <change type="DELETED" beforePath="C:\D\Science\CCDB\python\ccdb\ccdb_pyllapi\test_model.py" afterPath="" />
-      <change type="DELETED" beforePath="C:\D\Science\CCDB\python\ccdb\ccdb_pyllapi\libmysql.dll" afterPath="" />
-      <change type="DELETED" beforePath="C:\D\Science\CCDB\python\ccdb\ccdb_pyllapi" afterPath="" />
-      <change type="MOVED" beforePath="C:\D\Science\CCDB\python\ccdb\AlchemyProvider.py" afterPath="$PROJECT_DIR$/ccdb/provider.py" />
-      <change type="MOVED" beforePath="C:\D\Science\CCDB\python\ccdb\AlchemyProviderTest.py" afterPath="$PROJECT_DIR$/ccdb/provider_tests.py" />
-      <change type="MOVED" beforePath="C:\D\Science\CCDB\python\ccdb\Model.py" afterPath="$PROJECT_DIR$/ccdb/model.py" />
-      <change type="MOVED" beforePath="C:\D\Science\CCDB\python\ccdb\PathUtils.py" afterPath="$PROJECT_DIR$/ccdb/path_utils.py" />
-      <change type="MOVED" beforePath="C:\D\Science\CCDB\python\ccdb\TextFileDOM.py" afterPath="$PROJECT_DIR$/ccdb/table_file.py" />
-      <change type="MOVED" beforePath="C:\D\Science\CCDB\python\ccdb\cmd\ConsoleContext.py" afterPath="$PROJECT_DIR$/ccdb/cmd/console_context.py" />
-      <change type="MOVED" beforePath="C:\D\Science\CCDB\python\ccdb\cmd\ConsoleUtilBase.py" afterPath="$PROJECT_DIR$/ccdb/cmd/console_util.py" />
-      <change type="MOVED" beforePath="C:\D\Science\CCDB\python\ccdb\cmd\Theme.py" afterPath="$PROJECT_DIR$/ccdb/cmd/themes.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dictionaries/DmitryRa.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/DmitryRa.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/python.iml" afterPath="$PROJECT_DIR$/.idea/python.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/__init__.py" afterPath="$PROJECT_DIR$/ccdb/__init__.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/__init__.py" afterPath="$PROJECT_DIR$/ccdb/cmd/__init__.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/add.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/add.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/console_context.py" afterPath="$PROJECT_DIR$/ccdb/cmd/console_context.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/cat.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/cat.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/cd.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/cd.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/dump.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/dump.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/empty.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/empty.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/help.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/help.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/horse.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/horse.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/howto.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/howto.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/info.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/info.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/ls.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/ls.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/mkdir.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/mkdir.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/mktbl.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/mktbl.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/pwd.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/pwd.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/rm.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/rm.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/run.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/run.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/usage.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/usage.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/vers.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/vers.py" />
     </list>
     <ignored path="python.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -61,24 +28,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="mktbl.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/mktbl.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="335" column="15" selection-start="9996" selection-end="13131" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#0#16#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="provider.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ccdb/provider.py">
           <provider selected="true" editor-type-id="text-editor">
             <state line="712" column="22" selection-start="24752" selection-end="24766" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#78#96#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -96,38 +50,65 @@
         <entry file="file://$PROJECT_DIR$/ccdb/provider_tests.py">
           <provider selected="true" editor-type-id="text-editor">
             <state line="238" column="0" selection-start="9083" selection-end="9083" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#26#41#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="console_util.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccdb/cmd/console_util.py">
+      <file leaf-file-name="mkvar.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/mkvar.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="43" selection-start="43" selection-end="43" vertical-scroll-proportion="0.0">
+            <state line="22" column="21" selection-start="760" selection-end="760" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dump.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/dump.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="35" column="77" selection-start="1002" selection-end="1057" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="cat.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/cat.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="358" column="23" selection-start="12702" selection-end="12702" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="console_context.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccdb/cmd/console_context.py">
+        <entry file="file://D:/Science/CCDB/python/ccdb/cmd/console_context.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="0" selection-start="156" selection-end="156" vertical-scroll-proportion="-2.36">
-              <folding />
+            <state line="310" column="20" selection-start="9585" selection-end="9585" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#23#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="mkvar.py" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/mkvar.py">
+      <file leaf-file-name="cat.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://D:/Science/CCDB/python/ccdb/cmd/utils/cat.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="46" column="57" selection-start="1455" selection-end="1455" vertical-scroll-proportion="0.31343284">
+            <state line="365" column="20" selection-start="13075" selection-end="13075" vertical-scroll-proportion="0.6818182">
               <folding>
-                <element signature="e#0#36#0" expanded="true" />
+                <element signature="e#0#16#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="add.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://D:/Science/CCDB/python/ccdb/cmd/utils/add.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="132" column="0" selection-start="4441" selection-end="4441" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -136,9 +117,7 @@
         <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/ls.py">
           <provider selected="true" editor-type-id="text-editor">
             <state line="69" column="18" selection-start="2162" selection-end="2162" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#0#16#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -153,10 +132,7 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/ccdb/cmd/utils/usage.py" />
-        <option value="$PROJECT_DIR$/ccdb/cmd/__init__.py" />
         <option value="$PROJECT_DIR$/ccdb/cmd/utils/cd.py" />
-        <option value="$PROJECT_DIR$/ccdb/cmd/utils/dump.py" />
         <option value="$PROJECT_DIR$/ccdb/cmd/utils/mktbl.py" />
         <option value="$PROJECT_DIR$/ccdb/cmd/utils/rm.py" />
         <option value="$PROJECT_DIR$/ccdb/cmd/utils/vers.py" />
@@ -169,6 +145,9 @@
         <option value="$PROJECT_DIR$/ccdb/provider_tests.py" />
         <option value="$PROJECT_DIR$/ccdb/cmd/utils/ls.py" />
         <option value="$PROJECT_DIR$/ccdb/cmd/utils/mkvar.py" />
+        <option value="$PROJECT_DIR$/ccdb/cmd/utils/dump.py" />
+        <option value="D:/Science/CCDB/python/ccdb/cmd/console_context.py" />
+        <option value="D:/Science/CCDB/python/ccdb/cmd/utils/cat.py" />
       </list>
     </option>
   </component>
@@ -306,12 +285,12 @@
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="recentsLimit" value="5" />
     <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-    <property name="last_opened_file_path" value="D:/TestLab/StormTest" />
+    <property name="recentsLimit" value="5" />
     <property name="restartRequiresConfirmation" value="true" />
-    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="last_opened_file_path" value="D:/TestLab/StormTest" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -497,10 +476,10 @@
       <method />
     </configuration>
     <list size="6">
-      <item index="0" class="java.lang.String" itemvalue="Python.Model" />
-      <item index="1" class="java.lang.String" itemvalue="Python.ccdbcmd" />
-      <item index="2" class="java.lang.String" itemvalue="Python.cat" />
-      <item index="3" class="java.lang.String" itemvalue="Python's test.Doctests in flatten_data" />
+      <item index="0" class="java.lang.String" itemvalue="Python's test.Doctests in flatten_data" />
+      <item index="1" class="java.lang.String" itemvalue="Python.Model" />
+      <item index="2" class="java.lang.String" itemvalue="Python.ccdbcmd" />
+      <item index="3" class="java.lang.String" itemvalue="Python.cat" />
       <item index="4" class="java.lang.String" itemvalue="Python's test.Unittests in provider_tests" />
       <item index="5" class="java.lang.String" itemvalue="Python's test.Unittests in AlchemyProviderTest" />
     </list>
@@ -586,22 +565,22 @@
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.328125" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3270548" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.52397263" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23287672" sideWeight="0.49772727" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2780303" sideWeight="0.20719178" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32876712" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1430096" sideWeight="0.41609588" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2054429" sideWeight="0.41609588" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3242424" sideWeight="0.66952056" order="0" side_tool="false" content_ui="combo" />
       <window_info id="DB Browser" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5839041" sideWeight="0.4969697" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.52397263" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2780303" sideWeight="0.20719178" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23287672" sideWeight="0.49772727" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="DB Execution Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5839041" sideWeight="0.4969697" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="true" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="92" y="92" width="1182" height="544" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3270548" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3984375" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -658,94 +637,35 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="30" />
+      <option name="time" value="31" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/rm.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="32" selection-start="394" selection-end="394" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/mkdir.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="0" selection-start="1078" selection-end="1078" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/vers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="38" selection-start="2587" selection-end="2587" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccdb/path_utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="230" column="17" selection-start="7959" selection-end="7972" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccdb/cmd/console_util.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="43" selection-start="43" selection-end="43" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ccdb/cmd/console_context.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="0" selection-start="156" selection-end="156" vertical-scroll-proportion="-2.36">
-          <folding />
-        </state>
+        <state line="8" column="0" selection-start="140" selection-end="140" vertical-scroll-proportion="-2.36" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ccdb/cmd/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#44#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ccdb/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="24" selection-start="1181" selection-end="1181" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#806#815#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="32" column="24" selection-start="1181" selection-end="1181" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/mktbl.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="335" column="15" selection-start="9996" selection-end="13131" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/pwd.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="8" selection-start="922" selection-end="922" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="31" column="8" selection-start="922" selection-end="922" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/.PyCharm20/system/python_stubs/413958713/__builtin__.py">
@@ -758,9 +678,35 @@
     <entry file="file://$PROJECT_DIR$/ccdb/provider.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="712" column="22" selection-start="24752" selection-end="24766" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#78#96#0" expanded="true" />
-          </folding>
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/ls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="69" column="18" selection-start="2162" selection-end="2162" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/mkvar.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="21" selection-start="760" selection-end="760" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Science/CCDB/python/ccdb/cmd/utils/add.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="132" column="0" selection-start="4441" selection-end="4441" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/cat.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="358" column="23" selection-start="12702" selection-end="12702" vertical-scroll-proportion="0.0">
+          <folding />
         </state>
       </provider>
     </entry>
@@ -774,26 +720,31 @@
     <entry file="file://$PROJECT_DIR$/ccdb/provider_tests.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="238" column="0" selection-start="9083" selection-end="9083" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/dump.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="77" selection-start="1002" selection-end="1057" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Science/CCDB/python/ccdb/cmd/console_context.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="310" column="20" selection-start="9585" selection-end="9585" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#26#41#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/ls.py">
+    <entry file="file://D:/Science/CCDB/python/ccdb/cmd/utils/cat.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="18" selection-start="2162" selection-end="2162" vertical-scroll-proportion="0.0">
+        <state line="365" column="20" selection-start="13075" selection-end="13075" vertical-scroll-proportion="0.6818182">
           <folding>
             <element signature="e#0#16#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccdb/cmd/utils/mkvar.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="57" selection-start="1455" selection-end="1455" vertical-scroll-proportion="0.31343284">
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
           </folding>
         </state>
       </provider>

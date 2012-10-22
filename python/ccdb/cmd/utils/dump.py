@@ -33,7 +33,7 @@ class Dump(ConsoleUtilBase):
         log.debug("Dump is gained a control over the process.")
         log.debug("Arguments: " + " ".join(args))
 
-        self.context.process("cat --no-borders --no-header --comments --time" + " ".join(args))
+        command = "cat --no-borders --no-header --comments --time --horizontal " + " ".join(args)
 
 
     def print_directory_tree(self, directory, printFullPath, level):
@@ -54,5 +54,15 @@ class Dump(ConsoleUtilBase):
 
     def print_help(self):
         "Prints help of the command"
-        print "Dumps datat table to a file"
+        print """ Dumps data table to a file
+        Generally dump accepts the same parameters as 'cat'
+
+usage:
+        dump <request> <file_name>
+
+example:
+        dump /TOF/params2 file.txt
+        dump /TOF/params2::john:2012 file.txt
+        dump /TOF/params2::john:2012 file.txt
+        """
 
