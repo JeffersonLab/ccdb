@@ -1,5 +1,6 @@
 import logging
 import ccdb
+import os #for os.linesep
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.cmd import Theme
@@ -36,8 +37,8 @@ class Versions(ConsoleUtilBase):
 #   process 
 #----------------------------------------  
     def process(self, args):
-        log.debug("VersionsUtility is gained a control over the process.")
-        log.debug("   " + " ".join(args))
+        log.debug("VersionsUtility is gained a control. {0}\\".format(os.linesep))
+        log.debug(" |- arguments : "  + " ".join([("'"+arg+"'") for arg in args]))
 
         assert self.context is not None
         provider = self.context.provider
@@ -59,7 +60,9 @@ class Versions(ConsoleUtilBase):
         
         #correct path
         self.table_path = self.context.prepare_path(self.raw_table_path)
-        
+        log.debug(" |- prepared path : {0}".format(self.table_path))
+        log.debug(" |- run number    : {0}".format(self.run))
+
         #check such table really exists
         try:
             provider.get_type_table(self.table_path)
@@ -68,20 +71,20 @@ class Versions(ConsoleUtilBase):
             return 1
         
         assignments = provider.get_assignments(self.table_path, self.run)
-        print Theme.Directories + "(ID)   (Created)              (Modified)              (variation)     (run range)    (comments)"
+        log.debug(" |- sets found    : {0}".format(len(assignments)))
+
+        print Theme.Directories + "(ID)   (Created)              (Modified)              (variation)     (run range)    (comments)" + Theme.Reset
         for asgmnt in assignments:
             assert isinstance(asgmnt, ccdb.Assignment)
             max_str = repr(asgmnt.run_range.max)
             if asgmnt.run_range.max == ccdb.INFINITE_RUN:
                 max_str="inf"
-            print asgmnt.run_range.min
             print " %-5i "%asgmnt.id +\
                   " %-20s"%asgmnt.created.strftime("%Y-%m-%d_%H-%M-%S   ") +\
                   " %-20s"%asgmnt.modified.strftime("%Y-%m-%d_%H-%M-%S   ") +" "+\
                   " %-14s "%asgmnt.variation.name +\
                   " %-25s "%(repr(asgmnt.run_range.min) + "-" + max_str )+\
                   asgmnt.comment[0:20].replace("\n"," ")
-
         
         return 0
             
