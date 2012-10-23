@@ -1,4 +1,3 @@
-from ccdb.cmd.themes import Theme
 from ccdb.cmd import ConsoleUtilBase
 import logging
 

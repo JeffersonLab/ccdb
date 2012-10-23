@@ -48,48 +48,62 @@ else:
             ("srWindow", SMALL_RECT),
             ("dwMaximumWindowSize", COORD),
         ]
+        def __str__(self):
+            return '(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)' % (
+                self.dwSize.Y, self.dwSize.X
+                , self.dwCursorPosition.Y, self.dwCursorPosition.X
+                , self.wAttributes
+                , self.srWindow.Top, self.srWindow.Left, self.srWindow.Bottom, self.srWindow.Right
+                , self.dwMaximumWindowSize.Y, self.dwMaximumWindowSize.X
+            )
 
-    def GetConsoleScreenBufferInfo(stream_id):
+    def GetConsoleScreenBufferInfo(stream_id=STDOUT):
         handle = handles[stream_id]
         csbi = CONSOLE_SCREEN_BUFFER_INFO()
         success = windll.kernel32.GetConsoleScreenBufferInfo(
             handle, byref(csbi))
-        # This fails when imported via setup.py when installing using 'pip'
-        # presumably the fix is that running setup.py should not trigger all
-        # this activity.
-        # assert success
         return csbi
+
 
     def SetConsoleTextAttribute(stream_id, attrs):
         handle = handles[stream_id]
-        success = windll.kernel32.SetConsoleTextAttribute(handle, attrs)
-        assert success
+        return windll.kernel32.SetConsoleTextAttribute(handle, attrs)
+
 
     def SetConsoleCursorPosition(stream_id, position):
-        handle = handles[stream_id]
         position = COORD(*position)
-        success = windll.kernel32.SetConsoleCursorPosition(handle, position)
-        assert success
+        # If the position is out of range, do nothing.
+        if position.Y <= 0 or position.X <= 0:
+            return
+        # Adjust for Windows' SetConsoleCursorPosition:
+        #    1. being 0-based, while ANSI is 1-based.
+        #    2. expecting (x,y), while ANSI uses (y,x).
+        adjusted_position = COORD(position.Y - 1, position.X - 1)
+        # Adjust for viewport's scroll position
+        sr = GetConsoleScreenBufferInfo(STDOUT).srWindow
+        adjusted_position.Y += sr.Top
+        adjusted_position.X += sr.Left
+        # Resume normal processing
+        handle = handles[stream_id]
+        return windll.kernel32.SetConsoleCursorPosition(handle, adjusted_position)
 
     def FillConsoleOutputCharacter(stream_id, char, length, start):
         handle = handles[stream_id]
         char = TCHAR(char)
         length = DWORD(length)
-        start = COORD(*start)
         num_written = DWORD(0)
-        # AttributeError: function 'FillConsoleOutputCharacter' not found
-        # could it just be that my types are wrong?
-        success = windll.kernel32.FillConsoleOutputCharacter(
+        # Note that this is hard-coded for ANSI (vs wide) bytes.
+        success = windll.kernel32.FillConsoleOutputCharacterA(
             handle, char, length, start, byref(num_written))
-        assert success
         return num_written.value
 
-
-if __name__=='__main__':
-    x = GetConsoleScreenBufferInfo(STDOUT)
-    print(x.dwSize)
-    print(x.dwCursorPosition)
-    print(x.wAttributes)
-    print(x.srWindow)
-    print(x.dwMaximumWindowSize)
+    def FillConsoleOutputAttribute(stream_id, attr, length, start):
+        ''' FillConsoleOutputAttribute( hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten )'''
+        handle = handles[stream_id]
+        attribute = WORD(attr)
+        length = DWORD(length)
+        num_written = DWORD(0)
+        # Note that this is hard-coded for ANSI (vs wide) bytes.
+        return windll.kernel32.FillConsoleOutputAttribute(
+            handle, attribute, length, start, byref(num_written))
 

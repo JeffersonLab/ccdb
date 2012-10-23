@@ -1,5 +1,4 @@
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.themes import Theme
 from ccdb.path_utils import validate_name
 import logging
 
@@ -61,7 +60,7 @@ class MakeVariation(ConsoleUtilBase):
         except Exception as ex:
             log.warning("Failed to create directory. Exception message: {0}".format(ex))
 
-        log.info("Variation " + var_name + Theme.Success + " created" + Theme.Reset)
+        log.info("Variation " + var_name + self.theme.Success + " created" + self.theme.Reset)
 
 
     #----------------------------------------------

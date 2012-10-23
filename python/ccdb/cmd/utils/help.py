@@ -1,5 +1,4 @@
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.themes import Theme
 import logging
 
 log = logging.getLogger("ccdb.cmd.utils.help")

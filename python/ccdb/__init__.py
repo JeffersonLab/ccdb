@@ -23,7 +23,8 @@ import logging
 from .provider import AlchemyProvider
 from .model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn
 from .table_file import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
-
+from .cmd.themes import NoColorTheme, ColoredTheme
+import cmd.themes
 
 #the default ccdb logger
 logger = logging.getLogger("ccdb")
@@ -48,24 +49,23 @@ def init_ccdb_console():
 
     # CHECK SOME COMMAND LINE KEYS
     #------------------------------
-    if "--s" in sys.argv or "--silent" in sys.argv:
+    if "-s" in sys.argv or "--silent" in sys.argv:
         logger.setLevel(logging.CRITICAL)
     else:
         logger.setLevel(logging.INFO)
 
+    cmd.colorama.init(autoreset=True)
+
     if "--no-color" in sys.argv:
         #no colors for output
-        cmd.colorama.init(autoreset=True)
-        cmd.colorama.off()
-        pass
-
+        context.theme = NoColorTheme
     else:
         #colors are ON
-        cmd.colorama.init(autoreset=True)
+        context.theme = ColoredTheme
 
     if "--debug" in sys.argv:
         logger.setLevel(logging.DEBUG)
-        logger.debug("debugging verbose mode is " + Theme.Ok + " ON " + Theme.Reset)
+        logger.debug("debugging verbose mode is " + context.theme.Ok + " ON " + context.theme.Reset)
 
     if "--raise" in sys.argv:
         logger.debug("--raise flag found. The process will raise commands exceptions instead of humble notifications and non 0 result")

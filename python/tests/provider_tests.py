@@ -2,7 +2,7 @@ __author__ = 'RomanovDA'
 
 import unittest
 import os
-import path_utils
+import ccdb.path_utils
 from ccdb.model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
 import sqlalchemy.orm.exc
@@ -352,9 +352,9 @@ class PathUtilsTest(unittest.TestCase):
     """Test of the path_util package"""
 
     def validate_name_test(self):
-        self.assertTrue(path_utils.validate_name("this_is_variation2"))
-        self.assertFalse(path_utils.validate_name("this-is_variation2"))
-        self.assertFalse(path_utils.validate_name("this:isvariation2"))
+        self.assertTrue(ccdb.path_utils.validate_name("this_is_variation2"))
+        self.assertFalse(ccdb.path_utils.validate_name("this-is_variation2"))
+        self.assertFalse(ccdb.path_utils.validate_name("this:isvariation2"))
 
 
 

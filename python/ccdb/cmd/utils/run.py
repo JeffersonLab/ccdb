@@ -24,7 +24,7 @@ class CurrentRun(ConsoleUtilBase):
     
     def print_help(self):
         print """ gets or sets current working run
-        run (with no aguments) will display current working run
+        run (with no arguments) will display current working run
         run <run_number> will set current working run to this number
         
         """ 

@@ -3,7 +3,7 @@ import re
 import logging
 
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.themes import Theme, bool_color
+from ccdb.cmd.themes import bool_color
 
 log = logging.getLogger("ccdb.cmd.utils.mktbl")
 
@@ -32,6 +32,7 @@ class MakeTable(ConsoleUtilBase):
 #   __init__ 
 #---------------------------------------- 
     def __init__(self):
+        ConsoleUtilBase.__init__(self)
         self.columns = {}
         self.unparsed_columns = []
         self.rows = 1
@@ -44,7 +45,7 @@ class MakeTable(ConsoleUtilBase):
         self.table_parent_path = ""
         self.table_path = ""
         self.table_path_set = False
-        self.no_columns_quantity=False
+        self.no_columns_quantity = False
     
 #--------------------------------------------------------------------------------
 #   reset_on_process - sets values to be ready for new process function
@@ -106,7 +107,7 @@ class MakeTable(ConsoleUtilBase):
 #   interactive_mode - run interactive mode
 #------------------------------------------            
     def interactive_mode(self):
-        "asks data in interactive mode"
+        """asks data in interactive mode"""
 
         if not self.table_path_set:
             self.table_name = raw_input("Enter table name :")
@@ -124,7 +125,7 @@ class MakeTable(ConsoleUtilBase):
 
         log.debug("  write table to database...")
         self.context.provider.create_type_table(self.table_name, self.table_parent_path, self.rows, self.columns, self.comment)
-        print "saving table to database... " + Theme.Success + " completed" + Theme.Reset
+        print "saving table to database... " + self.theme.Success + " completed" + self.theme.Reset
 
 
     #----------------------------------------------
@@ -144,7 +145,6 @@ class MakeTable(ConsoleUtilBase):
         
         #parse loop
         i=0
-        token = ""
         while i < len(args):
             token = args[i].strip()
             i+=1
@@ -235,11 +235,7 @@ class MakeTable(ConsoleUtilBase):
     def parse_column(self, value):
         """parse each column argument record"""
         
-        result = {}
-        result["type"] = "double" #default type
-        result["name"] = ""       #no name
-        result["quantity"] = 1    #column quantity
-        result["no_columns_quantity"] = self.no_columns_quantity
+        result = {"type": "double", "name": "", "quantity": 1, "no_columns_quantity": self.no_columns_quantity}
 
         #regular expression that matches strings like this
         # <quantity><name>(<type>) or <quantity>(<pretype>)<name>
@@ -257,10 +253,10 @@ class MakeTable(ConsoleUtilBase):
             except ValueError:
                 pass
                         
-        if(m.group("type")):
+        if m.group("type"):
             result["type"] = m.group("type")
         
-        if(m.group("name")):
+        if m.group("name"):
             result["name"] = m.group("name")
               
         return result
@@ -270,7 +266,7 @@ class MakeTable(ConsoleUtilBase):
     #   print_help - prints help for MakeTable
     #----------------------------------------------
     def print_help(self):
-        "prints help for MakeTable"
+        """prints help for MakeTable"""
         
         print """
 MakeTable or mktbl - create type table with the specified namepath and parameters
@@ -342,11 +338,11 @@ keys:
         #basic values: name rows columns path
         print
         if not len(self.table_name):
-            print "Table: " + Theme.Fail + "Name is not set"
+            print "Table: " + self.theme.Fail + "Name is not set"
         else:
-            print "Table: " + Theme.Success +  self.table_name
+            print "Table: " + self.theme.Success +  self.table_name
         
-        print "Rows num: " + bool_color(self.rows) + repr(self.rows) + Theme.Reset +\
+        print "Rows num: " + bool_color(self.rows) + repr(self.rows) + self.theme.Reset +\
               "   Columns num: " + bool_color(len(self.columns)) + repr(len(self.columns))
         print "Full path: " + self.table_path
         #columns info 
@@ -354,31 +350,31 @@ keys:
         print "Columns: "
         print "   (type)    : (name)"
         for (colname, coltype) in self.columns:
-            print "   " + Theme.Type + "%-10s"%coltype + Theme.Reset + ": "+ colname
+            print "   " + self.theme.Type + "%-10s"%coltype + self.theme.Reset + ": "+ colname
         print 
         #comment
         print "Comment: "
         if len(self.comment):
             print self.comment
         else:
-            print Theme.Fail + "Comment is empty"
+            print self.theme.Fail + "Comment is empty"
         
         #additional info print
         print
         print "Additional info: " 
         if self.rows_set:
-            print "   Rows number is set by " + Theme.Success + "User"
+            print "   Rows number is set by " + self.theme.Success + "User"
         else: 
-            print "   Rows number is set by " + Theme.Accent + "Default"
+            print "   Rows number is set by " + self.theme.Accent + "Default"
             
         if self.comment_set:
-            print "   Comments added by " + Theme.Success + "User"
+            print "   Comments added by " + self.theme.Success + "User"
         else:
             print "   No comments are set"
          
         
     def print_settings_summary(self):
-        print Theme.Success + " Summary: "
+        print self.theme.Success + " Summary: "
         print "  columns: ", self.columns
         print "  unparsed_columns: ", self.unparsed_columns
         print

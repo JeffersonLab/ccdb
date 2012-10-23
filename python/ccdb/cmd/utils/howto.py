@@ -37,3 +37,4 @@ class HowTo(ConsoleUtilBase):
         print """
         Prints cases for using the ccdb console tools
         """
+

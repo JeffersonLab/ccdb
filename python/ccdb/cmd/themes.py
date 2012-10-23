@@ -12,9 +12,34 @@ def print_bool(value):
     if value:
         sys.stdout.write(Theme.Success + repr(value) + Theme.Reset)
     else:
-        sys.stdout.write(Theme.Fail + repr(value) + Theme.Reset)        
+        sys.stdout.write(Theme.Fail + repr(value) + Theme.Reset)
 
-class Theme:
+
+Theme = None
+
+def set_theme(theme):
+    global Theme
+    Theme = theme
+
+
+class NoColorTheme:
+    Ok = ""
+    Directories = ""
+    HelpCommand = ""
+    Registring = ""
+    UtilName = ""
+    Reset = ""
+    Success = ""
+    Fail = ""
+    Accent = ""
+    Title = ""
+    Type = ""
+    AsgmtHead = ""
+    AsgmtType = ""
+    AsgmtValue = ""
+    AsgmtBorder = ""
+
+class ColoredTheme(NoColorTheme):
     Ok = Fore.GREEN + Style.BRIGHT
     Directories = Fore.BLUE + Style.BRIGHT
     HelpCommand = Fore.BLUE + Style.BRIGHT
@@ -30,4 +55,5 @@ class Theme:
     AsgmtType = ""
     AsgmtValue = "" 
     AsgmtBorder = Fore.GREEN
-    
+
+

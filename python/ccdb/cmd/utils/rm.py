@@ -1,12 +1,6 @@
-import posixpath
 import logging
-import time
-
-
-from ccdb import Directory, TypeTable, TypeTableColumn, Variation
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.themes import Theme
 from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.rm")
@@ -33,7 +27,7 @@ class Remove(ConsoleUtilBase):
 
     #variables for each process
 
-    rawentry = "/"       #object path with possible pattern, like /mole/*
+    raw_entry = "/"       #object path with possible pattern, like /mole/*
     path = "/"    #parent path
     
 #----------------------------------------
@@ -43,20 +37,20 @@ class Remove(ConsoleUtilBase):
         log.debug("Remove is gained a control over the process.")
         log.debug("   " + " ".join(args))
 
-        assert self.context != None
+        assert self.context is not None
         provider = self.context.provider
         isinstance(provider, AlchemyProvider)
         
         #process arguments
-        self.rawentry = ""
+        self.raw_entry = ""
         self.object_type = "type_table" 
         self.ask_confirm = True
         self.process_arguments(args)
         
         #correct ending /
-        self.path = self.context.prepare_path(self.rawentry)
+        self.path = self.context.prepare_path(self.raw_entry)
                 
-        if not self.rawentry:
+        if not self.raw_entry:
             log.warning("No path is given. Use 'help info' or 'usage info' for getting help.")
 
         self.print_warning()
@@ -74,25 +68,25 @@ class Remove(ConsoleUtilBase):
                 self.type_table = provider.get_type_table(self.path)
                 provider.delete_type_table(self.type_table)
             except NoResultFound:
-                log.warning("No type table with this path: {0}".format(self.path))
+                log.warning("No type table with this path: '{0}'".format(self.path))
                 return 1
         
         #it is a directory
         if self.object_type == "directory":
             try:
                 parent_dir = provider.get_directory(self.path)
-                provider.delete_directory(self.type_table)
+                provider.delete_directory(parent_dir)
             except KeyError:
-                log.warning("No directory with this path")
+                log.warning("No directory with this path: '{0}'".format(self.path))
                 return 1
         
         #it is a variation
         if self.object_type == "variation":
             try:
-                variation = provider.get_variation(self.rawentry)
+                variation = provider.get_variation(self.raw_entry)
                 provider.delete_variation(variation)
             except NoResultFound:
-                log.warning("Unable to delete variation")
+                log.warning("Unable to delete variation '{0}'".format(self.raw_entry))
                 return 1
         
         #everything is fine!
@@ -105,7 +99,6 @@ class Remove(ConsoleUtilBase):
         
         #parse loop
         i=0
-        token = ""
         while i < len(args):
             token = args[i].strip()
             i+=1
@@ -115,13 +108,13 @@ class Remove(ConsoleUtilBase):
                 #variation
                 if token == "-v" or token.startswith("--variation"):
                     if i<len(args):
-                        self.rawentry =  args[i]
+                        self.raw_entry =  args[i]
                         self.object_type = "variation"
                         i+=1
                         
                 #directory
                 if token == "-d" or token == "--directory":
-                    self.rawentry = args[i]
+                    self.raw_entry = args[i]
                     self.object_type = "directory"
                     i+=1
 
@@ -130,7 +123,7 @@ class Remove(ConsoleUtilBase):
                 
             else:
                 #it probably must be a type table path
-                self.rawentry = token
+                self.raw_entry = token
                 self.object_type = "type_table"
                 
                 
@@ -140,7 +133,7 @@ class Remove(ConsoleUtilBase):
 #   print_warning
 #----------------------------------------        
     def print_warning(self):
-        "print warning"
+        """print warning"""
         
         print """ 
                     (!) WARNING (!) 
@@ -148,7 +141,7 @@ class Remove(ConsoleUtilBase):
 
 It is assumed by CCDB design that object names or paths are used in user code. 
 Deleting or renaming type table, directory or variation could break the user code 
-wich using this names. 
+which using this names.
 
 Deleting a table and recreating with different signature could 
 lead to even more severe hard-to-diagnose errors.
@@ -160,7 +153,7 @@ lead to even more severe hard-to-diagnose errors.
 #   print_help 
 #----------------------------------------
     def print_help(self):
-        "Prints help of the command"
+        """Prints help of the command"""
           
         print """Removes type table, directory or variation
     rm <type table path>   - removes type table with given path

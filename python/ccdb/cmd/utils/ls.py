@@ -4,7 +4,6 @@ import logging
 from ccdb.model import Directory
 from ccdb.provider import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd import Theme
 
 
 log = logging.getLogger("ccdb.cmd.utils.ls")
@@ -30,6 +29,7 @@ class List(ConsoleUtilBase):
 
 
     def __init__(self):
+        ConsoleUtilBase.__init__(self)
         self.reset()
 
     def reset(self):
@@ -111,7 +111,7 @@ class List(ConsoleUtilBase):
                 sub_dirs = self.context.provider.search_directories(self.pattern, self.parent_path)
            
             for subdir in sub_dirs:
-                print Theme.Directories + subdir.name + "    "
+                print self.theme.Directories + subdir.name + "    "
             
             #part 2 is tables for this path
             tables = []

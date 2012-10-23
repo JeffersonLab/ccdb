@@ -5,10 +5,10 @@ import shlex
 import posixpath
 
 from ccdb import AlchemyProvider
-from .themes import Theme
+import themes
+
 import colorama
 import readline
-import posixpath
 
 log = logging.getLogger("ccdb.cmd.console_context")
 
@@ -23,6 +23,7 @@ class ConsoleContext:
     anonymous_user_name = "anonymous"
     prefix = None
     words = []
+    theme = themes.NoColorTheme
 
     def __init__(self):
         self._prov = AlchemyProvider()
@@ -48,6 +49,7 @@ class ConsoleContext:
 
     @property
     def utils(self):
+        """:rtype: {}"""
         return self._utils
     
     @property
@@ -114,6 +116,7 @@ class ConsoleContext:
 
         #search modules
         modules = self.search_utils(path)
+        self._utils = {}
 
         #register each module
         for module in modules:
@@ -123,10 +126,12 @@ class ConsoleContext:
                 if util:
                     self._utils[util.command]=util
                     util.context = self
+                    util.theme = self.theme
                     if util.command == "ls":
                         self._ls = util
-            except AttributeError, ex:
-                log.debug("Error registering module : " + repr(ex))
+
+            except AttributeError, ex: log.debug("Error registering module : " + repr(ex))
+            except Exception as ex:    log.debug("Error registering module : " + repr(ex))
 
         log.debug("Utils found and registered in directory {0} are:".format(path))
         log.debug("%-10s %-15s %s:"%("(command)", "(name)", "(description)"))
@@ -144,7 +149,7 @@ class ConsoleContext:
         
         #>oO debud output
         log.debug("searching modules in directory:")
-        log.debug("   " + Theme.Directories + path + Theme.Reset)
+        log.debug("   " + self.theme.Directories + path + self.theme.Reset)
 
         #get list of files and module names
         files = os.listdir( path )
@@ -256,13 +261,13 @@ class ConsoleContext:
         #is there file redirect?
         redir_to_file = False  #should we redirect to file?
         redir_file = None      #file to redirect
+        redir_stream_backup = sys.stdout
+        redir_theme_backup = self.theme
 
         if ">" in tokens and tokens.index(">") == len(tokens) - 2:
             redir_fname = tokens[-1]
             redir_to_file = True
-            redir_stream_backup = sys.stdout
             tokens = tokens[:-2]
-
             log.debug(" |- redirecting to file : {0}".format(redir_fname))
 
             #open file
@@ -274,6 +279,7 @@ class ConsoleContext:
                 else: return 1
 
 
+
         #get command arguments
         arguments = []
         if len(tokens) > 1:
@@ -281,7 +287,10 @@ class ConsoleContext:
 
         #execute everything
         try:
-            if redir_to_file: sys.stdout = redir_file
+            if redir_to_file:
+                sys.stdout = redir_file
+                colorama.deinit()
+                self.theme = themes.NoColorTheme
             return self.process_command(command, arguments)
         except Exception as ex:
             log.error(ex)
@@ -291,6 +300,8 @@ class ConsoleContext:
             if redir_to_file:
                 sys.stdout = redir_stream_backup
                 redir_file.close()
+                self.theme = redir_theme_backup
+                colorama.reinit()
 
 
     #--------------------------------
@@ -327,7 +338,7 @@ class ConsoleContext:
     def check_connection(self, util):
         if self._prov.is_connected : return #connected anyway...
         log.debug(util.name + " uses the database and there is no connection yet. Trying to connect...")
-        log.debug("   Connection string is: " + Theme.Accent + self.connection_string + Theme.Reset)
+        log.debug("   Connection string is: " + self.theme.Accent + self.connection_string + self.theme.Reset)
 
         #connecting
         try:
@@ -337,7 +348,7 @@ class ConsoleContext:
             return False
 
         #connected
-        log.debug("   Connection " + Theme.Success + " successfull " + Theme.Reset)
+        log.debug("   Connection " + self.theme.Success + " successfull " + self.theme.Reset)
         return True
             
 
@@ -350,7 +361,7 @@ class ConsoleContext:
         #initialise autocomplete
         self.words = self._utils.keys()
         #completer = Completer(words)
-        colorama.pause() #make colorama to release stderr and stdout
+        colorama.deinit() #make colorama to release stderr and stdout
         readline.parse_and_bind("tab: complete")
         readline.set_completer(self.complete)
         try: 
@@ -367,7 +378,7 @@ class ConsoleContext:
         # to be displayed.
         # Begin user commands read loop
         while 1:
-            colorama.pause()
+            colorama.deinit()
             
             # read command from user
             try:
@@ -379,7 +390,7 @@ class ConsoleContext:
                 log.debug("Break sequence received. Ending interactive loop")
                 break
 
-            colorama.resume()
+            colorama.reinit()
                                 
             # exit if user wishes so    
             if user_input in ("quit", "q", "exit"):
@@ -554,9 +565,9 @@ class ConsoleContext:
   HallD JLab
 +--------------------------+
        """
-        print Theme.Title + "Interactive mode"
-        print "print " + Theme.Accent + "help" + Theme.Reset + " to get help"
-        print "print " + Theme.Accent + "quit" + Theme.Reset + " or " + Theme.Accent + "q" + Theme.Reset +" to exit"
+        print self.theme.Title + "Interactive mode"
+        print "print " + self.theme.Accent + "help" + self.theme.Reset + " to get help"
+        print "print " + self.theme.Accent + "quit" + self.theme.Reset + " or " + self.theme.Accent + "q" + self.theme.Reset +" to exit"
         print "print !<command> to execute shell command"
         print
         print "You login as: '"+self._user_name+"'"

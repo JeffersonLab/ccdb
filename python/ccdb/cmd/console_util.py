@@ -1,13 +1,26 @@
 from .console_context import ConsoleContext
-
+from .themes import NoColorTheme
 
 class ConsoleUtilBase:
     "base class for console utility"
     
-    context = ConsoleContext()
+    #context = ConsoleContext()
     uses_db = False
     changes_db = False
     help_util = False
+    theme = NoColorTheme
+
+    @property
+    def context(self):
+        """:return: context object for current utility
+           :rtype: ConsoleContext
+        """
+        return self._context
+
+    @context.setter
+    def context(self, value):
+        assert isinstance(value, ConsoleContext)
+        self._context = value
 
     def print_help(self):
         """@brief Prints help of the command"""
@@ -22,12 +35,8 @@ class ConsoleUtilBase:
         "Prints examples of the command usage"
         print "Examples are not defined for command " + self.command
 
-    def __init(self):
-        self.description = ""
-        self.command = ""
-        #self.context = ConsoleContext()
-                        
-        #context = None
+    def __init__(self):
+        self._context = None
         
     def read_multiline(self):
         user_input = []

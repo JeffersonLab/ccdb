@@ -6,7 +6,6 @@ import ccdb
 from ccdb import TextFileDOM
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd import Theme
 
 log = logging.getLogger("ccdb.cmd.utils.add")
 
@@ -79,7 +78,7 @@ class AddData(ConsoleUtilBase):
         
         #process arguments
         if not self.process_arguments(args):
-            log.debug(self.d_i + "process arguments " + Theme.Fail + "failed")
+            log.debug(self.d_i + "process arguments " + self.theme.Fail + "failed")
             return 1
         
         #by "" user means default variation
@@ -87,7 +86,7 @@ class AddData(ConsoleUtilBase):
         
         #validate what we've got
         if not self.validate():
-            log.debug(self.d_i + "arguments validation " + Theme.Fail + "failed")
+            log.debug(self.d_i + "arguments validation " + self.theme.Fail + "failed")
             return 1
         
         #correct paths
@@ -120,7 +119,7 @@ class AddData(ConsoleUtilBase):
 
         #try to create
         provider.create_assignment(dom, self.table_path, self.run_min, self.run_max, self.variation, self.comment)
-        log.info("Constants added " +Theme.Success+"successfully"+Theme.Reset)
+        log.info("Constants added " +self.theme.Success+"successfully"+self.theme.Reset)
         return 0
             
 #----------------------------------------

@@ -7,7 +7,6 @@ from ccdb import Directory, TypeTable, TypeTableColumn, Variation
 from ccdb import AlchemyProvider
 import sqlalchemy.exc
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd import Theme
 from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.info")
@@ -130,7 +129,7 @@ class Info(ConsoleUtilBase):
 #----------------------------------------   
     def print_directory(self, directory):
         assert isinstance(directory, Directory)
-        print " Name      :  " + Theme.Success +  directory.name
+        print " Name      :  " + self.theme.Success +  directory.name
         print " Full path :  " + directory.path
         try:
             print " Created   :  " + directory.created.strftime("%Y-%m-%d %H-%M-%S")
@@ -155,10 +154,10 @@ class Info(ConsoleUtilBase):
         print "+------------------------------------------+"
         print "| Type table information                   |"
         print "+------------------------------------------+"
-        print " Name       :  " + Theme.Success +  table.name
+        print " Name       :  " + self.theme.Success +  table.name
         print " Full path  :  " + table.path
-        print " Rows       :  " + Theme.Accent + repr(int(table.rows_count))
-        print " Columns    :  " + Theme.Accent + repr(int(table._columns_count))
+        print " Rows       :  " + self.theme.Accent + repr(int(table.rows_count))
+        print " Columns    :  " + self.theme.Accent + repr(int(table._columns_count))
         print " Created    :  " + table.created.strftime("%Y-%m-%d %H-%M-%S")
         print " Modified   :  " + table.modified.strftime("%Y-%m-%d %H-%M-%S")
         print " DB Id      :  " + repr(int(table.id))
@@ -170,7 +169,7 @@ class Info(ConsoleUtilBase):
         print "Columns info "
         print " N.   (type)    : (name)"
         for column in table.columns:
-            print " " + repr(int(column.order)).ljust(4)+" " + Theme.Type + "%-10s"%column.type + Theme.Reset + ": "+ column.name
+            print " " + repr(int(column.order)).ljust(4)+" " + self.theme.Type + "%-10s"%column.type + self.theme.Reset + ": "+ column.name
            
         print 
         print "+------------------------------------------+"

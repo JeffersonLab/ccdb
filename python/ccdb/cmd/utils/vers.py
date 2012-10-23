@@ -2,7 +2,6 @@ import logging
 import ccdb
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd import Theme
 from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.vers")
@@ -29,7 +28,7 @@ class Versions(ConsoleUtilBase):
 
     #variables for each process
 
-    rawentry = "/"   #object path with possible pattern, like /mole/*
+    raw_entry = "/"   #object path with possible pattern, like /mole/*
     path = "/"       #parent path
     
 #----------------------------------------
@@ -68,13 +67,12 @@ class Versions(ConsoleUtilBase):
             return 1
         
         assignments = provider.get_assignments(self.table_path, self.run)
-        print Theme.Directories + "(ID)   (Created)              (Modified)              (variation)     (run range)    (comments)"
+        print self.theme.Directories + "(ID)   (Created)              (Modified)              (variation)     (run range)    (comments)"
         for asgmnt in assignments:
             assert isinstance(asgmnt, ccdb.Assignment)
             max_str = repr(asgmnt.run_range.max)
             if asgmnt.run_range.max == ccdb.INFINITE_RUN:
                 max_str="inf"
-            print asgmnt.run_range.min
             print " %-5i "%asgmnt.id +\
                   " %-20s"%asgmnt.created.strftime("%Y-%m-%d_%H-%M-%S   ") +\
                   " %-20s"%asgmnt.modified.strftime("%Y-%m-%d_%H-%M-%S   ") +" "+\

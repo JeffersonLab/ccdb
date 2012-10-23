@@ -1,8 +1,6 @@
-import sys
-import posixpath
+import os
 import logging
 
-from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 
 log = logging.getLogger("ccdb.cmd.utils.ls")
@@ -30,10 +28,11 @@ class Dump(ConsoleUtilBase):
     #variables for each process
 
     def process(self, args):
-        log.debug("Dump is gained a control over the process.")
-        log.debug("Arguments: " + " ".join(args))
+        log.debug("{0}Dump is gained a control {0} \\".format(os.linesep))
+        log.debug(" |- arguments: " + " ".join(args))
 
         command = "cat --no-borders --no-header --comments --time --horizontal " + " ".join(args)
+        self.context.process_command_line(command)
 
 
     def print_directory_tree(self, directory, printFullPath, level):

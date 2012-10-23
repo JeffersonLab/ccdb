@@ -1,5 +1,4 @@
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.themes import Theme
 
 import logging
 log = logging.getLogger("ccdb.cmd.utils.pwd")
@@ -24,9 +23,8 @@ class PrintWorkDir(ConsoleUtilBase):
     name = "PrintWorkDir"
     short_descr = "Prints working directory"
     
-    def print_help(ChangeDir):
+    def print_help(self):
         print """ Prints working directory """ 
-    # ---- end of print_help() ----
 
 
     def process(self, args):

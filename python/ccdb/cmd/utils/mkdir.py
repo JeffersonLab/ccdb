@@ -1,5 +1,4 @@
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.themes import Theme
 import posixpath
 import logging
 
@@ -61,5 +60,5 @@ class MakeDirectory(ConsoleUtilBase):
         except Exception as ex:
             log.warning("Failed to create directory. Exception message: {0}".format(ex))
 
-        log.info("Directory " + name + Theme.Success + " created" + Theme.Reset)
+        log.info("Directory " + name + self.theme.Success + " created" + self.theme.Reset)
         
