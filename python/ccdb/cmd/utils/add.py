@@ -60,7 +60,7 @@ class AddData(ConsoleUtilBase):
         self.is_namevalue_format = False
         self.no_comments = False
         self.c_comments = False   #file has '//'-style comments
-        self.rawentry = "/"   #object path with possible pattern, like /mole/*
+        self.raw_entry = "/"   #object path with possible pattern, like /mole/*
         self.path = "/"       #parent path
 
 
@@ -68,7 +68,6 @@ class AddData(ConsoleUtilBase):
     #   process
     #----------------------------------------
     def process(self, args):
-        log.debug(self.d_i + "---------------------------------------------")
         log.debug(self.d_i + "AddData is gained a control over the process.")
         log.debug(self.d_i + "args: " + " ".join(args))
 
@@ -162,7 +161,7 @@ class AddData(ConsoleUtilBase):
                 
                 #file
                 if token == "-f" or token == "--file":
-                    self.rawentry = args[i]
+                    self.raw_entry = args[i]
                     self.object_type = "directory"
                     i+=1
                 

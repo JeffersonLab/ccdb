@@ -50,13 +50,19 @@ class ConsoleContextTests(unittest.TestCase):
         sys.stdout = self.output
 
 
+    def test_add_rm_assignment(self):
+        this_dir = os.path.dirname(os.path.realpath(__file__))
+        test_file = os.path.join(this_dir, "")
+        self.context.process_command_line("dump /test/test_vars/test_table")
+
+
     def test_context(self):
         self.assertTrue(len(self.context.utils)>0)
 
 
     def test_cat(self):
         self.context.process_command_line("cat /test/test_vars/test_table")
-        self.assertIn("1.991211",  self.output.getvalue())
+        self.assertIn("2.3",  self.output.getvalue())
 
     def test_cd(self):
         self.context.process_command_line("cd test")
@@ -71,9 +77,6 @@ class ConsoleContextTests(unittest.TestCase):
 
     def test_dump(self):
         self.context.process_command_line("dump /test/test_vars/test_table")
-
-
-
 
     def test_info(self):
         self.context.process_command_line("info /test/test_vars/test_table")

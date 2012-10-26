@@ -304,7 +304,17 @@ class AlchemyProviderTest(unittest.TestCase):
 
         #Check that everything is loaded
         tabledData = assignment.constant_set.data_table
+        self.assertEquals(len(tabledData),2)
+        self.assertEquals(len(tabledData[0]),3)
+        self.assertEquals(tabledData[0][0], "2.2")
+        self.assertEquals(tabledData[0][1], "2.3")
+        self.assertEquals(tabledData[0][2], "2.4")
+        self.assertEquals(tabledData[1][0], "2.5")
+        self.assertEquals(tabledData[1][1], "2.6")
+        self.assertEquals(tabledData[1][2], "2.7")
 
+        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table")
+        tabledData = assignment.constant_set.data_table
         self.assertEquals(len(tabledData),2)
         self.assertEquals(len(tabledData[0]),3)
         self.assertEquals(tabledData[0][0], "2.2")

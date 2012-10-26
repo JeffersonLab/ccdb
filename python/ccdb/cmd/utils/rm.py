@@ -1,4 +1,5 @@
 import logging
+import os
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from sqlalchemy.orm.exc import NoResultFound
@@ -34,8 +35,8 @@ class Remove(ConsoleUtilBase):
 #   process 
 #----------------------------------------  
     def process(self, args):
-        log.debug("Remove is gained a control over the process.")
-        log.debug("   " + " ".join(args))
+        log.debug("{0}Remove is gained a control{0}\\".format(os.linesep))
+        log.debug(" |- arguments: " + " ".join(["'"+arg+"'" for arg in args]))
 
         assert self.context is not None
         provider = self.context.provider
@@ -46,7 +47,10 @@ class Remove(ConsoleUtilBase):
         self.object_type = "type_table" 
         self.ask_confirm = True
         self.process_arguments(args)
-        
+        log.debug(" |- object_type: '{0}'".format(self.object_type))
+        log.debug(" |- ask confirm: '{0}'".format(self.ask_confirm))
+        log.debug(" |- raw entry:   '{0}'".format(self.raw_entry))
+
         #correct ending /
         self.path = self.context.prepare_path(self.raw_entry)
                 
@@ -88,7 +92,12 @@ class Remove(ConsoleUtilBase):
             except NoResultFound:
                 log.warning("Unable to delete variation '{0}'".format(self.raw_entry))
                 return 1
-        
+
+        if self.object_type == "assignment":
+            assignment = provider.get_assignment_by_id(int(self.raw_entry))
+            provider.delete_assignment(assignment)
+            #TODO use request instead of id
+
         #everything is fine!
         return 0
             
@@ -116,6 +125,11 @@ class Remove(ConsoleUtilBase):
                 if token == "-d" or token == "--directory":
                     self.raw_entry = args[i]
                     self.object_type = "directory"
+                    i+=1
+
+                if token == "-a" or token =="--assignment":
+                    self.raw_entry = args[i]
+                    self.object_type = "assignment"
                     i+=1
 
                 if token == "-f" or token == "--force":
@@ -159,6 +173,7 @@ lead to even more severe hard-to-diagnose errors.
     rm <type table path>   - removes type table with given path
     rm -d <directory path> - removes directory with given path
     rm -v <variation name> - removes variation with given name
+    rm -a <assignment id>  - Assignment db id from 'vers' command*
 
  Flags:
 
