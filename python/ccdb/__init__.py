@@ -24,12 +24,15 @@ from .provider import AlchemyProvider
 from .model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn
 from .table_file import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
 from .cmd.themes import NoColorTheme, ColoredTheme
+from .brace_log_message import BraceMessage
 import cmd.themes
 
 #the default ccdb logger
 logger = logging.getLogger("ccdb")
 
 INFINITE_RUN = 2147483647
+
+
 
 def init_ccdb_console():
     from .cmd.themes import Theme
@@ -38,10 +41,12 @@ def init_ccdb_console():
 
     # create logger
     logger = logging.getLogger("ccdb")
-    
+
     #create and set console handler
     ch = logging.StreamHandler()
     ch.stream = sys.stdout
+    #formatter = logging.Formatter('%(message)s', style='{')
+    #ch.setFormatter(formatter)
     logger.addHandler(ch)
 
     #create console context

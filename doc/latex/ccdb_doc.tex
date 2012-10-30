@@ -32,7 +32,7 @@ Newport News, VA 23606
 \maketitle
 
 \begin{abstract}
-This note contains a documentation of the CCDB package. A package for storing 
+This note contains a documentation of the CCDB package. A package for storing
 and managing calibration constants database.
 \end{abstract}
 
@@ -40,7 +40,7 @@ and managing calibration constants database.
 
 
 %==============================================================================
-%    I N T R O D U C T I O N 
+%    I N T R O D U C T I O N
 %==============================================================================
 \newpage
 \section{Introduction}
@@ -97,22 +97,22 @@ CCDB basic usage concepts and ccdb console tool for managing CCDB contents
 % Namepath
 %******************************************************************************
 \subsection{Namepath}
-The desired set of values is identified by name. The name string is unique 
-across all detector systems. The convention already implemented in the GlueX 
-code base is to use a forward slash(/) notation to specify a hierarchical 
-namepath. 
+The desired set of values is identified by name. The name string is unique
+across all detector systems. The convention already implemented in the GlueX
+code base is to use a forward slash(/) notation to specify a hierarchical
+namepath.
 
 For example:
 \begin{verbatim}
 /FDC/driftvelocity/timewalk_parameters
 \end{verbatim}
 
-This allows implementors of individual detector systems to to specify a 
+This allows implementors of individual detector systems to to specify a
 hierarchy with as much or little depth as is needed given their complexity.
-The "/FDC/driftvelocity/timewalk\_parameters" parameters may have members 
-identified by either name or position. For example, it may contain 3 values: 
-"slope", "offset", and "exponent". By contrast, a set of constants with a 
-namepath "/FDC/CathodeStrips/pedestals" may have 100 values identified simply 
+The "/FDC/driftvelocity/timewalk\_parameters" parameters may have members
+identified by either name or position. For example, it may contain 3 values:
+"slope", "offset", and "exponent". By contrast, a set of constants with a
+namepath "/FDC/CathodeStrips/pedestals" may have 100 values identified simply
 as "0", "1", "2", "3", ...
 
 \textbf{Namepath format}:\\
@@ -124,21 +124,21 @@ and database validation of namepath objects.
 % Variations
 %******************************************************************************
 \subsection{Variation}
-The CCDB includes a \textit{variation} feature. The variation is a sort 
-of data branching, making a "shallow copy" of a complete set of calibration 
-constants (i.e. one that refers to constants without actually copying them). 
+The CCDB includes a \textit{variation} feature. The variation is a sort
+of data branching, making a "shallow copy" of a complete set of calibration
+constants (i.e. one that refers to constants without actually copying them).
 
 The variation is to be used primarily to create a new set of constants based
-on another set, but with a few changes. A variation is identified as a string. 
+on another set, but with a few changes. A variation is identified as a string.
 The primary purpose of a variation is to allow testing of new constants or
-alternative sets of constants that don't disturb the main trunk and don't 
+alternative sets of constants that don't disturb the main trunk and don't
 require copying a complete set.
 
 Specifying a is optional for end-users. If no variation is specified, then a
-"\textit{default}" variation is used. It is assumed that the default variation 
-will be used to hold the best available constants at any point in time. 
+"\textit{default}" variation is used. It is assumed that the default variation
+will be used to hold the best available constants at any point in time.
 
-Each variation is stored in the CCDB with information regarding another 
+Each variation is stored in the CCDB with information regarding another
 variation upon which it is based. This basis variation may specify the default variation.
 
 Each set of constants in the CCDB includes a variation string that is used to
@@ -156,16 +156,16 @@ and database validation of variation names.
 
 There are two problems related to data access, CCDB tries to solve:
 \begin{enumerate}
-  \item Getting constants should be as easy as to say 
+  \item Getting constants should be as easy as to say
         "Give me this constants for June 2011"
 
   \item There should be one way to give an unique key for every set of data.
   \footnote{
     The first thing that comes to mind when one hears "unique key" might be
     "lets use incremental indexes". But CCDB is database independent. Indexes
-    which are good to use with databases become uneasy for standalone ACSII 
-    files. Moreover, moving indexes from one database to another might be a 
-    problem. And, last but not least, indexes are good for machines. If an 
+    which are good to use with databases become uneasy for standalone ACSII
+    files. Moreover, moving indexes from one database to another might be a
+    problem. And, last but not least, indexes are good for machines. If an
     operator has an index 1114211 it tells nothing to him and could be easily
     mistaken with 1142111 which belong to absolutely another data set.
   }
@@ -193,7 +193,7 @@ Lets look at examples:
 \item /path/to/data:::2029 - only the path and the date(year) are specified
 \end{itemize}
 
-As shown in the examples above, to specify a path and a variation but 
+As shown in the examples above, to specify a path and a variation but
 to use default run one skips the run number and leave its place like "::"
 \begin{verbatim}
                    +-- variation
@@ -223,17 +223,17 @@ so all these data lines are the same
     2029a06b17c22d03e05
 \end{verbatim}
 
-One can omit any part of the time string starting from the right, this the latest 
+One can omit any part of the time string starting from the right, this the latest
 date for this part will be returned.
 
 Examples:
 
-"2011" - (this means the year 2011), it will be interpreted as 
-2011/12/31-23:59:59 timestamp so the latest constants for year 
+"2011" - (this means the year 2011), it will be interpreted as
+2011/12/31-23:59:59 timestamp so the latest constants for year
 2011 will be returned.
 
 
-"2012/05/21" - it will be interpreted as 2012/05/21-23:59:59 meaning to be the 
+"2012/05/21" - it will be interpreted as 2012/05/21-23:59:59 meaning to be the
 latest constants for 21 May 2012
 
 CCDB searches the closest constants before or equal to timestamp provided.
@@ -243,8 +243,8 @@ CCDB searches the closest constants before or equal to timestamp provided.
 %******************************************************************************
 \subsection{Examples}
 
-This chapter will provide users with practical examples of all above. 
-Text is to be written.  
+This chapter will provide users with practical examples of all above.
+Text is to be written.
 
 \begin{figure}[h]
   \centering
@@ -266,8 +266,8 @@ There are two general cases of using the requests:
 \end{enumerate}
 \vspace{1 em}
 
-In the first case most probably the software will know and provide the run 
-number being processed. Also, most probably, the software should allow to set 
+In the first case most probably the software will know and provide the run
+number being processed. Also, most probably, the software should allow to set
 the variation to prefer for the analysis.
 
 So, CCDB defaults and priorities (1 - highest)
@@ -275,7 +275,7 @@ So, CCDB defaults and priorities (1 - highest)
 %Run number:
 \textbf{Run number:}
 1. Run number specified in a request
-(if you use "/path/to/data:100" request, constants for run 100 will be returned 
+(if you use "/path/to/data:100" request, constants for run 100 will be returned
 dependless of the run being processed)
 2. Software set global default run number.
 (if 10200 run is being processed and you use "/path/to/data" data for run \# 10200 will be returned)
@@ -399,12 +399,12 @@ CCDB follows two principles in terms of updating and deleting:
 \item Updates are done by '\textit{adding new}'.
 \end{enumerate}
 
-If one wants to \textit{update} the values of some table, it is done by 
-\textit{adding a new} set of constants. The software will use more recent set 
-of data by default. 
+If one wants to \textit{update} the values of some table, it is done by
+\textit{adding a new} set of constants. The software will use more recent set
+of data by default.
 
-If one wants to change the number of columns of the table (or columns 
-specification), it is done by adding a new table with a new name. 
+If one wants to change the number of columns of the table (or columns
+specification), it is done by adding a new table with a new name.
 
 For example. If one wants to change the format of a table:
 \begin{verbatim}
@@ -415,24 +415,24 @@ One should create a new table with right format:
 /FDC/driftvelocity/timewalk_parameters2
 \end{verbatim}
 
-CCDB doesn't provide any tools for deleting \textbf{\textit{non empty}} tables 
-or directories, changing their names or specifications at user level. 
+CCDB doesn't provide any tools for deleting \textbf{\textit{non empty}} tables
+or directories, changing their names or specifications at user level.
 
-There is a strong reason for this limitation. 
-If CCDB is used to hold calibration constants, then some code should exist for 
-each data set. At least somewhere at some point of time. So deleting  
-or changing something (the number of rows in a table for example) will lead to 
+There is a strong reason for this limitation.
+If CCDB is used to hold calibration constants, then some code should exist for
+each data set. At least somewhere at some point of time. So deleting
+or changing something (the number of rows in a table for example) will lead to
 corruption of the code. The worst case scenario is when such changes don't
-lead to immediate crush but produce weird hard-to-determine bugs somewhere in 
+lead to immediate crush but produce weird hard-to-determine bugs somewhere in
 deep parts of an offline software.
 
 (Deleting an empty table is OK - there is no data so no code behind it)
 
 
-If one really need to delete some constants, this should be done at 
-\textit{administrative level}. This means that is should be discussed, users 
-should be notified about changes, and the changes should be tested. 
-Thus deleting the constants shouldn't become a normal every day experience 
+If one really need to delete some constants, this should be done at
+\textit{administrative level}. This means that is should be discussed, users
+should be notified about changes, and the changes should be tested.
+Thus deleting the constants shouldn't become a normal every day experience
 for users.
 
 %==============================================================================
@@ -448,9 +448,9 @@ This section is a tutorial of using CCDB command line tools.
 %******************************************************************************
 \subsection {Getting started}
 
-CCDB provides command line tools which is useful for introspection and 
+CCDB provides command line tools which is useful for introspection and
 management of constants database. One can run it by typing 'ccdb' command.
-'ccdb' has two modes: it can be used as an interactive shell or as 
+'ccdb' has two modes: it can be used as an interactive shell or as
 a single command.
 \vspace{1 em}
 
@@ -482,8 +482,8 @@ Example 1. Command line mode:
 
 
 \begin{enumerate}
-\item \textbf{-c "mysql://john@localhost"} - sets the ccdb connection string. 
-      If -c flag is not given, ccdb will try CCDB\_CONNECTION environment 
+\item \textbf{-c "mysql://john@localhost"} - sets the ccdb connection string.
+      If -c flag is not given, ccdb will try CCDB\_CONNECTION environment
       variable, if CCDB\_CONNECTION  default connection string. The connection
       strings are described in ~\ref{sec:connection}
 
@@ -518,8 +518,8 @@ Example 2. Interactive mode:
 
   \item executing next commands will reproduce Example 1 step by step.
 
-  \item  The same as in posix shell, ccdb interactive mode have the current 
-         working directory, with relative and absolute pathes. 
+  \item  The same as in posix shell, ccdb interactive mode have the current
+         working directory, with relative and absolute pathes.
          pwd command shows the current working directory.
 
   \item to exit interactive mode enter 'q', 'quit' or press ctrl+D
@@ -637,10 +637,10 @@ Example 7. Directory commands overview:
 \end{itemize}
 
 %==============================================================================
-%    C + +   A P I  
+%    C + +   A P I
 %==============================================================================
 \newpage
-\section{CCDB command line tutorial}\label{sec:cpp}
+\section{C++ API}\label{sec:cpp}
 
 
 %C++ Overview
@@ -656,24 +656,24 @@ Example 7. Directory commands overview:
 
 CCDB C++ library consist of separate levels (see fig. \ref{pic:cpp_api_levels}).
 \begin{itemize}
-\item \textbf{C++ User API} - This level is \textit{most probably what any user}, 
-      who is not bound to JANA, \textit{needs}. The API provides simple 
-      functionality of getting  constants. It automates connections number, 
+\item \textbf{C++ User API} - This level is \textit{most probably what any user},
+      who is not bound to JANA, \textit{needs}. The API provides simple
+      functionality of getting  constants. It automates connections number,
       multithreading, data source selection, etc.
-      
-\item \textbf{Low level API} - provides all sorts of low level functionality for 
-       managing data and CCDB internals. This level considered to be internal 
-       and could be interesting only in terms further development of CCDB. 
-       Regular users should not use any classes from this level       
-       \footnote{Low level API is subject to change for better CCDB performance 
-                 and stability. The changes are done without any 
-                 remorse towards user's code which is happened to use Low 
-                 level API elements. That is the reason why Low level API 
+
+\item \textbf{Low level API} - provides all sorts of low level functionality for
+       managing data and CCDB internals. This level considered to be internal
+       and could be interesting only in terms further development of CCDB.
+       Regular users should not use any classes from this level
+       \footnote{Low level API is subject to change for better CCDB performance
+                 and stability. The changes are done without any
+                 remorse towards user's code which is happened to use Low
+                 level API elements. That is the reason why Low level API
                  should be kept separated and used only in CCDB higher level
-                 classes}. 
-       
-\item \textbf{JANA API} - There is a JANA API on top of Users C++ API. This 
-      level integrates CCDB and JANA framework. 
+                 classes}.
+
+\item \textbf{JANA API} - There is a JANA API on top of Users C++ API. This
+      level integrates CCDB and JANA framework.
 \end{itemize}
 
 
@@ -686,13 +686,13 @@ There are two main classes in C++ User API:
   \item \textbf{CalibrationGenerator}
   \item \textbf{Calibration}
 \end{itemize}
-The \textbf{Calibration} is used to get constants. 
-The \textbf{CalibrationGenerator} is used to get \textbf{Calibration} instance. 
+The \textbf{Calibration} is used to get constants.
+The \textbf{CalibrationGenerator} is used to get \textbf{Calibration} instance.
 
 
 
 
-The reasons for that comes from intention 
+The reasons for that comes from intention
 \bibliography{ccdb_doc}
 
 \section{Appendix A}

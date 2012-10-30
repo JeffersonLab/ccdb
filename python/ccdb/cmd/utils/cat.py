@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import sys
 import os
@@ -6,12 +7,13 @@ from ccdb import TypeTable, Assignment
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.path_utils import ParseRequestResult, parse_request
+from ccdb import BraceMessage as lfm #lfm is aka log format message. See BraceMessage desc about
 
 log = logging.getLogger("ccdb.cmd.utils.cat")
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registering Cat")
+    log.debug(lfm("      registering Cat"))
     return Cat()
 
 
@@ -21,7 +23,7 @@ def create_util_instance():
 class Cat(ConsoleUtilBase):
     """Show assignment data by ID"""
 
-    # ccdb utility class descr part 
+    # ccdb utility class descr part
     #------------------------------
     command = "cat"
     name = "Cat"
@@ -58,12 +60,13 @@ class Cat(ConsoleUtilBase):
         :return: 0 if command was successful, value!=0 means command was not successfull
         :rtype: int
         """
-        log.debug("Cat is gained a control over the process.")
-        log.debug("   " + " ".join(args))
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(lfm("{0} Cat command is in charge {0}\\", os.linesep))
+            log.debug(lfm(" |- arguments :  '" + "' '".join(args)+"'"))
 
         assert self.context is not None
 
-        #reset arguments on each process        
+        #reset arguments on each process
         self.raw_table_path = ""
         self.show_borders = True
         self.show_header = True
@@ -81,7 +84,7 @@ class Cat(ConsoleUtilBase):
         if not self.process_arguments(args):
             return 1
 
-            #if self.run == -1: 
+            #if self.run == -1:
             #    self.run = self.context.current_run
 
             #if not self.validate():
@@ -102,6 +105,7 @@ class Cat(ConsoleUtilBase):
             assignment = self.get_assignment_by_id(self.ass_id)
         else:
             assignment = self.get_assignment_by_request(self.request)
+
 
         if assignment:
             #now we have to know, how to print an assignment
@@ -142,35 +146,36 @@ class Cat(ConsoleUtilBase):
     #----------------------------------------
     def get_assignment_by_request(self, request):
         """gets assignment by parsed request"""
-        
+
         provider = self.context.provider
-        isinstance(provider, AlchemyProvider)
-        isinstance(request, ParseRequestResult)
+        assert isinstance(provider, AlchemyProvider)
+        assert isinstance(request, ParseRequestResult)
 
-        if not request.WasParsedVariation:
-            request.Variation = "default"
+        if not request.variation_is_parsed:
+            request.variation = "default"
 
-        
-        if not request.WasParsedRunNumber:
-            request.RunNumber = self.context.current_run
+
+        if not request.run_is_parsed:
+            request.run = self.context.current_run
 
         #correct path
-        self.table_path = self.context.prepare_path(self.request.Path)
-        
-        #check such table really exists
-        table = provider.get_type_table(self.table_path)
-        if not table:
-            log.warning("    Type table %s not found in the DB"% self.table_path)
-            return None
-                
-        assignments = provider.get_assignments(self.table_path, self.request.RunNumber, self.request.Variation, self.request.Time)
+        table_path = self.context.prepare_path(request.path)
+        time = request.time if request.time_is_parsed else None
+
+        #check such table really exists (otherwise exception will be thrown)
+        provider.get_type_table(table_path)
+
+        log.debug(lfm(" |- getting assignments for path : '{0}', run: '{1}', var: '{2}', time: '{3}'", table_path, request.run, request.variation, time))
+        assignments = provider.get_assignments(table_path, request.run, request.variation, time)
+
+        log.debug(lfm(" |- found assignments count : {0}", len(assignments)))
         if assignments and len(assignments)>0:
             return assignments[0]
-        
+
         #if we here there were no assignments selected
-        log.warning("    There is no data for table {}, run {}, variation '{}'".format(self.table_path, self.request.RunNumber, self.request.Variation))
-        if request.WasParsedTime:
-            log.warning("    on ".format(self.request.TimeString))
+        log.warning(" There is no data for table {}, run {}, variation '{}'".format(table_path, request.RunNumber, request.Variation))
+        if request.time_is_parsed:
+            log.warning("    on ".format(request.time_str))
         return None
 
 
@@ -178,7 +183,7 @@ class Cat(ConsoleUtilBase):
     #   process_arguments
     #----------------------------------------
     def process_arguments(self, args):
-        #solo arguments 
+        #solo arguments
         if ("-b" in args)  or ("--borders" in args):
             self.show_borders = True
         if ("-nb" in args) or ("--no-borders" in args):
@@ -222,32 +227,27 @@ class Cat(ConsoleUtilBase):
                          self.request.WasParsedRunNumber = True
                          i+=1
                     except ValueError:
-                        log.warning("    Cannot read run from {} command".format(token))
+                        log.warning("Cannot read run from '{}' command",token)
                         return False
-                    
-                
+
+
                 #get assignment by id
                 if token == "--id" and i < len(args):
-                    
+
                     token = args[i].strip()
                     i+=1
                     try:
                         self.ass_id = int(token)
                         self.use_ass_id = True
-                        log.debug("    The assignment DB ID is... " + repr(self.ass_id))
+                        log.debug(lfm(" |- parsed DB id : '{}' ", self.ass_id))
                     except ValueError:
-                        print "Cannot parse argument: {}".format(token)
+                        log.warning("Cannot parse assignment DB id: '{}'", token)
                         return False
 
             else:    #!token.startswith('-')
                 #it probably must be a request or just a table name
-                if ':' in token:                             #it is a request
-                    self.request = parse_request(token)
-                else:                                        #it is a table path
-                    self.request.Path = token
-                    self.request.WasParsedPath = True
-
-               
+                log.debug(lfm(" |- parsing request : '{0}'", token))
+                self.request = parse_request(token)
 
         return True
 
@@ -304,6 +304,8 @@ class Cat(ConsoleUtilBase):
         :param displayBorders: print '|' borders or not
         :type displayBorders: bool
         """
+        log.debug(lfm(" |- print asgmnt horizontally: header {0}, borders {1}, comments {2}", printHeader, displayBorders, comments))
+
         border = "|" if displayBorders else " "
 
         assert isinstance(assignment, Assignment)
@@ -336,7 +338,7 @@ class Cat(ConsoleUtilBase):
 
             totalDataLength += columnLengths[i]
 
-        #this is our cap, if we need it.... 
+        #this is our cap, if we need it....
         cap = "+" + (totalDataLength + 3 * columnsNum - 1)*"-" + "+"
 
             #print header if needed
@@ -401,6 +403,7 @@ class Cat(ConsoleUtilBase):
         :param displayBorders: print '|' borders or not
         :type displayBorders: bool
         """
+        log.debug(lfm(" |- print asgmnt vertically: header {0}, borders {1}, comments {2}", printHeader, displayBorders, comments))
 
         assert isinstance(assignment, Assignment)
         

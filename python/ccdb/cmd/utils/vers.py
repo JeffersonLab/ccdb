@@ -35,7 +35,7 @@ class Versions(ConsoleUtilBase):
 #   process 
 #----------------------------------------  
     def process(self, args):
-        log.debug("VersionsUtility is gained a control over the process.")
+        log.debug("Versions command is gained a control over the process.")
         log.debug("   " + " ".join(args))
 
         assert self.context is not None

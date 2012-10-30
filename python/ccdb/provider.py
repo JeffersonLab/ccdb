@@ -925,7 +925,7 @@ class AlchemyProvider(object):
             query = query.filter(RunRange.min<=run).filter(RunRange.max>=run)
 
         #filter by date and time
-        if not date_and_time is None:
+        if  date_and_time is not None:
             assert isinstance(date_and_time, datetime)
             query = query.filter(ConstantSet.created <= date_and_time)
 

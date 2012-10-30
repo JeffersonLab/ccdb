@@ -108,6 +108,8 @@ class ConstantSet(Base):
     assignment = relationship("Assignment", uselist=False, back_populates="constant_set")
     type_table_id = Column('constantTypeId',Integer, ForeignKey('typeTables.id'))
 
+
+
     @property
     def vault(self):
         """
@@ -144,13 +146,39 @@ class Assignment(Base):
     id = Column(Integer, primary_key=True)
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
-    comment = Column(Text)
     constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'))
     constant_set = relationship("ConstantSet", uselist=False, back_populates="assignment")
     run_range_id = Column('runRangeId',Integer, ForeignKey('runRanges.id'))
     run_range = relationship("RunRange", backref=backref('assignments'))
     variation_id = Column('variationId',Integer, ForeignKey('variations.id'))
     variation = relationship("Variation", backref=backref('assignments'))
+    _comment = Column('comment', Text)
+
+    @property
+    def comment(self):
+        """
+        returns comment for the object
+        :rtype: basestring
+        """
+        return self._comment if self._comment is not None else ""
+
+    @comment.setter
+    def comment(self, value):
+        self._comment = value
+
+    @property
+    def request(self):
+        """
+        Gets the unique "request" string in form of <path>:<run>:<variation>:<time>
+        :rtype: basestring
+        """
+
+        path = self.constant_set.type_table.path
+        run = self.run_range.min
+        variation = self.variation.name
+        time = self.modified.strftime("%Y-%m-%d %H:%M:%S")
+
+        return "{0}:{1}:{2}:{3}".format(path, run, variation, time)
 
 
     def __repr__(self):

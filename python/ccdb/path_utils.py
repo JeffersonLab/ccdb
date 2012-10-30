@@ -25,17 +25,18 @@ class ParseRequestResult:
     a string request. @see PathUtils::ParseRequest
     """
 
-    RunNumber = -1 	       # Run number
-    IsInvalidRunNumber = False # true if was an error parsing runnumber
-    Path=""                    # Object path
-    WasParsedPath=False        # true if Path was nonempty
-    Variation=""               # Variation name
-    Time = datetime.datetime.now() # Time stamp
-    TimeString = ""            # Original string with time
-    WasParsedTime = False      # true if time stamp was not empty
-    WasParsedRunNumber=False   # true if Run number was non empty
-    WasParsedVariation=False   # true if variation was not empty
-    
+    def __init__(self):
+        self.run = -1 	                    # Run number
+        self.run_is_parsed=False             # true if Run number was non empty
+        self.run_is_invalid = False          # true if was an error parsing runnumber
+        self.path=""                         # Object path
+        self.path_is_parsed=False            # true if Path was nonempty
+        self.variation=""                    # Variation name
+        self.variation_is_parsed=False       # true if variation was not empty
+        self.time = datetime.datetime.now()  # Time stamp
+        self.time_str = ""                   # Original string with time
+        self.time_is_parsed = False          # true if time stamp was not empty
+
 
 #______________________________________________________________________________
 def extract_dir(path = ""):
@@ -169,16 +170,16 @@ def parse_request( requestStr="" ):
 
     #Set the default parameters
     result = ParseRequestResult()
-    result.RunNumber=0	              # Run number
-    result.WasParsedRunNumber=False   # true if Run number was non empty
-    result.IsInvalidRunNumber=False   # true if was an error parsing runnumber
-    result.Path = ""                  # Object path
-    result.WasParsedPath=False        # true if Path was nonempty
-    result.Variation=""               # Variation name
-    result.WasParsedVariation=False   # true if variation was not empty
-    result.Time=0                     # Time stamp
-    result.WasParsedTime=False        # true if time stamp was not empty
-    result.TimeString=""              # Original string with time
+    result.run=0	              # Run number
+    result.run_is_parsed=False   # true if Run number was non empty
+    result.run_is_invalid=False   # true if was an error parsing runnumber
+    result.path = ""                  # Object path
+    result.path_is_parsed=False        # true if Path was nonempty
+    result.variation=""               # Variation name
+    result.variation_is_parsed=False   # true if variation was not empty
+    result.time=0                     # Time stamp
+    result.time_is_parsed=False        # true if time stamp was not empty
+    result.time_str=""              # Original string with time
 
     colonCount=0
     runStr =""
@@ -188,40 +189,40 @@ def parse_request( requestStr="" ):
 
             #it is a path
             if colonCount == 0:
-                result.Path+=symbol
-                result.WasParsedPath=True
+                result.path+=symbol
+                result.path_is_parsed=True
 
             #it is a run range
             elif colonCount == 1:  
                 runStr+=symbol
-                result.WasParsedRunNumber = True
+                result.run_is_parsed = True
 
             #it is a variation
             elif colonCount == 2:  
-                result.Variation+=symbol         # Variation name
-                result.WasParsedVariation=True   # True since we've got a variation
+                result.variation+=symbol         # Variation name
+                result.variation_is_parsed=True   # True since we've got a variation
 
             #it should be a time than
             else:  
-                result.WasParsedTime=True        # true if time stampt was not empty
-                result.TimeString+=symbol        # Original string with time
+                result.time_is_parsed=True        # true if time stampt was not empty
+                result.time_str+=symbol        # Original string with time
         else: #the symbol is colon (symbol==':')
             colonCount+=1
 
     # at this point we parsed all symbols and it is time for final parsing
 
     #parse run number
-    if result.WasParsedRunNumber :
+    if result.run_is_parsed :
         try:
-            result.RunNumber = int(runStr)
-            result.IsInvalidRunNumber = False
+            result.run = int(runStr)
+            result.run_is_invalid = False
         except:
-            result.IsInvalidRunNumber = True
+            result.run_is_invalid = True
 
     #parse time
-    if result.WasParsedTime:
+    if result.time_is_parsed:
         try:
-            result.Time = parse_time(result.TimeString)
+            result.time = parse_time(result.time_str)
         except:
             raise
 

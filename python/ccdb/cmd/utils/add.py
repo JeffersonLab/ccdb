@@ -1,11 +1,11 @@
-import posixpath
+import os
 import logging
-import time
 
 import ccdb
 from ccdb import TextFileDOM
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
+from ccdb import BraceMessage as lmf
 
 log = logging.getLogger("ccdb.cmd.utils.add")
 
@@ -34,7 +34,6 @@ class AddData(ConsoleUtilBase):
     name = "AddData"
     short_descr = "Add data constants"
     uses_db = True
-    d_i = "      " #debug indent. Dont bother your mind what is this
 
     def __init(self):
         self.reset()
@@ -55,7 +54,7 @@ class AddData(ConsoleUtilBase):
         self.file_path = ""
         self.run_min = 0
         self.run_max = ccdb.INFINITE_RUN
-        self.variation = ""
+        self.variation = "default"
         self.comment = ""
         self.is_namevalue_format = False
         self.no_comments = False
@@ -68,16 +67,18 @@ class AddData(ConsoleUtilBase):
     #   process
     #----------------------------------------
     def process(self, args):
-        log.debug(self.d_i + "AddData is gained a control over the process.")
-        log.debug(self.d_i + "args: " + " ".join(args))
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(lmf("{0}AddData is in charge{0}\\".format(os.linesep)))
+            log.debug(lmf(" |- arguments : '" + "' '".join(args)+"'"))
 
-        assert self.context is not None
+        self.reset()
+
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
         
         #process arguments
         if not self.process_arguments(args):
-            log.debug(self.d_i + "process arguments " + self.theme.Fail + "failed")
+            log.debug(lmf(" |- process arguments {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
             return 1
         
         #by "" user means default variation
@@ -85,7 +86,7 @@ class AddData(ConsoleUtilBase):
         
         #validate what we've got
         if not self.validate():
-            log.debug(self.d_i + "arguments validation " + self.theme.Fail + "failed")
+            log.debug(lmf(" |- arguments validation {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
             return 1
         
         #correct paths
@@ -93,14 +94,13 @@ class AddData(ConsoleUtilBase):
         self.file_path = self.raw_file_path
         
         #reading file
-        dom = None
         try:
             if not self.is_namevalue_format:
                 dom = ccdb.read_ccdb_text_file(self.file_path)
             else:
                 dom = ccdb.read_namevalue_text_file(self.file_path, self.c_comments)
         except IOError as error:
-            log.warning("Unable to read file %s. The error message is: \n %s"%(self.file_path, error.message))
+            log.warning(lmf("Unable to read file '{0}'. The error message is: '{2}'", self.file_path, error))
             return 1  
         
         #check what we've got
@@ -113,12 +113,12 @@ class AddData(ConsoleUtilBase):
             self.comment += "\n" + "\n".join(dom.comment_lines)
             
         # >oO debug record
-        log.debug(self.d_i+"adding constants")
-        log.debug(self.d_i+"columns {0} rows {1} comment lines {2} metas {3}".format(len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
+        log.debug(" |- adding constants")
+        log.debug(lmf(" |- columns: '{0}'  rows: '{1}'  comment lines:  '{2}'  metas: '{3}'",len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
 
         #try to create
-        provider.create_assignment(dom, self.table_path, self.run_min, self.run_max, self.variation, self.comment)
-        log.info("Constants added " +self.theme.Success+"successfully"+self.theme.Reset)
+        assignment = provider.create_assignment(dom, self.table_path, self.run_min, self.run_max, self.variation, self.comment)
+        log.info(assignment.request)
         return 0
             
 #----------------------------------------
@@ -183,7 +183,7 @@ class AddData(ConsoleUtilBase):
                     self.comment += " ".join( args[i-1:])
                     self.comment.strip()
                     self.comment = self.comment[1:]
-                    break #break the loop since everething next are comment
+                    break #break the loop since everything next are comment
                 
                 #it probably must be a type table path
                 if self.raw_table_path == "":
@@ -207,7 +207,7 @@ class AddData(ConsoleUtilBase):
 #   print_help 
 #----------------------------------------
     def print_help(self):
-        "Prints help of the command"
+        """Prints help of the command"""
           
         print """Add data constants according given type table
     add <type table path>  -v <variation>  -r <run_min>-<run_max>  file_to_import

@@ -4,6 +4,7 @@ import logging
 import shlex
 import posixpath
 
+from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
 import themes
 
@@ -148,8 +149,9 @@ class ConsoleContext:
         """
         
         #>oO debud output
-        log.debug("searching modules in directory:")
-        log.debug("   " + self.theme.Directories + path + self.theme.Reset)
+        log.debug(lfm("{0}search_utils{0}\\",os.linesep))
+        log.debug(" |- searching modules in directory:")
+        log.debug(" |   " + self.theme.Directories + path + self.theme.Reset)
 
         #get list of files and module names
         files = os.listdir( path )
@@ -157,6 +159,7 @@ class ConsoleContext:
         files = filter(test.search, files)
         filenameToModuleName = lambda f: os.path.splitext(f)[0]
         moduleNames = sorted(map(filenameToModuleName, files))
+        log.debug(lfm(" |- found '{0}' modules.{1} |- proceed loading each module {1}\\",len(moduleNames), os.linesep))
         
         modules = []
         for m in moduleNames:
@@ -167,8 +170,8 @@ class ConsoleContext:
                 f, filename, desc = imp.find_module(m, [path])
                 modules.append( imp.load_module(m, f, filename, desc))
             except ImportError, ex:
-                log.debug("Error importing module:")
-                log.debug("      " + repr(ex))
+                log.debug(lfm(" |- error importing module: {0}", m))
+                log.debug(lfm(" |\\{0} ||-{1}", os.linesep, repr(ex)))
                 continue
 
         return modules
