@@ -51,9 +51,11 @@ class ConsoleContextTests(unittest.TestCase):
 
 
     def test_add_rm_assignment(self):
-        this_dir = os.path.dirname(os.path.realpath(__file__))
-        test_file = os.path.join(this_dir, "")
-        self.context.process_command_line("dump /test/test_vars/test_table")
+        tests_dir = os.path.dirname(os.path.realpath(__file__))
+        test_file = os.path.join(tests_dir, "test_table.txt")
+        self.context.process_command_line("ccdb add /test/test_vars/test_table test_table.txt")
+        print self.output.getvalue()
+
 
 
     def test_context(self):

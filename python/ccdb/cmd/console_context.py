@@ -134,9 +134,11 @@ class ConsoleContext:
             except AttributeError, ex: log.debug("Error registering module : " + repr(ex))
             except Exception as ex:    log.debug("Error registering module : " + repr(ex))
 
-        log.debug("Utils found and registered in directory {0} are:".format(path))
-        log.debug("%-10s %-15s %s:"%("(command)", "(name)", "(description)"))
-        log.debug("\n".join(["%-10s %-15s %s" % (command, util.name, util.short_descr) for command, util in self._utils.items()]))
+        log.debug(lfm("{0} | +--+{0} |/{0} +", os.linesep))
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(lfm("{0}Utils found and registered in directory '{1}' are:", os.linesep, path))
+            log.debug("%-10s %-15s %s:"%("(command)", "(name)", "(description)"))
+            log.debug("\n".join(["%-10s %-15s %s" % (command, util.name, util.short_descr) for command, util in self._utils.items()]))
 
 
     #--------------------------------
@@ -159,7 +161,8 @@ class ConsoleContext:
         files = filter(test.search, files)
         filenameToModuleName = lambda f: os.path.splitext(f)[0]
         moduleNames = sorted(map(filenameToModuleName, files))
-        log.debug(lfm(" |- found '{0}' modules.{1} |- proceed loading each module {1}\\",len(moduleNames), os.linesep))
+        log.debug(lfm(" |- found '{0}' modules.{1} |- proceed loading each module{1} |\\{1} | +--+",len(moduleNames), os.linesep))
+
         
         modules = []
         for m in moduleNames:
@@ -170,8 +173,8 @@ class ConsoleContext:
                 f, filename, desc = imp.find_module(m, [path])
                 modules.append( imp.load_module(m, f, filename, desc))
             except ImportError, ex:
-                log.debug(lfm(" |- error importing module: {0}", m))
-                log.debug(lfm(" |\\{0} ||-{1}", os.linesep, repr(ex)))
+                log.debug(lfm(" ||- error importing module: {0}", m))
+                log.debug(lfm(" ||\\{0} |||-{1}", os.linesep, repr(ex)))
                 continue
 
         return modules
