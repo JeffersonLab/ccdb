@@ -1,3 +1,69 @@
-#Test assignment for software tests
-[32m [0m 1.11       [0m[32m [0m 1.991211   [0m[32m [0m 10.002     [0m[32m [0m
-[32m [0m 2.001      [0m[32m [0m 2.9912     [0m[32m [0m 20.111     [0m[32m [0m
+debugging verbose mode is [32m[1m ON [0m
+$CCDB_CONNECTION was not found. Found JANA_CALIB_URL ('file:///home/romanov/halld/calib'). Try use it
+JANA_CALIB_URL does not starts with mysql:// or sqlite://. Skipped
+
+search_utils
+\
+ |- searching modules in directory:
+ |   [34m[1m/home/romanov/halld/ccdb/trunk/python/ccdb/cmd/utils[0m
+ |- found '18' modules.
+ |- proceed loading each module
+ |\
+ | +--+
+      registering AddData
+      registering Cat
+      registering ChangeDir
+      registering Dump
+      registering Empty
+      registering HelpUtil
+      registering Horse
+      registering HowTo
+      registering Info
+      registering ListUtil
+      registering MakeDirectory
+      registering MakeTable
+      registering MakeVariation
+      registering PrintWorkDir
+      registering Remove
+      registering CurrentRun
+      registering Usage
+      registering AddData
+
+ | +--+
+ |/
+ +
+
+Utils found and registered in directory '/home/romanov/halld/ccdb/trunk/python/ccdb/cmd/utils' are:
+(command)  (name)          (description):
+info       Info            Prints extended information of object by the path
+vers       Versions        Show versions of data for specified type table
+horse      Horse           Horse
+run        CurrentRun      gets or sets current working run
+help       Help            Prints help for each util
+dump       Dump            Dumps data table
+mkdir      MakeDirectory   Create directory
+howto      HowTo           Prints howtos
+mkvar      MakeVariation   Create variation
+cd         ChangeDir       Change current directory
+add        AddData         Add data constants
+ls         List            List objects in a given directory
+usage      Usage           Prints usage for each util
+rm         Remove          Removes directory or type table
+cat        Cat             Show assignment data by ID
+pwd        PrintWorkDir    Prints working directory
+empty      Empty           empty utility example
+mktbl      MakeTable       Create constants type table
+Processing command: cat
+       commandArgs: 
+                   /test/test_vars/test_table                    =
+Cat uses the database and there is no connection yet. Trying to connect...
+   Connection string is: [34m[1mmysql://ccdb_user@localhost/ccdb[0m
+No module named MySQLdb occurred. Fallback to mysql-connector
+   Connection [32m[1m successfull [0m
+
+ Cat command is in charge 
+\
+ |- arguments :  '/test/test_vars/test_table' '='
+ |- parsing request : '/test/test_vars/test_table'
+ |- parsing request : '='
+No row was found for one()

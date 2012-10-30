@@ -17,7 +17,7 @@ class ConsoleContext:
     """
     Class to manage console commands
 
-    This class uses console_utitilities from utils directories
+    This class uses console_utilities from utils directories
 
     """
 
@@ -134,7 +134,6 @@ class ConsoleContext:
             except AttributeError, ex: log.debug("Error registering module : " + repr(ex))
             except Exception as ex:    log.debug("Error registering module : " + repr(ex))
 
-        log.debug(lfm("{0} | +--+{0} |/{0} +", os.linesep))
         if log.isEnabledFor(logging.DEBUG):
             log.debug(lfm("{0}Utils found and registered in directory '{1}' are:", os.linesep, path))
             log.debug("%-10s %-15s %s:"%("(command)", "(name)", "(description)"))
@@ -150,10 +149,9 @@ class ConsoleContext:
         :rtype: []
         """
         
-        #>oO debud output
+        #>oO debug output
         log.debug(lfm("{0}search_utils{0}\\",os.linesep))
-        log.debug(" |- searching modules in directory:")
-        log.debug(" |   " + self.theme.Directories + path + self.theme.Reset)
+        log.debug(lfm(" |- searching modules in directory:{0} |  '{1}{2}{3}'", os.linesep, self.theme.Directories, path, self.theme.Reset))
 
         #get list of files and module names
         files = os.listdir( path )
@@ -161,8 +159,7 @@ class ConsoleContext:
         files = filter(test.search, files)
         filenameToModuleName = lambda f: os.path.splitext(f)[0]
         moduleNames = sorted(map(filenameToModuleName, files))
-        log.debug(lfm(" |- found '{0}' modules.{1} |- proceed loading each module{1} |\\{1} | +--+",len(moduleNames), os.linesep))
-
+        log.debug(lfm(" |- found '{0}' modules.{1} |- proceed loading each module:{1}",len(moduleNames), os.linesep))
         
         modules = []
         for m in moduleNames:
@@ -173,8 +170,8 @@ class ConsoleContext:
                 f, filename, desc = imp.find_module(m, [path])
                 modules.append( imp.load_module(m, f, filename, desc))
             except ImportError, ex:
-                log.debug(lfm(" ||- error importing module: {0}", m))
-                log.debug(lfm(" ||\\{0} |||-{1}", os.linesep, repr(ex)))
+                log.debug(lfm(" |- error importing module: {0}", m))
+                log.debug(lfm(" |\\{0} ||-{1}", os.linesep, repr(ex)))
                 continue
 
         return modules
@@ -225,7 +222,8 @@ class ConsoleContext:
                 command = token
                 commandArgs = workargs[i:]
                 try:
-                    return self.process_command(command, commandArgs)
+                    self.process_command(command, commandArgs)
+                    break
                 except Exception as ex:
                     log.error(ex)
                     if not self.silent_exceptions: raise
@@ -264,16 +262,48 @@ class ConsoleContext:
         log.debug(" |- command is : {0}".format(command))
         log.debug(" |- tokens : {0}".format(" ".join([ ("'"+t+"'") for t in tokens])))
 
+        #get command arguments
+        arguments = []
+        if len(tokens) > 1:
+            arguments = tokens[1:]
+
+        #execute everything
+        return self.process_command(command, arguments)
+
+
+    #--------------------------------
+    #
+    #--------------------------------
+    def process_command(self, command, args):
+        #>oO debug
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(lfm("{0}Processing command: '{1}'{0}\\", os.linesep, command))
+            log.debug(lfm(" |- arguments : '{0}'", "' '".join(args)))
+        
+        #try to find function...
+        try:
+            util = self._utils[command]
+        except KeyError:
+            print "Command ", command," is unknown! Please, use help to see available commands"
+            if not self.silent_exceptions: raise
+            else: return 1;
+        
+        #check connection and connect if needed
+        if util.uses_db and (not self.provider.is_connected):
+            if not self.check_connection(util): return False
+
         #is there file redirect?
         redir_to_file = False  #should we redirect to file?
         redir_file = None      #file to redirect
         redir_stream_backup = sys.stdout
         redir_theme_backup = self.theme
 
-        if ">" in tokens and tokens.index(">") == len(tokens) - 2:
-            redir_fname = tokens[-1]
+        if (">" in args and args.index(">") == len(args) - 2) or\
+           ("=>" in args and args.index("=>") == len(args) - 2):
+
+            redir_fname = args[-1]
             redir_to_file = True
-            tokens = tokens[:-2]
+            args = args[:-2]
             log.debug(" |- redirecting to file : {0}".format(redir_fname))
 
             #open file
@@ -284,20 +314,13 @@ class ConsoleContext:
                 if not self.silent_exceptions: raise
                 else: return 1
 
-
-
-        #get command arguments
-        arguments = []
-        if len(tokens) > 1:
-            arguments = tokens[1:]
-
-        #execute everything
+        #execute command
         try:
             if redir_to_file:
                 sys.stdout = redir_file
                 colorama.deinit()
                 self.theme = themes.NoColorTheme
-            return self.process_command(command, arguments)
+            return util.process(args)
         except Exception as ex:
             log.error(ex)
             if not self.silent_exceptions: raise
@@ -313,38 +336,14 @@ class ConsoleContext:
     #--------------------------------
     #
     #--------------------------------
-    def process_command(self, command, commandArgs):
-        
-        #>oO debug
-        log.debug("Processing command: {0}".format(command))
-        log.debug("       commandArgs: ")
-        log.debug(" ".join(["                   " + arg for arg in commandArgs]))
-        
-        #try to find function...
-        util = None
-        try:
-            util = self._utils[command]
-        except KeyError:
-            print "Command ", command," is unknown! Please, use help to see avalable commands"
-
-
-        if not util: return 1;
-        
-        #check connection and connect if needed
-        if util.uses_db and (not self.provider.is_connected):
-            if not self.check_connection(util): return False
-               
-        #execute command
-        return util.process(commandArgs)            
-
-
-    #--------------------------------
-    #
-    #--------------------------------
     def check_connection(self, util):
         if self._prov.is_connected : return #connected anyway...
-        log.debug(util.name + " uses the database and there is no connection yet. Trying to connect...")
-        log.debug("   Connection string is: " + self.theme.Accent + self.connection_string + self.theme.Reset)
+        if not util.uses_db: return         #util doesn't use database
+
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(" |- check_connection(util){0} |  \\".format(os.linesep))
+            log.debug(" |  |- utility '" + util.name + "' uses the database and there is no connection yet. Connecting.")
+            log.debug(" |  |- connection string is: '" + self.theme.Accent + self.connection_string + self.theme.Reset+"'")
 
         #connecting
         try:
@@ -354,7 +353,12 @@ class ConsoleContext:
             return False
 
         #connected
-        log.debug("   Connection " + self.theme.Success + " successfull " + self.theme.Reset)
+        if log.isEnabledFor(logging.DEBUG):
+            if self.provider.connection_string.startswith("mysql+mysqlconnector://"):
+                log.debug(" |  |- no module MySQLdb. Fallback to mysql-connector used")
+            log.debug(" |  |- connection string used: '" + self.theme.Accent +  self.provider.connection_string + self.theme.Reset+"'")
+            log.debug(" |  |- connection: " + self.theme.Success + " successful " + self.theme.Reset)
+
         return True
             
 
@@ -428,9 +432,10 @@ class ConsoleContext:
 
 
     #--------------------------------
-    # generate_completition_words
+    # generate_completion_words
     #--------------------------------
-    def generate_completition_words(self, prefix):
+    #noinspection PyBroadException
+    def generate_completion_words(self, prefix):
         
         # find all words that start with this prefix
         self.matching_words = [w for w in self.words if w.startswith(prefix)]
@@ -454,12 +459,11 @@ class ConsoleContext:
             
         except Exception as ex:
             log.debug("error getting competition paths: " + ex.message)
-        
+
     
-    
-#--------------------------------
-#       complete
-#--------------------------------        
+    #--------------------------------
+    #       complete
+    #--------------------------------
     def complete(self, prefix, index):
        
         #print "prefix ", prefix, "  index ", index
@@ -470,7 +474,7 @@ class ConsoleContext:
         
         if prefix != self.prefix:
             #get new completions
-            self.generate_completition_words(prefix)
+            self.generate_completion_words(prefix)
             
             #self.matching_words.append(
             self.prefix = prefix
@@ -494,9 +498,9 @@ class ConsoleContext:
 #--------  G E T T I N G    O B J E C T S  -------------------------------------------
 #=====================================================================================
 
-#--------------------------------
-#  prepare_path      
-#--------------------------------
+    #--------------------------------
+    #  prepare_path
+    #--------------------------------
     def prepare_path(self, path):
         
         #correct ending /

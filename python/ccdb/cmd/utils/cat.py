@@ -61,8 +61,8 @@ class Cat(ConsoleUtilBase):
         :rtype: int
         """
         if log.isEnabledFor(logging.DEBUG):
-            log.debug(lfm("{0} Cat command is in charge {0}\\", os.linesep))
-            log.debug(lfm(" |- arguments :  '" + "' '".join(args)+"'"))
+            log.debug(lfm("{0}Cat command is in charge {0}\\", os.linesep))
+            log.debug(lfm(" |- arguments : '" + "' '".join(args)+"'"))
 
         assert self.context is not None
 

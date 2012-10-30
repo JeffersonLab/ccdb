@@ -342,8 +342,30 @@
   <component name="ProjectResources">
     <default-html-doctype>jar:file:\C:\Program Files (x86)\JetBrains\PyCharm 2.6.1\lib\pycharm.jar!\resources\html5-schema\html5.rnc</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 2.7.3 (D:/Tools/Python/Python27_86/python.exe)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 2.7.3 (/usr/bin/python)" project-jdk-type="Python SDK" />
   <component name="SvnBranchConfigurationManager">
+    <option name="myConfigurationMap">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://phys12svn.jlab.org/repos/JANA" />
+                  <option value="https://phys12svn.jlab.org/repos/JInventory" />
+                  <option value="https://phys12svn.jlab.org/repos/RootSpy" />
+                  <option value="https://phys12svn.jlab.org/repos/WWW" />
+                  <option value="https://phys12svn.jlab.org/repos/branches" />
+                  <option value="https://phys12svn.jlab.org/repos/tags" />
+                  <option value="https://phys12svn.jlab.org/repos/users" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="https://phys12svn.jlab.org/repos/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
 </project>
