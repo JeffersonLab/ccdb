@@ -53,7 +53,7 @@ class ConsoleContextTests(unittest.TestCase):
     def test_add_rm_assignment(self):
         tests_dir = os.path.dirname(os.path.realpath(__file__))
         test_file = os.path.join(tests_dir, "test_table.txt")
-        self.context.process_command_line("add /test/test_vars/test_table test_table.txt")
+        self.context.process_command_line("add /test/test_vars/test_table "+test_file)
         print self.output.getvalue()
 
 

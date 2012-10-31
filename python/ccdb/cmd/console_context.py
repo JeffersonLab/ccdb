@@ -298,8 +298,7 @@ class ConsoleContext:
         redir_stream_backup = sys.stdout
         redir_theme_backup = self.theme
 
-        if (">" in args and args.index(">") == len(args) - 2) or\
-           ("=>" in args and args.index("=>") == len(args) - 2):
+        if ">" in args and args.index(">") == len(args) - 2:
 
             redir_fname = args[-1]
             redir_to_file = True
@@ -317,10 +316,11 @@ class ConsoleContext:
         #execute command
         try:
             if redir_to_file:
-                sys.stdout = redir_file
                 colorama.deinit()
+                sys.stdout = redir_file
                 self.theme = themes.NoColorTheme
-            return util.process(args)
+            result = util.process(args)
+
         except Exception as ex:
             log.error(ex)
             if not self.silent_exceptions: raise
@@ -331,6 +331,7 @@ class ConsoleContext:
                 redir_file.close()
                 self.theme = redir_theme_backup
                 colorama.reinit()
+        return result
 
 
     #--------------------------------

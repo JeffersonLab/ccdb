@@ -368,12 +368,6 @@ def list_to_table(data, col_count):
     return table
 
 
-
-
-
-
-
-
 def decode_data(data):
     pass
 
