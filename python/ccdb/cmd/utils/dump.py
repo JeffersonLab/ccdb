@@ -2,7 +2,7 @@ import os
 import logging
 
 from ccdb.cmd import ConsoleUtilBase
-
+from ccdb import NoColorTheme
 log = logging.getLogger("ccdb.cmd.utils.ls")
 
 #ccdbcmd module interface
@@ -31,7 +31,13 @@ class Dump(ConsoleUtilBase):
         log.debug("{0}Dump is gained a control {0} \\".format(os.linesep))
         log.debug(" |- arguments: " + " ".join(args))
 
-        command = "cat --no-borders --no-header --comments --time --horizontal " + " ".join(args)
+        theme_backup = self.theme
+        self.theme = NoColorTheme
+        try:
+            command = "cat --no-borders --no-header --comments --time --horizontal " + " ".join(args)
+        finally:
+            self.theme = theme_backup
+
         self.context.process_command_line(command)
 
 

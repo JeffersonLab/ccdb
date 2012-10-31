@@ -360,7 +360,7 @@ class ConsoleContext:
             log.debug(" |  |- connection: " + self.theme.Success + " successful " + self.theme.Reset)
 
         return True
-            
+
 
     #----------------------------------------------------
     #       interactive_loop
