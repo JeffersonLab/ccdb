@@ -24,7 +24,7 @@ class ConsoleContext:
     anonymous_user_name = "anonymous"
     prefix = None
     words = []
-    theme = themes.NoColorTheme
+
 
     def __init__(self):
         self._prov = AlchemyProvider()
@@ -37,6 +37,8 @@ class ConsoleContext:
         self._ls=None
         self._connection_string = ""
         self.silent_exceptions = True #rethrow happened exceptions
+        self._theme = themes.NoColorTheme
+
 
     #prop verbose
     #_______________________
@@ -102,7 +104,35 @@ class ConsoleContext:
     @is_interactive.setter
     def is_interactive(self, value):
         self._is_interactive = value
-        
+
+    @property
+    def theme(self):
+        """:rtype: themes.NoColorTheme"""
+        log.debug(">>>>>>>>>>>>>>>>.getting")
+        return self._theme
+
+    #@theme.setter
+    #def theme(self, value):
+    #    """
+    #    :param newTheme: new theme to set
+    #    :type newTheme: themes.NoColorTheme
+    #    """
+    #    log.debug("<<<<<<<<<<<<<<<<<<<<.setting")
+    #    self._theme = value
+    #    for key in self._utils.keys():
+    #        self._utils[key].theme = value
+
+    @theme.setter
+    def set_fucking_theme(self, value):
+        """
+        :param newTheme: new theme to set
+        :type newTheme: themes.NoColorTheme
+        """
+        log.debug("<<<<<<<<<<<<<<<<<<<<.setttttting")
+        self._theme = value
+        for key in self._utils.keys():
+            self._utils[key].theme = value
+
 
 #=====================================================================================
 #------------------ P L U G I N   M A N A G E M E N T  -------------------------------
@@ -284,7 +314,7 @@ class ConsoleContext:
         try:
             util = self._utils[command]
         except KeyError:
-            print "Command ", command," is unknown! Please, use help to see available commands"
+            log.error("Command " + command +" is unknown! Please, use help to see available commands")
             if not self.silent_exceptions: raise
             else: return 1;
         

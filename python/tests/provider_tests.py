@@ -3,6 +3,8 @@ __author__ = 'RomanovDA'
 import unittest
 import os
 import ccdb.path_utils
+from ccdb import get_ccdb_home_path
+
 from ccdb.model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
 import sqlalchemy.orm.exc
@@ -12,9 +14,9 @@ from ccdb import AlchemyProvider
 class AlchemyProviderTest(unittest.TestCase):
 
     def setUp(self):
-        sqlite_path = ""
-        if "CCDB_HOME" in os.environ: sqlite_path = os.environ["CCDB_HOME"]
-        self.sqlite_connection_str = "sqlite:///" + os.path.join(sqlite_path, "mysql", "ccdb.sqlite")
+        ccdb_path = get_ccdb_home_path()
+
+        self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "mysql", "ccdb.sqlite")
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
         self.provider = AlchemyProvider()
 
@@ -285,8 +287,6 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertRaises(sqlalchemy.orm.exc.NoResultFound, self.provider.get_variation, "abra_kozyabra")
 
 
-
-
     def test_assignments(self):
         self.provider.connect(self.sqlite_connection_str)
         print "==> start SQLite assignments tests"
@@ -303,17 +303,6 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertIsNotNone(assignment)
 
         #Check that everything is loaded
-        tabledData = assignment.constant_set.data_table
-        self.assertEquals(len(tabledData),2)
-        self.assertEquals(len(tabledData[0]),3)
-        self.assertEquals(tabledData[0][0], "2.2")
-        self.assertEquals(tabledData[0][1], "2.3")
-        self.assertEquals(tabledData[0][2], "2.4")
-        self.assertEquals(tabledData[1][0], "2.5")
-        self.assertEquals(tabledData[1][1], "2.6")
-        self.assertEquals(tabledData[1][2], "2.7")
-
-        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table")
         tabledData = assignment.constant_set.data_table
         self.assertEquals(len(tabledData),2)
         self.assertEquals(len(tabledData[0]),3)

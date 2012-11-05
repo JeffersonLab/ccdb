@@ -19,6 +19,7 @@
 import os
 import sys
 import logging
+import inspect
 
 from .provider import AlchemyProvider
 from .model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn
@@ -26,13 +27,18 @@ from .table_file import TextFileDOM, read_ccdb_text_file, read_namevalue_text_fi
 from .cmd.themes import NoColorTheme, ColoredTheme
 from .brace_log_message import BraceMessage
 import cmd.themes
-
+import path_utils
 #the default ccdb logger
 logger = logging.getLogger("ccdb")
 
 INFINITE_RUN = 2147483647
 
-
+def get_ccdb_home_path():
+    if "CCDB_HOME" in os.environ: return os.environ["CCDB_HOME"]
+    this_dir = os.path.dirname(inspect.getfile(path_utils))
+    this_dir = os.path.join(this_dir, "..","..")
+    this_dir = os.path.normpath(this_dir)
+    return this_dir
 
 def init_ccdb_console():
     from .cmd.themes import Theme
@@ -63,10 +69,10 @@ def init_ccdb_console():
 
     if "--no-color" in sys.argv:
         #no colors for output
-        context.theme = NoColorTheme
+        context.theme = NoColorTheme()
     else:
         #colors are ON
-        context.theme = ColoredTheme
+        context.theme = ColoredTheme()
 
     if "--debug" in sys.argv:
         logger.setLevel(logging.DEBUG)

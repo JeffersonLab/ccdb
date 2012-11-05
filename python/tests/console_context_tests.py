@@ -6,12 +6,14 @@ __author__ = 'RomanovDA'
 import unittest
 import os
 import logging
+import inspect
 
 import ccdb.cmd.colorama
 import ccdb.path_utils
 import ccdb.cmd.themes
-
+from ccdb import get_ccdb_home_path
 from ccdb.cmd.console_context import ConsoleContext
+
 
 from ccdb.model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
@@ -27,9 +29,9 @@ class ConsoleContextTests(unittest.TestCase):
     """
 
     def setUp(self):
-        sqlite_path = ""
-        if "CCDB_HOME" in os.environ: sqlite_path = os.environ["CCDB_HOME"]
-        self.sqlite_connection_str = "sqlite:///" + os.path.join(sqlite_path, "mysql", "ccdb.sqlite")
+        ccdb_path = get_ccdb_home_path()
+
+        self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "mysql", "ccdb.sqlite")
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
 
         #initialize but disable colorama
@@ -58,6 +60,7 @@ class ConsoleContextTests(unittest.TestCase):
 
 
 
+
     def test_context(self):
         self.assertTrue(len(self.context.utils)>0)
 
@@ -78,7 +81,15 @@ class ConsoleContextTests(unittest.TestCase):
 
 
     def test_dump(self):
+        self.context.theme = ccdb.cmd.themes.ColoredTheme
         self.context.process_command_line("dump /test/test_vars/test_table")
+        text = self.output.getvalue()
+        self.assertNotIn("[",text,"Check that dump disabled color output")
+
+        #cleanup
+        self.context.theme = ccdb.cmd.themes.NoColorTheme
+        self.output.truncate(0)
+
 
     def test_info(self):
         self.context.process_command_line("info /test/test_vars/test_table")

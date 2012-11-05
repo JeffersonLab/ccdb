@@ -305,6 +305,7 @@ class Cat(ConsoleUtilBase):
         :type displayBorders: bool
         """
         log.debug(lfm(" |- print asgmnt horizontally: header {0}, borders {1}, comments {2}", printHeader, displayBorders, comments))
+        print "#", self.theme
 
         border = "|" if displayBorders else " "
 

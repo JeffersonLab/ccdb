@@ -8,7 +8,7 @@ class ConsoleUtilBase:
     uses_db = False
     changes_db = False
     help_util = False
-    theme = NoColorTheme
+
 
     @property
     def context(self):
@@ -37,6 +37,7 @@ class ConsoleUtilBase:
 
     def __init__(self):
         self._context = None
+        self.theme = NoColorTheme
         
     def read_multiline(self):
         user_input = []
