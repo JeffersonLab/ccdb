@@ -41,7 +41,7 @@ class ConsoleContextTests(unittest.TestCase):
         #create console context
         self.context = ConsoleContext()
         self.context.silent_exceptions = False
-        self.context.theme = ccdb.cmd.themes.NoColorTheme
+        self.context.theme = ccdb.cmd.themes.NoColorTheme()
         self.context.connection_string = self.sqlite_connection_str
         self.context.user_name = "python_tests"
         self.context.register_utilities()
@@ -81,13 +81,13 @@ class ConsoleContextTests(unittest.TestCase):
 
 
     def test_dump(self):
-        self.context.theme = ccdb.cmd.themes.ColoredTheme
+        self.context.theme = ccdb.cmd.themes.ColoredTheme()
         self.context.process_command_line("dump /test/test_vars/test_table")
         text = self.output.getvalue()
         self.assertNotIn("[",text,"Check that dump disabled color output")
 
         #cleanup
-        self.context.theme = ccdb.cmd.themes.NoColorTheme
+        self.context.theme = ccdb.cmd.themes.NoColorTheme()
         self.output.truncate(0)
 
 
