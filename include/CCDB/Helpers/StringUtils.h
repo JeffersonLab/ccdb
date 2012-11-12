@@ -1,4 +1,4 @@
-﻿#ifndef _StringUtils_
+#ifndef _StringUtils_
 #define _StringUtils_
 
 #ifdef WIN32
