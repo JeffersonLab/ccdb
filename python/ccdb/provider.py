@@ -15,8 +15,9 @@ from datetime import datetime
 import sqlalchemy
 import sqlalchemy.orm
 from sqlalchemy.sql.expression import desc
-from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
+from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
 import table_file
+import authentication
 
 
 import posixpath
@@ -40,6 +41,8 @@ class AlchemyProvider(object):
         self.path_name_regex = re.compile('^[\w\-_]+$', re.IGNORECASE)
         self._user_name = "anonymous"
         self._connection_string = ""
+        self._auth = authentication.Authentication(self)
+        self._auth.current_user_name = "anonymous"
 
 
 #----------------------------------------------------------------------------------------
@@ -236,6 +239,9 @@ class AlchemyProvider(object):
         if new_full_path in self.dirs_by_path.keys():
             raise ValueError("The directory with path '{0}' already exist".format(new_full_path))
 
+        #Get user
+        user = self.get_current_user()
+
         #create the directory
         dir = Directory()
         dir.name = new_dir_name
@@ -244,10 +250,18 @@ class AlchemyProvider(object):
         dir.parent_dir = parent_dir
         dir.parent_id = parent_dir.id
         parent_dir.sub_dirs.append(dir)
+        dir.author_id = user.id
 
         #add to database
         self.session.add(dir)
         self.session.commit()
+
+        #add log
+        self.create_log_record(user = user,
+            affected_ids=[dir.__tablename__+str(dir.id)],
+            action="create",
+            description="Created directory '{0}'".format(dir.path),
+            comment = dir.comment)
 
         #refresh directory structure
         self._load_dirs()
@@ -272,6 +286,9 @@ class AlchemyProvider(object):
 
         #refresh directory structure
         self._load_dirs()
+
+        #Get user
+        user = self.get_current_user()
 
 
     #------------------------------------------------
@@ -305,6 +322,9 @@ class AlchemyProvider(object):
 
         #refresh directory structure
         self._load_dirs()
+
+        #Get user
+        user = self.get_current_user()
 
 
     #------------------------------------------------
@@ -534,12 +554,16 @@ class AlchemyProvider(object):
             assert isinstance(dir_obj_or_path, Directory)
             parent_dir = dir_obj_or_path
 
+        #Get user
+        user = self.get_current_user()
+
         table = TypeTable()
         table.name = name
         table.comment = comment
         table.rows_count = rowsNumber
         table.parent_dir = parent_dir
         table.parent_dir_id = parent_dir.id
+        table.author_id = user.id
 
         for i, (name,type) in enumerate(columns):
             column = TypeTableColumn()
@@ -554,6 +578,13 @@ class AlchemyProvider(object):
         self.session.add(table)
         self.session.commit()
 
+        #add log
+        self.create_log_record(user = user,
+            affected_ids=[table.__tablename__+str(table.id)],
+            action="create",
+            description="Created table with path '{0}'".format(table.path),
+            comment = table.comment);
+
         return table
 
 
@@ -562,6 +593,9 @@ class AlchemyProvider(object):
     #------------------------------------------------
     def update_type_table(self, type_table):
         self.session.commit()
+
+        #Get user
+        user = self.get_current_user()
 
 
     #------------------------------------------------
@@ -589,6 +623,9 @@ class AlchemyProvider(object):
 
         self.session.delete(type_table)
         self.session.commit()
+
+        #Get user
+        user = self.get_current_user()
 
 
 #----------------------------------------------------------------------------------------
@@ -709,6 +746,7 @@ class AlchemyProvider(object):
     #------------------------------------------------
     # Searches all variations associated with this type table
     #------------------------------------------------
+    #noinspection PyUnresolvedReferences
     def get_variations(self, pattern=""):
         """
         Returns all variations associated with this type table
@@ -730,6 +768,7 @@ class AlchemyProvider(object):
     #------------------------------------------------
     # Searches all variations associated with this type table
     #------------------------------------------------
+    #noinspection PyUnresolvedReferences
     def search_variations(self, table_or_path, run = 0, name = None, limit = 0, offset = 0):
         """
         Searches all variations associated with this type table
@@ -743,7 +782,7 @@ class AlchemyProvider(object):
         :return: list of variations
         :rtype: [Variation]
         """
-        table = None
+
         if isinstance(table_or_path, str):
             table = self.get_type_table(table_or_path)
         else:
@@ -776,6 +815,9 @@ class AlchemyProvider(object):
         :return: new created variation
         :rtype: Variation
         """
+        #Get user
+        user = self.get_current_user()
+
         variation = Variation()
 
         if self.session.query(Variation).filter(Variation.name == name).count() > 0:
@@ -783,8 +825,18 @@ class AlchemyProvider(object):
 
         variation.comment = comment
         variation.name = name
+        variation.author_id = user.id
         self.session.add(variation)
         self.session.commit()
+
+        #add log
+        self.create_log_record(user = user,
+            affected_ids=[variation.__tablename__+str(variation.id)],
+            action="create",
+            description="Created variation '{0}'".format(variation.name),
+            comment = variation.comment);
+
+
         return variation
 
 
@@ -801,6 +853,8 @@ class AlchemyProvider(object):
     #------------------------------------------------
     def update_variation(self, variation):
         self.session.commit()
+        #Get user
+        user = self.get_current_user()
 
 
     ## @brief Delete variation
@@ -824,6 +878,8 @@ class AlchemyProvider(object):
 
         self.session.delete(variation)
         self.session.commit()
+        #Get user
+        user = self.get_current_user()
 
 #----------------------------------------------------------------------------------------
 #	A S S I G N M E N T S
@@ -987,6 +1043,19 @@ class AlchemyProvider(object):
             #rows_count = len(data) / table._columns_count
             raise NotImplementedError() #TODO check and implement this branch
 
+        #validate that the data rows and cols correspond to table rows and cols
+        data_rows_count = len(rows)
+        data_cols_count = len(rows[0])
+
+        if data_rows_count != table.rows_count or data_cols_count != table._columns_count:
+            message = "Data rows or columns count is inconsistent with table declared rows or columns count. " \
+                      "Data rows='{0}', columns='{1}'. Table declared rows='{2}', columns='{3}'" \
+                      "".format(data_rows_count, data_cols_count, table.rows_count, table._columns_count )
+            raise ValueError(message)
+
+        #Get user
+        user = self.get_current_user()
+
         #construct assignment
         assignment = Assignment()
         assignment.constant_set = ConstantSet()
@@ -997,8 +1066,17 @@ class AlchemyProvider(object):
         assignment.variation = variation
         assignment.variation_id = variation.id
         assignment.constant_set.data_table = rows
+        assignment.comment = comment
+        assignment.author_id = user.id
         self.session.add(assignment)
         self.session.commit()
+
+        #add log
+        self.create_log_record(user = user,
+            affected_ids=[assignment.__tablename__+str(assignment.id)],
+            action="create",
+            description="Created assignment '{0}'".format(assignment.request),
+            comment = assignment.comment);
         return assignment
 
 
@@ -1007,6 +1085,8 @@ class AlchemyProvider(object):
     #------------------------------------------------
     def update_assignment(self, assignment):
         self.session.commit()
+        #Get user
+        user = self.get_current_user()
 
 
     #------------------------------------------------
@@ -1020,6 +1100,9 @@ class AlchemyProvider(object):
         """
         self.session.delete(assignment_obj)
         self.session.commit()
+
+        #Get user
+        user = self.get_current_user()
 
 
     #------------------------------------------------
@@ -1046,6 +1129,44 @@ class AlchemyProvider(object):
         raise NotImplementedError()
 
 
+    #----------------------------------------------------------------------------------------
+    #	U S E R S
+    #----------------------------------------------------------------------------------------
+    def get_user(self, username):
+        """
+        Find user in the database by user name
+
+        :param username: username to find
+        :type username: basestring
+
+        :return: User db object
+        :rtype: User
+        """
+        query = self.session.query(User).filter(User.name==username)
+        return query.one()
+
+    def get_current_user(self):
+        """
+
+        :return: User db object
+        :rtype: User
+        """
+        return self.get_user(self._auth.current_user_name)
+
+
+    @property
+    def authentication(self):
+        """
+        returns Authentication object
+        :return: current Authentication object
+        :rtype: authentication.Authentication
+        """
+        return self._auth
+
+    @authentication.setter
+    def authentication(self, auth):
+        self._auth = auth
+
 #----------------------------------------------------------------------------------------
 #	E R R O R   H A N D L I N G
 #----------------------------------------------------------------------------------------
@@ -1061,7 +1182,7 @@ class AlchemyProvider(object):
     # @return   bool
     #/
     def validate_name(self, name):
-        return self._provider.ValidateName(name)
+        return path_utils.validate_name(name)
 
 #----------------------------------------------------------------------------------------
 #	L O G G I N G
@@ -1073,3 +1194,35 @@ class AlchemyProvider(object):
     @log_user_name.setter
     def log_user_name(self, user_name):
         self._user_name = user_name
+
+    def create_log_record(self, user, affected_ids, action, description, comment):
+        assert isinstance(user, User)
+        assert isinstance(affected_ids, list)
+
+        record = LogRecord()
+        record.author_id = user.id
+        record.author = user
+        record.affected_ids = "|"+"|".join(affected_ids)+"|"
+        record.action = action
+        record.description = description
+        record.comment = comment
+        self.session.add(record)
+        self.session.commit()
+        return record
+
+    def get_log_records(self, limit=20, offset=0):
+
+        if limit<0: limit = 0
+
+        #initial query
+        query = self.session.query(LogRecord)
+
+        #add limits to query
+        if limit !=0: query = query.limit(limit)
+        if offset!=0: query = query.offset(offset)
+        query.order_by(desc(Assignment.id))
+
+        #execute and return
+        return query.all()
+
+

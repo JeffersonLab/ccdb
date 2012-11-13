@@ -1,6 +1,6 @@
 import posixpath
 import datetime
-import time as time_lib
+
 
 def split(path):
     return posixpath.split(path)
@@ -20,7 +20,7 @@ class PathObjectType:
     Run = "Run"
 
 
-class ParseRequestResult:
+class ParseRequestResult(object):
     """@brief ParseRequestResult is a class that represents parse result of
     a string request. @see PathUtils::ParseRequest
     """
@@ -28,7 +28,6 @@ class ParseRequestResult:
     def __init__(self):
         self.run = -1 	                    # Run number
         self.run_is_parsed=False             # true if Run number was non empty
-        self.run_is_invalid = False          # true if was an error parsing runnumber
         self.path=""                         # Object path
         self.path_is_parsed=False            # true if Path was nonempty
         self.variation=""                    # Variation name
@@ -165,7 +164,8 @@ def parse_request( requestStr="" ):
     /path/to/data:::2029 - only path and date
 
     @parameter [in] requestStr - user request
-    @return structure that represent user result
+    :return: structure that represent user result
+    :rtype: ParseRequestResult
     """
 
     #Set the default parameters
@@ -207,17 +207,19 @@ def parse_request( requestStr="" ):
                 result.time_is_parsed=True        # true if time stampt was not empty
                 result.time_str+=symbol        # Original string with time
         else: #the symbol is colon (symbol==':')
-            colonCount+=1
+            if colonCount == 3: result.time_str+=symbol #it is colon but we are parsing time now, so it is related to time
+            else: colonCount+=1
 
     # at this point we parsed all symbols and it is time for final parsing
 
     #parse run number
+
     if result.run_is_parsed :
         try:
             result.run = int(runStr)
             result.run_is_invalid = False
         except:
-            result.run_is_invalid = True
+            raise
 
     #parse time
     if result.time_is_parsed:

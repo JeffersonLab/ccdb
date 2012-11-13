@@ -108,7 +108,7 @@ def init_ccdb_console():
     #connection string in in command line arguments ( by -c or --connection) is processed by context.process(sys.argv)
 
     if "CCDB_USER" in os.environ.keys():
-        context.user_name =  os.environ["CCDB_USER"]        
+        context.user_name =  os.environ["CCDB_USER"]
         logger.debug("Set user name from $CCDB_USER :" + context.user_name)
 
 

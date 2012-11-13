@@ -28,17 +28,19 @@ class Dump(ConsoleUtilBase):
     #variables for each process
 
     def process(self, args):
-        log.debug("{0}Dump is gained a control {0} \\".format(os.linesep))
+        log.debug("{0}Dump is gained a control {0}\\".format(os.linesep))
         log.debug(" |- arguments: " + " ".join(args))
 
         theme_backup = self.context.theme
 
         self.context.theme = NoColorTheme()
+        #self.context.utils["cat"].theme = NoColorTheme()
         try:
             command = "cat --no-borders --no-header --comments --time --horizontal " + " ".join(args)
             self.context.process_command_line(command)
         finally:
             self.context.theme = theme_backup
+            #self.context.utils["cat"].theme = theme_backup
 
 
     def print_directory_tree(self, directory, printFullPath, level):

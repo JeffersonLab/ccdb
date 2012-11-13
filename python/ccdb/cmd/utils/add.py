@@ -226,7 +226,7 @@ Required parameters:
    file_to_import - file to import. It should be ccdb file format (see documentation or file format section) 
                     if file format is column of names and column of values add --name-value flag
 
-Additionsl flags:
+Additional flags:
     
           --name-value  - indicates that the input file is in name-value format (column of names and column of values)
     -n or --no-comments - do not add all "#..." comments that is found in file to ccdb database

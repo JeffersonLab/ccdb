@@ -22,7 +22,7 @@ def set_theme(theme):
     Theme = theme
 
 
-class NoColorTheme:
+class NoColorTheme(object):
     Ok = ""
     Directories = ""
     HelpCommand = ""

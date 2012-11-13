@@ -163,7 +163,10 @@ class Cat(ConsoleUtilBase):
         time = request.time if request.time_is_parsed else None
 
         #check such table really exists (otherwise exception will be thrown)
-        provider.get_type_table(table_path)
+        try:
+            provider.get_type_table(table_path)
+        except:
+            log.error("Cant load: " + table_path)
 
         log.debug(lfm(" |- getting assignments for path : '{0}', run: '{1}', var: '{2}', time: '{3}'", table_path, request.run, request.variation, time))
         assignments = provider.get_assignments(table_path, request.run, request.variation, time)
@@ -305,7 +308,6 @@ class Cat(ConsoleUtilBase):
         :type displayBorders: bool
         """
         log.debug(lfm(" |- print asgmnt horizontally: header {0}, borders {1}, comments {2}", printHeader, displayBorders, comments))
-        print "#", self.theme
 
         border = "|" if displayBorders else " "
 

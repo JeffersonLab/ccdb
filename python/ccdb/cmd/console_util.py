@@ -1,14 +1,14 @@
 from .console_context import ConsoleContext
 from .themes import NoColorTheme
 
-class ConsoleUtilBase:
-    "base class for console utility"
+class ConsoleUtilBase(object):
+    """base class for console utility"""
     
     #context = ConsoleContext()
     uses_db = False
     changes_db = False
     help_util = False
-
+    command = ""
 
     @property
     def context(self):
@@ -23,25 +23,25 @@ class ConsoleUtilBase:
         self._context = value
 
     def print_help(self):
-        """@brief Prints help of the command"""
+        """Prints help of the command"""
 
         print "Help is not defined for command " + self.command
 
     def print_usage(self):
-        "Prints usage of the command"
+        """Prints usage of the command"""
         print "@brief Usage is not defined for command " + self.command
 
     def print_examples(self):
-        "Prints examples of the command usage"
+        """Prints examples of the command usage"""
         print "Examples are not defined for command " + self.command
 
     def __init__(self):
         self._context = None
-        self.theme = NoColorTheme
+        self.theme = NoColorTheme()
         
     def read_multiline(self):
         user_input = []
-        entry = raw_input("Enter comment text, 'EOF' on its own line to quit: \n")
+        entry = raw_input("Enter comment text, put 'EOF' on its own line to quit: \n")
         
         while entry != "EOF":
             user_input.append(entry)

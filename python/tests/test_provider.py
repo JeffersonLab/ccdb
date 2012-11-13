@@ -1,11 +1,10 @@
-__author__ = 'RomanovDA'
 
 import unittest
 import os
 import ccdb.path_utils
 from ccdb import get_ccdb_home_path
 
-from ccdb.model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
+from ccdb.model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation,User
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
 import sqlalchemy.orm.exc
 
@@ -319,8 +318,46 @@ class AlchemyProviderTest(unittest.TestCase):
 
         assignment = self.provider.create_assignment([[0,1,2],[3,4,5]],"/test/test_vars/test_table", 0, 1000, "default","Test assignment")
         assignment.print_deps()
+        self.assertEqual(assignment.constant_set.type_table.path,  "/test/test_vars/test_table")
+        self.assertEqual(assignment.variation.name,  "default")
+        self.assertEqual(assignment.run_range.min, 0)
+        self.assertEqual(assignment.run_range.max, 1000)
+        self.assertEqual(assignment.comment, "Test assignment")
+        tabledData = assignment.constant_set.data_table
+        self.assertEquals(len(tabledData),2)
+        self.assertEquals(len(tabledData[0]),3)
+        self.assertEquals(tabledData[0][0], "0")
+        self.assertEquals(tabledData[0][1], "1")
+        self.assertEquals(tabledData[0][2], "2")
+        self.assertEquals(tabledData[1][0], "3")
+        self.assertEquals(tabledData[1][1], "4")
+        self.assertEquals(tabledData[1][2], "5")
 
         self.provider.delete_assignment(assignment)
+
+
+    def test_users(self):
+        self.provider.connect(self.sqlite_connection_str)
+        print "==> start SQLite users tests"
+        self.universal_users_tests()
+
+        self.provider.connect(self.mysql_connection_str)
+        print "==> start MySQL users tests"
+        self.universal_users_tests()
+
+
+    def universal_users_tests(self):
+
+        user = self.provider.get_user("anonymous")
+        self.assertIsNotNone(user)
+        self.assertEqual(user.name, "anonymous")
+
+        user = self.provider.get_user("test_user")
+        isinstance(user, User)
+        self.assertIsNotNone(user)
+        self.assertEqual(user.password, "test")
+        self.assertEqual(user.roles, ["runrange_crate","runrange_delete"])
+        #self.assertEqual(user.)
 
 
     def test_gen_flatten_data(self):
@@ -345,15 +382,6 @@ class AlchemyProviderTest(unittest.TestCase):
     def test_list_to_table(self):
         self.assertRaises(ValueError, list_to_table, [1,2,3], 2)
         self.assertItemsEqual([[1,2,3],[4,5,6]], list_to_table([1,2,3,4,5,6], 3))
-
-
-class PathUtilsTest(unittest.TestCase):
-    """Test of the path_util package"""
-
-    def validate_name_test(self):
-        self.assertTrue(ccdb.path_utils.validate_name("this_is_variation2"))
-        self.assertFalse(ccdb.path_utils.validate_name("this-is_variation2"))
-        self.assertFalse(ccdb.path_utils.validate_name("this:isvariation2"))
 
 
 

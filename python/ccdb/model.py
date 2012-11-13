@@ -22,6 +22,10 @@ blob_delimiter = "|"
 # we have to encode blob_delimiter to blob_delimiter_replace on data write and decode it bach on data read
 blob_delimiter_replacement = "&delimiter;"
 
+
+#--------------------------------------------
+# class Directory
+#--------------------------------------------
 class Directory(Base):
     """
     Represents CCDB directory object.
@@ -34,6 +38,7 @@ class Directory(Base):
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
     parent_id = Column('parentId', Integer)
+    author_id = Column('authorId', Integer, default = 1)
 
     def __init__(self):
         self.path = ""
@@ -50,7 +55,9 @@ class Directory(Base):
         return "<Directory {0} '{1}'>".format(self.id, self.name)
 
 
-
+#--------------------------------------------
+# class TypeTable
+#--------------------------------------------
 class TypeTable(Base):
     __tablename__ = 'typeTables'
     id = Column(Integer, primary_key=True)
@@ -64,6 +71,7 @@ class TypeTable(Base):
     columns = relationship("TypeTableColumn", order_by="TypeTableColumn.order", cascade="all, delete, delete-orphan", backref=backref("type_table") )
     rows_count = Column('nRows',Integer)
     _columns_count = Column('nColumns',Integer)
+    author_id = Column('authorId', Integer, default = 1)
 
     @property
     def path(self):
@@ -77,7 +85,9 @@ class TypeTable(Base):
         return "<TypeTable {0} '{1}'>".format(self.id, self.name)
 
 
-
+#--------------------------------------------
+# class TypeTableColumn
+#--------------------------------------------
 class TypeTableColumn(Base):
     __tablename__ = 'columns'
     id = Column(Integer, primary_key=True)
@@ -98,7 +108,9 @@ class TypeTableColumn(Base):
         return "<TypeTableColumn '{0}'>".format(self.name)
 
 
-
+#--------------------------------------------
+# class ConstantSet
+#--------------------------------------------
 class ConstantSet(Base):
     __tablename__ = 'constantSets'
     id = Column(Integer, primary_key=True)
@@ -140,6 +152,9 @@ class ConstantSet(Base):
         return "<ConstantSet '{0}'>".format(self.id)
 
 
+#--------------------------------------------
+# class Assignment
+#--------------------------------------------
 class Assignment(Base):
     __tablename__ = 'assignments'
 
@@ -153,6 +168,7 @@ class Assignment(Base):
     variation_id = Column('variationId',Integer, ForeignKey('variations.id'))
     variation = relationship("Variation", backref=backref('assignments'))
     _comment = Column('comment', Text)
+    author_id = Column('authorId', Integer, default = 1)
 
     @property
     def comment(self):
@@ -176,7 +192,7 @@ class Assignment(Base):
         path = self.constant_set.type_table.path
         run = self.run_range.min
         variation = self.variation.name
-        time = self.modified.strftime("%Y-%m-%d_%H:%M:%S")
+        time = self.modified.strftime("%Y-%m-%d_%H-%M-%S")
 
         return "{0}:{1}:{2}:{3}".format(path, run, variation, time)
 
@@ -196,7 +212,9 @@ class Assignment(Base):
         print "      +-->" + repr(self.constant_set.data_table)
 
 
-
+#--------------------------------------------
+# class RunRange
+#--------------------------------------------
 class RunRange(Base):
     __tablename__ = 'runRanges'
     id = Column(Integer, primary_key=True)
@@ -214,17 +232,154 @@ class RunRange(Base):
             return "<RunRange {0} '{1}-{2}'>".format(self.id, self.min, self.max)
 
 
-
+#--------------------------------------------
+# class Variation
+#--------------------------------------------
 class Variation(Base):
     __tablename__ = 'variations'
     id = Column(Integer, primary_key=True)
     name = Column(String)
     created = Column(DateTime, default = datetime.datetime.now)
-    modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
     comment = Column(Text)
+    author_id = Column('authorId', Integer, default = 1)
 
     def __repr__(self):
         return "<Variation {0} '{1}'>".format(self.id, self.name)
+
+
+#--------------------------------------------
+# class User
+#--------------------------------------------
+class User(Base):
+    """
+    Represent user of the ccdb. Used for logging and authentication
+    """
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    created = Column('created', DateTime, default = datetime.datetime.now)
+    last_action_time = Column('lastActionTime', DateTime)#, nullable=False
+    name = Column(String(100), nullable=False)
+    password = Column(String(100), nullable=True)
+    _roles_str = Column('roles', String, nullable=False)
+    name = Column(String(100), nullable=False)
+    info  = Column(String(125), nullable=False)
+
+    @property
+    def roles(self):
+        """
+        Returns a list of user roles
+        :rtype:[]
+        """
+        return self._roles_str.split(",")
+
+    @roles.setter
+    def roles(self, value):
+        self._roles_str = ",".join(value)
+
+
+#--------------------------------------------
+# class LogRecord - record logs
+#--------------------------------------------
+class LogRecord(Base):
+    """
+    One record to the log
+    """
+    __tablename__ = 'logs'
+    id = Column(Integer, primary_key=True, nullable=False)
+    created = Column('created', DateTime, default = datetime.datetime.now)
+    affected_ids = Column('affectedIds', String)#, nullable=False
+    action = Column(String(7), nullable=False)
+    description = Column(String(255), nullable=False)
+    comment = Column(String, nullable=True)
+    author_id = Column('authorId', Integer, ForeignKey('users.id'))
+    author = relationship("User")
+
+
+
+
+#--------------------------------------------
+#
+#              F  I  E  L  D  S
+#
+#--------------------------------------------
+_roles_descr = {
+    "user_create"               :"Can create new user",
+    "user_modify"               :"Can modify users and set user roles",
+
+    "assignment_add_own"        :"Can add assignment to own variation",
+    "assignment_add_nondefault" :"Can add assignment to any variation except the default",
+    "assignment_add_default"    :"Can add assignment to the default variation",
+    "assignment_modify"         :"Can modify or even delete assignments. Exceptional role",
+
+    "variation_create"          :"Can create new variation",
+    "variation_modify_own"      :"Can modify self created variation",
+    "variation_modify_any"      :"Can modify any variation",
+    "variation_delete_own"      :"Can delete self created variation",
+    "variation_delete_any"      :"Can delete any variation",
+
+    "runrange_create"           :"Can create new runrange",
+    "runrange_modify_own"       :"Can modify self created runrange",
+    "runrange_modify_any"       :"Can modify any runrange",
+    "runrange_delete_own"       :"Can delete self created runrange",
+    "runrange_delete_any"       :"Can delete any runrange",
+
+    "eventrange_create"         :"Can create new eventrange",
+    "eventrange_modify_own"     :"Can modify self created eventrange",
+    "eventrange_modify_any"     :"Can modify any eventrange",
+    "eventrange_delete_own"     :"Can delete self created eventrange",
+    "eventrange_delete_any"     :"Can delete any eventrange",
+
+    "table_create"              :"Can create new table",
+    "table_modify_own"          :"Can modify self created table",
+    "table_modify_any"          :"Can modify any table",
+    "table_delete_own"          :"Can delete self created table",
+    "table_delete_any"          :"Can delete any table",
+
+    "directory_create"          :"Can create new directory",
+    "directory_modify_own"      :"Can modify self created directory",
+    "directory_modify_any"      :"Can modify any directory",
+    "directory_delete_own"      :"Can delete self created directory",
+    "directory_delete_any"      :"Can delete any directory",
+}
+
+
+_roles = _roles_descr.keys()
+
+_default_roles = [
+    "assignment_add_own",
+
+    "variation_create",
+    "variation_modify_own",
+    "variation_delete_own",
+
+    "runrange_create",
+    "runrange_modify_own",
+    "runrange_delete_own",
+
+    "eventrange_create",
+    "eventrange_modify_own",
+    "eventrange_delete_own",
+
+    "table_create",
+    "table_modify_own",
+    "table_delete_own",
+
+    "directory_create",
+    "directory_modify_own",
+    "directory_delete_own"
+]
+
+
+#--------------------------------------------
+# flattens arrays of arrays to one array
+#--------------------------------------------
+def get_roles():
+    """
+    Returns list of all known roles
+    :return:
+    """
+    global _roles
+    return _roles
 
 #--------------------------------------------
 # flattens arrays of arrays to one array

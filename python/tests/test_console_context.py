@@ -1,12 +1,9 @@
-from StringIO import StringIO
-import sys
-
-__author__ = 'RomanovDA'
-
 import unittest
 import os
 import logging
-import inspect
+import sys
+import shlex
+from StringIO import StringIO
 
 import ccdb.cmd.colorama
 import ccdb.path_utils
@@ -14,12 +11,6 @@ import ccdb.cmd.themes
 from ccdb import get_ccdb_home_path
 from ccdb.cmd.console_context import ConsoleContext
 
-
-from ccdb.model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation
-from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
-import sqlalchemy.orm.exc
-
-from ccdb import AlchemyProvider
 logger = logging.getLogger("ccdb")
 
 
@@ -56,9 +47,12 @@ class ConsoleContextTests(unittest.TestCase):
         tests_dir = os.path.dirname(os.path.realpath(__file__))
         test_file = os.path.join(tests_dir, "test_table.txt")
         self.context.process_command_line("add /test/test_vars/test_table "+test_file)
-        print self.output.getvalue()
-
-
+        self.output.truncate(0)
+        self.context.process_command_line("vers /test/test_vars/test_table")
+        text = str(self.output.getvalue())
+        line = text.split("\n")[1]
+        id = int(shlex.split(line)[0])
+        self.context.process_command_line("rm -f -a {0}".format(id))
 
 
     def test_context(self):
@@ -99,9 +93,21 @@ class ConsoleContextTests(unittest.TestCase):
         self.context.process_command_line("ls")
 
 
-    def test_mk_and_rm(self):
-        pass
-        #TODO make tests for mk* and rm commands here
+    def test_mk_rm_dir(self):
+        self.context.process_command_line("mkdir /test/auto_testing_dir")
+        #TODO check test table internals are wright
+        self.context.process_command_line("rm --force -d /test/auto_testing_dir")
+
+
+    def test_mk_rm_table(self):
+        self.context.process_command_line("mktbl /test/auto_testing_table -r 2 x y z #This is comment for my table")
+        #TODO check test table internals are wright
+        self.context.process_command_line("rm --force /test/auto_testing_table")
+
+    def test_mk_rm_variation(self):
+        self.context.process_command_line("mkvar auto_testing_variation")
+        #TODO check test table internals are wright
+        self.context.process_command_line("rm --force -v auto_testing_variation")
 
 
     def test_pwd(self):

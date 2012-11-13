@@ -8,7 +8,7 @@ log = logging.getLogger("ccdb.cmd.utils.vers")
 
 #ccdbcmd module interface
 def create_util_instance():
-    log.debug("      registering AddData")
+    log.debug("      registering Versions")
     return Versions()
 
 

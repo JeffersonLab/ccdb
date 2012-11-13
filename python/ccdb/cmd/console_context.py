@@ -13,7 +13,7 @@ import readline
 
 log = logging.getLogger("ccdb.cmd.console_context")
 
-class ConsoleContext:
+class ConsoleContext(object):
     """
     Class to manage console commands
 
@@ -37,7 +37,7 @@ class ConsoleContext:
         self._ls=None
         self._connection_string = ""
         self.silent_exceptions = True #rethrow happened exceptions
-        self._theme = themes.NoColorTheme
+        self._theme = themes.NoColorTheme()
 
 
     #prop verbose
@@ -108,30 +108,20 @@ class ConsoleContext:
     @property
     def theme(self):
         """:rtype: themes.NoColorTheme"""
-        log.debug(">>>>>>>>>>>>>>>>.getting")
         return self._theme
 
-    #@theme.setter
-    #def theme(self, value):
-    #    """
-    #    :param newTheme: new theme to set
-    #    :type newTheme: themes.NoColorTheme
-    #    """
-    #    log.debug("<<<<<<<<<<<<<<<<<<<<.setting")
-    #    self._theme = value
-    #    for key in self._utils.keys():
-    #        self._utils[key].theme = value
-
     @theme.setter
-    def set_fucking_theme(self, value):
+    def theme(self, value):
         """
-        :param newTheme: new theme to set
-        :type newTheme: themes.NoColorTheme
+        :param value: new theme to set
+        :type value: themes.NoColorTheme
         """
-        log.debug("<<<<<<<<<<<<<<<<<<<<.setttttting")
-        self._theme = value
+        assert (isinstance(value, themes.NoColorTheme))
         for key in self._utils.keys():
             self._utils[key].theme = value
+        log.debug(lfm(" |- theme(value) {0} | \\{0} |  |- theme switched to : '{1}'", os.linesep, value))
+        self._theme = value
+
 
 
 #=====================================================================================
@@ -348,7 +338,7 @@ class ConsoleContext:
             if redir_to_file:
                 colorama.deinit()
                 sys.stdout = redir_file
-                self.theme = themes.NoColorTheme
+                self.theme = themes.NoColorTheme()
             result = util.process(args)
 
         except Exception as ex:
@@ -372,7 +362,7 @@ class ConsoleContext:
         if not util.uses_db: return         #util doesn't use database
 
         if log.isEnabledFor(logging.DEBUG):
-            log.debug(" |- check_connection(util){0} |  \\".format(os.linesep))
+            log.debug(" |- check_connection(util){0} | \\".format(os.linesep))
             log.debug(" |  |- utility '" + util.name + "' uses the database and there is no connection yet. Connecting.")
             log.debug(" |  |- connection string is: '" + self.theme.Accent + self.connection_string + self.theme.Reset+"'")
 
@@ -591,7 +581,6 @@ class ConsoleContext:
 #=====================================================================================
 #------------------------- H E L P   A N D   I N F O ---------------------------------
 #=====================================================================================
-
 
     def print_general_usage(self):
         print "Use '-i'   option to enter interactive shell"
