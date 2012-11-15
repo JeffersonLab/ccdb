@@ -40,14 +40,14 @@ ccdb_dir = os.environ['CCDB_HOME']
 
 # configure ccdb package to use
 try:
-    import ccdb.ccdb_pyllapi
+    import ccdb
 except:
     ccdb_python_dir = os.path.join(ccdb_dir, 'python')
     sys.path.append(ccdb_python_dir)
     try:
-        import ccdb.ccdb_pyllapi
+        import ccdb
     except:
-        print "Cannot load ccdb_pyllapi. Check it is in path"
+        print "Cannot load ccdb python library. Check it is in path"
         exit(1)
 
 #configure ccdbcmd

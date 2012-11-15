@@ -45,5 +45,5 @@ if ARGUMENTS.get("mysql","yes")=="yes":
 	
 
 #Making tests
-ccdb_tests_program = env.Program('tests_ccdb', source = test_sources, LIBS=["ccdb"], LIBPATH='#lib')
+ccdb_tests_program = env.Program('test_ccdb_lib', source = test_sources, LIBS=["ccdb"], LIBPATH='#lib')
 ccdb_tests_install = env.Install('#bin', ccdb_tests_program)
