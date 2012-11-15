@@ -1,0 +1,20 @@
+#!/bin/bash
+
+echo "RUNNING TESTS OF PYTHON PART"
+env python $CCDB_HOME/python/tests/run_all_tests.py
+
+    
+    
+    
+    
+    
+        
+
+
+
+
+
+
+
+
+
