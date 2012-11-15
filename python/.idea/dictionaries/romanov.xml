@@ -3,11 +3,16 @@
     <words>
       <w>eventrange</w>
       <w>exitsts</w>
+      <w>kozyabra</w>
       <w>mktbl</w>
       <w>multiline</w>
+      <w>mysqlconnector</w>
       <w>nondefault</w>
       <w>runrange</w>
+      <w>testdir</w>
       <w>typetable</w>
+      <w>uint</w>
+      <w>ulong</w>
       <w>workargs</w>
     </words>
   </dictionary>

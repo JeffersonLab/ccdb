@@ -1,10 +1,9 @@
 
 import unittest
 import os
-import ccdb.path_utils
 from ccdb import get_ccdb_home_path
 
-from ccdb.model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation,User
+from ccdb.model import User, LogRecord
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
 import sqlalchemy.orm.exc
 
@@ -18,6 +17,7 @@ class AlchemyProviderTest(unittest.TestCase):
         self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "mysql", "ccdb.sqlite")
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
         self.provider = AlchemyProvider()
+        self.provider.logging_enabled = False
 
     def test_connection(self):
         self.provider.connect(self.sqlite_connection_str)
@@ -25,16 +25,14 @@ class AlchemyProviderTest(unittest.TestCase):
 
     def test_directories(self):
         self.provider.connect(self.sqlite_connection_str)
-        print "==> start SQLite directories tests"
         self.universal_test_directories()
 
         self.provider.connect(self.mysql_connection_str)
-        print "==> start MySQL directories tests"
         self.universal_test_directories()
 
     def universal_test_directories(self):
         """
-        test of directories work dependless of database
+        test of directories work independently of database
         """
         #simple get directory
         dir = self.provider.get_directory("/test")
@@ -48,11 +46,9 @@ class AlchemyProviderTest(unittest.TestCase):
 
         dirs = self.provider.search_directories("*", "/test")
         assert (len(dirs)>=2)
-        print dirs
 
         dirs = self.provider.search_directories("*", "")
         assert (len(dirs)>=2)
-        print dirs
 
         #cleanup directories
         #Ok, lets check if directory for the next text exists...
@@ -71,10 +67,21 @@ class AlchemyProviderTest(unittest.TestCase):
         dir = self.provider.create_directory("testdir", "/test")
         self.assertIsNotNone(dir)
 
+        self.provider.logging_enabled = True #enable logging to test log too
+
         #create subdirectory
-        constants_subdir = self.provider.create_directory("constants","/test/testdir","My constants")
+        constants_subdir = self.provider.create_directory("constants", "/test/testdir", "My constants")
         self.assertIsNotNone(constants_subdir)
         self.assertEqual(constants_subdir.comment, "My constants")
+
+        #check log
+        log = self.provider.get_log_records(limit=1)[0]
+        assert (isinstance(log, LogRecord))
+        self.assertEqual(log.action, "create")
+        self.assertEqual(log.affected_ids, "|directories"+str(constants_subdir.id)+"|")
+        self.assertEqual(log.comment, "My constants")
+        self.assertIn("Created directory", log.description)
+        self.provider.logging_enabled = False
 
         #cannot recreate subdirectory
         self.assertRaises(ValueError, self.provider.create_directory, "constants","/test/testdir","My constants")
@@ -85,41 +92,38 @@ class AlchemyProviderTest(unittest.TestCase):
         #test delete
         self.provider.delete_directory("/test/testdir/constants")
 
-        #test can't delete dir with subdirs
+        #test can't delete dir with sub dirs
         self.assertRaises(ValueError, self.provider.delete_directory, "/test/testdir")
 
         #test delete by object
         self.provider.delete_directory(variables_subdir)
 
-        #now, when dir doesn't have subdirs and subtables, it can be deleted
+        #now, when dir doesn't have sub dirs and sub tables, it can be deleted
         self.provider.delete_directory("/test/testdir")
 
     def test_type_tables(self):
         self.provider.connect(self.sqlite_connection_str)
-        print "==> start SQLite type tables tests"
         self.universal_type_tables()
 
         self.provider.connect(self.mysql_connection_str)
-        print "==> start MySQL type tables tests"
         self.universal_type_tables()
 
     #noinspection PyBroadException
     def universal_type_tables(self):
         pass
         table = self.provider.get_type_table("/test/test_vars/test_table")
-        assert table!=None;
+        assert table is not None
         self.assertEqual(len(table.columns), 3)
         assert table.name == "test_table"
         assert table.path == "/test/test_vars/test_table"
         assert table.parent_dir
         assert table.parent_dir.name == "test_vars"
         assert table.columns[0].name == "x"
-        print table
+
 
         #get all tables in directory
         tables = self.provider.get_type_tables("/test/test_vars")
         assert len(tables)>=2       #at least 2 tables are located in "/test/test_vars"
-        print "  {0} tables in '/test/test_vars' ".format(len(tables))
 
         #count tables in a directory
         assert self.provider.count_type_tables("/test/test_vars") >= 2
@@ -141,7 +145,7 @@ class AlchemyProviderTest(unittest.TestCase):
         #CREATE AND DELETE
 
         try:
-            #if such type table already extsts.. probably from last failed test...
+            #if such type table already exists.. probably from last failed test...
             #we haven't test it yet, but we should try to delete it
             table = self.provider.get_type_table("/test/test_vars/new_table")
             self.provider.delete_type_table(table)
@@ -173,11 +177,9 @@ class AlchemyProviderTest(unittest.TestCase):
 
     def test_run_ranges(self):
         self.provider.connect(self.sqlite_connection_str)
-        print "==> start SQLite run ranges tests"
         self.universal_run_ranges_tests()
 
         self.provider.connect(self.mysql_connection_str)
-        print "==> start MySQL run ranges tests"
         self.universal_run_ranges_tests()
 
     def universal_run_ranges_tests(self):
@@ -201,9 +203,10 @@ class AlchemyProviderTest(unittest.TestCase):
 
             #oh... such run range exists? It shouldn't be... Maybe it is left because of the last tests...
             print "WARNING provider.get_run_range(0, 2001) found run range (should not be there)"
-            print "trying to delete rrange and run the test one more time... "
+            print "trying to delete run range and run the test one more time... "
             self.provider.delete_run_range(rr) #(!) <-- test of this function is further
             rr = self.provider.get_run_range(0, 2001)
+            self.assertIsNotNone(rr)
 
         except sqlalchemy.orm.exc.NoResultFound:
             pass; #test passed
@@ -227,11 +230,9 @@ class AlchemyProviderTest(unittest.TestCase):
 
     def test_variations(self):
         self.provider.connect(self.sqlite_connection_str)
-        print "==> start SQLite variations tests"
         self.universal_variations_tests()
 
         self.provider.connect(self.mysql_connection_str)
-        print "==> start MySQL variations tests"
         self.universal_variations_tests()
 
     def universal_variations_tests(self):
@@ -243,7 +244,6 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertIsNotNone(v)
 
         #Get variations by type table
-        v = self.provider.get_run_range(0, 2000)
         table = self.provider.get_type_table("/test/test_vars/test_table")
         vs = self.provider.search_variations(table)
         self.assertIsNotNone(vs)
@@ -254,7 +254,7 @@ class AlchemyProviderTest(unittest.TestCase):
         var_names = [var.name for var in vs]
         self.assertIn("default", var_names)
 
-        # NON EXISTENT RUN RANGE
+        # NON EXISTENT VARIATION
         #----------------------------------------------------
         #Get run range that is not defined
         try:
@@ -265,6 +265,7 @@ class AlchemyProviderTest(unittest.TestCase):
             print "trying to delete variation and run the test one more time... "
             self.provider.delete_variation(v) #(!) <-- test of this function is further
             v = self.provider.get_variation("abra_kozyabra")
+            self.assertIsNotNone(v)
 
         except sqlalchemy.orm.exc.NoResultFound:
             pass; #test passed
@@ -288,11 +289,9 @@ class AlchemyProviderTest(unittest.TestCase):
 
     def test_assignments(self):
         self.provider.connect(self.sqlite_connection_str)
-        print "==> start SQLite assignments tests"
         self.universal_assignments_tests()
 
         self.provider.connect(self.mysql_connection_str)
-        print "==> start MySQL assignments tests"
         self.universal_assignments_tests()
 
 
@@ -312,12 +311,11 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEquals(tabledData[1][1], "2.6")
         self.assertEquals(tabledData[1][2], "2.7")
 
-        #Ok! Lets get all assigments for current types table
+        #Ok! Lets get all assignments for current types table
         assignments = self.provider.get_assignments("/test/test_vars/test_table")
         self.assertNotEquals(len(assignments), 0)
 
         assignment = self.provider.create_assignment([[0,1,2],[3,4,5]],"/test/test_vars/test_table", 0, 1000, "default","Test assignment")
-        assignment.print_deps()
         self.assertEqual(assignment.constant_set.type_table.path,  "/test/test_vars/test_table")
         self.assertEqual(assignment.variation.name,  "default")
         self.assertEqual(assignment.run_range.min, 0)
@@ -338,11 +336,9 @@ class AlchemyProviderTest(unittest.TestCase):
 
     def test_users(self):
         self.provider.connect(self.sqlite_connection_str)
-        print "==> start SQLite users tests"
         self.universal_users_tests()
 
         self.provider.connect(self.mysql_connection_str)
-        print "==> start MySQL users tests"
         self.universal_users_tests()
 
 

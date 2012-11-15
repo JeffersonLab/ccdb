@@ -3,9 +3,7 @@ Documentation for this module.
 
 More details.
 """
-import collections
 
-import os
 import re
 import logging
 import path_utils
@@ -43,6 +41,7 @@ class AlchemyProvider(object):
         self._connection_string = ""
         self._auth = authentication.Authentication(self)
         self._auth.current_user_name = "anonymous"
+        self.logging_enabled = True
 
 
 #----------------------------------------------------------------------------------------
@@ -57,7 +56,7 @@ class AlchemyProvider(object):
         """
         Connects to database using connection string
 
-        onnection string might be in form:
+        connection string might be in form:
         mysql://<username>:<password>@<mysql.address>:<port> <database>
         sqlite:///path/to/file.sqlite
 
@@ -272,7 +271,7 @@ class AlchemyProvider(object):
     ## @brief Updates directory
     #
     # @warning in current realization, if operation succeeded
-    # the directories structure will be rebuilded. This mean that
+    # the directories structure will be rebuilt. This mean that
     # (!) all previous pointers to DDirectory objects except Root Directory
     # will become deleted => unusable
     #
@@ -280,15 +279,21 @@ class AlchemyProvider(object):
     # @return bool True if success
     #/
     def update_directory(self, directory):
-        "Updates directory"
+        """Updates directory"""
         if not self._are_dirs_loaded: self._load_dirs()
         self.session.commit()
+
+        #Log
+        self.create_log_record(user = self.get_current_user(),
+            affected_ids=[directory.__tablename__+directory(directory.id)],
+            action="update",
+            description="Updated directory '{0}'".format(directory.path),
+            comment = directory.comment)
 
         #refresh directory structure
         self._load_dirs()
 
-        #Get user
-        user = self.get_current_user()
+
 
 
     #------------------------------------------------
@@ -323,8 +328,12 @@ class AlchemyProvider(object):
         #refresh directory structure
         self._load_dirs()
 
-        #Get user
-        user = self.get_current_user()
+        #Log
+        self.create_log_record(user = self.get_current_user(),
+            affected_ids=[directory.__tablename__+str(directory.id)],
+            action="delete",
+            description="Deleted directory '{0}'".format(directory.path),
+            comment = directory.comment)
 
 
     #------------------------------------------------
@@ -522,7 +531,7 @@ class AlchemyProvider(object):
     #
     # The map "columns" should contains <"name", "type"> string pairs where:
     #  -- "name" is the name of the column.
-    #      Should have the same naming convetions
+    #      Should have the same naming conventions
     #      as names of directories and type tables  @see ValidateName()
     #  -- "type" is the type of the column
     #     might be: int, uint, long, ulong, double, bool, string
@@ -540,7 +549,7 @@ class AlchemyProvider(object):
     #------------------------------------------------
     #------------------------------------------------
     def create_type_table(self, name, dir_obj_or_path, rowsNumber, columns, comment =""):
-        "Creates constant table in database"
+        """Creates constant table in database"""
         #return self._provider.CreateConstantsTypeTable(name, parentPath, rowsNumber, columns, comments)
 
         assert len(columns) >0
@@ -583,19 +592,23 @@ class AlchemyProvider(object):
             affected_ids=[table.__tablename__+str(table.id)],
             action="create",
             description="Created table with path '{0}'".format(table.path),
-            comment = table.comment);
+            comment = table.comment)
 
         return table
 
 
     #------------------------------------------------
-    # Uptades constant table in database
+    # Updates constant table in database
     #------------------------------------------------
     def update_type_table(self, type_table):
         self.session.commit()
 
-        #Get user
-        user = self.get_current_user()
+        #Log
+        self.create_log_record(user = self.get_current_user(),
+            affected_ids=[type_table.__tablename__+str(type_table.id)],
+            action="update",
+            description="Updated table with path '{0}'".format(type_table.path),
+            comment = type_table.comment)
 
 
     #------------------------------------------------
@@ -624,8 +637,12 @@ class AlchemyProvider(object):
         self.session.delete(type_table)
         self.session.commit()
 
-        #Get user
-        user = self.get_current_user()
+        #Log
+        self.create_log_record(user = self.get_current_user(),
+            affected_ids=[type_table.__tablename__+str(type_table.id)],
+            action="delete",
+            description="Deleted table with path '{0}'".format(type_table.path),
+            comment = type_table.comment)
 
 
 #----------------------------------------------------------------------------------------
@@ -694,11 +711,9 @@ class AlchemyProvider(object):
     #------------------------------------------------
     # Updates run range
     #------------------------------------------------
-    def update_run_range(self, run_range):
+    def update_run_range(self):
         """
         Updates run range
-
-        :param run_range: RunRange to update
         """
 
         self.session.commit()
@@ -834,7 +849,7 @@ class AlchemyProvider(object):
             affected_ids=[variation.__tablename__+str(variation.id)],
             action="create",
             description="Created variation '{0}'".format(variation.name),
-            comment = variation.comment);
+            comment = variation.comment)
 
 
         return variation
@@ -853,8 +868,12 @@ class AlchemyProvider(object):
     #------------------------------------------------
     def update_variation(self, variation):
         self.session.commit()
-        #Get user
-        user = self.get_current_user()
+        #Log
+        self.create_log_record(user = self.get_current_user(),
+            affected_ids=[variation.__tablename__+variation(variation.id)],
+            action="update",
+            description="Updated variation '{0}'".format(variation.name),
+            comment = variation.comment)
 
 
     ## @brief Delete variation
@@ -878,8 +897,12 @@ class AlchemyProvider(object):
 
         self.session.delete(variation)
         self.session.commit()
-        #Get user
-        user = self.get_current_user()
+        #Log
+        self.create_log_record(user = self.get_current_user(),
+            affected_ids=[variation.__tablename__+str(variation.id)],
+            action="delete",
+            description="Deleted variation '{0}'".format(variation.name),
+            comment = variation.comment)
 
 #----------------------------------------------------------------------------------------
 #	A S S I G N M E N T S
@@ -967,7 +990,7 @@ class AlchemyProvider(object):
         .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation)\
         .filter(TypeTable.id==table.id)
 
-        #filter varitation
+        #filter variation
         if isinstance(variation, str):
             if variation!="":
                 query = query.filter(Variation.name == variation)
@@ -996,7 +1019,7 @@ class AlchemyProvider(object):
     #------------------------------------------------
     # Creates Assignment using related object
     #------------------------------------------------
-    def copy_assignment(self, asssignment):
+    def copy_assignment(self, assignment):
         raise NotImplementedError("copy_assignment is not implemented")
 
 
@@ -1013,7 +1036,7 @@ class AlchemyProvider(object):
         -- If data is inconsistent with columns number and rows number
         -- If no variation with such name found
 
-        :param data: tabled data or textfiledom
+        :param data: tabled data or TextFileDom
         :param path: table path
         :param min_run:
         :param max_run:
@@ -1076,7 +1099,7 @@ class AlchemyProvider(object):
             affected_ids=[assignment.__tablename__+str(assignment.id)],
             action="create",
             description="Created assignment '{0}'".format(assignment.request),
-            comment = assignment.comment);
+            comment = assignment.comment)
         return assignment
 
 
@@ -1085,24 +1108,32 @@ class AlchemyProvider(object):
     #------------------------------------------------
     def update_assignment(self, assignment):
         self.session.commit()
-        #Get user
-        user = self.get_current_user()
+        #Log
+        self.create_log_record(user = self.get_current_user(),
+            affected_ids=[assignment.__tablename__+assignment(assignment.id)],
+            action="update",
+            description="Updated assignment '{0}'".format(assignment.request),
+            comment = assignment.comment)
 
 
     #------------------------------------------------
     # Deletes assignment
     #------------------------------------------------
-    def delete_assignment(self, assignment_obj):
+    def delete_assignment(self, assignment):
         """
          Deletes assignment
 
-        :param assignment_obj: assignment object to delete. Must have valid ID
+        :param assignment: assignment object to delete. Must have valid ID
         """
-        self.session.delete(assignment_obj)
+        self.session.delete(assignment)
         self.session.commit()
 
-        #Get user
-        user = self.get_current_user()
+        #Log
+        self.create_log_record(user = self.get_current_user(),
+            affected_ids=[assignment.__tablename__ + str(assignment.id)],
+            action="delete",
+            description="Deleted assignment '{0}'".format(assignment.request),
+            comment = assignment.comment)
 
 
     #------------------------------------------------
@@ -1112,16 +1143,7 @@ class AlchemyProvider(object):
         """
          @brief Fill assignment with data if it has proper ID
 
-         The function actually gets assignment by ID.
-
-         A problem: is that for DB providers the id is assignment->GetId().
-                    For file provider the id is probably a type table full path
-         A solution:
-            is to have this function that accepts DAssignment* assignment.
-            DAssignment* assignment incapsulates the id (one way or another)
-            And each provider could check if this DAssignment have valid Id,
-            fill assignment with data and return true.
-            Or just return "false" if something goes wrong;
+         The function actually gets assignment by ID
         :param assignment:
         :return:
         """
@@ -1191,11 +1213,15 @@ class AlchemyProvider(object):
     def log_user_name(self):
         return self._user_name
 
+
     @log_user_name.setter
     def log_user_name(self, user_name):
         self._user_name = user_name
 
+
     def create_log_record(self, user, affected_ids, action, description, comment):
+        if not self.logging_enabled: return None
+
         assert isinstance(user, User)
         assert isinstance(affected_ids, list)
 
@@ -1211,16 +1237,27 @@ class AlchemyProvider(object):
         return record
 
     def get_log_records(self, limit=20, offset=0):
+        """
+        Get log records sorted from now to the past
+
+        :param limit:
+        :type limit: int
+
+        :param offset:
+        :type offset: int
+
+        :return:List of log records
+        :rtype: []
+        """
 
         if limit<0: limit = 0
 
         #initial query
-        query = self.session.query(LogRecord)
+        query = self.session.query(LogRecord).order_by(desc(LogRecord.id))
 
         #add limits to query
         if limit !=0: query = query.limit(limit)
         if offset!=0: query = query.offset(offset)
-        query.order_by(desc(Assignment.id))
 
         #execute and return
         return query.all()

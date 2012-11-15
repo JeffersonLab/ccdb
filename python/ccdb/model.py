@@ -62,7 +62,7 @@ class TypeTable(Base):
     __tablename__ = 'typeTables'
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
-    comment = Column("comments", Text)
+    comment = Column(Text)
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
     parent_dir_id = Column('directoryId',Integer, ForeignKey('directories.id'))

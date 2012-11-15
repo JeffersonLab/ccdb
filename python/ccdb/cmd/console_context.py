@@ -339,6 +339,7 @@ class ConsoleContext(object):
                 colorama.deinit()
                 sys.stdout = redir_file
                 self.theme = themes.NoColorTheme()
+
             result = util.process(args)
 
         except Exception as ex:
@@ -543,7 +544,7 @@ class ConsoleContext(object):
     def parse_run_range(self, run_range_str):
         """ @brief parse run range string in form of <run_min>-<run-max>
 
-            if one inputs '<run_min>-' this means <run_min>-<infinit run>
+            if one inputs '<run_min>-' this means <run_min>-<infinite run>
             if one inputs '-<run_max>' this means <0>-<run_max> 
 
             @return (run_min, run_max, run_min_set, run_max_set)
