@@ -142,62 +142,6 @@ public:
 	 */
 	virtual vector<Directory *> SearchDirectories(const string& searchPattern, const string& parentPath="", int take=0, int startWith=0);
 
-	/** @brief Creates directory using parent parentDirFullPath
-	 * 
-	 * @warning in current realization, if operation succeeded 
-	 * the directories structure will be rebuilded. This mean that 
-	 * (!) all previous pointers to DDirectories except Root Directory
-	 * will become deleted => unusable
-	 * 
-	 * @param newDirName Name of the directory. Contains A-Z, a-z,0-9, _, -, 
-	 * @param parentDirFullPath Path of the parent directory. 
-	 * @param comment comment on this dir. Might be NULL
-	 * @return 
-	 */
-	virtual bool MakeDirectory(const string& newDirName, const string& parentDirFullPath, const string& comment = "");
-	
-	/** @brief Updates directory
-	 *
-	 * @warning in current realization, if operation succeeded 
-	 * the directories structure will be rebuilded. This mean that 
-	 * (!) all previous pointers to DDirectory objects except Root Directory
-	 * will become deleted => unusable
-	 * 
-	 * @param  dir		Directory to update
-	 * @return   bool
-	 */
-	virtual bool UpdateDirectory(Directory *dir);
-
-	/**
-	 * @brief Deletes directory using parent path
-	 *
-	 *	"/" - root directory can't be deleted
-	 *
-	 * @warning in current realization, if operation succeeded 
-	 * the directories structure will be rebuilded. This mean that 
-	 * (!) all previous pointers to DDirectories except Root Directory
-	 * will become deleted => unusable
-	 * 
-	 * @param  [in] path Path of the directory. 
-	 * @return true if no errors 
-	 */
-	virtual bool DeleteDirectory(const string& fullPath);
-
-	/**
-	 * @brief Deletes directory using directory object
-	 *
-	 *	"/" cant be deleted
-	 *
-	 * @warning in current realization, if operation succeeded 
-	 * the directories structure will be rebuilded. This mean that 
-	 * (!) all previous pointers to DDirectories except Root Directory
-	 * will become deleted => unusable
-	 *
-	 * @param  [in] dir	Directory to Delete
-	 * @return true if no errors 
-	 */
-	virtual bool DeleteDirectory(Directory *dir);
-		
 	/** @brief Load directories
 	 *
 	 * Explicitly forces to load directories from DB and build directory structure
@@ -324,87 +268,6 @@ public:
 	 * @return number of tables to return
 	 */
 	virtual int CountConstantsTypeTables(Directory *dir);
-	
-	/** @brief Creates constant table in database
-	 *
-	 * @param   table
-	 * @return bool
-	 */
-	virtual bool CreateConstantsTypeTable(ConstantsTypeTable *table);
-
-	/** @brief Creates constant table in database
-	 * 	
-	 * Creates  constants type table in database and returns reference to
-	 * created table if operation is succeeded (NULL otherwise)
-	 * 
-	 * The map "columns" should contains <"name", "type"> string pairs where:
-	 *  -- "name" is the name of the column.
-	 *      Should have the same naming convetions
-	 *      as names of directories and type tables  @see ValidateName() 
-	 *  -- "type" is the type of the column 
-	 *     might be: int, uint, long, ulong, double, bool, string 
-	 *     other values will lead to "double" type to be used.
-	 *     @see ccdb::ConstantsTypeColumn::StringToType
-	 *     Thus <"px", "">, <"py", ""> will create two double typed columns
-	 * 
-	 * @param [in] name			name of the new constants type table 
-	 * @param [in] parentPath   parent directory path
-	 * @param [in] rowsNumber  Number of rows
-	 * @param [in] columns     a map fo "name", "type" pairs
-	 * @param [in] comments		description for this type table
-	 * @return NULL if failed, pointer to created object otherwise
-	 */
-	virtual ConstantsTypeTable* CreateConstantsTypeTable(const string& name, const string& parentPath, int rowsNumber, map<string, string> columns, const string& comments ="");
-	
-	/** @brief Creates constant table in database
-	 * 	
-	 * Creates  constants type table in database and returns reference to
-	 * created table if operation is succeeded (NULL otherwise)
-	 * 
-	 * The map "columns" should contains <"name", "type"> string pairs where:
-	 *  -- "name" is the name of the column.
-	 *      Should have the same naming convetions
-	 *      as names of directories and type tables  @see ValidateName() 
-	 *  -- "type" is the type of the column 
-	 *     might be: int, uint, long, ulong, double, bool, string 
-	 *     other values will lead to "double" type to be used.
-	 *     @see ccdb::ConstantsTypeColumn::StringToType
-	 *     Thus <"px", "">, <"py", ""> will create two double typed columns
-	 * 
-	 * @param [in] name	       name of the new constants type table 
-	 * @param [in] parentDir   parent directory
-	 * @param [in] rowsNumber  Number of rows
-	 * @param [in] columns     a map for "name"-"type" pairs
-	 * @param [in] comments    description for this type table
-	 * @return NULL if failed, pointer to created object otherwise
-	 */
-	virtual ConstantsTypeTable* CreateConstantsTypeTable(const string& name, Directory *parentDir, int rowsNumber, map<string, string> columns, const string& comments ="");
-
-	/** @brief Uptades constant table in database
-	 *
-	 * Thes function updates only:
-	 * - name
-	 * - parent directory
-	 * - commens
-	 * The function doesnt change any columns and rows number
-	 * It assumed, that a user should delete the TypeTable and recreate it 
-	 * to perform such changes because it will break all data already stored
-	 * @param   [in] table with updated info
-	 * @return bool
-	 */
-	virtual bool UpdateConstantsTypeTable(ConstantsTypeTable *table);
-
-
-	/** @brief Deletes constant type table
-	 * 
-	 * Deletes constant type table. 
-	 * The type table will not be deleted if any assignment for this table exists
-	 * Used should delete assignments first and only than delete the type table.
-	 * 
-	 * @param   table table info
-	 * @return bool true if success
-	 */
-	virtual bool DeleteConstantsTypeTable(ConstantsTypeTable *table);
 
 	/** @brief Loads columns for "table" type table
 	 *
@@ -413,32 +276,11 @@ public:
 	 */
 	virtual bool LoadColumns(ConstantsTypeTable* table);
 
-	/** @brief Creates columns for the table
-	 *
-	 * @param parentDir
-	 * @return vector of constants
-	 */
-	virtual bool CreateColumn(ConstantsTypeColumn* column);
-
-	/** @brief Loads columns for the table
-	 *
-	 * @param parentDir
-	 * @return vector of constants
-	 */
-	virtual bool CreateColumns(ConstantsTypeTable* table);
 	
 
 	//----------------------------------------------------------------------------------------
 	//	R U N   R A N G E S
 	//----------------------------------------------------------------------------------------
-
-	/** @brief Creates RunRange in db
-	 *
-	 * TODO remove method
-	 * @param     DRunRange * run
-	 * @return   bool
-	 */
-	virtual bool CreateRunRange(RunRange *run);
 
 	/** @brief GetRun Range from db
 	 *
@@ -457,15 +299,6 @@ public:
 	 * @return   DRunRange* return NULL if not found or failed
 	 */
 	virtual RunRange* GetRunRange(const string& name);
-
-	/** @brief Gets run range from DB Or Creates RunRange in DB
-	 *
-	 * @param min run ranges limits
-	 * @param max run ranges limits
-	 * @param name name of the run range
-	 * @return   DRunRange* return NULL if failed
-	 */
-	virtual RunRange* GetOrCreateRunRange(int min, int max, const string& name="", const string& comment="");
 	
 	/**
 	 * @brief Searches all run ranges associated with this type table
@@ -479,23 +312,7 @@ public:
 	 */
 	virtual bool GetRunRanges(vector<RunRange *>& resultRunRanges, ConstantsTypeTable *table, const string& variation="", int take=0, int startWith=0 );
 	
-	/** @brief Updates run range
-	 * 
-	 * Function updates:
-	 * - start run number
-	 * - end run number
-	 * - comment
-	 * does not update run range name and id
-	 * @param [in] run runrange model with proper id and updated data
-	 * @return bool if no errors and data is changed
-	 */
-	virtual bool UpdateRunRange(RunRange* run);
 	
-	/** @brief Deletes run range
-	 * @param [in] run model object to delete
-	 * @return true if no errors and run range deleted
-	 */
-	virtual bool DeleteRunRange(RunRange* run);
 	
 	//----------------------------------------------------------------------------------------
 	//	V A R I A T I O N
@@ -530,32 +347,7 @@ public:
 	virtual vector<Variation *> GetVariations(ConstantsTypeTable *table, int run=0, int take=0, int startWith=0 );
 
 
-	/** @brief Create variation
-	 *
-	 * @param     DVariation * variation
-	 * @return   bool
-	 */
-	virtual bool CreateVariation(Variation *variation);
-
-	/** @brief Update variation
-	 *
-	 * Function updates:
-	 * variation comments
-	 * variation name if there is no variations with this name
-	 * 
-	 * @param   [in]  variation to update
-	 * @return true if success  
-	 */
-	virtual bool UpdateVariation(Variation *variation);
-
-	/** @brief Delete variation
-	 *
-	 * Variation will be deleted only 
-	 * if there is no assignments for this variation
-	 * @param    [in] variation to delete
-	 * @return   bool
-	 */
-	virtual bool DeleteVariation(Variation *variation);
+	
 	
 	private:
 	/** @brief Gets mysql record Id for specified variation name
@@ -596,17 +388,7 @@ public:
      * @return new DAssignment object or 
      */
     virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns=true);
-    
-     /** @brief Get specified version of Assignment with data blob only
-     *
-     * @remarks this function is named so
-     * @param [in] run - run number
-     * @param [in] path - object path
-     * @param [in] version - version is number of constants beginning with first added constant set. So 1 is the first added constants
-     * @param [in] variation - variation name
-     * @return new DAssignment object or 
-     */
-    virtual Assignment* GetAssignmentShortByVersion(int run, const string& path, int version, const string& variation="default");
+     
     
 	/** @brief Get last Assignment with all related objects
 	 *
@@ -627,46 +409,7 @@ public:
 	 */
 	virtual Assignment* GetAssignmentFull(int run, const string& path, int version, const string& variation="default");
 		
-	/** @brief Creates Assignment using related object
-	 * 
-	 * @warning since composing a "NEW" DAssignment is complex operation 
-	 *          it is suggested to use other reloads of this function for users 
-	 *          for creating "new" assignments. 
-	 *          This function is not set as "protected" only to provide easy "copy" operations
-	 *	 
-	 * This function assumes that all needed data is already contained in assignment
-	 * object. Including correct type table and data blob. 
-	 *
-	 * The function is powerful to copy assignment. For example from one variation to another.
-	 *
-	 * The function changes DAssignment object by setting Id and DataVaultId by new values
-	 *
-	 * @param    DAssignment * assignment
-	 * @return   DAssignment* adjusted with Id-s of objects and etc
-	 */
-	virtual bool CreateAssignment(Assignment *assignment);
-
-	/** @brief Creates Assignment using related object
-	 *
-	 * Creates Assignment using related object.
-	 * 
-	 * Validation:
-	 * If no such run range found, the new will be created (with no name)
-	 * No action will be done (and NULL will be returned):
-	 * -- If no type table with such path exists
-	 * -- If data is inconsistent with columns number and rows number
-	 * -- If no variation with such name found
-	 * 
-	 * @brief 
-	 * @param data  		by rows and columns
-	 * @param runMin		run range minimum
-	 * @param runMax     run range maximum
-	 * @param variationName	name of variation
-	 * @param comments   comments
-	 * @return NULL if failed, DAssignment reference if success
-	 */
-	virtual Assignment* CreateAssignment(const std::vector<std::vector<std::string> >& data, const std::string& path, int runMin, int runMax, const std::string& variationName, const std::string& comments);
-
+	
 	/**
 	 * @brief Complex and universal function to retrieve assignments
 	 * 
@@ -813,19 +556,7 @@ public:
 	 */
 	virtual vector<Assignment *> GetAssignments(const string& path, const string& runName, const string& variation="", time_t date=0, int take=0, int startWith=0);
 
-	/**
-	 * @brief the function updates assignment comments
-	 * @param assignment
-	 * @return 
-	 */
-	virtual bool UpdateAssignment(Assignment* assignment);
 	
-	/**
-	 * @brief Deletes assignment
-	 * @param assignment object to delete. Must have valid ID 
-	 * @return true if success
-	 */
-	virtual bool DeleteAssignment(Assignment* assignment);
 	
 	/**
 	 * @brief Fill assignment with data if it has proper ID
@@ -877,11 +608,7 @@ protected:
 	dbkey_t GetUserId(string userName);
 
 	virtual bool QueryPrepare(const char* query, const char *functionName); ///Prepare sqlite statement
-	virtual bool QuerySelect();	///Do "select" queries 	
-	virtual bool QueryInsert();	///Do "insert" queries 
-	virtual bool QueryUpdate();	///Do "Update" queries 
-	virtual bool QueryDelete();	///Do "Delete" queries 
-	virtual bool QueryCustom();	///Do any custom queries queries 
+	
 	
 	virtual void FreeSQLiteResult();	///Frees my sql result manually
 	

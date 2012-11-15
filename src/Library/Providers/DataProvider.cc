@@ -209,50 +209,6 @@ bool DataProvider::UpdateDirectoriesIfNeeded()
 }
 
 
-//______________________________________________________________________________
-bool DataProvider::DeleteDirectory( const string& fullPath )
-{
-    /**
-     * @brief Deletes directory using parent path
-     *
-     *  Root directory ("/") can't be deleted
-     *
-     * @warning if operation is succeeded the directories structure will be rebuilded. 
-     * This mean that (!) all previous pointers to Directory objects except Root Directory
-     * will become deleted => unusable
-     * 
-     * @param  [in] path Path of the directory. 
-     * @return true if no errors 
-     */
-
-    ClearErrors(); //Clear error in function that can produce new ones
-
-    Directory *dir = GetDirectory(fullPath);
-    if(!dir)
-    {
-        Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"DataProvider::DeleteDirectory", "Directory not found with this path");
-        return false;
-    }
-    return DeleteDirectory(dir);
-}
-
-
-//______________________________________________________________________________
-bool DataProvider::RecursiveDeleteDirectory( Directory *dir )
-{
-    //  NEVER USE IT UNLESS YOU KNOW
-    //  Deletes directory and all tables and subdirectories in it
-    // 
-    //  @remarks This function is here to use ccdb as a general data storage only 
-    //  this function is against the phylosofy "No delete. Any change by adding New"
-    // 
-    // 
-
-    std::cerr<<"RecursiveDeleteDirectory( DDirectory *dir ) is not implemented"<<endl;
-    return false;
-}
-
-
 
 //______________________________________________________________________________
 vector<Directory *> DataProvider::SearchDirectories( const string& searchPattern, const string& parentPath/*=""*/, int startWith/*=0*/, int select/*=0*/ )
@@ -292,20 +248,6 @@ vector<Directory *> DataProvider::SearchDirectories( const string& searchPattern
 //----------------------------------------------------------------------------------------
 
 #pragma region Type tables
-//______________________________________________________________________________
-bool DataProvider::RecursiveDeleteTypeTable( ConstantsTypeTable *dir )
-{
-    //
-    /** NEVER USE IT UNLESS YOU KNOW
-     *  Deletes type table and all assignments in it
-     *
-     *  @remarks This function is here to use ccdb as a general data storage only 
-     *  this function is against the philosofy "No delete. Any change by adding New"
-     *
-     */
-    std::cerr<<"RecursiveDeleteTypeTable( ConstantsTypeTable *dir ) is not implemented"<<endl;
-    return false;
-}
 
 //______________________________________________________________________________
 ConstantsTypeTable * DataProvider::GetConstantsTypeTable(const string& path, bool loadColumns/*=false*/ )
@@ -347,20 +289,6 @@ bool DataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, const string
 	return GetRunRanges(resultRunRanges, table, variation, take, startWith);
 }
 
-//______________________________________________________________________________
-bool DataProvider::RecursiveDeleteRunRange( RunRange *dir )
-{
-    /** NEVER USE IT UNLESS YOU KNOW
-     *  Deletes run range and all assignments in it
-     *
-     *  @remarks This function is here to use ccdb as a general data storage only 
-     *  this function is against the philosophy "No delete. Any change by adding New"
-     *
-     */
-    std::cerr<<"RecursiveDeleteRunRange( DRunRange *dir ) is not implemented"<<endl;
-    return false;
-
-}
 
 //----------------------------------------------------------------------------------------
 //	V A R I A T I O N
@@ -375,20 +303,7 @@ bool DataProvider::GetVariations(vector<Variation*>& resultVariations, const str
 }
 
 
-//______________________________________________________________________________
-bool DataProvider::RecursiveDeleteVariation( Variation *dir )
-{
-    /** NEVER USE IT UNLESS YOU KNOW
-     *  Deletes variation and all assignments that belongs to it 
-     *
-     *  @remarks This function is here to use ccdb as a general data storage only 
-     *  this function is against the philosophy "No delete. Any change by adding New"
-     *
-     */
-    std::cerr<<"RecursiveDeleteVariation( DVariation *dir ) is not implemented"<<endl;
-    return false;
 
-}
 
 //----------------------------------------------------------------------------------------
 //	A S S I G N M E N T S
@@ -441,168 +356,7 @@ Assignment* DataProvider::GetAssignmentFull( int run, const string& path,int ver
 }
 
 //______________________________________________________________________________
-Assignment* DataProvider::CreateAssignment(const vector<vector<string> >& data, const string& path, int runMin, int runMax, const string& variationName, const string& comments)
-{
-	/* Creates Assignment using related object.
-	* Validation:
-	* If no such run range found, the new will be created (with no name)
-	* No action will be done (and NULL will be returned):
-	* 
-	* -- If no type table with such path exists
-	* -- If data is inconsistant with columns number and rows number
-	* -- If no variation with such name found */
 
-	
-	Variation* variation = GetVariation(variationName);
-	if(variation == NULL)
-	{
-		 //TODO error message
-		return NULL;
-	}
-	 
-	ConstantsTypeTable* table=GetConstantsTypeTable(path);
-	if(!table)
-	{
-		//TODO error message
-		return NULL;
-	}
-	 
-	//check that we have right rows number
-	if(data.size()!= table->GetNRows())
-	{
-		 //TODO error message
-		return NULL;
-	}
-
-	//fill data blob vector
-	vector<string> vectorBlob;
-	for (size_t rowIter=0; rowIter<data.size(); rowIter++)
-	{
-		const vector<string> &row = data[rowIter];
-		if(row.size() != table->GetNColumns())
-		{
-			//TODO error handle
-			return NULL;
-		}
-
-		for (int i=0; i<row.size(); i++)
-		{
-			vectorBlob.push_back(row[i]);
-		}
-	}
-	
-	//last one we need is a run range
-	RunRange * runRange = GetOrCreateRunRange(runMin, runMax, "", "");
-	if(runRange == NULL)
-	{
-        //error report is in GetOrCreateRunRange
-		return NULL;
-	}
-
-	Assignment * assignment=new Assignment(this, this);
-	assignment->SetRawData(Assignment::VectorToBlob(vectorBlob));
-	
-	assignment->SetVariation(variation);
-	assignment->BeOwner(variation);
-
-	assignment->SetRunRange(runRange);
-	assignment->BeOwner(runRange);
-
-	assignment->SetTypeTable(table);	//set this table
-	assignment->BeOwner(table);			//new table should be owned by assignment
-
-	if(CreateAssignment(assignment))
-	{
-		return assignment;
-	}
-	else 
-	{
-		delete assignment;
-		return NULL;
-	}
-}
-
-//______________________________________________________________________________
-Assignment* DataProvider::CreateAssignment( const vector<vector<string> > &data, const string& path, const string& runRangeName, const string& variationName, const string& comments )
-{
-	/* Creates Assignment using related object.
-	* Validation:
-	* If no such run range found, the new will be created (with no name)
-	* No action will be done (and NULL will be returned):
-	* 
-	* -- If no type table with such path exists
-	* -- If data is inconsistant with columns number and rows number
-	* -- If no variation with such name found */
-
-	
-	Variation* variation = GetVariation(variationName);
-	if(variation == NULL)
-	{
-		 //TODO error message
-		return NULL;
-	}
-	 
-	ConstantsTypeTable* table=GetConstantsTypeTable(path);
-	if(!table)
-	{
-		//TODO error message
-		return NULL;
-	}
-	 
-	//check that we have right rows number
-	if(data.size()!= table->GetNRows())
-	{
-		 //TODO error message
-		return NULL;
-	}
-
-	//fill data blob vector
-	vector<string> vectorBlob;
-	for (int rowIter=0; rowIter<data.size(); rowIter++)
-	{
-		const vector<string> &row = data[rowIter];
-		if(row.size() != table->GetNColumns())
-		{
-			//TODO error handle
-			return NULL;
-		}
-
-		for (int i=0; i<row.size(); i++)
-		{
-			vectorBlob.push_back(row[i]);
-		}
-	}
-	
-	//last one we need is a run range
-	RunRange * runRange = GetRunRange(runRangeName);
-	if(runRange == NULL)
-	{
-		//TODO report cannot creat runrange
-		return NULL;
-	}
-
-	Assignment * assignment=new Assignment(this, this);
-	assignment->SetRawData(Assignment::VectorToBlob(vectorBlob));
-	
-	assignment->SetVariation(variation);
-	assignment->BeOwner(variation);
-
-	assignment->SetRunRange(runRange);
-	assignment->BeOwner(runRange);
-
-	assignment->SetTypeTable(table);	//set this table
-	assignment->BeOwner(table);			//new table should be owned by assignment
-
-	if(CreateAssignment(assignment))
-	{
-		return assignment;
-	}
-	else 
-	{
-		delete assignment;
-		return NULL;
-	}
-}
 #pragma endregion Assignments
 
 

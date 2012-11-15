@@ -226,164 +226,11 @@ bool ccdb::MySQLDataProvider::CheckConnection( const string& errorSource/*=""*/ 
 
 #pragma region Directories
 
-bool ccdb::MySQLDataProvider::MakeDirectory( const string& newDirName, const string& parentDirFullPath, const string& comment /*= ""*/ )
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//validate symbols in directory name
-	string name(newDirName);
-
-	if(!ValidateName(name))
-	{
-		Error(CCDB_ERROR_INVALID_OBJECT_NAME,"ccdb::MySQLDataProvider::MakeDirectory", "Object name format is invalid.");
-		return false;
-	}
-
-	//get parent directory
-	Directory * parentDir = GetDirectory(parentDirFullPath);
-	if(parentDir == NULL)
-	{
-		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::MakeDirectory", "Provider is not connected to MySQL.");
-		return false;
-	}
-
-	//maybe such directory already exists?
-	string fullPath = PathUtils::CombinePath(parentDir->GetFullPath() ,name);
-	Directory * dir = GetDirectory(fullPath.c_str());
-	if(dir)
-	{
-		Error(CCDB_ERROR_DIRECTORY_EXISTS,"MySQLDataProvider::MakeDirectory", "Such directory already exists");
-		return false;
-	}
-	
-	//ok... maybe table with such name exist? 
-	ConstantsTypeTable *tmpTable = GetConstantsTypeTable(fullPath);
-	if(tmpTable)
-	{
-		delete tmpTable; 
-		//error? Warning?
-		Error(CCDB_ERROR_TABLE_EXISTS,"MySQLDataProvider::MakeDirectory", "Table with this name already exists");
-		return false;
-	}
-	//building such query
-	string commentInsertion = PrepareCommentForInsert(comment);	//might be NULL or \"<comment>\"
-	string query = StringUtils::Format(						
-		"INSERT INTO `directories` (`modified`, `name`, `parentId`, `comment`) VALUES (NULL, '%s', '%i', %s);", 
-		name.c_str(), 
-		parentDir->GetId(), 
-		commentInsertion.c_str());
-
-	//query DB! 
-	bool result = QueryInsert(query.c_str()); 
-
-	if(result)
-	{
-		//here we save parent name because next, when LoadDirectories will be called link to directory will become junk 
-		string parentName = parentDir->GetName();
-
-		//Here we might create new DDirectory * and add it to parent directory,
-		//It is extremely fast comparing to database requests
-		//but! there some values that might be automatically set by MYSQL
-		//assuming that adding directory is "handmade" and sole operation
-		//we just reload all directories from DB;
-		LoadDirectories();
-
-		//And log such function
-		AdLogRecord("directories;", 
-			StringUtils::Format("directories_%i;", mLastInsertedId), 
-			StringUtils::Format("Directory %s created in %s", name.c_str(), parentName.c_str()),
-			StringUtils::Encode(StringUtils::Format("Related comments: %s", commentInsertion.c_str())));
-	}
-	
-	return result;
-}
 
 
 Directory* ccdb::MySQLDataProvider::GetDirectory( const string& path )
 {
 	return DataProvider::GetDirectory(path);
-}
-
-
-bool ccdb::MySQLDataProvider::UpdateDirectory( Directory *dir )
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//Check id! 
-	if(dir->GetId() <= 0 )
-	{
-		//TODO: report error
-		Error(CCDB_ERROR_DIRECTORY_INVALID_ID,"MySQLDataProvider::UpdateDirectory", "Id <= 0");
-		return false;
-	}
-
-	string query = StringUtils::Format("UPDATE `directories` SET `modified` = NULL, `name` = '%s', `parentId` = %i, `comment` = %s, WHERE `id` = '%i'",
-		/*name */		StringUtils::Encode(dir->GetName()).c_str(),
-		/*partntId */	dir->GetParentId(),
-		/*comment */	PrepareCommentForInsert(dir->GetComment().c_str()).c_str(),
-		/*id */			dir->GetId());
-	return QueryUpdate(query);
-}
-
-bool ccdb::MySQLDataProvider::DeleteDirectory( const string& fullPath )
-{
-	return DataProvider::DeleteDirectory(fullPath);
-}
-
-bool ccdb::MySQLDataProvider::DeleteDirectory( Directory *dir )
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//check not NULL
-	if(dir==NULL)
-	{
-		Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"MySQLDataProvider::DeleteDirectory", "Directory not found with this path");
-		return false;
-	}
-
-	//check id...
-	if(dir->GetId()<=0)
-	{
-		//TODO: ERROR report
-		Error(CCDB_ERROR_DIRECTORY_INVALID_ID,"MySQLDataProvider::DeleteDirectory", "Directory invalid id");
-
-		return false;
-	}
-	
-	if(dir->GetSubdirectories().size()>0)
-	{
-		//TODO error, have children
-		Error(CCDB_ERROR_DELETE_NONEMPTY,"MySQLDataProvider::DeleteDirectory", "Directory contains subdirectory");
-		return false;
-	}
-	
-	string assCountQuery = StringUtils::Format("SELECT `id` FROM `typeTables` WHERE `directoryId`='%i' LIMIT 1",dir->GetId());
-	if(!QuerySelect(assCountQuery)) 
-	{
-		return false;
-	}
-	if(mReturnedRowsNum > 0)
-	{
-		//TODO warning
-		Error(CCDB_ERROR_DELETE_NONEMPTY,"MySQLDataProvider::DeleteDirectory", "Directory contains type tables");
-		return false;
-	}
-	string affectedIds;
-	
-	string query = StringUtils::Format("DELETE FROM `directories` WHERE id = '%i';", dir->GetId());
-	
-	bool result =  QueryDelete(query.c_str());
-	if(result)
-	{
-		//just log this wicked action
-		AdLogRecord("directories;",
-		StringUtils::Format("directories_%l;", dir->GetId()),
-		StringUtils::Format("Delete directory %s", dir->GetName().c_str()),
-		StringUtils::Format("Delete directory %s,\n comments: %s", dir->GetName().c_str(), dir->GetComment().c_str()));
-	}
-	LoadDirectories();
-
-	return result;
 }
 
 
@@ -700,142 +547,6 @@ vector<ConstantsTypeTable *> ccdb::MySQLDataProvider::GetConstantsTypeTables( Di
 }
 
 
-bool ccdb::MySQLDataProvider::CreateConstantsTypeTable( ConstantsTypeTable *table )
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//validation
-	if(table == NULL)
-	{
-		//TODO error? Warning?
-		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::CreateConstantsTypeTable", "Type table is null or invalid");
-		return false;
-	}
-
-	if(table->GetDirectory() == NULL)
-	{
-		//TODO error? Warning?
-		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::CreateConstantsTypeTable", "Directory pointer is NULL for this type table object");
-		return false;
-	}
-
-	if(table->GetColumns().size() <=0)
-	{
-		//TODO error? Warning?
-		Error(CCDB_ERROR_TABLE_NO_COLUMNS,"MySQLDataProvider::CreateConstantsTypeTable", "No colums for this type table object. Cant create");
-		return false;
-	}
-
-	if(!ValidateName(table->GetName()))
-	{
-		//TODO error? Warning?
-		Error(CCDB_ERROR_INVALID_OBJECT_NAME,"MySQLDataProvider::CreateConstantsTypeTable", "Name has invalid format");
-		return false;
-	}
-	if(!table->GetNRows())
-	{
-		//TODO error? Warning?
-		Error(CCDB_ERROR_TABLE_NO_ROWS,"MySQLDataProvider::CreateConstantsTypeTable", "Nomber of rows is equal to 0");
-		return false;
-	}
-
-	//ok... maybe table with such name exist? 
-	ConstantsTypeTable *tmpTable = GetConstantsTypeTable(table->GetName().c_str(), table->GetDirectory());
-	if(tmpTable)
-	{
-		delete tmpTable; 
-		//error? Warning?
-		Error(CCDB_ERROR_TABLE_EXISTS,"MySQLDataProvider::CreateConstantsTypeTable", "Table with this name already exists");
-		return false;
-	}
-
-	//ok... maybe directory with such name exist? 
-	Directory *tmpDir = GetDirectory(PathUtils::CombinePath(table->GetDirectory()->GetFullPath(), table->GetName()) );
-	if(tmpDir)
-	{	
-		//error? Warning?
-		Error(CCDB_ERROR_DIRECTORY_EXISTS,"MySQLDataProvider::CreateConstantsTypeTable", "There is a directory with such name");
-		return false;
-	}
-
-
-	//start query, lock tables, make transaction imune;
-	if(!QueryCustom("START TRANSACTION;"))
-	{
-		return false; 
-	}
-	
-	string query = 
-	" INSERT INTO `typeTables` "
-	"	(`modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments`) VALUES "
-	"	(   NULL   , \"%s\",      '%i'    ,   '%i' ,     '%i'  ,     %s	  ); ";
-	
-	query = StringUtils::Format(query.c_str(), 
-		table->GetName().c_str(),
-		table->GetDirectory()->GetId(),
-		table->GetNRows(),
-		table->GetNColumns(),
-		PrepareCommentForInsert(table->GetComment().c_str()).c_str()  );
-	
-	//query...
-	if(!QueryInsert(query))
-	{
-		//no report error
-		QueryCustom("ROLLBACK;"); //rollback transaction doesnt matter will it happen or not but we should try
-		return false;
-	}
-	
-	table->SetId(static_cast<dbkey_t>(mLastInsertedId));
-	
-	//Now it is time to create columns
-	if(!CreateColumns(table))
-	{
-		QueryCustom("ROLLBACK;"); //rollback transaction. Will it happen or not depends on error - but we should try
-		return false;
-	}
-	
-	//commit changes
-
-	if(!QueryCustom("COMMIT;"))
-	{
-		return false; 
-	}
-
-	//add log record
-	AdLogRecord("typeTables;",
-		StringUtils::Format("typeTables_%l;", table->GetId()),
-		StringUtils::Format("Created constants type table %s", table->GetName().c_str()),
-		StringUtils::Format("Created constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
-	
-	return true;
-}
-
-
-ConstantsTypeTable* ccdb::MySQLDataProvider::CreateConstantsTypeTable( const string& name, const string& parentPath, int rowsNumber, map<string, string> columns, const string& comments /*=""*/ )
-{
-	return CreateConstantsTypeTable(name, GetDirectory(parentPath), rowsNumber, columns, comments);
-}
-
-
-ConstantsTypeTable* ccdb::MySQLDataProvider::CreateConstantsTypeTable( const string& name, Directory *parentDir, int rowsNumber, map<string, string> columns, const string& comments /*=""*/ )
-{
-	ConstantsTypeTable *table = new ConstantsTypeTable();
-	table->SetName(name);
-	table->SetComment(comments);
-	table->SetNRows(rowsNumber);
-
-	map<string, string>::const_iterator iter = columns.begin();
-	for(; iter != columns.end(); iter++)
-	{
-		table->AddColumn(iter->first, ConstantsTypeColumn::StringToType(iter->second));
-		//cout<<iter->first<<" "<<iter->second<<endl;
-	}
-	table->SetDirectory(parentDir);
-	
-	if(CreateConstantsTypeTable(table)) return table;
-	else return NULL;
-}
-
 
 bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath /*= ""*/, bool loadColumns/*=false*/, int take/*=0*/, int startWith/*=0 */ )
 {
@@ -946,198 +657,6 @@ std::vector<ConstantsTypeTable *> ccdb::MySQLDataProvider::SearchConstantsTypeTa
 	return tables;
 }
 
-
-bool ccdb::MySQLDataProvider::UpdateConstantsTypeTable( ConstantsTypeTable *table )
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	if(!table || !table->GetId())
-	{
-		//TODO warning
-		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::UpdateConstantsTypeTable", "Type table is null or have wrong ID");
-		return false;
-	}
-	
-	if(!table->GetDirectory())
-	{
-		//TODO warning
-		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::UpdateConstantsTypeTable", "Directory is NULL for the table");
-		return false;
-	}
-	
-	if(!ValidateName(table->GetName()))
-	{
-		//done error
-		Error(CCDB_ERROR_INVALID_OBJECT_NAME,"MySQLDataProvider::UpdateConstantsTypeTable", "Table name is incorect. Only letters, digits and '_' are allowed. ");
-		return false;
-	}
-	
-	ConstantsTypeTable *existingTable =GetConstantsTypeTable(table->GetFullPath());
-	
-	if(existingTable!=NULL && existingTable->GetId()!=table->GetId())
-	{
-		//error
-		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::UpdateConstantsTypeTable", "Another table whith such name is found");
-		return false;
-	}
-	
-	string query = StringUtils::Format(" UPDATE `typeTables`"
-			" SET `modified` = NULL, `name` = \"%s\", `directoryId` = '%i', `comments` = %s "
-			" WHERE `id` = '%i' ", 
-			table->GetName().c_str(), 
-			table->GetDirectory()->GetId(), 
-			PrepareCommentForInsert(table->GetComment()).c_str(),
-			table->GetId());
-	
-	bool result = QueryUpdate(query);
-	if(result)
-	{
-		AdLogRecord("typeTables;",
-		StringUtils::Format("typeTables_%l;", table->GetId()),
-		StringUtils::Format("Update constants type table %s", table->GetName().c_str()),
-		StringUtils::Format("Update constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
-	}
-	else
-	{
-		//probably the error is printed by QueryUpdate
-		return false;
-	}
-	
-	return true;
-}
-
-
-bool ccdb::MySQLDataProvider::DeleteConstantsTypeTable( ConstantsTypeTable *table )
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//validation
-	if(table == NULL || table->GetId() <=0)
-	{
-		//TODO error? Warning?
-		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::DeleteConstantsTypeTable", "Type table is null or have wrong ID");
-		return false;
-	}
-	mReturnedRowsNum = 0;
-    
-	string assCountQuery = StringUtils::Format(" SELECT `id` FROM `constantSets` WHERE `constantTypeId`='%i' LIMIT 1", table->GetId() );
-    
-	if(!QuerySelect(assCountQuery)) 
-	{	
-
-        Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::DeleteConstantsTypeTable", "Not found constants");
-		return false;
-	}
-
-    //Free mysql result
-	if(mReturnedRowsNum > 0)
-	{
-        Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::DeleteConstantsTypeTable", "found constants");
-
-        FreeMySQLResult();
-		return false;
-	}
-    FreeMySQLResult();
-	
-	
-
-	string query = StringUtils::Format("DELETE FROM `typeTables` WHERE `id` = %i ;", table->GetId());
-	if(!QueryDelete(query))
-	{
-		return false;
-	}
-
-	//Delete columns
-	query = StringUtils::Format("DELETE FROM `columns` WHERE `typeId` = %i ;", table->GetId());
-	if(!QueryDelete(query))
-	{
-		return false;
-	}
-	else
-	{
-		//just log this wicked action
-		AdLogRecord("typeTables;",
-		StringUtils::Format("typeTables_%l;", table->GetId()),
-		StringUtils::Format("Delete constants type table %s", table->GetName().c_str()),
-		StringUtils::Format("Delete constants type table %s,\n comments: %s", table->GetName().c_str(), table->GetComment().c_str()));
-	}
-	return true;
-}
-
-
-bool ccdb::MySQLDataProvider::CreateColumn(ConstantsTypeColumn* column)
-{
-
-	/** @brief Creates columns for the table
-	 *
-	 * @param parentDir
-	 * @return vector of constants
-	 */
-	
-	string query = 
-		"INSERT INTO `columns`												  "
-		"	( `modified`, `name`, `typeId`, `columnType`, `order`, `comment`) "
-		"	VALUES															  "
-		"	(   NULL    , \"%s\",   '%i'  ,    '%s'     ,  '%i'  ,    %s    );";
-
-	query = StringUtils::Format(query.c_str(), 
-		column->GetName().c_str(), 
-		column->GetTypeTableId(),  
-		column->GetTypeString().c_str(),
-		column->GetOrder(),
-		PrepareCommentForInsert(column->GetComment()).c_str());
-	
-	if(!QueryInsert(query))
-	{
-		return false;
-	}
-	
-	return true;
-}
-
-
-bool ccdb::MySQLDataProvider::CreateColumns(ConstantsTypeTable* table)
-{
-/** @brief Loads columns for the table
- *
- * @param parentDir
- * @return vector of constants
- */
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//get and validate parent table ID
-	dbkey_t tableId = table->GetId();
-	if(tableId <=0)
-	{
-		//TODO WARNING try to create columns without table key
-		Error(CCDB_ERROR_INVALID_ID,"MySQLDataProvider::CreateColumns", "Type table has wrong DB ID");
-		return false; 
-	}
-
-	if(table->GetColumns().size() <=0)
-	{
-		//TODO WARNING try to create columns without columns
-		Error(CCDB_ERROR_TABLE_NO_COLUMNS,"MySQLDataProvider::CreateColumns", "Table have no columns or colums are not loaded");
-		return false; 
-	}
-	
-	//TODO begin transaction
-
-	const vector<ConstantsTypeColumn *>& columns = table->GetColumns();
-	vector<ConstantsTypeColumn *>::const_iterator iter= columns.begin();
-	for(; iter<columns.end(); ++iter)
-	{
-		ConstantsTypeColumn *column= *iter;
-		if(!(CreateColumn(column )))
-		{	
-			return false;
-		}
-	}
-
-	//TODO end transaction
-	return true;
-}
-
 bool ccdb::MySQLDataProvider::LoadColumns( ConstantsTypeTable* table )
 {
 	ClearErrors(); //Clear error in function that can produce new ones
@@ -1185,29 +704,7 @@ bool ccdb::MySQLDataProvider::LoadColumns( ConstantsTypeTable* table )
 #pragma endregion Type Tables
 
 #pragma region Run ranges
-bool ccdb::MySQLDataProvider::CreateRunRange( RunRange *run )
-{
-	ClearErrors(); //Clear error in function that can produce new ones
 
-	//query;
-	string query = StringUtils::Format("INSERT INTO `runRanges` (`modified`, `runMin`, `runMax`, `name`, `comment`)"
-		"VALUES (NULL, '%i', '%i', '%s', '%s');",
-		run->GetMin(),
-		run->GetMax(),
-		run->GetName().c_str(),
-		run->GetComment().c_str());
-	
-	//Do query
-	if(!QueryInsert(query))
-	{
-		//NO report error
-		return false;
-	}
-    
-    run->SetId(mLastInsertedId);
-
-	return true;
-}
 
 
 RunRange* ccdb::MySQLDataProvider::GetRunRange( int min, int max, const string& name /*= ""*/ )
@@ -1224,7 +721,7 @@ RunRange* ccdb::MySQLDataProvider::GetRunRange( int min, int max, const string& 
 		return NULL;
 	}
 	
-	//Ok! We querryed our run range! lets catch it! 
+	//Ok! We queried our run range! lets catch it! 
 	
 	if(!FetchRow())
 	{
@@ -1293,34 +790,6 @@ RunRange* ccdb::MySQLDataProvider::GetRunRange( const string& name )
 	}
 
 	FreeMySQLResult();
-	return result;
-}
-
-
-RunRange* ccdb::MySQLDataProvider::GetOrCreateRunRange( int min, int max, const string& name/*=""*/, const string& comment/*=""*/ )
-{
-	//if one gets NULL after that function it is probably only because 
-	//run range with such name already exists but have different min and max ranges
-	// or, surely, because error with MySQL coGetOrCreateRunRangennection or something like this happened
-	RunRange *result = GetRunRange(min,max, name);
-	if(!result)
-	{
-		//Ok, lets try to create it...
-		result = new RunRange(this, this);
-		result->SetRange(min, max);
-		result->SetName(string(name));
-		result->SetComment(string(comment));
-		//TODO deside how to handle comment and time;
-		//TODO (!) Maybe change to REPLACE instead of insert?
-		//Try to create and return null if it was impossible
-		if(!CreateRunRange(result)) 
-        {
-            Error(CCDB_ERROR_OBTAINING_RUNRANGE,"DDataProvider::GetOrCreateRunRange", 
-                  StringUtils::Format("Can not get or create run range run-min: %i, run-max: %i, run-name: %s", min, max, name.c_str()));
-            return NULL;
-        }
-
-	}
 	return result;
 }
 
@@ -1412,62 +881,6 @@ bool ccdb::MySQLDataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, C
 }
 
 
-bool ccdb::MySQLDataProvider::DeleteRunRange(RunRange* run)
-{
-	ClearErrors(); //Clear errors in function that can produce new ones
-
-	if(!run || run->GetId() <=0)
-	{
-		//TODO error;
-		Error(CCDB_ERROR_RUNRANGE_INVALID,"MySQLDataProvider::DeleteRunRange", "Runrange is null or have invalid ID");
-		return false;
-	}
-	string assCountQuery = StringUtils::Format("SELECT `id` FROM `assignments` WHERE `runRangeId`='%i' LIMIT 1",run->GetId() );
-	if(!QuerySelect(assCountQuery)) 
-	{
-		//TODO error;
-		return false;
-	}
-	if(mReturnedRowsNum > 0)
-	{
-		//TODO warning
-		Error(CCDB_ERROR_DELETE_NONEMPTY,"MySQLDataProvider::DeleteRunRange", "There is assigment that linked to this runrange. Impossible to delete it");
-		return false;
-	}
-	FreeMySQLResult();
-
-	string query = StringUtils::Format("DELETE FROM `runRanges` WHERE `runRanges`.`id`='%i';", run->GetId());
-	bool result = QueryDelete(query);
-	if(result)
-	{
-		AdLogRecord("runranges;",StringUtils::Format("runRanges_%i;", run->GetId()), "Delete run range", StringUtils::Format("Delete run range: from %i to %i with name %s", run->GetMin(), run->GetMax(), run->GetName().c_str()));
-	}
-	return result;
-}
-
-bool ccdb::MySQLDataProvider::UpdateRunRange(RunRange* run)
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	if(run==NULL || run->GetId()<=0) 
-	{
-		//TODO error
-		Error(CCDB_ERROR_RUNRANGE_INVALID,"MySQLDataProvider::UpdateRunRange", "Run range is null or has wrong id");
-		return false;
-	}
-
-	string query=StringUtils::Format(
-		"UPDATE `runRanges` SET `modified` = NULL, " 
-		" `name` = \"%s\", `runMin` = '%i', `runMax` = '%i', `comment` = %s "
-		" WHERE `runRanges`.`id` = '%i' ;",
-		StringUtils::Encode(run->GetName()).c_str(), 
-		run->GetMin(),
-		run->GetMax(),
-		StringUtils::Encode(run->GetComment()).c_str(),
-		run->GetId());
-	return QueryUpdate(query);
-
-}
 
 #pragma endregion Run ranges
 
@@ -1648,91 +1061,6 @@ dbkey_t ccdb::MySQLDataProvider::GetVariationId( const string& name )
 
     FreeMySQLResult();
     return result;
-}
-
-
-bool ccdb::MySQLDataProvider::CreateVariation( Variation *variation )
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	string query=
-		"INSERT INTO `variations` "
-		"(`modified`,			  "
-		"`name`,				  "
-		"`description`,			  "
-		"`comment`)				  "
-		"VALUES	(NULL, \"%s\",	\"\", %s);";
-	
-	//TODO decide what to do with description of variation
-	query = StringUtils::Format(query.c_str(), variation->GetName().c_str(), variation->GetComment().c_str());
-	
-	//Do query
-	if(!QueryInsert(query))
-	{
-		//TODO report error
-		return false;
-	}
-
-	return true;
-}
-
-
-bool ccdb::MySQLDataProvider::UpdateVariation( Variation *variation )
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//validate
-	if(!variation || variation->GetId()<=0)
-	{
-		//TODO warning
-		Error(CCDB_ERROR_VARIATION_INVALID,"MySQLDataProvider::UpdateVariation", "Variation is NULL or has bad ID so update operations cant be done");
-		return false;
-	}
-	
-	string query = "UPDATE `variations` SET `modified` = NULL, `name` = \"%s\", `comment` = %s, WHERE `id` = %i";
-	query = StringUtils::Format(query.c_str(), variation->GetName().c_str(), PrepareCommentForInsert(variation->GetComment().c_str()).c_str(), variation->GetId());
-
-	if(!QueryUpdate(query))
-	{
-		//TODO report something
-		return false;
-	}
-
-	return true;
-}
-
-
-bool ccdb::MySQLDataProvider::DeleteVariation( Variation *variation )
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//validate
-	if(!variation || variation->GetId()<=0)
-	{
-		//TODO warning
-		Error(CCDB_ERROR_VARIATION_INVALID,"MySQLDataProvider::DeleteVariation", "Variation is NULL or has bad ID so delete operations cant be done");
-		return false;
-	}
-	
-	string assCountQuery = StringUtils::Format("SELECT `id` FROM `assignments` WHERE `variationId`='%i' LIMIT 1",variation->GetId() );
-	if(!QuerySelect(assCountQuery)) 
-	{
-		//TODO error;
-		return false;
-	}
-	if(mReturnedRowsNum > 0)
-	{
-		//TODO warning
-		return false;
-	}
-	string query = StringUtils::Format("DELETE FROM `variations` WHERE `id` = %'i'", variation->GetId());
-
-	bool result = QueryDelete(query);
-	if(result)
-	{
-		AdLogRecord("variations;",StringUtils::Format("variations_%i;", variation->GetId()), "Delete run variation", StringUtils::Format("Delete variation: name %s", variation->GetName().c_str()));
-	}
-	return result;
 }
 
 #pragma endregion Variations
@@ -2000,192 +1328,6 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByVersion(int run, const 
 	return result;
 }
 
-bool ccdb::MySQLDataProvider::CreateAssignment(Assignment *assignment )
-{   
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//Check runrange...
-	RunRange * runRange= assignment->GetRunRange();
-    //TODO event range handling
-
-    //Validation of inputted object
-    if(!assignment->GetRunRange())           {cout<<"!assignment->GetRunRange()"<<endl;           return false;}
-    if(!assignment->GetRunRange()->GetId())  
-    {
-        Error(CCDB_ERROR_RUNRANGE_INVALID,"MySQLDataProvider::CreateAssignment(DAssignment *assignment)", StringUtils::Format("Runrange is null or have invalid ID. ID is: %i" + assignment->GetRunRange()->GetId()));
-        return false;
-    }
-    if(!assignment->GetVariation())          {cout<<"!assignment->GetVariation()"<<endl;          return false;}
-	if(!assignment->GetVariation()->GetId()) {cout<<"!assignment->GetVariation()->GetId()"<<endl; return false;}
-
-	ConstantsTypeTable *table = assignment->GetTypeTable();
-	if(table == NULL || !table->GetId())
-	{
-		//TODO warning
-		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::CreateAssignment", "Table is NULL or has wrong id");
-		return false;
-	}
-
-	//start query, lock tables, make transaction imune;
-	if(!QueryCustom("START TRANSACTION;"))
-	{
-        cout<<"!QueryCustom(\"START TRANSACTION;\")"<<endl;
-		return false; 
-	}
-
-	//add constants
-	string query = 
-		" INSERT INTO `constantSets` (`modified`, `vault`, `constantTypeId`) "
-	    "                      VALUES(   NULL   ,  \"%s\",	       %i      );";
-	query = StringUtils::Format(query.c_str(), assignment->GetRawData().c_str(), table->GetId());
-	
-	//query...
-	if(!QueryInsert(query))
-	{
-		//TODO report error
-		QueryCustom("ROLLBACK;"); //rollback transaction doesnt matter will it happen or not but we should try
-        cout<<"!QueryInsert(query)1"<<endl;
-		return false;
-	}
-	assignment->SetDataVaultId(static_cast<dbkey_t>(mLastInsertedId));
-
-	query = "INSERT INTO `assignments` "
-	"	(				"
-	"	`modified`,		"
-	"	`variationId`,	"
-	"	`runRangeId`,	"
-	"	`eventRangeId`,	"
-	"	`constantSetId`,"
-	"	`comment`)		"
-	"	VALUES	(NULL, "		//modified update 
-	"  %i, "					//  #{variationId: INT}
-	"	%i, "					//  #{runRangeId: INT},		  
-	"	NULL,"					//	#{eventRangeId: INT},
-	"	LAST_INSERT_ID(), "		//	#{constantSetId: INT},	
-	"	%s "					//	#{comment: TEXT}
-	");	";
-	query = StringUtils::Format(query.c_str(), 
-		assignment->GetVariation()->GetId(), 
-		assignment->GetRunRange()->GetId(),
-		PrepareCommentForInsert(assignment->GetComment().c_str()).c_str());
-	//query...
-	if(!QueryInsert(query))
-	{
-		//TODO report error
-		QueryCustom("ROLLBACK;"); //rollback transaction doesnt matter will it happen or not but we should try
-        cout<<"!QueryInsert(query)2"<<endl;
-		return false;
-	}
-	assignment->SetId(static_cast<dbkey_t>(mLastInsertedId));
-	
-	//adjust number in data table
-	query = StringUtils::Format("UPDATE typeTables SET nAssignments=nAssignments+1 WHERE id='%i';", table->GetId());
-	QueryUpdate(query);
-	
-	//commit changes
-	if(!QueryCustom("COMMIT;"))
-	{	
-        cout<<"!QueryCustom(\"COMMIT;\")"<<endl;
-		return false; 
-	}
-
-	//just log this wicked action
-	AdLogRecord("assignments;constantSets;",
-		StringUtils::Format("assignments_%i;constantSets_%i", assignment->GetId(), assignment->GetDataVaultId()),
-		StringUtils::Format("Add assignment to %s", assignment->GetTypeTable()->GetName().c_str()),
-		StringUtils::Format("Add assignment to %s,\n comments: %s", assignment->GetTypeTable()->GetName().c_str(), table->GetComment().c_str()));
-	return true;
-}
-
-Assignment* ccdb::MySQLDataProvider::CreateAssignment(const std::vector<std::vector<std::string> >& data, const std::string& path, int runMin, int runMax, const std::string& variationName, const std::string& comments)
-{
-    // cout <<"HERE HERE"<<endl;
-	/* Creates Assignment using related object.
-	* Validation:
-	* If no such run range found, the new will be created (with no name)
-	* No action will be done (and NULL will be returned):
-	* 
-	* -- If no type table with such path exists
-	* -- If data is inconsistent with columns number and rows number
-	* -- If no variation with such name found */
-	ClearErrors(); //Clear error in function that can produce new ones
-	
-	Variation* variation = GetVariation(variationName);
-	if(variation == NULL)
-	{
-		 //TODO error message
-		Error(CCDB_ERROR_VARIATION_INVALID,"MySQLDataProvider::CreateAssignment", "Variation is NULL or has improper ID");
-		return NULL;
-	}
-	 
-	ConstantsTypeTable* table=GetConstantsTypeTable(path, true);
-	if(!table)
-	{
-		//TODO error message
-		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::CreateAssignment", "Type table is NULL or has improper ID");
-		return NULL;
-	}
-	 
-	//check that we have right rows number
-	if(data.size()!= table->GetNRows())
-	{
-		 //error message
-		Error(CCDB_ERROR_DATA_INCONSISTANT,"MySQLDataProvider::CreateAssignment", 
-              StringUtils::Format("Number of rows is inconsistent. Rows in table definition: %i, actual rows number %i",table->GetNRows(), data.size()));
-		return NULL;
-	}
-
-	//fill data blob vector
-	vector<string> vectorBlob;
-	for (size_t rowIter=0; rowIter<data.size(); rowIter++)
-	{
-		const vector<string> &row = data[rowIter];
-		if(row.size() != table->GetNColumns())
-		{
-			//TODO error handle
-			Error(CCDB_ERROR_DATA_INCONSISTANT, "MySQLDataProvider::CreateAssignment", 
-                    StringUtils::Format("Number of columns is inconsistent. Row with inconsistency (zero based): %i , columns by table definition: %i, actual columns number %i",rowIter, table->GetNColumns(), row.size()));
-			return NULL;
-		}
-
-		for (int i=0; i<row.size(); i++)
-		{
-			vectorBlob.push_back(row[i]);
-		}
-	}
-	
-	//last one we need is a run range
-	RunRange * runRange = GetOrCreateRunRange(runMin, runMax, "", "");
-	if(runRange == NULL)
-	{
-		//error reporting is in GetOrCreateRunRange
-		return NULL;
-	}
-
-	Assignment * assignment=new Assignment(this, this);
-	assignment->SetRawData(Assignment::VectorToBlob(vectorBlob));
-	
-	assignment->SetVariation(variation);
-	assignment->BeOwner(variation);
-
-	assignment->SetRunRange(runRange);
-	assignment->BeOwner(runRange);
-
-	assignment->SetTypeTable(table);	//set this table
-	assignment->BeOwner(table);			//new table should be owned by assignment
-
-	assignment->SetComment(StringUtils::Encode(comments));
-
-	if(CreateAssignment(assignment))
-	{
-		return assignment;
-	}
-	else 
-	{
-		delete assignment;
-		return NULL;
-	}
-}
 
 Assignment* ccdb::MySQLDataProvider::GetAssignmentFull( int run, const string& path, const string& variation )
 {
@@ -2337,89 +1479,14 @@ vector<Assignment *> ccdb::MySQLDataProvider::GetAssignments( const string& path
 	return assingments;
 }
 
-bool ccdb::MySQLDataProvider::UpdateAssignment(Assignment* assignment)
-{
-	Error(
-		CCDB_ERROR_NOT_IMPLEMENTED, 
-		"MySQLDataProvider::UpdateAssignment(DAssignment* assignment)",
-		"Method is not implemented");
-	return false;
-}
 
-bool ccdb::MySQLDataProvider::DeleteAssignment(Assignment* assignment)
-{
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//Check primary ID
-	if(!assignment->GetId())
-	{
-		//todo error
-		Error(CCDB_ERROR_ASSIGMENT_INVALID_ID,"MySQLDataProvider::DeleteAssignment", "!assignment->GetId()");
-		return false;
-	}
-	
-	//Check data vault ID
-	if(!assignment->GetDataVaultId())
-	{
-		//todo error 
-		Error(CCDB_ERROR_ASSIGMENT_INVALID_ID,"MySQLDataProvider::DeleteAssignment", "!assignment->GetDataVaultId()");
-		return false;
-	}
-	
-	//Check that all is OK with table
-	if(!assignment->GetTypeTable() || !assignment->GetTypeTable()->GetId())
-	{
-		//todo error 
-		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::DeleteAssignment", "Type table is null or has improper id");
-		return false;
-	}
-	
-	//start query, lock tables, make transaction imune;
-	if(!QueryCustom("START TRANSACTION;"))
-	{
-		return false; 
-	}
-	
-	//add constants
-	string query = StringUtils::Format(" DELETE FROM  constantSets WHERE constantSets.id = '%i% ;",assignment->GetDataVaultId());
-	
-	//query...
-	if(!QueryDelete(query))
-	{
-		//TODO report error
-		QueryCustom("ROLLBACK;"); //rollback transaction doesnt matter will it happen or not but we should try
-		return false;
-	}
-	
-	query = StringUtils::Format(" DELETE FROM  assignments WHERE assignments.id = '%i% ;",assignment->GetId());
-	
-	//query...
-	if(!QueryDelete(query))
-	{
-		//TODO report error
-		QueryCustom("ROLLBACK;"); //rollback transaction doesnt matter will it happen or not but we should try
-		return false;
-	}
-	
-	//adjust number in data table
-	query = StringUtils::Format("UPDATE typeTables SET nAssignments=nAssignments-1 WHERE id='%i';", assignment->GetTypeTable()->GetId());
-	QueryUpdate(query);
-	
-	//commit changes
-	if(!QueryCustom("COMMIT;"))
-	{
-		return false; 
-	}
-	
-	return true;
-}
 
 bool ccdb::MySQLDataProvider::FillAssignment(Assignment* assignment)
 {
 	ClearErrors(); //Clear error in function that can produce new ones
 	if(assignment == NULL || !assignment->GetId())
 	{
-		//todo report errors
+		//TODO report errors
 		Error(CCDB_ERROR_ASSIGMENT_INVALID,"MySQLDataProvider::FillAssignment", "ASSIGnMENt is NULL or has improper ID so update operations cant be done");
 		return false;
 	}
@@ -2487,12 +1554,12 @@ bool ccdb::MySQLDataProvider::FillAssignment(Assignment* assignment)
 	string typeTableName = ReadString(18);
 	dbkey_t directoryId = ReadIndex(19);
 	
-	//Mayby we need to update our directories?
+	//maybe we need to update our directories?
 	UpdateDirectoriesIfNeeded();
 
 	if(mDirectoriesById.find(directoryId) == mDirectoriesById.end())
 	{
-		//todo report errors
+		//TODO report errors
 		Error(CCDB_ERROR,"MySQLDataProvider::FillAssignment", "Cannot find directory locally by ID taken from database");
 		return false;
 	}
@@ -2745,100 +1812,6 @@ bool ccdb::MySQLDataProvider::QuerySelect(const string& query )
 	return QuerySelect(query.c_str());
 }
 
-
-bool ccdb::MySQLDataProvider::QueryInsert( const char* query )
-{
-	if(!CheckConnection("MySQLDataProvider::QueryCustom")) return false;
-		
-	//do we have some results we need to free?
-	if(mResult!=NULL)
-	{	
-		FreeMySQLResult();
-	}
-
-	//query
-	if(mysql_query(mMySQLHnd, query))
-	{
-		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_QUERY_INSERT,"ccdb::MySQLDataProvider::QueryInsert()",errStr.c_str());
-		return false;
-	}
-
-	//get last inserted id
-	if ((mResult = mysql_store_result(mMySQLHnd)) == 0 &&
-		mysql_field_count(mMySQLHnd) == 0 &&
-		mysql_insert_id(mMySQLHnd) != 0)
-	{
-		mLastInsertedId = mysql_insert_id(mMySQLHnd);
-		return true;
-	}
-
-	return false;	
-}
-
-bool ccdb::MySQLDataProvider::QueryInsert( const string& query )
-{
-	return QueryInsert(query.c_str());
-}
-
-
-bool ccdb::MySQLDataProvider::QueryUpdate( const char* query )
-{
-	if(!CheckConnection("MySQLDataProvider::QueryCustom")) return false;
-	
-	//do we have some results we need to free?
-	if(mResult!=NULL)
-	{	
-		FreeMySQLResult();
-	}
-
-	//query
-	if(mysql_query(mMySQLHnd, query))
-	{
-		//TODO: error report
-		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_UPDATE,"ccdb::MySQLDataProvider::QueryUpdate()",errStr.c_str());
-		return false;
-	}
-
-	mReturnedAffectedRows = mysql_affected_rows(mMySQLHnd);
-
-	return mReturnedAffectedRows>0;
-}
-
-bool ccdb::MySQLDataProvider::QueryUpdate( const string& query ) /*/Do "Update" queries */
-{
-	return QueryUpdate(query.c_str());
-}
-
-bool ccdb::MySQLDataProvider::QueryDelete( const char* query )
-{
-	if(!CheckConnection("MySQLDataProvider::QueryCustom")) return false;
-	
-	//do we have some results we need to free?
-	if(mResult!=NULL)
-	{	
-		FreeMySQLResult();
-	}
-	//query
-	if(mysql_query(mMySQLHnd, query))
-	{
-		//TODO: error report
-		string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-		Error(CCDB_ERROR_MYSQL_DELETE,"ccdb::MySQLDataProvider::QueryDelete()",errStr.c_str());
-		return false;
-	}
-
-	mReturnedAffectedRows = mysql_affected_rows(mMySQLHnd);
-
-	return true;
-}
-
-bool ccdb::MySQLDataProvider::QueryDelete( const string& query )
-{
-	return QueryDelete(query.c_str());
-}
-
 bool ccdb::MySQLDataProvider::QueryCustom( const string& query )
 {
 	if(!CheckConnection("MySQLDataProvider::QueryCustom")) return false;
@@ -2886,23 +1859,6 @@ std::string ccdb::MySQLDataProvider::ComposeMySQLError(std::string mySqlFunction
 #pragma endregion Fetch_free_and_other_MySQL_operations
 
 
-void ccdb::MySQLDataProvider::AdLogRecord( string userName, string affectedTables, string affectedIds, string shortDescription, string fullDescription )
-{
-	int id = GetUserId(userName);	
-
-	string query = "INSERT INTO `logs` "
-		" (`affectedTables`, `affectedIds`, `authorId`, `description`,  `fullDescription`) VALUES "
-		" (    \"%s\"      ,      \"%s\"  , 	 %i   ,    \"%s\"    ,        \"%s\"     ); ";
-	query = StringUtils::Format(query.c_str(), affectedTables.c_str(), affectedIds.c_str(), id, shortDescription.c_str(), fullDescription.c_str());
-	
-	QueryInsert(query);
-	
-}
-
-void ccdb::MySQLDataProvider::AdLogRecord( string affectedTables, string affectedIds, string shortDescription, string fullDescription )
-{
-	AdLogRecord(mLogUserName, affectedTables, affectedIds, shortDescription, fullDescription);
-}
 
 dbkey_t ccdb::MySQLDataProvider::GetUserId( string userName )
 {
@@ -2939,7 +1895,6 @@ std::string ccdb::MySQLDataProvider::PrepareLimitInsertion(  int take/*=0*/, int
 	if(startWith == 0 && take != 0) return StringUtils::Format(" LIMIT %i ", take);
 	
 	return string(); //No LIMIT at all, if run point is here it corresponds to if(startWith == 0 && take ==0 )
-
 }
 
 
