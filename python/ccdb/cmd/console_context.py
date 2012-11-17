@@ -3,6 +3,7 @@ import ccdb.cmd
 import logging
 import shlex
 import posixpath
+import getpass
 
 from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
@@ -57,6 +58,7 @@ class ConsoleContext(object):
     
     @property
     def connection_string(self):
+        """:rtype: str"""
         return self._connection_string
 
     @connection_string.setter
@@ -248,7 +250,13 @@ class ConsoleContext(object):
                     log.error(ex)
                     if not self.silent_exceptions: raise
                     else: return 1
-        
+
+        #we have to ask mysql password
+        if "-p" in workargs and self.connection_string.startswith("mysql"):
+            print("Enter MySql password: ")
+            password = getpass.getpass()
+            self.connection_string = self.connection_string.replace("@", ":"+password+"@")
+
         if self._is_interactive:
             self.interactive_loop()
 

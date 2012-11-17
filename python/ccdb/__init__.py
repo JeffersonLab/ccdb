@@ -81,7 +81,7 @@ def init_ccdb_console():
     if "--raise" in sys.argv:
         logger.debug("--raise flag found. The process will raise commands exceptions instead of humble notifications and non 0 result")
         context.silent_exceptions = False
-        
+
 
     #CONNECTION STRING
     #------------------------------
@@ -103,6 +103,7 @@ def init_ccdb_console():
                 context.connection_string = jana_url
             else:
                 logger.debug("JANA_CALIB_URL does not starts with mysql:// or sqlite://. Skipped")
+
 
 
     #connection string in in command line arguments ( by -c or --connection) is processed by context.process(sys.argv)
