@@ -52,12 +52,9 @@ class ConstantsTable
     T lexical_cast(const string& str)
     {
         T ret;
-        if (!(stringstream(str) >> ret))
-        {
-            stringstream ss;
-            ss << "Could not convert: '" << str << "' to a numeric type.";
-            throw std::logic_error(ss.str());
-        }
+        stringstream ss;
+        ss << str;
+        ss >> ret;
         return ret;
     }
 
