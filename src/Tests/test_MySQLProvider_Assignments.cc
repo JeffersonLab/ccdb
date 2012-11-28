@@ -60,26 +60,5 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	dbkey_t lastId = assignment->GetId();
 	dbkey_t lastDataVaultId = assignment->GetDataVaultId();
 
-
-	//Lets try create assignments testing from copy assignment
-
-	//simple copy
-	result = prov->CreateAssignment(assignment);
-	REQUIRE(result);	
-
-	//test what we will get
-	result = prov->GetAssignments(assignments, "/test/test_vars/test_table", 100);
-	REQUIRE(result);	
-	REQUIRE(assignments.size()==(selectedAssignments+1));
-	REQUIRE(lastId!= assignment->GetId());
-	REQUIRE(lastDataVaultId!= assignment->GetDataVaultId());
-	REQUIRE(assignment->GetTypeTable()->GetColumns().size());
-	
-	//Lets print table
-	tabeled_values = assignment->GetData();
-	REQUIRE(tabeled_values.size()>0);	
-	REQUIRE(tabeled_values[0].size()>0);	
-	REQUIRE(Assignment::DecodeBlobSeparator("30e-2") == "30e-2");	
-	
 }
 #endif //ifdef CCDB_MYSQL

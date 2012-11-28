@@ -26,8 +26,6 @@ StoredObject(owner, provider)
 	mUpdateTime = 0;		//update time
 	mNRows = 0;
 	mNColumnsFromDB = 0;		//
-
-
 }
 
 
