@@ -66,11 +66,13 @@ if ARGUMENTS.get("mysql","yes")=="yes":
 	print ""
 	
 	if not WhereIs("mysql_config"):
+		print
 		print 	"Can't find 'mysql_config' utility which is needed to build CCDB with MySQL support."
 		print 	"Two options is possible to build CCDB:"
-		print   "  1. Install mysql_config (RHEL has it in mysql-devel package)"
+		print   "  1. Install mysql_config (RHEL has it in mysql-devel package, Ubuntu in libmysqlclient-dev)"
 		print   "  2. Build CCDB without MySQL dependencies (use 'mysql=no' scons flag)"
-		ExitNow()
+		print
+		Exit()
 	
 	mysql_sources = [
 	#user api
