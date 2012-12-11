@@ -1,0 +1,34 @@
+#!/usr/bin/python
+
+
+print "Content-Type: text/html; charset=ISO-8859-1"
+print ""
+print "ha! hu! "
+
+#import cgitb
+#cgitb.enable()
+
+import ccdb_web_config as config
+config.python_config()
+
+import ccdb
+prov = ccdb.AlchemyProvider()
+prov.connect("mysql://ccdb_user@127.0.0.1/ccdb")
+d = prov.get_root_directory()
+
+from wheezy.template.engine import Engine
+from wheezy.template.ext.core import CoreExtension
+from wheezy.template.loader import FileLoader
+
+search_path = ['content/']
+engine = Engine(
+    loader=FileLoader(search_path),
+    extensions=[CoreExtension()]
+)
+template = engine.get_template('template.html')
+sd = d.sub_dirs[0]
+print(template.render({"directory": sd}))
+
+
+#print "<p>done!</p>" + .name
+
