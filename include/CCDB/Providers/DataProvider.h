@@ -392,7 +392,7 @@ public:
      * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
      * @return DAssignment object or NULL if no assignment is found or error
      */
-    virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation="default", bool loadColumns=true)=0;
+    virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation="default", bool loadColumns=false)=0;
     
     
     /** @brief Get specified by creation time version of Assignment with data blob only.
@@ -409,7 +409,7 @@ public:
      * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
      * @return DAssignment object or NULL if no assignment is found or error
      */
-    virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns=true)=0;
+    virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns=false)=0;
        
 
     /** @brief Get last Assignment with all related objects
@@ -690,19 +690,23 @@ protected:
      */
     virtual void ClearErrorsOnFunctionStart();
     
-    vector<int> mErrorCodes;         ///vector of last errors
+    vector<int> mErrorCodes;            ///vector of last errors
 
-    vector<CCDBError *> mErrors;     ///errors 
+    vector<CCDBError *> mErrors;        ///errors 
     
-    int mLastError;                  ///last error
+    int mLastError;                     ///last error
     
-    const int mMaximumErrorsToHold;  ///=100 Maximum errors to hold in @see mLastErrors
+    const int mMaximumErrorsToHold;     ///=100 Maximum errors to hold in @see mLastErrors
     
-    std::string mLogUserName;        ///User name
+    std::string mLogUserName;           ///User name
 
-    std::string mConnectionString;   ///Connection string that was used on last successfull connect.
+    std::string mConnectionString;      ///Connection string that was used on last successfully connect.
 
     IAuthentication * mAuthentication;
+
+    map<dbkey_t, Variation *> mVariationsById;
+
+    
 
 };
 }

@@ -16,9 +16,6 @@
     <Filter Include="Model\Sources">
       <UniqueIdentifier>{98bdd288-e057-4051-9211-9d5f3251c135}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Model\Headers">
-      <UniqueIdentifier>{84fd2c79-ecd2-47f2-9261-a8a2d926212f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UserApi">
       <UniqueIdentifier>{bb35650e-a4ae-42c1-bab8-5f579f223c91}</UniqueIdentifier>
     </Filter>
@@ -45,6 +42,9 @@
     </Filter>
     <Filter Include="Globals\Sources">
       <UniqueIdentifier>{c5a49971-91dc-46ee-bc42-1b040dfe9832}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model\Headers">
+      <UniqueIdentifier>{84fd2c79-ecd2-47f2-9261-a8a2d926212f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

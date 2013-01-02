@@ -87,23 +87,18 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
 	 * @parameter [out] values - vector of rows, each row is a map<header_name, string_cell_value>
 	 * @parameter [in]  namepath - data path
 	 * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
-	 */
+	 */  
 
-   
-    
-
-    Assignment* assignment = GetAssignment(namepath, true);
+    auto_ptr<Assignment> assignment(GetAssignment(namepath, true));
         
-    if(assignment == NULL) 
-    {
-            cout<<"CCDB GetCalib assignment is null "<<assignment<<endl;
-            return false; //TODO possibly exception throwing?
+    if(!assignment.get()) 
+    {       
+        return false; //TODO possibly exception throwing?
     }
 
     //Get data
     
     assert(values.empty());
-
     
     assignment->GetMappedData(values);
 
@@ -210,17 +205,17 @@ bool Calibration::GetCalib( vector< vector<string> > &values, const string & nam
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
     
-    Assignment* assigment = GetAssignment(namepath, false);
+    Assignment* assignment = GetAssignment(namepath, false);
     
-    if(assigment == NULL) 
+    if(assignment == NULL) 
     {
         //TODO possibly exception throwing?
         return false;
     }
+   
+    assignment->GetData(values);
         
-    assigment->GetData(values);
-    
-    delete assigment;
+    delete assignment;
 
     return true;
 }
@@ -316,7 +311,6 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
     
     Assignment* assignment = GetAssignment(namepath, true);
     
-
     if(assignment == NULL) 
     {
         //TODO possibly exception throwing?
@@ -337,12 +331,8 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
     //now we take only first row of table
     vector<string> rawValues = rawTableValues[0];
 
-    //get table
-    ConstantsTypeTable *table = assignment->GetTypeTable(); 
-    assert(table != NULL); //It is DataProvider logic, that assignments have some table information
-
     //get columns names
-    vector<string> columnNames = table->GetColumnNames();
+    vector<string> columnNames = assignment->GetTypeTable()->GetColumnNames();
     int columnsNum = columnNames.size();
     assert(columnsNum == rawValues.size());
 
@@ -350,10 +340,7 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
     assert(values.empty());
     
     //compose values
-    for (int i=0; i<columnsNum; i++)
-    {
-        values[columnNames[i]] = rawValues[i];
-    }
+    for (int i=0; i<columnsNum; i++) values[columnNames[i]] = rawValues[i];
     
     //finishing
     delete assignment;
@@ -436,7 +423,7 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
      */
 
     
-    Assignment* assignment = GetAssignment(namepath, false);
+    Assignment* assignment = GetAssignment(namepath);
     
     if(assignment == NULL) return false; //TODO possibly exception throwing?
 
@@ -444,6 +431,7 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
     assert(values.empty());
     assignment->GetVectorData(values);
 
+    delete assignment;
     //check data and check that the user will get what he ment...
     if(values.size() == 0)
         throw std::logic_error("Calibration::GetCalib(vector<string> &, const string &). Data has no rows. Zero rows are not supposed to be.");
@@ -522,12 +510,12 @@ string Calibration::GetConnectionString() const
 
 
 //______________________________________________________________________________
-Assignment * Calibration::GetAssignment( const string& namepath , bool loadColumns/*=true*/)
+Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns /*=false*/)
 {
     /** @brief Gets the assignment from provider using namepath
      * namepath is the common ccdb request; @see GetCalib
      *
-     * @remark the function is threadsafe
+     * @remark the function is thread safe
      * 
      * @parameter [in] namepath -  full namepath is /path/to/data:run:variation:time but usually it is only /path/to/data
      * @return   DAssignment *
@@ -544,37 +532,17 @@ Assignment * Calibration::GetAssignment( const string& namepath , bool loadColum
     mReadMutex->Lock();
     if(result.WasParsedTime)
     {   
-        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation, loadColumns);
+        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation,loadColumns);
     }
 	else if (mDefaultTime>0)
 	{
-		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), mDefaultTime, variation, loadColumns);
+		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), mDefaultTime, variation,loadColumns);
 	}
     else
     {
-        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation, loadColumns);
+        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns);
     }
-
-	//Try to fallback to default variation
-	if (assigment == NULL && variation!="default")
-	{
-		variation = "default";
-
-		//TODO fix this repeating code
-		if(result.WasParsedTime)
-		{   
-			assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation, loadColumns);
-		}
-		else if (mDefaultTime>0)
-		{
-			assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), mDefaultTime, variation, loadColumns);
-		}
-		else
-		{
-			assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation, loadColumns);
-		}
-
-	}
+	
     mReadMutex->Release();
     return assigment;
 

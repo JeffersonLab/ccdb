@@ -60,5 +60,17 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	dbkey_t lastId = assignment->GetId();
 	dbkey_t lastDataVaultId = assignment->GetDataVaultId();
 
+    //Variations work test
+    delete assignment;
+
+    //variation hierarchy is
+    // default -> test -> subtest
+    // There are /test/test_vars/test_table for variation subtest. 
+    // But  /test/test_vars/test_table2 has only default variation
+
+    assignment = prov->GetAssignmentShort(100,"/test/test_vars/test_table2", "subtest");
+
+
+
 }
 #endif //ifdef CCDB_MYSQL

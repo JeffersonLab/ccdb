@@ -149,6 +149,110 @@ Allowed symbols are a-z, A-Z, 0-9, \_ and -. There is no space or special symbol
 allowed in variation name. Such considerations simplifies the console management
 and database validation of variation names.
 
+\subsection{Variations hierarchy}
+
+
+
+The variation feature could be very flexible and helpfull. From the other point of view
+it could be a 
+
+1. 
+Lets say we have 3 data tables:
+table1, 
+table2, 
+table3. 
+Each table has some default data1, data2, data3 in it. 
++===================
+variation || default
+ request  ||
++===================
+ table1   ||  data1
+ table2   ||  data2
+ table3   ||  data3
+ 
+This means that when somebody call 
+calibration->GetData("table1"...)  - data1 is returned. 
+
+2.
+Now lets bring variations to the scene. Mr John wants to experiment with 
+constants in table2. So Mr John create a variation named 'john'. 
+When a variation is created it should have some parent. If no parent is 
+explicitly specified, then the 'default' variation is set as parent. 
+
+So now we have a variations hierarchy:
+"default" <- "john" 
+
+Mr John adds data to table2 in the jnon variation.  So now we have:
+
++================================
+variation || default | john
+ request  ||         |
++================================
+ table1   ||  data1  |
+ table2   ||  data2  | data-john
+ table3   ||  data3  |
+ 
+For all regular users, who doesn't specify that want to work with John's data, a call:
+ calibration->GetData("table2"...) //returns "data2".
+ 
+But If one runs JANA with environment variatble
+ JANA_CONTEXT="variation:john"
+
+Then data from john variation will be used whenever it is possible. 
+So when "table2" is requested, "data-john" is returned. But when table1 is requested, 
+there is no specific data in john variation for table1, so ccdb goes looking data in parent 
+variation which is the 'default' variation. So data1 is returned. 
+
+So once again:
+if one runs JANA with JANA_CONTEXT="variation:john", then requests:
+calibration->GetData("table1"...) //returns "data1"
+calibration->GetData("table2"...) //returns "data-john"
+calibration->GetData("table3"...) //returns "data3"
+
+
+3.
+Mr Bill whanted to use John data but tune table3 data to work with "data-john". Mr Bill 
+created 'bill' variation with 'john' variation as parent. 
+So now we have a variations hierarchy:
+"default" <- "john" <- "bill"
+
+Then Mr Bill create "data-bill" set of constants for "table3" and variation "bill".
+
++============================================
+variation || default | john      | bill
+ request  ||         |           |
++============================================
+ table1   ||  data1  |           |
+ table2   ||  data2  | data-john |
+ table3   ||  data3  |           | data-bill
+ 
+Lets see how requests will work if one specifies "bill" variation. 
+If "table3" is requested, then "data-bill" is returned.
+If "table2" is requested, there is no data for table3 and "bill" variation, so 
+ccdb goes looking for "bill" parent, whitch is "jhon" variation. "john" variation has
+"data-john" for "table2" so "data-john" is returned. 
+If "table1" is requested, there is no other data than in "default" variation which
+is on top of variation hierarhy, so "data1" will be raturned. 
+Summarizing:
+JANA_CONTEXT="variation:bill"
+calibration->GetData("table1"...) //returns "data1"
+calibration->GetData("table2"...) //returns "data-john"
+calibration->GetData("table3"...) //returns "data-bill"
+ 
+
+
+
+\begin{tabular}{|l||*{5}{c|}}\hline
+\backslashbox{Room}{Date}
+&\makebox[3em]{5/31}&\makebox[3em]{6/1}&\makebox[3em]{6/2}
+&\makebox[3em]{6/3}&\makebox[3em]{6/4}\\\hline\hline
+Meeting Room &&&&&\\\hline
+Auditorium &&&&&\\\hline
+Seminar Room &&&&&\\\hline
+\end{tabular}
+
+\end{document} 
+
 
 % Data requests
 %******************************************************************************

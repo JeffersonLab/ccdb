@@ -26,7 +26,8 @@ ccdb::MySQLDataProvider::MySQLDataProvider(void)
 	mRootDir = new Directory(this, this);
 	mDirsAreLoaded = false;
 	mLastFullQuerry="";
-	mLastShortQuerry=""; 
+	mLastShortQuerry="";
+    mLastVariation = NULL; 
 }
 
 
@@ -407,7 +408,7 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 		return NULL;
 	}
 	
-	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `name` = '%s' AND `directoryId` = '%i';",
+	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM `typeTables` WHERE `name` = '%s' AND `directoryId` = '%i';",
 		 /*`name`*/ name.c_str(),
 		 /*`directoryId`*/ parentDir->GetId());
 
@@ -457,6 +458,8 @@ ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const strin
 	
 	//load columns if needed
 	if(loadColumns) LoadColumns(result);
+        
+
 	return result;
 }
 
@@ -493,7 +496,7 @@ bool ccdb::MySQLDataProvider::GetConstantsTypeTables(  vector<ConstantsTypeTable
 	//Ok, lets cleanup result list
 		resultTypeTables.clear(); //we clear the consts. Considering that some one else should handle deletion
 
-	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `directoryId` = '%i';",
+	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM `typeTables` WHERE `directoryId` = '%i';",
 		/*`directoryId`*/ parentDir->GetId());
 
 	if(!QuerySelect(query))
@@ -596,7 +599,7 @@ bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTab
 	string limitAddon = PrepareLimitInsertion(take, startWith);
     
 	//combine query
-	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `name` LIKE '%s' %s ORDER BY `name` %s;",
+	string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM `typeTables` WHERE `name` LIKE '%s' %s ORDER BY `name` %s;",
 		likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
         
 	if(!QuerySelect(query))
@@ -982,86 +985,80 @@ vector<Variation *> ccdb::MySQLDataProvider::GetVariations( ConstantsTypeTable *
 Variation* ccdb::MySQLDataProvider::GetVariation( const string& name )
 {
 	ClearErrors(); //Clear error in function that can produce new ones
+    if(mLastVariation!=NULL && mLastVariation->GetName()==name) return mLastVariation;
 
-	//TODO: Implement method
-	string query = 
-		"SELECT											 "
-		"`id`,											 "
-		"UNIX_TIMESTAMP(`created`) as `created`,		 "
-		"UNIX_TIMESTAMP(`modified`) as `modified`,		 "
-		"`name`,										 "
-		"`description`,									 "
-		"`comment`										 "
-		"FROM `variations`								 "
-		"WHERE `name`= \"%s\";							 ";
-	query = StringUtils::Format(query.c_str(), name.c_str());
-	//query this
-	if(!QuerySelect(query))
-	{
-		//TODO report error
-		return NULL;
-	}
-
-	//Ok! We querried our run range! lets catch it! 
-	if(!FetchRow())
-	{
-		//nothing was selected
-		return NULL;
-	}
-
-	//ok lets read the data...
-	Variation *result = new Variation(this, this);
-	result->SetId(ReadULong(0));
-	result->SetCreatedTime(ReadUnixTime(1));
-	result->SetModifiedTime(ReadUnixTime(2));
-	result->SetName(ReadString(3));
-	result->SetDescription(ReadString(4));
-	result->SetComment(ReadString(5));
-
-	if(mReturnedRowsNum>1)
-	{
-		//TODO warning not uniq row
-	}
-
-	FreeMySQLResult();
-	return result;
+    return SelectVariation("`name`= \"" + name + "\"");
 }
 
-dbkey_t ccdb::MySQLDataProvider::GetVariationId( const string& name )
+/** @brief Load variation by name
+* 
+* @param     const char * name
+* @return   DVariation*
+*/
+Variation* ccdb::MySQLDataProvider::GetVariationById(int id)
 {
+    if(mVariationsById.find(id) != mVariationsById.end()) return mVariationsById[id];
+
+    char binary_str[31];
+    (void)itoa(id, binary_str, 10);
+
     ClearErrors(); //Clear error in function that can produce new ones
+    return SelectVariation("`id`= " + string(binary_str) + "");
+}
 
-    //check that maybe we have this variation id by the last request?
-    if(name == mLastVariationName) return mLastVariationId;
-
-    string query = "SELECT	`id` FROM `variations` WHERE `name`= \"%s\";";
-    query = StringUtils::Format(query.c_str(), name.c_str());
-
+/**
+* Get variation by database request
+*/
+Variation* ccdb::MySQLDataProvider::SelectVariation(const string& whereClause)
+{
+    //TODO: Implement method
+    string query = "SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `description`, `comment`, `parentId`"
+        " FROM `variations` WHERE "+whereClause+";";
 
     //query this
     if(!QuerySelect(query))
     {
         //TODO report error
-        return (dbkey_t)-1;
+        return NULL;
     }
 
-    //Ok! We querried our run range! lets catch it! 
+    //Ok! We queried our run range! lets catch it! 
     if(!FetchRow())
     {
         //nothing was selected
-        return (dbkey_t)-1;
+        return NULL;
     }
 
     //ok lets read the data...
-    dbkey_t result = ReadULong(0);
+    Variation *result = new Variation(this, this);
+    result->SetId(ReadULong(0));
+    result->SetCreatedTime(ReadUnixTime(1));
+    result->SetModifiedTime(ReadUnixTime(2));
+    result->SetName(ReadString(3));
+    result->SetDescription(ReadString(4));
+    result->SetComment(ReadString(5));
+    result->SetParentDbId(ReadULong(6));
 
-    //save variation so maybe we don't need to query it next time
-    mLastVariationName = name;
-    mLastVariationId = result;
+    if(mReturnedRowsNum>1)
+    {
+        //TODO warning not uniq row
+    }
 
+    result->SetOwner(this, true);
+
+    mVariationsById[result->GetId()] = result;
+    mLastVariation = result;
     FreeMySQLResult();
+
+    //Get parent recursively
+    if(result->GetParentDbId()!=0)
+    {
+        result->SetParent(GetVariationById(result->GetParentDbId()));
+    }
+
     return result;
 }
+
 
 #pragma endregion Variations
 
@@ -1070,7 +1067,7 @@ dbkey_t ccdb::MySQLDataProvider::GetVariationId( const string& name )
 //----------------------------------------------------------------------------------------
 
 #pragma region Assignment
-Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, const string& variation, bool loadColumns /*=true*/)
+Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, const string& variationName, bool loadColumns /*=false*/)
 {
     /** @brief Get Assignment with data blob only
      *
@@ -1082,25 +1079,60 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
      * @param [in] variation - variation name
      * @return DAssignment object or NULL if no assignment is found or error
      */
+    return GetAssignmentShort(run, path, 0, variationName, loadColumns);
+}
 
-	ClearErrors(); //Clear errors in function that can produce new ones ;)
 
-	if(!CheckConnection("MySQLDataProvider::GetAssignmentShort(int run, const string& path, const string& variation)")) return NULL;
+Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variationName, bool loadColumns /*=false*/)
+{
+    /** @brief Get specified by creation time version of Assignment with data blob only.
+     *
+     * The Time is a timestamp, data that is equal or earlier in time than that timestamp is returned
+     *
+     * @remarks this function is named so
+     * @param [in] run - run number
+     * @param [in] path - object path
+     * @param [in] time - timestamp, data that is equal or earlier in time than that timestamp is returned
+     * @param [in] variation - variation name
+     * @return new DAssignment object or 
+     */
 
-	//get table! 
-	ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
-	if(!table)
-	{
-		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetAssignmentShort", StringUtils::Format("Table with the name '%s' was not found", path.c_str()));
-		return NULL;
-	}
+	ClearErrors(); //Clear error in function that can produce new ones
 
-    //get variation id
-    int varId = GetVariationId( variation );
+	if(!CheckConnection("MySQLDataProvider::GetAssignmentShort( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
+	        
+    //Get directory. Directories should be cached. So this doesn't make a database request
+    
+    ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
+    if(!table)
+    {
+        Error(CCDB_ERROR_NO_TYPETABLE, "MySQLDataProvider::GetAssignmentShort", "Type table was not found: '"+path+"'" );
+        return NULL;
+    }
+
+    //retrieve name of our constant table 
+    string tableName = PathUtils::ExtractObjectname(path);
+
+    //get variation
+    Variation* variation = GetVariation(variationName);
+    if(!variation)
+    {
+        Error(CCDB_ERROR_VARIATION_INVALID,"MySQLDataProvider::GetAssignmentShort", "No variation '"+variationName+"' was found");
+        return NULL;
+    }
+
+    //run number to string
+    char runBuf[32];
+    itoa(run, runBuf, 10);
+
+    //dir id to string
+    char tableIdBuf[32];
+    itoa(table->GetId(), tableIdBuf, 10);
+
+    char varIdBuf[32];
+    itoa(variation->GetId(), varIdBuf, 10);
 
 	//ok now we must build our mighty query...
-    //TODO this is not optimized request. The request could be optimized.
 	string query=
         "SELECT `assignments`.`id` AS `asId`, "
         "`constantSets`.`vault` AS `blob` "
@@ -1108,112 +1140,42 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
         "USE INDEX (id_UNIQUE) "
         "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
         "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
-        "WHERE  `runRanges`.`runMin` <= '%i' "
-        "AND `runRanges`.`runMax` >= '%i' "
-        "AND `assignments`.`variationId`= '%i' "
-        "AND `constantSets`.`constantTypeId` ='%i' "
-        "ORDER BY `assignments`.`id` DESC "
-        "LIMIT 1 ";
+        "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
+        "WHERE  `runRanges`.`runMin` <= '"+string(runBuf)+"' "
+        "AND `runRanges`.`runMax` >= '"+string(runBuf)+"' "
+        "AND `assignments`.`variationId`= '"+string(varIdBuf)+"' "
+        "AND `constantSets`.`constantTypeId` ='"+string(tableIdBuf)+"' ";
+    
+    //time in querY?
+    if(time!=0)
+    {
+        char timeBuf[32];
+        itoa(time, timeBuf, 10);
+        query=query + "AND UNIX_TIMESTAMP(`assignments`.`created`) <= '"+string(timeBuf)+"' ";
+    }
 
-	query=StringUtils::Format(query.c_str(), run, run, varId, table->GetId());
+    //finish query 
+    query = query + "ORDER BY `assignments`.`id` DESC LIMIT 1 ";
+	
 	//query this
 	if(!QuerySelect(query))
 	{
-		//Error report is in QuerySelect
+		//TODO report error
 		return NULL;
 	}
+
+    //If We have not found data for this variation, getting data for parent variation
+    if(mReturnedRowsNum==0 && variation->GetParentDbId()!=0)
+    {
+        delete table;
+        return GetAssignmentShort(run, path, time, variation->GetParent()->GetName());
+    }
 
 	//Ok! We queried our run range! lets catch it! 
 	if(!FetchRow())
 	{
-		//nothing was selected
-        Error(CCDB_ERROR_NO_ASSIGMENT,"MySQLDataProvider::GetAssignmentShort(int, const string&, const string&)", 
-            StringUtils::Format("No data was selected. Table '%s' for run='%i',  and variation='%s' ", path.c_str(), run, variation.c_str()));
-		return NULL;
-	}
-
-	//ok lets read the data...
-	Assignment *result = new Assignment(this, this);
-	result->SetId( ReadIndex(0) );
-	result->SetRawData( ReadString(1) );
-	
-	//additional fill
-	result->SetRequestedRun(run);
-	result->SetTypeTable(table);
-	if(IsOwner(table)) table->SetOwner(result); //new ownership?
-	
-
-	if(mReturnedRowsNum>1)
-	{
-		//TODO warning not uniq row
-		Error(CCDB_ERROR,"MySQLDataProvider::GetAssignmentShort", "Many variations return instead of one");
-	}
-
-	FreeMySQLResult();
-	return result;
-}
-
-
-Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variation, bool loadColumns /*=true*/)
-{
-    /** @brief Get specified by creation time version of Assignment with data blob only.
-     *
-     * The Time is a timestamp, data that is equal or earlier in time than that timestamp is returned
-     *
-     * @remarks this function is named so
-     * @param [in] run - run number
-     * @param [in] path - object path
-     * @param [in] time - timestamp, data that is equal or earlier in time than that timestamp is returned
-     * @param [in] variation - variation name
-     * @return new DAssignment object or 
-     */
-
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	if(!CheckConnection("MySQLDataProvider::GetAssignmentShort( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
-	
-	//get table! 
-	ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
-	if(!table)
-	{
-		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetAssignmentShort", "No type table with this path was found");
-		return NULL;
-	}
-
-    //get variation id
-    int varId = GetVariationId( variation );
-
-	//ok now we must build our mighty query...
-	char format[]=
-        "SELECT `assignments`.`id` AS `asId`, "
-        "`constantSets`.`vault` AS `blob` "
-        "FROM  `assignments` "
-        "USE INDEX (id_UNIQUE) "
-        "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
-        "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
-        "WHERE  `runRanges`.`runMin` <= '%i' "
-        "AND `runRanges`.`runMax` >= '%i' "
-        "AND `assignments`.`variationId`= '%i' "
-        "AND UNIX_TIMESTAMP(`assignments`.`created`) <= '%lld' "
-        "AND `constantSets`.`constantTypeId` ='%i' "
-        "ORDER BY `assignments`.`id` DESC "
-        "LIMIT 1 ";
-		
-	char query[1000];
-	sprintf(query,format, run,run, varId, (long long)time, table->GetId());
-	
-	//query this
-	if(!QuerySelect(query))
-	{
-		//TODO report error
-		return NULL;
-	}
-
-	//Ok! We querried our run range! lets catch it! 
-	if(!FetchRow())
-	{
 		Error(CCDB_ERROR_NO_ASSIGMENT,"MySQLDataProvider::GetAssignmentShort(int, const string&, time_t, const string&)", 
-            StringUtils::Format("No data was selected. Table '%s' for run='%i', timestampt='%ui' and variation='%s' ", path.c_str(), run, time, variation.c_str()));
+            StringUtils::Format("No data was selected. Table '%s' for run='%i', timestampt='%ui' and variation='%s' ", path.c_str(), run, time, variationName.c_str()));
 		return NULL;
 	}
 
@@ -1224,9 +1186,13 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	
 	//additional fill
 	result->SetRequestedRun(run);
-	result->SetTypeTable(table);
-	result->SetVariationId(varId);
+	result->SetVariationId(variation->GetId());
 	
+    //type table
+    result->SetTypeTable(table);
+    result->BeOwner(table);
+    table->SetOwner(result);
+
 	if(mReturnedRowsNum>1)
 	{
 		//TODO warning not uniq row
@@ -1236,98 +1202,6 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	return result;
 
 }
-
-Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByVersion(int run, const string& path, int version, const string& variation)
-{
-    /** @brief Get specified by creation time version of Assignment with data blob only.
-     *
-     * The Time is a timestamp, data that is equal or earlier in time than that timestamp is returned
-     *
-     * @remarks this function is named so
-     * @param [in] run - run number
-     * @param [in] path - object path
-     * @param [in] time - timestamp, data that is equal or earlier in time than that timestamp is returned
-     * @param [in] variation - variation name
-     * @return new DAssignment object or 
-     */
-
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	if(!CheckConnection("MySQLDataProvider::GetAssignmentShort( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
-	
-	//get table! 
-	ConstantsTypeTable *table = GetConstantsTypeTable(path, true);
-	if(!table)
-	{
-		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetAssignmentShort", "No type table with this path was found");
-		return NULL;
-	}
-
-	//ok now we must build our mighty query...
-	string query= 
-		" SELECT 													"
-		" `assignments`.`id` AS `asId`,								"
-		" UNIX_TIMESTAMP(`assignments`.`created`) as `asCreated`,	"
-		" UNIX_TIMESTAMP(`assignments`.`modified`) as `asModified`,	"
-		" `runRanges`.`id`   AS `runRangeId`, 						"
-		" `variations`.`id`  AS `varId`,								"
-		" `constantSets`.`id` AS `constId`,							"
-		" `constantSets`.`vault` AS `blob`,							"
-		" FROM `typeTables` 											"
-		" INNER JOIN `assignments` ON `assignments`.`runRangeId`= `runRanges`.`id` "
-		" INNER JOIN `variations` ON `assignments`.`variationId`= `variations`.`id` "
-		" INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
-		" INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
-		" WHERE "
-		" `runRanges`.`runMin` < '%i' "
-		" AND `runRanges`.`runMax` > '%i' "
-		" AND (UNIX_TIMESTAMP(`assignments`.`creation`) = 0 OR 1 = 1) "
-		" AND `variations`.`name`=\"%s\"	"
-		" AND `typeTables`.`id` = %i	"
-		" ORDER BY `assignments`.`time` DESC	"
-		" LIMIT 0,1; ";
-		
-
-	query=StringUtils::Format(query.c_str(), run,run, variation.c_str(), table->GetId());
-	
-	//query this
-	if(!QuerySelect(query))
-	{
-		//TODO report error
-		return NULL;
-	}
-
-	//Ok! We querried our run range! lets catch it! 
-	if(!FetchRow())
-	{
-		//nothing was selected
-		return NULL;
-	}
-
-	//ok lets read the data...
-	Assignment *result = new Assignment(this, this);
-	result->SetId(ReadULong(0));
-	result->SetCreatedTime(ReadUnixTime(1));
-	result->SetModifiedTime(ReadUnixTime(2));
-	result->SetRunRangeId(ReadInt(3));
-	result->SetVariationId(ReadInt(4));
-	result->SetDataVaultId(ReadInt(5));
-	result->SetRawData(ReadString(6));
-	
-	//additional fill
-	result->SetRequestedRun(run);
-	result->SetTypeTable(table);
-	
-	if(mReturnedRowsNum>1)
-	{
-		//TODO warning not uniq row
-	}
-
-	FreeMySQLResult();
-	return result;
-}
-
 
 Assignment* ccdb::MySQLDataProvider::GetAssignmentFull( int run, const string& path, const string& variation )
 {

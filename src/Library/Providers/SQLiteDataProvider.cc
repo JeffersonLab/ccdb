@@ -25,6 +25,7 @@ ccdb::SQLiteDataProvider::SQLiteDataProvider(void)
 	mIsConnected = false;
 	mDatabase=NULL;
 	mStatement=NULL;
+    mLastVariation = NULL;
 	mRootDir = new Directory(this, this);
 	mDirsAreLoaded = false;
 }
@@ -301,7 +302,7 @@ ConstantsTypeTable * ccdb::SQLiteDataProvider::GetConstantsTypeTable( const stri
 	// prepare the SQL statement from the command line
 	//sqlite3_finalize(mStatement);
 	//int result = sqlite3_prepare_v2(mDatabase,"SELECT `id`, strftime('%s', created , 'localtime') as `created`, strftime('%s', modified , 'localtime') as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `name` = '?1' AND `directoryId` = ?2", -1, &mStatement, 0);
-	int result = sqlite3_prepare_v2(mDatabase,"SELECT `id`, strftime('%s', created , 'localtime') as `created`, strftime('%s', modified , 'localtime') as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables`WHERE `name` = ?1 AND `directoryId` = ?2", -1, &mStatement, 0);
+	int result = sqlite3_prepare_v2(mDatabase,"SELECT `id`, strftime('%s', created , 'localtime') as `created`, strftime('%s', modified , 'localtime') as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM `typeTables`WHERE `name` = ?1 AND `directoryId` = ?2", -1, &mStatement, 0);
 	if( result )
 	{
 		ComposeSQLiteError("SQLiteDataProvider::GetConstantsTypeTable");
@@ -384,6 +385,8 @@ ConstantsTypeTable * ccdb::SQLiteDataProvider::GetConstantsTypeTable( const stri
 
 	//load columns if needed
 	if(loadColumns && table) LoadColumns(table);
+    
+    
 	
 	//return result;
 	return table;
@@ -949,56 +952,8 @@ vector<Variation *> ccdb::SQLiteDataProvider::GetVariations( ConstantsTypeTable 
 }
 
 
+
 Variation* ccdb::SQLiteDataProvider::GetVariation( const string& name )
-{
-	//ClearErrors(); //Clear error in function that can produce new ones
-
-	////TODO: Implement method
-	//string query = 
-	//	"SELECT											 "
-	//	"`id`,											 "
-	//	"UNIX_TIMESTAMP(`created`) as `created`,		 "
-	//	"UNIX_TIMESTAMP(`modified`) as `modified`,		 "
-	//	"`name`,										 "
-	//	"`description`,									 "
-	//	"`comment`										 "
-	//	"FROM `variations`								 "
-	//	"WHERE `name`= \"%s\";							 ";
-	//query = StringUtils::Format(query.c_str(), name.c_str());
-	////query this
-	//if(!QuerySelect(query))
-	//{
-	//	//TODO report error
-	//	return NULL;
-	//}
-
-	////Ok! We querried our run range! lets catch it! 
-	//if(!FetchRow())
-	//{
-	//	//nothing was selected
-	//	return NULL;
-	//}
-
-	////ok lets read the data...
-	//Variation *result = new Variation(this, this);
-	//result->SetId(ReadULong(0));
-	//result->SetCreatedTime(ReadUnixTime(1));
-	//result->SetModifiedTime(ReadUnixTime(2));
-	//result->SetName(ReadString(3));
-	//result->SetDescription(ReadString(4));
-	//result->SetComment(ReadString(5));
-
-	//if(mReturnedRowsNum>1)
-	//{
-	//	//TODO warning not uniq row
-	//}
-
-	//FreeSQLiteResult();
-	//return result;
-	return NULL;
-}
-
-dbkey_t ccdb::SQLiteDataProvider::GetVariationId( const string& name )
 {
 	/** @brief Gets mysql record Id for specified variation name
 	 *         returns -1 if variation with this name is not found
@@ -1007,24 +962,70 @@ dbkey_t ccdb::SQLiteDataProvider::GetVariationId( const string& name )
 	 * @return   dbkey_t id of variation or -1 if variation with this name is not found
 	 */
 
-	char thisFunc[] = "ccdb::SQLiteDataProvider::GetVariationId( const string& name )";
+	char thisFunc[] = "ccdb::SQLiteDataProvider::GetVariation( const string& name )";
 
     ClearErrors(); //Clear error in function that can produce new ones
 
     //check that maybe we have this variation id by the last request?
-    if(name == mLastVariationName) return mLastVariationId;
+    if(mLastVariation!=NULL && name == mLastVariation->GetName()) return mLastVariation;
 
-    string query = "SELECT `id` FROM `variations` WHERE `name`= ?1";
+    string query = "SELECT `id`, `parentId`, `name` FROM `variations` WHERE `name`= ?1";
 
 	// prepare the SQL statement from the command line
 	int result = sqlite3_prepare_v2(mDatabase, query.c_str(), -1, &mStatement, 0);
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return (dbkey_t)-1; }
+	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
 
-	result = sqlite3_bind_text(mStatement, 1, name.c_str(), -1, SQLITE_TRANSIENT);	/*`directoryId`*/
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return (dbkey_t)-1; }
+	result = sqlite3_bind_text(mStatement, 1, name.c_str(), -1, SQLITE_TRANSIENT);
+	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+
+    //select variation
+    mLastVariation = SelectVariation();
+    return mLastVariation;
+}
+
+
+Variation* ccdb::SQLiteDataProvider::GetVariationById( dbkey_t id )
+{
+	/** @brief Gets mysql record Id for specified variation name
+	 *         returns -1 if variation with this name is not found
+	 *	 
+	 * @param    [in] variation name
+	 * @return   dbkey_t id of variation or -1 if variation with this name is not found
+	 */
+
+	char thisFunc[] = "ccdb::SQLiteDataProvider::GetVariationById( dbkey_t id )";
+
+    ClearErrors(); //Clear error in function that can produce new ones
+
+    //check that maybe we have this variation id by the last request?
+    if(mVariationsById.find(id) != mVariationsById.end()) return mVariationsById[id];
+
+    string query = "SELECT `id`, `parentId`, `name` FROM `variations` WHERE `id`= ?1";
+
+	// prepare the SQL statement from the command line
+	int result = sqlite3_prepare_v2(mDatabase, query.c_str(), -1, &mStatement, 0);
+	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+
+	result = sqlite3_bind_int(mStatement, 1, id);
+	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+
+    //select variation
+    mLastVariation = SelectVariation();
+    return mLastVariation;
+}
+
+
+Variation* ccdb::SQLiteDataProvider::SelectVariation()
+{
+    ///* Executes statement and create Variation object. mStatement should be prepared when calling the function
+
+    char thisFunc[] = "ccdb::SQLiteDataProvider::SelectVariation()";
 
 	// execute the statement
 	dbkey_t id = (dbkey_t)-1;
+    dbkey_t parentId = (dbkey_t)-1;
+    string name;
+    int result;
 	do
 	{
 		result = sqlite3_step(mStatement);
@@ -1035,9 +1036,13 @@ dbkey_t ccdb::SQLiteDataProvider::GetVariationId( const string& name )
 			break;
 		case SQLITE_ROW:			
 			id =  ReadULong(0);
+            parentId = ReadULong(1);
+            name = ReadString(2);
 			break;
 		default:
-			fprintf(stderr, "Error: %d : %s\n",  result, sqlite3_errmsg(mDatabase));
+			ComposeSQLiteError(thisFunc);
+            sqlite3_finalize(mStatement); 
+            return NULL;
 			break;
 		}
 	}
@@ -1045,12 +1050,19 @@ dbkey_t ccdb::SQLiteDataProvider::GetVariationId( const string& name )
 
 	// finalize the statement to release resources
 	sqlite3_finalize(mStatement);
-	    
-    //save variation so maybe we don't need to query it next time
-    mLastVariationName = name;
-    mLastVariationId = id;
+	
+    Variation *var = new Variation(this, this);
+    var->SetName(name);
+    var->SetId(id);
+    var->SetParentDbId(parentId);
     
-	return id;
+    //recursive call to get variation parent
+    if(parentId>0) var->SetParent(GetVariationById(parentId));
+    
+    //add to cache
+    if(mVariationsById.find(id) == mVariationsById.end())  mVariationsById[id] = var;
+    
+	return var;
 }
 
 
@@ -1059,7 +1071,7 @@ dbkey_t ccdb::SQLiteDataProvider::GetVariationId( const string& name )
 //	A S S I G N M E N T S
 //----------------------------------------------------------------------------------------
 #pragma region Assignments	
-Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, const string& variation, bool loadColumns /*=true*/)
+Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, const string& variationName, bool loadColumns /*=false*/)
 {
    /** @brief Get Assignment with data blob only
     *
@@ -1071,90 +1083,11 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
     * @param [in] variation - variation name
     * @return DAssignment object or NULL if no assignment is found or error
     */
-
-	char thisFunc[] = "ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, const string& variation, bool loadColumns=true)";
-
-	ClearErrors(); //Clear errors in function that can produce new ones ;)
-	if(!CheckConnection(thisFunc)) return NULL;
-
-	//get table! 
-	ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
-	if(!table)
-	{
-		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE, thisFunc, "Table with the name '%s' was not found" + path);
-		return NULL;
-	}
-
-	//get variation id
-	int varId = GetVariationId( variation );
-
-	//ok now we must build our mighty query...
-	//TODO this is not optimized request. The request could be optimized.
-	char query[]=
-	   " SELECT `assignments`.`id` AS `asId`, "
-	   " `constantSets`.`vault` AS `blob` "
-	   " FROM  `assignments` "
-	   " INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
-	   " INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
-	   " WHERE  `runRanges`.`runMin` <= ?1 "
-	   " AND `runRanges`.`runMax` >= ?1 "
-	   " AND `assignments`.`variationId`= ?2 "
-	   " AND `constantSets`.`constantTypeId` = ?3 "
-	   " ORDER BY `assignments`.`id` DESC "
-	   " LIMIT 1 ";
-	
-	// prepare the SQL statement from the command line
-	int result = sqlite3_prepare_v2(mDatabase, query, -1, &mStatement, 0);
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
-
-	result = sqlite3_bind_int(mStatement, 1, run);	/*`directoryId`*/
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
-	
-	result = sqlite3_bind_int(mStatement, 2, varId);	/*`directoryId`*/
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
-	
-	result = sqlite3_bind_int(mStatement, 3, table->GetId());	/*`directoryId`*/
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
-
-	mQueryColumns = sqlite3_column_count(mStatement);
-
-	// execute the statement
-	Assignment *assignment = NULL;
-	do
-	{
-		result = sqlite3_step(mStatement);
-		
-		switch( result )
-		{
-		case SQLITE_DONE:
-			break;
-		case SQLITE_ROW:
-			assignment = new Assignment(this, this);
-			assignment->SetId( ReadIndex(0) );			
-			assignment->SetRawData( ReadString(1) );
-
-			//additional fill
-			assignment->SetRequestedRun(run);
-			assignment->SetTypeTable(table);
-			if(IsOwner(table)) table->SetOwner(assignment); //new ownership?
-
-			break;
-		default:
-			fprintf(stderr, "Error: %d : %s\n",  result, sqlite3_errmsg(mDatabase));
-			break;
-		}
-	}
-	while(result==SQLITE_ROW );
-
-	// finalize the statement to release resources
-	sqlite3_finalize(mStatement);
-
-	return assignment;
+   return GetAssignmentShort(run,path,0,variationName, loadColumns);
 }
 
 
-Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variation, bool loadColumns /*=true*/)
+Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variationName, bool loadColumns /*=false*/)
 {
     /** @brief Get specified by creation time version of Assignment with data blob only.
      *
@@ -1172,66 +1105,64 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
 
 	if(!CheckConnection(thisFunc)) return NULL;
 	
-	//get table! 
-	ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
-	if(!table)
-	{
-		Error(CCDB_ERROR_NO_TYPETABLE,"SQLiteDataProvider::GetAssignmentShort", "No type table with this path was found");
-		return NULL;
-	}
+    //Get type table
+    ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
+    if(!table)
+    {
+        Error(CCDB_ERROR_NO_TYPETABLE, "SQLiteDataProvider::GetAssignmentShort", "Type table was not found: '"+path+"'" );
+        return NULL;
+    }
 
-    //get variation id
-    int varId = GetVariationId( variation );
+    //retrieve name of our constant table 
+    string tableName = PathUtils::ExtractObjectname(path);
+
+    //get variation
+    Variation* variation = GetVariation(variationName);
+    if(!variation)
+    {
+        Error(CCDB_ERROR_VARIATION_INVALID,"SQLiteDataProvider::GetAssignmentShort", "No variation '"+variationName+"' was found");
+        return NULL;
+    }
+
 
 	////ok now we must build our mighty query...
-	char query[]=
+	string query(
         "SELECT `assignments`.`id` AS `asId`, "
         "`constantSets`.`vault` AS `blob` "
         "FROM  `assignments` "
         "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
         "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
+        "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
         "WHERE  `runRanges`.`runMin` <= ?1 "
         "AND `runRanges`.`runMax` >= ?1 "
         "AND `assignments`.`variationId`= ?2 "
-        "AND  `assignments`.`created` <= datetime(?3, 'unixepoch', 'localtime') "
-        "AND `constantSets`.`constantTypeId` =?4 "
+        "AND  `constantSets`.`constantTypeId` =?3 " + 
+        (time>0)? string("AND  `assignments`.`created` <= datetime(?4, 'unixepoch', 'localtime') ") : string() +
         "ORDER BY `assignments`.`id` DESC "
-        "LIMIT 1 ";
+        "LIMIT 1 ");
 		
-/*
-SELECT `assignments`.`id` AS `asId`,
-`constantSets`.`vault` AS `blob`,
-strftime('%s', `assignments`.`created`, 'localtime') AS `time`
-FROM  `assignments`
-INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id`
-INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id`
-WHERE  `runRanges`.`runMin` <= 100
-AND `runRanges`.`runMax` >= 100
-AND `assignments`.`variationId`= 1
-AND  strftime('%s', `assignments`.`created`, 'localtime') <= 1346475599
-AND `constantSets`.`constantTypeId` = 1
-ORDER BY `assignments`.`id` DESC
-LIMIT 1 ;
-AND  strftime('%s', `assignments`.`created`, 'localtime') <= 1346475599
-*/
+
 	// prepare the SQL statement from the command line
-	int result = sqlite3_prepare_v2(mDatabase, query, -1, &mStatement, 0);
+	int result = sqlite3_prepare_v2(mDatabase, query.c_str(), -1, &mStatement, 0);
 	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
 
 	result = sqlite3_bind_int(mStatement, 1, run);	/*`directoryId`*/
 	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
 	
-	result = sqlite3_bind_int(mStatement, 2, varId);	/*`directoryId`*/
+	result = sqlite3_bind_int(mStatement, 2, variation->GetId());	/*`variationId`*/
 	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
-	
-	result = sqlite3_bind_int64(mStatement, 3, time);	/*`directoryId`*/
+			
+	result = sqlite3_bind_int(mStatement, 3, table->GetId());	/*``typeTables`.`directoryId``*/
 	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
-		
-	result = sqlite3_bind_int(mStatement, 4, table->GetId());	/*`directoryId`*/
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+    
+    if(time>0)
+    {
+        result = sqlite3_bind_int64(mStatement, 4, time);	/*` `assignments`.`created``*/
+        if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+    }
 
 	mQueryColumns = sqlite3_column_count(mStatement);
-
+    int selectedRows = 0;
 	// execute the statement
 	Assignment *assignment = NULL;
 	do
@@ -1249,22 +1180,31 @@ AND  strftime('%s', `assignments`.`created`, 'localtime') <= 1346475599
 
 			//additional fill
 			assignment->SetRequestedRun(run);
-			assignment->SetTypeTable(table);
-			if(IsOwner(table)) table->SetOwner(assignment); //new ownership?
-
+            selectedRows++;
 			break;
 		default:
-			fprintf(stderr, "Error: %d : %s\n",  result, sqlite3_errmsg(mDatabase));
+			ComposeSQLiteError(thisFunc); 
+            sqlite3_finalize(mStatement); 
+            return NULL;
 			break;
 		}
-	}
-	while(result==SQLITE_ROW );
+	} while(result==SQLITE_ROW );
 
-	// finalize the statement to release resources
-	sqlite3_finalize(mStatement);
+    // finalize the statement to release resources
+    sqlite3_finalize(mStatement);
+        
+    //If We have not found data for this variation, getting data for parent variation
+    if(selectedRows==0 && variation->GetParentDbId()!=0)
+    {
+        delete table;
+        return GetAssignmentShort(run, path, time, variation->GetParent()->GetName());
+    }
+
+    assignment->SetTypeTable(table);
+    assignment->BeOwner(table);
+    table->SetOwner(assignment);
 
 	return assignment;
-
 }
 
 

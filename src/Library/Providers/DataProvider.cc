@@ -22,7 +22,6 @@ DataProvider::DataProvider(void):
     //Constructor
     mAuthentication = new EnvironmentAuthentication();
     mLogUserName = mAuthentication->GetLogin();
-
 	ClearErrorsOnFunctionStart();
     mConnectionString="";
 }
@@ -258,7 +257,7 @@ ConstantsTypeTable * DataProvider::GetConstantsTypeTable(const string& path, boo
      * @param  [in] parentDir directory that contains type table
      * @return new object of ConstantsTypeTable
      */
-
+    
 	//get directory path
 	string dirPath = PathUtils::ExtractDirectory(path);
 
@@ -271,7 +270,7 @@ ConstantsTypeTable * DataProvider::GetConstantsTypeTable(const string& path, boo
 	string name = PathUtils::ExtractObjectname(path);
 
 	//get it from db etc...
-	return GetConstantsTypeTable(name.c_str(), dir, loadColumns);
+	return GetConstantsTypeTable(name, dir, loadColumns);
 }
 
 #pragma endregion Type tables

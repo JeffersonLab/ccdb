@@ -345,18 +345,27 @@ public:
 	 * @return resultVariations result variations
 	 */
 	virtual vector<Variation *> GetVariations(ConstantsTypeTable *table, int run=0, int take=0, int startWith=0 );
-
-
+    
 	
 	
 	private:
-	/** @brief Gets mysql record Id for specified variation name
-	 *         returns -1 if variation with this name is not found
-	 *	 
-	 * @param    [in] variation name
-	 * @return   dbkey_t id of variation or -1 if variation with this name is not found
+
+    /** @brief Load variation by DB id
+	 * 
+	 * @param     const char * name
+	 * @return   DVariation*
 	 */
-	dbkey_t GetVariationId( const string& name );
+    Variation* GetVariationById(dbkey_t id);
+
+     /** @brief Executes statement and create Variation object. 
+	 * 
+     * mStatement should be prepared when calling the function. 
+     * The assumed data order in prepared statement is:
+     * `id`, `parentId`, `name` 
+	 * @return   DVariation*
+	 */
+    Variation *SelectVariation();
+
 	//----------------------------------------------------------------------------------------
 	//	A S S I G N M E N T S
 	//----------------------------------------------------------------------------------------
@@ -372,7 +381,7 @@ public:
      * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
      * @return DAssignment object or NULL if no assignment is found or error
      */
-	virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation="default", bool loadColumns=true);
+	virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation="default", bool loadColumns =false);
 	
 	
 	 /** @brief Get specified by creation time version of Assignment with data blob only.
@@ -387,7 +396,7 @@ public:
      * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
      * @return new DAssignment object or 
      */
-    virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns=true);
+    virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns =false);
      
     
 	/** @brief Get last Assignment with all related objects
@@ -625,7 +634,7 @@ protected:
 
     /** prepares preparedStatemets for use
      */
-    bool InitializePreparedStatements(){;}; //TODO implement PreparedStatements for GetAssignmentShort funcitons
+    bool InitializePreparedStatements(){;}; //TODO implement PreparedStatements for GetAssignmentShort functions
 
 	//read of row fields
 	bool IsNullOrUnreadable(int fieldNum);		///Check if the field is NULL or is unreadable. If it is Unreadable
@@ -692,8 +701,7 @@ private:
 
 	
     //VARIATIONs WORK
-    dbkey_t mLastVariationId;                     ///Last requested variation ID. Used for caching
-    string mLastVariationName;                    ///Last requested variation name. Used for caching
+    Variation* mLastVariation;                    ///Last requested variation. Used for caching
 
 };
 }

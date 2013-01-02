@@ -45,11 +45,6 @@ public:
 	 */
 	static bool MapData( vector<vector<string> > & mappedData, const vector<string>& data, int columnsNum );
 
-	/** @brief makes array of tokens from blob
-	 * @param     string blob
-	 * @return   const vector<string>&
-	 */
-	static void SplitData(vector<string>& outArray,string blob);
 
 	/**
 	 * @brief makes a string blob from tokens
@@ -75,57 +70,41 @@ public:
 	 */
 	static string DecodeBlobSeparator(string str);
 
-	unsigned int	GetVariationId() const;				/// database ID of variation
-	void			SetVariationId(unsigned int val);	/// database ID of variation
+	unsigned int    GetVariationId() const;				/// database ID of variation
+	void            SetVariationId(unsigned int val);	/// database ID of variation
 
-	unsigned int	GetRunRangeId() const;				/// database ID of run range
-	void			SetRunRangeId(unsigned int val);	/// database ID of run range
+	unsigned int    GetRunRangeId() const;				/// database ID of run range
+	void            SetRunRangeId(unsigned int val);	/// database ID of run range
 
-	unsigned int	GetDataVaultId() const;				/// database ID of data blob
-	void			SetDataVaultId(unsigned int val);	/// database ID of data blob
+	unsigned int    GetDataVaultId() const;				/// database ID of data blob
+	void            SetDataVaultId(unsigned int val);	/// database ID of data blob
 
-	unsigned int	GetEventRangeId() const;			/// event range ID
-	void			SetEventRangeId(unsigned int val);	/// event range ID
+	unsigned int    GetEventRangeId() const;			/// event range ID
+	void            SetEventRangeId(unsigned int val);	/// event range ID
 
-	int			GetRequestedRun() const;				/// Run than was requested for user
+	int			    GetRequestedRun() const;			/// Run than was requested for user
 	void			SetRequestedRun(int val);			/// Run than was requested for user
 
-	RunRange *	GetRunRange() const;					/// Run range object, is NULL if not set
-	void			SetRunRange(RunRange * val);		/// Run range object, is NULL if not set
+	RunRange *	    GetRunRange() const;		        /// Run range object, is NULL if not set
+	void            SetRunRange(RunRange * val);		/// Run range object, is NULL if not set
 
-	EventRange *	GetEventRange() const;				/// Event range object, is NULL if not set
-	void			SetEventRange(EventRange * val);	/// Event range object, is NULL if not set
+	EventRange *	GetEventRange() const;			    /// Event range object, is NULL if not set
+	void			SetEventRange(EventRange * val);    /// Event range object, is NULL if not set
 
-	Variation *	GetVariation() const;				/// Variation object, is NULL if not set
+	Variation *	    GetVariation() const;               /// Variation object, is NULL if not set
 	void			SetVariation(Variation * val);		/// Variation object, is NULL if not set
 
-	int		GetId() const {
-		return mId;    /// id in database
-	}
-	void		SetId(int val) {
-		mId = val;    /// id in database
-	}
+	int		GetId() const { return mId;	} /// id in database
+	void	SetId(int val) { mId = val; } /// id in database
 
-	time_t	GetCreatedTime() const {
-		return mCreatedTime;    ///Time of creation
-	}
-	void	SetCreatedTime(time_t val) {
-		mCreatedTime = val;    ///Time of creation
-	}
+	time_t	GetCreatedTime() const { return mCreatedTime; }    ///Time of creation
+	void	SetCreatedTime(time_t val) { mCreatedTime = val;}  ///Time of creation
 
-	time_t	GetModifiedTime() const {
-		return mModifiedTime;    ///Time of last modification
-	}
-	void	SetModifiedTime(time_t val) {
-		mModifiedTime = val;    ///Time of last modification
-	}
+	time_t	GetModifiedTime() const { return mModifiedTime;}   ///Time of last modification
+    void	SetModifiedTime(time_t val) {mModifiedTime = val;} ///Time of last modification
 
-	string	GetRawData() const {
-		return mRawData;    ///Raw data blob
-	}
-	void		SetRawData(std::string val) {
-		mRawData = val;    ///Raw data blob
-	}
+	string	GetRawData() const { return mRawData; }          ///Raw data blob
+	void	SetRawData(std::string val) { mRawData = val; }  ///Raw data blob
 
 	
 	/** @brief GetMappedData returns rows vector of maps of column_name => data_value
@@ -143,19 +122,11 @@ public:
 	vector<vector<string> > GetData() const;
 	void GetData(vector<vector<string> > &data) const;
 	
-	std::string GetComment() const {
-		return mComment;    ///Comment of assignment
-	}
-	void SetComment(std::string val) {
-		mComment = val;    ///Comment of assignment
-	}
+	std::string GetComment() const { return mComment;} ///Comment of assignment
+	void SetComment(std::string val) {mComment = val;} ///Comment of assignment
 	
-	void SetTypeTable(ConstantsTypeTable* typeTable) {
-		this->mTypeTable = typeTable;
-	}
-	ConstantsTypeTable* GetTypeTable() const {
-		return mTypeTable;
-	}
+	void SetTypeTable(ConstantsTypeTable* typeTable) { this->mTypeTable = typeTable;}
+	ConstantsTypeTable* GetTypeTable() const { return mTypeTable; }
 private:
 
 	vector<map<string,string> > mRows;	// cache for blob data by rows
@@ -167,6 +138,7 @@ private:
 	unsigned int mRunRangeId;			// database ID of run range
 	unsigned int mDataVaultId;			// database ID of data blob
 	unsigned int mEventRangeId;			// event range ID
+    unsigned int mColumnCount;          // number of columns
 	int	mRequestedRun;					// Run than was requested for user
 	RunRange *mRunRange;				// Run range object, is NULL if not set
 	EventRange *mEventRange;			// Event range object, is NULL if not set

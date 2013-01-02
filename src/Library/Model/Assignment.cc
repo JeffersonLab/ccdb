@@ -88,13 +88,6 @@ bool ccdb::Assignment::MapData( vector<vector<string> > & mappedData, const vect
 }
 
 //______________________________________________________________________________
-void ccdb::Assignment::SplitData( vector<string>& outArray,string blob )
-{
-	//split blob from DB to tokens and data
-	StringUtils::Split(blob,outArray, "|");
-}
-
-//______________________________________________________________________________
 unsigned int ccdb::Assignment::GetVariationId() const
 {
 	return mVariationId;

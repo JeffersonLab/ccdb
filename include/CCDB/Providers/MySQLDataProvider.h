@@ -369,11 +369,25 @@ public:
 	 */
 	virtual vector<Variation *> GetVariations(ConstantsTypeTable *table, int run=0, int take=0, int startWith=0 );
 	
+private:
+    /** @brief Load variation by name
+    * 
+    * @param     const char * name
+    * @return   DVariation*
+    */
+	virtual Variation* GetVariationById(int id);
+
+    /**
+     * Get variation by database request
+     */
+    virtual Variation* SelectVariation(const string& query);
+    
 	#pragma endregion Variation
 
 	//----------------------------------------------------------------------------------------
 	//	A S S I G N M E N T S
 	//----------------------------------------------------------------------------------------
+public:
     #pragma region Assignments
 
 	/** @brief Get Assignment with data blob only
@@ -387,7 +401,7 @@ public:
      * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
      * @return DAssignment object or NULL if no assignment is found or error
      */
-	virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation="default", bool loadColumns=true);
+	virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation="default", bool loadColumns=false);
 	
 	
 	 /** @brief Get specified by creation time version of Assignment with data blob only.
@@ -402,18 +416,9 @@ public:
      * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
      * @return new DAssignment object or 
      */
-    virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns=true);
-    
-     /** @brief Get specified version of Assignment with data blob only
-     *
-     * @remarks this function is named so
-     * @param [in] run - run number
-     * @param [in] path - object path
-     * @param [in] version - version is number of constants beginning with first added constant set. So 1 is the first added constants
-     * @param [in] variation - variation name
-     * @return new DAssignment object or 
-     */
-    virtual Assignment* GetAssignmentShortByVersion(int run, const string& path, int version, const string& variation="default");
+    virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns=false);
+
+
     
 	/** @brief Get last Assignment with all related objects
 	 *
@@ -601,6 +606,7 @@ public:
 	 */
 	virtual bool FillAssignment(Assignment* assignment);
 
+
 	#pragma endregion Assignments
         
     //----------------------------------------------------------------------------------------
@@ -717,9 +723,7 @@ private:
 	string mLastShortQuerry;  //full text of last short assignment query
 	
     //VARIATIONs WORK
-    dbkey_t GetVariationId( const string& name ); ///Gets mysql record Id for specified variation name
-    dbkey_t mLastVariationId;                     ///Last requested variation ID. Used for caching
-    string mLastVariationName;                    ///Last requested variation name. Used for caching
+    Variation* mLastVariation;                     ///Last requested variation ID. Used for caching
 	
 
 #pragma endregion Private

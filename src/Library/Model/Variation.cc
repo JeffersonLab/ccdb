@@ -16,6 +16,8 @@ Variation::Variation( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NU
 	mId=0;			//! database table uniq id;
 	mCreatedTime=0;	//! Creation Time 
 	mUpdateTime=0;		//! Update Time 
+    mParentDbId = 0;
+    mParent = NULL;
 }
 
 
