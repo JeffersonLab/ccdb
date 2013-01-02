@@ -89,9 +89,9 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
 	 * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
 	 */  
 
-    auto_ptr<Assignment> assignment(GetAssignment(namepath, true));
+    Assignment* assignment = GetAssignment(namepath, true);
         
-    if(!assignment.get()) 
+    if(!assignment)
     {       
         return false; //TODO possibly exception throwing?
     }
@@ -102,6 +102,7 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
     
     assignment->GetMappedData(values);
 
+    delete assignment;
     //check data, get columns 
     if(values.size() == 0){
         throw std::logic_error("Calibration::GetCalib( vector< map<string, string> >&, const string&). Data has no rows. Zero rows are not supposed to be.");
