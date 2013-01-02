@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <sstream>
@@ -15,6 +16,47 @@
 
 
 using namespace ccdb;
+
+
+/**
+	
+ * Ansi C "itoa" based on Kernighan & Ritchie's "Ansi C"
+ * with slight modification to optimize for specific architecture:
+ */
+	
+void strreverse(char* begin, char* end) {
+	char aux;
+	while(end>begin) aux=*end, *end--=*begin, *begin++=aux;
+	
+}
+	
+void itoa(int value, char* str, int base) {
+	
+	static char num[] = "0123456789abcdefghijklmnopqrstuvwxyz";	
+	char* wstr=str;	
+	int sign;	
+	div_t res;
+	
+	// Validate base
+	if (base<2 || base>35){ *wstr='\0'; return; }
+	
+	// Take care of sign
+	if ((sign=value) < 0) value = -value;
+	
+	// Conversion. Number is reversed.
+	do {
+		res = div(value,base);
+		*wstr++ = num[res.rem];
+	
+	}while(value=res.quot);
+	
+	if(sign<0) *wstr++='-';
+	*wstr='\0';
+	
+	// Reverse string
+	strreverse(str,wstr-1);
+	
+}
 
 #pragma region constructors
 
@@ -1147,10 +1189,10 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
         "AND `constantSets`.`constantTypeId` ='"+string(tableIdBuf)+"' ";
     
     //time in querY?
-    if(time!=0)
+    if(time>0)
     {
         char timeBuf[32];
-        itoa(time, timeBuf, 10);
+        sprintf(timeBuf,"%lu",time);
         query=query + "AND UNIX_TIMESTAMP(`assignments`.`created`) <= '"+string(timeBuf)+"' ";
     }
 
@@ -1175,7 +1217,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	if(!FetchRow())
 	{
 		Error(CCDB_ERROR_NO_ASSIGMENT,"MySQLDataProvider::GetAssignmentShort(int, const string&, time_t, const string&)", 
-            StringUtils::Format("No data was selected. Table '%s' for run='%i', timestampt='%ui' and variation='%s' ", path.c_str(), run, time, variationName.c_str()));
+            StringUtils::Format("No data was selected. Table '%s' for run='%i', timestampt='%lu' and variation='%s' ", path.c_str(), run, time, variationName.c_str()));
 		return NULL;
 	}
 
