@@ -31,8 +31,8 @@ Or you can add next lines to your .bashrc
  1. With SQLite and MySQL support (default)
  2. With SQLite support only. 
  
- Since MySql is supposed to be a main central database, MySQL is used by default. 
- However compiling SQLite version only doesn't require any dependencies except pthread.
+ Since MySql is supposed to be a main central database, MySQL+SQLite is used by default. 
+ However compiling SQLite only version, doesn't require any dependencies except pthread.
  
  1. To compile CCDB by default:
 
@@ -42,7 +42,7 @@ Or you can add next lines to your .bashrc
     scons
     
     
- 2. To compile CCDB with no dependencies and SQLite support only
+ 2. To compile CCDB with no MySQL dependencies and SQLite support only
 
 ##RUN CODE:
 
@@ -66,20 +66,11 @@ Or you can add next lines to your .bashrc
 
 ##RUN CODE:
 
-      mysql -u root -p <$CCDB_HOME/mysql/ccdb.mysql.sql
-
- Database ccdb will be created and filled with tables and default records.
- 
- HallD constants are stored in halld-<MM-DD-YYY>.mysql.sql file. To fill the 
- database with the latest Hall D constants:
-
- ##RUN CODE:
-
-      mysql -u root -p ccdb <$CCDB_HOME/mysql/halld-11-10-2011.mysql.sql
+      mysql -u root -p <$CCDB_HOME/sql/ccdb.mysql.sql
  
  By default CCDB tries to connect by using 'ccdb_user' user name with no password 
- So You might whant to create such user or specify connection string explicitly later
-
+ So one might whant to create such user. 
+ 
  To create the user for development purposes use sql command like this
 
 ##RUN CODE:
@@ -91,16 +82,13 @@ Or you can add next lines to your .bashrc
 
 
   Adjust mysql configuration *max_allowed_packet* for bigger value i.e 32M in order
-  to be able to get large data tables from the CCDB
-
-
-##RUN CODE:
- 
-     sudo echo max_allowed_packet=32M >> /etc/my.cnf 
-	 
- (If you encounter an error while running mysql after that:
-  "Found option without preceding group in config file: /etc/my.cnf"
-  open file /etc/my.cnf and add [mysqld] prior max_allowed_packet)
+  to be able to get large data tables from the CCDB, set 
+  
+   max_allowed_packet=32M 
+  to [mysqld] section of /etc/my.cnf
+  
+  if you don't have /etc/my.cnf in your system yet, create one and add [mysqld] in the 
+  beginning.
 
 
 	 
@@ -110,7 +98,7 @@ Or you can add next lines to your .bashrc
 
 ##RUN CODE:
 
-     . $CCDB_HOME/bin/tests_ccdb
+     . $CCDB_HOME/bin/test_ccdb_lib
 
 You should see ccdb unit test running and successfully complete.
 
@@ -159,7 +147,7 @@ The packages needed to compile CCDB for Ubuntu:
 (tested on ubuntu 11.10, mint 12)
 
 ##RUN CODE:
-	 apt-get install mysql-server scons python-dev libmysqlclient-dev
+	 apt-get install mysql-server scons libmysqlclient-dev
 
 
  
@@ -169,4 +157,4 @@ Any questions, suggestions or discussions:
 
 Dmitry romanov
 JLab id: romanov
-757-269-5332
+757-269-6931
