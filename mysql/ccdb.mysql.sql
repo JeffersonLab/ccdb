@@ -320,7 +320,7 @@ START TRANSACTION;
 USE `ccdb`;
 INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (1, '2012-07-30 23:48:42', '2012-07-30 23:48:42', 1, 1, NULL, 1, 2, 'Test assignment for software tests');
 INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (2, '2012-08-30 23:48:42', '2012-08-30 23:48:42', 3, 2, NULL, 2, 2, 'Test assignment for software tests 2');
-INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (3, '2012-09-30 23:48:42', '2012-09-30 23:48:42', 2, 1, NULL, 3, 2, 'Test assignment for software tests 3');
+INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (3, '2012-09-30 23:48:42', '2012-09-30 23:48:42', 3, 1, NULL, 3, 2, 'Test assignment for software tests 3');
 INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (4, '2012-10-30 23:48:42', '2012-10-30 23:48:42', 1, 1, NULL, 4, 2, 'Test assignment for software tests 4');
 INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (5, '2012-10-30 23:48:43', '2012-10-30 23:48:43', 4, 1, NULL, 5, 2, 'Test assignment for software tests 5');
 

@@ -38,7 +38,6 @@ TEST_CASE("CCDB/MySQLDataProvider/Variations","Variations/tests")
     REQUIRE(variation->GetName()=="default");
     REQUIRE(variation->GetParentDbId()==0);
     REQUIRE(variation->GetParent()==NULL);
-    delete variation;
 
     //lets try to get default variation
     variation = prov->GetVariation("default");

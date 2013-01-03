@@ -338,7 +338,7 @@ string & ccdb::PathUtils::MakeAbsolute( string &path )
      * @return   void
      */
 
-    if(IsAbsolute(path)) path.insert(0,1,'/');
+    if(!IsAbsolute(path)) path.insert(0,1,'/');
     return path;
 }
 //______________________________________________________________________________
@@ -346,7 +346,7 @@ bool ccdb::PathUtils::IsAbsolute( const string &path )
 {
     /** @brief Check if the path is absolute - starts with /
      */
-    return (path.length()>0 && path[0]!='/');
+    return (path.length()>0 && path[0]=='/');
 }
 
 //______________________________________________________________________________

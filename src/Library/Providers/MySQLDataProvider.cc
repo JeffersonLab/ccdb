@@ -18,46 +18,6 @@
 using namespace ccdb;
 
 
-/**
-	
- * Ansi C "itoa" based on Kernighan & Ritchie's "Ansi C"
- * with slight modification to optimize for specific architecture:
- */
-	
-void strreverse(char* begin, char* end) {
-	char aux;
-	while(end>begin) aux=*end, *end--=*begin, *begin++=aux;
-	
-}
-	
-void itoa(int value, char* str, int base) {
-	
-	static char num[] = "0123456789abcdefghijklmnopqrstuvwxyz";	
-	char* wstr=str;	
-	int sign;	
-	div_t res;
-	
-	// Validate base
-	if (base<2 || base>35){ *wstr='\0'; return; }
-	
-	// Take care of sign
-	if ((sign=value) < 0) value = -value;
-	
-	// Conversion. Number is reversed.
-	do {
-		res = div(value,base);
-		*wstr++ = num[res.rem];
-	
-	}while(value=res.quot);
-	
-	if(sign<0) *wstr++='-';
-	*wstr='\0';
-	
-	// Reverse string
-	strreverse(str,wstr-1);
-	
-}
-
 #pragma region constructors
 
 ccdb::MySQLDataProvider::MySQLDataProvider(void)
@@ -70,6 +30,7 @@ ccdb::MySQLDataProvider::MySQLDataProvider(void)
 	mLastFullQuerry="";
 	mLastShortQuerry="";
     mLastVariation = NULL; 
+    
 }
 
 
@@ -1040,12 +1001,9 @@ Variation* ccdb::MySQLDataProvider::GetVariation( const string& name )
 Variation* ccdb::MySQLDataProvider::GetVariationById(int id)
 {
     if(mVariationsById.find(id) != mVariationsById.end()) return mVariationsById[id];
-
-    char binary_str[31];
-    (void)itoa(id, binary_str, 10);
-
+    
     ClearErrors(); //Clear error in function that can produce new ones
-    return SelectVariation("`id`= " + string(binary_str) + "");
+    return SelectVariation("`id`= " + StringUtils::IntToString(id) + "");
 }
 
 /**
@@ -1164,15 +1122,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
     }
 
     //run number to string
-    char runBuf[32];
-    itoa(run, runBuf, 10);
-
-    //dir id to string
-    char tableIdBuf[32];
-    itoa(table->GetId(), tableIdBuf, 10);
-
-    char varIdBuf[32];
-    itoa(variation->GetId(), varIdBuf, 10);
+    string runStr = StringUtils::IntToString(run);
 
 	//ok now we must build our mighty query...
 	string query=
@@ -1183,10 +1133,10 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
         "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
         "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
         "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
-        "WHERE  `runRanges`.`runMin` <= '"+string(runBuf)+"' "
-        "AND `runRanges`.`runMax` >= '"+string(runBuf)+"' "
-        "AND `assignments`.`variationId`= '"+string(varIdBuf)+"' "
-        "AND `constantSets`.`constantTypeId` ='"+string(tableIdBuf)+"' ";
+        "WHERE  `runRanges`.`runMin` <= '"+runStr+"' "
+        "AND `runRanges`.`runMax` >= '"+runStr+"' "
+        "AND `assignments`.`variationId`= '"+StringUtils::IntToString(variation->GetId())+"' "
+        "AND `constantSets`.`constantTypeId` ='"+StringUtils::IntToString(table->GetId())+"' ";
     
     //time in querY?
     if(time>0)

@@ -529,12 +529,17 @@ bool ccdb::SQLiteDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTa
 	string limitAddon = PrepareLimitInsertion(take, startWith);
 	
 	//combine query
-	string query = StringUtils::Format("SELECT `id`, strftime('%%s', `created`, 'localtime')  as `created`, strftime('%%s', `modified`, 'localtime') as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM typeTables WHERE name LIKE '%s' ESCAPE '\\' %s ORDER BY `name` %s;",
+	string query = StringUtils::Format("SELECT `id`, strftime('%%s', `created`, 'localtime')  as `created`, strftime('%%s', `modified`, 'localtime') as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM typeTables WHERE name LIKE '%s' ESCAPE '\\' %s ORDER BY `name` %s;",
 		likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
        
 	// prepare the SQL statement from the command line
 	int result = sqlite3_prepare_v2(mDatabase, query.c_str(), -1, &mStatement, 0);
-	if( result ) { ComposeSQLiteError(funcName); sqlite3_finalize(mStatement); return NULL; }
+	if( result ) 
+    { 
+        Error(CCDB_ERROR_QUERY_PREPARE, funcName,ComposeSQLiteError(funcName)); 
+        sqlite3_finalize(mStatement); 
+        return NULL; 
+    }
 
 	mQueryColumns = sqlite3_column_count(mStatement);
 
@@ -1112,10 +1117,7 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
         Error(CCDB_ERROR_NO_TYPETABLE, "SQLiteDataProvider::GetAssignmentShort", "Type table was not found: '"+path+"'" );
         return NULL;
     }
-
-    //retrieve name of our constant table 
-    string tableName = PathUtils::ExtractObjectname(path);
-
+    
     //get variation
     Variation* variation = GetVariation(variationName);
     if(!variation)
@@ -1137,7 +1139,7 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
         "AND `runRanges`.`runMax` >= ?1 "
         "AND `assignments`.`variationId`= ?2 "
         "AND  `constantSets`.`constantTypeId` =?3 " + 
-        (time>0)? string("AND  `assignments`.`created` <= datetime(?4, 'unixepoch', 'localtime') ") : string() +
+        ((time>0)? string("AND  `assignments`.`created` <= datetime(?4, 'unixepoch', 'localtime') ") : string()) +
         "ORDER BY `assignments`.`id` DESC "
         "LIMIT 1 ");
 		
