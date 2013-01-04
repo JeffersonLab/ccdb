@@ -1,4 +1,4 @@
-﻿#ifndef _StringUtils_
+#ifndef _StringUtils_
 #define _StringUtils_
 
 #ifdef WIN32
@@ -240,7 +240,7 @@ public:
 	}
 
     /** itoa implementation for string
-     *  C++ version 0.4 char* style "itoa": Written by Lukás Chmela 
+     *  C++ version 0.4 char* style "itoa": Written by Luk�¡s Chmela 
      *  Released under GPLv3.
      * @remark:
      * It is proven by benchmarking that writing int to C buffer and making it a string at the end is the fastest way of getting string from int
@@ -249,7 +249,7 @@ public:
     {
         /**
 	     * C++ version 0.4 char* style "itoa":
-	     * Written by Lukás Chmela
+	     * Written by Luk�¡s Chmela
 	     * Released under GPLv3.
 	     */
          
