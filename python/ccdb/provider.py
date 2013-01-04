@@ -1005,7 +1005,7 @@ class AlchemyProvider(object):
         #filter by date and time
         if  date_and_time is not None:
             assert isinstance(date_and_time, datetime)
-            query = query.filter(ConstantSet.created <= date_and_time)
+            query = query.filter(Assignment.created <= date_and_time)
 
         #sort query
         query = query.order_by(desc(Assignment.id))
