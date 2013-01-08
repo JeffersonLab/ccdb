@@ -272,8 +272,8 @@ def process_directories(processing_dir):
     #for xml_name in xml_dirs_names:
     #    print xml_name
     #create_directory(dir, '/')
-
-    pass
+    print "==================================================================================================="
+    print "CONVERSION IS SUCCESSFULL"
 
 #----------------------------------
 def create_directory(dir_name, parent_path):
