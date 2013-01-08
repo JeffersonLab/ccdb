@@ -4,6 +4,7 @@
 \usepackage{epstopdf}
 \usepackage{listings}
 \usepackage{parskip}
+\usepackage{slashbox}
 
 \title{Calibration Constants Database (CCDB) package documentation \\
 ~\\
@@ -113,7 +114,7 @@ The "/FDC/driftvelocity/timewalk\_parameters" parameters may have members
 identified by either name or position. For example, it may contain 3 values:
 "slope", "offset", and "exponent". By contrast, a set of constants with a
 namepath "/FDC/CathodeStrips/pedestals" may have 100 values identified simply
-as "0", "1", "2", "3", ...
+as ``0", ``1", ``2", ``3", ...
 
 \textbf{Namepath format}:\\
 Allowed symbols are a-z, A-Z, 0-9, \_ and -. There is no space or special symbols
@@ -151,17 +152,18 @@ and database validation of variation names.
 
 \subsection{Variations hierarchy}
 
-
-
 The variation feature could be very flexible and helpfull. From the other point of view
 it could be a 
 
-1. 
-Lets say we have 3 data tables:
-table1, 
-table2, 
-table3. 
+\begin{enumerate} 
+\item Lets say we have 3 data tables:
+\begin{verbatim}
+table1 
+table2 
+table3
+\end{verbatim}
 Each table has some default data1, data2, data3 in it. 
+\begin{verbatim}
 +===================
 variation || default
  request  ||
@@ -169,21 +171,23 @@ variation || default
  table1   ||  data1
  table2   ||  data2
  table3   ||  data3
+\end{verbatim}
  
 This means that when somebody call 
 calibration->GetData("table1"...)  - data1 is returned. 
 
-2.
-Now lets bring variations to the scene. Mr John wants to experiment with 
+\item Now lets bring variations to the scene. Mr John wants to experiment with 
 constants in table2. So Mr John create a variation named 'john'. 
 When a variation is created it should have some parent. If no parent is 
 explicitly specified, then the 'default' variation is set as parent. 
 
 So now we have a variations hierarchy:
+\begin{verbatim}
 "default" <- "john" 
+\end{verbatim}
 
-Mr John adds data to table2 in the jnon variation.  So now we have:
-
+Mr John adds data to table2 in the john variation.  So now we have:
+\begin{verbatim}
 +================================
 variation || default | john
  request  ||         |
@@ -191,33 +195,41 @@ variation || default | john
  table1   ||  data1  |
  table2   ||  data2  | data-john
  table3   ||  data3  |
+\end{verbatim}
  
 For all regular users, who doesn't specify that want to work with John's data, a call:
+\begin{verbatim}
  calibration->GetData("table2"...) //returns "data2".
- 
+\end{verbatim}
+
 But If one runs JANA with environment variatble
+\begin{verbatim}
  JANA_CONTEXT="variation:john"
+\end{verbatim}
 
 Then data from john variation will be used whenever it is possible. 
 So when "table2" is requested, "data-john" is returned. But when table1 is requested, 
 there is no specific data in john variation for table1, so ccdb goes looking data in parent 
-variation which is the 'default' variation. So data1 is returned. 
+variation which is the ``default'' variation. So data1 is returned. 
 
 So once again:
-if one runs JANA with JANA_CONTEXT="variation:john", then requests:
+if one runs JANA with {\tt JANA\_CONTEXT="variation:john"}, then requests:
+\begin{verbatim}
 calibration->GetData("table1"...) //returns "data1"
 calibration->GetData("table2"...) //returns "data-john"
 calibration->GetData("table3"...) //returns "data3"
+\end{verbatim}
 
 
-3.
-Mr Bill whanted to use John data but tune table3 data to work with "data-john". Mr Bill 
+\item Mr Bill whanted to use John data but tune table3 data to work with "data-john". Mr Bill 
 created 'bill' variation with 'john' variation as parent. 
 So now we have a variations hierarchy:
+\begin{verbatim}
 "default" <- "john" <- "bill"
+\end{verbatim}
 
 Then Mr Bill create "data-bill" set of constants for "table3" and variation "bill".
-
+\begin{verbatim}
 +============================================
 variation || default | john      | bill
  request  ||         |           |
@@ -225,22 +237,23 @@ variation || default | john      | bill
  table1   ||  data1  |           |
  table2   ||  data2  | data-john |
  table3   ||  data3  |           | data-bill
+\end{verbatim}
  
 Lets see how requests will work if one specifies "bill" variation. 
-If "table3" is requested, then "data-bill" is returned.
-If "table2" is requested, there is no data for table3 and "bill" variation, so 
-ccdb goes looking for "bill" parent, whitch is "jhon" variation. "john" variation has
-"data-john" for "table2" so "data-john" is returned. 
-If "table1" is requested, there is no other data than in "default" variation which
-is on top of variation hierarhy, so "data1" will be raturned. 
+If ``table3" is requested, then ``data-bill" is returned.
+If ``table2" is requested, there is no data for table3 and ``bill" variation, so 
+ccdb goes looking for ``bill" parent, whitch is ``john" variation. ``john" variation has
+``data-john" for ``table2" so ``data-john" is returned. 
+If ``table1" is requested, there is no other data than in ``default" variation which
+is on top of variation hierarhy, so ``data1" will be returned. 
 Summarizing:
-JANA_CONTEXT="variation:bill"
+\begin{verbatim}
+JANA\_CONTEXT="variation:bill"
 calibration->GetData("table1"...) //returns "data1"
 calibration->GetData("table2"...) //returns "data-john"
 calibration->GetData("table3"...) //returns "data-bill"
- 
-
-
+\end{verbatim}
+\end{enumerate} 
 
 \begin{tabular}{|l||*{5}{c|}}\hline
 \backslashbox{Room}{Date}
@@ -250,8 +263,6 @@ Meeting Room &&&&&\\\hline
 Auditorium &&&&&\\\hline
 Seminar Room &&&&&\\\hline
 \end{tabular}
-
-\end{document} 
 
 
 % Data requests
@@ -379,7 +390,7 @@ So, CCDB defaults and priorities (1 - highest)
 %Run number:
 \textbf{Run number:}
 1. Run number specified in a request
-(if you use "/path/to/data:100" request, constants for run 100 will be returned
+(if you use ``/path/to/data:100" request, constants for run 100 will be returned
 dependless of the run being processed)
 2. Software set global default run number.
 (if 10200 run is being processed and you use "/path/to/data" data for run \#
