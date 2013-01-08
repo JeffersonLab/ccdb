@@ -87,7 +87,7 @@ As a management tool and as a data provider CCDB allows:
 \newpage
 \section{Basic concepts}\label{sec:basic_concepts}
 
-CCDB basic usage concepts and ccdb console tool for managing CCDB contents
+CCDB basic usage concepts and CCDB console tool for managing CCDB contents
 
 
 % Data structure
@@ -118,7 +118,7 @@ as ``0", ``1", ``2", ``3", ...
 
 \textbf{Namepath format}:\\
 Allowed symbols are a-z, A-Z, 0-9, \_ and -. There is no space or special symbols
-allowed in the namespath. Such considerations simplifies the console management
+allowed in the namepath. Such considerations simplifies the console management
 and database validation of namepath objects.
 
 
@@ -152,7 +152,7 @@ and database validation of variation names.
 
 \subsection{Variations hierarchy}
 
-The variation feature could be very flexible and helpfull. From the other point of view
+The variation feature could be very flexible and helpful. From the other point of view
 it could be a 
 
 \begin{enumerate} 
@@ -202,14 +202,14 @@ For all regular users, who doesn't specify that want to work with John's data, a
  calibration->GetData("table2"...) //returns "data2".
 \end{verbatim}
 
-But If one runs JANA with environment variatble
+But If one runs JANA with environment variable
 \begin{verbatim}
  JANA_CONTEXT="variation:john"
 \end{verbatim}
 
 Then data from john variation will be used whenever it is possible. 
 So when "table2" is requested, "data-john" is returned. But when table1 is requested, 
-there is no specific data in john variation for table1, so ccdb goes looking data in parent 
+there is no specific data in john variation for table1, so CCDB goes looking data in parent 
 variation which is the ``default'' variation. So data1 is returned. 
 
 So once again:
@@ -221,7 +221,7 @@ calibration->GetData("table3"...) //returns "data3"
 \end{verbatim}
 
 
-\item Mr Bill whanted to use John data but tune table3 data to work with "data-john". Mr Bill 
+\item Mr Bill wanted to use John data but tune table3 data to work with "data-john". Mr Bill 
 created 'bill' variation with 'john' variation as parent. 
 So now we have a variations hierarchy:
 \begin{verbatim}
@@ -242,10 +242,10 @@ variation || default | john      | bill
 Lets see how requests will work if one specifies "bill" variation. 
 If ``table3" is requested, then ``data-bill" is returned.
 If ``table2" is requested, there is no data for table3 and ``bill" variation, so 
-ccdb goes looking for ``bill" parent, whitch is ``john" variation. ``john" variation has
+CCDB goes looking for ``bill" parent, which is ``john" variation. ``john" variation has
 ``data-john" for ``table2" so ``data-john" is returned. 
 If ``table1" is requested, there is no other data than in ``default" variation which
-is on top of variation hierarhy, so ``data1" will be returned. 
+is on top of variation hierarchy, so ``data1" will be returned. 
 Summarizing:
 \begin{verbatim}
 JANA\_CONTEXT="variation:bill"
@@ -278,7 +278,7 @@ There are two problems related to data access, CCDB tries to solve:
   \footnote{
     The first thing that comes to mind when one hears "unique key" might be
     "lets use incremental indexes". But CCDB is database independent. Indexes
-    which are good to use with databases become uneasy for standalone ACSII
+    which are good to use with databases become uneasy for standalone ASCII
     files. Moreover, moving indexes from one database to another might be a
     problem. And, last but not least, indexes are good for machines. If an
     operator has an index 1114211 it tells nothing to him and could be easily
@@ -377,7 +377,7 @@ Text is to be written.
 There are two general cases of using the requests:
 \begin{enumerate}
   \item In physics software to read out constants
-  \item When one manages constants (with ccdb console, python or other)
+  \item When one manages constants (with CCDB console, python or other)
 \end{enumerate}
 \vspace{1 em}
 
@@ -391,7 +391,7 @@ So, CCDB defaults and priorities (1 - highest)
 \textbf{Run number:}
 1. Run number specified in a request
 (if you use ``/path/to/data:100" request, constants for run 100 will be returned
-dependless of the run being processed)
+regardless of the run being processed)
 2. Software set global default run number.
 (if 10200 run is being processed and you use "/path/to/data" data for run \#
  10200 will be returned)
@@ -411,7 +411,7 @@ dependless of the run being processed)
 1. Request specified time will be used
 2. Current time
 
-When one uses ccdb console tool in interactive mode, one can set the default run number by running 'run' command
+When one uses CCDB console tool in interactive mode, one can set the default run number by running 'run' command
 
 Example:
 \begin{verbatim}
@@ -420,7 +420,7 @@ Example:
 > run                   # you can check what run is set by default
 100
 \end{verbatim}
-C++ API section will overview how to set defult run
+C++ API section will overview how to set default run
 
 
 % Connection strings
@@ -463,7 +463,7 @@ Here is the order of how ccdb gets the connection string:
   \item if \textbf{CCDB\_CONNECTION} environment variable is set it is used overwriting
         the default connection string
 
-  \item if -c or --connection flag is given in command promt it is used overwriting
+  \item if -c or --connection flag is given in command prompt it is used overwriting
         all other.
 \end{enumerate}
 
@@ -636,7 +636,7 @@ Example 2. Interactive mode:
   \item executing next commands will reproduce Example 1 step by step.
 
   \item  The same as in posix shell, ccdb interactive mode have the current
-         working directory, with relative and absolute pathes.
+         working directory, with relative and absolute paths.
          pwd command shows the current working directory.
 
   \item to exit interactive mode enter 'q', 'quit' or press ctrl+D
@@ -717,7 +717,7 @@ Assuming that user is in interactive mode, one may categorize the commands:
 
 
 \emph{To navigate directories}
-pwd - prints curent directory
+pwd - prints current directory
 cd  - switch to specified directory
 ls  - list objects in the directory (wildcards are allowed)
 mkdir - creates directory
@@ -778,7 +778,7 @@ CCDB C++ library consist of separate levels (see fig. \ref{pic:cpp_api_levels}).
 \item \textbf{C++ User API} - This level is \textit{most probably what any user},
       who is not bound to JANA, \textit{needs}. The API provides simple
       functionality of getting  constants. It automates connections number,
-      multithreading, data source selection, etc.
+      multi-threading, data source selection, etc.
 
 \item \textbf{Low level API} - provides all sorts of low level functionality for
        managing data and CCDB internals. This level considered to be internal
@@ -822,8 +822,8 @@ Possible future outline:
 \item introduction
 \item design logic
 \item ccdb shell interface
-\item C++ api
-\item jana api
+\item C++ API
+\item jana API
 \item examples
   \begin{enumerate}
   \item user
