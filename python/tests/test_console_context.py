@@ -22,7 +22,7 @@ class ConsoleContextTests(unittest.TestCase):
     def setUp(self):
         ccdb_path = get_ccdb_home_path()
 
-        self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "mysql", "ccdb.sqlite")
+        self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
 
         #initialize but disable colorama

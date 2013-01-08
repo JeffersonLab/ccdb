@@ -14,7 +14,7 @@ class AlchemyProviderTest(unittest.TestCase):
     def setUp(self):
         ccdb_path = get_ccdb_home_path()
 
-        self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "mysql", "ccdb.sqlite")
+        self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
         self.provider = AlchemyProvider()
         self.provider.logging_enabled = False
@@ -43,6 +43,7 @@ class AlchemyProviderTest(unittest.TestCase):
         #search directories
         dirs = self.provider.search_directories("t??t_va*", "/test")
         assert (len(dirs)!=0)
+
 
         dirs = self.provider.search_directories("*", "/test")
         assert (len(dirs)>=2)
@@ -137,6 +138,8 @@ class AlchemyProviderTest(unittest.TestCase):
         #now lets get all tables from the directory.
         tables = self.provider.search_type_tables("*", "/test/test_vars")
         self.assertNotEqual(len(tables),0)
+        for table in tables:
+            self.assertEqual(table.path, "/test/test_vars"+"/"+table.name)
 
         #now lets get all tables from root directory.
         tables = self.provider.search_type_tables("t*", "/")
