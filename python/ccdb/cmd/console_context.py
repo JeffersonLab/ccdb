@@ -600,7 +600,7 @@ class ConsoleContext(object):
     def print_interactive_intro(self):
         print """
 +--------------------------+
-  CCDB shell v.0.6
+  CCDB shell v.0.7
   HallD JLab
 +--------------------------+
        """

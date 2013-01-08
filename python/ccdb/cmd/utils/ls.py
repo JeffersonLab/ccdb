@@ -1,7 +1,7 @@
 import posixpath
 import logging
 
-from ccdb.model import Directory
+from ccdb.model import Directory, TypeTable
 from ccdb.provider import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 
@@ -65,8 +65,13 @@ class List(ConsoleUtilBase):
             return
 
         #dump variations
-        if "-v" in args or "--variation" in args:
+        if "-v" in args or "--variations" in args:
             self.print_variations()
+            return
+
+        #dump type_tables
+        if "-t" in args or "--tables" in args:
+            self.print_tables()
             return
 
         if len(args) > 0:
@@ -244,11 +249,25 @@ class List(ConsoleUtilBase):
             print var.name
             #TODO more sophisticated output
 
-
+    def print_tables(self):
+        tables = self.context.provider.search_type_tables("*")
+        for table in tables:
+            assert (isinstance(table, TypeTable))
+            print(str(table.parent_dir.path)+"==>"+table.path)
 
     def print_help(self):
         "Prints help of the command"
-        print "Displays directories and tables for current directory"
+        print """
+Displays directories and tables for current directory
+
+keys:
+    -v or --variations - prints all variations
+    -t or --tables     - prints full path for all tables
+          --dump       - prints all directories
+          --dump-tree  - draws directory tree
+"""
+
+
 
 
 
