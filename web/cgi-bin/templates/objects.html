@@ -1,0 +1,81 @@
+@extends("master.html")
+@require(site_root, dir_tree_html)
+
+@def title():
+CCDB - Objects Browser
+@end
+
+@def content():
+<link rel="stylesheet" href="@site_root/js/jquery_treeview/jquery.treeview.css" />
+<link rel="stylesheet" href="@site_root/js/jquery_treeview/jquery.treeview.css" />
+<script src="@site_root/js/jquery.cookie.js" type="text/javascript"></script>
+<script src="@site_root/js/jquery_treeview/jquery.treeview.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="@site_root/css/jquery-ui/jquery-ui.css" />
+<script src="@site_root/js/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+    function initTrees() {
+        $("#browser").treeview(
+                {
+                    collapsed: true,
+                    persist: "cookie"
+                }
+        );
+    }
+    $(document).ready(function () {
+        initTrees();
+        $( "#dialog" ).dialog({
+                                  autoOpen: false,
+                                  width: 500,
+                                  height: 250
+
+
+                              });
+        $(".object_more_info").click(function() {
+            //get dialog box
+            var dialog = $( "#dialog");
+
+            //Get content
+
+            var title = $(this).attr("rel");
+            var content = $(this).parent().next().html();
+
+            //Display
+            dialog.html(content);
+            dialog.dialog( "option", "title", title);
+            dialog.dialog("open");
+        });
+
+        //SPOILER
+        //This code is for spoilers that reveals source code in example
+        $("span.spoiler").hide();
+
+        $('<a class="reveal">Reveal Spoiler &gt;&gt;</a> ').insertBefore('.spoiler');
+
+        $("a.reveal").click(function(){
+            alert("here!");
+            $(this).parents("p").children("span.spoiler").fadeIn(2500);
+            $(this).parents("p").children("a.reveal").fadeOut(600);
+        });
+
+
+    });
+
+</script>
+@dir_tree_html
+
+<div id="dialog">
+    <table>
+        <tr>
+            <td style="width:auto">Full path:</td><td style="width: 100%">/some/thing</td>
+        </tr>
+        <tr>
+            <td>Created:</td><td>created</td>
+        </tr>
+        <tr>
+            <td>Modified:</td><td>10/238</td>
+        </tr>
+    </table>
+</div>
+@end

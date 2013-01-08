@@ -1,0 +1,111 @@
+#!/usr/bin/env python
+print "Content-Type: text/html; charset=ISO-8859-1"
+print ""
+
+
+import ccdb_web_config as config
+config.python_config()
+
+import os
+
+#------------ RENDER --------------------------------
+from wheezy.template.engine import Engine
+from wheezy.template.ext.core import CoreExtension
+from wheezy.template.loader import FileLoader
+
+search_path = ['templates/']
+engine = Engine(
+    loader=FileLoader(search_path),
+    extensions=[CoreExtension()]
+)
+
+import ccdb
+prov = ccdb.AlchemyProvider()
+prov.connect(config.connection_string)
+
+d = prov.get_root_directory()
+
+def  render_dir_info(dir):
+    """
+    :type dir: ccdb.Directory
+    """
+    template = engine.get_template('objects_dir_info.html');
+    return template.render(
+        {
+            "id":str(dir.id),
+            "name":dir.name,
+            "path": dir.path,
+            "created": str(dir.created),
+            "modified": str(dir.modified),
+            "author":str(dir.author_id),
+            "comment":dir.comment if dir.comment else ""
+        })
+
+
+def  render_table_info(table):
+    """
+    :type table: ccdb.TypeTable
+    """
+    template = engine.get_template('objects_table_info.html');
+    return template.render(
+        {
+            "id":str(table.id),
+            "name":table.name,
+            "path": table.path,
+            "created": str(table.created),
+            "modified": str(table.modified),
+            "author":str(table.author_id),
+            "comment":table.comment if table.comment else ""
+        })
+
+
+def dir_to_ul(dir, level = 0):
+    """
+
+    :param dir: Directory
+    :type dir: ccdb.Directory
+    :return: String
+    :rtype; str
+    """
+
+    if not len(dir.sub_dirs) and not len(dir.type_tables): return ""
+
+    spaces = level * "      "
+    result = spaces + '<!-- ' + dir.name + '--> ' +  os.linesep +\
+             spaces + '<ul' +(' id="browser" class="filetree"' if level ==0 else '')+'>' +  os.linesep
+
+    #print subdirectories
+    for sub_dir in dir.sub_dirs:
+        assert (isinstance(sub_dir, ccdb.Directory))
+        result = result + '  <li> ' + os.linesep + render_dir_info(sub_dir) + os.linesep
+
+
+
+        if len(dir.sub_dirs):
+            result = result + dir_to_ul(sub_dir, level+1) +  os.linesep
+        result = result + spaces + '  </li>' +  os.linesep
+
+    #print type tables
+    for table in dir.type_tables:
+        assert(isinstance(table, ccdb.TypeTable))
+        result = result +\
+                 spaces + '  <li>' + os.linesep +\
+                 spaces + '    ' + render_table_info(table) + '</span>' +  os.linesep +\
+                 spaces + '  </li>' + os.linesep
+
+    #close
+    result = result + spaces + "</ul>" +  os.linesep
+    return result
+
+tree_html = "<!-- TREE -->" +  os.linesep + dir_to_ul(d,0) +  os.linesep
+
+
+template = engine.get_template('objects.html')
+sd = d.sub_dirs[0]
+print(template.render({
+    "site_url":config.site_url,
+    "site_cgi_root": config.site_cgi_root,
+    "site_root":config.site_root,
+    "dir_tree_html":tree_html
+}))
+

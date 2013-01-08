@@ -1,0 +1,80 @@
+#!/usr/bin/env python
+print "Content-Type: text/plain; charset=ISO-8859-1"
+print ""
+
+
+import ccdb_web_config as config
+config.python_config()
+
+import cgi
+
+#------------ RENDER --------------------------------
+from wheezy.template.engine import Engine
+from wheezy.template.ext.core import CoreExtension
+from wheezy.template.loader import FileLoader
+template_engine = Engine(loader=FileLoader(['templates/']), extensions=[CoreExtension()])
+template = template_engine.get_template('show_request.html')
+
+
+
+#------ CCDB DATABASE API-----------------------------
+import ccdb
+from ccdb.path_utils import ParseRequestResult, parse_request
+from ccdb.model import User
+
+prov = ccdb.AlchemyProvider()
+prov.connect(config.connection_string)
+
+
+assignment = None #this is the desired assignment
+variation = ""
+created   = ""
+author    = ""
+run_range = ""
+comment   = ""
+
+
+#get request from web form
+str_request = cgi.FieldStorage().getfirst("request", None)
+#str_request = "/test/test_vars/test_table:0:default:2012-10-30_23-48-41"
+
+if str_request:
+
+    #parse request and prepare time
+    request = parse_request(str_request)
+    assert isinstance(request, ParseRequestResult)
+    time = request.time if request.time_is_parsed else None
+
+    #query database for assignments for this request
+    assignments = prov.get_assignments(request.path, request.run, request.variation, time)
+
+    #get first assignment
+    if assignments and len(assignments)!=0 :
+        assignment = assignments[0]
+        assert (isinstance(assignment, ccdb.Assignment))
+
+        #print META information about the request
+        print("#meta full request: " + assignment.request)
+        print("#meta variation: " + assignment.variation.name)
+        print("#meta created: " + str(assignment.created))
+        print("#meta run range: " + str(assignment.run_range.min)+" - "  + (str(assignment.run_range.max) if assignment.run_range.max!=2147483647 else "inf."))
+        try:
+            print("#meta author: " + prov.session.query(User).filter(User.id == assignment.author_id).one().name) #TODO make provider proper function to handle author by id
+        except Exception as ex:
+            print ex
+
+        #print comment
+        comment = "#" + assignment.comment.replace("\n", "\n#") + "\n"
+        print("") #one empty line
+        print(comment)
+
+        #column names
+        print("#& " + " ".join([column.name for column in assignment.constant_set.type_table.columns]))
+
+        #print
+        for row in assignment.constant_set.data_table:
+            print(" ".join(row))
+
+
+
+

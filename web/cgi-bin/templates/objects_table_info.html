@@ -1,0 +1,13 @@
+@require(id, name, path, created, modified, author, comment)
+
+<span class="file"><a href="versions?table=@path" class="table_link">@name</a>&nbsp;&nbsp;<a class="tree_link object_more_info" rel="Table @name">?</a></span>
+<div style="display: none">
+    <table>
+        <tr style="color: gray"><td style="width:auto">DB ID:</td><td style="width: 100%">:&nbsp;&nbsp;&nbsp;@id</td></tr>
+        <tr><td style="font-weight: bolder">Full path </td><td>:&nbsp;&nbsp;&nbsp; @path</td></tr>
+        <tr><td>Created   </td><td>:&nbsp;&nbsp;&nbsp; @created</td></tr>
+        <tr><td>Modified  </td><td>:&nbsp;&nbsp;&nbsp; @modified</td></tr>
+        <tr><td>Author    </td><td>:&nbsp;&nbsp;&nbsp; @author</td></tr>
+        <tr><td>Comment   </td><td>:&nbsp;&nbsp;&nbsp; @comment</td></tr>
+    </table>
+</div>

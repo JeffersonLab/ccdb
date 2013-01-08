@@ -1,0 +1,52 @@
+@extends("master.html")
+@require(site_root, variations)
+
+@def title():
+CCDB - Variations list
+@end
+
+@def content():
+
+<link rel="stylesheet" href="@site_root/js/data_tables/media/css/jquery.dataTables.css" />
+<link rel="stylesheet" href="@site_root/js/data_tables/media/css/jquery.dataTables_themeroller.css" />
+<script src="@site_root/js/jquery.cookie.js" type="text/javascript"></script>
+<script src="@site_root/js/data_tables/media/js/jquery.dataTables.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#data_versions_table").dataTable( {
+                                                 "sPaginationType": "full_numbers",
+                                                 "aaSorting": [[ 1, "asc" ]]
+                                             } );
+
+
+    });
+
+</script>
+
+@if variations:
+
+<table id="data_versions_table" class="data_versions">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Created</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    @for variation in variations:
+    <tr>
+        <td>@variation.name</td>
+        <td>@variation.created!s</td>
+        <td>@variation.comment</td>
+    </tr>
+    @end
+    </tbody>
+</table>
+@else:
+No variations found
+@end
+@end
