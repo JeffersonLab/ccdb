@@ -1,13 +1,57 @@
 This manual asserts that ccdb is set and database is configured
 
-S T E P   1   -  M A K E
-==========================
+Installing ccdb web interface (web site) consists of 3 steps:
+1. Copy files to right site folders
+2. Edit configuration file
+3. Fill in your content
 
- make ccdb library for your system. 
- scons            - makes ccdb library located $CCDB_HOME/lib and test executable located in $CCDB_HOME/bin
 
+S T E P   1   -  C O P Y   S I T E
+==================================
+
+CCDB Web site uses python cgi scripts to access CCDB database and to generate html response. 
+These scripts and html templates should be installed in cgi-bin folder of the server. 
+
+When html is returned from the server it looks for additional content, like button pictures,
+styling information and java script. All pictures, css, js files should be installed in 
+regular www folder of the server. 
+
+Thus ccdb has two folders:
+$CCDB_HOME/web/cgi-bin
+$CCDB_HOME/web/www
+
+(One could configure server to run cgi in www folder and copy all contents of ccdb to the only folder. It is an option)
 
 ##RUN CODE:
 
-    cd $CCDB_HOME
-    scons web=1
+    cp -r $CCDB_HOME/web/cgi-bin/* /Your/server/cgi-bin forlder. 
+    cp -r $CCDB_HOME/web/www/*     /Your/server/www folder
+
+
+
+S T E P   2  -  C O N F I G U R E
+=================================
+
+The main configuration file for CCDB web site is cgi-bin/ccdb_web_config.py
+
+Fields of the file have description in comments. Please, review them all, because all of them are relevant for CCDB site to be run.
+
+
+
+S T E P   3  -  C O N T E N T
+=============================
+
+1. www/index.php file is the only content file in www directory. It serves to redirect from 
+   main page of the site to the cgi-bin/objects page. Edit file to set proper redirection
+   or delete file at all
+
+2. cgi-bin/templates/doc.html - contains content of the Documentation page. Most probably
+   one would like to set own links and text there. 
+
+3. cgi-bin/templates/master.html - contains main html content for all pages. Edit the page
+   to add links to top menu (for example) or footer text.
+
+
+
+L I V E   E X A M P L E S   O F   C O N F I G U R A T I O N
+===========================================================

@@ -1,0 +1,29 @@
+/* 
+    Document   : internal
+    Created on : Jan 2, 2011, 1:42:50 PM
+    Author     : diraven (divine.raven@gmail.com, http://www.diraven.com)
+    Description:
+        n/a
+*/
+
+root { 
+    display: block;
+}
+
+#d_header {
+  height: 50px;
+}
+
+div.brief {
+  height: 237px;
+  top: 35px;
+}
+
+#d_body div.content div.center{
+  width: 710px;
+}
+
+#d_body div.content div.center{
+  width: 710px;
+  text-align: justify;
+}
