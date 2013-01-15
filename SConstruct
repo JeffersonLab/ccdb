@@ -49,7 +49,10 @@ default_env = Environment(
     ENV = os.environ,
 )
 
-
+#Read user flag for using mysql dependencies or not
+if ARGUMENTS.get("clang","no")=="yes":	
+	default_env["CXX"] = "clang++"
+	default_env["ENV"]["TERM"]=os.environ["TERM"]
 
 #Export 'default' environment for everything that whishes to use it
 Export('default_env') 
