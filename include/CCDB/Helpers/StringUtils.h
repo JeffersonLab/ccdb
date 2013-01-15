@@ -218,26 +218,6 @@ public:
      */
 	static void LexicalSplit(std::vector<string>& tokens, const std::string& source);
 
-	 
-	/** @brief Prints object to string
-	 *
-	 * @param     obj Object to be converted to string. Should have << stream 
-	 * @return   String with value, if object doesn't have reloaded operator <<, return string::empty()
-	 */
-	template<class T>
-	static std::string ToString(const T& obj)
-	{
-		std::stringstream sstream (stringstream::out);
-		string result(string::empty());
-
-		try
-		{
-			sstream << obj;
-			result = sstream.str();
-		}
-		catch (std::exception ex) {	/*eat it*/}
-		return result;
-	}
 
     /** itoa implementation for string
      *  C++ version 0.4 char* style "itoa": Written by LukÃÂ¡s Chmela 
