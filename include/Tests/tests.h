@@ -8,11 +8,11 @@
 
 #ifndef WIN32
 #define TESTS_CONENCTION_STRING "mysql://ccdb_user@127.0.0.1:3306/ccdb"
-#define TESTS_SQLITE_STRING ( "sqlite://" + string(getenv("CCDB_HOME")) + "/mysql/ccdb.sqlite").c_str()
+#define TESTS_SQLITE_STRING ( "sqlite://" + string(getenv("CCDB_HOME")) + "/sql/ccdb.sqlite").c_str()
 
 #else
 #define TESTS_CONENCTION_STRING "mysql://ccdb_user@127.0.0.1:3306/ccdb"
-#define TESTS_SQLITE_STRING "sqlite://..\\..\\..\\mysql\\ccdb.sqlite"
+#define TESTS_SQLITE_STRING "sqlite://..\\..\\..\\sql\\ccdb.sqlite"
 #endif
 
 
