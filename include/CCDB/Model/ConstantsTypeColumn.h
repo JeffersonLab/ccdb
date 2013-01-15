@@ -139,8 +139,8 @@ private:
 
 	ConstantsTypeTable *mTypeTable; //ref to type table; 
 	
-	ConstantsTypeColumn(const ConstantsTypeColumn& rhs){}	
-	ConstantsTypeColumn& operator=(const ConstantsTypeColumn& rhs){}
+	ConstantsTypeColumn(const ConstantsTypeColumn& rhs);
+	ConstantsTypeColumn& operator=(const ConstantsTypeColumn& rhs);
 };
 
 }
