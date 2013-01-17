@@ -16,7 +16,7 @@ env = default_env.Clone()
 if env['PLATFORM'] == 'darwin':
     print
     print "Darwin platform is detected. Setting -install_name @rpath/libccdb.dylib"
-    env.Append(SHLINKFLAGS = ['-install_name @rpath/' + '${TARGET.file}'])
+    env.Append(SHLINKFLAGS = ['-install_name', '@rpath/'+'${TARGET.file}'])
     
      
 lib_target  = "ccdb"
