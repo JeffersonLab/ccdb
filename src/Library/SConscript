@@ -1,6 +1,6 @@
 
-Import('env')
-
+Import('default_env')
+env = default_env.Clone()
 #TODO move to normal debug\release modes
 
 #debugcflags = ['-W1', '-GX', '-EHsc', '-D_DEBUG', '/MDd']   #extra compile flags for debug
@@ -11,6 +11,14 @@ Import('env')
 
 #Configure environment to create ccdb_library
 
+
+#Mac Os X requires install_name flag to properly build 
+if env['PLATFORM'] == 'darwin':
+    print
+    print "Darwin platform is detected. Setting -install_name @rpath/libccdb.dylib"
+    env.Append(SHLINKFLAGS = ['-install_name @rpath/' + '${TARGET.file}'])
+    
+     
 lib_target  = "ccdb"
 lib_sources = [
     

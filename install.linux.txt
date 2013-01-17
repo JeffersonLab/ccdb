@@ -10,7 +10,7 @@ You can run script located at root of CCDB:
 
 The script will determine it's path and set all needed directories to run and link ccdb.
 
-Or you can add next lines to your .bashrc
+Or you can setup environment manually
 
 ##CODE FOR .bashrc:
 
@@ -18,7 +18,7 @@ Or you can add next lines to your .bashrc
     export CCDB_HOME=/path/to/ccdb/home/directory
 
     export LD_LIBRARY_PATH="$CCDB_HOME/lib":$LD_LIBRARY_PATH
-    export PYTHONPATH="$CCDB_HOME/python":"$CCDB_HOME/python/ccdb/ccdb_pyllapi/":$PYTHONPATH
+    export PYTHONPATH="$CCDB_HOME/python":$PYTHONPATH
     export PATH="$CCDB_HOME/bin":$
 
 
@@ -49,6 +49,13 @@ Or you can add next lines to your .bashrc
     cd $CCDB_HOME
     scons mysql=no
     
+ 3. To compile with clang, one can use 'clang=yes' flag
+ 
+##RUN CODE:
+    cd $CCDB_HOME
+    scons clang=yes
+
+ 
 
   S T E P   3   -   M Y S Q L
 =============================
@@ -61,7 +68,7 @@ Or you can add next lines to your .bashrc
 
  If You would like to install database on the local machine, you need to create
  a database (by default it is ment to be called ccdb). 
- mysql script $CCDB_HOME/mysql/ccdb.mysql.sql generates schema for you. 
+ mysql script $CCDB_HOME/sql/ccdb.mysql.sql generates schema for you. 
  MySQL-Workbench project with mysql schema is located in the same directory. 
 
 ##RUN CODE:
@@ -81,9 +88,8 @@ Or you can add next lines to your .bashrc
      exit;
 
 
-  Adjust mysql configuration *max_allowed_packet* for bigger value i.e 32M in order
-  to be able to get large data tables from the CCDB, set 
-  
+ Adjust mysql configuration *max_allowed_packet* for bigger value i.e 32M in order
+ to be able to get large data tables from the CCDB, set   
    max_allowed_packet=32M 
   to [mysqld] section of /etc/my.cnf
   
@@ -94,11 +100,12 @@ Or you can add next lines to your .bashrc
 	 
   A F T E R   I N S T A L L
 ===========================
- To test the CCDB installed correctly one might run tests_ccdb 
+ To test the CCDB installed correctly one might run CCDB unit tests
 
 ##RUN CODE:
 
      . $CCDB_HOME/bin/test_ccdb_lib
+     . $CCDB_HOME/bin/test_ccdb_python
 
 You should see ccdb unit test running and successfully complete.
 
@@ -123,6 +130,7 @@ interactive ccdb shell should be started
 Instructions of building website is in $CCDB_HOME/web/install.txt
 
 
+
   F E D O R A   D E P E N D E N C I E S
 =======================================
 The packages needed to compile CCDB for Fedora:
@@ -138,6 +146,7 @@ If you haven't configured mysql server:
 
      service mysqld start
      mysqladmin -u root -h password 'your-password'
+
 
 
    U B U N T U   D E P E N D E N C I E S

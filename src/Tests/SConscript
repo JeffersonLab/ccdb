@@ -2,8 +2,8 @@
  # Tests SConstcipt files
  #
  ##
-
-Import('env')
+Import('default_env')
+env = default_env.Clone()
 
 #TODO move to normal debug\release modes
 

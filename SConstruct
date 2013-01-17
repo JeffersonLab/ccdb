@@ -58,14 +58,10 @@ if ARGUMENTS.get("clang","no")=="yes":
 Export('default_env') 
 
 #Create 'working' environment
-env = default_env.Clone()
-env.Repository('src')
+default_env.Repository('src')
 
 #Attach SConsctipts
-SConscript('src/Library/SConscript', 'env', variant_dir='tmp/Library', duplicate=0)
-SConscript('src/Tests/SConscript', 'env', variant_dir='tmp/Tests', duplicate=0)
-#SConscript('src/Benchmarks/SConscript', 'env', variant_dir='tmp/Benchmarks', duplicate=0)
-SConscript('src/Web/SConscript', 'env', variant_dir='tmp/Web', duplicate=0)
-#SConscript('swig/SConscript', 'env', variant_dir='tmp/swig', duplicate=0)
-#SConscript('swig/SConscript', 'env', variant_dir='tmp/swig', duplicate=0)
+SConscript('src/Library/SConscript', 'default_env', variant_dir='tmp/Library', duplicate=0)
+SConscript('src/Tests/SConscript', 'default_env', variant_dir='tmp/Tests', duplicate=0)
+
 
