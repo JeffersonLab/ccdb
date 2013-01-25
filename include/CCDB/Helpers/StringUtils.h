@@ -220,7 +220,7 @@ public:
 
 
     /** itoa implementation for string
-     *  C++ version 0.4 char* style "itoa": Written by Lukás Chmela 
+     *  C++ version 0.4 char* style "itoa": Written by Lukas Chmela 
      *  Released under GPLv3.
      * @remark:
      * It is proved by benchmarking that writing int to C buffer and making it a string at the end is the fastest way of getting string from int
@@ -229,7 +229,7 @@ public:
     {
         /**
 	     * C++ version 0.4 char* style "itoa":
-	     * Written by Lukás Chmela
+	     * Written by Lukas Chmela
 	     * Released under GPLv3.
 	     */
          
