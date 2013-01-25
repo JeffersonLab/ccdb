@@ -64,7 +64,7 @@ public:
     static std::string Format(const char *va_(fmt), ...);
 	
 	
-	//static string	Format(const char *fmt, ...);			
+	//static string	Format(const char *fmt, ...);
 	
 	/**
 	 * @brief vprintf like string formatter
@@ -72,7 +72,7 @@ public:
 	 * vprintf like string formatter, based on @see vsprintf
 	 * The reason to implement this function is that 
 	 * except of sprintf and snprintf the string length 
-	 * is determined automathically
+	 * is determined automatically
 	 * @param fmt
 	 * @param ap
 	 * @return 
@@ -137,7 +137,7 @@ public:
 	 * Split
 	 *
 	 * @param     const std::string & s
-	 * @param     char delim
+	 * @param     char delimiters
 	 * @return   std::vector<std::string>
 	 */
 	static std::vector<std::string> Split(const std::string &s, const string& delimiters = " ");
@@ -171,21 +171,21 @@ public:
      * 
      * @remark
      * Handling inconsistencies and errors while readout parse time:
-     *  ●  No ending quote . If no ending “ is found, string value will be taken
+     *  -  No ending quote . If no ending " is found, string value will be taken
      *     until the end of line.
-     *  ●  Comment inside a string. Comment symbol inside the line is ignored. 
-     *     So if you have a record in the file “info #4” it will be read just
-     *     as “info #4” string
-     *  ●  Sticked string. In case of there is no spaces between symbols and
+     *  -  Comment inside a string. Comment symbol inside the line is ignored. 
+     *     So if you have a record in the file "info #4" it will be read just
+     *     as "info #4" string
+     *  -  Sticked string. In case of there is no spaces between symbols and
      *     an quotes, all will be merged as one string. I.e.:
      *     John" Smith" will be parsed as one value: "John Smith"
      *     John" "Smith will be parsed as one value: "John Smith"
      *     but be careful(!) not to forget to do a spaces between columns
-     *     5.14”Smith” will be parsed as one value “5.14Smith” that probably would
+     *     5.14"Smith" will be parsed as one value "5.14Smith" that probably would
      *     lead to errors if these were two different columns
-     *  ●  If data contains string fields they are taken into “...” characters. All “
-     *     inside string should be saved by \” symbol. All words and symbols
-     *     inside “...” will be interpreted as string entity.
+     *  -  If data contains string fields they are taken into "..." characters. All "
+     *     inside string should be saved by \" symbol. All words and symbols
+     *     inside "..." will be interpreted as string entity.
      *
      */
     static std::vector<string> LexicalSplit(const std::string& source);
@@ -199,21 +199,21 @@ public:
      * 
      * @remark
      * Handling inconsistencies and errors while readout parse time:
-     *  ●  No ending quote . If no ending “ is found, string value will be taken
+     *  -  No ending quote . If no ending " is found, string value will be taken
      *     until the end of line.
-     *  ●  Comment inside a string. Comment symbol inside the line is ignored. 
-     *     So if you have a record in the file “info #4” it will be read just
-     *     as “info #4” string
-     *  ●  Sticked string. In case of there is no spaces between symbols and
+     *  -  Comment inside a string. Comment symbol inside the line is ignored. 
+     *     So if you have a record in the file "info #4" it will be read just
+     *     as "info #4" string
+     *  -  Sticked string. In case of there is no spaces between symbols and
      *     an quotes, all will be merged as one string. I.e.:
      *     John" Smith" will be parsed as one value: "John Smith"
      *     John" "Smith will be parsed as one value: "John Smith"
      *     but be careful(!) not to forget to do a spaces between columns
-     *     5.14”Smith” will be parsed as one value “5.14Smith” that probably would
+     *     5.14"Smith" will be parsed as one value "5.14Smith" that probably would
      *     lead to errors if these were two different columns
-     *  ●  If data contains string fields they are taken into “...” characters. All “
-     *     inside string should be saved by \” symbol. All words and symbols
-     *     inside “...” will be interpreted as string entity.
+     *  -  If data contains string fields they are taken into "..." characters. All "
+     *     inside string should be saved by \" symbol. All words and symbols
+     *     inside "..." will be interpreted as string entity.
      *
      */
 	static void LexicalSplit(std::vector<string>& tokens, const std::string& source);
@@ -223,7 +223,7 @@ public:
      *  C++ version 0.4 char* style "itoa": Written by Lukás Chmela 
      *  Released under GPLv3.
      * @remark:
-     * It is proven by benchmarking that writing int to C buffer and making it a string at the end is the fastest way of getting string from int
+     * It is proved by benchmarking that writing int to C buffer and making it a string at the end is the fastest way of getting string from int
      */
     static string IntToString(int value, int base = 10)
     {
@@ -272,4 +272,3 @@ public:
 
 }
 #endif // StringUtils_h__
-
