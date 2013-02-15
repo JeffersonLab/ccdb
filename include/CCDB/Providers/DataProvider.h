@@ -100,8 +100,9 @@ public:
     //----------------------------------------------------------------------------------------
     //  D I R E C T O R Y   M A N G E M E N T
     //----------------------------------------------------------------------------------------
+#ifndef __GNUC__
     #pragma region Directory managemend
-
+#endif
     /** @brief Gets directory by its full path
     *
     * @param   Full path of the directory
@@ -183,11 +184,15 @@ public:
     virtual bool CheckDirectoryListActual();    /// Checks if directory list is actual i.e. nobody changed directories in database
     virtual bool UpdateDirectoriesIfNeeded();   /// Update directories structure if this is required
 
+#ifndef __GNUC__
     #pragma endregion Directory managemend
+#endif
     //----------------------------------------------------------------------------------------
     //  C O N S T A N T   T Y P E   T A B L E
     //----------------------------------------------------------------------------------------
+#ifndef __GNUC__
 	#pragma region Type tables
+#endif
 
     public:
     /** @brief Gets ConstantsType information from the DB
@@ -283,7 +288,9 @@ public:
      */
     virtual bool LoadColumns(ConstantsTypeTable* table) =0;
 
+#ifndef __GNUC__
 	#pragma endregion Type tables
+#endif
 
     //----------------------------------------------------------------------------------------
     //  R U N   R A N G E S
@@ -379,7 +386,9 @@ public:
     //----------------------------------------------------------------------------------------
     //  A S S I G N M E N T S
     //----------------------------------------------------------------------------------------
+#ifndef __GNUC__
 	#pragma region Assignments
+#endif
 
     /** @brief Get Assignment with data blob only
      *
@@ -596,7 +605,9 @@ public:
      */
     virtual bool FillAssignment(Assignment* assignment)=0;
     
+#ifndef __GNUC__
 	#pragma endregion Assignments
+#endif
 
     //----------------------------------------------------------------------------------------
     //  E R R O R   H A N D L I N G 
