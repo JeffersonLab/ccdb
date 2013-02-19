@@ -493,7 +493,7 @@ bool ccdb::MySQLDataProvider::GetConstantsTypeTables(  vector<ConstantsTypeTable
 	{
 		//TODO error
 		Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::GetConstantsTypeTables", "Parent directory is null or has invald ID");
-		return NULL;
+		return false;
 	}
 	
 	//Ok, lets cleanup result list
@@ -505,7 +505,7 @@ bool ccdb::MySQLDataProvider::GetConstantsTypeTables(  vector<ConstantsTypeTable
 	if(!QuerySelect(query))
 	{
 		//no report error
-		return NULL;
+		return false;
 	}
 
 	//Ok! We querryed our directories! lets catch them! 
@@ -608,7 +608,7 @@ bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTab
 	if(!QuerySelect(query))
 	{
 		//no report error
-		return NULL;
+		return false;
 	}
 
     
@@ -1306,7 +1306,7 @@ bool ccdb::MySQLDataProvider::GetAssignments( vector<Assignment *> &assingments,
 	if(!QuerySelect(query))
 	{
 		//TODO report error
-		return NULL;
+		return false;
 	}
 
 	//Ok! We querried our run range! lets catch it! 

@@ -538,7 +538,7 @@ bool ccdb::SQLiteDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTa
     { 
         Error(CCDB_ERROR_QUERY_PREPARE, funcName,ComposeSQLiteError(funcName)); 
         sqlite3_finalize(mStatement); 
-        return NULL; 
+        return false; 
     }
 
 	mQueryColumns = sqlite3_column_count(mStatement);
@@ -1320,7 +1320,7 @@ bool ccdb::SQLiteDataProvider::GetAssignments( vector<Assignment *> &assingments
 	
 	// prepare the SQL statement from the command line
 	int result = sqlite3_prepare_v2(mDatabase, query.c_str(), -1, &mStatement, 0);
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return false; }
 
 	mQueryColumns = sqlite3_column_count(mStatement);
 
