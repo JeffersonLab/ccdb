@@ -562,6 +562,12 @@ class AlchemyProvider(object):
         else:
             assert isinstance(dir_obj_or_path, Directory)
             parent_dir = dir_obj_or_path
+            
+        #check the table already exists
+        data_count = self.session.query(TypeTable).filter(TypeTable.parent_dir_id == typarent_dir.id).filter(TypeTable.name == name).count()
+        if data_count>0:
+            message = "Can't create a type table. Such table already exists in this directory"
+            raise ValueError(message)
 
         #Get user
         user = self.get_current_user()
@@ -629,9 +635,9 @@ class AlchemyProvider(object):
 
         data_count = self.session.query(ConstantSet).filter(ConstantSet.type_table_id == type_table.id).count()
         if data_count>0:
-            message = "Can't delete type table that has data assigned to it."\
+            message = ("Can't delete type table that has data assigned to it."\
                       + "The type table '{0}' with id '{1}'. It has {2} data sets which reference it."\
-                      + "Please, delete the data first".format(type_table.path, type_table.id, data_count)
+                      + "Please, delete the data first").format(type_table.path, type_table.id, data_count)
             raise ValueError(message)
 
         self.session.delete(type_table)
@@ -731,9 +737,9 @@ class AlchemyProvider(object):
         """
         data_count = self.session.query(Assignment).filter(Assignment.run_range_id == run_range.id).count()
         if data_count>0:
-            message = "Can't delete run range that has data assigned to it."\
+            message = ("Can't delete run range that has data assigned to it."\
                       + "The run range with id '{0}', name '{2}' [{3} - {4}] has {5} data sets which reference it."\
-                      + "Please, delete the data first".format(run_range.id, run_range.name, run_range.min, run_range.max, data_count)
+                      + "Please, delete the data first").format(run_range.id, run_range.name, run_range.min, run_range.max, data_count)
             raise ValueError(message)
 
         self.session.delete(run_range)
@@ -890,9 +896,9 @@ class AlchemyProvider(object):
 
         data_count = self.session.query(Assignment).filter(Assignment.variation_id == variation.id).count()
         if data_count>0:
-            message = "Can't delete variation that has data assigned to it."\
+            message = ("Can't delete variation that has data assigned to it."\
                       + "The variation '{0}' with id '{1} has {2} data sets which reference it."\
-                      + "Please, delete the data first".format(variation.name, variation.id, data_count)
+                      + "Please, delete the data first").format(variation.name, variation.id, data_count)
             raise ValueError(message)
 
         self.session.delete(variation)
