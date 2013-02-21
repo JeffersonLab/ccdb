@@ -318,7 +318,7 @@ class AlchemyProvider(object):
             directory = dir_or_path
 
         if len(directory.sub_dirs) != 0 or len(directory.type_tables) != 0:
-			err_message = "Directory '{0}' contains {1} subdirectories and {2} tables."+\
+            err_message = "Directory '{0}' contains {1} subdirectories and {2} tables."+\
                           "Impossible to delete directory which contains another directories or tables"
             err_message = err_message.format(directory.path, len(directory.sub_dirs),  len(directory.type_tables))
             raise ValueError(err_message)
