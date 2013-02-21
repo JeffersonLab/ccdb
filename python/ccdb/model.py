@@ -162,7 +162,7 @@ class Assignment(Base):
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
     constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'))
-    constant_set = relationship("ConstantSet", uselist=False, back_populates="assignment")
+    constant_set = relationship("ConstantSet", uselist=False, back_populates="assignment", cascade="all, delete, delete-orphan")
     run_range_id = Column('runRangeId',Integer, ForeignKey('runRanges.id'))
     run_range = relationship("RunRange", backref=backref('assignments'))
     variation_id = Column('variationId',Integer, ForeignKey('variations.id'))
