@@ -565,7 +565,7 @@ class AlchemyProvider(object):
             parent_dir = dir_obj_or_path
             
         #check the table already exists
-        data_count = self.session.query(TypeTable).filter(TypeTable.parent_dir_id == typarent_dir.id).filter(TypeTable.name == name).count()
+        data_count = self.session.query(TypeTable).filter(TypeTable.parent_dir_id == parent_dir.id).filter(TypeTable.name == name).count()
         if data_count>0:
             message = "Can't create a type table. Such table already exists in this directory"
             raise ValueError(message)
