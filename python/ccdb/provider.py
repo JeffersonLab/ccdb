@@ -585,7 +585,7 @@ class AlchemyProvider(object):
             column = TypeTableColumn()
             column.name = name
             column.order = i
-            column.column_type = type if not type is none else "double"
+            column.column_type = type if not type is None else "double"
             #column.type_table = table
             table.columns.append(column)
             #self.session.add(table)
