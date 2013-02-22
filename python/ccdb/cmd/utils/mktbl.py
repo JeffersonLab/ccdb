@@ -256,6 +256,9 @@ class MakeTable(ConsoleUtilBase):
         if m.group("type"):
             result["type"] = m.group("type")
         
+        if result["type"] == None:
+            result["type"] = "double"
+        
         if m.group("name"):
             result["name"] = m.group("name")
               
