@@ -1,24 +1,20 @@
 
-Import('default_env')
-env = default_env.Clone()
-#TODO move to normal debug\release modes
+Import('default_env')      #Import default environment(settings) for CCDB staff building. 
+env = default_env.Clone()  #Clone it to add library specified things
 
+
+#TODO move to normal debug\release modes
 #debugcflags = ['-W1', '-GX', '-EHsc', '-D_DEBUG', '/MDd']   #extra compile flags for debug
 #releasecflags = ['-O2', '-EHsc', '-DNDEBUG', '/MD']         #extra compile flags for release
-#env.Append(CCFLAGS='-g')
 
-#env = default_env.Clone()
-
-#Configure environment to create ccdb_library
-
-
-#Mac Os X requires install_name flag to properly build 
+#Mac Os X requires install_name flag to be built properly
 if env['PLATFORM'] == 'darwin':
     print
-    print "Darwin platform is detected. Setting -install_name @rpath/libccdb.dylib"
+    print "Darwin platform is detected. Setting -install_name @rpath/"+'${TARGET.file}'
     env.Append(SHLINKFLAGS = ['-install_name', '@rpath/'+'${TARGET.file}'])
     
-     
+
+#Set target and sources
 lib_target  = "ccdb"
 lib_sources = [
     
@@ -65,7 +61,9 @@ lib_sources = [
 #additional variables
 env.Append(LIBS = ['pthread'])
 env.Append(CPPDEFINES = 'SQLITE_OMIT_LOAD_EXTENSION')
+env.Append(CCFLAGS='-Wno-unknown-pragmas') #Disable unknown pragmas warnings. CCDB files have '#pragma region' records to structurize files. 
 
+#Build with mysql or no?                                           
 #Read user flag for using mysql dependencies or not
 if ARGUMENTS.get("mysql","yes")=="yes":
 	#User wants mysql!
