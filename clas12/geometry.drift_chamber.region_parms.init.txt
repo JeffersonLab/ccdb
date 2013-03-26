@@ -1,4 +1,0 @@
-#& region nsuperlayers dist2tgt frontgap midgap backgap
-1 2 228.08 2.5 2.5 2.5
-2 2 348.09 2.5 7   2.5
-3 2 450    2.5 2.5 2.5
