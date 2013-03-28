@@ -83,7 +83,7 @@ class ConstantsTable
         stringstream conn_ss;
         conn_ss << "mysql://" << user
             << "@" << host << ":" << port
-            << " " << db;
+            << "/" << db;
         return conn_ss.str();
     }
 
