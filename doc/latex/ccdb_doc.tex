@@ -372,12 +372,10 @@ calibration->GetCalib("/CDC/general_params");
 
 The run number is provided by application, and user may specify variation and date
 through command line or environment variables. Everything is counted by CCDB when
- 'calibration' object is created. So you shouldn't specify run, variation or time in GetCalib function. By following design user may change variation or time without recompiling the application.
+ 'calibration' object is created. So run, variation or time shouldn't be in GetCalib function. By following design user may change variation or time without recompiling the application.
 
  
-But CCDB C++ (and python) API accepts requests for debugging or sketch up purposes. 
-So next code works and any run number, variation and time given by application 
-before is overwritten by 100:my\_variation:2011 in this spot. 
+But CCDB C++ (and python) API accepts full version of requests for debugging and  sketch up purposes. Next code works and run number, variation and time given by application is overwritten by 100:my\_variation:2011 for this transaction. 
 \begin{verbatim}
 calibration->GetCalib("/CDC/general_params:100:my_variation:2011"); //FOR DEBUG ONLY
 \end{verbatim}
