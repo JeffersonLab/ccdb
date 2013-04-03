@@ -362,28 +362,28 @@ CCDB searches the closest constants before or equal to timestamp provided.
 \subsection{When full data request should NOT be used}
 
 The short answer to this question is: \\
-If you have a full request in your application code\textbf{in production environment} it is definitely NOT how CCDB is designed. 
-\\
-The long answer:
-Usually C++ code that reads out particular data set from CCDB looks like this:
+In application code. If you have a full request in your application code \textbf{in production environment} it is definitely NOT how CCDB is designed. 
+
+The long answer:\\
+Usually C++ code that reads out data from CCDB looks like this:
 \begin{verbatim}
 calibration->GetCalib("/CDC/general_params");
 \end{verbatim}
 
 The run number is provided by application, and user may specify variation and date
-through command line or environment variable. Everything is counted by CCDB when
-this 'calibration' object is created. By this design user may change variation or 
-desired constants time without recompiling the application. 
+through command line or environment variables. Everything is counted by CCDB when
+ 'calibration' object is created. So you shouldn't specify run, variation or time in GetCalib function. By following design user may change variation or time without recompiling the application.
 
-Recompiling is not only drawback of using full requests. If you write 
+ 
+But CCDB C++ (and python) API accepts requests for debugging or sketch up purposes. 
+So next code works and any run number, variation and time given by application 
+before is overwritten by 100:my\_variation:2011 in this spot. 
 \begin{verbatim}
-calibration->GetCalib("/CDC/general_params::my_variation:2011"); //REALLY BAD
+calibration->GetCalib("/CDC/general_params:100:my_variation:2011"); //FOR DEBUG ONLY
 \end{verbatim}
-in production version of the application, users may not know it and be surprised
-when they change variation by application flags and variation is changed everywhere except the spots with "full requests"
+Please, remove everything beyond first ":" when you clean up the code and get it ready for production use.
 
-Conclusion. When you develop an application for offline analysis, use full or partial requests for debugging or to sketch something up. But please, remove everything beyond first ":" when you clean up the code and get it ready for production use.
-
+If you use full requests in some places of production version of the application, users may not know about it and be surprised when they change variation using application flags and data is changed everywhere except the spots with "full requests"
 
 
 % Examples
