@@ -114,13 +114,18 @@ The "/FDC/driftvelocity/timewalk\_parameters" parameters may have members
 identified by either name or position. For example, it may contain 3 values:
 "slope", "offset", and "exponent". By contrast, a set of constants with a
 namepath "/FDC/CathodeStrips/pedestals" may have 100 values identified simply
-as ``0", ``1", ``2", ``3", ...
+as "0", "1", "2", "3", ...
 
 \textbf{Namepath format}:\\
 Allowed symbols are a-z, A-Z, 0-9, \_ and -. There is no space or special symbols
 allowed in the namepath. Such considerations simplifies the console management
 and database validation of namepath objects.
+\begin{verbatim}
+/My-path/to/data_01               #names are ok
 
+/Some...thing/is wrong here! //   #ERROR illegal symbols
+
+\end{verbatim}
 
 % Variations
 %******************************************************************************
@@ -152,50 +157,54 @@ and database validation of variation names.
 
 \subsection{Variations hierarchy}
 
-The variation feature could be very flexible and helpful. From the other point of view
-it could be a 
+Variations have hierarchy. The idea behind variation hierarhy is simple:
+if one wants to experiment with calibration data without changing it
+one creates a variation(thus branching the data). If one wants to go deeper
+and experiment with changed data without changing it more, one create a child variation. 
 
+The top level is "default" variation.
+When any new variation is created a parent variation may be specified. 
+If user doesn't specify the parent, new variation is created with "default" as
+a parent. Thus one can say, that "default" variation is "super" or "root" parent. 
+
+Lets examine how variation hierarcy work by real example. 
 \begin{enumerate} 
-\item Lets say we have 3 data tables:
-\begin{verbatim}
-table1 
-table2 
-table3
-\end{verbatim}
-Each table has some default data1, data2, data3 in it. 
-\begin{verbatim}
-+===================
-variation || default
- request  ||
-+===================
- table1   ||  data1
- table2   ||  data2
- table3   ||  data3
-\end{verbatim}
+\item 
+Lets say we have 3 data tables with names: "table1", "table2", "table3". 
+Each table has some default data: "data1", "data2", "data3" in it.\\
+\\
+\begin{tabular}{|l||*{5}{c|}}\hline
+\backslashbox{Table}{Variation}
+&\makebox[3em]{default}\\\hline\hline
+table1 &data1\\\hline
+table2 &data2\\\hline
+table3 &data3\\\hline
+\end{tabular}
  
 This means that when somebody call 
-calibration->GetData("table1"...)  - data1 is returned. 
+\begin{verbatim}
+calibration->GetData("table1",...)
+\end{verbatim}
+ - "data1" is returned. 
 
 \item Now lets bring variations to the scene. Mr John wants to experiment with 
-constants in table2. So Mr John create a variation named 'john'. 
+constants in table2. So he creates a variation named "john". 
 When a variation is created it should have some parent. If no parent is 
-explicitly specified, then the 'default' variation is set as parent. 
+explicitly specified, the "default" variation is set as parent. 
 
 So now we have a variations hierarchy:
 \begin{verbatim}
 "default" <- "john" 
 \end{verbatim}
 
-Mr John adds data to table2 in the john variation.  So now we have:
-\begin{verbatim}
-+================================
-variation || default | john
- request  ||         |
-+================================
- table1   ||  data1  |
- table2   ||  data2  | data-john
- table3   ||  data3  |
-\end{verbatim}
+Mr John adds data to "table2" in the "john" variation. Thus now we have:\\
+\begin{tabular}{|l||*{5}{c|}}\hline
+\backslashbox{Table}{Variation}
+&\makebox[3em]{default}&\makebox[3em]{john}\\\hline\hline
+table1 &data1&\\\hline
+table2 &data2&data2.1\\\hline
+table3 &data3&\\\hline
+\end{tabular}
  
 For all regular users, who doesn't specify that want to work with John's data, a call:
 \begin{verbatim}
@@ -208,81 +217,75 @@ But If one runs JANA with environment variable
 \end{verbatim}
 
 Then data from john variation will be used whenever it is possible. 
-So when "table2" is requested, "data-john" is returned. But when table1 is requested, 
+So when "table2" is requested, "data2.1" is returned. But when table1 is requested, 
 there is no specific data in john variation for table1, so CCDB goes looking data in parent 
-variation which is the ``default'' variation. So data1 is returned. 
+variation which is the "default" variation. So data1 is returned. 
 
 So once again:
 if one runs JANA with {\tt JANA\_CONTEXT="variation:john"}, then requests:
 \begin{verbatim}
 calibration->GetData("table1"...) //returns "data1"
-calibration->GetData("table2"...) //returns "data-john"
+calibration->GetData("table2"...) //returns "data2.1"
 calibration->GetData("table3"...) //returns "data3"
 \end{verbatim}
 
 
-\item Mr Bill wanted to use John data but tune table3 data to work with "data-john". Mr Bill 
-created 'bill' variation with 'john' variation as parent. 
-So now we have a variations hierarchy:
+\item Bill wanted to use John's "data2.1" but change table3 data. Bill 
+creates "bill" variation with "john" variation as parent. 
+So now we have a hierarchy:
 \begin{verbatim}
 "default" <- "john" <- "bill"
 \end{verbatim}
 
-Then Mr Bill create "data-bill" set of constants for "table3" and variation "bill".
-\begin{verbatim}
-+============================================
-variation || default | john      | bill
- request  ||         |           |
-+============================================
- table1   ||  data1  |           |
- table2   ||  data2  | data-john |
- table3   ||  data3  |           | data-bill
-\end{verbatim}
+Bill adds "data3.1" set of constants to "table3" and variation "bill".\\
+\begin{tabular}{|l||*{5}{c|}}\hline
+\backslashbox{Table}{Variation}
+&\makebox[3em] {default} & \makebox[3em]{john} & \makebox[3em]{bill} \\\hline\hline
+table1 &data1&&\\\hline
+table2 &data2&data2.1&\\\hline
+table3 &data3&&data3.1\\\hline
+\end{tabular}
  
 Lets see how requests will work if one specifies "bill" variation. 
-If ``table3" is requested, then ``data-bill" is returned.
-If ``table2" is requested, there is no data for table3 and ``bill" variation, so 
-CCDB goes looking for ``bill" parent, which is ``john" variation. ``john" variation has
-``data-john" for ``table2" so ``data-john" is returned. 
-If ``table1" is requested, there is no other data than in ``default" variation which
-is on top of variation hierarchy, so ``data1" will be returned. 
+If "table3" is requested, then "data3.1" is returned.
+If "table2" is requested, there is no data for table3 and "bill" variation, so 
+CCDB goes looking for "bill" parent, which is "john" variation. "john" variation has
+"data2.1" for "table2" so "data2.1" is returned. 
+If "table1" is requested, there is no other data than in "default" variation which
+is on top of variation hierarchy, so "data1" is to be returned. 
 Summarizing:
 \begin{verbatim}
 JANA\_CONTEXT="variation:bill"
 calibration->GetData("table1"...) //returns "data1"
-calibration->GetData("table2"...) //returns "data-john"
-calibration->GetData("table3"...) //returns "data-bill"
+calibration->GetData("table2"...) //returns "data2.1"
+calibration->GetData("table3"...) //returns "data3.1"
 \end{verbatim}
 \end{enumerate} 
 
-\begin{tabular}{|l||*{5}{c|}}\hline
-\backslashbox{Room}{Date}
-&\makebox[3em]{5/31}&\makebox[3em]{6/1}&\makebox[3em]{6/2}
-&\makebox[3em]{6/3}&\makebox[3em]{6/4}\\\hline\hline
-Meeting Room &&&&&\\\hline
-Auditorium &&&&&\\\hline
-Seminar Room &&&&&\\\hline
-\end{tabular}
 
 
+%
 % Data requests
 %******************************************************************************
 \subsection{Data requests}
-
-There are two problems related to data access, CCDB tries to solve:
+No doubt it is a must to have a way to uniquely identify and address each 
+particular set of data in calibration database.
+ 
+There are two problems with it CCDB tries to solve:
 \begin{enumerate}
-  \item Getting constants should be as easy as to say
+  \item Generally, getting constants should be as easy as to say
         "Give me this constants for June 2011"
 
-  \item There should be one way to give an unique key for every set of data.
+  \item There should be a way to give an unique key for every set of data.
   \footnote{
-    The first thing that comes to mind when one hears "unique key" might be
-    "lets use incremental indexes". But CCDB is database independent. Indexes
-    which are good to use with databases become uneasy for standalone ASCII
-    files. Moreover, moving indexes from one database to another might be a
-    problem. And, last but not least, indexes are good for machines. If an
-    operator has an index 1114211 it tells nothing to him and could be easily
-    mistaken with 1142111 which belong to absolutely another data set.
+    "incremental integer indexes" definitely is the first thing that comes to mind 
+    when one hears conjunction of words "unique key" and "database". Why don't CCDB use it?
+    But CCDB is database independent. Integer indexes, which are good to use with
+    relational databases, become uneasy with standalone ASCII
+    files. Moving indexes from one database to another might be a
+    problem. And, last but not least, indexes are good for machines but not humans. If 
+    human operator has an index 1114211 it tells nothing to him and it could be easily
+    mistaken with 1142111 which belongs to absolutely another data set.
   }
 \end{enumerate}
 \vspace{1 em}
@@ -321,9 +324,9 @@ to use default run one skips the run number and leave its place like "::"
 \end{verbatim}
 
 
-And the request '/path/to/data:::2029' means that we specify a path and a date
-but leave a run number and a variation to be set by default.
-What does word 'default' means? We will discuss it in "DEFAULT VALUES" chapter.
+And the request '/path/to/data:::2029' means that a path and a date are specified
+but a run number and a variation are left to be set by default.
+What does 'default' means? It is discussed further in "DEFAULT VALUES" chapter.
 
 The time is parsed as:
     \textbf{YYYY:MM:DD-hh:mm:ss}
@@ -353,19 +356,48 @@ latest constants for 21 May 2012
 
 CCDB searches the closest constants before or equal to timestamp provided.
 
+%
+% When data request should NOT be used
+%******************************************************************************
+\subsection{When full data request should NOT be used}
+
+The short answer to this question is: \\
+If you have a full request in your application code\textbf{in production environment} it is definitely NOT how CCDB is designed. 
+\\
+The long answer:
+Usually C++ code that reads out particular data set from CCDB looks like this:
+\begin{verbatim}
+calibration->GetCalib("/CDC/general_params");
+\end{verbatim}
+
+The run number is provided by application, and user may specify variation and date
+through command line or environment variable. Everything is counted by CCDB when
+this 'calibration' object is created. By this design user may change variation or 
+desired constants time without recompiling the application. 
+
+Recompiling is not only drawback of using full requests. If you write 
+\begin{verbatim}
+calibration->GetCalib("/CDC/general_params::my_variation:2011"); //REALLY BAD
+\end{verbatim}
+in production version of the application, users may not know it and be surprised
+when they change variation by application flags and variation is changed everywhere except the spots with "full requests"
+
+Conclusion. When you develop an application for offline analysis, use full or partial requests for debugging or to sketch something up. But please, remove everything beyond first ":" when you clean up the code and get it ready for production use.
+
+
 
 % Examples
 %******************************************************************************
-\subsection{Examples}
-
-This chapter will provide users with practical examples of all above.
-Text is to be written.
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.8\textwidth]{pics/variations_example1}
-  \caption{Variations basic usage}
-\end{figure}
+%\subsection{Examples}
+%
+%This chapter will provide users with practical examples of all above.
+%Text is to be written.
+%
+%\begin{figure}[h]
+%  \centering
+%  \includegraphics[width=0.8\textwidth]{pics/variations_example1}
+%  \caption{Variations basic usage}
+%\end{figure}
 
 
 
@@ -614,7 +646,7 @@ Example 1. Command line mode:
 
 Example 2. Interactive mode:
 \begin{verbatim}
-      ccdbcmd -i -c "mysql://john@localhost:999"               (1)
+      ccdb -i -c "mysql://john@localhost:999"                  (1)
       > ls /TOF/params                                         (2)
       > help                                                   (3)
       > cd /TOF                                                (4)
