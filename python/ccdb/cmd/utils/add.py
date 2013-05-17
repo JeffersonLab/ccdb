@@ -100,7 +100,7 @@ class AddData(ConsoleUtilBase):
             else:
                 dom = ccdb.read_namevalue_text_file(self.file_path, self.c_comments)
         except IOError as error:
-            log.warning(lmf("Unable to read file '{0}'. The error message is: '{2}'", self.file_path, error))
+            log.warning(lmf("Unable to read file '{0}'. The error message is: '{1}'", self.file_path, error))
             return 1  
         
         #check what we've got
