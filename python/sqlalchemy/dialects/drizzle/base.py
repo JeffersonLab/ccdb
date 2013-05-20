@@ -1,12 +1,15 @@
 # drizzle/base.py
-# Copyright (C) 2005-2012 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
 # Copyright (C) 2010-2011 Monty Taylor <mordred@inaugust.com>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 
-"""Support for the Drizzle database.
+"""
+
+.. dialect:: drizzle
+    :name: Drizzle
 
 Drizzle is a variant of MySQL. Unlike MySQL, Drizzle's default storage engine
 is InnoDB (transactions, foreign-keys) rather than MyISAM. For more
@@ -16,10 +19,6 @@ the `Drizzle Documentation <http://docs.drizzle.org/index.html>`_.
 The SQLAlchemy Drizzle dialect leans heavily on the MySQL dialect, so much of
 the :doc:`SQLAlchemy MySQL <mysql>` documentation is also relevant.
 
-Connecting
-----------
-
-See the individual driver sections below for details on connecting.
 
 """
 
@@ -183,7 +182,7 @@ class BIGINT(sqltypes.BIGINT):
         super(BIGINT, self).__init__(**kw)
 
 
-class _DrizzleTime(mysql_dialect._MSTime):
+class TIME(mysql_dialect.TIME):
     """Drizzle TIME type."""
 
 
@@ -317,7 +316,7 @@ class _DrizzleBoolean(sqltypes.Boolean):
 colspecs = {
     sqltypes.Numeric: NUMERIC,
     sqltypes.Float: FLOAT,
-    sqltypes.Time: _DrizzleTime,
+    sqltypes.Time: TIME,
     sqltypes.Enum: ENUM,
     sqltypes.Boolean: _DrizzleBoolean,
 }
@@ -446,16 +445,6 @@ class DrizzleDialect(mysql_dialect.MySQLDialect):
         def connect(conn):
             conn.autocommit(False)
         return connect
-
-    def do_commit(self, connection):
-        """Execute a COMMIT."""
-
-        connection.commit()
-
-    def do_rollback(self, connection):
-        """Execute a ROLLBACK."""
-
-        connection.rollback()
 
     @reflection.cache
     def get_table_names(self, connection, schema=None, **kw):

@@ -1,5 +1,6 @@
 /*
 resultproxy.c
+Copyright (C) 2010-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
 Copyright (C) 2010 Gaetan de Menten gdementen@gmail.com
 
 This module is part of SQLAlchemy and is released under
@@ -121,7 +122,7 @@ BaseRowProxy_reduce(PyObject *self)
     if (state == NULL)
         return NULL;
 
-    module = PyImport_ImportModule("sqlalchemy.engine.base");
+    module = PyImport_ImportModule("sqlalchemy.engine.result");
     if (module == NULL)
         return NULL;
 
@@ -406,7 +407,7 @@ BaseRowProxy_setparent(BaseRowProxy *self, PyObject *value, void *closure)
         return -1;
     }
 
-    module = PyImport_ImportModule("sqlalchemy.engine.base");
+    module = PyImport_ImportModule("sqlalchemy.engine.result");
     if (module == NULL)
         return -1;
 

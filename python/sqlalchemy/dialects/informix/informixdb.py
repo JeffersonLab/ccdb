@@ -1,22 +1,16 @@
 # informix/informixdb.py
-# Copyright (C) 2005-2012 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 """
-Support for the informixdb DBAPI.
 
-informixdb is available at:
-
-    http://informixdb.sourceforge.net/
-
-Connecting
-^^^^^^^^^^
-
-Sample informix connection::
-
-    engine = create_engine('informix+informixdb://user:password@host/dbname')
+.. dialect:: informix+informixdb
+    :name: informixdb
+    :dbapi: informixdb
+    :connectstring: informix+informixdb://user:password@host/dbname
+    :url: http://informixdb.sourceforge.net/
 
 """
 
@@ -27,7 +21,9 @@ from sqlalchemy.engine import default
 
 VERSION_RE = re.compile(r'(\d+)\.(\d+)(.+\d+)')
 
+
 class InformixExecutionContext_informixdb(default.DefaultExecutionContext):
+
     def post_exec(self):
         if self.isinsert:
             self._lastrowid = self.cursor.sqlerrd[1]

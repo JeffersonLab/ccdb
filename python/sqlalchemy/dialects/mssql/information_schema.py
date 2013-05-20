@@ -1,23 +1,30 @@
 # mssql/information_schema.py
-# Copyright (C) 2005-2012 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 # TODO: should be using the sys. catalog with SQL Server, not information schema
 
-from sqlalchemy import Table, MetaData, Column
-from sqlalchemy.types import String, Unicode, Integer, TypeDecorator
+from ... import Table, MetaData, Column
+from ...types import String, Unicode, Integer, TypeDecorator
+from ... import cast
 
 ischema = MetaData()
+
 
 class CoerceUnicode(TypeDecorator):
     impl = Unicode
 
     def process_bind_param(self, value, dialect):
+        # Py2K
         if isinstance(value, str):
             value = value.decode(dialect.encoding)
+        # end Py2K
         return value
+
+    def bind_expression(self, bindvalue):
+        return cast(bindvalue, Unicode)
 
 schemata = Table("SCHEMATA", ischema,
     Column("CATALOG_NAME", CoerceUnicode, key="catalog_name"),
@@ -93,4 +100,3 @@ views = Table("VIEWS", ischema,
     Column("CHECK_OPTION", String, key="check_option"),
     Column("IS_UPDATABLE", String, key="is_updatable"),
     schema="INFORMATION_SCHEMA")
-

@@ -1,15 +1,13 @@
 # sqlalchemy/__init__.py
-# Copyright (C) 2005-2012 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-import inspect
+import inspect as _inspect
 import sys
 
-import sqlalchemy.exc as exceptions
-
-from sqlalchemy.sql import (
+from .sql import (
     alias,
     and_,
     asc,
@@ -49,7 +47,7 @@ from sqlalchemy.sql import (
     update,
     )
 
-from sqlalchemy.types import (
+from .types import (
     BIGINT,
     BINARY,
     BLOB,
@@ -94,7 +92,7 @@ from sqlalchemy.types import (
     )
 
 
-from sqlalchemy.schema import (
+from .schema import (
     CheckConstraint,
     Column,
     ColumnDefault,
@@ -114,15 +112,17 @@ from sqlalchemy.schema import (
     UniqueConstraint,
     )
 
-from sqlalchemy.engine import create_engine, engine_from_config
+from .inspection import inspect
+
+from .engine import create_engine, engine_from_config
 
 
 __all__ = sorted(name for name, obj in locals().items()
-                 if not (name.startswith('_') or inspect.ismodule(obj)))
+                 if not (name.startswith('_') or _inspect.ismodule(obj)))
 
-__version__ = '0.7.9'
+__version__ = '0.8.1'
 
-del inspect, sys
+del _inspect, sys
 
-from sqlalchemy import util as _sa_util
+from . import util as _sa_util
 _sa_util.importlater.resolve_all()

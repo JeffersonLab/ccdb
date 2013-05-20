@@ -1,18 +1,19 @@
 # orm/exc.py
-# Copyright (C) 2005-2012 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 """SQLAlchemy ORM exceptions."""
-
-import sqlalchemy as sa
-orm_util = sa.util.importlater('sqlalchemy.orm', 'util')
+from .. import exc as sa_exc, util
+orm_util = util.importlater('sqlalchemy.orm', 'util')
+attributes = util.importlater('sqlalchemy.orm', 'attributes')
 
 NO_STATE = (AttributeError, KeyError)
 """Exception types that may be raised by instrumentation implementations."""
 
-class StaleDataError(sa.exc.SQLAlchemyError):
+
+class StaleDataError(sa_exc.SQLAlchemyError):
     """An operation encountered database state that is unaccounted for.
 
     Conditions which cause this to happen include:
@@ -41,19 +42,25 @@ class StaleDataError(sa.exc.SQLAlchemyError):
 ConcurrentModificationError = StaleDataError
 
 
-class FlushError(sa.exc.SQLAlchemyError):
+class FlushError(sa_exc.SQLAlchemyError):
     """A invalid condition was detected during flush()."""
 
 
-class UnmappedError(sa.exc.InvalidRequestError):
+class UnmappedError(sa_exc.InvalidRequestError):
     """Base for exceptions that involve expected mappings not present."""
 
-class ObjectDereferencedError(sa.exc.SQLAlchemyError):
-    """An operation cannot complete due to an object being garbage collected."""
 
-class DetachedInstanceError(sa.exc.SQLAlchemyError):
+class ObjectDereferencedError(sa_exc.SQLAlchemyError):
+    """An operation cannot complete due to an object being garbage
+    collected.
+
+    """
+
+
+class DetachedInstanceError(sa_exc.SQLAlchemyError):
     """An attempt to access unloaded attributes on a
     mapped instance that is detached."""
+
 
 class UnmappedInstanceError(UnmappedError):
     """An mapping operation was requested for an unknown instance."""
@@ -61,11 +68,12 @@ class UnmappedInstanceError(UnmappedError):
     def __init__(self, obj, msg=None):
         if not msg:
             try:
-                mapper = sa.orm.class_mapper(type(obj))
+                mapper = orm_util.class_mapper(type(obj))
                 name = _safe_cls_name(type(obj))
                 msg = ("Class %r is mapped, but this instance lacks "
-                       "instrumentation.  This occurs when the instance is created "
-                       "before sqlalchemy.orm.mapper(%s) was called." % (name, name))
+                       "instrumentation.  This occurs when the instance"
+                       "is created before sqlalchemy.orm.mapper(%s) "
+                       "was called." % (name, name))
             except UnmappedClassError:
                 msg = _default_unmapped(type(obj))
                 if isinstance(obj, type):
@@ -76,6 +84,7 @@ class UnmappedInstanceError(UnmappedError):
 
     def __reduce__(self):
         return self.__class__, (None, self.args[0])
+
 
 class UnmappedClassError(UnmappedError):
     """An mapping operation was requested for an unknown class."""
@@ -88,7 +97,8 @@ class UnmappedClassError(UnmappedError):
     def __reduce__(self):
         return self.__class__, (None, self.args[0])
 
-class ObjectDeletedError(sa.exc.InvalidRequestError):
+
+class ObjectDeletedError(sa_exc.InvalidRequestError):
     """A refresh operation failed to retrieve the database
     row corresponding to an object's known primary key identity.
 
@@ -112,27 +122,23 @@ class ObjectDeletedError(sa.exc.InvalidRequestError):
             msg = "Instance '%s' has been deleted, or its "\
              "row is otherwise not present." % orm_util.state_str(state)
 
-        sa.exc.InvalidRequestError.__init__(self, msg)
+        sa_exc.InvalidRequestError.__init__(self, msg)
 
     def __reduce__(self):
         return self.__class__, (None, self.args[0])
 
-class UnmappedColumnError(sa.exc.InvalidRequestError):
+
+class UnmappedColumnError(sa_exc.InvalidRequestError):
     """Mapping operation was requested on an unknown column."""
 
 
-class NoResultFound(sa.exc.InvalidRequestError):
+class NoResultFound(sa_exc.InvalidRequestError):
     """A database result was required but none was found."""
 
 
-class MultipleResultsFound(sa.exc.InvalidRequestError):
+class MultipleResultsFound(sa_exc.InvalidRequestError):
     """A single database result was required but more than one were found."""
 
-
-# Legacy compat until 0.6.
-sa.exc.ConcurrentModificationError = ConcurrentModificationError
-sa.exc.FlushError = FlushError
-sa.exc.UnmappedColumnError
 
 def _safe_cls_name(cls):
     try:
@@ -143,9 +149,10 @@ def _safe_cls_name(cls):
             cls_name = repr(cls)
     return cls_name
 
+
 def _default_unmapped(cls):
     try:
-        mappers = sa.orm.attributes.manager_of_class(cls).mappers
+        mappers = attributes.manager_of_class(cls).mappers
     except NO_STATE:
         mappers = {}
     except TypeError:
