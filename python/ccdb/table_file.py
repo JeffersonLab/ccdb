@@ -25,12 +25,16 @@ class TextFileDOM(object):
             return False
         
         columns_length = len(self.rows[0])
-        for row in self.rows:
+        for row_index, row in enumerate(self.rows):
             if len(row) != columns_length: 
-                self.inconsistent_reason = "Columns length mistmatch"
+                self.inconsistent_reason = "Row length mismatch. " \
+                                           "Row {0} has {1} values while awaited number of columns is {2}".\
+                                           format(row_index, len(row), columns_length)
                 return False
+
         if len(self.column_names) != columns_length:
-            self.inconsistent_reason = "Column names number mistmatch with data colums number"
+            self.inconsistent_reason = "Column names number is: '{0}'. It is not equal to data columns number: '{1}'".\
+                                       format(len(self.column_names),columns_length)
             return True
         #if we are here, everything is good
         return True
