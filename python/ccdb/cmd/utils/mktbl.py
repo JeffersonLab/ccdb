@@ -7,6 +7,7 @@ from ccdb.cmd.themes import bool_color
 
 log = logging.getLogger("ccdb.cmd.utils.mktbl")
 
+
 #ccdbcmd module interface
 def create_util_instance():
     log.debug("      registering MakeTable")
@@ -20,17 +21,17 @@ def create_util_instance():
 #*********************************************************************
 class MakeTable(ConsoleUtilBase):
     """ Create constants type table """
-    
+
     # ccdb utility class descr part 
     #------------------------------
     command = "mktbl"
     name = "MakeTable"
     short_descr = "Create constants type table"
     uses_db = True
-    
-#----------------------------------------
-#   __init__ 
-#---------------------------------------- 
+
+    #----------------------------------------
+    #   __init__
+    #----------------------------------------
     def __init__(self):
         ConsoleUtilBase.__init__(self)
         self.columns = {}
@@ -46,10 +47,10 @@ class MakeTable(ConsoleUtilBase):
         self.table_path = ""
         self.table_path_set = False
         self.no_columns_quantity = False
-    
-#--------------------------------------------------------------------------------
-#   reset_on_process - sets values to be ready for new process function
-#--------------------------------------------------------------------------------     
+
+    #--------------------------------------------------------------------------------
+    #   reset_on_process - sets values to be ready for new process function
+    #--------------------------------------------------------------------------------
     def reset_on_process(self):
         self.columns = {}
         self.unparsed_columns = []
@@ -63,49 +64,47 @@ class MakeTable(ConsoleUtilBase):
         self.table_parent_path = ""
         self.table_path = ""
         self.table_path_set = False
-        self.no_columns_quantity=False
+        self.no_columns_quantity = False
         #set interactive mode as context by default
         self.interactive = self.context.is_interactive
-        
 
-#----------------------------------------
-#   process - processes commands
-#----------------------------------------   
+    #----------------------------------------
+    #   process - processes commands
+    #----------------------------------------
     def process(self, args):
-        
+
         #>oO debug      
         log.debug("MakeTable is gained a control over the process.")
         log.debug("   " + " ".join(args))
-        
+
         #reset all needed variables
         self.reset_on_process()
-        
+
         #process arguments
         self.process_arguments(args)
-        
+
         if self.interactive:
             self.interactive_mode()
-        
+
         #lets parse columns
         self.columns = self.parse_columns(self.unparsed_columns)
-                
+
         #set name
         self.table_path = self.context.prepare_path(self.table_path)
         (self.table_parent_path, self.table_name) = posixpath.split(self.table_path)
-        
+
         #>oO debug
         if log.getEffectiveLevel() <= logging.DEBUG:
             self.print_settings_summary()
             if not self.interactive:
                 self.print_validation()
-        
+
         #create table
         self.do_create_type()
-        
 
-#------------------------------------------
-#   interactive_mode - run interactive mode
-#------------------------------------------            
+    #------------------------------------------
+    #   interactive_mode - run interactive mode
+    #------------------------------------------
     def interactive_mode(self):
         """asks data in interactive mode"""
 
@@ -116,7 +115,6 @@ class MakeTable(ConsoleUtilBase):
         if not self.comment_set:
             self.comment = raw_input("Enter comment :")
 
-
     #----------------------------------------------
     #   do_create_type - creates table
     #----------------------------------------------
@@ -124,9 +122,9 @@ class MakeTable(ConsoleUtilBase):
         """this function finally creates table"""
 
         log.debug("  write table to database...")
-        self.context.provider.create_type_table(self.table_name, self.table_parent_path, self.rows, self.columns, self.comment)
+        self.context.provider.create_type_table(self.table_name, self.table_parent_path, self.rows, self.columns,
+                                                self.comment)
         print "saving table to database... " + self.theme.Success + " completed" + self.theme.Reset
-
 
     #----------------------------------------------
     #   process_arguments - process input arguments
@@ -142,135 +140,135 @@ class MakeTable(ConsoleUtilBase):
                > All other such tokens are treated as columns
         
         """
-        
+
         #parse loop
-        i=0
+        i = 0
         while i < len(args):
             token = args[i].strip()
-            i+=1
+            i += 1
             if token.startswith('-'): #it is some command
 
                 #rows number
                 if token == "-r" or token.startswith("--rows"):
-                    if i<len(args):
+                    if i < len(args):
                         try:
-                            self.rows =  int(args[i])
+                            self.rows = int(args[i])
                             self.rows_set = True
                         except ValueError:
-                            log.warning("Cannot parse number of rows")                      
-                            self.rows =  1
+                            log.warning("Cannot parse number of rows")
+                            self.rows = 1
                             self.rows_set = False
-                            
-                        i+=1
+
+                        i += 1
 
                 #no columns quantity 
                 if token == "-nq" or token.startswith("--no-quantity"):
-                    self.no_columns_quantity=True
+                    self.no_columns_quantity = True
                     continue
 
                 #interactive mode
                 if token == "-i" or token == "--interactive":
                     self.interactive = True
                     self.interactive_set = True
-                
+
             else:
-                
+
                 #is it a comment?
                 if token.startswith("#"):
                     #everething next are comments
-                    self.comment += " ".join( args[i-1:])
+                    self.comment += " ".join(args[i - 1:])
                     self.comment = self.comment[1:]        # remove '#' sign in the beginning
                     self.comment_set = True
                     break #break the loop since everething next are comment
-                
+
                 #if table_path is NOT set it is table_path 
                 elif not self.table_path_set:
                     self.table_path = token
                     self.table_path_set = True
-                
+
                 #othervise it is one of the columns
                 else:
                     self.unparsed_columns.append(token)
-                    
-    
-#--------------------------------------------------
-#   parse_columns - parse columns part of arguments
-#--------------------------------------------------
+
+
+                    #--------------------------------------------------
+                    #   parse_columns - parse columns part of arguments
+                    #--------------------------------------------------
+
     def parse_columns(self, unparsed_columns):
         """ parse columns part of arguments """
-        
+
         columns = []
         for unparsed_column in unparsed_columns:
             parse_result = self.parse_column(unparsed_column)
             if parse_result:
                 if parse_result["quantity"] != 1:
-                    #if user i.e. have naming like value_1 and 3 field 
-                    #we should produse value_1 value_2 value_3
-                    #so we should take the last part and see if it is 
-                    #some number 
+                    #if user have naming like value_1 and 3 field
+                    #we should produce value_1 value_2 value_3
+                    #so we take the last part and see if it is some number
                     preg = "^.+(?P<start>[0-9]+)$"
                     m = re.match(preg, parse_result["name"])
                     start_index = 0
                     if m and m.group("start"):
                         try:
                             start_index = int(m.group("start"))
-                            
+
                             #correct numbers will be added later
                             tmp = parse_result["name"]
                             parse_result["name"] = tmp[:-len(m.group("start"))]
                         except ValueError:
                             pass
-            
+
                     for i in range(start_index, start_index + parse_result["quantity"]):
-                        columns.append((parse_result["name"]+repr(i), parse_result["type"]))
-                        
+                        columns.append((parse_result["name"] + repr(i), parse_result["type"]))
+
                 else:
                     columns.append((parse_result["name"], parse_result["type"]))
         return columns
-            
-    
+
+
     #----------------------------------------------
     #   parse_column - parse each column
     #----------------------------------------------
     def parse_column(self, value):
         """parse each column argument record"""
-        
+
         result = {"type": "double", "name": "", "quantity": 1, "no_columns_quantity": self.no_columns_quantity}
 
         #regular expression that matches strings like this
         # <quantity><name>(<type>) or <quantity>(<pretype>)<name>
-        
+
         preg = "(?P<quantity>^[0-9]*)(?P<name>[0-9a-zA-Z_]+)*(=(?P<type>.*))*"
         if self.no_columns_quantity:
             preg = "(?P<name>[0-9a-zA-Z_]+)*(=(?P<type>.*))*"
-        
+
         m = re.match(preg, value)
-        
+
         #fill results
         if not self.no_columns_quantity and m.group("quantity"):
             try:
                 result["quantity"] = int(m.group("quantity"))
             except ValueError:
                 pass
-                        
+
         if m.group("type"):
             result["type"] = m.group("type")
-        
-        if result["type"] == None:
+
+        if result["type"] is None:
             result["type"] = "double"
-        
+
         if m.group("name"):
             result["name"] = m.group("name")
-              
+
         return result
-            
-            
+
+
     #----------------------------------------------
     #   print_help - prints help for MakeTable
     #----------------------------------------------
     def print_help(self):
         """prints help for MakeTable"""
-        
+
         print """
 MakeTable or mktbl - create type table with the specified namepath and parameters
 
@@ -333,7 +331,7 @@ keys:
                                 i.e  mktbl ... 10val      - creates 10 columns named 'val0' ... 'val9'
                                      mktbl -nq ... 10val  - creates 1 column named '10val'
             """
-        
+
     #----------------------------------------------
     #   print_validation - PRINTS VALIDATION TABLE
     #----------------------------------------------
@@ -343,9 +341,9 @@ keys:
         if not len(self.table_name):
             print "Table: " + self.theme.Fail + "Name is not set"
         else:
-            print "Table: " + self.theme.Success +  self.table_name
-        
-        print "Rows num: " + bool_color(self.rows) + repr(self.rows) + self.theme.Reset +\
+            print "Table: " + self.theme.Success + self.table_name
+
+        print "Rows num: " + bool_color(self.rows) + repr(self.rows) + self.theme.Reset + \
               "   Columns num: " + bool_color(len(self.columns)) + repr(len(self.columns))
         print "Full path: " + self.table_path
         #columns info 
@@ -353,29 +351,29 @@ keys:
         print "Columns: "
         print "   (type)    : (name)"
         for (colname, coltype) in self.columns:
-            print "   " + self.theme.Type + "%-10s"%coltype + self.theme.Reset + ": "+ colname
-        print 
+            print "   " + self.theme.Type + "%-10s" % coltype + self.theme.Reset + ": " + colname
+        print
         #comment
         print "Comment: "
         if len(self.comment):
             print self.comment
         else:
             print self.theme.Fail + "Comment is empty"
-        
+
         #additional info print
         print
-        print "Additional info: " 
+        print "Additional info: "
         if self.rows_set:
             print "   Rows number is set by " + self.theme.Success + "User"
-        else: 
+        else:
             print "   Rows number is set by " + self.theme.Accent + "Default"
-            
+
         if self.comment_set:
             print "   Comments added by " + self.theme.Success + "User"
         else:
             print "   No comments are set"
-         
-        
+
+
     def print_settings_summary(self):
         print self.theme.Success + " Summary: "
         print "  columns: ", self.columns
@@ -383,18 +381,16 @@ keys:
         print
         print "    rows            : ", self.rows
         print "    rows_set        : ", bool_color(self.rows_set) + repr(self.rows_set)
-        print 
+        print
         print "    interactive     : ", bool_color(self.interactive) + repr(self.interactive)
         print "    interactive_set : ", bool_color(self.interactive_set) + repr(self.interactive_set)
-        print 
-        print "    comment         : ", self.comment 
-        print "    comment_set     : ", bool_color(self.comment_set) + repr(self.comment_set)
-        print 
-        print "    table_name      : ", self.table_name 
         print
-        print "    table_path      : ", self.table_path 
+        print "    comment         : ", self.comment
+        print "    comment_set     : ", bool_color(self.comment_set) + repr(self.comment_set)
+        print
+        print "    table_name      : ", self.table_name
+        print
+        print "    table_path      : ", self.table_path
         print "    table_path_set  : ", bool_color(self.table_path_set) + repr(self.table_path_set)
         print
         print "    table_parent_path      : ", self.table_parent_path
-        
-        

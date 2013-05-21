@@ -57,8 +57,10 @@ class MakeDirectory(ConsoleUtilBase):
 
         try:
             self.context.provider.create_directory(name, parent_path, comment)
+            log.info("Directory " + name + self.theme.Success + " created" + self.theme.Reset)
         except Exception as ex:
-            log.warning("Failed to create directory. Exception message: {0}".format(ex))
+            log.warning(self.theme.Fail+"Failed"+self.theme.Reset+" to create directory. Exception message: {0}".format(ex))
+            raise
 
-        log.info("Directory " + name + self.theme.Success + " created" + self.theme.Reset)
+
         

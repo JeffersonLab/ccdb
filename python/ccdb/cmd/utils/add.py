@@ -9,6 +9,7 @@ from ccdb import BraceMessage as lmf
 
 log = logging.getLogger("ccdb.cmd.utils.add")
 
+
 #ccdbcmd module interface
 def create_util_instance():
     """
@@ -58,10 +59,9 @@ class AddData(ConsoleUtilBase):
         self.comment = ""
         self.is_namevalue_format = False
         self.no_comments = False
-        self.c_comments = False   #file has '//'-style comments
-        self.raw_entry = "/"   #object path with possible pattern, like /mole/*
-        self.path = "/"       #parent path
-
+        self.c_comments = False   # file has '//'-style comments
+        self.raw_entry = "/"      # object path with possible pattern, like /mole/*
+        self.path = "/"           # parent path
 
     #----------------------------------------
     #   process
@@ -79,15 +79,15 @@ class AddData(ConsoleUtilBase):
         #process arguments
         if not self.process_arguments(args):
             log.debug(lmf(" |- process arguments {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
-            return 1
+            raise ValueError("Problem parsing arguments")
         
         #by "" user means default variation
-        if self.variation == "" : self.variation = "default"
+        self.variation = "default" if not bool(self.variation) else self.variation
         
         #validate what we've got
         if not self.validate():
             log.debug(lmf(" |- arguments validation {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
-            return 1
+            raise ValueError("Arguments validation failed")
         
         #correct paths
         self.table_path = self.context.prepare_path(self.raw_table_path)
@@ -101,23 +101,30 @@ class AddData(ConsoleUtilBase):
                 dom = ccdb.read_namevalue_text_file(self.file_path, self.c_comments)
         except IOError as error:
             log.warning(lmf("Unable to read file '{0}'. The error message is: '{1}'", self.file_path, error))
-            return 1  
+            raise
         
         #check what we've got
         assert isinstance(dom, TextFileDOM)     
         if not dom.data_is_consistant:
-            log.warning("Number of columns in each row is inconsistent across the file")
-            return 1
+            message = "Inconsistency error. " + dom.inconsistent_reason
+            log.warning(message)
+            raise ValueError(message=message)
         
         if len(dom.comment_lines):
             self.comment += "\n" + "\n".join(dom.comment_lines)
             
         # >oO debug record
         log.debug(" |- adding constants")
-        log.debug(lmf(" |- columns: '{0}'  rows: '{1}'  comment lines:  '{2}'  metas: '{3}'",len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
+        log.debug(lmf(" |- columns: '{0}'  rows: '{1}'  comment lines:  '{2}'  metas: '{3}'",
+                      len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
 
         #try to create
-        assignment = provider.create_assignment(dom, self.table_path, self.run_min, self.run_max, self.variation, self.comment)
+        assignment = provider.create_assignment(dom,
+                                                self.table_path,
+                                                self.run_min,
+                                                self.run_max,
+                                                self.variation,
+                                                self.comment)
         log.info(assignment.request)
         return 0
             
@@ -127,24 +134,24 @@ class AddData(ConsoleUtilBase):
     def process_arguments(self, args):
         
         #parse loop
-        i=0
+        i = 0
 
         while i < len(args):
             token = args[i].strip()
-            i+=1
+            i += 1
             if token.startswith('-'):
                 #it is some command, lets parse what is the command
 
                 #variation
                 if token == "-v" or token.startswith("--variation"):
-                    if i<len(args):
+                    if i < len(args):
                         self.variation = args[i]
-                        i+=1
+                        i += 1
                                                                                     
                 #runrange
                 if token == "-r" or token == "--runrange":
                     result = self.context.parse_run_range(args[i])
-                    i+=1
+                    i += 1
                     if not result:
                         log.warning("Run range should be in form of: min-max, or min- , or -max")
                         return False
@@ -154,16 +161,15 @@ class AddData(ConsoleUtilBase):
                     
                     #check how the bounds were set
                     if not run_min_set:
-                        log.warning("Min run bound was set as 0 by default")
+                        log.warning("Min run bound was set as 0 by default. ")
                     if not run_max_set:
-                        log.warning("Max run bound was set as INFINITE_RUN by default")
-                    
+                        log.warning("Max run bound was set as INFINITE_RUN by default. ")
                 
                 #file
                 if token == "-f" or token == "--file":
                     self.raw_entry = args[i]
                     self.object_type = "directory"
-                    i+=1
+                    i += 1
                 
                 #skip comments 'no-comments' value
                 if token == "-n" or token == "--no-comments":
@@ -180,10 +186,10 @@ class AddData(ConsoleUtilBase):
             else:
                 if token.startswith("#"):
                     #everething next are comments
-                    self.comment += " ".join( args[i-1:])
+                    self.comment += " ".join(args[i-1:])
                     self.comment.strip()
                     self.comment = self.comment[1:]
-                    break #break the loop since everything next are comment
+                    break    # break the loop since everything further are comments
                 
                 #it probably must be a type table path
                 if self.raw_table_path == "":
@@ -193,16 +199,14 @@ class AddData(ConsoleUtilBase):
         
         return True
     
-    
 #----------------------------------------
 #   validate 
 #----------------------------------------  
     def validate(self):
-        if not self.raw_file_path : return False
-        if not self.raw_table_path: return False
+        if not self.raw_file_path or not self.raw_table_path:
+            return False
         return True
 
-    
 #----------------------------------------
 #   print_help 
 #----------------------------------------
