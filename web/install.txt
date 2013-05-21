@@ -41,9 +41,15 @@ Fields of the file have description in comments. Please, review them all, becaus
 S T E P   3  -  C O N T E N T
 =============================
 
-1. www/index.php file is the only content file in www directory. It serves to redirect from 
-   main page of the site to the cgi-bin/objects page. Edit file to set proper redirection
-   or delete file at all
+1. The CCDB web site main page is actually '/cgi-bin/objects', 
+   but in the production environment it is good idea to support someone who is landed on the '/' page 
+   One of the ways to provide this is to create 'index.php' file in "www" directory witch redirects to '/cgi-bin/objects'
+   
+	For example, the content of index.php for halldweb1 ccdb is:
+
+	<?php
+	 header( 'Location: https://halldweb1.jlab.org/cgi-bin/ccdb/objects' ) ;
+	?>
 
 2. cgi-bin/templates/doc.html - contains content of the Documentation page. Most probably
    one would like to set own links and text there. 
