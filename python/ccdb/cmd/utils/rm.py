@@ -62,8 +62,8 @@ class Remove(ConsoleUtilBase):
         #ask confirmation
         if self.ask_confirm:
             result = raw_input("To confirm delete type 'yes': ")
-            if result != 'yes': return 0
-            
+            if result != 'yes':
+                return 0
 
         #it is a type table
         if self.object_type == "type_table":
@@ -73,7 +73,7 @@ class Remove(ConsoleUtilBase):
                 provider.delete_type_table(self.type_table)
             except NoResultFound:
                 log.warning("No type table with this path: '{0}'".format(self.path))
-                return 1
+                raise
         
         #it is a directory
         if self.object_type == "directory":
@@ -82,7 +82,7 @@ class Remove(ConsoleUtilBase):
                 provider.delete_directory(parent_dir)
             except KeyError:
                 log.warning("No directory with this path: '{0}'".format(self.path))
-                return 1
+                raise
         
         #it is a variation
         if self.object_type == "variation":
@@ -91,7 +91,7 @@ class Remove(ConsoleUtilBase):
                 provider.delete_variation(variation)
             except NoResultFound:
                 log.warning("Unable to delete variation '{0}'".format(self.raw_entry))
-                return 1
+                raise
 
         if self.object_type == "assignment":
             assignment = provider.get_assignment_by_id(int(self.raw_entry))
@@ -127,7 +127,7 @@ class Remove(ConsoleUtilBase):
                     self.object_type = "directory"
                     i+=1
 
-                if token == "-a" or token =="--assignment":
+                if token == "-a" or token == "--assignment":
                     self.raw_entry = args[i]
                     self.object_type = "assignment"
                     i+=1

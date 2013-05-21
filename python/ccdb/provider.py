@@ -43,11 +43,9 @@ class AlchemyProvider(object):
         self._auth.current_user_name = "anonymous"
         self.logging_enabled = True
 
-
-#----------------------------------------------------------------------------------------
-#	C O N N E C T I O N
-#----------------------------------------------------------------------------------------
-
+    #----------------------------------------------------------------------------------------
+    #	C O N N E C T I O N
+    #----------------------------------------------------------------------------------------
 
     #------------------------------------------------
     #  Connects to database using connection string
@@ -242,31 +240,30 @@ class AlchemyProvider(object):
         user = self.get_current_user()
 
         #create the directory
-        dir = Directory()
-        dir.name = new_dir_name
-        if comment!="": dir.comment = comment
-        else: dir.comment = None
-        dir.parent_dir = parent_dir
-        dir.parent_id = parent_dir.id
-        parent_dir.sub_dirs.append(dir)
-        dir.author_id = user.id
+        directory = Directory()
+        directory.name = new_dir_name
+        if comment!="": directory.comment = comment
+        else: directory.comment = None
+        directory.parent_dir = parent_dir
+        directory.parent_id = parent_dir.id
+        parent_dir.sub_dirs.append(directory)
+        directory.author_id = user.id
 
         #add to database
-        self.session.add(dir)
+        self.session.add(directory)
         self.session.commit()
 
         #add log
-        self.create_log_record(user = user,
-            affected_ids=[dir.__tablename__+str(dir.id)],
-            action="create",
-            description="Created directory '{0}'".format(dir.path),
-            comment = dir.comment)
+        self.create_log_record(user=user,
+                               affected_ids=[directory.__tablename__+str(directory.id)],
+                               action="create",
+                               description="Created directory '{0}'".format(directory.path),
+                               comment=directory.comment)
 
         #refresh directory structure
         self._load_dirs()
 
-        return dir
-
+        return directory
 
     ## @brief Updates directory
     #
@@ -284,17 +281,14 @@ class AlchemyProvider(object):
         self.session.commit()
 
         #Log
-        self.create_log_record(user = self.get_current_user(),
-            affected_ids=[directory.__tablename__+directory(directory.id)],
-            action="update",
-            description="Updated directory '{0}'".format(directory.path),
-            comment = directory.comment)
+        self.create_log_record(user=self.get_current_user(),
+                               affected_ids=[directory.__tablename__+directory(directory.id)],
+                               action="update",
+                               description="Updated directory '{0}'".format(directory.path),
+                               comment=directory.comment)
 
         #refresh directory structure
         self._load_dirs()
-
-
-
 
     #------------------------------------------------
     # Deletes directory using path or Directory obj
@@ -348,37 +342,36 @@ class AlchemyProvider(object):
     #------------------------------------------------
     # Structure directories by hierarchy
     #------------------------------------------------
-    def _structure_dirs(self, dirs):
+    def _structure_dirs(self, directories):
         """
-        :type dirs: {} dictionary with dir.id as a key
+        :type directories: {} dictionary with dir.id as a key
         """
-        assert(isinstance(dirs,type({})))
+        assert(isinstance(directories,type({})))
 
         #clear the full path dictionary
         dirsByFullPath = {self.root_dir.path: self.root_dir}
 
         #clear subdirectories to append them from the beginning in the next step
-        for dir in dirs.values(): dir.sub_dirs = []
+        for directory in directories.values(): directory.sub_dirs = []
 
         #begin loop through the directories
-        for dir in dirs.values():
-            assert (isinstance(dir, Directory))
+        for directory in directories.values():
+            assert (isinstance(directory, Directory))
 
             parent_dir = self.root_dir
 
             # and check if it have parent directory
-            if dir.parent_id >0:
+            if directory.parent_id >0:
                 #this directory must have a parent! so now search it
-                parent_dir = dirs[dir.parent_id]
+                parent_dir = directories[directory.parent_id]
 
-            parent_dir.sub_dirs.append(dir)
-            dir.path = posixpath.join(parent_dir.path, dir.name)
-            dir.parent_dir = parent_dir
-            dirsByFullPath[dir.path] = dir
+            parent_dir.sub_dirs.append(directory)
+            directory.path = posixpath.join(parent_dir.path, directory.name)
+            directory.parent_dir = parent_dir
+            dirsByFullPath[directory.path] = directory
 
         return dirsByFullPath
     #end of structure_dirs()
-
 
     #------------------------------------------------
     # create dictionary by directory id
@@ -581,15 +574,14 @@ class AlchemyProvider(object):
         table.parent_dir_id = parent_dir.id
         table.author_id = user.id
 
-        for i, (name,type) in enumerate(columns):
+        for i, (name,col_type) in enumerate(columns):
             column = TypeTableColumn()
             column.name = name
             column.order = i
-            if type is None: type = "double"
-            column.column_type = type
-            #column.type_table = table
+            col_type = col_type or "double"
+            column.column_type = col_type
             table.columns.append(column)
-            #self.session.add(table)
+
         table._columns_count = len(columns)
 
         self.session.add(table)
@@ -816,9 +808,12 @@ class AlchemyProvider(object):
         query = self.session.query(Variation)\
                 .join(Assignment).join(ConstantSet).join(TypeTable).join(RunRange)\
                 .filter(TypeTable.id == table.id)
-        if run>=0: query = query.filter(RunRange.min<=run).filter(RunRange.max>=run)
-        if limit>0: query = query.limit(limit)
-        if offset>0: query = query.offset(offset)
+        if run>=0:
+            query = query.filter(RunRange.min<=run).filter(RunRange.max>=run)
+        if limit>0:
+            query = query.limit(limit)
+        if offset>0:
+            query = query.offset(offset)
         if name and len(name):
             name = name.replace("_", "\\_").replace("*","%").replace("?","_")
             query = self.session.query(Variation).filter(Variation.name.like(name, escape="\\"))
@@ -1133,15 +1128,20 @@ class AlchemyProvider(object):
 
         :param assignment: assignment object to delete. Must have valid ID
         """
+
+        # save assignment parameters
+        user = self.get_current_user()
+        affected_ids = [assignment.__tablename__ + str(assignment.id)]
+        action = "delete"
+        description = "Deleted assignment '{0}'".format(assignment.request)
+        comment = assignment.comment
+
+        #delete it
         self.session.delete(assignment)
         self.session.commit()
 
         #Log
-        self.create_log_record(user = self.get_current_user(),
-            affected_ids=[assignment.__tablename__ + str(assignment.id)],
-            action="delete",
-            description="Deleted assignment '{0}'".format(assignment.request),
-            comment = assignment.comment)
+        self.create_log_record(user, affected_ids, action, description, comment)
 
 
     #------------------------------------------------
@@ -1201,7 +1201,6 @@ class AlchemyProvider(object):
 #	E R R O R   H A N D L I N G
 #----------------------------------------------------------------------------------------
 
-
 #----------------------------------------------------------------------------------------
 #	O T H E R   F U N C T I O N S
 #----------------------------------------------------------------------------------------
@@ -1226,9 +1225,9 @@ class AlchemyProvider(object):
     def log_user_name(self, user_name):
         self._user_name = user_name
 
-
     def create_log_record(self, user, affected_ids, action, description, comment):
-        if not self.logging_enabled: return None
+        if not self.logging_enabled:
+            return None
 
         assert isinstance(user, User)
         assert isinstance(affected_ids, list)
