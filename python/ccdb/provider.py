@@ -9,7 +9,6 @@ import logging
 import path_utils
 from datetime import datetime
 
-
 import sqlalchemy
 import sqlalchemy.orm
 from sqlalchemy.sql.expression import desc
@@ -17,11 +16,9 @@ from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignmen
 import table_file
 import authentication
 
-
 import posixpath
 
 log = logging.getLogger("ccdb.provider")
-
 
 
 class AlchemyProvider(object):
@@ -50,7 +47,7 @@ class AlchemyProvider(object):
     #------------------------------------------------
     #  Connects to database using connection string
     #------------------------------------------------
-    def connect(self, connection_string = ""):
+    def connect(self, connection_string=""):
         """
         Connects to database using connection string
 
@@ -118,9 +115,9 @@ class AlchemyProvider(object):
         return self._connection_string
 
 
-#----------------------------------------------------------------------------------------
-#	D I R E C T O R Y   M A N G E M E N T
-#----------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------
+    #	D I R E C T O R Y   M A N G E M E N T
+    #----------------------------------------------------------------------------------------
 
 
     #------------------------------------------------
@@ -188,18 +185,19 @@ class AlchemyProvider(object):
         :rtype: [] of Directory
         """
 
-        if not self._are_dirs_loaded: self._load_dirs()
+        if not self._are_dirs_loaded:
+            self._load_dirs()
 
-        searchPattern = searchPattern.replace("_", "\\_").replace("*","%").replace("?","_")
+        searchPattern = searchPattern.replace("_", "\\_").replace("*", "%").replace("?", "_")
 
         query = self.session.query(Directory).filter(Directory.name.like(searchPattern, escape="\\"))
 
-        if parentPath !="":
+        if parentPath != "":
             parent_dir = self.dirs_by_path[parentPath]
             query = query.filter(Directory.parent_id == parent_dir.id)
 
-        if limit !=0: query = query.limit(limit)
-        if offset!=0: query = query.offset(offset)
+        if limit != 0: query = query.limit(limit)
+        if offset != 0: query = query.offset(offset)
 
         result = query.all()
 
@@ -242,8 +240,10 @@ class AlchemyProvider(object):
         #create the directory
         directory = Directory()
         directory.name = new_dir_name
-        if comment!="": directory.comment = comment
-        else: directory.comment = None
+        if comment != "":
+            directory.comment = comment
+        else:
+            directory.comment = None
         directory.parent_dir = parent_dir
         directory.parent_id = parent_dir.id
         parent_dir.sub_dirs.append(directory)
@@ -255,7 +255,7 @@ class AlchemyProvider(object):
 
         #add log
         self.create_log_record(user=user,
-                               affected_ids=[directory.__tablename__+str(directory.id)],
+                               affected_ids=[directory.__tablename__ + str(directory.id)],
                                action="create",
                                description="Created directory '{0}'".format(directory.path),
                                comment=directory.comment)
@@ -282,7 +282,7 @@ class AlchemyProvider(object):
 
         #Log
         self.create_log_record(user=self.get_current_user(),
-                               affected_ids=[directory.__tablename__+directory(directory.id)],
+                               affected_ids=[directory.__tablename__ + directory(directory.id)],
                                action="update",
                                description="Updated directory '{0}'".format(directory.path),
                                comment=directory.comment)
@@ -308,13 +308,13 @@ class AlchemyProvider(object):
         if isinstance(dir_or_path, str):
             directory = self.dirs_by_path[dir_or_path]
         else:
-            assert(isinstance(dir_or_path, Directory))
+            assert (isinstance(dir_or_path, Directory))
             directory = dir_or_path
 
         if len(directory.sub_dirs) != 0 or len(directory.type_tables) != 0:
-            err_message = "Directory '{0}' contains {1} subdirectories and {2} tables."+\
+            err_message = "Directory '{0}' contains {1} subdirectories and {2} tables." + \
                           "Impossible to delete directory which contains another directories or tables"
-            err_message = err_message.format(directory.path, len(directory.sub_dirs),  len(directory.type_tables))
+            err_message = err_message.format(directory.path, len(directory.sub_dirs), len(directory.type_tables))
             raise ValueError(err_message)
 
         self.session.delete(directory)
@@ -324,11 +324,11 @@ class AlchemyProvider(object):
         self._load_dirs()
 
         #Log
-        self.create_log_record(user = self.get_current_user(),
-            affected_ids=[directory.__tablename__+str(directory.id)],
-            action="delete",
-            description="Deleted directory '{0}'".format(directory.path),
-            comment = directory.comment)
+        self.create_log_record(user=self.get_current_user(),
+                               affected_ids=[directory.__tablename__ + str(directory.id)],
+                               action="delete",
+                               description="Deleted directory '{0}'".format(directory.path),
+                               comment=directory.comment)
 
 
     #------------------------------------------------
@@ -346,7 +346,7 @@ class AlchemyProvider(object):
         """
         :type directories: {} dictionary with dir.id as a key
         """
-        assert(isinstance(directories,type({})))
+        assert (isinstance(directories, type({})))
 
         #clear the full path dictionary
         dirsByFullPath = {self.root_dir.path: self.root_dir}
@@ -361,7 +361,7 @@ class AlchemyProvider(object):
             parent_dir = self.root_dir
 
             # and check if it have parent directory
-            if directory.parent_id >0:
+            if directory.parent_id > 0:
                 #this directory must have a parent! so now search it
                 parent_dir = directories[directory.parent_id]
 
@@ -371,6 +371,7 @@ class AlchemyProvider(object):
             dirsByFullPath[directory.path] = directory
 
         return dirsByFullPath
+
     #end of structure_dirs()
 
     #------------------------------------------------
@@ -379,17 +380,15 @@ class AlchemyProvider(object):
     def _get_dirs_by_id_dic(self, dirs):
         result = {}
         for dir in dirs:
-            assert(isinstance(dir, Directory))
-            result[dir.id]=dir
+            assert (isinstance(dir, Directory))
+            result[dir.id] = dir
 
         return result
 
 
-
-
-#----------------------------------------------------------------------------------------
-#	C O N S T A N T   T Y P E   T A B L E
-#----------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------
+    #	C O N S T A N T   T Y P E   T A B L E
+    #----------------------------------------------------------------------------------------
 
 
     #------------------------------------------------
@@ -409,7 +408,9 @@ class AlchemyProvider(object):
         table_name = posixpath.basename(exact_path)
         parent_dir = self.dirs_by_path[parent_dir_path]
 
-        return self.session.query(TypeTable).filter(TypeTable.name == table_name, TypeTable.parent_dir_id == parent_dir.id).one()
+        table = self.session.query(TypeTable).filter(TypeTable.name == table_name,
+                                                      TypeTable.parent_dir_id == parent_dir.id).one()
+        return table
 
 
     #------------------------------------------------
@@ -464,8 +465,11 @@ class AlchemyProvider(object):
         :rtype: []
         """
 
+        if not self._are_dirs_loaded:
+            self._load_dirs()
+
         #prepare search pattern for SQL
-        pattern = pattern.replace("_", "\\_").replace("*","%").replace("?","_")
+        pattern = pattern.replace("_", "\\_").replace("*", "%").replace("?", "_")
 
         #initial query
         query = self.session.query(TypeTable).filter(TypeTable.name.like(pattern, escape="\\"))
@@ -486,8 +490,8 @@ class AlchemyProvider(object):
             query = query.filter(TypeTable.parent_dir_id == parent_dir.id)
 
         #add limits to query
-        if limit !=0: query = query.limit(limit)
-        if offset!=0: query = query.offset(offset)
+        if limit != 0: query = query.limit(limit)
+        if offset != 0: query = query.offset(offset)
 
         #execute and return
         return query.all()
@@ -542,24 +546,26 @@ class AlchemyProvider(object):
     #/
     #------------------------------------------------
     #------------------------------------------------
-    def create_type_table(self, name, dir_obj_or_path, rowsNumber, columns, comment =""):
+    def create_type_table(self, name, dir_obj_or_path, rowsNumber, columns, comment=""):
         """Creates constant table in database"""
         #return self._provider.CreateConstantsTypeTable(name, parentPath, rowsNumber, columns, comments)
 
-        assert len(columns) >0
+        assert len(columns) > 0
         assert rowsNumber > 0
 
-        if not self._are_dirs_loaded: self._load_dirs()
+        if not self._are_dirs_loaded:
+            self._load_dirs()
 
         if isinstance(dir_obj_or_path, str):
             parent_dir = self.dirs_by_path[dir_obj_or_path]
         else:
             assert isinstance(dir_obj_or_path, Directory)
             parent_dir = dir_obj_or_path
-            
+
         #check the table already exists
-        data_count = self.session.query(TypeTable).filter(TypeTable.parent_dir_id == parent_dir.id).filter(TypeTable.name == name).count()
-        if data_count>0:
+        data_count = self.session.query(TypeTable).filter(TypeTable.parent_dir_id == parent_dir.id).filter(
+            TypeTable.name == name).count()
+        if data_count > 0:
             message = "Can't create a type table. Such table already exists in this directory"
             raise ValueError(message)
 
@@ -574,7 +580,7 @@ class AlchemyProvider(object):
         table.parent_dir_id = parent_dir.id
         table.author_id = user.id
 
-        for i, (name,col_type) in enumerate(columns):
+        for i, (name, col_type) in enumerate(columns):
             column = TypeTableColumn()
             column.name = name
             column.order = i
@@ -588,11 +594,11 @@ class AlchemyProvider(object):
         self.session.commit()
 
         #add log
-        self.create_log_record(user = user,
-            affected_ids=[table.__tablename__+str(table.id)],
-            action="create",
-            description="Created table with path '{0}'".format(table.path),
-            comment = table.comment)
+        self.create_log_record(user=user,
+                               affected_ids=[table.__tablename__ + str(table.id)],
+                               action="create",
+                               description="Created table with path '{0}'".format(table.path),
+                               comment=table.comment)
 
         return table
 
@@ -604,11 +610,11 @@ class AlchemyProvider(object):
         self.session.commit()
 
         #Log
-        self.create_log_record(user = self.get_current_user(),
-            affected_ids=[type_table.__tablename__+str(type_table.id)],
-            action="update",
-            description="Updated table with path '{0}'".format(type_table.path),
-            comment = type_table.comment)
+        self.create_log_record(user=self.get_current_user(),
+                               affected_ids=[type_table.__tablename__ + str(type_table.id)],
+                               action="update",
+                               description="Updated table with path '{0}'".format(type_table.path),
+                               comment=type_table.comment)
 
 
     #------------------------------------------------
@@ -628,37 +634,35 @@ class AlchemyProvider(object):
         assert isinstance(type_table, TypeTable)
 
         data_count = self.session.query(ConstantSet).filter(ConstantSet.type_table_id == type_table.id).count()
-        if data_count>0:
-            message = ("Can't delete type table that has data assigned to it."\
-                      + "The type table '{0}' with id '{1}'. It has {2} data sets which reference it."\
-                      + "Please, delete the data first").format(type_table.path, type_table.id, data_count)
+        if data_count > 0:
+            message = ("Can't delete type table that has data assigned to it." \
+                       + "The type table '{0}' with id '{1}'. It has {2} data sets which reference it." \
+                       + "Please, delete the data first").format(type_table.path, type_table.id, data_count)
             raise ValueError(message)
 
         self.session.delete(type_table)
         self.session.commit()
 
         #Log
-        self.create_log_record(user = self.get_current_user(),
-            affected_ids=[type_table.__tablename__+str(type_table.id)],
-            action="delete",
-            description="Deleted table with path '{0}'".format(type_table.path),
-            comment = type_table.comment)
+        self.create_log_record(user=self.get_current_user(),
+                               affected_ids=[type_table.__tablename__ + str(type_table.id)],
+                               action="delete",
+                               description="Deleted table with path '{0}'".format(type_table.path),
+                               comment=type_table.comment)
 
-
-#----------------------------------------------------------------------------------------
-#	R U N   R A N G E S
-#----------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------
+    #	R U N   R A N G E S
+    #----------------------------------------------------------------------------------------
 
 
     #------------------------------------------------
     # GetRun Range from db by name or max and min run
     #------------------------------------------------
     def get_run_range(self, min_run, max_run, name=""):
-        if name!="":
+        if name:
             return self.session.query(RunRange).filter(RunRange.name == name).one()
 
         return self.session.query(RunRange).filter(RunRange.min == min_run).filter(RunRange.max == max_run).one()
-
 
 
     #------------------------------------------------
@@ -678,7 +682,7 @@ class AlchemyProvider(object):
     # Gets run range from DB Or Creates RunRange in DB
     #------------------------------------------------
     #noinspection PyBroadException
-    def get_or_create_run_range(self, min_run, max_run, name = "", comment = ""):
+    def get_or_create_run_range(self, min_run, max_run, name="", comment=""):
         """
         Gets run range from DB Or Creates RunRange in DB
 
@@ -730,18 +734,23 @@ class AlchemyProvider(object):
         :return: None
         """
         data_count = self.session.query(Assignment).filter(Assignment.run_range_id == run_range.id).count()
-        if data_count>0:
-            message = ("Can't delete run range that has data assigned to it."\
-                      + "The run range with id '{0}', name '{2}' [{3} - {4}] has {5} data sets which reference it."\
-                      + "Please, delete the data first").format(run_range.id, run_range.name, run_range.min, run_range.max, data_count)
+        if data_count > 0:
+            message = ("Can't delete run range that has data assigned to it."
+                       "The run range with id '{0}', name '{2}' [{3} - {4}] has {5} data sets which reference it."
+                       "Please, delete the data first"). \
+                format(run_range.id,
+                       run_range.name,
+                       run_range.min,
+                       run_range.max,
+                       data_count)
             raise ValueError(message)
 
         self.session.delete(run_range)
         self.session.commit()
 
-#----------------------------------------------------------------------------------------
-#	V A R I A T I O N S
-#----------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------
+    #	V A R I A T I O N S
+    #----------------------------------------------------------------------------------------
 
 
     #------------------------------------------------
@@ -775,7 +784,7 @@ class AlchemyProvider(object):
 
         if len(pattern):
             #prepare search pattern for SQL
-            pattern = pattern.replace("_", "\\_").replace("*","%").replace("?","_")
+            pattern = pattern.replace("_", "\\_").replace("*", "%").replace("?", "_")
             query = query.filter(Variation.name.like(pattern, escape="\\"))
 
         return query.all()
@@ -784,7 +793,7 @@ class AlchemyProvider(object):
     # Searches all variations associated with this type table
     #------------------------------------------------
     #noinspection PyUnresolvedReferences
-    def search_variations(self, table_or_path, run = 0, name = None, limit = 0, offset = 0):
+    def search_variations(self, table_or_path, run=0, name=None, limit=0, offset=0):
         """
         Searches all variations associated with this type table
 
@@ -805,17 +814,17 @@ class AlchemyProvider(object):
             table = table_or_path
         if not table: return []
 
-        query = self.session.query(Variation)\
-                .join(Assignment).join(ConstantSet).join(TypeTable).join(RunRange)\
-                .filter(TypeTable.id == table.id)
-        if run>=0:
-            query = query.filter(RunRange.min<=run).filter(RunRange.max>=run)
-        if limit>0:
+        query = self.session.query(Variation) \
+            .join(Assignment).join(ConstantSet).join(TypeTable).join(RunRange) \
+            .filter(TypeTable.id == table.id)
+        if run >= 0:
+            query = query.filter(RunRange.min <= run).filter(RunRange.max >= run)
+        if limit > 0:
             query = query.limit(limit)
-        if offset>0:
+        if offset > 0:
             query = query.offset(offset)
         if name and len(name):
-            name = name.replace("_", "\\_").replace("*","%").replace("?","_")
+            name = name.replace("_", "\\_").replace("*", "%").replace("?", "_")
             query = self.session.query(Variation).filter(Variation.name.like(name, escape="\\"))
 
         return query.all()
@@ -839,7 +848,8 @@ class AlchemyProvider(object):
         variation = Variation()
 
         if self.session.query(Variation).filter(Variation.name == name).count() > 0:
-            raise ValueError("Cannot create a new variation with name {0}. Variation with that name already exists".format(name))
+            raise ValueError(
+                "Cannot create a new variation with name {0}. Variation with that name already exists".format(name))
 
         variation.comment = comment
         variation.name = name
@@ -848,12 +858,11 @@ class AlchemyProvider(object):
         self.session.commit()
 
         #add log
-        self.create_log_record(user = user,
-            affected_ids=[variation.__tablename__+str(variation.id)],
-            action="create",
-            description="Created variation '{0}'".format(variation.name),
-            comment = variation.comment)
-
+        self.create_log_record(user=user,
+                               affected_ids=[variation.__tablename__ + str(variation.id)],
+                               action="create",
+                               description="Created variation '{0}'".format(variation.name),
+                               comment=variation.comment)
 
         return variation
 
@@ -872,11 +881,11 @@ class AlchemyProvider(object):
     def update_variation(self, variation):
         self.session.commit()
         #Log
-        self.create_log_record(user = self.get_current_user(),
-            affected_ids=[variation.__tablename__+variation(variation.id)],
-            action="update",
-            description="Updated variation '{0}'".format(variation.name),
-            comment = variation.comment)
+        self.create_log_record(user=self.get_current_user(),
+                               affected_ids=[variation.__tablename__ + variation(variation.id)],
+                               action="update",
+                               description="Updated variation '{0}'".format(variation.name),
+                               comment=variation.comment)
 
 
     ## @brief Delete variation
@@ -892,24 +901,24 @@ class AlchemyProvider(object):
         assert isinstance(variation, Variation)
 
         data_count = self.session.query(Assignment).filter(Assignment.variation_id == variation.id).count()
-        if data_count>0:
-            message = ("Can't delete variation that has data assigned to it."\
-                      + "The variation '{0}' with id '{1} has {2} data sets which reference it."\
-                      + "Please, delete the data first").format(variation.name, variation.id, data_count)
+        if data_count > 0:
+            message = ("Can't delete variation that has data assigned to it." \
+                       + "The variation '{0}' with id '{1} has {2} data sets which reference it." \
+                       + "Please, delete the data first").format(variation.name, variation.id, data_count)
             raise ValueError(message)
 
         self.session.delete(variation)
         self.session.commit()
         #Log
-        self.create_log_record(user = self.get_current_user(),
-            affected_ids=[variation.__tablename__+str(variation.id)],
-            action="delete",
-            description="Deleted variation '{0}'".format(variation.name),
-            comment = variation.comment)
+        self.create_log_record(user=self.get_current_user(),
+                               affected_ids=[variation.__tablename__ + str(variation.id)],
+                               action="delete",
+                               description="Deleted variation '{0}'".format(variation.name),
+                               comment=variation.comment)
 
-#----------------------------------------------------------------------------------------
-#	A S S I G N M E N T S
-#----------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------
+    #	A S S I G N M E N T S
+    #----------------------------------------------------------------------------------------
 
     #------------------------------------------------
     # Get last Assignment that matches parameters
@@ -937,12 +946,12 @@ class AlchemyProvider(object):
             assert isinstance(variation, Variation)
             variation_name = variation.name
 
-        query = self.session.query(Assignment)\
-                .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation)\
-                .filter(Variation.name == variation_name)\
-                .filter(TypeTable.id==table.id)\
-                .filter(RunRange.min<=run).filter(RunRange.max>=run)\
-                .order_by(desc(Assignment.id))
+        query = self.session.query(Assignment) \
+            .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation) \
+            .filter(Variation.name == variation_name) \
+            .filter(TypeTable.id == table.id) \
+            .filter(RunRange.min <= run).filter(RunRange.max >= run) \
+            .order_by(desc(Assignment.id))
 
         return query.limit(1).one()
 
@@ -958,7 +967,7 @@ class AlchemyProvider(object):
     #------------------------------------------------
     # get list of assignments
     #------------------------------------------------
-    def get_assignments(self, path_or_table, run = -1, variation = "", date_and_time = None, limit= 0, offset = 0):
+    def get_assignments(self, path_or_table, run=-1, variation="", date_and_time=None, limit=0, offset=0):
         """
         returns list of assignments
 
@@ -989,13 +998,13 @@ class AlchemyProvider(object):
             table = path_or_table
 
         #build query
-        query = self.session.query(Assignment)\
-        .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation)\
-        .filter(TypeTable.id==table.id)
+        query = self.session.query(Assignment) \
+            .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation) \
+            .filter(TypeTable.id == table.id)
 
         #filter variation
         if isinstance(variation, str):
-            if variation!="":
+            if variation != "":
                 query = query.filter(Variation.name == variation)
         else:
             assert isinstance(variation, Variation)
@@ -1003,10 +1012,10 @@ class AlchemyProvider(object):
 
         #filter by run
         if run >= 0:
-            query = query.filter(RunRange.min<=run).filter(RunRange.max>=run)
+            query = query.filter(RunRange.min <= run).filter(RunRange.max >= run)
 
         #filter by date and time
-        if  date_and_time is not None:
+        if date_and_time is not None:
             assert isinstance(date_and_time, datetime)
             query = query.filter(Assignment.created <= date_and_time)
 
@@ -1014,8 +1023,8 @@ class AlchemyProvider(object):
         query = query.order_by(desc(Assignment.id))
 
         #limits
-        if limit  !=0: query = query.limit(limit)
-        if offset !=0: query = query.offset(offset)
+        if limit != 0: query = query.limit(limit)
+        if offset != 0: query = query.offset(offset)
 
         return query.all()
 
@@ -1024,7 +1033,6 @@ class AlchemyProvider(object):
     #------------------------------------------------
     def copy_assignment(self, assignment):
         raise NotImplementedError("copy_assignment is not implemented")
-
 
 
     #------------------------------------------------
@@ -1063,7 +1071,8 @@ class AlchemyProvider(object):
         run_range = self.get_or_create_run_range(min_run, max_run)
 
         #validate data.. a little =)
-        if len(rows) == 0: raise ValueError("Try to create variation with data length = 0. Fill data prior inserting into database")
+        if len(rows) == 0: raise ValueError(
+            "Try to create variation with data length = 0. Fill data prior inserting into database")
         if not isinstance(rows[0], list):
             #the data is plain list, like [1,2,3,4,5,6]
             #rows_count = len(data) / table._columns_count
@@ -1076,7 +1085,7 @@ class AlchemyProvider(object):
         if data_rows_count != table.rows_count or data_cols_count != table._columns_count:
             message = "Data rows or columns count is inconsistent with table declared rows or columns count. " \
                       "Data rows='{0}', columns='{1}'. Table declared rows='{2}', columns='{3}'" \
-                      "".format(data_rows_count, data_cols_count, table.rows_count, table._columns_count )
+                      "".format(data_rows_count, data_cols_count, table.rows_count, table._columns_count)
             raise ValueError(message)
 
         #Get user
@@ -1098,11 +1107,11 @@ class AlchemyProvider(object):
         self.session.commit()
 
         #add log
-        self.create_log_record(user = user,
-            affected_ids=[assignment.__tablename__+str(assignment.id)],
-            action="create",
-            description="Created assignment '{0}'".format(assignment.request),
-            comment = assignment.comment)
+        self.create_log_record(user=user,
+                               affected_ids=[assignment.__tablename__ + str(assignment.id)],
+                               action="create",
+                               description="Created assignment '{0}'".format(assignment.request),
+                               comment=assignment.comment)
         return assignment
 
 
@@ -1112,11 +1121,11 @@ class AlchemyProvider(object):
     def update_assignment(self, assignment):
         self.session.commit()
         #Log
-        self.create_log_record(user = self.get_current_user(),
-            affected_ids=[assignment.__tablename__+assignment(assignment.id)],
-            action="update",
-            description="Updated assignment '{0}'".format(assignment.request),
-            comment = assignment.comment)
+        self.create_log_record(user=self.get_current_user(),
+                               affected_ids=[assignment.__tablename__ + assignment(assignment.id)],
+                               action="update",
+                               description="Updated assignment '{0}'".format(assignment.request),
+                               comment=assignment.comment)
 
 
     #------------------------------------------------
@@ -1172,7 +1181,7 @@ class AlchemyProvider(object):
         :return: User db object
         :rtype: User
         """
-        query = self.session.query(User).filter(User.name==username)
+        query = self.session.query(User).filter(User.name == username)
         return query.one()
 
     def get_current_user(self):
@@ -1197,13 +1206,13 @@ class AlchemyProvider(object):
     def authentication(self, auth):
         self._auth = auth
 
-#----------------------------------------------------------------------------------------
-#	E R R O R   H A N D L I N G
-#----------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------
+    #	E R R O R   H A N D L I N G
+    #----------------------------------------------------------------------------------------
 
-#----------------------------------------------------------------------------------------
-#	O T H E R   F U N C T I O N S
-#----------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------
+    #	O T H E R   F U N C T I O N S
+    #----------------------------------------------------------------------------------------
 
     ## @brief Validates name for constant type table or directory or column
     #
@@ -1213,9 +1222,9 @@ class AlchemyProvider(object):
     def validate_name(self, name):
         return path_utils.validate_name(name)
 
-#----------------------------------------------------------------------------------------
-#	L O G G I N G
-#----------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------
+    #	L O G G I N G
+    #----------------------------------------------------------------------------------------
     @property
     def log_user_name(self):
         return self._user_name
@@ -1235,7 +1244,7 @@ class AlchemyProvider(object):
         record = LogRecord()
         record.author_id = user.id
         record.author = user
-        record.affected_ids = "|"+"|".join(affected_ids)+"|"
+        record.affected_ids = "|" + "|".join(affected_ids) + "|"
         record.action = action
         record.description = description
         record.comment = comment
@@ -1257,14 +1266,14 @@ class AlchemyProvider(object):
         :rtype: []
         """
 
-        if limit<0: limit = 0
+        if limit < 0: limit = 0
 
         #initial query
         query = self.session.query(LogRecord).order_by(desc(LogRecord.id))
 
         #add limits to query
-        if limit !=0: query = query.limit(limit)
-        if offset!=0: query = query.offset(offset)
+        if limit != 0: query = query.limit(limit)
+        if offset != 0: query = query.offset(offset)
 
         #execute and return
         return query.all()
