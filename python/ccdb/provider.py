@@ -58,12 +58,11 @@ class AlchemyProvider(object):
         :param connection_string: connection string
         :type connection_string: str
         """
-
         try:
             self.engine = sqlalchemy.create_engine(connection_string)
         except ImportError, err:
-            #sql alchemy uses MySQLdb by default. But it might be not install in the system
-            #in such case we fallback to mysqlconnector which is embedded in CCDB
+            #sql alchemy uses MySQLdb by default. But it might not be installed in the system
+            #in such case we fallback to mysqlconnector which is included in CCDB
             if connection_string.startswith("mysql://") and "No module named MySQLdb" in repr(err):
                 connection_string = connection_string.replace("mysql://", "mysql+mysqlconnector://")
                 self.engine = sqlalchemy.create_engine(connection_string)
@@ -77,6 +76,7 @@ class AlchemyProvider(object):
 
         #since it is a new connection we need to rebuild directories
         self._are_dirs_loaded = False
+
 
     #------------------------------------------------
     # Closes connection to data
@@ -132,7 +132,7 @@ class AlchemyProvider(object):
         :return: Directory object if directory exists, NULL otherwise
         :rtype: Directory
         """
-        if not self._are_dirs_loaded: self._load_dirs()
+        self._ensure_dirs_loaded()
 
         #we don't have this directory
         if not path in self.dirs_by_path.keys():
@@ -153,7 +153,7 @@ class AlchemyProvider(object):
         :return:reference to root directory
         :rtype: Directory
         """
-        if not self._are_dirs_loaded: self._load_dirs()
+        self._ensure_dirs_loaded()
         return self.root_dir
 
 
@@ -185,8 +185,7 @@ class AlchemyProvider(object):
         :rtype: [] of Directory
         """
 
-        if not self._are_dirs_loaded:
-            self._load_dirs()
+        self._ensure_dirs_loaded()
 
         searchPattern = searchPattern.replace("_", "\\_").replace("*", "%").replace("?", "_")
 
@@ -196,8 +195,10 @@ class AlchemyProvider(object):
             parent_dir = self.dirs_by_path[parentPath]
             query = query.filter(Directory.parent_id == parent_dir.id)
 
-        if limit != 0: query = query.limit(limit)
-        if offset != 0: query = query.offset(offset)
+        if limit != 0:
+            query = query.limit(limit)
+        if offset != 0:
+            query = query.offset(offset)
 
         result = query.all()
 
@@ -220,7 +221,7 @@ class AlchemyProvider(object):
         :return: new created Directory
         :rtype: Directory
         """
-        if not self._are_dirs_loaded: self._load_dirs()
+        self._ensure_dirs_loaded()
 
         #get parent directory
         if isinstance(parent_dir_or_path, str):
@@ -277,7 +278,8 @@ class AlchemyProvider(object):
     #/
     def update_directory(self, directory):
         """Updates directory"""
-        if not self._are_dirs_loaded: self._load_dirs()
+        self._ensure_dirs_loaded()
+
         self.session.commit()
 
         #Log
@@ -302,7 +304,7 @@ class AlchemyProvider(object):
         :return: None
         """
 
-        if not self._are_dirs_loaded: self._load_dirs()
+        self._ensure_dirs_loaded()
 
         #check the type
         if isinstance(dir_or_path, str):
@@ -349,7 +351,7 @@ class AlchemyProvider(object):
         assert (isinstance(directories, type({})))
 
         #clear the full path dictionary
-        dirsByFullPath = {self.root_dir.path: self.root_dir}
+        dirs_by_full_path = {self.root_dir.path: self.root_dir}
 
         #clear subdirectories to append them from the beginning in the next step
         for directory in directories.values(): directory.sub_dirs = []
@@ -368,9 +370,9 @@ class AlchemyProvider(object):
             parent_dir.sub_dirs.append(directory)
             directory.path = posixpath.join(parent_dir.path, directory.name)
             directory.parent_dir = parent_dir
-            dirsByFullPath[directory.path] = directory
+            dirs_by_full_path[directory.path] = directory
 
-        return dirsByFullPath
+        return dirs_by_full_path
 
     #end of structure_dirs()
 
@@ -379,11 +381,19 @@ class AlchemyProvider(object):
     #------------------------------------------------
     def _get_dirs_by_id_dic(self, dirs):
         result = {}
-        for dir in dirs:
-            assert (isinstance(dir, Directory))
-            result[dir.id] = dir
+        for directory in dirs:
+            assert (isinstance(directory, Directory))
+            result[directory.id] = directory
 
         return result
+
+    #------------------------------------------------
+    # Checks that directory structure is loaded
+    # and ready for use. Loads everything if not
+    #------------------------------------------------
+    def _ensure_dirs_loaded(self):
+        if not self._are_dirs_loaded:
+            self._load_dirs()
 
 
     #----------------------------------------------------------------------------------------
@@ -402,14 +412,21 @@ class AlchemyProvider(object):
         :return: TypeTable that matches this path
         :rtype: TypeTable
         """
-        if not self._are_dirs_loaded: self._load_dirs()
+        self._ensure_dirs_loaded()
 
         parent_dir_path = posixpath.dirname(exact_path)
         table_name = posixpath.basename(exact_path)
         parent_dir = self.dirs_by_path[parent_dir_path]
+        query = self.session.query(TypeTable).filter(TypeTable.name == table_name,
+                                                     TypeTable.parent_dir_id == parent_dir.id)
 
-        table = self.session.query(TypeTable).filter(TypeTable.name == table_name,
-                                                      TypeTable.parent_dir_id == parent_dir.id).one()
+        try:
+            table = query.one()
+        except sqlalchemy.orm.exc.NoResultFound as ex:
+            message = "No table found by exact path: '{0}'".format(exact_path)
+            print type(ex)
+            raise sqlalchemy.orm.exc.NoResultFound(message)
+
         return table
 
 
@@ -425,7 +442,7 @@ class AlchemyProvider(object):
         :return: [] of TypeTables for the directory
         :rtype: [] of TypeTable
         """
-        if not self._are_dirs_loaded: self._load_dirs()
+        self._ensure_dirs_loaded()
 
         if isinstance(dir_obj_or_path, str):
             parent_dir = self.dirs_by_path[dir_obj_or_path]
@@ -465,8 +482,7 @@ class AlchemyProvider(object):
         :rtype: []
         """
 
-        if not self._are_dirs_loaded:
-            self._load_dirs()
+        self._ensure_dirs_loaded()
 
         #prepare search pattern for SQL
         pattern = pattern.replace("_", "\\_").replace("*", "%").replace("?", "_")
@@ -477,7 +493,7 @@ class AlchemyProvider(object):
         #does parent directory specified?
         parent_dir = None
         if dir_obj_or_path is not None:
-            if not self._are_dirs_loaded: self._load_dirs()
+            self._ensure_dirs_loaded()
 
             if isinstance(dir_obj_or_path, str) and dir_obj_or_path != "":
                 parent_dir = self.dirs_by_path[dir_obj_or_path]
@@ -511,7 +527,7 @@ class AlchemyProvider(object):
         :rtype: int
         """
 
-        if not self._are_dirs_loaded: self._load_dirs()
+        self._ensure_dirs_loaded()
 
         if isinstance(dir_obj_or_path, str):
             parent_dir = self.dirs_by_path[dir_obj_or_path]
@@ -553,8 +569,7 @@ class AlchemyProvider(object):
         assert len(columns) > 0
         assert rowsNumber > 0
 
-        if not self._are_dirs_loaded:
-            self._load_dirs()
+        self._ensure_dirs_loaded()
 
         if isinstance(dir_obj_or_path, str):
             parent_dir = self.dirs_by_path[dir_obj_or_path]
@@ -635,8 +650,8 @@ class AlchemyProvider(object):
 
         data_count = self.session.query(ConstantSet).filter(ConstantSet.type_table_id == type_table.id).count()
         if data_count > 0:
-            message = ("Can't delete type table that has data assigned to it." \
-                       + "The type table '{0}' with id '{1}'. It has {2} data sets which reference it." \
+            message = ("Can't delete type table that has data assigned to it."
+                       + "The type table '{0}' with id '{1}'. It has {2} data sets which reference it."
                        + "Please, delete the data first").format(type_table.path, type_table.id, data_count)
             raise ValueError(message)
 
@@ -812,7 +827,8 @@ class AlchemyProvider(object):
         else:
             assert isinstance(table_or_path, TypeTable)
             table = table_or_path
-        if not table: return []
+        if not table:
+            return []
 
         query = self.session.query(Variation) \
             .join(Assignment).join(ConstantSet).join(TypeTable).join(RunRange) \
@@ -902,8 +918,8 @@ class AlchemyProvider(object):
 
         data_count = self.session.query(Assignment).filter(Assignment.variation_id == variation.id).count()
         if data_count > 0:
-            message = ("Can't delete variation that has data assigned to it." \
-                       + "The variation '{0}' with id '{1} has {2} data sets which reference it." \
+            message = ("Can't delete variation that has data assigned to it."
+                       + "The variation '{0}' with id '{1} has {2} data sets which reference it."
                        + "Please, delete the data first").format(variation.name, variation.id, data_count)
             raise ValueError(message)
 
@@ -955,14 +971,14 @@ class AlchemyProvider(object):
 
         return query.limit(1).one()
 
-    def get_assignment_by_id(self, id):
+    def get_assignment_by_id(self, assignment_id):
         """
 
-        :param id: database id of the assignment
+        :param assignment_id: database id of the assignment
         :return: Assignment by database Id
         :rtype: Assignment
         """
-        return self.session.query(Assignment).filter(Assignment.id == id).one()
+        return self.session.query(Assignment).filter(Assignment.id == assignment_id).one()
 
     #------------------------------------------------
     # get list of assignments
@@ -1042,7 +1058,7 @@ class AlchemyProvider(object):
         """
         Validation:
         If no such run range found, the new will be created (with no name)
-        No action will be done (and NULL will be returned):
+        No assignment will be created (and NULL will be returned):
         -- If no type table with such path exists
         -- If data is inconsistent with columns number and rows number
         -- If no variation with such name found
@@ -1067,6 +1083,7 @@ class AlchemyProvider(object):
 
         #get objects
         table = self.get_type_table(path) #TODO create path_or_table variable
+
         variation = self.get_variation(variation_name) #TODO create variation_name_or_obj instead of variation_name
         run_range = self.get_or_create_run_range(min_run, max_run)
 

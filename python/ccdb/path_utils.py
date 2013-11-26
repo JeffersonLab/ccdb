@@ -230,6 +230,7 @@ def parse_request( requestStr="" ):
 
     return result
 
+
 #______________________________________________________________________________
 def validate_name(name):
     """ Checks if name is valid ccdb object name
@@ -237,7 +238,8 @@ def validate_name(name):
     :rtype: bool
     """
     import re
-    if re.match("[\w]", name) : return True # No match
+    if re.match("^[\w]+$", name):
+        return True   # No match
     return False
 
 
@@ -251,7 +253,8 @@ def MakeAbsolute(path=""):
     * @return   void
     */"""
 
-    if IsAbsolute(path): return '/' + path
+    if IsAbsolute(path):
+        return '/' + path
     return path
 
 

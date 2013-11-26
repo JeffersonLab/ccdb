@@ -111,7 +111,7 @@ class Cat(ConsoleUtilBase):
             #now we have to know, how to print an assignment
             data = assignment.constant_set.data_table
 
-            if len(data)!=0 and len(data[0])!=0:
+            if len(data) and len(data[0]):
                 if self.user_request_print_horizontal:
                     self.print_assignment_horizontal(assignment, self.show_header, self.show_borders, self.show_comments)
                 elif self.user_request_print_vertical:
@@ -152,7 +152,7 @@ class Cat(ConsoleUtilBase):
         assert isinstance(request, ParseRequestResult)
 
         if not request.variation_is_parsed:
-            request.variation = "default"
+            request.variation = self.context.current_variation
 
 
         if not request.run_is_parsed:
@@ -209,16 +209,16 @@ class Cat(ConsoleUtilBase):
             self.user_request_print_vertical = True
 
         #parse loop
-        i=0
+        i = 0
         while i < len(args):
             token = args[i].strip()
-            i+=1
+            i += 1
             if token.startswith('-'):
                 #it is some command, lets parse what is the command
 
                 #variation
                 if token == "-v" or token.startswith("--variation"):
-                    if i<len(args):
+                    if i < len(args):
                         self.request.Variation = args[i].strip()
                         self.request.WasParsedPath = True
                         i+=1
@@ -238,7 +238,7 @@ class Cat(ConsoleUtilBase):
                 if token == "--id" and i < len(args):
 
                     token = args[i].strip()
-                    i+=1
+                    i += 1
                     try:
                         self.ass_id = int(token)
                         self.use_ass_id = True
@@ -270,17 +270,17 @@ class Cat(ConsoleUtilBase):
         """Prints help of the command"""
 
         print """Show data values for assigment.
-	-b  or --borders      - Switch show borders on of off
-	-nb or --no-borders
+    -b  or --borders      - Switch show borders on of off
+    -nb or --no-borders
 
-	-h  or --header       - Show header on/off
-	-nh or --no-header
+    -h  or --header       - Show header on/off
+    -nh or --no-header
 
-	-c  or --comments     - Show comments on/off
-	-nc or --no-comments
+    -c  or --comments     - Show comments on/off
+    -nc or --no-comments
 
-	-t  or --time         - Show time
-	-nt or --no-time
+    -t  or --time         - Show time
+    -nt or --no-time
 
         -ph or --horizontal   - Print table horizontally
         -pa or --vertical     - Print table vertically
@@ -317,10 +317,10 @@ class Cat(ConsoleUtilBase):
 
         #PRINT COMMENTS
         if comments:
-            print "#" + assignment.comment.replace(os.linesep, "#"+os.linesep)
+            print "#" + assignment.comment.replace(os.linesep, "#" + os.linesep)
 
-        columnNames = [column.name  for column in table.columns]
-        columnTypes = [column.type  for column in table.columns]
+        columnNames = [column.name for column in table.columns]
+        columnTypes = [column.type for column in table.columns]
         data = assignment.constant_set.data_list
 
         columnsNum = len(columnNames)

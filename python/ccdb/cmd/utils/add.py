@@ -5,7 +5,7 @@ import ccdb
 from ccdb import TextFileDOM
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
-from ccdb import BraceMessage as lmf
+from ccdb import BraceMessage as Lmf
 
 log = logging.getLogger("ccdb.cmd.utils.add")
 
@@ -55,7 +55,10 @@ class AddData(ConsoleUtilBase):
         self.file_path = ""
         self.run_min = 0
         self.run_max = ccdb.INFINITE_RUN
-        self.variation = "default"
+        if self.context is None:
+            self.variation = "default"
+        else:
+            self.variation = self.context.current_variation
         self.comment = ""
         self.is_namevalue_format = False
         self.no_comments = False
@@ -68,8 +71,8 @@ class AddData(ConsoleUtilBase):
     #----------------------------------------
     def process(self, args):
         if log.isEnabledFor(logging.DEBUG):
-            log.debug(lmf("{0}AddData is in charge{0}\\".format(os.linesep)))
-            log.debug(lmf(" |- arguments : '" + "' '".join(args)+"'"))
+            log.debug(Lmf("{0}AddData is in charge{0}\\".format(os.linesep)))
+            log.debug(Lmf(" |- arguments : '" + "' '".join(args)+"'"))
 
         self.reset()
 
@@ -78,15 +81,16 @@ class AddData(ConsoleUtilBase):
         
         #process arguments
         if not self.process_arguments(args):
-            log.debug(lmf(" |- process arguments {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
+            log.debug(Lmf(" |- process arguments {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
             raise ValueError("Problem parsing arguments")
         
         #by "" user means default variation
-        self.variation = "default" if not bool(self.variation) else self.variation
+        #self.variation = "default" if not bool(self.variation) else self.variation
+        #TODO commented as self.variation is set in self.reset() need to be tested
         
         #validate what we've got
         if not self.validate():
-            log.debug(lmf(" |- arguments validation {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
+            log.debug(Lmf(" |- arguments validation {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
             raise ValueError("Arguments validation failed")
         
         #correct paths
@@ -100,7 +104,7 @@ class AddData(ConsoleUtilBase):
             else:
                 dom = ccdb.read_namevalue_text_file(self.file_path, self.c_comments)
         except IOError as error:
-            log.warning(lmf("Unable to read file '{0}'. The error message is: '{1}'", self.file_path, error))
+            log.warning(Lmf("Unable to read file '{0}'. The error message is: '{1}'", self.file_path, error))
             raise
         
         #check what we've got
@@ -115,8 +119,15 @@ class AddData(ConsoleUtilBase):
             
         # >oO debug record
         log.debug(" |- adding constants")
-        log.debug(lmf(" |- columns: '{0}'  rows: '{1}'  comment lines:  '{2}'  metas: '{3}'",
+        log.debug(Lmf(" |- columns: '{0}'  rows: '{1}'  comment lines:  '{2}'  metas: '{3}'",
                       len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
+
+        try:
+            table = provider.get_type_table(self.table_path)
+        except Exception as ex:
+            if 'No table found by exact path' in ex.message: #TODO replace with good exception type
+                #it is safe to use len(dom.rows[0]) because dom.data_is_consistant checked that
+                print(self._get_notable_instruction(self.table_path, len(dom.rows[0]), len(dom.rows)))
 
         #try to create
         assignment = provider.create_assignment(dom,
@@ -206,6 +217,21 @@ class AddData(ConsoleUtilBase):
         if not self.raw_file_path or not self.raw_table_path:
             return False
         return True
+
+#----------------------------------------
+#   print instruction if no table found
+#----------------------------------------
+    def _get_notable_instruction(self, path, cols, rows):
+        """print instruction if no table found"""
+        msg = """
+There is no table with path '{0}' found in the database.
+A table should be created prior adding the constants (see help mktbl)
+The command to create the table for the data is:
+
+mktbl {0} -c {1} -r {2} #<Description and comments here>
+""".format(path, cols, rows)
+        return msg
+
 
 #----------------------------------------
 #   print_help 

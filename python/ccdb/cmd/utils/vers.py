@@ -1,7 +1,10 @@
 import logging
+import os
+
 import ccdb
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
+from ccdb.brace_log_message import BraceMessage as Lfm
 from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.vers")
@@ -35,9 +38,11 @@ class Versions(ConsoleUtilBase):
 #   process 
 #----------------------------------------  
     def process(self, args):
-        log.debug("Versions command is gained a control over the process.")
-        log.debug("   " + " ".join(args))
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(Lfm("{0}Versions is in charge{0}\\".format(os.linesep)))
+            log.debug(Lfm(" |- arguments : '" + "' '".join(args)+"'"))
 
+        #preparations
         assert self.context is not None
         provider = self.context.provider
         isinstance(provider, AlchemyProvider)
@@ -46,10 +51,16 @@ class Versions(ConsoleUtilBase):
         self.raw_table_path = ""
         self.variation = ""
         self.run = -1
-        
+
+
+
         if not self.process_arguments(args):
-            return 1
-        
+            return 1    # BAD return TODO raise exceptions instead of returns here
+
+        if not bool(self.raw_table_path):
+            log.info("Table name (path) is required. See 'help vers'")
+            return 0    # OK return
+
         if self.run == -1: 
             self.run = self.context.current_run
             
@@ -66,19 +77,19 @@ class Versions(ConsoleUtilBase):
             log.warning("Type table %s not found in the DB", self.table_path)
             return 1
         
-        assignments = provider.get_assignments(self.table_path, self.run)
-        print self.theme.Directories + "(ID)   (Created)              (Modified)              (variation)     (run range)    (comments)"
+        assignments = provider.get_assignments(self.table_path, self.run, self.variation)
+        print self.theme.Directories + "(ID)   (Created)              (Modified)              (variation)     (run range)      (comments)"
         for asgmnt in assignments:
             assert isinstance(asgmnt, ccdb.Assignment)
             max_str = repr(asgmnt.run_range.max)
             if asgmnt.run_range.max == ccdb.INFINITE_RUN:
                 max_str="inf"
             print " %-5i "%asgmnt.id +\
-                  " %-20s"%asgmnt.created.strftime("%Y-%m-%d_%H-%M-%S   ") +\
-                  " %-20s"%asgmnt.modified.strftime("%Y-%m-%d_%H-%M-%S   ") +" "+\
+                  " %-20s"%asgmnt.created.strftime("%Y-%m-%d %H-%M-%S   ") +\
+                  " %-20s"%asgmnt.modified.strftime("%Y-%m-%d %H-%M-%S   ") + " " +\
                   " %-14s "%asgmnt.variation.name +\
-                  " %-25s "%(repr(asgmnt.run_range.min) + "-" + max_str )+\
-                  asgmnt.comment[0:20].replace("\n"," ")
+                  " %-15s "%(repr(asgmnt.run_range.min) + "-" + max_str) +\
+                  asgmnt.comment[0:20].replace("\n", " ")
 
         
         return 0
@@ -133,6 +144,16 @@ class Versions(ConsoleUtilBase):
         """Prints help of the command"""
           
         print """Show versions of data for specified type table
-        vers /path/to/table
-    
+
+Flags:
+    -v or --variation  - filters output by variation
+    -r or --run        - filters output by run
+
+Remark: Current working variation which is set by 'var' command or '-v' ccdb flag
+is not propagated to 'vers' command.
+
+Example:
+    >> vers /test/test_vars/test_table   #get all data versions
+    >> cd /test/test_vars                #navigate to directory
+    >> vers -v default test_table        #shows only data versions in default variation
     """

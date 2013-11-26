@@ -23,31 +23,45 @@ class TextFileDOM(object):
         if not self.has_data: 
             self.inconsistent_reason = "File has no data"
             return False
-        
-        columns_length = len(self.rows[0])
+
         for row_index, row in enumerate(self.rows):
-            if len(row) != columns_length: 
+            if len(row) != self.columns_length:
                 self.inconsistent_reason = "Row length mismatch. " \
-                                           "Row {0} has {1} values while awaited number of columns is {2}".\
-                                           format(row_index, len(row), columns_length)
+                                           "Row '{0}' has '{1}' values while awaited number of columns is '{2}'".\
+                                           format(row_index, len(row), self.columns_length)
                 return False
 
-        if len(self.column_names) != columns_length:
+        if len(self.column_names) != self.columns_length:
             self.inconsistent_reason = "Column names number is: '{0}'. It is not equal to data columns number: '{1}'".\
-                                       format(len(self.column_names),columns_length)
+                                       format(len(self.column_names), self.columns_length)
             return True
         #if we are here, everything is good
         return True
-            
+
+
+    @property
+    def columns_length(self):
+        """returns number of columns based on row[0] length
+        return 0 if there is no data
+        """
+        if not len(self.rows):
+            return 0
+
+        #now we know there is at least 1 row
+        return len(self.rows[0])
+
     
     @property
     def has_data(self):
-        if not len(self.rows): return False
-        try:
-            if len(self.rows[0]): return True
-            else: return False
-        except:
+        if not len(self.rows):
             return False
+
+        try:
+            if len(self.rows[0]):
+                return True
+        except IndexError:
+            pass
+        return False
         
 
 #----------------------------------------
@@ -75,19 +89,19 @@ def read_ccdb_text_file(file_name):
                     else:
                         dom.metas[line]=""
                         
-                elif line.startswith('#&'):    #comment with column names
+                elif line.startswith('#&'):         # comment with column names
                     line = line[2:].strip()
                     dom.column_names = shlex.split(line)
                         
-                elif line.startswith("#"):     #comment
+                elif line.startswith("#"):          # comment
                     line = line[1:]
                     dom.comment_lines.append(line)
                     
-                else:                          #string with data?
+                else:                               # string with data?
                     tokens = shlex.split(line)
                     values = []
                     for token in tokens:
-                        if token.startswith("#"): #stop loop if the comment is met
+                        if token.startswith("#"):   # stop loop if the comment is met
                             break 
                         else:
                             values.append(token)

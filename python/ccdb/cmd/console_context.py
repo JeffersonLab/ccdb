@@ -8,6 +8,7 @@ import posixpath
 import getpass
 
 import ccdb.cmd
+import ccdb.path_utils
 from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
 import themes
@@ -37,11 +38,13 @@ class ConsoleContext(object):
         self._user_name = self.anonymous_user_name
         self._is_interactive = False
         self._current_run = 0
-        self._utils = {}
         self._current_path = "/"
+        self._current_variation = "default"
+        self._utils = {}
+        self._verbose = False
         self._ls = None
         self._connection_string = ""
-        self.silent_exceptions = True #rethrow happened exceptions
+        self.silent_exceptions = True   # rethrow happened exceptions
         self._theme = themes.NoColorTheme()
 
 
@@ -51,8 +54,8 @@ class ConsoleContext(object):
         """Sets or gets verbose behaviour for this class"""
         return self._verbose
 
-    def _set_verbose(self, isTrue):
-        self._verbose = isTrue
+    def _set_verbose(self, is_verbose):
+        self._verbose = is_verbose
 
     verbose = property(_get_verbose, _set_verbose)
 
@@ -79,13 +82,13 @@ class ConsoleContext(object):
         return self._current_path
 
     @current_path.setter
-    def current_path(self, newPath):
-        self._current_path = newPath
+    def current_path(self, new_path):
+        self._current_path = new_path
 
     @property
     def current_run(self):
         """
-        Sets or gets verbose behaviour for this class
+        Sets or gets current working run
         :rtype: int
         """
         return self._current_run
@@ -93,6 +96,18 @@ class ConsoleContext(object):
     @current_run.setter
     def current_run(self, new_run):
         self._current_run = new_run
+
+    @property
+    def current_variation(self):
+        """
+        Sets or gets current working variation
+        :rtype: str
+        """
+        return self._current_variation
+
+    @current_variation.setter
+    def current_variation(self, new_var):
+        self._current_variation = new_var
 
     @property
     def user_name(self):
@@ -244,7 +259,15 @@ class ConsoleContext(object):
                         self.current_run = int(workargs[i])
                         log.info("Working run is %i", self.current_run)
                     except ValueError:
-                        log.warning("cannot read run from %s command" % token)
+                        log.warning("(!) Warning. Cannot read run from %s command" % token)
+                    i += 1
+                elif token == "-v" or token == "--variation":
+                    #working variation
+                    if not ccdb.path_utils.validate_name(workargs[i]):
+                        log.warning("(!) Warning. Cannot read variation from --variation flag. "
+                                    "Variation name should consist of A-Z, a-z, 0-9, _")
+                    else:
+                        self._current_variation = workargs[i]
                     i += 1
             else:
                 #looks like is is a command
@@ -619,7 +642,7 @@ class ConsoleContext(object):
     def print_interactive_intro(self):
         print """
 +--------------------------+
-  CCDB shell v.0.8
+  CCDB shell v.0.9
   HallD JLab
 +--------------------------+
        """

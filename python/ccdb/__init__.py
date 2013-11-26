@@ -34,7 +34,9 @@ logger = logging.getLogger("ccdb")
 INFINITE_RUN = 2147483647
 
 def get_ccdb_home_path():
-    if "CCDB_HOME" in os.environ: return os.environ["CCDB_HOME"]
+    if "CCDB_HOME" in os.environ:
+        return os.environ["CCDB_HOME"]
+
     this_dir = os.path.dirname(inspect.getfile(path_utils))
     this_dir = os.path.join(this_dir, "..","..")
     this_dir = os.path.normpath(this_dir)
@@ -60,6 +62,9 @@ def init_ccdb_console():
 
     # CHECK SOME COMMAND LINE KEYS
     #------------------------------
+    if "-h" in sys.argv or "--help" in sys.argv:
+        print("Please call 'ccdb help' for help")
+
     if "-s" in sys.argv or "--silent" in sys.argv:
         logger.setLevel(logging.CRITICAL)
     else:
@@ -79,7 +84,8 @@ def init_ccdb_console():
         logger.debug("debugging verbose mode is " + context.theme.Ok + " ON " + context.theme.Reset)
 
     if "--raise" in sys.argv:
-        logger.debug("--raise flag found. The process will raise commands exceptions instead of humble notifications and non 0 result")
+        logger.debug("--raise flag found. The process will raise exceptions thrown by commands"
+                     " instead of humble notifications and non 0 return result")
         context.silent_exceptions = False
 
 
