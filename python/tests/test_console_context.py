@@ -43,38 +43,40 @@ class ConsoleContextTests(unittest.TestCase):
         sys.stdout = self.output
 
 
-    def test_add_rm_assignment(self):
-        tests_dir = os.path.dirname(os.path.realpath(__file__))
-        test_file = os.path.join(tests_dir, "test_table.txt")
-        self.context.process_command_line("add /test/test_vars/test_table "+test_file)
-        self.output.truncate(0)
-        self.context.process_command_line("vers /test/test_vars/test_table")
-        text = str(self.output.getvalue())
-        line = text.split("\n")[1]
-        id = int(shlex.split(line)[0])
-        self.context.process_command_line("rm -f -a {0}".format(id))
+    def tearDown(self):
+        #restore stdout
+        sys.stdout = self.saved_stdout
 
 
     def test_context(self):
+        """Test utils are loaded"""
         self.assertTrue(len(self.context.utils)>0)
 
 
     def test_cat(self):
+        """cat. General help"""
         self.context.process_command_line("cat /test/test_vars/test_table")
-        self.assertIn("2.3",  self.output.getvalue())
+        self.assertIn("2.3", self.output.getvalue())
+
 
     def test_cd(self):
+        """cd. General test"""
         self.context.process_command_line("cd test")
 
+
     def test_help(self):
+        """help. Help command test"""
         self.context.process_command_line("help")
+        self.assertIn("ls", self.output.getvalue())
 
 
     def test_howto(self):
+        """howto. General test"""
         self.context.process_command_line("howto")
 
 
     def test_dump(self):
+        """dump. General and output tests"""
         self.context.theme = ccdb.cmd.themes.ColoredTheme()
         self.context.process_command_line("dump /test/test_vars/test_table")
         text = self.output.getvalue()
@@ -86,33 +88,59 @@ class ConsoleContextTests(unittest.TestCase):
 
 
     def test_info(self):
+        """info. General test"""
         self.context.process_command_line("info /test/test_vars/test_table")
+        out_str = self.output.getvalue()
+        self.assertIn("test_table", out_str)
+        self.assertIn("Test type", out_str)
+        self.assertIn("z", out_str)
 
 
     def test_ls(self):
+        """ls. General test"""
         self.context.process_command_line("ls")
+        self.assertIn("test", self.output.getvalue())
 
 
     def test_mk_rm_dir(self):
+        """mkdir, rm. Create directory and delete it"""
         self.context.process_command_line("mkdir /test/auto_testing_dir")
-        #TODO check test table internals are wright
+        #TODO check test table internals are right
         self.context.process_command_line("rm --force -d /test/auto_testing_dir")
 
 
     def test_mk_rm_table(self):
+        """mktbl, rm. Create table and delete it"""
         self.context.process_command_line("mktbl /test/auto_testing_table -r 2 x y z #This is comment for my table")
-        #TODO check test table internals are wright
+        #TODO check test table internals are right
         self.context.process_command_line("rm --force /test/auto_testing_table")
 
+
     def test_mk_rm_variation(self):
+        """mkvar, rm. Create variation and delete it"""
         self.context.process_command_line("mkvar auto_testing_variation")
-        #TODO check test table internals are wright
+        #TODO check test table internals are right
         self.context.process_command_line("rm --force -v auto_testing_variation")
 
 
+    def test_add_rm_assignment(self):
+        """add, rm. Add constants and remove them"""
+        tests_dir = os.path.dirname(os.path.realpath(__file__))
+        test_file = os.path.join(tests_dir, "test_table.txt")
+        print(test_file)
+        self.context.process_command_line("add /test/test_vars/test_table "+test_file)
+        self.output.truncate(0)
+        self.context.process_command_line("vers /test/test_vars/test_table")
+        text = str(self.output.getvalue())
+        line = text.split("\n")[1]
+        id = int(shlex.split(line)[0])
+        self.context.process_command_line("rm -f -a {0}".format(id))
+
+
     def test_pwd(self):
+        """pwd. General test"""
         self.context.process_command_line("pwd")
-        self.assertIn("/",  self.output.getvalue())
+        self.assertIn("/", self.output.getvalue())
 
 
     def test_rm(self):
@@ -121,23 +149,43 @@ class ConsoleContextTests(unittest.TestCase):
 
 
     def test_run(self):
-        #default run is 0
+        """run. Test if 0 is default run"""
         self.context.process_command_line("run")
-        self.assertIn("0",  self.output.getvalue())
+        self.assertIn("0", self.output.getvalue())
 
-        #set another run number
+
+    def test_run_change(self):
+        """run. Test run is changed"""
         self.context.process_command_line("run 1")
         self.output.truncate(0)
         self.context.process_command_line("run")
-        self.assertIn("1",  self.output.getvalue())
+        self.assertIn("1", self.output.getvalue())
 
 
-    def test_usage(self):
-        self.context.process_command_line("usage")
+    def test_var(self):
+        """var. Test if 'default' variation is default"""
+        #default run is 0
+        self.context.process_command_line("var")
+        self.assertIn("default", self.output.getvalue())
+
+
+    def test_var_change(self):
+        """var. Test variation change"""
+        self.context.process_command_line("var test_var")
+        self.output.truncate(0)
+        self.context.process_command_line("var")
+        self.assertIn("test_var", self.output.getvalue())
 
 
     def test_vers(self):
+        """vers. General usage test"""
         self.context.process_command_line("vers /test/test_vars/test_table")
+
+
+    def test_vers_variation(self):
+        """vers. Test if vers limits variation"""
+        self.context.process_command_line("vers /test/test_vars/test_table -v default")
+        self.assertNotIn("subtest", self.output.getvalue())
 
 
 
