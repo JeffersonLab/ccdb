@@ -424,7 +424,6 @@ class AlchemyProvider(object):
             table = query.one()
         except sqlalchemy.orm.exc.NoResultFound as ex:
             message = "No table found by exact path: '{0}'".format(exact_path)
-            print type(ex)
             raise sqlalchemy.orm.exc.NoResultFound(message)
 
         return table
@@ -599,8 +598,8 @@ class AlchemyProvider(object):
             column = TypeTableColumn()
             column.name = name
             column.order = i
-            col_type = col_type or "double"
-            column.column_type = col_type
+            col_type = col_type or 'double'
+            column.type = col_type
             table.columns.append(column)
 
         table._columns_count = len(columns)
@@ -1082,9 +1081,9 @@ class AlchemyProvider(object):
             rows = data
 
         #get objects
-        table = self.get_type_table(path) #TODO create path_or_table variable
+        table = self.get_type_table(path)  # TODO create path_or_table variable
 
-        variation = self.get_variation(variation_name) #TODO create variation_name_or_obj instead of variation_name
+        variation = self.get_variation(variation_name)  # TODO create variation_name_or_obj instead of variation_name
         run_range = self.get_or_create_run_range(min_run, max_run)
 
         #validate data.. a little =)
@@ -1093,7 +1092,7 @@ class AlchemyProvider(object):
         if not isinstance(rows[0], list):
             #the data is plain list, like [1,2,3,4,5,6]
             #rows_count = len(data) / table._columns_count
-            raise NotImplementedError() #TODO check and implement this branch
+            raise NotImplementedError()  # TODO check and implement this branch
 
         #validate that the data rows and cols correspond to table rows and cols
         data_rows_count = len(rows)

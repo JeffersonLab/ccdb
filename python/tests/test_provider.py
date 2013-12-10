@@ -1,4 +1,3 @@
-
 import unittest
 import os
 from ccdb import get_ccdb_home_path
@@ -9,8 +8,8 @@ import sqlalchemy.orm.exc
 
 from ccdb import AlchemyProvider
 
-class AlchemyProviderTest(unittest.TestCase):
 
+class AlchemyProviderTest(unittest.TestCase):
     def setUp(self):
         ccdb_path = get_ccdb_home_path()
 
@@ -42,14 +41,13 @@ class AlchemyProviderTest(unittest.TestCase):
 
         #search directories
         dirs = self.provider.search_directories("t??t_va*", "/test")
-        assert (len(dirs)!=0)
-
+        assert (len(dirs) != 0)
 
         dirs = self.provider.search_directories("*", "/test")
-        assert (len(dirs)>=2)
+        assert (len(dirs) >= 2)
 
         dirs = self.provider.search_directories("*", "")
-        assert (len(dirs)>=2)
+        assert (len(dirs) >= 2)
 
         #cleanup directories
         #Ok, lets check if directory for the next text exists...
@@ -79,16 +77,16 @@ class AlchemyProviderTest(unittest.TestCase):
         log = self.provider.get_log_records(limit=1)[0]
         assert (isinstance(log, LogRecord))
         self.assertEqual(log.action, "create")
-        self.assertEqual(log.affected_ids, "|directories"+str(constants_subdir.id)+"|")
+        self.assertEqual(log.affected_ids, "|directories" + str(constants_subdir.id) + "|")
         self.assertEqual(log.comment, "My constants")
         self.assertIn("Created directory", log.description)
         self.provider.logging_enabled = False
 
         #cannot recreate subdirectory
-        self.assertRaises(ValueError, self.provider.create_directory, "constants","/test/testdir","My constants")
+        self.assertRaises(ValueError, self.provider.create_directory, "constants", "/test/testdir", "My constants")
 
         #create another subdirectory
-        variables_subdir = self.provider.create_directory("variables","/test/testdir","My constants")
+        variables_subdir = self.provider.create_directory("variables", "/test/testdir", "My constants")
 
         #test delete
         self.provider.delete_directory("/test/testdir/constants")
@@ -124,7 +122,7 @@ class AlchemyProviderTest(unittest.TestCase):
 
         #get all tables in directory
         tables = self.provider.get_type_tables("/test/test_vars")
-        assert len(tables)>=2       #at least 2 tables are located in "/test/test_vars"
+        assert len(tables) >= 2       # at least 2 tables are located in "/test/test_vars"
 
         #count tables in a directory
         assert self.provider.count_type_tables("/test/test_vars") >= 2
@@ -134,17 +132,17 @@ class AlchemyProviderTest(unittest.TestCase):
         #basic search type table functional
         tables = self.provider.search_type_tables("t??t_tab*")
         self.assertNotEqual(len(tables), 0)
-        self.assertIn("/",tables[0].path)
+        self.assertIn("/", tables[0].path)
 
         #now lets get all tables from the directory.
         tables = self.provider.search_type_tables("*", "/test/test_vars")
-        self.assertNotEqual(len(tables),0)
+        self.assertNotEqual(len(tables), 0)
         for table in tables:
-            self.assertEqual(table.path, "/test/test_vars"+"/"+table.name)
+            self.assertEqual(table.path, "/test/test_vars" + "/" + table.name)
 
         #now lets get all tables from root directory.
         tables = self.provider.search_type_tables("t*", "/")
-        self.assertEquals(len(tables),0)
+        self.assertEquals(len(tables), 0)
 
         #CREATE AND DELETE
 
@@ -157,21 +155,24 @@ class AlchemyProviderTest(unittest.TestCase):
             pass
 
         table = self.provider.create_type_table(
-                    name = "new_table",
-                    dir_obj_or_path = "/test/test_vars",
-                    rowsNumber = 5,
-                    columns=[("c","double"), ("a","double"), ("b","int")],
-                    comment = "This is temporary created table for test reasons")
+            name="new_table",
+            dir_obj_or_path="/test/test_vars",
+            rowsNumber=5,
+            columns=[('c', 'double'), ('a', 'double'), ('b', 'int')],
+            comment="This is temporary created table for test reasons")
 
         self.assertIsNotNone(table)
 
         table = self.provider.get_type_table("/test/test_vars/new_table")
         self.assertEqual(table.rows_count, 5)
-        self.assertEqual(table._columns_count, 3)
-        self.assertEqual(table.name, "new_table")
-        self.assertEqual(table.columns[0].name, "c")
-        self.assertEqual(table.columns[1].name, "a")
-        self.assertEqual(table.columns[2].name, "b")
+        self.assertEqual(table.columns_count, 3)
+        self.assertEqual(table.name, 'new_table')
+        self.assertEqual(table.columns[0].name, 'c')
+        self.assertEqual(table.columns[0].type, 'double')
+        self.assertEqual(table.columns[1].name, 'a')
+        self.assertEqual(table.columns[1].type, 'double')
+        self.assertEqual(table.columns[2].name, 'b')
+        self.assertEqual(table.columns[2].type, 'int')
         self.assertEqual(table.comment, "This is temporary created table for test reasons")
 
         #delete
@@ -304,10 +305,11 @@ class AlchemyProviderTest(unittest.TestCase):
         assignment = self.provider.get_assignment(100, "/test/test_vars/test_table", "default")
         self.assertIsNotNone(assignment)
 
+
         #Check that everything is loaded
         tabledData = assignment.constant_set.data_table
-        self.assertEquals(len(tabledData),2)
-        self.assertEquals(len(tabledData[0]),3)
+        self.assertEquals(len(tabledData), 2)
+        self.assertEquals(len(tabledData[0]), 3)
         self.assertEquals(tabledData[0][0], "2.2")
         self.assertEquals(tabledData[0][1], "2.3")
         self.assertEquals(tabledData[0][2], "2.4")
@@ -319,15 +321,20 @@ class AlchemyProviderTest(unittest.TestCase):
         assignments = self.provider.get_assignments("/test/test_vars/test_table")
         self.assertNotEquals(len(assignments), 0)
 
-        assignment = self.provider.create_assignment([[0,1,2],[3,4,5]],"/test/test_vars/test_table", 0, 1000, "default","Test assignment")
-        self.assertEqual(assignment.constant_set.type_table.path,  "/test/test_vars/test_table")
-        self.assertEqual(assignment.variation.name,  "default")
+        #Ok! Lets get all assignments for current types table and variation
+        assignments = self.provider.get_assignments("/test/test_vars/test_table", variation="default")
+        self.assertNotEquals(len(assignments), 0)
+
+        assignment = self.provider.create_assignment([[0, 1, 2], [3, 4, 5]], "/test/test_vars/test_table", 0, 1000,
+                                                     "default", "Test assignment")
+        self.assertEqual(assignment.constant_set.type_table.path, "/test/test_vars/test_table")
+        self.assertEqual(assignment.variation.name, "default")
         self.assertEqual(assignment.run_range.min, 0)
         self.assertEqual(assignment.run_range.max, 1000)
         self.assertEqual(assignment.comment, "Test assignment")
         tabledData = assignment.constant_set.data_table
-        self.assertEquals(len(tabledData),2)
-        self.assertEquals(len(tabledData[0]),3)
+        self.assertEquals(len(tabledData), 2)
+        self.assertEquals(len(tabledData[0]), 3)
         self.assertEquals(tabledData[0][0], "0")
         self.assertEquals(tabledData[0][1], "1")
         self.assertEquals(tabledData[0][2], "2")
@@ -356,12 +363,12 @@ class AlchemyProviderTest(unittest.TestCase):
         isinstance(user, User)
         self.assertIsNotNone(user)
         self.assertEqual(user.password, "test")
-        self.assertEqual(user.roles, ["runrange_crate","runrange_delete"])
+        self.assertEqual(user.roles, ["runrange_crate", "runrange_delete"])
         #self.assertEqual(user.)
 
 
     def test_gen_flatten_data(self):
-        source = [[1,2],[3,"444"]]
+        source = [[1, 2], [3, "444"]]
         result = list(gen_flatten_data(source))
         assert result[0] == 1
         assert result[1] == 2
@@ -370,18 +377,18 @@ class AlchemyProviderTest(unittest.TestCase):
 
 
     def test_list_to_blob(self):
-        self.assertMultiLineEqual("1|2|33", list_to_blob([1,2,"33"]))
+        self.assertMultiLineEqual("1|2|33", list_to_blob([1, 2, "33"]))
         self.assertMultiLineEqual("strings|with&delimiter;surprise", list_to_blob(["strings", "with|surprise"]))
 
 
     def test_blob_to_list(self):
-        self.assertItemsEqual(["1","2","str"], blob_to_list("1|2|str"))
+        self.assertItemsEqual(["1", "2", "str"], blob_to_list("1|2|str"))
         self.assertItemsEqual(["strings", "with|surprise"], blob_to_list("strings|with&delimiter;surprise"))
 
 
     def test_list_to_table(self):
-        self.assertRaises(ValueError, list_to_table, [1,2,3], 2)
-        self.assertItemsEqual([[1,2,3],[4,5,6]], list_to_table([1,2,3,4,5,6], 3))
+        self.assertRaises(ValueError, list_to_table, [1, 2, 3], 2)
+        self.assertItemsEqual([[1, 2, 3], [4, 5, 6]], list_to_table([1, 2, 3, 4, 5, 6], 3))
 
 
 

@@ -420,12 +420,14 @@ class Cat(ConsoleUtilBase):
         if comments:
             print "#" + assignment.comment.replace(os.linesep, "#"+os.linesep)
 
-        columnNames = [column.name  for column in table.columns]
-        columnTypes = [column.type  for column in table.columns]
+        columnNames = [column.name for column in table.columns]
+        columnTypes = [column.type for column in table.columns]
         data = assignment.constant_set.data_table
         
-        if len(data)==0 :return
-        if len(data[0])==0:return
+        if not data:      # no rows
+            return
+        if not data[0]:   # no columns
+            return
         assert len(columnNames) == len(columnTypes)
         assert len(data[0]) == len(columnNames)
 

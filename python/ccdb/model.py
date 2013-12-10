@@ -74,6 +74,14 @@ class TypeTable(Base):
     author_id = Column('authorId', Integer, default = 1)
 
     @property
+    def columns_count(self):
+        """
+        :return: Number of columns of the table
+        :rtype: int
+        """
+        return self._columns_count
+
+    @property
     def path(self):
         """
         :return: full path of the table
@@ -96,7 +104,7 @@ class TypeTableColumn(Base):
     created = Column(DateTime, default = datetime.datetime.now)
     modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
     order = Column(Integer)
-    type = Column('columnType', Enum('int', 'uint','long','ulong','double','string','bool'))
+    type = Column('columnType', Enum('int', 'uint', 'long', 'ulong', 'double', 'string', 'bool'))
     type_table_id = Column('typeId',Integer, ForeignKey('typeTables.id'))
 
 
