@@ -9,6 +9,10 @@
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="SQLite Debug|Win32">
+      <Configuration>SQLite Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\include\CCDB\Calibration.h" />
@@ -20,6 +24,7 @@
     <ClInclude Include="..\..\..\include\CCDB\Helpers\PathUtils.h" />
     <ClInclude Include="..\..\..\include\CCDB\Helpers\StopWatch.h" />
     <ClInclude Include="..\..\..\include\CCDB\Helpers\StringUtils.h" />
+    <ClInclude Include="..\..\..\include\CCDB\Helpers\TimeProvider.h" />
     <ClInclude Include="..\..\..\include\CCDB\Helpers\Varargs.h" />
     <ClInclude Include="..\..\..\include\CCDB\Helpers\WorkUtils.h" />
     <ClInclude Include="..\..\..\include\CCDB\IMutex.h" />
@@ -34,13 +39,19 @@
     <ClInclude Include="..\..\..\include\CCDB\Model\RunRange.h" />
     <ClInclude Include="..\..\..\include\CCDB\Model\StoredObject.h" />
     <ClInclude Include="..\..\..\include\CCDB\Model\Variation.h" />
-    <ClInclude Include="..\..\..\include\CCDB\MySQLCalibration.h" />
+    <ClInclude Include="..\..\..\include\CCDB\MySQLCalibration.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\..\include\CCDB\Providers\DataProvider.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\EnvironmentAuthentication.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\FileDataProvider.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\IAuthentication.h" />
     <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLConnectionInfo.h" />
-    <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLDataProvider.h" />
+    <ClInclude Include="..\..\..\include\CCDB\Providers\MySQLDataProvider.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\..\include\CCDB\Providers\SQLiteDataProvider.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -58,6 +69,7 @@
     <ClCompile Include="..\..\..\src\Library\Helpers\PathUtils.cc" />
     <ClCompile Include="..\..\..\src\Library\Helpers\Stopwatch.cc" />
     <ClCompile Include="..\..\..\src\Library\Helpers\StringUtils.cc" />
+    <ClCompile Include="..\..\..\src\Library\Helpers\TimeProvider.cc" />
     <ClCompile Include="..\..\..\src\Library\Helpers\WorkUtils.cc" />
     <ClCompile Include="..\..\..\src\Library\IMutex.cc" />
     <ClCompile Include="..\..\..\src\Library\ISyncObject.cc" />
@@ -71,13 +83,20 @@
     <ClCompile Include="..\..\..\src\Library\Model\RunRange.cc" />
     <ClCompile Include="..\..\..\src\Library\Model\StoredObject.cc" />
     <ClCompile Include="..\..\..\src\Library\Model\Variation.cc" />
-    <ClCompile Include="..\..\..\src\Library\MySQLCalibration.cc" />
+    <ClCompile Include="..\..\..\src\Library\MySQLCalibration.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\Library\Providers\DataProvider.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\EnvironmentAuthentication.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\FileDataProvider.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\IAuthentication.cc" />
     <ClCompile Include="..\..\..\src\Library\Providers\MySQLConnectionInfo.cc" />
-    <ClCompile Include="..\..\..\src\Library\Providers\MySQLDataProvider.cc" />
+    <ClCompile Include="..\..\..\src\Library\Providers\MySQLDataProvider.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\Library\Providers\SQLiteDataProvider.cc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
@@ -99,6 +118,12 @@
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -110,6 +135,9 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -141,6 +169,28 @@
       <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR)/lib/opt;$(CCDB_HOME)\lib;$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;SQLITE;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MYSQL_CONNECTOR)\include;$(CCDB_HOME)/include;$(SolutionDir)/SQLite;</AdditionalIncludeDirectories>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(MYSQL_CONNECTOR)/lib/opt;$(CCDB_HOME)\lib;$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -149,10 +199,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;SQLITE;CCDB_MYSQLNDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;SQLITE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(CCDB_HOME)/include;$(SolutionDir)/SQLite;$(MYSQL_CONNECTOR)/include</AdditionalIncludeDirectories>
-      <UndefinePreprocessorDefinitions>
-      </UndefinePreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>CCDB_MYSQL</UndefinePreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>

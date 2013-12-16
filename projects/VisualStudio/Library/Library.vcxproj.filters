@@ -151,6 +151,9 @@
     <ClInclude Include="..\..\..\include\CCDB\SQLiteCalibration.h">
       <Filter>UserApi\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\include\CCDB\Helpers\TimeProvider.h">
+      <Filter>Helpers\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Library\Helpers\StringUtils.cc">
@@ -248,6 +251,9 @@
       <Filter>UserApi\Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Library\Helpers\Stopwatch.cc">
+      <Filter>Helpers\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\Library\Helpers\TimeProvider.cc">
       <Filter>Helpers\Sources</Filter>
     </ClCompile>
   </ItemGroup>
