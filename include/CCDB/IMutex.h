@@ -15,7 +15,7 @@ namespace ccdb
     class IMutex
     {
     public:
-        IMutex(ISyncObject *){};
+        IMutex(ISyncObject *){}
         virtual ~IMutex(){}
 
         

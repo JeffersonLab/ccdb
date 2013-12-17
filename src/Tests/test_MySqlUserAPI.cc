@@ -15,6 +15,7 @@
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Log.h"
 #include "CCDB/CalibrationGenerator.h"
+#include "CCDB/Helpers/TimeProvider.h"
 
 using namespace std;
 using namespace ccdb;
@@ -56,6 +57,10 @@ TEST_CASE("CCDB/UserAPI/MySQL","tests")
     REQUIRE(tabledValues.size()==2);
     REQUIRE(tabledValues[0].size()==3);
 
+    //test of disconnect and reconnect function
+    //----------------------------------------------------
+    REQUIRE_NOTHROW(calib->Disconnect());
+    REQUIRE_NOTHROW(calib->Reconnect());
     
     //test of getting data without / in the beginning
     //----------------------------------------------------
@@ -82,8 +87,6 @@ TEST_CASE("CCDB/UserAPI/MySQL","tests")
     REQUIRE_NOTHROW(result = calib->GetCalib(vectorOfMapsdValues, "test/test_vars/test_table"));
     REQUIRE(result);
     REQUIRE(vectorOfMapsdValues.size()>0);
-
-    
 
     //test of get all namepaths
     //----------------------------------------------------
@@ -186,4 +189,51 @@ TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get ca
 		REQUIRE(tabledValues[0].size()==3);
 		REQUIRE(tabledValues[0][0]=="1.11");
 	}
+}
+
+TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Disconnect database with timeout")
+{
+    //Set fake time
+    TimeProvider::SetTimeUnitTest(true);
+    TimeProvider::SetUnitTestTime(100);
+
+    //Get calibration generator
+    CalibrationGenerator* gen = new CalibrationGenerator();
+    gen->SetMaxInactiveTime(50);  //50 seconds of inactivity
+
+    //Get calibration object
+    Calibration* sqliteCalib = gen->MakeCalibration(TESTS_CONENCTION_STRING, 100, "default");
+
+    REQUIRE(sqliteCalib->IsConnected());
+
+    //Now update time
+    REQUIRE_NOTHROW(gen->UpdateInactivity());
+    REQUIRE(sqliteCalib->IsConnected());
+
+    //Update time once more
+    TimeProvider::SetUnitTestTime(110);
+    REQUIRE_NOTHROW(gen->UpdateInactivity());
+    REQUIRE(sqliteCalib->IsConnected());
+
+    //and more... Now the database should be disconnected
+    TimeProvider::SetUnitTestTime(151);
+    REQUIRE_NOTHROW(gen->UpdateInactivity());
+    REQUIRE_FALSE(sqliteCalib->IsConnected());
+    
+    //Now we download something to check reconnect function
+    bool result;
+    vector<vector<string> > tabledValues;
+    REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+    REQUIRE(result);
+    REQUIRE(tabledValues.size()>0);
+    REQUIRE(tabledValues.size()==2);
+    REQUIRE(tabledValues[0].size()==3);
+
+    //Update time once more. It should be connected 
+    TimeProvider::SetUnitTestTime(160);
+    REQUIRE_NOTHROW(gen->UpdateInactivity());
+    REQUIRE(sqliteCalib->IsConnected());
+
+    //Turn back normal time
+    TimeProvider::SetTimeUnitTest(false);
 }

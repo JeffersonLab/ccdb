@@ -98,9 +98,9 @@ public:
 protected:
 
 private:
-    Log() {};                              /// Private it can  not be called
-    Log(Log const&) {};                    /// copy constructor is private
-    Log& operator=(Log const&) {};         /// assignment operator is private
+    Log() {}                               /// Private it can  not be called
+    Log(Log const&) {}                     /// copy constructor is private
+    Log& operator=(Log const&);            /// assignment operator is private
     static Console msConsole;              /// standard output console
     static Console msErrorConsole;         /// output for error reporting
     static Console msMessageConsole;       /// Console for messages

@@ -32,10 +32,10 @@ public:
 	void OpAjaxDirectoryList();
 protected:
 private:
-	HttpContext();										// Private so that it can  not be called
-	HttpContext(HttpContext const&){};				// copy constructor is private
+	HttpContext();									// Private so that it can  not be called
+	HttpContext(HttpContext const&){}				// copy constructor is private
 	HttpContext& operator=(HttpContext const&);		// assignment operator is private
-	
+
 	string mHeader; //Header definitions
 	void ProcessOperation();//processes request set variables;
 	void WriteResponse(const string &content);
@@ -43,8 +43,7 @@ private:
 	std::map <std::string, std::string> mGet;
 	std::map <std::string, std::string> mPost;
 	string mConnectionString;
-	static HttpContext* mInstance;						//Main and only singleton instance
-	
+	static HttpContext* mInstance;					//Main and only singleton instance
 };
 }
 #endif // HttpContext_h__

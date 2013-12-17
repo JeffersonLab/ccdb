@@ -10,9 +10,12 @@ import path_utils
 from datetime import datetime
 
 import sqlalchemy
+from sqlalchemy.exc import OperationalError
 import sqlalchemy.orm
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
+from ccdb.errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError
+
 import table_file
 import authentication
 
@@ -136,7 +139,7 @@ class AlchemyProvider(object):
 
         #we don't have this directory
         if not path in self.dirs_by_path.keys():
-            raise KeyError("Can't find the directory with path '{0}'".format(path))
+            raise DirectoryNotFound("Can't find the directory with path '{0}'".format(path))
 
         return self.dirs_by_path[path]
 
@@ -308,7 +311,7 @@ class AlchemyProvider(object):
 
         #check the type
         if isinstance(dir_or_path, str):
-            directory = self.dirs_by_path[dir_or_path]
+            directory = self.get_directory(dir_or_path)
         else:
             assert (isinstance(dir_or_path, Directory))
             directory = dir_or_path
@@ -337,7 +340,18 @@ class AlchemyProvider(object):
     # Load all directories
     #------------------------------------------------
     def _load_dirs(self):
-        self.dirs_by_id = self._get_dirs_by_id_dic(self.session.query(Directory).all())
+        try:
+            self.dirs_by_id = self._get_dirs_by_id_dic(self.session.query(Directory).all())
+        except OperationalError as err:
+            if 'no such table' in err.message:
+                import os
+                message = "No database structure found. Possibly you are trying to connect " +\
+                          "to wrong SQLite file or to MySQL database without schema. " +\
+                          "Original SqlAlchemy error is:" +\
+                          os.linesep + os.linesep + err.message
+                raise DatabaseStructureError(message)
+            else:
+                raise
         self.dirs_by_path = self._structure_dirs(self.dirs_by_id)
         self._are_dirs_loaded = True
 
@@ -412,19 +426,20 @@ class AlchemyProvider(object):
         :return: TypeTable that matches this path
         :rtype: TypeTable
         """
-        self._ensure_dirs_loaded()
+        self._ensure_dirs_loaded()  # even with self.get_directory do not remove it
 
         parent_dir_path = posixpath.dirname(exact_path)
         table_name = posixpath.basename(exact_path)
-        parent_dir = self.dirs_by_path[parent_dir_path]
+        parent_dir = self.get_directory(parent_dir_path)
+
         query = self.session.query(TypeTable).filter(TypeTable.name == table_name,
                                                      TypeTable.parent_dir_id == parent_dir.id)
 
         try:
             table = query.one()
         except sqlalchemy.orm.exc.NoResultFound as ex:
-            message = "No table found by exact path: '{0}'".format(exact_path)
-            raise sqlalchemy.orm.exc.NoResultFound(message)
+            message = "No type table found by exact path: '{0}'".format(exact_path)
+            raise TypeTableNotFound(message)
 
         return table
 
@@ -444,7 +459,7 @@ class AlchemyProvider(object):
         self._ensure_dirs_loaded()
 
         if isinstance(dir_obj_or_path, str):
-            parent_dir = self.dirs_by_path[dir_obj_or_path]
+            parent_dir = self.get_directory(dir_obj_or_path)
         else:
             assert isinstance(dir_obj_or_path, Directory)
             parent_dir = dir_obj_or_path
@@ -495,7 +510,7 @@ class AlchemyProvider(object):
             self._ensure_dirs_loaded()
 
             if isinstance(dir_obj_or_path, str) and dir_obj_or_path != "":
-                parent_dir = self.dirs_by_path[dir_obj_or_path]
+                parent_dir = self.get_directory(dir_obj_or_path)
             else:
                 assert isinstance(dir_obj_or_path, Directory)
                 parent_dir = dir_obj_or_path
@@ -529,7 +544,7 @@ class AlchemyProvider(object):
         self._ensure_dirs_loaded()
 
         if isinstance(dir_obj_or_path, str):
-            parent_dir = self.dirs_by_path[dir_obj_or_path]
+            parent_dir = self.get_directory(dir_obj_or_path)
         else:
             assert isinstance(dir_obj_or_path, Directory)
             parent_dir = dir_obj_or_path
@@ -571,7 +586,7 @@ class AlchemyProvider(object):
         self._ensure_dirs_loaded()
 
         if isinstance(dir_obj_or_path, str):
-            parent_dir = self.dirs_by_path[dir_obj_or_path]
+            parent_dir = self.get_directory(dir_obj_or_path)
         else:
             assert isinstance(dir_obj_or_path, Directory)
             parent_dir = dir_obj_or_path
@@ -674,9 +689,12 @@ class AlchemyProvider(object):
     #------------------------------------------------
     def get_run_range(self, min_run, max_run, name=""):
         if name:
-            return self.session.query(RunRange).filter(RunRange.name == name).one()
+            return self.get_named_run_range(name)
 
-        return self.session.query(RunRange).filter(RunRange.min == min_run).filter(RunRange.max == max_run).one()
+        try:
+            return self.session.query(RunRange).filter(RunRange.min == min_run).filter(RunRange.max == max_run).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            raise RunRangeNotFound("Run range '{0}-{1}' is not found".format(min_run, max_run))
 
 
     #------------------------------------------------
@@ -689,7 +707,10 @@ class AlchemyProvider(object):
         :param name:
         :return:
         """
-        return self.session.query(RunRange).filter(RunRange.name == name).one()
+        try:
+            return self.session.query(RunRange).filter(RunRange.name == name).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            raise RunRangeNotFound("Run range with name '{0}' is not found".format(name))
 
 
     #------------------------------------------------

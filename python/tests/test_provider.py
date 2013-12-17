@@ -4,6 +4,7 @@ from ccdb import get_ccdb_home_path
 
 from ccdb.model import User, LogRecord
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
+from ccdb.errors import DatabaseStructureError, RunRangeNotFound, TypeTableNotFound, DirectoryNotFound
 import sqlalchemy.orm.exc
 
 from ccdb import AlchemyProvider
@@ -100,6 +101,12 @@ class AlchemyProviderTest(unittest.TestCase):
         #now, when dir doesn't have sub dirs and sub tables, it can be deleted
         self.provider.delete_directory("/test/testdir")
 
+
+    def test_sqlite_wrong_file(self):
+        self.provider.connect("sqlite:///some.crap.file")
+        self.assertRaises(DatabaseStructureError, self.provider.get_directory, "/test")
+
+
     def test_type_tables(self):
         self.provider.connect(self.sqlite_connection_str)
         self.universal_type_tables()
@@ -177,7 +184,7 @@ class AlchemyProviderTest(unittest.TestCase):
 
         #delete
         self.provider.delete_type_table(table)
-        self.assertRaises(sqlalchemy.orm.exc.NoResultFound, self.provider.get_type_table, "/test/test_vars/new_table")
+        self.assertRaises(TypeTableNotFound, self.provider.get_type_table, "/test/test_vars/new_table")
 
 
     def test_run_ranges(self):
@@ -213,8 +220,8 @@ class AlchemyProviderTest(unittest.TestCase):
             rr = self.provider.get_run_range(0, 2001)
             self.assertIsNotNone(rr)
 
-        except sqlalchemy.orm.exc.NoResultFound:
-            pass; #test passed
+        except RunRangeNotFound:
+            pass;  # test passed
 
 
         # GET OR CREATE RUNRANGE
@@ -231,7 +238,8 @@ class AlchemyProviderTest(unittest.TestCase):
         # DELETE RUN-RANGE TEST
         #----------------------------------------------------
         self.provider.delete_run_range(rr)
-        self.assertRaises(sqlalchemy.orm.exc.NoResultFound, self.provider.get_run_range, 0, 2001)
+        self.assertRaises(RunRangeNotFound, self.provider.get_run_range, 0, 2001)
+
 
     def test_variations(self):
         self.provider.connect(self.sqlite_connection_str)
@@ -239,6 +247,7 @@ class AlchemyProviderTest(unittest.TestCase):
 
         self.provider.connect(self.mysql_connection_str)
         self.universal_variations_tests()
+
 
     def universal_variations_tests(self):
         # GET VARIATION TEST

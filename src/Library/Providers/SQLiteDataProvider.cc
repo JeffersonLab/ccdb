@@ -496,7 +496,7 @@ bool ccdb::SQLiteDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTa
 	Directory *parentDir = NULL; //will need it anyway later
 	if(parentPath!="")
 	{	//we should care about parent path!
-		if(parentDir = GetDirectory(parentPath.c_str()))
+		if( (parentDir = GetDirectory(parentPath.c_str())) )
 		{
 			parentAddon = StringUtils::Format(" AND `directoryId` = '%i'", parentDir->GetId());
 		}

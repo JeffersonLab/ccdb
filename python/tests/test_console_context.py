@@ -6,6 +6,7 @@ import shlex
 from StringIO import StringIO
 
 import ccdb.cmd.colorama
+from ccdb.errors import DirectoryNotFound, TypeTableNotFound
 import ccdb.path_utils
 import ccdb.cmd.themes
 from ccdb import get_ccdb_home_path
@@ -25,6 +26,8 @@ class ConsoleContextTests(unittest.TestCase):
         self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
 
+
+
         #initialize but disable colorama
         ccdb.cmd.colorama.init(autoreset=True)
         ccdb.cmd.colorama.deinit()
@@ -41,6 +44,10 @@ class ConsoleContextTests(unittest.TestCase):
         self.output = StringIO()
         self.saved_stdout = sys.stdout
         sys.stdout = self.output
+        ch = logging.StreamHandler()
+        ch.stream = self.output
+        logger.addHandler(ch)
+
 
 
     def tearDown(self):
@@ -144,8 +151,8 @@ class ConsoleContextTests(unittest.TestCase):
 
 
     def test_rm(self):
+        """rm. General test... But rm is tested in other tests"""
         pass
-        #TODO test rm
 
 
     def test_run(self):
@@ -188,6 +195,10 @@ class ConsoleContextTests(unittest.TestCase):
         self.assertNotIn("subtest", self.output.getvalue())
 
 
+    def test_vers_bad_params(self):
+        """vers. Test vers bad parameters"""
 
-
-
+        #wrong directory
+        self.assertRaises(DirectoryNotFound, self.context.process_command_line, "vers /some/wrong/dir/table")
+        self.assertRaises(TypeTableNotFound, self.context.process_command_line, "vers /test/test_vars/wrong_table")
+        

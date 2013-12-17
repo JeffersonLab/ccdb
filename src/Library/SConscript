@@ -37,6 +37,7 @@ lib_sources = [
 	"Helpers/StringUtils.cc",
 	"Helpers/PathUtils.cc",
 	"Helpers/WorkUtils.cc",
+	"Helpers/TimeProvider.cc",
 	
 	#model and provider
 	"Model/ObjectsOwner.cc",
@@ -59,16 +60,16 @@ lib_sources = [
 	]
 
 #additional variables
-env.Append(LIBS = ['pthread'])
+env.Append(LIBS = ['pthread','rt'])
 env.Append(CPPDEFINES = 'SQLITE_OMIT_LOAD_EXTENSION')
 env.Append(CCFLAGS='-Wno-unknown-pragmas') #Disable unknown pragmas warnings. CCDB files have '#pragma region' records to structurize files. 
 
 #Build with mysql or no?                                           
 #Read user flag for using mysql dependencies or not
-if ARGUMENTS.get("mysql","yes")=="yes":
+if ARGUMENTS.get("mysql","no")=="yes" or ARGUMENTS.get("with-mysql","true")=="true":
 	#User wants mysql!
 	print "Building CCDB using MySQL dependencies"
-	print "To build CCDB without mysql dependencies. Run scons with 'mysql=no' flag"
+	print "To build CCDB without mysql dependencies. Run scons with 'with-mysql=false' flag"
 	print ""
 	
 	if not WhereIs("mysql_config"):
@@ -92,7 +93,7 @@ if ARGUMENTS.get("mysql","yes")=="yes":
 	env.Append(CPPDEFINES='CCDB_MYSQL')
 	env.ParseConfig('mysql_config --libs --cflags')
 else:
-	print "CCDB is being build WITHOUT MySQL support. Use 'mysql=yes' flag to explicitly enable MySQL support"
+	print "CCDB is being build WITHOUT MySQL support. Use 'with-mysql=true' flag to explicitly enable MySQL support"
 	
 
 #Making library

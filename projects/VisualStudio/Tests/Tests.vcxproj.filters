@@ -77,7 +77,7 @@
     <ClCompile Include="..\..\..\src\Tests\test_NoMysqlUserAPI.cc">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\Tests\tests_TimeProvider.cc">
+    <ClCompile Include="..\..\..\src\Tests\test_TimeProvider.cc">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>

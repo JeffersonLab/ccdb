@@ -26,12 +26,14 @@ test_sources = [
 	"test_SQLiteProvider_Directories.cc",
 	"test_SQLiteProvider_TypeTables.cc",
 	"test_SQLiteProvider_Variations.cc",
+	"test_SQLiteProvider_Variations.cc",
+	"test_TimeProvider.cc",
 	]
 	
 #Read user flag for using mysql dependencies or not
-if ARGUMENTS.get("mysql","yes")=="yes":
+if ARGUMENTS.get("mysql","no")=="yes" or ARGUMENTS.get("with-mysql","true")=="true":
 	#User wants mysql!
-		
+	print("Compiling unit tests with MySQL")
 	#model and provider
 	test_sources.extend([
 	"test_MySQLProvider_Assignments.cc",
@@ -42,6 +44,8 @@ if ARGUMENTS.get("mysql","yes")=="yes":
 	"test_MySQLProvider_RunRanges.cc",
 	"test_MySQLProvider_TypeTables.cc",
 	"test_MySQLProvider_Variations.cc"])
+	env.Append(CPPDEFINES='CCDB_MYSQL')
+	env.ParseConfig('mysql_config --libs --cflags')
 	
 
 #Making tests

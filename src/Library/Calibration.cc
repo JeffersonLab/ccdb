@@ -6,6 +6,7 @@
 #include "CCDB/GlobalMutex.h"
 #include "CCDB/Providers/DataProvider.h"
 #include "CCDB/Helpers/PathUtils.h"
+#include "CCDB/Helpers/TimeProvider.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ Calibration::Calibration()
 	mDefaultTime = 0;
     mDefaultVariation = "default";
     mReadMutex = new PthreadMutex(new PthreadSyncObject());
+    mIsAutoReconnect = true;
 }
 
 
@@ -36,10 +38,11 @@ Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/, 
 	mDefaultTime = defaultTime;
 
     mProvider = NULL;
-    mProviderIsLocked = false; //by default we assume that we own the provider
+    mProviderIsLocked = false;      // by default we assume that we own the provider
     PthreadSyncObject * x = NULL;
     x = new PthreadSyncObject();
     mReadMutex = new PthreadMutex(x);
+    mIsAutoReconnect = true;
 }
 
 
@@ -506,6 +509,7 @@ string Calibration::GetConnectionString() const
 {
     //
     if (mProvider!=NULL) return mProvider->GetConnectionString();
+    
     return string();
 }
 
@@ -522,12 +526,14 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
      * @return   DAssignment *
      */
 
+	mLastActivityTime = ccdb::TimeProvider::GetUnixTimeStamp(ccdb::ClockSources::Monotonic);
+
     RequestParseResult result = PathUtils::ParseRequest(namepath);
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
     Assignment* assigment = NULL;
-    if(!this->IsConnected()) throw std::logic_error("Calibration class is not connected to data source. Connect to the data source first");
     
+    CheckConnection();  // Check if is connected and reconnect if needed (and allowed)
 	
     //Lock();Unlock();
     mReadMutex->Lock();
@@ -574,6 +580,8 @@ void Calibration::GetListOfNamepaths( vector<string> &namepaths )
     * @parameter [in] vector<string> & namepaths
     * @return   void
     */
+    
+    mLastActivityTime = ccdb::TimeProvider::GetUnixTimeStamp(ccdb::ClockSources::Monotonic);
 
     vector<ConstantsTypeTable*> tables;
     if(!mProvider->SearchConstantsTypeTables(tables, "*"))
@@ -591,5 +599,43 @@ void Calibration::GetListOfNamepaths( vector<string> &namepaths )
     }
 }
 
+
+//______________________________________________________________________________
+bool Calibration::Reconnect()
+{
+   /**
+     * @brief Connects to database using the connection string 
+     *        of the last @see Connect function call
+     *
+     * @remark Just returns true if already connected
+     * @exception logic_error if Connect hasn't been called before
+     * 
+     * @return true if connected
+     */
+
+    if(IsConnected()) return true;          //How was it? - Just returns true if already connected
+    
+    string constr = GetConnectionString();
+
+    //Check if we have connection string === connected ever before
+    if(constr.length()==0)
+    {
+        throw std::logic_error("Can not reconnect to database because connection string is empty. Has one connected to DB before REconnect?");
+    }
+
+    //Connect...
+    return Connect(constr);
+}
+
+
+//______________________________________________________________________________
+void Calibration::CheckConnection()
+{
+    if(!this->IsConnected())
+    {
+        if(!mIsAutoReconnect) throw std::logic_error("Calibration class is not connected to data source. Auto-reconnection is turned off.");
+        this->Reconnect();
+    }
+}
 }
 

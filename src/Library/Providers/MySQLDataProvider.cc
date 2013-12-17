@@ -73,6 +73,8 @@ bool ccdb::MySQLDataProvider::Connect( std::string connectionString )
 bool ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
 {
 	ClearErrors(); //Clear error in function that can produce new ones
+	mLastConnectionTime = 0; //No time 
+
 
 	//check if we are connected
 	if(IsConnected())
@@ -112,7 +114,11 @@ bool ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
 		return false;
 	}
 	mIsConnected = true;
-    
+
+	//Open connection time
+	struct timespec spec;
+	clock_gettime(CLOCK_REALTIME, &spec);
+    mLastConnectionTime = spec.tv_sec;
 	return true;
 }
 
@@ -249,7 +255,7 @@ bool ccdb::MySQLDataProvider::SearchDirectories( vector<Directory *>& resultDire
 	string likePattern = WilcardsToLike(searchPattern);
 	
 	//do we need to search only in specific directory?
-	string parentAddon(""); //this is addon to query indicates this
+	string parentAddon(""); //this addition is to query right parent directory
 	if(parentPath!="")
 	{	//we should care about parent path
 		
@@ -257,13 +263,13 @@ bool ccdb::MySQLDataProvider::SearchDirectories( vector<Directory *>& resultDire
 		//and tables in db which doesn't have parents should have parentId=0
 		
 		Directory *parentDir;
-		if(parentDir = GetDirectory(parentPath.c_str()))
+		if( (parentDir = GetDirectory(parentPath.c_str())) )
 		{
 			parentAddon = StringUtils::Format(" AND `parentId` = '%i'", parentDir->GetId());
 		}
 		else
 		{
-			//request was made for directory that doestn exits
+			//request was made for directory that doesn't exists
 			//TODO place warning or not?
 			return false;
 		}
@@ -563,22 +569,23 @@ bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTab
 	string likePattern = WilcardsToLike(pattern);
     
 	//do we need to search only in specific directory?
-	string parentAddon(""); 		//this is addon to query indicates this
-	Directory *parentDir = NULL; //will need it anyway later
+	string parentAddon("");         //this addition is to query with right parent directory
+	Directory *parentDir = NULL;    //we will need it later anyway
 	if(parentPath!="")
-	{	//we should care about parent path!
-		if(parentDir = GetDirectory(parentPath.c_str()))
-		{
-			parentAddon = StringUtils::Format(" AND `directoryId` = '%i'", parentDir->GetId());
-		}
-		else
-		{
-			//request was made for directory that doestn exits
-			//TODO place warning or not?
-			Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"MySQLDataProvider::SearchConstantsTypeTables", "Path to search is not found");
-			return false;
-		}
-	}
+	{	
+        //we must take care of parent path!
+        if(parentDir = GetDirectory(parentPath.c_str()))
+        {
+            parentAddon = StringUtils::Format(" AND `directoryId` = '%i'", parentDir->GetId());
+        }
+        else
+        {
+            //request was made for directory that doesn't exits
+            //TODO place warning or not?
+            Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"MySQLDataProvider::SearchConstantsTypeTables", "Path to search is not found");
+            return false;
+        }
+    }
     else
     {
         //In this case we will need mDirectoriesById

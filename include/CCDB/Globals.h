@@ -201,7 +201,6 @@ typedef int dbkey_t;
 
 #if defined(__MACH__) && defined(__i386__) && !defined(__APPLE__)
 #   define D__HURD
-#   define f2cFortran   /* cfortran.h does not know HURD - sigh */
 #   define D__UNIX
 #endif
 

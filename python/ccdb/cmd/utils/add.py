@@ -5,7 +5,7 @@ import ccdb
 from ccdb import TextFileDOM
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
-from ccdb import BraceMessage as Lmf
+from ccdb import BraceMessage as LogFmt
 
 log = logging.getLogger("ccdb.cmd.utils.add")
 
@@ -71,8 +71,8 @@ class AddData(ConsoleUtilBase):
     #----------------------------------------
     def process(self, args):
         if log.isEnabledFor(logging.DEBUG):
-            log.debug(Lmf("{0}AddData is in charge{0}\\".format(os.linesep)))
-            log.debug(Lmf(" |- arguments : '" + "' '".join(args)+"'"))
+            log.debug(LogFmt("{0}AddData is in charge{0}\\".format(os.linesep)))
+            log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
 
         self.reset()
 
@@ -81,7 +81,7 @@ class AddData(ConsoleUtilBase):
         
         #process arguments
         if not self.process_arguments(args):
-            log.debug(Lmf(" |- process arguments {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
+            log.debug(LogFmt(" |- process arguments {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
             raise ValueError("Problem parsing arguments")
         
         #by "" user means default variation
@@ -90,7 +90,7 @@ class AddData(ConsoleUtilBase):
         
         #validate what we've got
         if not self.validate():
-            log.debug(Lmf(" |- arguments validation {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
+            log.debug(LogFmt(" |- arguments validation {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
             raise ValueError("Arguments validation failed")
         
         #correct paths
@@ -104,7 +104,7 @@ class AddData(ConsoleUtilBase):
             else:
                 dom = ccdb.read_namevalue_text_file(self.file_path, self.c_comments)
         except IOError as error:
-            log.warning(Lmf("Unable to read file '{0}'. The error message is: '{1}'", self.file_path, error))
+            log.warning(LogFmt("Unable to read file '{0}'. The error message is: '{1}'", self.file_path, error))
             raise
         
         #check what we've got
@@ -119,7 +119,7 @@ class AddData(ConsoleUtilBase):
             
         # >oO debug record
         log.debug(" |- adding constants")
-        log.debug(Lmf(" |- columns: '{0}'  rows: '{1}'  comment lines:  '{2}'  metas: '{3}'",
+        log.debug(LogFmt(" |- columns: '{0}'  rows: '{1}'  comment lines:  '{2}'  metas: '{3}'",
                       len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
 
         try:

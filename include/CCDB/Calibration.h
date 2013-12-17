@@ -57,14 +57,6 @@ public:
      */
     virtual bool Connect(std::string connectionString) = 0;
 
-    /**
-     * @brief closes connection to data
-     * Closes connection to data.
-     * If underlayed @see DProvider* object is "locked"
-     * (user could check this by
-     *
-     */
-    virtual void Disconnect() = 0;
 
     /**
      * @brief indicates ether the connection is open or not
@@ -73,7 +65,30 @@ public:
      */
     virtual bool IsConnected() = 0;
 
-    /** @brief gets DDataProvider* object used for specified DCalibration
+
+    /**
+     * @brief closes connection to data
+     * Closes connection to data.
+     * If underlayed @see DProvider* object is "locked"
+     * (user could check this by
+     *
+     */
+    virtual void Disconnect() = 0;
+    
+
+    /**
+     * @brief Connects to database using the connection string 
+     *        of the last @see Connect function call
+     *
+     * @remark Just returns true if already connected
+     * @exception logic_error if Connect hasn't been called before
+     * 
+     * @return true if connected
+     */
+    virtual bool Reconnect();
+    
+
+    /** @brief gets DataProvider* object used for specified DCalibration
     *@returns provider used for specified DCalibration
     */
     DataProvider * GetProvider() const { return mProvider; }
@@ -87,6 +102,7 @@ public:
      * @return   void
      */
     void UseProvider(DataProvider * provider, bool lockProvider=true);
+
 
     /** @brief Get constants by namepath
      *
@@ -202,7 +218,19 @@ public:
       */
      void GetListOfNamepaths(vector<string> &namepaths);
 
-    
+	/** @brief Returns UNIX timestamp of the last successful connection 
+	 * 
+	 * The function Returns UNIX timestamp of the last successful connection or 0 if last 
+	 * connection hasn't been successful or hasn't been at all. The function is designed
+	 * to make it possible to track the connection session time length. 
+	 *
+	 * @warning IsConnected - is the proper function to check a connection status
+	 * 
+	 * @return time_t UNIX timestamp of the last successful connection or 0 if last 
+	 *                connection hasn't been successful or hasn't been at all
+	 *        
+	 */
+	time_t GetLastActivityTime() const {return mLastActivityTime;}
 
 protected:
 
@@ -219,19 +247,33 @@ protected:
      * @return   DAssignment *
      */
     virtual Assignment * GetAssignment(const string& namepath, bool loadColumns=false);
+
+
+    /**@brief Try to auto-reconnect if possible 
+     *
+     */
+    bool GetIsAutoReconnect() const { return mIsAutoReconnect; }
+
+
+    /**@brief Try to auto-reconnect if possible 
+     * @returns true if AutoReconnect is enabled
+     */
+    void SetIsAutoReconnect(bool val) { mIsAutoReconnect = val; }
+protected:
+    DataProvider *mProvider;         /// Underlaid DataProvider object
+    bool mProviderIsLocked;          /// If provider
+    int mDefaultRun;                 /// Default run number
+    string mDefaultVariation;        /// Default variation
+    time_t mDefaultTime;             /// Set default time
+    time_t mLastActivityTime;        /// Time of the last request
+    bool mIsAutoReconnect;           /// Try to auto-reconnect if possible
+    
+
+    PthreadMutex * mReadMutex;
 private:
     Calibration(const Calibration& rhs);
     Calibration& operator=(const Calibration& rhs);
-
-protected:
-
-    DataProvider *mProvider;    ///Underlaid DataProvider object
-    bool mProviderIsLocked;     ///If provider
-    int mDefaultRun;            ///Default run number
-    string mDefaultVariation;   ///Default variation
-	time_t mDefaultTime;        ///Set default time
-    PthreadMutex * mReadMutex;
-	
+    void CheckConnection(); /// Check if is connected and reconnect if needed (and allowed)
 };
 
 }

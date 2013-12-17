@@ -7,35 +7,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jana", "Jana\Jana.vcxproj", "{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PythonWrapping", "PythonWrapping\PythonWrapping.vcxproj", "{C3904F06-5EF3-4E29-A395-B1957CBFE247}"
-EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Python", "..\..\python\Python.pyproj", "{5D9FD999-B0DC-446C-A481-0093353DBFF8}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Benchmarks", "Benchmarks\Benchmarks.vcxproj", "{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF983026-1744-4F84-B52A-3797F2A4BADE}"
-EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "web", "..\..\web\", "{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/web"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\web\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\web\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/web"
-		Release.AspNetCompiler.PhysicalPath = "..\..\web\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\web\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "4187"
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WebCgi", "WebCgi\WebCgi.vcxproj", "{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -118,38 +92,6 @@ Global
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.SQLite Debug|x64.ActiveCfg = SQLite Debug|Win32
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.SQLite Debug|x86.ActiveCfg = SQLite Debug|Win32
 		{3F6DE0CB-51FB-4CB7-A0E1-D933D5886C5E}.SQLite Debug|x86.Build.0 = SQLite Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|x64.ActiveCfg = Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Debug|x86.ActiveCfg = Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Any CPU.ActiveCfg = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Win32.ActiveCfg = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|Win32.Build.0 = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|x64.ActiveCfg = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.Release|x86.ActiveCfg = Release|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.SQLite Debug|Any CPU.ActiveCfg = SQLite Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.SQLite Debug|Mixed Platforms.ActiveCfg = SQLite Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.SQLite Debug|Win32.ActiveCfg = SQLite Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.SQLite Debug|x64.ActiveCfg = SQLite Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.SQLite Debug|x86.ActiveCfg = SQLite Debug|Win32
-		{C3904F06-5EF3-4E29-A395-B1957CBFE247}.SQLite Debug|x86.Build.0 = SQLite Debug|Win32
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|Win32.ActiveCfg = Release|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|x64.ActiveCfg = Release|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.Release|x86.ActiveCfg = Release|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.SQLite Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.SQLite Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.SQLite Debug|Win32.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.SQLite Debug|x64.ActiveCfg = Debug|Any CPU
-		{5D9FD999-B0DC-446C-A481-0093353DBFF8}.SQLite Debug|x86.ActiveCfg = Debug|Any CPU
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.Debug|Win32.ActiveCfg = Debug|Win32
@@ -168,39 +110,6 @@ Global
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.SQLite Debug|x64.ActiveCfg = SQLite Debug|Win32
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.SQLite Debug|x86.ActiveCfg = SQLite Debug|Win32
 		{4F69203B-0EA6-4D21-B617-86CAF4B4DC85}.SQLite Debug|x86.Build.0 = SQLite Debug|Win32
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|Win32.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|x64.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.Release|x86.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.SQLite Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.SQLite Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.SQLite Debug|Win32.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.SQLite Debug|x64.ActiveCfg = Debug|Any CPU
-		{757B4CF4-E0DC-43E9-8A10-E1E2A7F0E135}.SQLite Debug|x86.ActiveCfg = Debug|Any CPU
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|Win32.Build.0 = Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|x64.ActiveCfg = Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Debug|x86.ActiveCfg = Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|Any CPU.ActiveCfg = Release|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|Win32.ActiveCfg = Release|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|Win32.Build.0 = Release|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|x64.ActiveCfg = Release|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.Release|x86.ActiveCfg = Release|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.SQLite Debug|Any CPU.ActiveCfg = SQLite Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.SQLite Debug|Mixed Platforms.ActiveCfg = SQLite Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.SQLite Debug|Win32.ActiveCfg = SQLite Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.SQLite Debug|x64.ActiveCfg = SQLite Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.SQLite Debug|x86.ActiveCfg = SQLite Debug|Win32
-		{C9B7AA59-D2E2-49BB-BA70-1299E026D94B}.SQLite Debug|x86.Build.0 = SQLite Debug|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

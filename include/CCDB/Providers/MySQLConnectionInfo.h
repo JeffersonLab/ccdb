@@ -18,7 +18,7 @@ class MySQLConnectionInfo
 	Port(0)
 	{
 	}
-	~MySQLConnectionInfo(){};
+	~MySQLConnectionInfo(){}
 	string	UserName;
 	string	Password;
 	string 	Database;

@@ -4,7 +4,7 @@
 #include "CCDB/CalibrationGenerator.h"
 #include "CCDB/SQLiteCalibration.h"
 #include "CCDB/Providers/SQLiteDataProvider.h"
-
+#include "CCDB/Helpers/TimeProvider.h"
 #ifdef CCDB_MYSQL
 #include "CCDB/MySQLCalibration.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
@@ -18,6 +18,8 @@ namespace ccdb
 //______________________________________________________________________________
 CalibrationGenerator::CalibrationGenerator()
 {
+    mMaxInactiveTime = 0; //Disable inactive check
+    mInactivityCheckInterval = 1;
 }
 
 
@@ -40,7 +42,7 @@ Calibration* CalibrationGenerator::MakeCalibration( const std::string & connecti
 	 */
 
 	//hash of requested variation
-	string calibHash = GetCalibrationHash(connectionString, run, variation,time);
+	string calibHash = GetCalibrationHash(connectionString, run, variation, time);
 
 	//first we look maybe we already have such a calibration
 	if(mCalibrationsByHash.find(calibHash) != mCalibrationsByHash.end())
@@ -55,7 +57,7 @@ Calibration* CalibrationGenerator::MakeCalibration( const std::string & connecti
 		isMySql = true;  //It is mysql
 		
 		#ifndef CCDB_MYSQL
-		throw std::logic_error("Cannot connect to MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using mysql=1 flag. The connection string: " + connectionString);
+		throw std::logic_error("Cannot be used with MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using with-mysql=true flag. The connection string: " + connectionString);
 		#endif //CCDB_MYSQL
 	}
 	else
@@ -67,57 +69,16 @@ Calibration* CalibrationGenerator::MakeCalibration( const std::string & connecti
 			throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now. The connection string: " + connectionString);
 		}
 	}
-
-	//Ok, we have to create calibration
-	//but lets see, maybe we at least have a DataProvider for this connectionString
-	DataProvider *provider = NULL;
-	if(mProvidersByUrl.find(connectionString) != mProvidersByUrl.end())
-	{
-		provider = static_cast<DataProvider *>(mProvidersByUrl[connectionString]);
-
-		//lets see the provider is connected... if not it is useless
-		if(provider!= NULL && !provider->IsConnected()) provider = NULL;
-	}
-
-	//Create a new provider if no old one
-	if(provider == NULL)
-	{	
-		if(isMySql)
-		{
-			#ifdef CCDB_MYSQL
-			provider = (DataProvider *)new MySQLDataProvider();
-			#else
-			throw std::logic_error("Cannot connect to MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using mysql=1 flag. The connection string: " + connectionString);
-			#endif //CCDB_MYSQL
-		}
-		else
-		{
-			provider = (DataProvider *)new SQLiteDataProvider();
-		}
-
-		//and connect it
-		if(!provider->Connect(connectionString))
-		{
-			//error handling...
-			vector<CCDBError *> errors = provider->GetErrors();
-			string message;
-			for(int i=0; i< errors.size(); i++)
-			{
-				message = errors[i]->GetMessage() + " in ";
-				message += errors[i]->GetErrorKey() + " in ";
-				message += errors[i]->GetSource() + " in ";
-				message += errors[i]->GetDescription() + " in ";
-			}
-			delete provider;
-			throw std::logic_error(message.c_str());
-		}
-
-		mProvidersByUrl[connectionString] = provider;
-	}
 	
 	//now we create calibration
-	Calibration * calib = CreateCalibration(isMySql, provider, run, variation, time);
-	calib->UseProvider(provider, true);
+	Calibration * calib = CreateCalibration(isMySql, run, variation, time);
+
+    //Connect!
+    if(!calib->Connect(connectionString))
+    {
+        string message = GetConnectionErrorMessage(calib);
+        throw std::logic_error(message);
+    }
 
 	//add it to arrays
 	mCalibrationsByHash[calibHash] = calib;
@@ -126,8 +87,9 @@ Calibration* CalibrationGenerator::MakeCalibration( const std::string & connecti
 	return calib;
 }
 
+
 //______________________________________________________________________________
-Calibration* CalibrationGenerator::CreateCalibration( bool isMySQL, DataProvider *prov, int run, const std::string& variation, const time_t time )
+Calibration* CalibrationGenerator::CreateCalibration( bool isMySQL, int run, const std::string& variation, const time_t time )
 {	
 	
 	if (isMySQL)
@@ -143,7 +105,6 @@ Calibration* CalibrationGenerator::CreateCalibration( bool isMySQL, DataProvider
 		return new SQLiteCalibration(run, variation, time);
 	}
 }
-
 
 
 //______________________________________________________________________________
@@ -172,6 +133,65 @@ bool CalibrationGenerator::CheckOpenable( const std::string & str)
 
 	if(str.find("sqlite://")== 0) return true;
     return false;
+}
+
+
+//______________________________________________________________________________
+void CalibrationGenerator::UpdateInactivity()
+{
+    /** @brief Checks the time of last activity of Calibrations and disconnects
+     *         and closes ones that have inactivity longer than @see SetMaxInactiveTime
+     * 
+     *  If user would like to use his own timer (or event) to check for inactive connections
+     *  He/she should set SetUseInactiveCheckTimer(false) and call UpdateInactivity manually
+     */
+
+    if(mMaxInactiveTime==0) return;
+
+    time_t now = ccdb::TimeProvider::GetUnixTimeStamp(ccdb::ClockSources::Monotonic);
+
+    //Maybe we may skip the current check
+    if(mInactivityCheckInterval!=0)
+    {
+        if(now - mLastInactivityCheckTime < mInactivityCheckInterval) return;
+        mLastInactivityCheckTime = now;
+    }
+
+    //Lets iterate all of them then
+    for (size_t i=0; i<=mCalibrations.size(); i++)
+    {
+        Calibration* cal = mCalibrations[i];
+
+        if(!cal->IsConnected()) continue;
+        if(now - cal->GetLastActivityTime() > mMaxInactiveTime) cal->Disconnect();
+    }
+}
+
+std::string CalibrationGenerator::GetConnectionErrorMessage( Calibration * calib )
+{
+    DataProvider* provider = calib->GetProvider();
+    string message("CONNECTION ERROR. ");
+
+    if(provider == NULL)
+    {
+        message += "Can't failed to create database Provider";
+    }
+    else
+    {
+        //error handling...
+        vector<CCDBError *> errors = provider->GetErrors();
+        for(int i=0; i< errors.size(); i++)
+        {
+            std::stringstream ss;
+
+            ss << endl << "Key: '"<< errors[i]->GetErrorKey()<<"'  Message: '" << errors[i]->GetMessage() << "'" << std::endl;
+            ss << "Source: '" << errors[i]->GetSource() << "'" << std::endl;
+            ss << "Description: " << errors[i]->GetDescription() << "'" << endl;
+            message += ss.str();
+        }
+    }
+
+    return message;
 }
 
 }

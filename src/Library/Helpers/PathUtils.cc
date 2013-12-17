@@ -175,7 +175,7 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
                 //February...
                 if(time.tm_mon == 2)
                 {
-                    if( time.tm_year % 4 == 0 &&  time.tm_year % 100 != 0 || time.tm_year % 400 == 0)
+                    if( (time.tm_year % 4 == 0 &&  time.tm_year % 100 != 0) || time.tm_year % 400 == 0)
                     {
                         time.tm_mday = 29;
                     }

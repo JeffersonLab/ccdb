@@ -47,6 +47,8 @@ def init_ccdb_console():
     from .cmd import ConsoleContext
     import cmd.colorama
 
+    #TODO move ccdb to pure logging. NO print command at all
+
     # create logger
     logger = logging.getLogger("ccdb")
 

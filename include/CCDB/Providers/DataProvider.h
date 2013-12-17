@@ -16,9 +16,9 @@
 
 
 
-/* @class DDataProvider
- * This is the main base interface to the Providers class family. Providers - are classes 
- * derived from this class, each Provider provides data from/to a specified data source. 
+/* @class DataProvider
+ * This is the main base interface to the Providers class family. Each specialized Provider,
+ * derived from this class, provides data from/to a specified data source. 
  * I.e. MySQLDataProvider works with MySQL database.
  *
  *==============================================
@@ -27,19 +27,19 @@
  *                    ^ ^ ^  
  *                    | | |                            
  *  +------------------------------------------+
- *  | Data Model: DAssignment, DTypeTable, ... |    -   Data model is returned to user
+ *  | Data Model:  Assignment,  TypeTable, ... |    -   Data model is returned to user
  *  +------------------------------------------+        
  *                       ^                              
  *                       |                              
  *                       |                              
  *  +------------------------------------------+        
- *  |   DDataProvider - Interface to database  |    -   User get data by using DDataProvider functions
+ *  |    DataProvider - Interface to database  |    -   User get data by using DDataProvider functions
  *  +------------------------------------------+        
  *                       |                              
  *             +---------------------+                  
  *            /                       \                 
  *  +----------------+        +----------------+        
- *  | DMySQLProvider |        | DSQLiteProvider|    -   These classes are inherited from DDataProvider and do actual querries to related sources
+ *  |  MySQLProvider |        |  SQLiteProvider|    -   These classes are inherited from DDataProvider and do actual querries to related sources
  *  +----------------+        +----------------+        
  *          |                          |                
  *  <================>        <================>        
@@ -671,12 +671,26 @@ public:
      */
     bool ValidateName(const string& name);
 
+	/** @brief Returns UNIX timestamp of the last successful connection 
+	 * 
+	 * The function Returns UNIX timestamp of the last successful connection or 0 if last 
+	 * connection hasn't been successful or hasn't been at all. The function is designed
+	 * to make it possible to track the connection session time length. 
+	 *
+	 * @warning IsConnected - is the proper function to check a connection status
+	 * 
+	 * @return time_t UNIX timestamp of the last successful connection or 0 if last 
+	 *                connection hasn't been successful or hasn't been at all
+	 *        
+	 */
+	time_t GetLastConnectionTime() const {return mLastConnectionTime;}
+
     //----------------------------------------------------------------------------------------
     //  L O G G I N G
     //----------------------------------------------------------------------------------------
     std::string GetLogUserName() const { return mLogUserName; }      ///User name for logging
     void SetLogUserName(std::string val) { mLogUserName = val; }     ///User name for logging
-
+	
     
     
 protected:
@@ -717,7 +731,7 @@ protected:
 
     map<dbkey_t, Variation *> mVariationsById;
 
-    
+    time_t mLastConnectionTime;        ///Time of the last successful connection
 
 };
 }

@@ -47,6 +47,8 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
     REQUIRE_NOTHROW(result = calib->Connect(TESTS_SQLITE_STRING));
     REQUIRE(result);
     REQUIRE(calib->GetConnectionString() == TESTS_SQLITE_STRING);
+
+    
     
     //get data as table of strings
     //----------------------------------------------------
@@ -56,7 +58,11 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
     REQUIRE(tabledValues.size()==2);
     REQUIRE(tabledValues[0].size()==3);
 
-    
+    //test of disconnect and reconnect function
+    //----------------------------------------------------
+    REQUIRE_NOTHROW(calib->Disconnect());
+    REQUIRE_NOTHROW(calib->Reconnect());
+
     //test of getting data without / in the beginning
     //----------------------------------------------------
     tabledValues.clear();

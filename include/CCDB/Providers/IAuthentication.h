@@ -19,8 +19,8 @@ namespace ccdb
     class IAuthentication
     {
     public:
-        IAuthentication(){};
-        virtual ~IAuthentication(){};
+        IAuthentication(){}
+        virtual ~IAuthentication(){}
         virtual string GetLogin()=0;
 
         /** @brief  Gets current user Name

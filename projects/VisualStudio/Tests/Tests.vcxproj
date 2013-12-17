@@ -60,6 +60,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
+    <OutDir>$(SolutionDir)\$(ProjectName)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -144,8 +145,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\Tests\tests.cc" />
-    <ClCompile Include="..\..\..\src\Tests\tests_TimeProvider.cc">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'">true</ExcludedFromBuild>
+    <ClCompile Include="..\..\..\src\Tests\test_TimeProvider.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Tests\test_Authentication.cc" />
     <ClCompile Include="..\..\..\src\Tests\test_Console.cc">
@@ -196,7 +197,7 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\Tests\test_MySqlUserAPI.cc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='SQLite Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\src\Tests\test_PathUtils.cc" />

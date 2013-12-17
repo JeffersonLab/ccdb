@@ -634,7 +634,7 @@ protected:
 
     /** prepares preparedStatemets for use
      */
-    bool InitializePreparedStatements(){;}; //TODO implement PreparedStatements for GetAssignmentShort functions
+    bool InitializePreparedStatements(){ return false;} //TODO implement PreparedStatements for GetAssignmentShort functions
 
 	//read of row fields
 	bool IsNullOrUnreadable(int fieldNum);		///Check if the field is NULL or is unreadable. If it is Unreadable

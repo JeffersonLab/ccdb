@@ -18,6 +18,7 @@ public:
 	/** @brief destructor	 */
 	virtual ~CalibrationGenerator();
 
+
 	/** @brief Creates @see Calibration by connectionString, run number and desirable variation
 	 *
 	 * @parameter [in] connectionString - Connection string to the data source
@@ -28,6 +29,7 @@ public:
 	 */
 	virtual Calibration* MakeCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time=0); 
 
+
 	/** @brief    CheckOpenable
 	 *
 	 * @parameter [in] const std::string &
@@ -35,6 +37,7 @@ public:
 	 */
 	static bool CheckOpenable(const std::string &str); ///< Instantiate an JCalibration object (subclass)
     
+
     /** @brief gets string hash based on  connectionString, run, and variation
      *
      * The hash is used for storing Calibrations in calibrations hash table
@@ -48,16 +51,55 @@ public:
      */
     virtual string GetCalibrationHash(const std::string & connectionString, int run, const std::string& variation, const time_t time);
 
+      
+
+    /** @brief Checks the time of last activity of Calibrations and disconnects
+     *         and closes ones that have inactivity longer than @see SetMaxInactiveTime
+     * 
+     *  @seealso GetMaxInactiveTime
+     *  @seealso GetInactivityCheckInterval
+     */
+    void UpdateInactivity();
+
+
+    /** @brief Maximum inactive time for @see UpdateInactivity function
+     *  if 0 inactivity isn't checked by UpdateInactivity
+     */
+    time_t GetMaxInactiveTime() const { return mMaxInactiveTime; }
+
+
+    /** @brief Maximum inactive time for @see UpdateInactivity function
+     *  if 0 inactivity isn't checked by UpdateInactivity
+     */
+    void SetMaxInactiveTime(time_t val) { mMaxInactiveTime = val; }
+
+
+    /** @brief UpdateInactivity is ignored if is called more frequent than mInactivityCheckInterval
+     *         if value is 0 - switches off this feature
+     */
+    time_t GetInactivityCheckInterval() const { return mInactivityCheckInterval; }
+
+
+     /** @brief UpdateInactivity is ignored if is called more frequent than mInactivityCheckInterval
+     *         if value is 0 - switches off this feature
+     */
+    void SetInactivityCheckInterval(time_t val) { mInactivityCheckInterval = val; }
 
 private:	
 
-	Calibration* CreateCalibration(bool isMySQL, DataProvider * prov, int run, const std::string& variation, const time_t time);
+	Calibration* CreateCalibration(bool isMySQL, int run, const std::string& variation, const time_t time);
 
 	CalibrationGenerator(const CalibrationGenerator& rhs);
 	CalibrationGenerator& operator=(const CalibrationGenerator& rhs);
-	std::vector<Calibration *> mCalibrations;					///Created Calibrations
+    string GetConnectionErrorMessage( Calibration * calib );
+    std::vector<Calibration *> mCalibrations;					///Created Calibrations
 	std::map<std::string, Calibration*> mCalibrationsByHash;    ///map of connection string => DCallibration
-	std::map<std::string, DataProvider*> mProvidersByUrl;      ///map of connection string => DCallibration
+    
+	time_t mMaxInactiveTime;                                    ///Max inactive time for calibration secs
+    time_t mLastInactivityCheckTime;                            ///Last time of inactivity check from Unix epoch
+    time_t mInactivityCheckInterval;                            ///Interval to check inactivity secs
+    
+
 };
 }
 

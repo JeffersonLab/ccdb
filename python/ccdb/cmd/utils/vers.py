@@ -4,7 +4,7 @@ import os
 import ccdb
 from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.brace_log_message import BraceMessage as Lfm
+from ccdb.brace_log_message import BraceMessage as LogFmt
 from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.vers")
@@ -39,8 +39,8 @@ class Versions(ConsoleUtilBase):
 #----------------------------------------  
     def process(self, args):
         if log.isEnabledFor(logging.DEBUG):
-            log.debug(Lfm("{0}Versions is in charge{0}\\".format(os.linesep)))
-            log.debug(Lfm(" |- arguments : '" + "' '".join(args)+"'"))
+            log.debug(LogFmt("{0}Versions is in charge{0}\\".format(os.linesep)))
+            log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
 
         #preparations
         assert self.context is not None
@@ -71,11 +71,13 @@ class Versions(ConsoleUtilBase):
         self.table_path = self.context.prepare_path(self.raw_table_path)
         
         #check such table really exists
-        try:
-            provider.get_type_table(self.table_path)
-        except NoResultFound:
-            log.warning("Type table %s not found in the DB", self.table_path)
-            return 1
+        #try:
+         #   provider.get_type_table(self.table_path)
+        #except NoResultFound:
+        #    log.warning(LogFmt("Type table is not found in the DB. The path given is '{}'", self.table_path))
+        #except KeyError:
+        #    log.warning(LogFmt("Directory of the table is not found in the DB. The path given '{}'", self.table_path))
+         #   return 1
         
         assignments = provider.get_assignments(self.table_path, self.run, self.variation)
         print self.theme.Directories + "(ID)   (Created)              (Modified)              (variation)     (run range)      (comments)"
