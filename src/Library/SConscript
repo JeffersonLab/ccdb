@@ -60,7 +60,9 @@ lib_sources = [
 	]
 
 #additional variables
-env.Append(LIBS = ['pthread','rt'])
+env.Append(LIBS = ['pthread'])
+if env['PLATFORM'] != 'darwin':
+	env.Append(LIBS = ['rt'])
 env.Append(CPPDEFINES = 'SQLITE_OMIT_LOAD_EXTENSION')
 env.Append(CCFLAGS='-Wno-unknown-pragmas') #Disable unknown pragmas warnings. CCDB files have '#pragma region' records to structurize files. 
 

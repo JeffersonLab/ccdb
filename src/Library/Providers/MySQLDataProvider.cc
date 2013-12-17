@@ -14,6 +14,11 @@
 #include "CCDB/Model/ConstantsTypeTable.h"
 #include "CCDB/Model/RunRange.h"
 
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 
 using namespace ccdb;
 
@@ -117,7 +122,18 @@ bool ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
 
 	//Open connection time
 	struct timespec spec;
+
+#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
+	clock_serv_t cclock;
+	mach_timespec_t mts;
+	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+	clock_get_time(cclock, &mts);
+	mach_port_deallocate(mach_task_self(), cclock);
+	spec.tv_sec = mts.tv_sec;
+	spec.tv_nsec = mts.tv_nsec;
+#else // Linux
 	clock_gettime(CLOCK_REALTIME, &spec);
+#endif
     mLastConnectionTime = spec.tv_sec;
 	return true;
 }
@@ -574,7 +590,7 @@ bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTab
 	if(parentPath!="")
 	{	
         //we must take care of parent path!
-        if(parentDir = GetDirectory(parentPath.c_str()))
+        if((parentDir = GetDirectory(parentPath.c_str())))
         {
             parentAddon = StringUtils::Format(" AND `directoryId` = '%i'", parentDir->GetId());
         }
@@ -1714,7 +1730,7 @@ bool ccdb::MySQLDataProvider::QueryCustom( const string& query )
 bool ccdb::MySQLDataProvider::FetchRow()
 {	
     
-	if(mRow = mysql_fetch_row(mResult)) return true;
+	if((mRow = mysql_fetch_row(mResult))) return true;
 	return false;
 }
 
