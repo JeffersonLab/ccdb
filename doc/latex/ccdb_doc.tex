@@ -862,4 +862,13 @@ Possible future outline:
 \item future work
 \end{enumerate}
 
+There is a script at \$CCDB\_HOME/scripts/mysql2sqlite/mysql2sqlite
+It takes all flags from mysqldump and creates a sqlite file.
+
+Sample command:
+
+\begin{verbatim}
+mysqldump -hhalldweb1 -uccdb_user ccdb | sqlite3 ccdb.sqlite
+\end{verbatim}
+
 \end{document}
