@@ -44,12 +44,12 @@ public:
 	void SetId(int val) { mId = val; }
 
 	
-	/** @brief gets thread sended the error
+	/** @brief gets thread sent the error
 	*@return mThreadId
 	*/
 	unsigned int GetThreadId() const { return mThreadId; }
 
-	/** @brief sets thread sended the error
+	/** @brief sets thread sent the error
 	*@param [in] mThreadId
 	*/
 	void SetThreadId(unsigned int val) { mThreadId = val; }
