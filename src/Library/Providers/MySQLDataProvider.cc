@@ -78,8 +78,6 @@ bool ccdb::MySQLDataProvider::Connect( std::string connectionString )
 bool ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
 {
 	ClearErrors(); //Clear error in function that can produce new ones
-	mLastConnectionTime = 0; //No time 
-
 
 	//check if we are connected
 	if(IsConnected())
