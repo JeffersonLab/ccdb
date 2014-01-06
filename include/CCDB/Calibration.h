@@ -260,6 +260,15 @@ protected:
      */
     void SetIsAutoReconnect(bool val) { mIsAutoReconnect = val; }
 protected:
+    
+    /** @brief Updates time of last database activity
+     *
+     * @warning (!) function MUST be called on each action that involves database
+     *              (constants read, connection established or recontction)
+     *
+     */
+    void UpdateActivityTime();
+
     DataProvider *mProvider;         /// Underlaid DataProvider object
     bool mProviderIsLocked;          /// If provider
     int mDefaultRun;                 /// Default run number
@@ -267,6 +276,7 @@ protected:
     time_t mDefaultTime;             /// Set default time
     time_t mLastActivityTime;        /// Time of the last request
     bool mIsAutoReconnect;           /// Try to auto-reconnect if possible
+    
     
 
     PthreadMutex * mReadMutex;

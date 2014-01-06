@@ -228,8 +228,7 @@ bool Calibration::GetCalib( vector< vector<string> > &values, const string & nam
 //______________________________________________________________________________
 bool Calibration::GetCalib( vector< vector<double> > &values, const string & namepath )
 {
-    //TODO right now the function works through copy. 
-    //one needs to find out, maybe it needs to be reimplemented
+    //TODO right now the function works through copy. One has to check, maybe it needs to be reimplemented
 
     vector< vector<string> > rawValues;
     try
@@ -526,7 +525,7 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
      * @return   DAssignment *
      */
 
-	mLastActivityTime = ccdb::TimeProvider::GetUnixTimeStamp(ccdb::ClockSources::Monotonic);
+	UpdateActivityTime();
 
     RequestParseResult result = PathUtils::ParseRequest(namepath);
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
@@ -581,7 +580,7 @@ void Calibration::GetListOfNamepaths( vector<string> &namepaths )
     * @return   void
     */
     
-    mLastActivityTime = ccdb::TimeProvider::GetUnixTimeStamp(ccdb::ClockSources::Monotonic);
+    UpdateActivityTime();
 
     vector<ConstantsTypeTable*> tables;
     if(!mProvider->SearchConstantsTypeTables(tables, "*"))
@@ -637,5 +636,18 @@ void Calibration::CheckConnection()
         this->Reconnect();
     }
 }
+
+//______________________________________________________________________________
+void Calibration::UpdateActivityTime()
+{
+    /** @brief Updates time of last database activity
+     *
+     * @warning (!) function MUST be called on each action that uses database 
+     *              (constants read, connection established or reconnection)
+     *
+     */
+    mLastActivityTime = TimeProvider::GetUnixTimeStamp(ClockSources::Monotonic);
+}
+
 }
 

@@ -25,6 +25,8 @@ TEST_CASE("CCDB/TimeProvider", "Test feature")
 
     TimeProvider::SetUnitTestTime(100);
     REQUIRE(TimeProvider::GetUnixTimeStamp(ClockSources::Monotonic)==100);
+    
+    //disable unit test fixed time
     TimeProvider::SetTimeUnitTest(false);
 
 }

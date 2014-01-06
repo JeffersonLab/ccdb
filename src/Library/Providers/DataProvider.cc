@@ -24,7 +24,6 @@ DataProvider::DataProvider(void):
     mLogUserName = mAuthentication->GetLogin();
 	ClearErrorsOnFunctionStart();
     mConnectionString="";
-	mLastConnectionTime = 0;
 }
 
 

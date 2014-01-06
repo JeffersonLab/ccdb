@@ -201,4 +201,3 @@ class ConsoleContextTests(unittest.TestCase):
         #wrong directory
         self.assertRaises(DirectoryNotFound, self.context.process_command_line, "vers /some/wrong/dir/table")
         self.assertRaises(TypeTableNotFound, self.context.process_command_line, "vers /test/test_vars/wrong_table")
-        

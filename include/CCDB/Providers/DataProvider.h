@@ -671,19 +671,7 @@ public:
      */
     bool ValidateName(const string& name);
 
-	/** @brief Returns UNIX timestamp of the last successful connection 
-	 * 
-	 * The function Returns UNIX timestamp of the last successful connection or 0 if last 
-	 * connection hasn't been successful or hasn't been at all. The function is designed
-	 * to make it possible to track the connection session time length. 
-	 *
-	 * @warning IsConnected - is the proper function to check a connection status
-	 * 
-	 * @return time_t UNIX timestamp of the last successful connection or 0 if last 
-	 *                connection hasn't been successful or hasn't been at all
-	 *        
-	 */
-	time_t GetLastConnectionTime() const {return mLastConnectionTime;}
+
 
     //----------------------------------------------------------------------------------------
     //  L O G G I N G
@@ -730,9 +718,6 @@ protected:
     IAuthentication * mAuthentication;
 
     map<dbkey_t, Variation *> mVariationsById;
-
-    time_t mLastConnectionTime;        ///Time of the last successful connection
-
 };
 }
 #endif // _DDataProvider_

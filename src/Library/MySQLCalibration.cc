@@ -50,6 +50,8 @@ bool MySQLCalibration::Connect( std::string connectionString )
 	 */
     Lock();
 
+    UpdateActivityTime();
+
     //Create provider if needed
     if(mProvider == NULL)
     {
