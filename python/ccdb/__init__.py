@@ -28,6 +28,7 @@ from .cmd.themes import NoColorTheme, ColoredTheme
 from .brace_log_message import BraceMessage
 import cmd.themes
 import path_utils
+
 #the default ccdb logger
 logger = logging.getLogger("ccdb")
 
@@ -43,7 +44,6 @@ def get_ccdb_home_path():
     return this_dir
 
 def init_ccdb_console():
-    from .cmd.themes import Theme
     from .cmd import ConsoleContext
     import cmd.colorama
 
@@ -99,7 +99,7 @@ def init_ccdb_console():
 
     #connection string
     if "CCDB_CONNECTION" in os.environ.keys():
-        context.connection_string =  os.environ["CCDB_CONNECTION"]
+        context.connection_string = os.environ["CCDB_CONNECTION"]
         logger.debug("Set connection string from $CCDB_CONNECTION :" + context.connection_string)
     else:
         #fallback to jana calib url
@@ -117,8 +117,11 @@ def init_ccdb_console():
     #connection string in in command line arguments ( by -c or --connection) is processed by context.process(sys.argv)
 
     if "CCDB_USER" in os.environ.keys():
-        context.user_name =  os.environ["CCDB_USER"]
+        context.user_name = os.environ["CCDB_USER"]
         logger.debug("Set user name from $CCDB_USER :" + context.user_name)
+    #elif "USER" in os.environ.keys():
+    #    context.user_name = os.environ["USER"]
+    #    logger.debug("Set user name from $USER :" + context.user_name)
 
 
     # START PROCESSING

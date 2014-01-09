@@ -1,7 +1,5 @@
 import collections
 
-__author__ = 'Dimitry Romanov'
-
 import datetime
 import posixpath
 
@@ -227,8 +225,8 @@ class RunRange(Base):
     __tablename__ = 'runRanges'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    created = Column(DateTime, default = datetime.datetime.now)
-    modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
+    created = Column(DateTime, default=datetime.datetime.now)
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     comment = Column(Text)
     min = Column('runMin',Integer)
     max = Column('runMax',Integer)
@@ -264,12 +262,11 @@ class User(Base):
     """
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    created = Column('created', DateTime, default = datetime.datetime.now)
-    last_action_time = Column('lastActionTime', DateTime)#, nullable=False
+    created = Column('created', DateTime, default=datetime.datetime.now)
+    last_action_time = Column('lastActionTime', DateTime) #, nullable=False
     name = Column(String(100), nullable=False)
     password = Column(String(100), nullable=True)
     _roles_str = Column('roles', String, nullable=False)
-    name = Column(String(100), nullable=False)
     info  = Column(String(125), nullable=False)
 
     @property

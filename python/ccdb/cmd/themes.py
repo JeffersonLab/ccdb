@@ -2,26 +2,6 @@ import sys
 
 from .colorama import Fore, Back, Style
 
-def bool_color(value):
-    if value:
-        return Theme.Success
-    else:
-        return Theme.Fail
-
-def print_bool(value):
-    if value:
-        sys.stdout.write(Theme.Success + repr(value) + Theme.Reset)
-    else:
-        sys.stdout.write(Theme.Fail + repr(value) + Theme.Reset)
-
-
-Theme = None
-
-def set_theme(theme):
-    global Theme
-    Theme = theme
-
-
 class NoColorTheme(object):
     Ok = ""
     Directories = ""
@@ -39,6 +19,9 @@ class NoColorTheme(object):
     AsgmtValue = ""
     AsgmtBorder = ""
 
+    def __repr__(self):
+        "NoColorTheme"
+
 class ColoredTheme(NoColorTheme):
     Ok = Fore.GREEN + Style.BRIGHT
     Directories = Fore.BLUE + Style.BRIGHT
@@ -55,5 +38,8 @@ class ColoredTheme(NoColorTheme):
     AsgmtType = ""
     AsgmtValue = "" 
     AsgmtBorder = Fore.GREEN
+
+    def __repr__(self):
+        "ColoredTheme"
 
 

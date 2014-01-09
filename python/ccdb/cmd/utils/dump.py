@@ -62,14 +62,14 @@ class Dump(ConsoleUtilBase):
     def print_help(self):
         "Prints help of the command"
         print """ Dumps data table to a file
-        Generally dump accepts the same parameters as 'cat'
-
-usage:
+Usage:
         dump <request> <file_name>
 
-example:
-        dump /TOF/params2 file.txt
-        dump /TOF/params2::john:2012 file.txt
-        dump /TOF/params2::john:2012 file.txt
+Example:
+    > cat /test/test_vars/test_table file.txt              #latest data for test_table
+    > cat /test/test_vars/test_table::subtest file.txt     #latest data in subtest variation
+    > cat /test/test_vars/test_table:::2012-08 file.txt    #data latest for august 2012
+
+Dump accepts the same flags as 'cat' command. See 'help cat' for flags
         """
 

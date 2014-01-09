@@ -35,7 +35,7 @@ class ConsoleContext(object):
     def __init__(self):
         self._prov = AlchemyProvider()
         self._is_interactive = False
-        self._user_name = self.anonymous_user_name
+        self.user_name = self.anonymous_user_name
         self._is_interactive = False
         self._current_run = 0
         self._current_path = "/"
@@ -46,6 +46,7 @@ class ConsoleContext(object):
         self._connection_string = ""
         self.silent_exceptions = True   # rethrow happened exceptions
         self._theme = themes.NoColorTheme()
+        self.log_sqlite = False
 
 
     #prop verbose
@@ -111,12 +112,11 @@ class ConsoleContext(object):
 
     @property
     def user_name(self):
-        return self._user_name
+        return self._prov.authentication.current_user_name
 
     @user_name.setter
     def user_name(self, name):
-        self._user_name = name
-        self._prov.log_user_name = name
+        self._prov.authentication.current_user_name = name
 
     @property
     def is_interactive(self):
@@ -405,15 +405,17 @@ class ConsoleContext(object):
     #
     #--------------------------------
     def check_connection(self, util):
-        if self._prov.is_connected: return # connected anyway...
-        if not util.uses_db: return # util doesn't use database
+
+        # maybe there is nothing to do?
+        if self._prov.is_connected or (not util.uses_db):
+            return
 
         if log.isEnabledFor(logging.DEBUG):
             log.debug(" |- check_connection(util){0} | \\".format(os.linesep))
-            log.debug(
-                " |  |- utility '" + util.name + "' uses the database and there is no connection yet. Connecting.")
-            log.debug(
-                " |  |- connection string is: '" + self.theme.Accent + self.connection_string + self.theme.Reset + "'")
+            log.debug(" |  |- utility '" + util.name + "' requires the database "
+                                                       "and there is no connection yet. Connecting.")
+            log.debug(" |  |- connection string is: '"
+                      + self.theme.Accent + self.connection_string + self.theme.Reset + "'")
 
         #connecting
         try:
@@ -422,6 +424,12 @@ class ConsoleContext(object):
             log.critical("CCDB provider unable to connect to {0}. Aborting command. Exception details: {1}".format(
                 self.connection_string, ex))
             return False
+
+        #skip user for sqlite
+        if (not self.log_sqlite) and (self.provider.connection_string.startswith("sqlite://")):
+            log.debug(" |  |- log_sqlite == False, set user to anonymous and disable logging'")
+            self.provider.logging_enabled = False
+            self.user_name = self.anonymous_user_name
 
         #connected
         if log.isEnabledFor(logging.DEBUG):
@@ -489,9 +497,9 @@ class ConsoleContext(object):
             log.warn("unable to write history file")
 
 
-        #=====================================================================================
-        #------------------------ C O M P L E T I O N ----------------------------------------
-        #=====================================================================================
+            #=====================================================================================
+            #------------------------ C O M P L E T I O N ----------------------------------------
+            #=====================================================================================
 
     #region Description
 
@@ -513,7 +521,6 @@ class ConsoleContext(object):
 
         # find all words that start with this prefix
         self.matching_words = [w for w in self.words if w.startswith(prefix)]
-
 
         #get name patches
         path_prefix = posixpath.join(self.current_path, prefix)
@@ -567,9 +574,9 @@ class ConsoleContext(object):
 
             #endregion
 
-        #=====================================================================================
-        #--------  G E T T I N G    O B J E C T S  -------------------------------------------
-        #=====================================================================================
+            #=====================================================================================
+            #--------  G E T T I N G    O B J E C T S  -------------------------------------------
+            #=====================================================================================
 
     #--------------------------------
     #  prepare_path
@@ -651,7 +658,7 @@ class ConsoleContext(object):
         print "print " + self.theme.Accent + "quit" + self.theme.Reset + " or " + self.theme.Accent + "q" + self.theme.Reset + " to exit"
         print "print !<command> to execute shell command"
         print
-        print "You login as: '" + self._user_name + "'"
+        print "You login as: '" + self.user_name + "'"
         
         
                 

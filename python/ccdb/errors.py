@@ -1,3 +1,4 @@
+from PyQt4.QtScript import __init__
 
 
 class AuthVerificationError(Exception):
@@ -35,4 +36,11 @@ class DatabaseStructureError(Exception):
     """
     pass
 
+
+class UserNotFoundError(Exception):
+    """ Exception raised if user not found in the database"""
+
+    def __init__(self, message="", username=""):
+        self.message = message,
+        self.username = username
 

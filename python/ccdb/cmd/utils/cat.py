@@ -62,7 +62,7 @@ class Cat(ConsoleUtilBase):
         """
         if log.isEnabledFor(logging.DEBUG):
             log.debug(lfm("{0}Cat command is in charge {0}\\", os.linesep))
-            log.debug(lfm(" |- arguments : '" + "' '".join(args)+"'"))
+            log.debug(lfm(" |- arguments : '" + "' '".join(args) + "'"))
 
         assert self.context is not None
 
@@ -106,21 +106,23 @@ class Cat(ConsoleUtilBase):
         else:
             assignment = self.get_assignment_by_request(self.request)
 
-
         if assignment:
             #now we have to know, how to print an assignment
             data = assignment.constant_set.data_table
 
             if len(data) and len(data[0]):
                 if self.user_request_print_horizontal:
-                    self.print_assignment_horizontal(assignment, self.show_header, self.show_borders, self.show_comments)
+                    self.print_assignment_horizontal(assignment, self.show_header, self.show_borders,
+                                                     self.show_comments)
                 elif self.user_request_print_vertical:
                     self.print_assignment_vertical(assignment, self.show_header, self.show_borders, self.show_comments)
                 else:
-                    if len(data) == 1 and len(data[0])>3:
-                        self.print_assignment_vertical(assignment, self.show_header, self.show_borders, self.show_comments)
+                    if len(data) == 1 and len(data[0]) > 3:
+                        self.print_assignment_vertical(assignment, self.show_header, self.show_borders,
+                                                       self.show_comments)
                     else:
-                        self.print_assignment_horizontal(assignment, self.show_header, self.show_borders, self.show_comments)
+                        self.print_assignment_horizontal(assignment, self.show_header, self.show_borders,
+                                                         self.show_comments)
             else:
                 log.warning("Assignment contains no data")
         else:
@@ -154,7 +156,6 @@ class Cat(ConsoleUtilBase):
         if not request.variation_is_parsed:
             request.variation = self.context.current_variation
 
-
         if not request.run_is_parsed:
             request.run = self.context.current_run
 
@@ -168,15 +169,17 @@ class Cat(ConsoleUtilBase):
         except:
             log.error("Cant load: " + table_path)
 
-        log.debug(lfm(" |- getting assignments for path : '{0}', run: '{1}', var: '{2}', time: '{3}'", table_path, request.run, request.variation, time))
+        log.debug(lfm(" |- getting assignments for path : '{0}', run: '{1}', var: '{2}', time: '{3}'"
+                      "", table_path, request.run, request.variation, time))
         assignments = provider.get_assignments(table_path, request.run, request.variation, time)
 
         log.debug(lfm(" |- found assignments count : {0}", len(assignments)))
-        if assignments and len(assignments)>0:
+        if assignments and len(assignments) > 0:
             return assignments[0]
 
         #if we here there were no assignments selected
-        log.warning(" There is no data for table {}, run {}, variation '{}'".format(table_path, request.RunNumber, request.Variation))
+        log.warning("There is no data for table {}, run {}, variation '{}'"
+                    "".format(table_path, request.run, request.variation))
         if request.time_is_parsed:
             log.warning("    on ".format(request.time_str))
         return None
@@ -187,7 +190,7 @@ class Cat(ConsoleUtilBase):
     #----------------------------------------
     def process_arguments(self, args):
         #solo arguments
-        if ("-b" in args)  or ("--borders" in args):
+        if ("-b" in args) or ("--borders" in args):
             self.show_borders = True
         if ("-nb" in args) or ("--no-borders" in args):
             self.show_borders = False
@@ -219,18 +222,18 @@ class Cat(ConsoleUtilBase):
                 #variation
                 if token == "-v" or token.startswith("--variation"):
                     if i < len(args):
-                        self.request.Variation = args[i].strip()
-                        self.request.WasParsedPath = True
-                        i+=1
+                        self.request.variation = args[i].strip()
+                        self.request.variation_is_parsed = True
+                        i += 1
 
                 #runrange
                 if token == "-r" or token == "--run":
                     try:
-                         self.request.RunNumber = int(args[i].strip())
-                         self.request.WasParsedRunNumber = True
-                         i+=1
+                        self.request.run = int(args[i].strip())
+                        self.request.run_is_parsed = True
+                        i += 1
                     except ValueError:
-                        log.warning("Cannot read run from '{}' command",token)
+                        log.warning("Cannot read run from '{}' command", token)
                         return False
 
 
@@ -263,53 +266,26 @@ class Cat(ConsoleUtilBase):
         return True
 
 
-    #----------------------------------------
-    #   print_help
-    #----------------------------------------
-    def print_help(self):
-        """Prints help of the command"""
-
-        print """Show data values for assigment.
-    -b  or --borders      - Switch show borders on of off
-    -nb or --no-borders
-
-    -h  or --header       - Show header on/off
-    -nh or --no-header
-
-    -c  or --comments     - Show comments on/off
-    -nc or --no-comments
-
-    -t  or --time         - Show time
-    -nt or --no-time
-
-        -ph or --horizontal   - Print table horizontally
-        -pa or --vertical     - Print table vertically
-        If no '--horizontal' or '--vertical' is given - the layout of table will be determined automatically: vertical layout if table has only 1 row and more than 3 columns otherwise horizontal
-
-        --id show table by database ID. One can obtain ID by 'vers <table path>' command
-
-    """
-
-
     #--------------------------------------------------------------------------------
     #   print_assignment_vertical
     #--------------------------------------------------------------------------------
-    def print_assignment_horizontal(self, assignment, printHeader=True, displayBorders=True, comments=False):
+    def print_assignment_horizontal(self, assignment, print_header=True, display_borders=True, comments=False):
         """
         print table with assignment data horizontally
 
         :param assignment : Assignment object ot print
         :type assignment: Assignment
 
-        :param printHeader: print header with column information or not
-        :type printHeader: bool
+        :param print_header: print header with column information or not
+        :type print_header: bool
 
-        :param displayBorders: print '|' borders or not
-        :type displayBorders: bool
+        :param display_borders: print '|' borders or not
+        :type display_borders: bool
         """
-        log.debug(lfm(" |- print asgmnt horizontally: header {0}, borders {1}, comments {2}", printHeader, displayBorders, comments))
+        log.debug(lfm(" |- print asgmnt horizontally: header {0}, borders {1}, comments {2}"
+                      "", print_header, display_borders, comments))
 
-        border = "|" if displayBorders else " "
+        border = "|" if display_borders else " "
 
         assert isinstance(assignment, Assignment)
         table = assignment.constant_set.type_table
@@ -319,55 +295,55 @@ class Cat(ConsoleUtilBase):
         if comments:
             print "#" + assignment.comment.replace(os.linesep, "#" + os.linesep)
 
-        columnNames = [column.name for column in table.columns]
-        columnTypes = [column.type for column in table.columns]
+        column_names = [column.name for column in table.columns]
+        column_types = [column.type for column in table.columns]
         data = assignment.constant_set.data_list
 
-        columnsNum = len(columnNames)
+        columns_count = len(column_names)
 
-        assert len(columnNames) == len(columnTypes)
-        assert (len(data) % columnsNum) == 0
+        assert len(column_names) == len(column_types)
+        assert (len(data) % columns_count) == 0
 
-        minLength = 10
-        columnLengths = [10 for _ in range(columnsNum)]
-        totalDataLength = 0
+        min_width = 10
+        column_width = [10 for _ in range(columns_count)]
+        total_data_width = 0
 
         #determine column length
-        for i in range(0, columnsNum):
-            if len(columnNames[i]) > minLength:
-                columnLengths[i] = len(columnNames[i])
+        for i in range(0, columns_count):
+            if len(column_names[i]) > min_width:
+                column_width[i] = len(column_names[i])
             else:
-                columnLengths[i] = minLength
+                column_width[i] = min_width
 
-            totalDataLength += columnLengths[i]
+            total_data_width += column_width[i]
 
         #this is our cap, if we need it....
-        cap = "+" + (totalDataLength + 3 * columnsNum - 1)*"-" + "+"
+        cap = "+" + (total_data_width + 3 * columns_count - 1) * "-" + "+"
 
-            #print header if needed
-        if printHeader:
+        #print header if needed
+        if print_header:
 
             #cap?
-            if displayBorders:
+            if display_borders:
                 print self.theme.AsgmtBorder + cap
 
             #names line
-            for i in range(0, columnsNum):
+            for i in range(0, columns_count):
                 sys.stdout.write(self.theme.AsgmtBorder + border + self.theme.Reset)
-                format = " %%-%is "%columnLengths[i]
-                sys.stdout.write(self.theme.AsgmtHead + format%columnNames[i] + self.theme.Reset)
+                col_format = " %%-%is " % column_width[i]
+                sys.stdout.write(self.theme.AsgmtHead + col_format % column_names[i] + self.theme.Reset)
 
-            print self.theme.AsgmtBorder + border + self.theme.Reset #last border
+            print self.theme.AsgmtBorder + border + self.theme.Reset    # last border
 
             #types line
-            for i in range(0, columnsNum):
+            for i in range(0, columns_count):
                 sys.stdout.write(self.theme.AsgmtBorder + border + self.theme.Reset)
-                format = " %%-%is "%columnLengths[i]
-                sys.stdout.write(self.theme.AsgmtType + format%columnTypes[i] + self.theme.Reset)
-            print self.theme.AsgmtBorder + border + self.theme.Reset #last border
+                col_format = " %%-%is " % column_width[i]
+                sys.stdout.write(self.theme.AsgmtType + col_format % column_types[i] + self.theme.Reset)
+            print self.theme.AsgmtBorder + border + self.theme.Reset    # last border
 
         #cap?
-        if displayBorders:
+        if display_borders:
             print self.theme.AsgmtBorder + cap
 
         #data line by line
@@ -375,25 +351,24 @@ class Cat(ConsoleUtilBase):
         for dataItem in data:
             #place data
             sys.stdout.write(self.theme.AsgmtBorder + border + self.theme.Reset)
-            format = " %%-%is "%columnLengths[column_iter]
-            sys.stdout.write(self.theme.AsgmtValue + format%dataItem + self.theme.Reset)
-            column_iter+=1
+            col_format = " %%-%is " % column_width[column_iter]
+            sys.stdout.write(self.theme.AsgmtValue + col_format % dataItem + self.theme.Reset)
+            column_iter += 1
 
             #new line?
-            if column_iter == columnsNum:
+            if column_iter == columns_count:
                 column_iter = 0
                 print self.theme.AsgmtBorder + border + self.theme.Reset
 
         #final cap?
-        if displayBorders:
+        if display_borders:
             print self.theme.AsgmtBorder + cap
-
 
 
     #--------------------------------------------------------------------------------
     #   print_assignment_horizontal
     #--------------------------------------------------------------------------------
-    def print_assignment_vertical(self, assignment, printHeader=True, displayBorders=True, comments = False):
+    def print_assignment_vertical(self, assignment, printHeader=True, displayBorders=True, comments=False):
         """
         print columns vertically and rows horizontally
 
@@ -406,10 +381,11 @@ class Cat(ConsoleUtilBase):
         :param displayBorders: print '|' borders or not
         :type displayBorders: bool
         """
-        log.debug(lfm(" |- print asgmnt vertically: header {0}, borders {1}, comments {2}", printHeader, displayBorders, comments))
+        log.debug(lfm(" |- print asgmnt vertically: header {0}, borders {1}, comments {2}", printHeader, displayBorders,
+                      comments))
 
         assert isinstance(assignment, Assignment)
-        
+
         border = " "
         if displayBorders: border = "|"
 
@@ -418,12 +394,12 @@ class Cat(ConsoleUtilBase):
 
         #PRINT COMMENTS
         if comments:
-            print "#" + assignment.comment.replace(os.linesep, "#"+os.linesep)
+            print "#" + assignment.comment.replace(os.linesep, "#" + os.linesep)
 
         columnNames = [column.name for column in table.columns]
         columnTypes = [column.type for column in table.columns]
         data = assignment.constant_set.data_table
-        
+
         if not data:      # no rows
             return
         if not data[0]:   # no columns
@@ -433,24 +409,24 @@ class Cat(ConsoleUtilBase):
 
         #present data as columns, each column has cells
         columns = []
-        headerColumnsAdded = 0
+        header_columns_added = 0
         if printHeader:
             columns.append(columnNames)
             columns.append(columnTypes)
-            headerColumnsAdded = 2
+            header_columns_added = 2
 
         for _ in data:
             columns.append([])
-        
-        #fill data to columns
-        for rowI in range(0,len(data)):
-            for colI in range (0,len(data[rowI])):
-                columns[rowI + headerColumnsAdded].append(data[rowI][colI])
 
-        columnLengths = [len(max(column, key=len)) for column in columns]
-        totalLength =0
-        for length in columnLengths: totalLength+=length
-        
+        #fill data to columns
+        for rowI in range(0, len(data)):
+            for colI in range(0, len(data[rowI])):
+                columns[rowI + header_columns_added].append(data[rowI][colI])
+
+        column_widths = [len(max(column, key=len)) for column in columns]
+        total_width = 0
+        for length in column_widths: total_width += length
+
         #totalDataLength = 0
 
         ##determine column length
@@ -463,12 +439,12 @@ class Cat(ConsoleUtilBase):
         #    totalDataLength += columnLengths[i];
 
         #this is our cap, if we need it.... 
-        cap = "+" + (totalLength + 3 * len(columns) - 2)*"-" + "+"
+        cap = "+" + (total_width + 3 * len(columns) - 2) * "-" + "+"
 
         #print header if needed
-        
 
-            #names line
+
+        #names line
         #    for i in range(0, columnsNum):
         #        sys.stdout.write(self.theme.AsgmtBorder + border + self.theme.Reset)
         #        frmt = " %%-%is "%columnLengths[i]
@@ -496,23 +472,57 @@ class Cat(ConsoleUtilBase):
             for colI in range(0, len(columns)):
                 #place data
                 dataItem = columns[colI][rowI]
-                format = " %%-%is "%columnLengths[colI]
-                if colI==0 and printHeader:
-                    sys.stdout.write(self.theme.AsgmtHead + format%dataItem + self.theme.Reset)
-                elif colI==1 and printHeader:
-                    sys.stdout.write(self.theme.AsgmtType + '('+(format%dataItem).strip()+')' + self.theme.Reset)
+                format = " %%-%is " % column_widths[colI]
+                if colI == 0 and printHeader:
+                    sys.stdout.write(self.theme.AsgmtHead + format % dataItem + self.theme.Reset)
+                elif colI == 1 and printHeader:
+                    sys.stdout.write(self.theme.AsgmtType + '(' + (format % dataItem).strip() + ')' + self.theme.Reset)
                     sys.stdout.write(self.theme.AsgmtBorder + border + self.theme.Reset)
                 else:
-                    sys.stdout.write(self.theme.AsgmtValue + format%dataItem + self.theme.Reset)
-
+                    sys.stdout.write(self.theme.AsgmtValue + format % dataItem + self.theme.Reset)
 
             sys.stdout.write(self.theme.AsgmtBorder + border + self.theme.Reset + os.linesep)
-
-        #    #new line?
-        #    if columnIter == columnsNum:
-        #        columnIter = 0
-        #        print self.theme.AsgmtBorder + border + self.theme.Reset
 
         ##final cap?
         if displayBorders:
             print self.theme.AsgmtBorder + cap + self.theme.Reset
+
+    #----------------------------------------
+    #   print_help
+    #----------------------------------------
+    def print_help(self):
+        """Prints help of the command"""
+
+        print """Show data values for assignment.
+
+Usage:
+    cat <request or table path>
+    cat --id <assignment_id>   #Where assignment_id provided by 'vers <table path>' command
+
+Formatting flags:
+
+    -c  or --comments     - Show comments on/off
+    -nc or --no-comments
+
+    -ph or --horizontal   - Print table horizontally
+    -pa or --vertical     - Print table vertically
+    (If no '--horizontal' or '--vertical' flag is given, the layout of table is determined automatically:
+    vertical layout if table has only 1 row and more than 3 columns, horizontal otherwise)
+
+    -b  or --borders      - Switch show borders on of off
+    -nb or --no-borders
+
+    -h  or --header       - Show header on/off
+    -nh or --no-header
+
+    -t  or --time         - Show time
+    -nt or --no-time
+
+Examples:
+    > cat /test/test_vars/test_table               #print latest data for test_table
+    > cat /test/test_vars/test_table::subtest      #print latest data in subtest variation
+    > cat /test/test_vars/test_table:::2012-08     #print data latest for august 2012
+
+See also 'dump' command which is 'cat' formatted to save data to files. 'help dump'
+
+    """

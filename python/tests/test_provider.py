@@ -4,7 +4,7 @@ from ccdb import get_ccdb_home_path
 
 from ccdb.model import User, LogRecord
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
-from ccdb.errors import DatabaseStructureError, RunRangeNotFound, TypeTableNotFound, DirectoryNotFound
+from ccdb.errors import DatabaseStructureError, RunRangeNotFound, TypeTableNotFound, DirectoryNotFound, UserNotFoundError
 import sqlalchemy.orm.exc
 
 from ccdb import AlchemyProvider
@@ -375,7 +375,16 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEqual(user.roles, ["runrange_crate", "runrange_delete"])
         #self.assertEqual(user.)
 
+        #test that with wrong user we can't create anything
+        self.provider.authentication.current_user_name = "non_exist_user_ever"
+        self.assertRaises(UserNotFoundError, self.provider.create_directory, "some_strange_dir", "/")
+        self.assertEqual(0, len(self.provider.search_directories("some_strange_dir")))
+        self.assertRaises(UserNotFoundError, self.provider.update_directory, self.provider.get_directory("/test"))
+        self.assertRaises(UserNotFoundError, self.provider.delete_directory, self.provider.get_directory("/test"))
+        self.assertIsNotNone(self.provider.get_directory("/test"))
 
+
+    #_____________________________________________________________
     def test_gen_flatten_data(self):
         source = [[1, 2], [3, "444"]]
         result = list(gen_flatten_data(source))

@@ -14,7 +14,7 @@ from sqlalchemy.exc import OperationalError
 import sqlalchemy.orm
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
-from ccdb.errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError
+from ccdb.errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError, UserNotFoundError
 
 import table_file
 import authentication
@@ -37,7 +37,6 @@ class AlchemyProvider(object):
         self.root_dir.name = ''
         self.root_dir.id = 0
         self.path_name_regex = re.compile('^[\w\-_]+$', re.IGNORECASE)
-        self._user_name = "anonymous"
         self._connection_string = ""
         self._auth = authentication.Authentication(self)
         self._auth.current_user_name = "anonymous"
@@ -261,7 +260,7 @@ class AlchemyProvider(object):
         self.create_log_record(user=user,
                                affected_ids=[directory.__tablename__ + str(directory.id)],
                                action="create",
-                               description="Created directory '{0}'".format(directory.path),
+                               description="Created directory '{0}'".format(new_full_path),
                                comment=directory.comment)
 
         #refresh directory structure
@@ -283,10 +282,13 @@ class AlchemyProvider(object):
         """Updates directory"""
         self._ensure_dirs_loaded()
 
+        #get user or get user error if there is no user
+        user = self.get_current_user()
+
         self.session.commit()
 
         #Log
-        self.create_log_record(user=self.get_current_user(),
+        self.create_log_record(user,
                                affected_ids=[directory.__tablename__ + directory(directory.id)],
                                action="update",
                                description="Updated directory '{0}'".format(directory.path),
@@ -309,6 +311,9 @@ class AlchemyProvider(object):
 
         self._ensure_dirs_loaded()
 
+        #get user here to fail if no such user
+        user = self.get_current_user()
+
         #check the type
         if isinstance(dir_or_path, str):
             directory = self.get_directory(dir_or_path)
@@ -329,7 +334,7 @@ class AlchemyProvider(object):
         self._load_dirs()
 
         #Log
-        self.create_log_record(user=self.get_current_user(),
+        self.create_log_record(user,
                                affected_ids=[directory.__tablename__ + str(directory.id)],
                                action="delete",
                                description="Deleted directory '{0}'".format(directory.path),
@@ -636,10 +641,14 @@ class AlchemyProvider(object):
     # Updates constant table in database
     #------------------------------------------------
     def update_type_table(self, type_table):
+
+        #get user here to fail if no such user
+        user = self.get_current_user()
+
         self.session.commit()
 
         #Log
-        self.create_log_record(user=self.get_current_user(),
+        self.create_log_record(user=user,
                                affected_ids=[type_table.__tablename__ + str(type_table.id)],
                                action="update",
                                description="Updated table with path '{0}'".format(type_table.path),
@@ -662,6 +671,9 @@ class AlchemyProvider(object):
         """
         assert isinstance(type_table, TypeTable)
 
+        #get user here to fail if no such user
+        user = self.get_current_user()
+
         data_count = self.session.query(ConstantSet).filter(ConstantSet.type_table_id == type_table.id).count()
         if data_count > 0:
             message = ("Can't delete type table that has data assigned to it."
@@ -673,7 +685,7 @@ class AlchemyProvider(object):
         self.session.commit()
 
         #Log
-        self.create_log_record(user=self.get_current_user(),
+        self.create_log_record(user=user,
                                affected_ids=[type_table.__tablename__ + str(type_table.id)],
                                action="delete",
                                description="Deleted table with path '{0}'".format(type_table.path),
@@ -915,9 +927,13 @@ class AlchemyProvider(object):
     #------------------------------------------------
     #------------------------------------------------
     def update_variation(self, variation):
+
+        #get user here to fail if no such user
+        user = self.get_current_user()
+
         self.session.commit()
         #Log
-        self.create_log_record(user=self.get_current_user(),
+        self.create_log_record(user=user,
                                affected_ids=[variation.__tablename__ + variation(variation.id)],
                                action="update",
                                description="Updated variation '{0}'".format(variation.name),
@@ -936,17 +952,20 @@ class AlchemyProvider(object):
     def delete_variation(self, variation):
         assert isinstance(variation, Variation)
 
+        #get user here to fail if no such user
+        user = self.get_current_user()
+
         data_count = self.session.query(Assignment).filter(Assignment.variation_id == variation.id).count()
         if data_count > 0:
-            message = ("Can't delete variation that has data assigned to it."
-                       + "The variation '{0}' with id '{1} has {2} data sets which reference it."
-                       + "Please, delete the data first").format(variation.name, variation.id, data_count)
+            message = ("Can't delete variation that has data assigned to it. "
+                       "The variation '{0}' with id '{1}' has {2} data sets which reference it."
+                       "Please, delete the data first").format(variation.name, variation.id, data_count)
             raise ValueError(message)
 
         self.session.delete(variation)
         self.session.commit()
         #Log
-        self.create_log_record(user=self.get_current_user(),
+        self.create_log_record(user=user,
                                affected_ids=[variation.__tablename__ + str(variation.id)],
                                action="delete",
                                description="Deleted variation '{0}'".format(variation.name),
@@ -1156,9 +1175,14 @@ class AlchemyProvider(object):
     # updates assignment comments
     #------------------------------------------------
     def update_assignment(self, assignment):
+
+        #get user here to fail if no such user
+        user = self.get_current_user()
+
         self.session.commit()
+
         #Log
-        self.create_log_record(user=self.get_current_user(),
+        self.create_log_record(user=user,
                                affected_ids=[assignment.__tablename__ + assignment(assignment.id)],
                                action="update",
                                description="Updated assignment '{0}'".format(assignment.request),
@@ -1182,6 +1206,7 @@ class AlchemyProvider(object):
         description = "Deleted assignment '{0}'".format(assignment.request)
         comment = assignment.comment
 
+
         #delete it
         self.session.delete(assignment)
         self.session.commit()
@@ -1204,7 +1229,6 @@ class AlchemyProvider(object):
         #TODO decide is it useless or not
         raise NotImplementedError()
 
-
     #----------------------------------------------------------------------------------------
     #	U S E R S
     #----------------------------------------------------------------------------------------
@@ -1219,7 +1243,12 @@ class AlchemyProvider(object):
         :rtype: User
         """
         query = self.session.query(User).filter(User.name == username)
-        return query.one()
+        try:
+            return query.one()
+        except sqlalchemy.orm.exc.NoResultFound as ex:
+            message = "No user with name '{0}' is found in database".format(username)
+            raise UserNotFoundError(message, username)
+
 
     def get_current_user(self):
         """
@@ -1262,15 +1291,6 @@ class AlchemyProvider(object):
     #----------------------------------------------------------------------------------------
     #	L O G G I N G
     #----------------------------------------------------------------------------------------
-    @property
-    def log_user_name(self):
-        return self._user_name
-
-
-    @log_user_name.setter
-    def log_user_name(self, user_name):
-        self._user_name = user_name
-
     def create_log_record(self, user, affected_ids, action, description, comment):
         if not self.logging_enabled:
             return None
@@ -1285,9 +1305,12 @@ class AlchemyProvider(object):
         record.action = action
         record.description = description
         record.comment = comment
+        user.last_action_time = datetime.now()
+
         self.session.add(record)
         self.session.commit()
         return record
+
 
     def get_log_records(self, limit=20, offset=0):
         """
@@ -1303,7 +1326,8 @@ class AlchemyProvider(object):
         :rtype: []
         """
 
-        if limit < 0: limit = 0
+        if limit < 0:
+            limit = 0
 
         #initial query
         query = self.session.query(LogRecord).order_by(desc(LogRecord.id))

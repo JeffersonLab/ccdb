@@ -201,3 +201,18 @@ class ConsoleContextTests(unittest.TestCase):
         #wrong directory
         self.assertRaises(DirectoryNotFound, self.context.process_command_line, "vers /some/wrong/dir/table")
         self.assertRaises(TypeTableNotFound, self.context.process_command_line, "vers /test/test_vars/wrong_table")
+
+    def test_skip_sqlite_logging(self):
+        """
+        check that for sqlite connection user name is skipped
+        """
+
+        self.context.process_command_line("ls") # run command that requires connection make it to connect
+        self.assertEqual('anonymous', self.context.user_name)
+
+    def test_log(self):
+        """
+        log. general test
+        """
+        self.context.process_command_line("log")
+

@@ -1,12 +1,12 @@
 import posixpath
 import re
 import logging
+import os
 
 from ccdb.cmd import ConsoleUtilBase
-from ccdb.cmd.themes import bool_color
+from ccdb import BraceMessage as LogFmt
 
 log = logging.getLogger("ccdb.cmd.utils.mktbl")
-
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -73,9 +73,9 @@ class MakeTable(ConsoleUtilBase):
     #----------------------------------------
     def process(self, args):
 
-        #>oO debug      
-        log.debug("MakeTable is gained a control over the process.")
-        log.debug("   " + " ".join(args))
+        #>oO debug
+        log.debug(LogFmt("{0}MakeTable is in charge{0}\\".format(os.linesep)))
+        log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
 
         #reset all needed variables
         self.reset_on_process()
@@ -343,8 +343,8 @@ keys:
         else:
             print "Table: " + self.theme.Success + self.table_name
 
-        print "Rows num: " + bool_color(self.rows) + repr(self.rows) + self.theme.Reset + \
-              "   Columns num: " + bool_color(len(self.columns)) + repr(len(self.columns))
+        print "Rows num: " + repr(self.rows) + self.theme.Reset + \
+              "   Columns num: " + repr(len(self.columns))
         print "Full path: " + self.table_path
         #columns info 
         print
@@ -380,17 +380,17 @@ keys:
         print "  unparsed_columns: ", self.unparsed_columns
         print
         print "    rows            : ", self.rows
-        print "    rows_set        : ", bool_color(self.rows_set) + repr(self.rows_set)
+        print "    rows_set        : ", repr(self.rows_set)
         print
-        print "    interactive     : ", bool_color(self.interactive) + repr(self.interactive)
-        print "    interactive_set : ", bool_color(self.interactive_set) + repr(self.interactive_set)
+        print "    interactive     : ", repr(self.interactive)
+        print "    interactive_set : ", repr(self.interactive_set)
         print
         print "    comment         : ", self.comment
-        print "    comment_set     : ", bool_color(self.comment_set) + repr(self.comment_set)
+        print "    comment_set     : ", repr(self.comment_set)
         print
         print "    table_name      : ", self.table_name
         print
         print "    table_path      : ", self.table_path
-        print "    table_path_set  : ", bool_color(self.table_path_set) + repr(self.table_path_set)
+        print "    table_path_set  : ", repr(self.table_path_set)
         print
         print "    table_parent_path      : ", self.table_parent_path
