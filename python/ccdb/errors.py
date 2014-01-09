@@ -1,6 +1,3 @@
-from PyQt4.QtScript import __init__
-
-
 class AuthVerificationError(Exception):
     """
     Exception raised when wrong pair login,password is obtained by authentication
