@@ -206,6 +206,7 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`users` (
   `password` VARCHAR(100) NULL ,
   `roles` TEXT NOT NULL ,
   `info` VARCHAR(125) NOT NULL ,
+  `isDeleted` TINYINT(1) NOT NULL DEFAULT 0 ,
   PRIMARY KEY (`id`) ,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) )
 ENGINE = MyISAM;
@@ -241,6 +242,7 @@ CREATE  TABLE IF NOT EXISTS `ccdb`.`schemaVersions` (
   PRIMARY KEY (`id`) )
 ENGINE = InnoDB;
 
+USE `ccdb` ;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
@@ -345,8 +347,8 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `ccdb`.`users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`) VALUES (1, NULL, NULL, 'anonymous', NULL, '', 'User anonymous is a default user for CCDB. It has no modify privilegies');
-INSERT INTO `ccdb`.`users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`) VALUES (2, '2012-07-15 15:16:30', '2012-09-20 08:11:12', 'test_user', 'test', 'runrange_crate,runrange_delete', 'User for unit tests');
+INSERT INTO `ccdb`.`users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`, `isDeleted`) VALUES (1, NULL, NULL, 'anonymous', NULL, '', 'User anonymous is a default user for CCDB. It has no modify privilegies', 0);
+INSERT INTO `ccdb`.`users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`, `isDeleted`) VALUES (2, '2012-07-15 15:16:30', '2012-09-20 08:11:12', 'test_user', 'test', 'runrange_crate,runrange_delete', 'User for unit tests', 0);
 
 COMMIT;
 
