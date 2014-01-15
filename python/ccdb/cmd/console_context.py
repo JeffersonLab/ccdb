@@ -646,10 +646,17 @@ class ConsoleContext(object):
         print "Use 'help command' to get help for particular command"
 
 
+    def print_info(self):
+        log.info("You login as : '" + self.user_name + "'")
+        log.info("Connection string: '" + self.connection_string + "'")
+        log.info("Current variation: '" + self.current_variation + "'")
+        log.info("Current run: '" + str(self.current_run) + "'")
+
+
     def print_interactive_intro(self):
         print """
 +--------------------------+
-  CCDB shell v.0.9
+  CCDB shell v.1.00
   HallD JLab
 +--------------------------+
        """
@@ -658,7 +665,7 @@ class ConsoleContext(object):
         print "print " + self.theme.Accent + "quit" + self.theme.Reset + " or " + self.theme.Accent + "q" + self.theme.Reset + " to exit"
         print "print !<command> to execute shell command"
         print
-        print "You login as: '" + self.user_name + "'"
+        self.print_info()
         
         
                 

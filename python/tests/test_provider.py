@@ -408,6 +408,12 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertRaises(ValueError, list_to_table, [1, 2, 3], 2)
         self.assertItemsEqual([[1, 2, 3], [4, 5, 6]], list_to_table([1, 2, 3, 4, 5, 6], 3))
 
+    def test_get_users(self):
+        self.provider.connect(self.sqlite_connection_str)
+        users = self.provider.get_users()
+        self.assertGreater(len(users),0)
+
+
 
 
 

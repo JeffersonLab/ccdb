@@ -14,7 +14,7 @@ from sqlalchemy.exc import OperationalError
 import sqlalchemy.orm
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
-from ccdb.errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError, UserNotFoundError
+from ccdb.errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError, UserNotFoundError, UserExistsError
 
 import table_file
 import authentication
@@ -1248,6 +1248,58 @@ class AlchemyProvider(object):
         except sqlalchemy.orm.exc.NoResultFound as ex:
             message = "No user with name '{0}' is found in database".format(username)
             raise UserNotFoundError(message, username)
+
+
+    def get_users(self, filter_deleted=True):
+        """
+        @param filterDeleted: Return only non-deleted users
+        @type filterDeleted: bool
+        @return:
+        """
+        query = self.session.query(User)
+        if filter_deleted:
+            query = query.filter(User.is_deleted == 0)
+        return query.all()
+
+    def create_user(self, name, pwd="", roles=[], user_info=""):
+        """
+            Creates a user with defined user name
+
+        """
+        try:
+            user = self.get_user(name)
+            if user.is_deleted:
+                user.is_deleted = False
+            else:
+                raise UserExistsError("The user with name '"+name+"' exists in the database", name)
+        except UserNotFoundError:
+            user = User()
+            user.last_action_time = datetime.now()
+            user.name = name
+            self.session.add(user)
+
+        user.password = pwd
+        user.roles = roles
+        user.info = user_info
+        self.session.commit()
+        return user
+
+    def delete_user(self, name):
+        """
+        Deletes user with specified name
+        @param name: Name(login) of the user to delete
+        @type name: str
+        @raise UserNo
+        """
+
+        user = self.get_user(name)
+        user.is_deleted = True
+        self.session.commit()
+
+
+
+
+
 
 
     def get_current_user(self):

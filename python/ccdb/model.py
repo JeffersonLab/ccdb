@@ -6,7 +6,7 @@ import posixpath
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column, ForeignKey
-from sqlalchemy.types import Integer, String, Text, DateTime, Enum
+from sqlalchemy.types import Integer, String, Text, DateTime, Enum, Boolean
 from sqlalchemy.orm import sessionmaker, reconstructor
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql.expression import desc
@@ -267,7 +267,8 @@ class User(Base):
     name = Column(String(100), nullable=False)
     password = Column(String(100), nullable=True)
     _roles_str = Column('roles', String, nullable=False)
-    info  = Column(String(125), nullable=False)
+    info = Column(String(125), nullable=False)
+    is_deleted = Column('isDeleted', Boolean, default=False)
 
     @property
     def roles(self):
@@ -279,7 +280,10 @@ class User(Base):
 
     @roles.setter
     def roles(self, value):
-        self._roles_str = ",".join(value)
+        if not value:
+            self._roles_str = ""
+        else:
+            self._roles_str = ",".join(value)
 
 
 #--------------------------------------------

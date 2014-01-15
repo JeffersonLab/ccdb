@@ -1,19 +1,24 @@
 <component name="ProjectDictionaryState">
   <dictionary name="romanov">
     <words>
+      <w>delition</w>
       <w>eventrange</w>
       <w>exitsts</w>
+      <w>halld</w>
       <w>kozyabra</w>
       <w>mktbl</w>
       <w>multiline</w>
       <w>mysqlconnector</w>
       <w>nondefault</w>
       <w>runrange</w>
+      <w>stdin</w>
       <w>testdir</w>
       <w>typetable</w>
       <w>uint</w>
       <w>ulong</w>
       <w>workargs</w>
+      <w>ypmatch</w>
+      <w>ypstr</w>
     </words>
   </dictionary>
 </component>
