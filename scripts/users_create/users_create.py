@@ -1,6 +1,7 @@
 import sys
 from ccdb.model import User
 from ccdb.provider import AlchemyProvider
+from ccdb.errors import UserExistsError
 import shlex
 import sys
 import select
@@ -83,8 +84,14 @@ def create_users(provider, user_names):
     @param provider:Connected alchemy provider
     @param user_names: list of user names
     """
+    count = 0
     for name in user_names:
-        provider.create_user(name)
+        try:
+            provider.create_user(name)
+            count += 1
+        except UserExistsError as err:
+            print(err.message)
+
     print("Users created: {}".format(len(user_names)))
 
 
