@@ -111,7 +111,7 @@ class ConsoleContextTests(unittest.TestCase):
 
     def test_mk_rm_dir(self):
         """mkdir, rm. Create directory and delete it"""
-        self.context.process_command_line("mkdir /test/auto_testing_dir")
+        self.context.process_command_line("mkdir /test/auto_testing_dir #Comment for the dir\n something at new line")
         #TODO check test table internals are right
         self.context.process_command_line("rm --force -d /test/auto_testing_dir")
 
