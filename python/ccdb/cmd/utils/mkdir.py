@@ -1,11 +1,20 @@
 from ccdb.cmd import ConsoleUtilBase
 import posixpath
 import logging
+import os
+from ccdb import BraceMessage as LogFmt
 
 log = logging.getLogger("ccdb.cmd.utils.mkdir")
 
+
 #ccdbcmd module interface
 def create_util_instance():
+    """
+    This function is a module interface
+
+    :return: new MakeDirectory utility
+    :rtype: MakeDirectory
+    """
     log.debug("      registering MakeDirectory")
     return MakeDirectory()
 
@@ -25,18 +34,21 @@ class MakeDirectory(ConsoleUtilBase):
     uses_db = True
 
     def process(self, args):
-        log.debug("MakeDirectory module gained control")
-        log.debug("Arguments: \n " + "     ".join(args))
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(LogFmt("{0}MakeDirectory is in charge{0}\\".format(os.linesep)))
+            log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
+
         
-        if not len(args): return
+        if not len(args):
+            return
 
         comment = ""
-        raw_str = args[0] #hello dynamic language!
+        raw_str = args[0]
 
         #in case there is a space between comments and name
-        if len(args)>=2 and args[1].starts_with("#"):
+        if len(args) >= 2 and args[1].startswith("#"):
             comment = args[1][1:]
-            if len(args)>=3:
+            if len(args) >= 3:
                 comment = comment + " " + " ".join(args[2:])
         
         #try to extract comment from /path/#comment 
@@ -53,7 +65,7 @@ class MakeDirectory(ConsoleUtilBase):
         (parent_path, name) = posixpath.split(path)
         
         #try to create directory
-        log.debug("  creating directory. Name: {0}, parent path: {1},  comment: {2}".format(name,parent_path,comment))
+        log.debug(" |- creating directory. Name: {0}, parent path: {1},  comment: {2}".format(name,parent_path,comment))
 
         try:
             self.context.provider.create_directory(name, parent_path, comment)

@@ -54,8 +54,9 @@ class ShowLog(ConsoleUtilBase):
         offset = 0
         limit = 10
 
-        if len(args) == 2:
+        if len(args) == 1:
             limit = int(args[0])
+        if len(args) == 2:
             offset = int(args[1])
 
         log_records = provider.get_log_records(limit=limit, offset=offset)
