@@ -19,7 +19,7 @@ namespace ccdb
 CalibrationGenerator::CalibrationGenerator()
 {
     mMaxInactiveTime = 0; //Disable inactive check
-    mInactivityCheckInterval = 1;
+    mInactivityCheckInterval = 100;
 }
 
 
