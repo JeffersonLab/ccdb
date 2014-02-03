@@ -460,6 +460,27 @@ Example:
 \end{verbatim}
 C++ API section will overview how to set default run
 
+-v start flag and var command to set working variation
+-r and 'run' command sets default run for ccdb session
+So...
+
+\begin{verbatim}
+ccdb -i -v mc -r 100 #runs ccdb shell with variation 'mc' and run 100 by default
+
+>run       # findout ccdb default run number
+100
+
+>var       # findout default variation
+mc
+
+>run 200   # change run default run nubmer during session
+>run
+200
+
+>var john  # change variation during session
+>var 
+john
+\end{verbatim}
 
 % Connection strings
 %******************************************************************************
@@ -926,6 +947,24 @@ The reasons for that comes from intention
 \bibliography{ccdb_doc}
 
 \section{Appendix A}
+
+Closed connections automatically reopened if needed. 
+CalibrationGenerator have UpdateInactivity function which goes through all opened
+ calibrations and disconnects ones that is idle for long. Time of idling is controlled 
+ through SetMaxInactiveTime, GetMaxInactiveTime functions.
+
+
+\begin{verbatim}
+
+//Initialization part:
+CalibrationGenerator calibGen;
+calibGen.SetMaxInactiveTime(100);  // 100 seconds
+
+//...
+
+//Each event or on timer:
+calibGen->UpdateInactivity()
+\end{verbatim}
 
 Possible future outline:
 
