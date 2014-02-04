@@ -1,5 +1,5 @@
 # mysql/mysqlconnector.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -79,12 +79,13 @@ class MySQLDialect_mysqlconnector(MySQLDialect):
 
     def create_connect_args(self, url):
         opts = url.translate_connect_args(username='user')
+
         opts.update(url.query)
 
         util.coerce_kw_type(opts, 'buffered', bool)
         util.coerce_kw_type(opts, 'raise_on_warnings', bool)
-        opts['buffered'] = True
-        opts['raise_on_warnings'] = True
+        opts.setdefault('buffered', True)
+        opts.setdefault('raise_on_warnings', True)
 
         # FOUND_ROWS must be set in ClientFlag to enable
         # supports_sane_rowcount.
@@ -113,7 +114,8 @@ class MySQLDialect_mysqlconnector(MySQLDialect):
         errnos = (2006, 2013, 2014, 2045, 2055, 2048)
         exceptions = (self.dbapi.OperationalError, self.dbapi.InterfaceError)
         if isinstance(e, exceptions):
-            return e.errno in errnos
+            return e.errno in errnos or \
+                "MySQL Connection not available." in str(e)
         else:
             return False
 

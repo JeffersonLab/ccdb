@@ -1,5 +1,5 @@
 # postgresql/hstore.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -10,6 +10,7 @@ from .base import ARRAY, ischema_names
 from ... import types as sqltypes
 from ...sql import functions as sqlfunc
 from ...sql.operators import custom_op
+from ... import util
 
 __all__ = ('HSTORE', 'hstore')
 
@@ -67,11 +68,11 @@ def _parse_hstore(hstore_str):
     pair_match = HSTORE_PAIR_RE.match(hstore_str)
 
     while pair_match is not None:
-        key = pair_match.group('key')
+        key = pair_match.group('key').replace(r'\"', '"').replace("\\\\", "\\")
         if pair_match.group('value_null'):
             value = None
         else:
-            value = pair_match.group('value').replace(r'\"', '"')
+            value = pair_match.group('value').replace(r'\"', '"').replace("\\\\", "\\")
         result[key] = value
 
         pos += pair_match.end()
@@ -96,14 +97,14 @@ def _serialize_hstore(val):
     def esc(s, position):
         if position == 'value' and s is None:
             return 'NULL'
-        elif isinstance(s, basestring):
-            return '"%s"' % s.replace('"', r'\"')
+        elif isinstance(s, util.string_types):
+            return '"%s"' % s.replace("\\", "\\\\").replace('"', r'\"')
         else:
             raise ValueError("%r in %s position is not a string." %
                              (s, position))
 
     return ', '.join('%s=>%s' % (esc(k, 'key'), esc(v, 'value'))
-                     for k, v in val.iteritems())
+                     for k, v in val.items())
 
 
 class HSTORE(sqltypes.Concatenable, sqltypes.TypeEngine):
@@ -143,8 +144,10 @@ class HSTORE(sqltypes.Concatenable, sqltypes.TypeEngine):
     For usage with the SQLAlchemy ORM, it may be desirable to combine
     the usage of :class:`.HSTORE` with :class:`.MutableDict` dictionary
     now part of the :mod:`sqlalchemy.ext.mutable`
-    extension.  This extension will allow in-place changes to dictionary
-    values to be detected by the unit of work::
+    extension.  This extension will allow "in-place" changes to the
+    dictionary, e.g. addition of new keys or replacement/removal of existing
+    keys to/from the current dictionary, to produce events which will be detected
+    by the unit of work::
 
         from sqlalchemy.ext.mutable import MutableDict
 
@@ -161,6 +164,11 @@ class HSTORE(sqltypes.Concatenable, sqltypes.TypeEngine):
         my_object.data['some_key'] = 'some value'
 
         session.commit()
+
+    When the :mod:`sqlalchemy.ext.mutable` extension is not used, the ORM
+    will not be alerted to any changes to the contents of an existing dictionary,
+    unless that dictionary value is re-assigned to the HSTORE-attribute itself,
+    thus generating a change event.
 
     .. versionadded:: 0.8
 
@@ -260,19 +268,35 @@ class HSTORE(sqltypes.Concatenable, sqltypes.TypeEngine):
                 _adapt_expression(self, op, other_comparator)
 
     def bind_processor(self, dialect):
-        def process(value):
-            if isinstance(value, dict):
-                return _serialize_hstore(value)
-            else:
-                return value
+        if util.py2k:
+            encoding = dialect.encoding
+            def process(value):
+                if isinstance(value, dict):
+                    return _serialize_hstore(value).encode(encoding)
+                else:
+                    return value
+        else:
+            def process(value):
+                if isinstance(value, dict):
+                    return _serialize_hstore(value)
+                else:
+                    return value
         return process
 
     def result_processor(self, dialect, coltype):
-        def process(value):
-            if value is not None:
-                return _parse_hstore(value)
-            else:
-                return value
+        if util.py2k:
+            encoding = dialect.encoding
+            def process(value):
+                if value is not None:
+                    return _parse_hstore(value.decode(encoding))
+                else:
+                    return value
+        else:
+            def process(value):
+                if value is not None:
+                    return _parse_hstore(value)
+                else:
+                    return value
         return process
 
 

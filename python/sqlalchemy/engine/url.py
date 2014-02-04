@@ -1,5 +1,5 @@
 # engine/url.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -14,9 +14,9 @@ be used directly and is also accepted directly by ``create_engine()``.
 """
 
 import re
-import urllib
 from .. import exc, util
 from . import Dialect
+from ..dialects import registry
 
 
 class URL(object):
@@ -24,8 +24,8 @@ class URL(object):
     Represent the components of a URL used to connect to a database.
 
     This object is suitable to be passed directly to a
-    ``create_engine()`` call.  The fields of the URL are parsed from a
-    string by the ``module-level make_url()`` function.  the string
+    :func:`~sqlalchemy.create_engine` call.  The fields of the URL are parsed from a
+    string by the :func:`.make_url` function.  the string
     format of the URL is an RFC-1738-style string.
 
     All initialization parameters are available as public attributes.
@@ -62,24 +62,34 @@ class URL(object):
         self.database = database
         self.query = query or {}
 
-    def __str__(self):
+    def __to_string__(self, hide_password=True):
         s = self.drivername + "://"
         if self.username is not None:
-            s += self.username
+            s += _rfc_1738_quote(self.username)
             if self.password is not None:
-                s += ':' + urllib.quote_plus(self.password)
+                s += ':' + ('***' if hide_password
+                            else _rfc_1738_quote(self.password))
             s += "@"
         if self.host is not None:
-            s += self.host
+            if ':' in self.host:
+                s += "[%s]" % self.host
+            else:
+                s += self.host
         if self.port is not None:
             s += ':' + str(self.port)
         if self.database is not None:
             s += '/' + self.database
         if self.query:
-            keys = self.query.keys()
+            keys = list(self.query)
             keys.sort()
             s += '?' + "&".join("%s=%s" % (k, self.query[k]) for k in keys)
         return s
+
+    def __str__(self):
+        return self.__to_string__(hide_password=False)
+
+    def __repr__(self):
+        return self.__to_string__()
 
     def __hash__(self):
         return hash(str(self))
@@ -103,7 +113,6 @@ class URL(object):
             name = self.drivername
         else:
             name = self.drivername.replace('+', '.')
-        from sqlalchemy.dialects import registry
         cls = registry.load(name)
         # check for legacy dialects that
         # would return a module with 'dialect' as the
@@ -150,7 +159,7 @@ def make_url(name_or_url):
     existing URL object is passed, just returns the object.
     """
 
-    if isinstance(name_or_url, basestring):
+    if isinstance(name_or_url, util.string_types):
         return _parse_rfc1738_args(name_or_url)
     else:
         return name_or_url
@@ -161,10 +170,13 @@ def _parse_rfc1738_args(name):
             (?P<name>[\w\+]+)://
             (?:
                 (?P<username>[^:/]*)
-                (?::(?P<password>[^/]*))?
+                (?::(?P<password>.*))?
             @)?
             (?:
-                (?P<host>[^/:]*)
+                (?:
+                    \[(?P<ipv6host>[^/]+)\] |
+                    (?P<ipv4host>[^/:]+)
+                )?
                 (?::(?P<port>[^/]*))?
             )?
             (?:/(?P<database>.*))?
@@ -177,24 +189,33 @@ def _parse_rfc1738_args(name):
             tokens = components['database'].split('?', 2)
             components['database'] = tokens[0]
             query = (len(tokens) > 1 and dict(util.parse_qsl(tokens[1]))) or None
-            # Py2K
-            if query is not None:
+            if util.py2k and query is not None:
                 query = dict((k.encode('ascii'), query[k]) for k in query)
-            # end Py2K
         else:
             query = None
         components['query'] = query
 
-        if components['password'] is not None:
-            components['password'] = \
-                urllib.unquote_plus(components['password'])
+        if components['username'] is not None:
+            components['username'] = _rfc_1738_unquote(components['username'])
 
+        if components['password'] is not None:
+            components['password'] = _rfc_1738_unquote(components['password'])
+
+        ipv4host = components.pop('ipv4host')
+        ipv6host = components.pop('ipv6host')
+        components['host'] = ipv4host or ipv6host
         name = components.pop('name')
         return URL(name, **components)
     else:
         raise exc.ArgumentError(
             "Could not parse rfc1738 URL from string '%s'" % name)
 
+
+def _rfc_1738_quote(text):
+    return re.sub(r'[:@/]', lambda m: "%%%X" % ord(m.group(0)), text)
+
+def _rfc_1738_unquote(text):
+    return util.unquote(text)
 
 def _parse_keyvalue_args(name):
     m = re.match(r'(\w+)://(.*)', name)

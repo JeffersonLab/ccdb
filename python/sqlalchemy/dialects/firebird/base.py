@@ -1,5 +1,5 @@
 # firebird/base.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -78,9 +78,8 @@ from sqlalchemy.engine import base, default, reflection
 from sqlalchemy.sql import compiler
 
 
-from sqlalchemy.types import (BIGINT, BLOB, BOOLEAN, DATE,
-                              FLOAT, INTEGER, NUMERIC, SMALLINT,
-                              TEXT, TIME, TIMESTAMP)
+from sqlalchemy.types import (BIGINT, BLOB, DATE, FLOAT, INTEGER, NUMERIC,
+                              SMALLINT, TEXT, TIME, TIMESTAMP, Integer)
 
 
 RESERVED_WORDS = set([
@@ -162,13 +161,13 @@ colspecs = {
 
 ischema_names = {
       'SHORT': SMALLINT,
-       'LONG': BIGINT,
+       'LONG': INTEGER,
        'QUAD': FLOAT,
       'FLOAT': FLOAT,
        'DATE': DATE,
        'TIME': TIME,
        'TEXT': TEXT,
-      'INT64': NUMERIC,
+      'INT64': BIGINT,
      'DOUBLE': FLOAT,
   'TIMESTAMP': TIMESTAMP,
     'VARYING': VARCHAR,
@@ -360,6 +359,7 @@ class FBIdentifierPreparer(sql.compiler.IdentifierPreparer):
     """Install Firebird specific reserved words."""
 
     reserved_words = RESERVED_WORDS
+    illegal_initial_characters = compiler.ILLEGAL_INITIAL_CHARACTERS.union(['_'])
 
     def __init__(self, dialect):
         super(FBIdentifierPreparer, self).__init__(dialect, omit_schema=True)
@@ -401,6 +401,8 @@ class FBDialect(default.DefaultDialect):
 
     colspecs = colspecs
     ischema_names = ischema_names
+
+    construct_arguments = []
 
     # defaults to dialect ver. 3,
     # will be autodetected off upon
@@ -475,18 +477,34 @@ class FBDialect(default.DefaultDialect):
 
     @reflection.cache
     def get_table_names(self, connection, schema=None, **kw):
+        # there are two queries commonly mentioned for this.
+        # this one, using view_blr, is at the Firebird FAQ among other places:
+        # http://www.firebirdfaq.org/faq174/
         s = """
-        SELECT DISTINCT rdb$relation_name
-        FROM rdb$relation_fields
-        WHERE rdb$system_flag=0 AND rdb$view_context IS NULL
+        select rdb$relation_name
+        from rdb$relations
+        where rdb$view_blr is null
+        and (rdb$system_flag is null or rdb$system_flag = 0);
         """
+
+        # the other query is this one.  It's not clear if there's really
+        # any difference between these two.  This link:
+        # http://www.alberton.info/firebird_sql_meta_info.html#.Ur3vXfZGni8
+        # states them as interchangeable.  Some discussion at [ticket:2898]
+        # SELECT DISTINCT rdb$relation_name
+        # FROM rdb$relation_fields
+        # WHERE rdb$system_flag=0 AND rdb$view_context IS NULL
+
         return [self.normalize_name(row[0]) for row in connection.execute(s)]
 
     @reflection.cache
     def get_view_names(self, connection, schema=None, **kw):
+        # see http://www.firebirdfaq.org/faq174/
         s = """
-        SELECT distinct rdb$view_name
-        FROM rdb$view_relations
+        select rdb$relation_name
+        from rdb$relations
+        where rdb$view_blr is not null
+        and (rdb$system_flag is null or rdb$system_flag = 0);
         """
         return [self.normalize_name(row[0]) for row in connection.execute(s)]
 
@@ -593,8 +611,8 @@ class FBDialect(default.DefaultDialect):
                 util.warn("Did not recognize type '%s' of column '%s'" %
                           (colspec, name))
                 coltype = sqltypes.NULLTYPE
-            elif colspec == 'INT64':
-                coltype = coltype(
+            elif issubclass(coltype, Integer) and row['fprec'] != 0:
+                coltype = NUMERIC(
                                 precision=row['fprec'],
                                 scale=row['fscale'] * -1)
             elif colspec in ('VARYING', 'CSTRING'):
@@ -685,7 +703,7 @@ class FBDialect(default.DefaultDialect):
                                 self.normalize_name(row['fname']))
             fk['referred_columns'].append(
                                 self.normalize_name(row['targetfname']))
-        return fks.values()
+        return list(fks.values())
 
     @reflection.cache
     def get_indexes(self, connection, table_name, schema=None, **kw):
@@ -701,7 +719,7 @@ class FBDialect(default.DefaultDialect):
                         ic.rdb$index_name
         WHERE ix.rdb$relation_name=? AND ix.rdb$foreign_key IS NULL
           AND rdb$relation_constraints.rdb$constraint_type IS NULL
-        ORDER BY index_name, field_name
+        ORDER BY index_name, ic.rdb$field_position
         """
         c = connection.execute(qry, [self.denormalize_name(table_name)])
 
@@ -716,17 +734,5 @@ class FBDialect(default.DefaultDialect):
             indexrec['column_names'].append(
                                 self.normalize_name(row['field_name']))
 
-        return indexes.values()
+        return list(indexes.values())
 
-    def do_execute(self, cursor, statement, parameters, context=None):
-        # kinterbase does not accept a None, but wants an empty list
-        # when there are no arguments.
-        cursor.execute(statement, parameters or [])
-
-    def do_rollback(self, dbapi_connection):
-        # Use the retaining feature, that keeps the transaction going
-        dbapi_connection.rollback(True)
-
-    def do_commit(self, dbapi_connection):
-        # Use the retaining feature, that keeps the transaction going
-        dbapi_connection.commit(True)

@@ -1,5 +1,5 @@
 # sql/visitors.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -26,10 +26,12 @@ http://techspot.zzzeek.org/2008/01/23/expression-transformations/
 from collections import deque
 from .. import util
 import operator
+from .. import exc
 
 __all__ = ['VisitableType', 'Visitable', 'ClauseVisitor',
     'CloningVisitor', 'ReplacingCloningVisitor', 'iterate',
     'iterate_depthfirst', 'traverse_using', 'traverse',
+    'traverse_depthfirst',
     'cloned_traverse', 'replacement_traverse']
 
 
@@ -49,11 +51,9 @@ class VisitableType(type):
     Classes having no __visit_name__ attribute will remain unaffected.
     """
     def __init__(cls, clsname, bases, clsdict):
-        if cls.__name__ == 'Visitable' or not hasattr(cls, '__visit_name__'):
-            super(VisitableType, cls).__init__(clsname, bases, clsdict)
-            return
-
-        _generate_dispatch(cls)
+        if clsname != 'Visitable' and \
+                hasattr(cls, '__visit_name__'):
+            _generate_dispatch(cls)
 
         super(VisitableType, cls).__init__(clsname, bases, clsdict)
 
@@ -71,14 +71,24 @@ def _generate_dispatch(cls):
             getter = operator.attrgetter("visit_%s" % visit_name)
 
             def _compiler_dispatch(self, visitor, **kw):
-                return getter(visitor)(self, **kw)
+                try:
+                    meth = getter(visitor)
+                except AttributeError:
+                    raise exc.UnsupportedCompilationError(visitor, cls)
+                else:
+                    return meth(self, **kw)
         else:
             # The optimization opportunity is lost for this case because the
             # __visit_name__ is not yet a string. As a result, the visit
             # string has to be recalculated with each compilation.
             def _compiler_dispatch(self, visitor, **kw):
                 visit_attr = 'visit_%s' % self.__visit_name__
-                return getattr(visitor, visit_attr)(self, **kw)
+                try:
+                    meth = getattr(visitor, visit_attr)
+                except AttributeError:
+                    raise exc.UnsupportedCompilationError(visitor, cls)
+                else:
+                    return meth(self, **kw)
 
         _compiler_dispatch.__doc__ = \
           """Look for an attribute named "visit_" + self.__visit_name__
@@ -87,13 +97,11 @@ def _generate_dispatch(cls):
         cls._compiler_dispatch = _compiler_dispatch
 
 
-class Visitable(object):
+class Visitable(util.with_metaclass(VisitableType, object)):
     """Base class for visitable objects, applies the
     ``VisitableType`` metaclass.
 
     """
-
-    __metaclass__ = VisitableType
 
 
 class ClauseVisitor(object):
@@ -259,8 +267,8 @@ def cloned_traverse(obj, opts, visitors):
     """clone the given expression structure, allowing
     modifications by visitors."""
 
-    cloned = util.column_dict()
-    stop_on = util.column_set(opts.get('stop_on', []))
+    cloned = {}
+    stop_on = set(opts.get('stop_on', []))
 
     def clone(elem):
         if elem in stop_on:
@@ -283,8 +291,8 @@ def replacement_traverse(obj, opts, replace):
     """clone the given expression structure, allowing element
     replacement by a given replacement function."""
 
-    cloned = util.column_dict()
-    stop_on = util.column_set([id(x) for x in opts.get('stop_on', [])])
+    cloned = {}
+    stop_on = set([id(x) for x in opts.get('stop_on', [])])
 
     def clone(elem, **kw):
         if id(elem) in stop_on or \

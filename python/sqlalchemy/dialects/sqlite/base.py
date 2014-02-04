@@ -1,5 +1,5 @@
 # sqlite/base.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -130,15 +130,16 @@ for new connections through the usage of events::
 import datetime
 import re
 
-from sqlalchemy import sql, exc
-from sqlalchemy.engine import default, base, reflection
-from sqlalchemy import types as sqltypes
-from sqlalchemy import util
-from sqlalchemy.sql import compiler
-from sqlalchemy import processors
+from ... import sql, exc
+from ...engine import default, reflection
+from ... import types as sqltypes, schema as sa_schema
+from ... import util
+from ...sql import compiler
+from ... import processors
 
-from sqlalchemy.types import BLOB, BOOLEAN, CHAR, DATE, DATETIME, DECIMAL,\
-    FLOAT, REAL, INTEGER, NUMERIC, SMALLINT, TEXT, TIME, TIMESTAMP, VARCHAR
+from ...types import BIGINT, BLOB, BOOLEAN, CHAR,\
+    DECIMAL, FLOAT, REAL, INTEGER, NUMERIC, SMALLINT, TEXT,\
+    TIMESTAMP, VARCHAR
 
 
 class _DateTimeMixin(object):
@@ -151,6 +152,20 @@ class _DateTimeMixin(object):
             self._reg = re.compile(regexp)
         if storage_format is not None:
             self._storage_format = storage_format
+
+    def adapt(self, cls, **kw):
+        if issubclass(cls, _DateTimeMixin):
+            if self._storage_format:
+                kw["storage_format"] = self._storage_format
+            if self._reg:
+                kw["regexp"] = self._reg
+        return super(_DateTimeMixin, self).adapt(cls, **kw)
+
+    def literal_processor(self, dialect):
+        bp = self.bind_processor(dialect)
+        def process(value):
+            return "'%s'" % bp(value)
+        return process
 
 
 class DATETIME(_DateTimeMixin, sqltypes.DateTime):
@@ -172,7 +187,7 @@ class DATETIME(_DateTimeMixin, sqltypes.DateTime):
 
         dt = DATETIME(
             storage_format="%(year)04d/%(month)02d/%(day)02d %(hour)02d:%(min)02d:%(second)02d",
-            regexp=re.compile("(\d+)/(\d+)/(\d+) (\d+)-(\d+)-(\d+)")
+            regexp=r"(\d+)/(\d+)/(\d+) (\d+)-(\d+)-(\d+)"
         )
 
     :param storage_format: format string which will be applied to the
@@ -203,6 +218,7 @@ class DATETIME(_DateTimeMixin, sqltypes.DateTime):
                 "%(year)04d-%(month)02d-%(day)02d "
                 "%(hour)02d:%(minute)02d:%(second)02d"
             )
+
 
     def bind_processor(self, dialect):
         datetime_datetime = datetime.datetime
@@ -384,6 +400,7 @@ colspecs = {
 }
 
 ischema_names = {
+    'BIGINT': sqltypes.BIGINT,
     'BLOB': sqltypes.BLOB,
     'BOOL': sqltypes.BOOLEAN,
     'BOOLEAN': sqltypes.BOOLEAN,
@@ -439,9 +456,9 @@ class SQLiteCompiler(compiler.SQLCompiler):
 
     def visit_cast(self, cast, **kwargs):
         if self.dialect.supports_cast:
-            return super(SQLiteCompiler, self).visit_cast(cast)
+            return super(SQLiteCompiler, self).visit_cast(cast, **kwargs)
         else:
-            return self.process(cast.clause)
+            return self.process(cast.clause, **kwargs)
 
     def visit_extract(self, extract, **kw):
         try:
@@ -483,7 +500,7 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
             colspec += " NOT NULL"
 
         if (column.primary_key and
-            column.table.kwargs.get('sqlite_autoincrement', False) and
+            column.table.dialect_options['sqlite']['autoincrement'] and
             len(column.table.primary_key.columns) == 1 and
             issubclass(column.type._type_affinity, sqltypes.Integer) and
             not column.foreign_keys):
@@ -498,7 +515,7 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
         if len(constraint.columns) == 1:
             c = list(constraint)[0]
             if c.primary_key and \
-                c.table.kwargs.get('sqlite_autoincrement', False) and \
+                c.table.dialect_options['sqlite']['autoincrement'] and \
                 issubclass(c.type._type_affinity, sqltypes.Integer) and \
                 not c.foreign_keys:
                 return None
@@ -508,7 +525,7 @@ class SQLiteDDLCompiler(compiler.DDLCompiler):
 
     def visit_foreign_key_constraint(self, constraint):
 
-        local_table = constraint._elements.values()[0].parent.table
+        local_table = list(constraint._elements.values())[0].parent.table
         remote_table = list(constraint._elements.values())[0].column.table
 
         if local_table.schema != remote_table.schema:
@@ -592,6 +609,7 @@ class SQLiteDialect(default.DefaultDialect):
     supports_empty_insert = False
     supports_cast = True
     supports_multivalues_insert = True
+    supports_right_nested_joins = False
 
     default_paramstyle = 'qmark'
     execution_ctx_cls = SQLiteExecutionContext
@@ -605,6 +623,12 @@ class SQLiteDialect(default.DefaultDialect):
 
     supports_cast = True
     supports_default_values = True
+
+    construct_arguments = [
+        (sa_schema.Table, {
+            "autoincrement": False
+        })
+    ]
 
     _broken_fk_pragma_quotes = False
 
@@ -812,7 +836,7 @@ class SQLiteDialect(default.DefaultDialect):
             coltype = sqltypes.NullType()
 
         if default is not None:
-            default = unicode(default)
+            default = util.text_type(default)
 
         return {
             'name': name,
@@ -915,6 +939,27 @@ class SQLiteDialect(default.DefaultDialect):
                     break
                 cols.append(row[2])
         return indexes
+
+    @reflection.cache
+    def get_unique_constraints(self, connection, table_name,
+                               schema=None, **kw):
+        UNIQUE_SQL = """
+            SELECT sql
+            FROM
+                sqlite_master
+            WHERE
+                type='table' AND
+                name=:table_name
+        """
+        c = connection.execute(UNIQUE_SQL, table_name=table_name)
+        table_data = c.fetchone()[0]
+
+        UNIQUE_PATTERN = 'CONSTRAINT (\w+) UNIQUE \(([^\)]+)\)'
+        return [
+            {'name': name,
+             'column_names': [col.strip(' "') for col in cols.split(',')]}
+            for name, cols in re.findall(UNIQUE_PATTERN, table_data)
+        ]
 
 
 def _pragma_cursor(cursor):

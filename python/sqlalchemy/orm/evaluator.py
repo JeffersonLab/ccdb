@@ -1,5 +1,5 @@
 # orm/evaluator.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -13,9 +13,7 @@ class UnevaluatableError(Exception):
 
 _straight_ops = set(getattr(operators, op)
                     for op in ('add', 'mul', 'sub',
-                                # Py2K
                                 'div',
-                                # end Py2K
                                 'mod', 'truediv',
                                'lt', 'le', 'ne', 'gt', 'ge', 'eq'))
 
@@ -40,6 +38,12 @@ class EvaluatorCompiler(object):
     def visit_null(self, clause):
         return lambda obj: None
 
+    def visit_false(self, clause):
+        return lambda obj: False
+
+    def visit_true(self, clause):
+        return lambda obj: True
+
     def visit_column(self, clause):
         if 'parentmapper' in clause._annotations:
             key = clause._annotations['parentmapper'].\
@@ -50,7 +54,7 @@ class EvaluatorCompiler(object):
         return lambda obj: get_corresponding_attr(obj)
 
     def visit_clauselist(self, clause):
-        evaluators = map(self.process, clause.clauses)
+        evaluators = list(map(self.process, clause.clauses))
         if clause.operator is operators.or_:
             def evaluate(obj):
                 has_null = False
@@ -79,8 +83,8 @@ class EvaluatorCompiler(object):
         return evaluate
 
     def visit_binary(self, clause):
-        eval_left, eval_right = map(self.process,
-                                [clause.left, clause.right])
+        eval_left, eval_right = list(map(self.process,
+                                [clause.left, clause.right]))
         operator = clause.operator
         if operator is operators.is_:
             def evaluate(obj):

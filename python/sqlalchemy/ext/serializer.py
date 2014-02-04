@@ -1,5 +1,5 @@
 # ext/serializer.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -58,24 +58,9 @@ from ..orm.interfaces import MapperProperty
 from ..orm.attributes import QueryableAttribute
 from .. import Table, Column
 from ..engine import Engine
-from ..util import pickle
+from ..util import pickle, byte_buffer, b64encode, b64decode, text_type
 import re
-import base64
-# Py3K
-#from io import BytesIO as byte_buffer
-# Py2K
-from cStringIO import StringIO as byte_buffer
-# end Py2K
 
-# Py3K
-#def b64encode(x):
-#    return base64.b64encode(x).decode('ascii')
-#def b64decode(x):
-#    return base64.b64decode(x.encode('ascii'))
-# Py2K
-b64encode = base64.b64encode
-b64decode = base64.b64decode
-# end Py2K
 
 __all__ = ['Serializer', 'Deserializer', 'dumps', 'loads']
 
@@ -95,9 +80,9 @@ def Serializer(*args, **kw):
             id = "mapperprop:" + b64encode(pickle.dumps(obj.parent.class_)) + \
                                     ":" + obj.key
         elif isinstance(obj, Table):
-            id = "table:" + str(obj)
+            id = "table:" + text_type(obj.key)
         elif isinstance(obj, Column) and isinstance(obj.table, Table):
-            id = "column:" + str(obj.table) + ":" + obj.key
+            id = "column:" + text_type(obj.table.key) + ":" + text_type(obj.key)
         elif isinstance(obj, Session):
             id = "session:"
         elif isinstance(obj, Engine):
@@ -127,7 +112,7 @@ def Deserializer(file, metadata=None, scoped_session=None, engine=None):
             return None
 
     def persistent_load(id):
-        m = our_ids.match(str(id))
+        m = our_ids.match(text_type(id))
         if not m:
             return None
         else:

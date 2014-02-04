@@ -1,5 +1,5 @@
 # mysql/zxjdbc.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -37,7 +37,7 @@ class _ZxJDBCBit(BIT):
                 return value
             if isinstance(value, bool):
                 return int(value)
-            v = 0L
+            v = 0
             for i in value:
                 v = v << 8 | (i & 0xff)
             value = v

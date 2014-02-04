@@ -1,5 +1,5 @@
 # util/langhelpers.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -15,16 +15,15 @@ import re
 import sys
 import types
 import warnings
-from .compat import set_types, threading, \
-    callable, inspect_getfullargspec
 from functools import update_wrapper
 from .. import exc
 import hashlib
 from . import compat
+from . import _collections
 
 def md5_hex(x):
-    # Py3K
-    #x = x.encode('utf-8')
+    if compat.py3k:
+        x = x.encode('utf-8')
     m = hashlib.md5()
     m.update(x)
     return m.hexdigest()
@@ -77,8 +76,8 @@ def _unique_symbols(used, *bases):
     used = set(used)
     for base in bases:
         pool = itertools.chain((base,),
-                               itertools.imap(lambda i: base + str(i),
-                                              xrange(1000)))
+                               compat.itertools_imap(lambda i: base + str(i),
+                                              range(1000)))
         for sym in pool:
             if sym not in used:
                 used.add(sym)
@@ -94,19 +93,65 @@ def decorator(target):
     def decorate(fn):
         if not inspect.isfunction(fn):
             raise Exception("not a decoratable function")
-        spec = inspect_getfullargspec(fn)
-        names = tuple(spec[0]) + spec[1:3] + (fn.func_name,)
+        spec = compat.inspect_getfullargspec(fn)
+        names = tuple(spec[0]) + spec[1:3] + (fn.__name__,)
         targ_name, fn_name = _unique_symbols(names, 'target', 'fn')
 
         metadata = dict(target=targ_name, fn=fn_name)
         metadata.update(format_argspec_plus(spec, grouped=False))
-
-        code = 'lambda %(args)s: %(target)s(%(fn)s, %(apply_kw)s)' % (
-                metadata)
-        decorated = eval(code, {targ_name: target, fn_name: fn})
-        decorated.func_defaults = getattr(fn, 'im_func', fn).func_defaults
+        metadata['name'] = fn.__name__
+        code = """\
+def %(name)s(%(args)s):
+    return %(target)s(%(fn)s, %(apply_kw)s)
+""" % metadata
+        decorated = _exec_code_in_env(code,
+                            {targ_name: target, fn_name: fn},
+                            fn.__name__)
+        decorated.__defaults__ = getattr(fn, 'im_func', fn).__defaults__
         return update_wrapper(decorated, fn)
     return update_wrapper(decorate, target)
+
+def _exec_code_in_env(code, env, fn_name):
+    exec(code, env)
+    return env[fn_name]
+
+def public_factory(target, location):
+    """Produce a wrapping function for the given cls or classmethod.
+
+    Rationale here is so that the __init__ method of the
+    class can serve as documentation for the function.
+
+    """
+    if isinstance(target, type):
+        fn = target.__init__
+        callable_ = target
+        doc = "Construct a new :class:`.%s` object. \n\n"\
+        "This constructor is mirrored as a public API function; see :func:`~%s` "\
+        "for a full usage and argument description." % (
+                    target.__name__, location, )
+    else:
+        fn = callable_ = target
+        doc = "This function is mirrored; see :func:`~%s` "\
+                "for a description of arguments." % location
+
+    location_name = location.split(".")[-1]
+    spec = compat.inspect_getfullargspec(fn)
+    del spec[0][0]
+    metadata = format_argspec_plus(spec, grouped=False)
+    metadata['name'] = location_name
+    code = """\
+def %(name)s(%(args)s):
+    return cls(%(apply_kw)s)
+""" % metadata
+    env = {'cls': callable_, 'symbol': symbol}
+    exec(code, env)
+    decorated = env[location_name]
+    decorated.__doc__ = fn.__doc__
+    if compat.py2k or hasattr(fn, '__func__'):
+        fn.__func__.__doc__ = doc
+    else:
+        fn.__doc__ = doc
+    return decorated
 
 
 class PluginLoader(object):
@@ -136,21 +181,20 @@ class PluginLoader(object):
                 self.impls[name] = impl.load
                 return impl.load()
 
-        from sqlalchemy import exc
-        raise exc.ArgumentError(
+        raise exc.NoSuchModuleError(
                 "Can't load plugin: %s:%s" %
                 (self.group, name))
 
     def register(self, name, modulepath, objname):
         def load():
-            mod = __import__(modulepath)
+            mod = compat.import_(modulepath)
             for token in modulepath.split(".")[1:]:
                 mod = getattr(mod, token)
             return getattr(mod, objname)
         self.impls[name] = load
 
 
-def get_cls_kwargs(cls):
+def get_cls_kwargs(cls, _set=None):
     """Return the full set of inherited kwargs for the given `cls`.
 
     Probes a class's __init__ method, collecting all named arguments.  If the
@@ -162,39 +206,38 @@ def get_cls_kwargs(cls):
     No anonymous tuple arguments please !
 
     """
+    toplevel = _set == None
+    if toplevel:
+        _set = set()
 
-    for c in cls.__mro__:
-        if '__init__' in c.__dict__:
-            stack = set([c])
-            break
-    else:
-        return []
+    ctr = cls.__dict__.get('__init__', False)
 
-    args = set()
-    while stack:
-        class_ = stack.pop()
-        ctr = class_.__dict__.get('__init__', False)
-        if (not ctr or
-            not isinstance(ctr, types.FunctionType) or
-                not isinstance(ctr.func_code, types.CodeType)):
-            stack.update(class_.__bases__)
-            continue
+    has_init = ctr and isinstance(ctr, types.FunctionType) and \
+        isinstance(ctr.__code__, types.CodeType)
 
-        # this is shorthand for
-        # names, _, has_kw, _ = inspect.getargspec(ctr)
-
+    if has_init:
         names, has_kw = inspect_func_args(ctr)
-        args.update(names)
-        if has_kw:
-            stack.update(class_.__bases__)
-    args.discard('self')
-    return args
+        _set.update(names)
+
+        if not has_kw and not toplevel:
+            return None
+
+    if not has_init or has_kw:
+        for c in cls.__bases__:
+            if get_cls_kwargs(c, _set) is None:
+                break
+
+    _set.discard('self')
+    return _set
+
+
 
 try:
+    # TODO: who doesn't have this constant?
     from inspect import CO_VARKEYWORDS
 
     def inspect_func_args(fn):
-        co = fn.func_code
+        co = fn.__code__
         nargs = co.co_argcount
         names = co.co_varnames
         args = list(names[:nargs])
@@ -215,8 +258,22 @@ def get_func_kwargs(func):
 
     """
 
-    return inspect.getargspec(func)[0]
+    return compat.inspect_getargspec(func)[0]
 
+def get_callable_argspec(fn, no_self=False):
+    if isinstance(fn, types.FunctionType):
+        return compat.inspect_getargspec(fn)
+    elif isinstance(fn, types.MethodType) and no_self:
+        spec = compat.inspect_getargspec(fn.__func__)
+        return compat.ArgSpec(spec.args[1:], spec.varargs, spec.keywords, spec.defaults)
+    elif hasattr(fn, '__func__'):
+        return compat.inspect_getargspec(fn.__func__)
+    elif hasattr(fn, '__call__') and \
+        not hasattr(fn.__call__, '__call__'):  # functools.partial does this;
+                                               # not much we can do
+        return get_callable_argspec(fn.__call__)
+    else:
+        raise ValueError("Can't inspect function: %s" % fn)
 
 def format_argspec_plus(fn, grouped=True):
     """Returns a dictionary of formatted, introspected function arguments.
@@ -250,8 +307,8 @@ def format_argspec_plus(fn, grouped=True):
        'apply_pos': '(self, a, b, c, **d)'}
 
     """
-    if callable(fn):
-        spec = inspect_getfullargspec(fn)
+    if compat.callable(fn):
+        spec = compat.inspect_getfullargspec(fn)
     else:
         # we accept an existing argspec...
         spec = fn
@@ -263,22 +320,21 @@ def format_argspec_plus(fn, grouped=True):
     else:
         self_arg = None
 
-    # Py3K
-    #apply_pos = inspect.formatargspec(spec[0], spec[1],
-    #    spec[2], None, spec[4])
-    #num_defaults = 0
-    #if spec[3]:
-    #    num_defaults += len(spec[3])
-    #if spec[4]:
-    #    num_defaults += len(spec[4])
-    #name_args = spec[0] + spec[4]
-    # Py2K
-    apply_pos = inspect.formatargspec(spec[0], spec[1], spec[2])
-    num_defaults = 0
-    if spec[3]:
-        num_defaults += len(spec[3])
-    name_args = spec[0]
-    # end Py2K
+    if compat.py3k:
+        apply_pos = inspect.formatargspec(spec[0], spec[1],
+            spec[2], None, spec[4])
+        num_defaults = 0
+        if spec[3]:
+            num_defaults += len(spec[3])
+        if spec[4]:
+            num_defaults += len(spec[4])
+        name_args = spec[0] + spec[4]
+    else:
+        apply_pos = inspect.formatargspec(spec[0], spec[1], spec[2])
+        num_defaults = 0
+        if spec[3]:
+            num_defaults += len(spec[3])
+        name_args = spec[0]
 
     if num_defaults:
         defaulted_vals = name_args[0 - num_defaults:]
@@ -341,8 +397,8 @@ def unbound_method_to_callable(func_or_cls):
 
     """
 
-    if isinstance(func_or_cls, types.MethodType) and not func_or_cls.im_self:
-        return func_or_cls.im_func
+    if isinstance(func_or_cls, types.MethodType) and not func_or_cls.__self__:
+        return func_or_cls.__func__
     else:
         return func_or_cls
 
@@ -353,44 +409,66 @@ def generic_repr(obj, additional_kw=(), to_inspect=None):
 
     """
     if to_inspect is None:
-        to_inspect = obj
+        to_inspect = [obj]
+    else:
+        to_inspect = _collections.to_list(to_inspect)
 
     missing = object()
 
-    def genargs():
+    pos_args = []
+    kw_args = _collections.OrderedDict()
+    vargs = None
+    for i, insp in enumerate(to_inspect):
         try:
-            (args, vargs, vkw, defaults) = \
-                inspect.getargspec(to_inspect.__init__)
+            (_args, _vargs, vkw, defaults) = \
+                inspect.getargspec(insp.__init__)
         except TypeError:
-            return
-
-        default_len = defaults and len(defaults) or 0
-
-        if not default_len:
-            for arg in args[1:]:
-                yield repr(getattr(obj, arg, None))
-            if vargs is not None and hasattr(obj, vargs):
-                yield ', '.join(repr(val) for val in getattr(obj, vargs))
+            continue
         else:
-            for arg in args[1:-default_len]:
-                yield repr(getattr(obj, arg, None))
-            for (arg, defval) in zip(args[-default_len:], defaults):
-                try:
-                    val = getattr(obj, arg, missing)
-                    if val is not missing and val != defval:
-                        yield '%s=%r' % (arg, val)
-                except:
-                    pass
-        if additional_kw:
-            for arg, defval in additional_kw:
-                try:
-                    val = getattr(obj, arg, missing)
-                    if val is not missing and val != defval:
-                        yield '%s=%r' % (arg, val)
-                except:
-                    pass
+            default_len = defaults and len(defaults) or 0
+            if i == 0:
+                if _vargs:
+                    vargs = _vargs
+                if default_len:
+                    pos_args.extend(_args[1:-default_len])
+                else:
+                    pos_args.extend(_args[1:])
+            else:
+                kw_args.update([
+                    (arg, missing) for arg in _args[1:-default_len]
+                ])
 
-    return "%s(%s)" % (obj.__class__.__name__, ", ".join(genargs()))
+            if default_len:
+                kw_args.update([
+                    (arg, default)
+                        for arg, default
+                        in zip(_args[-default_len:], defaults)
+                ])
+    output = []
+
+    output.extend(repr(getattr(obj, arg, None)) for arg in pos_args)
+
+    if vargs is not None and hasattr(obj, vargs):
+        output.extend([repr(val) for val in getattr(obj, vargs)])
+
+    for arg, defval in kw_args.items():
+        try:
+            val = getattr(obj, arg, missing)
+            if val is not missing and val != defval:
+                output.append('%s=%r' % (arg, val))
+        except:
+            pass
+
+    if additional_kw:
+        for arg, defval in additional_kw:
+            try:
+                val = getattr(obj, arg, missing)
+                if val is not missing and val != defval:
+                    output.append('%s=%r' % (arg, val))
+            except:
+                pass
+
+    return "%s(%s)" % (obj.__class__.__name__, ", ".join(output))
 
 
 class portable_instancemethod(object):
@@ -399,7 +477,7 @@ class portable_instancemethod(object):
 
     """
     def __init__(self, meth):
-        self.target = meth.im_self
+        self.target = meth.__self__
         self.name = meth.__name__
 
     def __call__(self, *arg, **kw):
@@ -419,32 +497,33 @@ def class_hierarchy(cls):
     will not be descended.
 
     """
-    # Py2K
-    if isinstance(cls, types.ClassType):
-        return list()
-    # end Py2K
+    if compat.py2k:
+        if isinstance(cls, types.ClassType):
+            return list()
+
     hier = set([cls])
     process = list(cls.__mro__)
     while process:
         c = process.pop()
-        # Py2K
-        if isinstance(c, types.ClassType):
-            continue
-        for b in (_ for _ in c.__bases__
-                  if _ not in hier and not isinstance(_, types.ClassType)):
-        # end Py2K
-        # Py3K
-        #for b in (_ for _ in c.__bases__
-        #          if _ not in hier):
+        if compat.py2k:
+            if isinstance(c, types.ClassType):
+                continue
+            bases = (_ for _ in c.__bases__
+                  if _ not in hier and not isinstance(_, types.ClassType))
+        else:
+            bases = (_ for _ in c.__bases__ if _ not in hier)
+
+        for b in bases:
             process.append(b)
             hier.add(b)
-        # Py3K
-        #if c.__module__ == 'builtins' or not hasattr(c, '__subclasses__'):
-        #    continue
-        # Py2K
-        if c.__module__ == '__builtin__' or not hasattr(c, '__subclasses__'):
-            continue
-        # end Py2K
+
+        if compat.py3k:
+            if c.__module__ == 'builtins' or not hasattr(c, '__subclasses__'):
+                continue
+        else:
+            if c.__module__ == '__builtin__' or not hasattr(c, '__subclasses__'):
+                continue
+
         for s in [_ for _ in c.__subclasses__() if _ not in hier]:
             process.append(s)
             hier.add(s)
@@ -501,9 +580,9 @@ def monkeypatch_proxied_specials(into_cls, from_cls, skip=None, only=None,
               "return %(name)s.%(method)s%(d_args)s" % locals())
 
         env = from_instance is not None and {name: from_instance} or {}
-        exec py in env
+        compat.exec_(py, env)
         try:
-            env[method].func_defaults = fn.func_defaults
+            env[method].__defaults__ = fn.__defaults__
         except AttributeError:
             pass
         setattr(into_cls, method, env[method])
@@ -512,11 +591,7 @@ def monkeypatch_proxied_specials(into_cls, from_cls, skip=None, only=None,
 def methods_equivalent(meth1, meth2):
     """Return True if the two methods are the same implementation."""
 
-    # Py3K
-    #return getattr(meth1, '__func__', meth1) is getattr(meth2, '__func__', meth2)
-    # Py2K
-    return getattr(meth1, 'im_func', meth1) is getattr(meth2, 'im_func', meth2)
-    # end Py2K
+    return getattr(meth1, '__func__', meth1) is getattr(meth2, '__func__', meth2)
 
 
 def as_interface(obj, cls=None, methods=None, required=None):
@@ -589,7 +664,7 @@ def as_interface(obj, cls=None, methods=None, required=None):
     for method, impl in dictlike_iteritems(obj):
         if method not in interface:
             raise TypeError("%r: unknown in this interface" % method)
-        if not callable(impl):
+        if not compat.callable(impl):
             raise TypeError("%r=%r is not callable" % (method, impl))
         setattr(AnonymousInterface, method, staticmethod(impl))
         found.add(method)
@@ -615,7 +690,11 @@ class memoized_property(object):
         return result
 
     def _reset(self, obj):
-        obj.__dict__.pop(self.__name__, None)
+        memoized_property.reset(obj, self.__name__)
+
+    @classmethod
+    def reset(cls, obj, name):
+        obj.__dict__.pop(name, None)
 
 
 class memoized_instancemethod(object):
@@ -671,89 +750,140 @@ class group_expirable_memoized_property(object):
         return memoized_instancemethod(fn)
 
 
-class importlater(object):
-    """Deferred import object.
 
-    e.g.::
+def dependency_for(modulename):
+    def decorate(obj):
+        # TODO: would be nice to improve on this import silliness,
+        # unfortunately importlib doesn't work that great either
+        tokens = modulename.split(".")
+        mod = compat.import_(".".join(tokens[0:-1]), globals(), locals(), tokens[-1])
+        mod = getattr(mod, tokens[-1])
+        setattr(mod, obj.__name__, obj)
+        return obj
+    return decorate
 
-        somesubmod = importlater("mypackage.somemodule", "somesubmod")
+class dependencies(object):
+    """Apply imported dependencies as arguments to a function.
 
-    is equivalent to::
+    E.g.::
 
-        from mypackage.somemodule import somesubmod
+        @util.dependencies(
+            "sqlalchemy.sql.widget",
+            "sqlalchemy.engine.default"
+        );
+        def some_func(self, widget, default, arg1, arg2, **kw):
+            # ...
 
-    except evaluted upon attribute access to "somesubmod".
-
-    importlater() currently requires that resolve_all() be
-    called, typically at the bottom of a package's __init__.py.
-    This is so that __import__ still called only at
-    module import time, and not potentially within
-    a non-main thread later on.
+    Rationale is so that the impact of a dependency cycle can be
+    associated directly with the few functions that cause the cycle,
+    and not pollute the module-level namespace.
 
     """
 
-    _unresolved = set()
+    def __init__(self, *deps):
+        self.import_deps = []
+        for dep in deps:
+            tokens = dep.split(".")
+            self.import_deps.append(
+                    dependencies._importlater(
+                    ".".join(tokens[0:-1]),
+                    tokens[-1]
+                )
+            )
 
-    def __init__(self, path, addtl=None):
-        self._il_path = path
-        self._il_addtl = addtl
-        importlater._unresolved.add(self)
+    def __call__(self, fn):
+        import_deps = self.import_deps
+        spec = compat.inspect_getfullargspec(fn)
+
+        spec_zero = list(spec[0])
+        hasself = spec_zero[0] in ('self', 'cls')
+
+        for i in range(len(import_deps)):
+            spec[0][i + (1 if hasself else 0)] = "import_deps[%r]" % i
+
+        inner_spec = format_argspec_plus(spec, grouped=False)
+
+        for impname in import_deps:
+            del spec_zero[1 if hasself else 0]
+        spec[0][:] = spec_zero
+
+        outer_spec = format_argspec_plus(spec, grouped=False)
+
+        code = 'lambda %(args)s: fn(%(apply_kw)s)' % {
+                    "args": outer_spec['args'],
+                    "apply_kw": inner_spec['apply_kw']
+        }
+
+        decorated = eval(code, locals())
+        decorated.__defaults__ = getattr(fn, 'im_func', fn).__defaults__
+        return update_wrapper(decorated, fn)
 
     @classmethod
-    def resolve_all(cls):
-        for m in list(importlater._unresolved):
-            m._resolve()
+    def resolve_all(cls, path):
+        for m in list(dependencies._unresolved):
+            if m._full_path.startswith(path):
+                m._resolve()
 
-    @property
-    def _full_path(self):
-        if self._il_addtl:
+    _unresolved = set()
+    _by_key = {}
+
+    class _importlater(object):
+        _unresolved = set()
+
+        _by_key = {}
+
+        def __new__(cls, path, addtl):
+            key = path + "." + addtl
+            if key in dependencies._by_key:
+                return dependencies._by_key[key]
+            else:
+                dependencies._by_key[key] = imp = object.__new__(cls)
+                return imp
+
+        def __init__(self, path, addtl):
+            self._il_path = path
+            self._il_addtl = addtl
+            dependencies._unresolved.add(self)
+
+
+        @property
+        def _full_path(self):
             return self._il_path + "." + self._il_addtl
-        else:
-            return self._il_path
 
-    @memoized_property
-    def module(self):
-        if self in importlater._unresolved:
-            raise ImportError(
-                    "importlater.resolve_all() hasn't "
-                    "been called (this is %s %s)"
-                    % (self._il_path, self._il_addtl))
+        @memoized_property
+        def module(self):
+            if self in dependencies._unresolved:
+                raise ImportError(
+                        "importlater.resolve_all() hasn't "
+                        "been called (this is %s %s)"
+                        % (self._il_path, self._il_addtl))
 
-        m = self._initial_import
-        if self._il_addtl:
-            m = getattr(m, self._il_addtl)
-        else:
-            for token in self._il_path.split(".")[1:]:
-                m = getattr(m, token)
-        return m
+            return getattr(self._initial_import, self._il_addtl)
 
-    def _resolve(self):
-        importlater._unresolved.discard(self)
-        if self._il_addtl:
-            self._initial_import = __import__(
+        def _resolve(self):
+            dependencies._unresolved.discard(self)
+            self._initial_import = compat.import_(
                                 self._il_path, globals(), locals(),
                                 [self._il_addtl])
-        else:
-            self._initial_import = __import__(self._il_path)
 
-    def __getattr__(self, key):
-        if key == 'module':
-            raise ImportError("Could not resolve module %s"
-                                % self._full_path)
-        try:
-            attr = getattr(self.module, key)
-        except AttributeError:
-            raise AttributeError(
-                        "Module %s has no attribute '%s'" %
-                        (self._full_path, key)
-                    )
-        self.__dict__[key] = attr
-        return attr
+        def __getattr__(self, key):
+            if key == 'module':
+                raise ImportError("Could not resolve module %s"
+                                    % self._full_path)
+            try:
+                attr = getattr(self.module, key)
+            except AttributeError:
+                raise AttributeError(
+                            "Module %s has no attribute '%s'" %
+                            (self._full_path, key)
+                        )
+            self.__dict__[key] = attr
+            return attr
 
 
 # from paste.deploy.converters
 def asbool(obj):
-    if isinstance(obj, (str, unicode)):
+    if isinstance(obj, compat.string_types):
         obj = obj.strip().lower()
         if obj in ['true', 'yes', 'on', 'y', 't', '1']:
             return True
@@ -813,14 +943,14 @@ def constructor_copy(obj, cls, **kw):
 def counter():
     """Return a threadsafe counter function."""
 
-    lock = threading.Lock()
-    counter = itertools.count(1L)
+    lock = compat.threading.Lock()
+    counter = itertools.count(1)
 
     # avoid the 2to3 "next" transformation...
     def _next():
         lock.acquire()
         try:
-            return counter.next()
+            return next(counter)
         finally:
             lock.release()
 
@@ -836,7 +966,7 @@ def duck_type_collection(specimen, default=None):
     if hasattr(specimen, '__emulates__'):
         # canonicalize set vs sets.Set to a standard: the builtin set
         if (specimen.__emulates__ is not None and
-                issubclass(specimen.__emulates__, set_types)):
+                issubclass(specimen.__emulates__, set)):
             return set
         else:
             return specimen.__emulates__
@@ -844,7 +974,7 @@ def duck_type_collection(specimen, default=None):
     isa = isinstance(specimen, type) and issubclass or isinstance
     if isa(specimen, list):
         return list
-    elif isa(specimen, set_types):
+    elif isa(specimen, set):
         return set
     elif isa(specimen, dict):
         return dict
@@ -876,15 +1006,14 @@ def assert_arg_type(arg, argtype, name):
 def dictlike_iteritems(dictlike):
     """Return a (key, value) iterator for almost any dict-like object."""
 
-    # Py3K
-    #if hasattr(dictlike, 'items'):
-    #    return dictlike.items()
-    # Py2K
-    if hasattr(dictlike, 'iteritems'):
-        return dictlike.iteritems()
-    elif hasattr(dictlike, 'items'):
-        return iter(dictlike.items())
-    # end Py2K
+    if compat.py3k:
+        if hasattr(dictlike, 'items'):
+            return list(dictlike.items())
+    else:
+        if hasattr(dictlike, 'iteritems'):
+            return dictlike.iteritems()
+        elif hasattr(dictlike, 'items'):
+            return iter(dictlike.items())
 
     getter = getattr(dictlike, '__getitem__', getattr(dictlike, 'get', None))
     if getter is None:
@@ -937,7 +1066,7 @@ class hybridmethod(object):
 class _symbol(int):
     def __new__(self, name, doc=None, canonical=None):
         """Construct a new named symbol."""
-        assert isinstance(name, str)
+        assert isinstance(name, compat.string_types)
         if canonical is None:
             canonical = hash(name)
         v = int.__new__(_symbol, canonical)
@@ -953,7 +1082,7 @@ class _symbol(int):
         return repr(self)
 
     def __repr__(self):
-        return "<symbol '%s>" % self.name
+        return "symbol(%r)" % self.name
 
 _symbol.__name__ = 'symbol'
 
@@ -980,7 +1109,7 @@ class symbol(object):
 
     """
     symbols = {}
-    _lock = threading.Lock()
+    _lock = compat.threading.Lock()
 
     def __new__(cls, name, doc=None, canonical=None):
         cls._lock.acquire()
@@ -1034,15 +1163,27 @@ def warn(msg, stacklevel=3):
        be controlled.
 
     """
-    if isinstance(msg, basestring):
+    if isinstance(msg, compat.string_types):
         warnings.warn(msg, exc.SAWarning, stacklevel=stacklevel)
     else:
         warnings.warn(msg, stacklevel=stacklevel)
 
 
+def only_once(fn):
+    """Decorate the given function to be a no-op after it is called exactly
+    once."""
+
+    once = [fn]
+    def go(*arg, **kw):
+        if once:
+            once_fn = once.pop()
+            return once_fn(*arg, **kw)
+
+    return update_wrapper(go, fn)
+
+
 _SQLA_RE = re.compile(r'sqlalchemy/([a-z_]+/){0,2}[a-z_]+\.py')
 _UNITTEST_RE = re.compile(r'unit(?:2|test2?/)')
-
 
 def chop_traceback(tb, exclude_prefix=_UNITTEST_RE, exclude_suffix=_SQLA_RE):
     """Chop extraneous lines off beginning and end of a traceback.

@@ -1,5 +1,5 @@
 # mysql/oursql.py
-# Copyright (C) 2005-2013 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -55,10 +55,10 @@ class MySQLExecutionContext_oursql(MySQLExecutionContext):
 
 class MySQLDialect_oursql(MySQLDialect):
     driver = 'oursql'
-# Py2K
-    supports_unicode_binds = True
-    supports_unicode_statements = True
-# end Py2K
+
+    if util.py2k:
+        supports_unicode_binds = True
+        supports_unicode_statements = True
 
     supports_native_decimal = True
 
@@ -90,12 +90,11 @@ class MySQLDialect_oursql(MySQLDialect):
         connection.cursor().execute('BEGIN', plain_query=True)
 
     def _xa_query(self, connection, query, xid):
-# Py2K
-        arg = connection.connection._escape_string(xid)
-# end Py2K
-# Py3K
-#        charset = self._connection_charset
-#        arg = connection.connection._escape_string(xid.encode(charset)).decode(charset)
+        if util.py2k:
+            arg = connection.connection._escape_string(xid)
+        else:
+            charset = self._connection_charset
+            arg = connection.connection._escape_string(xid.encode(charset)).decode(charset)
         arg = "'%s'" % arg
         connection.execution_options(_oursql_plain_query=True).execute(query % arg)
 
