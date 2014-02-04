@@ -1385,8 +1385,10 @@ class AlchemyProvider(object):
         query = self.session.query(LogRecord).order_by(desc(LogRecord.id))
 
         #add limits to query
-        if limit != 0: query = query.limit(limit)
-        if offset != 0: query = query.offset(offset)
+        if limit != 0:
+            query = query.limit(limit)
+        if offset != 0:
+            query = query.offset(offset)
 
         #execute and return
         return query.all()

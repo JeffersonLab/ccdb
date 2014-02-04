@@ -647,10 +647,10 @@ class ConsoleContext(object):
 
 
     def print_info(self):
-        log.info("You login as : '" + self.user_name + "'")
-        log.info("Connection string: '" + self.connection_string + "'")
-        log.info("Current variation: '" + self.current_variation + "'")
-        log.info("Current run: '" + str(self.current_run) + "'")
+        log.info("Login as   : '" + self.user_name + "'")
+        log.info("Connect to : '" + self.connection_string + "'")
+        log.info("Variation  : '" + self.current_variation + "'")
+        log.info("Deflt. run : '" + str(self.current_run) + "'")
 
 
     def print_interactive_intro(self):
