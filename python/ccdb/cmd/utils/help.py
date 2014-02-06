@@ -83,8 +83,7 @@ Environment:
     CCDB_CONNECTION : might be set, containing a connection string to be automatically loaded
 
 
-Connection examples:
-
+Connection string examples:
     MySql  : mysql://ccdb_user@localhost/ccdb
     SQLite : sqlite:///$CCDB_HOME/sql/ccdb.sqlite
              (notice 3 slashes)
