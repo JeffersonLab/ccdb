@@ -76,12 +76,19 @@ Flags:
           --no-color     No colored output
     -c <connection string>  or  --connection <connection string>
                          Set connection string to server
-
                          """
     enveron_text = """     
 Environment:
     CCDB_USER       : user name. Should be set to perform any update operation
-    CCDB_CONNECTION : might be set, containing a connection string to be automatically loaded"""
+    CCDB_CONNECTION : might be set, containing a connection string to be automatically loaded
+
+
+Connection examples:
+
+    MySql  : mysql://ccdb_user@localhost/ccdb
+    SQLite : sqlite:///$CCDB_HOME/sql/ccdb.sqlite
+             (notice 3 slashes)
+    """
     
     
 

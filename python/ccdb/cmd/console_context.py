@@ -548,9 +548,9 @@ class ConsoleContext(object):
 
         #print "prefix ", prefix, "  index ", index
         #readline.insert_text("bla bla bla")
-        #colorama.resume()
+        #colorama.deinit()
         #print "ha ha ha"
-        #colorama.pause()
+        #colorama.reinit()
 
         if prefix != self.prefix:
             #get new completions

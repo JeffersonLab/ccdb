@@ -1,5 +1,6 @@
 import posixpath
 import logging
+from ccdb.errors import DirectoryNotFound
 
 from ccdb.model import Directory, TypeTable
 from ccdb.provider import AlchemyProvider
@@ -140,8 +141,9 @@ class List(ConsoleUtilBase):
 
         self.raw_entry = path
         #prepare path
-        log.debug("   get_name_pathes=> START ")
-        log.debug("   get_name_pathes=>  before prepare_path:  " + self.raw_entry)
+        log.debug(" |  |- ls.get_name_pathes")
+        log.debug(" |  | \\")
+        log.debug(" |  |  |- before prepare_path: " + self.raw_entry)
 
         self.raw_entry = self.prepare_path(self.raw_entry)
         log.debug("   get_name_pathes=>  after prepare_path:  " + self.raw_entry)
@@ -157,6 +159,9 @@ class List(ConsoleUtilBase):
         except KeyError:
             self.parent_dir = None
             log.debug("   get_name_pathes=>  directory {0} not found.".format(self.raw_entry))
+        except DirectoryNotFound:
+            self.parent_dir = None
+            log.debug("   here_we_are=>  directory {0} not found.".format(self.raw_entry))
 
         if not self.parent_dir:
             #we have not find the directory by brute rawentry.
