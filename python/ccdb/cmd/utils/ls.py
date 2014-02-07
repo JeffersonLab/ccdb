@@ -1,11 +1,12 @@
 import posixpath
 import logging
-from ccdb.errors import DirectoryNotFound
+import os
 
+from ccdb.errors import DirectoryNotFound
 from ccdb.model import Directory, TypeTable
 from ccdb.provider import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
-
+from ccdb import BraceMessage as LogFmt
 
 log = logging.getLogger("ccdb.cmd.utils.ls")
 
@@ -80,58 +81,70 @@ class List(ConsoleUtilBase):
         else:
             self.raw_entry = self.context.current_path
 
+        #print self.get_name_pathes(self.raw_entry)
+
         #prepare path
-        self.raw_entry = self.prepare_path(self.raw_entry)
+        #self.raw_entry = self.prepare_path(self.raw_entry)
+
+        dir_names, table_names = self.get_name_pathes(self.raw_entry)
+
+        if (not dir_names) and (not table_names):
+            log.info("Can't find the directory or tables")
+
+        for dir_name in dir_names:
+            log.info(self.theme.Directories + dir_name + self.theme.Reset)
+
+        for table_name in table_names:
+            log.info(table_name)
         
         #SEARCH LOGIC
 
         #brute assumption that user has entered a simple dir path
-        try:
-            self.parent_dir = provider.get_directory(self.raw_entry)
-        except KeyError:
-            #we have not find the directory by brute rawentry.
-            #but maybe it is just /path/plus*some*pattern
-            (head, tale) = posixpath.split(self.raw_entry)
-            self.parent_path = head
-            self.pattern = tale
-
-            #try to find such dir once more
-            try:
-                self.parent_dir = provider.get_directory(self.parent_path)
-            except KeyError:
-                self.parent_dir = None
-
-        #found a directory
-        if self.parent_dir:
-            assert isinstance(self.parent_dir, Directory)
-
-            #>oO debug
-            log.debug("  path: {0}".format(self.parent_path))
-            if len(self.pattern): log.debug("  pattern: {0}".format(self.pattern))
-            
-            #part 1 directories for this path
-            sub_dirs = []
-            if self.pattern == "":
-                sub_dirs = self.parent_dir.sub_dirs
-            else:
-                sub_dirs = self.context.provider.search_directories(self.pattern, self.parent_path)
-           
-            for subdir in sub_dirs:
-                print self.theme.Directories + subdir.name + "    "
-            
-            #part 2 is tables for this path
-            tables = []
-            if self.pattern == "":
-                tables = self.context.provider.get_type_tables(self.parent_dir)
-            else:
-                tables = self.context.provider.search_type_tables(self.pattern, self.parent_path)
-                        
-            for table in tables:
-                print table.name
-            print
-        else:
-            print "Can't find the directory"
-
+        # try:
+        #     self.parent_dir = provider.get_directory(self.raw_entry)
+        # except KeyError:
+        #     #we have not find the directory by brute rawentry.
+        #     #but maybe it is just /path/plus*some*pattern
+        #     (head, tale) = posixpath.split(self.raw_entry)
+        #     self.parent_path = head
+        #     self.pattern = tale
+        #
+        #     #try to find such dir once more
+        #     try:
+        #         self.parent_dir = provider.get_directory(self.parent_path)
+        #     except KeyError:
+        #         self.parent_dir = None
+        #
+        # #found a directory
+        # if self.parent_dir:
+        #     assert isinstance(self.parent_dir, Directory)
+        #
+        #     #>oO debug
+        #     log.debug("  path: {0}".format(self.parent_path))
+        #     if len(self.pattern): log.debug("  pattern: {0}".format(self.pattern))
+        #
+        #     #part 1 directories for this path
+        #     sub_dirs = []
+        #     if self.pattern == "":
+        #         sub_dirs = self.parent_dir.sub_dirs
+        #     else:
+        #         sub_dirs = self.context.provider.search_directories(self.pattern, self.parent_path)
+        #
+        #     for subdir in sub_dirs:
+        #         print self.theme.Directories + subdir.name + "    "
+        #
+        #     #part 2 is tables for this path
+        #     tables = []
+        #     if self.pattern == "":
+        #         tables = self.context.provider.get_type_tables(self.parent_dir)
+        #     else:
+        #         tables = self.context.provider.search_type_tables(self.pattern, self.parent_path)
+        #
+        #     for table in tables:
+        #         print table.name
+        #     print
+        # else:
+        #     print "Can't find the directory"
 
     def get_name_pathes(self, path):
         assert self.context is not None
@@ -139,14 +152,13 @@ class List(ConsoleUtilBase):
         assert isinstance(provider, AlchemyProvider)
         self.reset()
 
-        self.raw_entry = path
         #prepare path
         log.debug(" |  |- ls.get_name_pathes")
         log.debug(" |  | \\")
-        log.debug(" |  |  |- before prepare_path: " + self.raw_entry)
+        log.debug(" |  |  |- before prepare_path: " + path)
 
-        self.raw_entry = self.prepare_path(self.raw_entry)
-        log.debug("   get_name_pathes=>  after prepare_path:  " + self.raw_entry)
+        self.raw_entry = self.prepare_path(path)
+        log.debug(" |  |  |- after prepare_path:  " + self.raw_entry)
         
         #SEARCH LOGIC
         #---------------------------
@@ -156,12 +168,9 @@ class List(ConsoleUtilBase):
             self.parent_dir = provider.get_directory(self.raw_entry)
             self.parent_path = self.raw_entry
             self.pattern = ""
-        except KeyError:
-            self.parent_dir = None
-            log.debug("   get_name_pathes=>  directory {0} not found.".format(self.raw_entry))
         except DirectoryNotFound:
             self.parent_dir = None
-            log.debug("   here_we_are=>  directory {0} not found.".format(self.raw_entry))
+            log.debug(" |  |  |- directory {0} not found.".format(self.raw_entry))
 
         if not self.parent_dir:
             #we have not find the directory by brute rawentry.
@@ -169,40 +178,43 @@ class List(ConsoleUtilBase):
             (head, tale) = posixpath.split(self.raw_entry)
             self.parent_path = head
             self.pattern = tale
-            log.debug("   get_name_pathes=>  searching parent directory as:")
-            log.debug("   get_name_pathes=>  new path: " + self.parent_path)
-            if len(self.pattern): log.debug("   get_name_pathes=> pattern: " + self.pattern)
+            log.debug(" |  |  |- searching parent directory as:")
+            log.debug(" |  |  |- new path: " + self.parent_path)
+            if self.pattern:
+                log.debug(" |  |  |- pattern: " + self.pattern)
 
             #try to find such dir once more
             self.parent_dir = provider.get_directory(self.parent_path)
 
         #found a directory
         assert isinstance(self.parent_dir, Directory)
-        log.debug("   get_name_pathes=>  searching subdirectoris ")
-        log.debug("   get_name_pathes=>  full path: " +self.parent_dir.path)
-        if len(self.pattern): log.debug("    get_name_pathes=> pattern: " + self.pattern)
+        log.debug(" |  |  |- searching sub directories ")
+        log.debug(" |  |  |- full path: " + self.parent_dir.path)
+        if self.pattern:
+            log.debug(" |  |  |- pattern: " + self.pattern)
 
         #part 1 directories for this path
         if self.pattern == "":
             sub_dirs = self.parent_dir.sub_dirs
+            log.debug(" |  |  |- simply taking sub directories ")
         else:
             sub_dirs = provider.search_directories(self.pattern, self.parent_path)
+            log.debug(" |  |  |- use database search for directories ")
 
         #fill list of directory names
         dir_list = [subdir.name for subdir in sub_dirs]
 
-        log.debug("   get_name_pathes=>  found dirs:" + " ".join([d for d in dir_list]))
+        log.debug(" |  |  |- found dirs:" + " ".join([d for d in dir_list]))
 
-        log.debug("   get_name_pathes=>  searching tables ")
+        log.debug(" |  |  |- searching tables ")
         #part 2 is tables for this path
-        tables = []
         if self.pattern == "":
             tables = self.context.provider.get_type_tables(self.parent_dir)
         else:
             tables = self.context.provider.search_type_tables(self.pattern, self.parent_path)
 
         #fill list of tables
-        table_list=[table.name for table in tables]
+        table_list = [table.name for table in tables]
 
         return dir_list, table_list
 

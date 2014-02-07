@@ -26,6 +26,13 @@ class RunRangeNotFound(Exception):
     pass
 
 
+class VariationNotFound(Exception):
+    """
+    Variation is not found in the database
+    """
+    pass
+
+
 class DatabaseStructureError(Exception):
     """
     Exception raised if No database structure found.

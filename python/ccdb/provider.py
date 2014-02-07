@@ -12,9 +12,11 @@ from datetime import datetime
 import sqlalchemy
 from sqlalchemy.exc import OperationalError
 import sqlalchemy.orm
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
-from ccdb.errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError, UserNotFoundError, UserExistsError
+from ccdb.errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError, UserNotFoundError, UserExistsError, \
+    VariationNotFound
 
 import table_file
 import authentication
@@ -32,6 +34,8 @@ class AlchemyProvider(object):
     def __init__(self):
         self._is_connected = False
         self._are_dirs_loaded = False
+        self.dirs_by_id = {}
+        self.dirs_by_path = {}
         self.root_dir = Directory()
         self.root_dir.path = '/'
         self.root_dir.name = ''
@@ -357,6 +361,7 @@ class AlchemyProvider(object):
                 raise DatabaseStructureError(message)
             else:
                 raise
+
         self.dirs_by_path = self._structure_dirs(self.dirs_by_id)
         self._are_dirs_loaded = True
 
@@ -373,7 +378,12 @@ class AlchemyProvider(object):
         dirs_by_full_path = {self.root_dir.path: self.root_dir}
 
         #clear subdirectories to append them from the beginning in the next step
-        for directory in directories.values(): directory.sub_dirs = []
+        for directory in directories.values():
+            directory.sub_dirs = []
+
+        # root dir is artificial (not from database).
+        # have to clear it
+        self.root_dir.sub_dirs = []
 
         #begin loop through the directories
         for directory in directories.values():
@@ -694,8 +704,6 @@ class AlchemyProvider(object):
     #----------------------------------------------------------------------------------------
     #	R U N   R A N G E S
     #----------------------------------------------------------------------------------------
-
-
     #------------------------------------------------
     # GetRun Range from db by name or max and min run
     #------------------------------------------------
@@ -707,7 +715,6 @@ class AlchemyProvider(object):
             return self.session.query(RunRange).filter(RunRange.min == min_run).filter(RunRange.max == max_run).one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise RunRangeNotFound("Run range '{0}-{1}' is not found".format(min_run, max_run))
-
 
     #------------------------------------------------
     # GetRun Range from db by name
@@ -723,7 +730,6 @@ class AlchemyProvider(object):
             return self.session.query(RunRange).filter(RunRange.name == name).one()
         except sqlalchemy.orm.exc.NoResultFound:
             raise RunRangeNotFound("Run range with name '{0}' is not found".format(name))
-
 
     #------------------------------------------------
     # Gets run range from DB Or Creates RunRange in DB
@@ -758,7 +764,6 @@ class AlchemyProvider(object):
         self.session.commit()
         return run_range
 
-
     #------------------------------------------------
     # Updates run range
     #------------------------------------------------
@@ -768,7 +773,6 @@ class AlchemyProvider(object):
         """
 
         self.session.commit()
-
 
     #------------------------------------------------
     # Deletes run range
@@ -798,8 +802,6 @@ class AlchemyProvider(object):
     #----------------------------------------------------------------------------------------
     #	V A R I A T I O N S
     #----------------------------------------------------------------------------------------
-
-
     #------------------------------------------------
     # Get variation by name
     #------------------------------------------------
@@ -811,7 +813,11 @@ class AlchemyProvider(object):
         :return: Variation object
         :rtype: Variation
         """
-        return self.session.query(Variation).filter(Variation.name == name).one()
+        try:
+            return self.session.query(Variation).filter(Variation.name == name).one()
+        except NoResultFound:
+            message = "No variation found with name: '{0}'".format(name)
+            raise VariationNotFound(message)
 
 
     #------------------------------------------------
@@ -914,7 +920,6 @@ class AlchemyProvider(object):
 
         return variation
 
-
     ## @brief Update variation
     #
     # Function updates:
@@ -938,7 +943,6 @@ class AlchemyProvider(object):
                                action="update",
                                description="Updated variation '{0}'".format(variation.name),
                                comment=variation.comment)
-
 
     ## @brief Delete variation
     #
@@ -974,7 +978,6 @@ class AlchemyProvider(object):
     #----------------------------------------------------------------------------------------
     #	A S S I G N M E N T S
     #----------------------------------------------------------------------------------------
-
     #------------------------------------------------
     # Get last Assignment that matches parameters
     #------------------------------------------------
@@ -1010,6 +1013,9 @@ class AlchemyProvider(object):
 
         return query.limit(1).one()
 
+    #------------------------------------------------
+    # get list of assignments
+    #------------------------------------------------
     def get_assignment_by_id(self, assignment_id):
         """
 

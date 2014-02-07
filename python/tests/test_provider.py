@@ -4,7 +4,8 @@ from ccdb import get_ccdb_home_path
 
 from ccdb.model import User, LogRecord
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
-from ccdb.errors import DatabaseStructureError, RunRangeNotFound, TypeTableNotFound, DirectoryNotFound, UserNotFoundError
+from ccdb.errors import DatabaseStructureError, RunRangeNotFound, TypeTableNotFound, DirectoryNotFound, UserNotFoundError, \
+    VariationNotFound
 import sqlalchemy.orm.exc
 
 from ccdb import AlchemyProvider
@@ -253,7 +254,7 @@ class AlchemyProviderTest(unittest.TestCase):
         # GET VARIATION TEST
         #----------------------------------------------------
 
-        #Get run range by name, test "all" run range
+        #Get variation by name, test "all" run range
         v = self.provider.get_variation("default")
         self.assertIsNotNone(v)
 
@@ -281,7 +282,7 @@ class AlchemyProviderTest(unittest.TestCase):
             v = self.provider.get_variation("abra_kozyabra")
             self.assertIsNotNone(v)
 
-        except sqlalchemy.orm.exc.NoResultFound:
+        except VariationNotFound:
             pass; #test passed
 
 
@@ -298,7 +299,7 @@ class AlchemyProviderTest(unittest.TestCase):
         # DELETE RUN-RANGE TEST
         #----------------------------------------------------
         self.provider.delete_variation(v)
-        self.assertRaises(sqlalchemy.orm.exc.NoResultFound, self.provider.get_variation, "abra_kozyabra")
+        self.assertRaises(VariationNotFound, self.provider.get_variation, "abra_kozyabra")
 
 
     def test_assignments(self):

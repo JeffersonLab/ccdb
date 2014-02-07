@@ -26,12 +26,12 @@ class ParseRequestResult(object):
     """
 
     def __init__(self):
-        self.run = -1 	                    # Run number
-        self.run_is_parsed=False             # true if Run number was non empty
-        self.path=""                         # Object path
-        self.path_is_parsed=False            # true if Path was nonempty
-        self.variation=""                    # Variation name
-        self.variation_is_parsed=False       # true if variation was not empty
+        self.run = -1 	                     # Run number
+        self.run_is_parsed = False           # true if Run number was non empty
+        self.path = ""                       # Object path
+        self.path_is_parsed = False          # true if Path was nonempty
+        self.variation = ""                  # Variation name
+        self.variation_is_parsed = False     # true if variation was not empty
         self.time = datetime.datetime.now()  # Time stamp
         self.time_str = ""                   # Original string with time
         self.time_is_parsed = False          # true if time stamp was not empty

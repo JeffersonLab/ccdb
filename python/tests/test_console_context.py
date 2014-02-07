@@ -27,7 +27,6 @@ class ConsoleContextTests(unittest.TestCase):
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
 
 
-
         #initialize but disable colorama
         ccdb.cmd.colorama.init(autoreset=True)
         ccdb.cmd.colorama.deinit()
@@ -44,9 +43,12 @@ class ConsoleContextTests(unittest.TestCase):
         self.output = StringIO()
         self.saved_stdout = sys.stdout
         sys.stdout = self.output
+
+        #logger
         ch = logging.StreamHandler()
         ch.stream = self.output
         logger.addHandler(ch)
+        logger.setLevel(logging.INFO)
 
 
 
