@@ -11,17 +11,17 @@ USE `ccdb` ;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`runRanges` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`runRanges` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
-  `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `name` VARCHAR(45) NULL DEFAULT '' ,
-  `runMin` INT NOT NULL ,
-  `runMax` INT NOT NULL ,
-  `comment` TEXT NULL DEFAULT NULL ,
-  PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `run search` (`runMin` ASC, `runMax` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`runRanges` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `created` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+  `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `name` VARCHAR(45) NULL DEFAULT '',
+  `runMin` INT NOT NULL,
+  `runMax` INT NOT NULL,
+  `comment` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `run search` (`runMin` ASC, `runMax` ASC))
 ENGINE = MyISAM;
 
 
@@ -30,19 +30,19 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`variations` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`variations` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
-  `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `name` VARCHAR(100) NOT NULL DEFAULT 'default' ,
-  `description` VARCHAR(255) NULL ,
-  `authorId` INT NOT NULL DEFAULT 1 ,
-  `comment` TEXT NULL DEFAULT NULL ,
-  `parentId` INT NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `name_search` USING HASH (`name` ASC) ,
-  INDEX `fk_variations_variations1_idx` (`parentId` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`variations` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `created` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+  `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `name` VARCHAR(100) NOT NULL DEFAULT 'default',
+  `description` VARCHAR(255) NULL,
+  `authorId` INT NOT NULL DEFAULT 1,
+  `comment` TEXT NULL DEFAULT NULL,
+  `parentId` INT NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `name_search` USING HASH (`name` ASC),
+  INDEX `fk_variations_variations1_idx` (`parentId` ASC))
 ENGINE = MyISAM;
 
 
@@ -51,17 +51,17 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`directories` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`directories` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
-  `name` VARCHAR(255) NOT NULL DEFAULT '' ,
-  `parentId` INT NOT NULL DEFAULT 0 ,
-  `authorId` INT NOT NULL DEFAULT 1 ,
-  `comment` TEXT NULL DEFAULT NULL ,
-  PRIMARY KEY (`id`) ,
-  INDEX `fk_directories_directories1_idx` (`parentId` ASC) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`directories` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+  `name` VARCHAR(255) NOT NULL DEFAULT '',
+  `parentId` INT NOT NULL DEFAULT 0,
+  `authorId` INT NOT NULL DEFAULT 1,
+  `comment` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_directories_directories1_idx` (`parentId` ASC),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = MyISAM;
 
 
@@ -70,20 +70,20 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`typeTables` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`typeTables` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
-  `directoryId` INT NOT NULL ,
-  `name` VARCHAR(255) NOT NULL ,
-  `nRows` INT NOT NULL DEFAULT 1 ,
-  `nColumns` INT NOT NULL ,
-  `nAssignments` INT NOT NULL DEFAULT 0 ,
-  `authorId` INT NOT NULL DEFAULT 1 ,
-  `comment` TEXT NULL DEFAULT NULL ,
-  PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `fk_constantTypes_directories1_idx` (`directoryId` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`typeTables` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+  `directoryId` INT NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `nRows` INT NOT NULL DEFAULT 1,
+  `nColumns` INT NOT NULL,
+  `nAssignments` INT NOT NULL DEFAULT 0,
+  `authorId` INT NOT NULL DEFAULT 1,
+  `comment` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_constantTypes_directories1_idx` (`directoryId` ASC))
 ENGINE = MyISAM;
 
 
@@ -92,15 +92,15 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`constantSets` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`constantSets` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
-  `vault` LONGTEXT NOT NULL ,
-  `constantTypeId` INT NOT NULL ,
-  PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `fk_constantSets_constantTypes1_idx` (`constantTypeId` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`constantSets` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+  `vault` LONGTEXT NOT NULL,
+  `constantTypeId` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_constantSets_constantTypes1_idx` (`constantTypeId` ASC))
 ENGINE = MyISAM;
 
 
@@ -109,16 +109,16 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`eventRanges` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`eventRanges` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
-  `runNumber` INT NOT NULL ,
-  `eventMin` INT NOT NULL ,
-  `eventMax` INT NOT NULL ,
-  `comment` TEXT NULL DEFAULT NULL ,
-  PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `ideventRanges_UNIQUE` (`id` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`eventRanges` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+  `runNumber` INT NOT NULL,
+  `eventMin` INT NOT NULL,
+  `eventMax` INT NOT NULL,
+  `comment` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `ideventRanges_UNIQUE` (`id` ASC))
 ENGINE = MyISAM;
 
 
@@ -127,23 +127,23 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`assignments` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`assignments` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
-  `variationId` INT NOT NULL ,
-  `runRangeId` INT NULL ,
-  `eventRangeId` INT NULL ,
-  `constantSetId` INT NOT NULL ,
-  `authorId` INT NOT NULL DEFAULT 1 ,
-  `comment` TEXT NULL ,
-  PRIMARY KEY (`id`) ,
-  INDEX `fk_assignments_variations1_idx` (`variationId` ASC) ,
-  INDEX `fk_assignments_runRanges1_idx` (`runRangeId` ASC) ,
-  INDEX `fk_assignments_constantSets1_idx` (`constantSetId` ASC) ,
-  INDEX `fk_assignments_eventRanges1_idx` (`eventRangeId` ASC) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `date_sort_index` USING BTREE (`created` DESC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`assignments` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+  `variationId` INT NOT NULL,
+  `runRangeId` INT NULL,
+  `eventRangeId` INT NULL,
+  `constantSetId` INT NOT NULL,
+  `authorId` INT NOT NULL DEFAULT 1,
+  `comment` TEXT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_assignments_variations1_idx` (`variationId` ASC),
+  INDEX `fk_assignments_runRanges1_idx` (`runRangeId` ASC),
+  INDEX `fk_assignments_constantSets1_idx` (`constantSetId` ASC),
+  INDEX `fk_assignments_eventRanges1_idx` (`eventRangeId` ASC),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `date_sort_index` USING BTREE (`created` DESC))
 ENGINE = MyISAM;
 
 
@@ -152,18 +152,18 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`columns` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`columns` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000 ,
-  `name` VARCHAR(45) NOT NULL ,
-  `typeId` INT NOT NULL ,
-  `columnType` ENUM('int', 'uint','long','ulong','double','string','bool') NULL ,
-  `order` INT NOT NULL ,
-  `comment` TEXT NULL DEFAULT NULL ,
-  PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `fk_columns_constantTypes1_idx` (`typeId` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`columns` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+  `name` VARCHAR(45) NOT NULL,
+  `typeId` INT NOT NULL,
+  `columnType` ENUM('int', 'uint','long','ulong','double','string','bool') NULL,
+  `order` INT NOT NULL,
+  `comment` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_columns_constantTypes1_idx` (`typeId` ASC))
 ENGINE = MyISAM;
 
 
@@ -172,11 +172,11 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`tags` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`tags` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `name` VARCHAR(45) NOT NULL ,
-  PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`tags` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = MyISAM;
 
 
@@ -185,11 +185,11 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`variations_has_tags` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`variations_has_tags` (
-  `variations_id` INT NOT NULL ,
-  `tags_id` INT NOT NULL ,
-  PRIMARY KEY (`variations_id`, `tags_id`) ,
-  INDEX `fk_variations_has_tags_tags1_idx` (`tags_id` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`variations_has_tags` (
+  `variations_id` INT NOT NULL,
+  `tags_id` INT NOT NULL,
+  PRIMARY KEY (`variations_id`, `tags_id`),
+  INDEX `fk_variations_has_tags_tags1_idx` (`tags_id` ASC))
 ENGINE = MyISAM;
 
 
@@ -198,17 +198,17 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`users` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`users` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `lastActionTime` TIMESTAMP NOT NULL DEFAULT 00010101000000 ,
-  `name` VARCHAR(100) NOT NULL ,
-  `password` VARCHAR(100) NULL ,
-  `roles` TEXT NOT NULL ,
-  `info` VARCHAR(125) NOT NULL ,
-  `isDeleted` TINYINT(1) NOT NULL DEFAULT 0 ,
-  PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`users` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lastActionTime` TIMESTAMP NOT NULL DEFAULT 00010101000000,
+  `name` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(100) NULL,
+  `roles` TEXT NOT NULL,
+  `info` VARCHAR(125) NOT NULL,
+  `isDeleted` TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = MyISAM;
 
 
@@ -217,17 +217,17 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`logs` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`logs` (
-  `id` INT NOT NULL AUTO_INCREMENT ,
-  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-  `affectedIds` TEXT NOT NULL ,
-  `action` VARCHAR(7) NOT NULL ,
-  `description` VARCHAR(255) NOT NULL ,
-  `comment` TEXT NULL ,
-  `authorId` INT NOT NULL ,
-  PRIMARY KEY (`id`) ,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
-  INDEX `fk_logs_users1_idx` (`authorId` ASC) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`logs` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `affectedIds` TEXT NOT NULL,
+  `action` VARCHAR(7) NOT NULL,
+  `description` VARCHAR(255) NOT NULL,
+  `comment` TEXT NULL,
+  `authorId` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_logs_users1_idx` (`authorId` ASC))
 ENGINE = MyISAM;
 
 
@@ -236,13 +236,11 @@ ENGINE = MyISAM;
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `ccdb`.`schemaVersions` ;
 
-CREATE  TABLE IF NOT EXISTS `ccdb`.`schemaVersions` (
-  `id` INT NOT NULL ,
-  `schemaVersion` INT NOT NULL DEFAULT 1 ,
-  PRIMARY KEY (`id`) )
+CREATE TABLE IF NOT EXISTS `ccdb`.`schemaVersions` (
+  `id` INT NOT NULL,
+  `schemaVersion` INT NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
-
-USE `ccdb` ;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
@@ -260,6 +258,7 @@ INSERT INTO `ccdb`.`runRanges` (`id`, `created`, `modified`, `name`, `runMin`, `
 
 COMMIT;
 
+
 -- -----------------------------------------------------
 -- Data for table `ccdb`.`variations`
 -- -----------------------------------------------------
@@ -272,6 +271,7 @@ INSERT INTO `ccdb`.`variations` (`id`, `created`, `modified`, `name`, `descripti
 
 COMMIT;
 
+
 -- -----------------------------------------------------
 -- Data for table `ccdb`.`directories`
 -- -----------------------------------------------------
@@ -283,6 +283,7 @@ INSERT INTO `ccdb`.`directories` (`id`, `created`, `modified`, `name`, `parentId
 
 COMMIT;
 
+
 -- -----------------------------------------------------
 -- Data for table `ccdb`.`typeTables`
 -- -----------------------------------------------------
@@ -292,6 +293,7 @@ INSERT INTO `ccdb`.`typeTables` (`id`, `created`, `modified`, `directoryId`, `na
 INSERT INTO `ccdb`.`typeTables` (`id`, `created`, `modified`, `directoryId`, `name`, `nRows`, `nColumns`, `nAssignments`, `authorId`, `comment`) VALUES (2, NULL, NULL, 3, 'test_table2', 1, 3, 1, 2, 'Test type 2');
 
 COMMIT;
+
 
 -- -----------------------------------------------------
 -- Data for table `ccdb`.`constantSets`
@@ -306,6 +308,7 @@ INSERT INTO `ccdb`.`constantSets` (`id`, `created`, `modified`, `vault`, `consta
 
 COMMIT;
 
+
 -- -----------------------------------------------------
 -- Data for table `ccdb`.`eventRanges`
 -- -----------------------------------------------------
@@ -314,6 +317,7 @@ USE `ccdb`;
 INSERT INTO `ccdb`.`eventRanges` (`id`, `created`, `modified`, `runNumber`, `eventMin`, `eventMax`, `comment`) VALUES (1, NULL, NULL, 1, 0, 1000, 'test');
 
 COMMIT;
+
 
 -- -----------------------------------------------------
 -- Data for table `ccdb`.`assignments`
@@ -327,6 +331,7 @@ INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `r
 INSERT INTO `ccdb`.`assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `constantSetId`, `authorId`, `comment`) VALUES (5, '2012-10-30 23:48:43', '2012-10-30 23:48:43', 4, 1, NULL, 5, 2, 'Test assignment for software tests 5');
 
 COMMIT;
+
 
 -- -----------------------------------------------------
 -- Data for table `ccdb`.`columns`
@@ -342,15 +347,17 @@ INSERT INTO `ccdb`.`columns` (`id`, `created`, `modified`, `name`, `typeId`, `co
 
 COMMIT;
 
+
 -- -----------------------------------------------------
 -- Data for table `ccdb`.`users`
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `ccdb`.`users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`, `isDeleted`) VALUES (1, NULL, NULL, 'anonymous', NULL, '', 'User anonymous is a default user for CCDB. It has no modify privilegies', 0);
-INSERT INTO `ccdb`.`users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`, `isDeleted`) VALUES (2, '2012-07-15 15:16:30', '2012-09-20 08:11:12', 'test_user', 'test', 'runrange_crate,runrange_delete', 'User for unit tests', 0);
+INSERT INTO `ccdb`.`users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`, `isDeleted`) VALUES (1, NULL, NULL, 'anonymous', NULL, '', 'User anonymous is a default user for CCDB. It has no modify privilegies', NULL);
+INSERT INTO `ccdb`.`users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`, `isDeleted`) VALUES (2, '2012-07-15 15:16:30', '2012-09-20 08:11:12', 'test_user', 'test', 'runrange_crate,runrange_delete', 'User for unit tests', NULL);
 
 COMMIT;
+
 
 -- -----------------------------------------------------
 -- Data for table `ccdb`.`logs`
@@ -361,11 +368,13 @@ INSERT INTO `ccdb`.`logs` (`id`, `created`, `affectedIds`, `action`, `descriptio
 
 COMMIT;
 
+
 -- -----------------------------------------------------
 -- Data for table `ccdb`.`schemaVersions`
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `ccdb`.`schemaVersions` (`id`, `schemaVersion`) VALUES (1, 3);
+INSERT INTO `ccdb`.`schemaVersions` (`id`, `schemaVersion`) VALUES (1, 4);
 
 COMMIT;
+
