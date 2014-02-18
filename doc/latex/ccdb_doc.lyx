@@ -1,0 +1,4192 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+
+
+\usepackage{epstopdf}\usepackage{listings}\usepackage{parskip}\usepackage{diagbox}
+
+\title{Calibration Constants Database (CCDB) package documentation \\
+~\\
+\large GlueX-doc-1015-v2
+}
+\author{Mark M.\ Ito, Dmitry A. Romanov \\
+Thomas Jefferson National Accelerator Facility \\
+12000 Jefferson Avenue \\
+Newport News, VA 23606
+}
+\date{June 15, 2012}
+
+% global parameters
+\textwidth=6.5in
+\oddsidemargin=0in % use built-in offset of 1 inch for left margin
+\evensidemargin=0in % ditto for even pages
+\textheight=9in
+\topmargin=0in
+\headheight=0in % no headers in this document
+\headsep=0in
+\let\textquotedbl="
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language american
+\language_package auto
+\inputencoding auto
+\fontencoding default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref section
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 0
+\use_mathdots 0
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "basicstyle={\ttfamily},columns=fullflexible"
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+bibliographystyle{plain}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+maketitle
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+This note contains a documentation of the CCDB package.
+ A package for storing and managing calibration constants database.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%==============================================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%    I N T R O D U C T I O N
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%==============================================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%
+\backslash
+begin{figure}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%  
+\backslash
+includegraphics[width=
+\backslash
+textwidth]{ccdb_overall_tasks.eps}
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%  
+\backslash
+caption{CCDB area of usage}
+\backslash
+label{fig:ccdb_overall_tasks}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%
+\backslash
+end{figure}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Calibration Constants Database (CCDB) aims the next goals: 
+\end_layout
+
+\begin_layout Itemize
+Storing calibration constants.
+ 
+\end_layout
+
+\begin_layout Itemize
+Managing calibrations.
+ 
+\end_layout
+
+\begin_layout Itemize
+API for JANA, plain C++, Python.
+ 
+\end_layout
+
+\begin_layout Itemize
+Additional Logging, import, export data.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+CCDB stores data as tables with columns and rows.
+ As a data storage CCDB supports: 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Naming
+\series default
+.
+ Each table is identified by path-name; 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Versioning
+\series default
+.
+ Each table may has many versions of data; 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Branching
+\series default
+.
+ So called "variations" allows to use branches of data; 
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As a management tool and as a data provider CCDB allows: 
+\end_layout
+
+\begin_layout Itemize
+C++ User API.
+ Allows an easy access to CCDB data from C++.
+ 
+\end_layout
+
+\begin_layout Itemize
+JANA API.
+ An integration to JANA framework.
+ 
+\end_layout
+
+\begin_layout Itemize
+Python API.
+ Allows accessing and managing CCDB from python language.
+ 
+\end_layout
+
+\begin_layout Itemize
+Command line tools.
+ Tools to manage CCDB data from the shell.
+ 
+\end_layout
+
+\begin_layout Itemize
+Web interface.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%==============================================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%    B A S I C   C O N C E P T S
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%==============================================================================
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Basic concepts
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:basic_concepts"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+CCDB basic usage concepts and CCDB console tool for managing CCDB contents
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+% Data structure
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%******************************************************************************
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Data structure
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+% Namepath
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%******************************************************************************
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Namepath
+\end_layout
+
+\begin_layout Standard
+The desired set of values is identified by name.
+ The name string is unique across all detector systems.
+ The convention is to use a forward slash(/) notation to specify a hierarchical
+ namepath.
+\end_layout
+
+\begin_layout Standard
+For example: 
+\family sans
+/FDC/driftvelocity/timewalkparameters 
+\end_layout
+
+\begin_layout Standard
+This allows implementors of individual detector systems to to specify a
+ hierarchy with as much or little depth as is needed given their complexity.
+ The "/FDC/driftvelocity/timewalk_parameters" parameters may have members
+ identified by either name or position.
+ For example, it may contain 3 values: "slope", "offset", and "exponent".
+ By contrast, a set of constants with a namepath "/FDC/CathodeStrips/pedestals"
+ may 
+\family sans
+have
+\family default
+ 100 values identified simply as "0", "1", "2", "3", ...
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Namepath format
+\series default
+:
+\begin_inset Newline newline
+\end_inset
+
+ Allowed symbols are a-z, A-Z, 0-9, _ and -.
+ There is no space or special symbols allowed in the namepath.
+ Such considerations simplifies the console management and database validation
+ of namepath objects.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+/My-path/to/data_01   #OK
+\end_layout
+
+\begin_layout Plain Layout
+
+/Some...thing/is wrong here!  #ERROR illegal symbols and spaces
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Variation
+\end_layout
+
+\begin_layout Standard
+The CCDB includes a 
+\shape italic
+variation
+\shape default
+ feature.
+ The variation is a sort of data branching, making a "shallow copy" of a
+ complete set of calibration constants (i.e.
+ one that refers to constants without actually copying them).
+\end_layout
+
+\begin_layout Standard
+The variation is to be used primarily to create a new set of constants based
+ on another set, but with a few changes.
+ A variation is identified as a string.
+ The primary purpose of a variation is to allow testing of new constants
+ or alternative sets of constants that don't disturb the main trunk and
+ don't require copying a complete set.
+\end_layout
+
+\begin_layout Standard
+Specifying a variation is optional for end-users.
+ If no variation is specified, then a "
+\shape italic
+default
+\shape default
+" variation is used.
+ It is assumed that the default variation will be used to hold the best
+ available constants at any point in time.
+\end_layout
+
+\begin_layout Standard
+Each variation is stored in the CCDB with information regarding another
+ variation upon which it is based.
+ This basis variation may specify the default variation.
+\end_layout
+
+\begin_layout Standard
+Each set of constants in the CCDB includes a variation string that is used
+ to specify which variation those specific constants are valid for.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Variations format
+\series default
+:
+\begin_inset Newline newline
+\end_inset
+
+ Allowed symbols are a-z, A-Z, 0-9, _ and -.
+ There is no space or special symbols allowed in variation name.
+ Such considerations simplifies the console management and database validation
+ of variation names.
+\end_layout
+
+\begin_layout Subsection
+Variations hierarchy
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:variations_hierarchy"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Variations have hierarchy.
+ 
+\end_layout
+
+\begin_layout Standard
+The top level is "default" variation.
+ When a new variation is created, user can specify a parent variation for
+ it.
+ If user doesn't specify the parent, new variation is created with "default"
+ variation as a parent.
+ Thus one can say, that "default" variation is a root of variation hierarchy.
+\end_layout
+
+\begin_layout Standard
+Lets examine how variation hierarcy work by real example.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Lets say we have 3 data tables with names: "table1", "table2", "table3".
+ Each table has some default data: "data1", "data2", "data3" in it.
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+backslashbox
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+Table
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+Variation
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 1
+width "3em"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+default
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+table1 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+table2 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+table3 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data3
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This means that when somebody > calls - 
+\begin_inset Quotes eld
+\end_inset
+
+data1
+\begin_inset Quotes erd
+\end_inset
+
+ is returned.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Lets bring variations to the scene.
+ John wants to experiment with constants in table2.
+ So he creates a variation named "john".
+ When a variation is created it should have some parent.
+ If no parent is explicitly specified, the "default" variation is set as
+ parent.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+So now we have a variations hierarchy: 
+\family sans
+"default" 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ "john"
+\end_layout
+
+\begin_layout Standard
+John adds data to "table2" in the "john" variation.
+ Now we have:
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+backslashbox
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+Table
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+Variation
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 1
+width "3em"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+default
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 1
+width "3em"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+john
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+table1 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+table2 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data2.1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+table3 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For all gular users, who don't specify that they work with 
+\begin_inset Quotes eld
+\end_inset
+
+john
+\begin_inset Quotes erd
+\end_inset
+
+ variation, a call:
+\family sans
+ calibration->GetData("table2"...)
+\family default
+ - returnes 
+\begin_inset Quotes eld
+\end_inset
+
+data2
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+But for those who specified that they work in 
+\begin_inset Quotes eld
+\end_inset
+
+john
+\begin_inset Quotes erd
+\end_inset
+
+ variation 
+\begin_inset Quotes eld
+\end_inset
+
+data2.1
+\begin_inset Quotes erd
+\end_inset
+
+ is returned for 
+\begin_inset Quotes eld
+\end_inset
+
+table2
+\begin_inset Quotes erd
+\end_inset
+
+.
+ If these users request table1, there is no specific data for john variation
+ for 
+\begin_inset Quotes eld
+\end_inset
+
+table1
+\begin_inset Quotes erd
+\end_inset
+
+, so CCDB goes looking data in parent variation which is the "default" variation.
+ So 
+\begin_inset Quotes eld
+\end_inset
+
+data1
+\begin_inset Quotes erd
+\end_inset
+
+ is returned for 
+\begin_inset Quotes eld
+\end_inset
+
+table1
+\begin_inset Quotes erd
+\end_inset
+
+ variation 
+\begin_inset Quotes eld
+\end_inset
+
+john
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Lets summarise: if one runs software with 
+\family typewriter
+"variation:john"
+\family default
+, then requests: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+calibration->GetData("table1"...) //returns "data1" 
+\end_layout
+
+\begin_layout Plain Layout
+
+calibration->GetData("table2"...) //returns "data2.1" 
+\end_layout
+
+\begin_layout Plain Layout
+
+calibration->GetData("table3"...) //returns "data3"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Alice wanted to use John's 
+\begin_inset Quotes eld
+\end_inset
+
+data2.1
+\begin_inset Quotes erd
+\end_inset
+
+ but to change table3 data without disturbing variation 
+\begin_inset Quotes eld
+\end_inset
+
+john
+\begin_inset Quotes erd
+\end_inset
+
+.
+ She creates 
+\begin_inset Quotes eld
+\end_inset
+
+alice
+\begin_inset Quotes erd
+\end_inset
+
+ variation with 
+\begin_inset Quotes eld
+\end_inset
+
+john
+\begin_inset Quotes erd
+\end_inset
+
+ variation as parent.
+ So now we have a hierarchy: 
+\family sans
+"default" 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ "john" 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ "alice"
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Alice adds "data3.1" set of constants to "table3" and variation "alice".
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+backslashbox
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+Table
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+Variation
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 1
+width "3em"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+default
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 1
+width "3em"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+john
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 1
+width "3em"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+alice
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+table1 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+table2 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data2.1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+table3 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+data3.1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Lets figure out how requests work if one specifies "alice" variation.
+ If "table3" is requested, then "data3.1" is returned.
+ If "table2" is requested, there is no data for table3 and "alice" variation,
+ so CCDB goes looking for "alice" parent, which is "john" variation.
+ "john" variation has "data2.1" for "table2" so "data2.1" is returned.
+ If "table1" is requested, there is no other data than in "default" variation
+ which is on top of variation hierarchy, so "data1" is to be returned.
+ Summarizing: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+calibration->GetData("table1"...) //returns "data1"
+\end_layout
+
+\begin_layout Plain Layout
+
+calibration->GetData("table2"...) //returns "data2.1" 
+\end_layout
+
+\begin_layout Plain Layout
+
+calibration->GetData("table3"...) //returns "data3.1"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Requests
+\end_layout
+
+\begin_layout Standard
+There must be a way to uniquely identify every set of data.
+ Because name path by itself doesn't describe run, variation and time, CCDB
+ uses so called "Requests" to solve the problem.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+ "integer indexes" is the first thing that comes to mind when one hears
+ words "unique key" and "database".
+ Why don't CCDB use it? But CCDB is database independent.
+ Indexes, which are good to use with relational databases, become uneasy
+ with standalone ASCII files or ROOT files.
+ Moving indexes from one database to another might be a problem.
+ And, last but not least, indexes are good for machines but not for humans.
+ If human operator has an index 1114211 it tells nothing to him and it could
+ be easily mistaken with 1142111 which belongs to absolutely another data
+ set.
+ 
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Full form of the request is:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+</path/to/data>:<run>:<variation>:<time>
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\vphantom{1em}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Full form of the request 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+with full form of time section (given up to seconds)
+\end_layout
+
+\end_inset
+
+ can identify a set of data.
+ In database terms the full request is an "unique composite key" for the
+ particular data values.
+\end_layout
+
+\begin_layout Standard
+At the same time, in most of the cases we want to address table just by
+ a name and let software to figure out the rest.
+ 
+\end_layout
+
+\begin_layout Standard
+So parts of a request can be omitted.
+ The minimal request to get the data is just name path, like: 
+\family sans
+/TOF/params.
+\end_layout
+
+\begin_layout Standard
+To give even more flexibility, mainly for debug and introspection purposes,
+ one may omit any part of the request and leave other parts.
+\end_layout
+
+\begin_layout Standard
+Lets look at examples: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Itemize
+
+/path/to/data             - no run, variation or timestamp is specified
+\end_layout
+
+\begin_layout Itemize
+
+/path/to/data::mc         - no run specified, variation is "mc", no date
+ is specified 
+\end_layout
+
+\begin_layout Itemize
+
+/path/to/data:::2029      - only the path and the date(year) are specified
+ 
+\end_layout
+
+\begin_layout Itemize
+
+/path/to/data:100::2029   - variation is omitted
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As shown in the examples above, to specify a path and a variation but to
+ use default run one skips the run number and leave its place like "::"
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+               +-- variation 
+\end_layout
+
+\begin_layout Plain Layout
+
+               |
+\end_layout
+
+\begin_layout Plain Layout
+
+/path/to/data::mc  
+\end_layout
+
+\begin_layout Plain Layout
+
+             | 
+\end_layout
+
+\begin_layout Plain Layout
+
+             +-- place where run number should be
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+And the request '/path/to/data:::2029' means that a path and a date are
+ specified but a run number and a variation are left to be set by default.
+ What does 
+\begin_inset Quotes eld
+\end_inset
+
+default
+\begin_inset Quotes erd
+\end_inset
+
+ means? It is discussed further in 
+\begin_inset CommandInset ref
+LatexCommand nameref
+reference "sec:default-values"
+
+\end_inset
+
+ chapter.
+\end_layout
+
+\begin_layout Standard
+The time is parsed as: 
+\series bold
+YYYY:MM:DD-hh:mm:ss
+\end_layout
+
+\begin_layout Standard
+Any non digit character may be used as separator instead of ':' and '-'
+\end_layout
+
+\begin_layout Standard
+so all next lines are parsed the same:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+2029/06/17-22:03:05 
+\end_layout
+
+\begin_layout Plain Layout
+
+2029-06-17-22-03-05
+\end_layout
+
+\begin_layout Plain Layout
+
+2029/06/17:22/03/05
+\end_layout
+
+\begin_layout Plain Layout
+
+2029a06b17c22d03e05 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One can omit any part of the time string starting from the right, the latest
+ date for this part will be returned.
+\end_layout
+
+\begin_layout Standard
+Examples:
+\end_layout
+
+\begin_layout Standard
+"2011" - (this means the year 2011) is interpreted as 2011/12/31-23:59:59,
+ the latest constants for year 2011 is to be returned.
+\end_layout
+
+\begin_layout Standard
+"2012/05/21" - is interpreted as 2012/05/21-23:59:59, the latest constants
+ for 21 May 2012
+\end_layout
+
+\begin_layout Standard
+CCDB searches the closest constants before or equal to timestamp provided.
+\end_layout
+
+\begin_layout Subsection
+When full request should NOT be used
+\end_layout
+
+\begin_layout Standard
+The short answer: 
+\begin_inset Newline newline
+\end_inset
+
+ In application code.
+ If you have something besides of name-path in your application code 
+\series bold
+in production environment
+\series default
+, it is definitely NOT how CCDB is designed.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+calibration->GetCalib("/CDC/generalparams");       // Ok
+\end_layout
+
+\begin_layout Plain Layout
+
+calibration->GetCalib("/CDC/generalparams::mc");   // Bad.
+ Bad! BAD!!! (use it only for debug)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The long answer:
+\begin_inset Newline newline
+\end_inset
+
+ Usually C++ code that reads out data from CCDB looks like this: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+calibration->GetCalib("/CDC/generalparams"); 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The run number is provided by application, and user may specify variation
+ and date through command line or environment variables.
+ Everything is counted by CCDB when the 
+\emph on
+calibration
+\emph default
+ object is created.
+ By such design user may change variation or time without recompiling the
+ application.
+\end_layout
+
+\begin_layout Standard
+But CCDB C++ (and python) API accepts full version of requests for debugging
+ and sketch up purposes.
+ Next code works:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+calibration->GetCalib("/CDC/generalparams:100:myvariation:2011");  //FOR
+ DEBUG ONLY
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and run number, variation and time given by application is overwritten by
+ 100:my_variation:2011 for this transaction.
+ Please, remove everything beyond first ":" when you clean up the code and
+ get it ready for production use.
+\end_layout
+
+\begin_layout Standard
+If you use full requests in some places of production version of the application
+, users may not know about it and be surprised when they change application
+ flags but data is changed everywhere except the spots with full requests.
+\end_layout
+
+\begin_layout Subsection
+Default values
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:default-values"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are two general cases of using the requests: 
+\end_layout
+
+\begin_layout Enumerate
+To read out data in physics software 
+\end_layout
+
+\begin_layout Enumerate
+To manage constants (using CCDB CLI, python, etc.) 
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the first case, physics software usually knows and provides a run number
+ being processed.
+ Also the software is responsible for allowing users to set a default variation
+ or(and) constants date for the analysis.
+ (The way the software interacts with CCDB is described in 
+\begin_inset CommandInset ref
+LatexCommand nameref
+reference "sec:cpp"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand nameref
+reference "sec:python"
+
+\end_inset
+
+ chapters)
+\end_layout
+
+\begin_layout Standard
+CCDB Command Line Interface (CCDB CLI) is the main facility to manage constants.
+ The default values could be set by flags and commands that are described
+ in 
+\begin_inset CommandInset ref
+LatexCommand nameref
+reference "sec:console_tools_tutorial"
+
+\end_inset
+
+ section.
+ But generally it sets run=0, variation='default' if no flags are given.
+\end_layout
+
+\begin_layout Standard
+So, CCDB defaults and priorities (1 - highest)
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Run number:
+\series default
+ 
+\end_layout
+
+\begin_layout Enumerate
+Run number specified in a request
+\begin_inset Newline newline
+\end_inset
+
+ If one uses "/path/to/data:100" request, constants for run 100 are returned
+ regardless of the run being processed
+\end_layout
+
+\begin_layout Enumerate
+Software set run number.
+\begin_inset Newline newline
+\end_inset
+
+ If 10200 run is being processed and one requests "/path/to/data", then
+ data for run # 10200 is returned.
+\begin_inset Newline newline
+\end_inset
+
+ If one starts CCDB CLI as "ccdb -i -r 10200", the run is used as default
+ for the session.
+\end_layout
+
+\begin_layout Enumerate
+0 - (means run number 0).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Variation:
+\series default
+ 
+\end_layout
+
+\begin_layout Enumerate
+Variation specified in a request
+\begin_inset Newline newline
+\end_inset
+
+ If one uses "/path/to/data::mc" request, the variation 'mc' is used to
+ return the data.
+ 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+ Using variation in request doesn't cancel variation hierarchy feature.
+ Lets say request is "/path/to/data::mc" and variation 'default' is parent
+ of 'mc' variation ('default' 
+\begin_inset Formula $\rightarrow$
+\end_inset
+
+ 'mc').
+ If there is no data that has been specially added for 'mc' variation for
+ table '/path/to/data', then CCDB looks for constants of parent variation,
+ i.e.
+ 'default' variation.
+ See 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+nameref
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+sec:variationshierarchy
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+ chapter.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Global preferred variation set by software
+\begin_inset Newline newline
+\end_inset
+
+ 
+\shape italic
+If one starts CCDB CLI as "ccdb -i -v mc", variation 'mc' is used as default
+ for the session
+\end_layout
+
+\begin_layout Enumerate
+The "default" variation 
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Timestamp:
+\series default
+ 
+\end_layout
+
+\begin_layout Enumerate
+Request specified time will be used 
+\end_layout
+
+\begin_layout Enumerate
+Current time 
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When one uses CCDB console tool in interactive mode, one can set the default
+ run number by running 'run' command
+\end_layout
+
+\begin_layout Standard
+Example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> run 100 
+\end_layout
+
+\begin_layout Plain Layout
+
+> cat /path/to/data  # all commands will get constants for run 100 
+\end_layout
+
+\begin_layout Plain Layout
+
+> run # you can check what run is set by default 100
+\end_layout
+
+\begin_layout Plain Layout
+
+100
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+C++ API section will overview how to set default run 
+\begin_inset CommandInset ref
+LatexCommand nameref
+reference "sec:cpp"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Connection strings
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:connection"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+CCDB uses so called "connection strings" to specify a data source.
+ The generic format of a connection string is: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+<protocol>://<username>:<password>@<serveraddress>:<port>/<database>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+SQLite
+\end_layout
+
+\begin_layout Standard
+SQLite connection string is: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+sqlite:///<path to sqlite db file>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Please note that since there is no 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\end_inset
+
+ <username>:<password>@<serveraddress>
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+ part for the SQLite database, we have three (3) slashes ///.
+ And if you have an absolute path to file, it becomes four (4) slashes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+sqlite:////absolute/path/to/file.db
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+MySQL
+\end_layout
+
+\begin_layout Standard
+MySQL connection string: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+mysql://<username>:<password>@<serveraddress>:<port>/<database>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One may omit any part except 
+\begin_inset Quotes eld
+\end_inset
+
+mysql://
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+<server_address>
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The default values are used in this case:
+\end_layout
+
+\begin_layout Itemize
+username - ccdb_user 
+\end_layout
+
+\begin_layout Itemize
+password - no password 
+\end_layout
+
+\begin_layout Itemize
+port - default MySQL port (now is 3306) 
+\end_layout
+
+\begin_layout Itemize
+database - ccdb 
+\end_layout
+
+\begin_layout Standard
+Examples:
+\end_layout
+
+\begin_layout Standard
+Connection string 1:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\end_inset
+
+ "mysql://john@localhost:999" 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+MySQL server on 'localhost' using port 999 
+\end_layout
+
+\begin_layout Itemize
+user is 'john' with no password 
+\end_layout
+
+\begin_layout Itemize
+the database is 'ccdb' by default 
+\end_layout
+
+\begin_layout Standard
+Simple connection string: 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\end_inset
+
+ "mysql://localhost" 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+MySQL server on localhost using port 3306 (default) 
+\end_layout
+
+\begin_layout Itemize
+user is 'ccdb_user' with no password (default) 
+\end_layout
+
+\begin_layout Itemize
+the database is 'ccdb' (default) 
+\end_layout
+
+\begin_layout Standard
+Full connection string: 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\end_inset
+
+ "mysql://smith:hHjD83f@192.168.1.3:4444/ccdb_database" 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It tells ccdbcmd to connect to: 
+\end_layout
+
+\begin_layout Itemize
+MySQL server on '192.168.1.3' using port 4444 
+\end_layout
+
+\begin_layout Itemize
+user is 'smith' with password 'hHjD83f' 
+\end_layout
+
+\begin_layout Itemize
+the database is 'ccdb_database' 
+\end_layout
+
+\begin_layout Subsection
+Update and delete operations
+\end_layout
+
+\begin_layout Standard
+CCDB follows two principles in terms of updating and deleting: 
+\end_layout
+
+\begin_layout Enumerate
+Don't delete anything.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Updates are done by '
+\shape italic
+adding new
+\shape default
+'.
+ 
+\end_layout
+
+\begin_layout Standard
+If one wants to 
+\shape italic
+update
+\shape default
+ the values of some table, it is done by 
+\shape italic
+adding a new
+\shape default
+ set of constants.
+ The software will use more recent set of data by default.
+\end_layout
+
+\begin_layout Standard
+If one wants to change the number of columns of the table (or columns specificat
+ion), it is done by adding a new table with a new name.
+\end_layout
+
+\begin_layout Standard
+For example.
+ If one wants to change the format of a table: 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\end_inset
+
+ /FDC/driftvelocity/timewalkparameters 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+ One should create a new table with right format: 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\end_inset
+
+ /FDC/driftvelocity/timewalkparameters2 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+CCDB doesn't provide any tools for deleting 
+\series bold
+\shape italic
+non empty
+\series default
+\shape default
+ tables or directories, changing their names or specifications at user level.
+\end_layout
+
+\begin_layout Standard
+There is a strong reason for this limitation.
+ If CCDB is used to hold calibration constants, then some code should exist
+ for each data set.
+ At least somewhere at some point of time.
+ So deleting or changing something (the number of rows in a table for example)
+ will lead to corruption of the code.
+ The worst case scenario is when such changes don't lead to immediate crush
+ but produce weird hard-to-determine bugs somewhere in deep parts of an
+ offline software.
+\end_layout
+
+\begin_layout Standard
+(Deleting an empty table is OK - there is no data so no code behind it)
+\end_layout
+
+\begin_layout Standard
+If one really need to delete some constants, this should be done at 
+\shape italic
+administrative level
+\shape default
+.
+ This means that is should be discussed, users should be notified about
+ changes, and the changes should be tested.
+ Thus deleting the constants shouldn't become a normal every day experience
+ for users.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+CCDB command line tutorial
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:console_tools_tutorial"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This section is a tutorial of using CCDB command line tools.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%Getting started
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%******************************************************************************
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Getting started
+\end_layout
+
+\begin_layout Standard
+CCDB provides command line tool for introspection and management of constants
+ database.
+ To access it call 'ccdb' shell command (CCDB should be installed and its
+ environment variables are set)
+\end_layout
+
+\begin_layout Standard
+'ccdb' can be used as an interactive shell or as a single command.
+ 
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Usage from command line:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ccdb <ccdb arguents> command <command arguments>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Usage as interactive shell:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ccdb <ccdb arguments> -i 
+\end_layout
+
+\begin_layout Plain Layout
+
+> command1 
+\end_layout
+
+\begin_layout Plain Layout
+
+> command2 
+\end_layout
+
+\begin_layout Plain Layout
+
+> ...
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+> q
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 1.
+ Command line mode:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+     (1)                             (2) (3) 
+\end_layout
+
+\begin_layout Plain Layout
+
+ccdb -c "mysql://john@localhost:999" ls  /TOF/params
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\series bold
+-c "mysql://john@localhost"
+\series default
+ - sets the ccdb connection string.
+ If -c flag is not given, ccdb try read CCDB_CONNECTION environment variable.
+ If CCDB_CONNECTION is not set the default connection string is used.
+ The connection strings are described in 
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:connection"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+ls - is a ccdb command which returns a list of directories and tables that
+ belongs to directory 
+\end_layout
+
+\begin_layout Enumerate
+/TOF/params - is the argument of ls command.
+ Like a posix shell ls.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 1em
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Example 2.
+ Interactive mode:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+export CCDB_CONNECTION=sqlite:///$CCDB_HOME/sql/ccdb.sqlite         (0)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ccdb -i         (1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+> ls test       (2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+> help          (3) 
+\end_layout
+
+\begin_layout Plain Layout
+
+> cd test       (4) 
+\end_layout
+
+\begin_layout Plain Layout
+
+> cd test_vars 
+\end_layout
+
+\begin_layout Plain Layout
+
+> ls 
+\end_layout
+
+\begin_layout Plain Layout
+
+> pwd           (5) 
+\end_layout
+
+\begin_layout Plain Layout
+
+> q             (6)
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Enumerate
+flag '-i' will start ccdb in interactive mode.
+\end_layout
+
+\begin_layout Enumerate
+'ls test' - show everything in test directory.
+ One stays in the interactive shell after the execution.
+\end_layout
+
+\begin_layout Enumerate
+'help' command provides list of commands and how to use each of them
+\end_layout
+
+\begin_layout Enumerate
+navigating directories
+\end_layout
+
+\begin_layout Enumerate
+The same as in posix shell, ccdb interactive mode have the current working
+ directory, with relative and absolute paths.
+ pwd command shows the current working directory.
+\end_layout
+
+\begin_layout Enumerate
+to exit interactive mode enter 'q', 'quit' or press ctrl+D 
+\end_layout
+
+\begin_layout Standard
+Since ccdb objects have /name/paths and many other things that looks like
+ POSIX file system, the commands are very posix-shell-like.
+\end_layout
+
+\begin_layout Subsection
+Help system
+\end_layout
+
+\begin_layout Standard
+The ccdb is designed to be a self descriptive.
+ By using 'help' commands one could get all the commands and how to use
+ them.
+\end_layout
+
+\begin_layout Standard
+Gives you the list of commands, flags and variables:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ccdb help
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Gives help for create table command:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ccdb help mktbl
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Connection and defaults
+\end_layout
+
+\begin_layout Standard
+As it shown before, one can use ether flag or CCDB_CONNECTION environment
+ variable to specify the data source.
+ 
+\end_layout
+
+\begin_layout Standard
+Here is the order of how ccdb gets the connection string: 
+\end_layout
+
+\begin_layout Enumerate
+The default connection string is 
+\series bold
+mysql://ccdb_user@localhost ccdb
+\end_layout
+
+\begin_layout Enumerate
+if 
+\emph on
+CCDB_CONNECTION
+\emph default
+ environment variable is set it is used overwriting the default connection
+ string
+\end_layout
+
+\begin_layout Enumerate
+if -c or --connection flag is given in command prompt it is used overwriting
+ all other.
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+ccdb
+\emph default
+ uses 
+\begin_inset Quotes eld
+\end_inset
+
+default
+\begin_inset Quotes erd
+\end_inset
+
+ variation by default.
+ 
+\series bold
+'-v'
+\series default
+ flag allows to set default variation on ccdb start.
+ 'var' command allows to check and change default variation during interactive
+ session
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ccdb -i -v mc
+\end_layout
+
+\begin_layout Plain Layout
+
+> var             # shows current default variation
+\end_layout
+
+\begin_layout Plain Layout
+
+mc
+\end_layout
+
+\begin_layout Plain Layout
+
+> var subtest     # sets a new default variation (subtest) for this session
+\end_layout
+
+\begin_layout Plain Layout
+
+> var
+\end_layout
+
+\begin_layout Plain Layout
+
+subtest
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+ccdb
+\emph default
+ uses run = 0 by default.
+ 
+\series bold
+'-r'
+\series default
+ flag allows to set run number on ccdb start.
+ 'run' command allows to check and change run number for current session
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ccdb -i -r 100
+\end_layout
+
+\begin_layout Plain Layout
+
+> run             # shows current run
+\end_layout
+
+\begin_layout Plain Layout
+
+100
+\end_layout
+
+\begin_layout Plain Layout
+
+> run 254         # sets a new run number for this session
+\end_layout
+
+\begin_layout Plain Layout
+
+> run
+\end_layout
+
+\begin_layout Plain Layout
+
+254
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Commands
+\end_layout
+
+\begin_layout Subsubsection
+Keys consistency
+\end_layout
+
+\begin_layout Standard
+We try to keep command keys consistent.
+ This means that some flags are the same across all commands.
+ Maybe this makes the keys differ from POSIX, but the advantage is if you
+ see '-v' key, you know that it is something about a variation whatever
+ the commands are.
+ 
+\end_layout
+
+\begin_layout Standard
+Unified flags to identify objects for all commands: 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+-a
+\series default
+ - Assignment 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+-v
+\series default
+ - Variation 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+-t
+\series default
+ - Data table 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+-r
+\series default
+ - Run or run-range 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+-d
+\series default
+ - Directory 
+\end_layout
+
+\begin_layout Standard
+For example '
+\series bold
+info
+\series default
+' command may be executed against directory, table or variation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+[bash promt] ccdb -i 
+\end_layout
+
+\begin_layout Plain Layout
+
+> info -v default         (1) 
+\end_layout
+
+\begin_layout Plain Layout
+
+> info -d /test           (3) 
+\end_layout
+
+\begin_layout Plain Layout
+
+> info -t /test/test_vars (4) 
+\end_layout
+
+\begin_layout Plain Layout
+
+> info /test/test_vars    (5)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+1.
+ Get information about "default" variation 
+\end_layout
+
+\begin_layout Standard
+2.
+ Get information about "/test" directory.
+ 
+\end_layout
+
+\begin_layout Standard
+3.
+ Get information about "/test/test_vars" type table 
+\end_layout
+
+\begin_layout Standard
+4.
+ The same as 3.
+ By default 
+\emph on
+info
+\emph default
+ treat argument as a table if specifying flag is not given
+\end_layout
+
+\begin_layout Subsubsection
+Commands overview
+\end_layout
+
+\begin_layout Standard
+This table is printed if one executes "ccdb help" 
+\begin_inset Float table
+placement position
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Tabular
+<lyxtabular version="3" rows="12" columns="3">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<column alignment="left" valignment="top" width="0">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+% after 
+\backslash
+
+\backslash
+: 
+\backslash
+hline or 
+\backslash
+cline{col1-col2} 
+\backslash
+cline{col3-col4} ...
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+info 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Info 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Prints extended information about an object 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+vers 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Versions 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Show versions of data for the specified table 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+run 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+CurrentRun 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gets or sets current working run 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+dump 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dump 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dumps data table to a file 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+show 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Show 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Shows type table data 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mkdir 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MakeDirectory 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Create directory 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+pwd 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PrintWorkDir 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Prints working directory 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cd 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ChangeDir 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Change current directory 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+add 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+AddData 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Add data constants 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+mktbl 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MakeTable 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Create constants type table 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cat 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cat 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Show assignment data by ID 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+ls 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+List 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+List objects in a given directory 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+List of ccdb commands
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:commands"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assuming that user is in interactive mode, one may categorize the commands:
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+To navigate directories
+\emph default
+ pwd - prints current directory cd - switch to specified directory ls -
+ list objects in the directory (wildcards are allowed) mkdir - creates directory
+\end_layout
+
+\begin_layout Standard
+Example 7.
+ Directory commands overview: 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{verbatim}
+\end_layout
+
+\end_inset
+
+ > pwd / > cd /TOF > ls table1 table2 > mkdir constants > ls con* constants
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{verbatim}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Get information about objects
+\series default
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+info
+\series default
+ - gets information about objects (use -v -r -d flags), see example 6.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+vers
+\series default
+ - gets all versions of the table 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+cat
+\series default
+ - displays values 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+dump
+\series default
+ - same as cat but dumps files to disk 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+logs
+\series default
+ - see logs information 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Manage objects
+\series default
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+mkdir
+\series default
+ - creates directory 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+mktbl
+\series default
+ - creates data table 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+add
+\series default
+ - adds data from text file to table (variation and run ranges are created
+ automatically by add command) 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+C++ API
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:cpp"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%C++ Overview
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%******************************************************************************
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+C++ Overview
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename pics/cpp_api_levels.png
+	width 30text%
+	BoundingBox 0bp 0bp 431 552
+
+\end_inset
+
+ 
+\begin_inset Caption
+
+\begin_layout Plain Layout
+C++ API levels
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "pic:cpp_api_levels"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+CCDB C++ library consists of separate levels (see fig.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "pic:cpp_api_levels"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+C++ User API
+\series default
+ - This level is 
+\shape italic
+most probably what any user
+\shape default
+, who is not bound to JANA, 
+\shape italic
+needs
+\shape default
+.
+ The API provides simple functionality of getting constants.
+ It automates connections number, multi-threading, data source selection,
+ etc.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Low level API
+\series default
+ - provides all sorts of low level functionality for managing data and CCDB
+ internals.
+ This level considered to be internal and could be interesting only in terms
+ further development of CCDB.
+ Regular users should not use any classes from this level 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Low level API is subject to change for better CCDB performance and stability.
+ The changes are done without any remorse towards user's code which is happened
+ to use Low level API elements.
+ That is the reason why Low level API should be kept separated and used
+ only in CCDB higher level classes.
+ On the other hand, if one wants for example to add a new PostgreSQL database,
+ one has to use low level API abstractions.
+ It is good idea to collaborate with ccdb code maintainers in such case.
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+JANA API
+\series default
+ - There is a JANA API on top of Users C++ API.
+ This level integrates CCDB and JANA framework.
+ 
+\end_layout
+
+\begin_layout Subsection
+C++ User API
+\end_layout
+
+\begin_layout Standard
+There are two main classes in C++ User API:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+CalibrationGenerator
+\series default
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Calibration
+\series default
+ 
+\end_layout
+
+\begin_layout Standard
+The 
+\series bold
+Calibration
+\series default
+ is used to get constants.
+ The 
+\series bold
+CalibrationGenerator
+\series default
+ is used to get 
+\series bold
+Calibration
+\series default
+ instance.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Python API
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:python"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Python Overview
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:python_overview"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+CalibrationGenerator
+\series default
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Calibration
+\series default
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+%******************************************************************************
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Using CCDB from python
+\end_layout
+
+\begin_layout Standard
+One can use CCDB directly from python using ConsoleContext class.
+ PYTHONPATH is automatically adjusted when one source environment.bash CCDB
+ script and is set to 
+\end_layout
+
+\end_body
+\end_document
