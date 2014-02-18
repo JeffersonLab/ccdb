@@ -66,9 +66,9 @@ Usage:
         dump <request> <file_name>
 
 Example:
-    > cat /test/test_vars/test_table file.txt              #latest data for test_table
-    > cat /test/test_vars/test_table::subtest file.txt     #latest data in subtest variation
-    > cat /test/test_vars/test_table:::2012-08 file.txt    #data latest for august 2012
+    > cat /test/test_vars/test_table > file.txt              #latest data for test_table
+    > cat /test/test_vars/test_table::subtest > file.txt     #latest data in subtest variation
+    > cat /test/test_vars/test_table:::2012-08 > file.txt    #data latest for august 2012
 
 Dump accepts the same flags as 'cat' command. See 'help cat' for flags
         """
