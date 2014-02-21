@@ -22,6 +22,21 @@ blob_delimiter_replacement = "&delimiter;"
 
 
 #--------------------------------------------
+# class CcdbSchemaVersion
+#--------------------------------------------
+class CcdbSchemaVersion(Base):
+    """
+    Represents CCDB directory object.
+    Directories may contain other directories or TypeTable objects
+    """
+    __tablename__ = 'schemaVersions'
+    id = Column(Integer, primary_key=True)
+    version = Column("schemaVersion", Integer)
+    def __repr__(self):
+        return "<CcdbSchemaVersion {0} version: '{1}'>".format(self.id, self.version)
+
+
+#--------------------------------------------
 # class Directory
 #--------------------------------------------
 class Directory(Base):

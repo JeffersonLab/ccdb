@@ -5,7 +5,9 @@ More details.
 """
 
 import re
+import os
 import logging
+from ccdb.model import CcdbSchemaVersion
 import path_utils
 from datetime import datetime
 
@@ -45,6 +47,10 @@ class AlchemyProvider(object):
         self._auth = authentication.Authentication(self)
         self._auth.current_user_name = "anonymous"
         self.logging_enabled = True
+        self._no_structure_message = "No database structure found. Possibly you are trying to connect " +\
+                       "to wrong SQLite file or to MySQL database without schema. " +\
+                       "Original SqlAlchemy error is: " + os.linesep + os.linesep + "{0}"
+
 
     #----------------------------------------------------------------------------------------
     #	C O N N E C T I O N
@@ -75,13 +81,27 @@ class AlchemyProvider(object):
             else:
                 raise
 
-        Session = sqlalchemy.orm.sessionmaker(bind=self.engine)
-        self.session = Session()
+        #
+        session_type = sqlalchemy.orm.sessionmaker(bind=self.engine)
+        self.session = session_type()
         self._is_connected = True
         self._connection_string = connection_string
 
         #since it is a new connection we need to rebuild directories
         self._are_dirs_loaded = False
+
+        #check data schema version
+        try:
+            vers_rec = self.session.query(CcdbSchemaVersion).first()
+            if vers_rec.version < 4:
+                message = "Version mismatch. The database schema version is '{0}'. " \
+                          "This CCDB version works with schema version 4 (or maybe 4+)".format(vers_rec.version)
+                raise DatabaseStructureError(message)
+        except OperationalError as err:
+            if "no such table" in err.message:
+                raise DatabaseStructureError(self._no_structure_message.format(err))
+            else:
+                raise
 
 
     #------------------------------------------------
@@ -354,11 +374,8 @@ class AlchemyProvider(object):
         except OperationalError as err:
             if 'no such table' in err.message:
                 import os
-                message = "No database structure found. Possibly you are trying to connect " +\
-                          "to wrong SQLite file or to MySQL database without schema. " +\
-                          "Original SqlAlchemy error is:" +\
-                          os.linesep + os.linesep + err.message
-                raise DatabaseStructureError(message)
+
+                raise DatabaseStructureError(self._no_structure_message.format(err))
             else:
                 raise
 

@@ -1,3 +1,5 @@
+import os
+
 class AuthVerificationError(Exception):
     """
     Exception raised when wrong pair login,password is obtained by authentication
@@ -38,6 +40,7 @@ class DatabaseStructureError(Exception):
     Exception raised if No database structure found.
     Possibly because of connecting to wrong SQLite file or to MySQL database without schema.
     """
+
     pass
 
 

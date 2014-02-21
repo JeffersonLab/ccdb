@@ -125,7 +125,7 @@ class EnvironmentAuthentication(Authentication):
     #------------------------------------------------------------------------------------
     def __init__(self, prov):
         assert(isinstance(prov, provider.AlchemyProvider))
-        Authentication.__init__( self, prov )
+        super(Authentication,self).__init__( prov )
         self._username = ""
         self._env_variable = ""
         self._is_validated = False
