@@ -1,6 +1,5 @@
 import unittest
 import os
-from nose.plugins.collect import TestSuite
 from ccdb import get_ccdb_home_path
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
 from ccdb.model import LogRecord, User
