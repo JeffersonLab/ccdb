@@ -1942,13 +1942,9 @@ calibration->GetCalib("/CDC/generalparams");
 \end_layout
 
 \begin_layout Standard
-The run number is provided by application, and user may specify variation
- and date through command line or environment variables.
- Everything is counted by CCDB when the 
-\emph on
-calibration
-\emph default
- object is created.
+The run number is provided by application.
+ User may specify variation and date through command line or environment
+ variables, thus it is provided by application too.
  By such design user may change variation or time without recompiling the
  application.
 \end_layout
@@ -1976,16 +1972,17 @@ calibration->GetCalib("/CDC/generalparams:100:myvariation:2011");  //FOR
 \end_layout
 
 \begin_layout Standard
-and run number, variation and time given by application is overwritten by
- 100:my_variation:2011 for this transaction.
+In this case run number, variation and time given by application are overwritten
+ by 100:my_variation:2011.
  Please, remove everything beyond first ":" when you clean up the code and
  get it ready for production use.
 \end_layout
 
 \begin_layout Standard
-If you use full requests in some places of production version of the application
-, users may not know about it and be surprised when they change application
- flags but data is changed everywhere except the spots with full requests.
+Otherwise, if one uses full requests in production, users may not know about
+ it and be surprised when they change application flags but data is not
+ changed in some places.
+ It leads to weird bugs that are very tough to spot.
 \end_layout
 
 \begin_layout Subsection
@@ -4144,32 +4141,32 @@ name "sec:python_overview"
  
 \end_layout
 
-\begin_layout Itemize
-
-\series bold
-CalibrationGenerator
-\series default
- 
-\end_layout
-
-\begin_layout Itemize
-
-\series bold
-Calibration
-\series default
- 
-\end_layout
-
 \begin_layout Standard
-\begin_inset ERT
-status collapsed
+\begin_inset Float figure
+wide false
+sideways false
+status open
 
 \begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename pics/python_api_levels.png
+	width 70text%
 
-%******************************************************************************
+\end_inset
+
+
 \end_layout
 
 \begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+General python API layers
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -4178,14 +4175,739 @@ status collapsed
 
 \end_layout
 
+\begin_layout Standard
+CCDB has two API levels for python:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Command line interface (CLI) API.
+ 
+\series default
+It is used by ccdb command, it has these 
+\begin_inset Quotes eld
+\end_inset
+
+ls
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+mkdir
+\begin_inset Quotes erd
+\end_inset
+
+, etc.
+ commands and should be used to manage constants from python.
+ Usage looks like:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+context.process_command("mkdir /test/mydir  #My directory")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Low Level API.
+
+\series default
+ It has more low level and direct functions like 
+\begin_inset Quotes eld
+\end_inset
+
+create_type_table
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Usage looks like:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+provider.create_directory("mydir", "/test", "My directory")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So.
+ What API should I use?
+\end_layout
+
+\begin_layout Standard
+CLI API should be used whenever it is possible.
+ Very often users need just something like ccdb command that they can call
+ from their python scripts.
+ That is exact case for CLI API.
+ Moreover having consistent commands between python and console shell makes
+ code easier to read and understand by others.
+\end_layout
+
+\begin_layout Standard
+Low Level API should be used when something is hard to do with CLI API,
+ if one extending CCDB, creating new commands for CLI or wants to have direct
+ database access.
+ Generally, the API has safety and consistency checks but 
+\series bold
+one can
+\series default
+ really 
+\series bold
+screw up
+\series default
+ things with it.
+ It works with objects, so one can iterate over returned results, etc.
+ And, finally, the API gives the direct access to SqlAlchemy session.
+ 
+\end_layout
+
 \begin_layout Subsection
-Using CCDB from python
+Using CLI python API
 \end_layout
 
 \begin_layout Standard
 One can use CCDB directly from python using ConsoleContext class.
  PYTHONPATH is automatically adjusted when one source environment.bash CCDB
- script and is set to 
+ script.
+ 
+\end_layout
+
+\begin_layout Standard
+This is the example of using ConsoleContext class to execute CCDB commands:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import ccdb.path_utils 
+\end_layout
+
+\begin_layout Plain Layout
+
+from ccdb import get_ccdb_home_path 
+\end_layout
+
+\begin_layout Plain Layout
+
+from ccdb.cmd.console_context import ConsoleContext
+\end_layout
+
+\begin_layout Plain Layout
+
+from ccdb.cmd.themes import NoColorTheme
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#initialization
+\end_layout
+
+\begin_layout Plain Layout
+
+#create connection string: 
+\end_layout
+
+\begin_layout Plain Layout
+
+ccdb_path = get_ccdb_home_path() 
+\end_layout
+
+\begin_layout Plain Layout
+
+con_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#create console context 
+\end_layout
+
+\begin_layout Plain Layout
+
+context = ConsoleContext()            # this is the main class 
+\end_layout
+
+\begin_layout Plain Layout
+
+context.silent_exceptions = False     # now all exception is raised and one
+ can try-except them 
+\end_layout
+
+\begin_layout Plain Layout
+
+context.theme = NoColorTheme()        # disable colored output 
+\end_layout
+
+\begin_layout Plain Layout
+
+context.connection_string = con_str   # set connection string 
+\end_layout
+
+\begin_layout Plain Layout
+
+context.user_name = "python_tests"    # your username 
+\end_layout
+
+\begin_layout Plain Layout
+
+context.register_utilities()          # Initialization.
+ Register commands (ls, rm, mktbl etc...)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#now you can use context to run ccdb command 
+\end_layout
+
+\begin_layout Plain Layout
+
+try: 
+\end_layout
+
+\begin_layout Plain Layout
+
+    context.process_command_line("mkdir /test/testable2 x y z #Some comment")
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Please look at $CCDB_HOME/python/tests/test_console_context.py
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+There are a lot of examples of how to use console_context class.
+\end_layout
+
+\begin_layout Subsection
+Using Low Level python API
+\end_layout
+
+\begin_layout Standard
+All functions to manage CCDB are located at AlchemyProvider class.
+ One can find it in:
+\begin_inset Newline newline
+\end_inset
+
+$CCDB_HOME/python/ccdb/provider.py
+\end_layout
+
+\begin_layout Standard
+At this point I encourage you to view the code for a list of all functions.
+ Code and functions are well commented.
+ One can use unit tests as example of using API looking in:
+\begin_inset Newline newline
+\end_inset
+
+$CCDB_HOME/python/tests/test_provider.py
+\end_layout
+
+\begin_layout Standard
+But lets see, how to start work with LowLevel python API:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import ccdb
+\end_layout
+
+\begin_layout Plain Layout
+
+import io
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+if __name__ == "__main__":
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    #create CCDB api class
+\end_layout
+
+\begin_layout Plain Layout
+
+    provider = ccdb.AlchemyProvider()                        # this class
+ has all CCDB manipulation functions
+\end_layout
+
+\begin_layout Plain Layout
+
+    provider.connect("mysql://ccdb_user@localhost/ccdb")     # use usual
+ connection string to connect to database
+\end_layout
+
+\begin_layout Plain Layout
+
+    provider.authentication.current_user_name = "anonymous"  # to have a name
+ in logs   
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That is it! Now you can call provider functions.
+ 
+\end_layout
+
+\begin_layout Standard
+Lets get all directories matching wildcard in directory 
+\begin_inset Quotes eld
+\end_inset
+
+/test
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    dirs = self.provider.search_directories("t??t_va*", "/test")
+\end_layout
+
+\begin_layout Plain Layout
+
+    for d in dirs:
+\end_layout
+
+\begin_layout Plain Layout
+
+        print d.path  
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Get variations by type table name:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    variations = provider.search_variations("/test/test_vars/test_table")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Get variations by table object is the same:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    table = provider.get_type_table("/test/test_vars/test_table") 
+\end_layout
+
+\begin_layout Plain Layout
+
+    variations = provider.search_variations(table)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To get data one uses one uses get_assignment function.
+ It returns Assignment object that holds the data
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    assignment = self.provider.get_assignment(100, "/test/test_vars/test_table",
+ "default")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To get all assignments for current type table and variation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    assignments = self.provider.get_assignments("/test/test_vars/test_table",
+ variation="default")
+\end_layout
+
+\begin_layout Plain Layout
+
+        for assignment in assignments:
+\end_layout
+
+\begin_layout Plain Layout
+
+           ...
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To get data when you have assignment object you do:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    #To get data when you have assignment object you do
+\end_layout
+
+\begin_layout Plain Layout
+
+    tabledData = assignment.constant_set.data_table
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    #or if you want the data presented as single list:
+\end_layout
+
+\begin_layout Plain Layout
+
+    listData = assignment.constant_set.data_list
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    #To get other assignment info:
+\end_layout
+
+\begin_layout Plain Layout
+
+    #date of creation: 
+\end_layout
+
+\begin_layout Plain Layout
+
+    assignment.created
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+    #run range: 
+\end_layout
+
+\begin_layout Plain Layout
+
+    assignment.run_range.min assignment.run_range.max
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+    #comment 
+\end_layout
+
+\begin_layout Plain Layout
+
+    assignment.comment
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    #get variation and variation name 
+\end_layout
+
+\begin_layout Plain Layout
+
+    assignment.variation 
+\end_layout
+
+\begin_layout Plain Layout
+
+    assignment.variation.name
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    #get type table 
+\end_layout
+
+\begin_layout Plain Layout
+
+    assignment.constant_set.type_table
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\end_layout
+
+\begin_layout Plain Layout
+
+    #get columns 
+\end_layout
+
+\begin_layout Plain Layout
+
+    assignment.constant_set.type_table.columns
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What is tabled or list data? If you have a data like 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+0 1 2 
+\end_layout
+
+\begin_layout Plain Layout
+
+3 4 5
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Tabled data is: [[0,1,2],[3,4,5]]
+\end_layout
+
+\begin_layout Standard
+List data is: [0,1,2,3,4,5]
+\end_layout
+
+\begin_layout Standard
+Adding data to CCDB.
+ 
+\series bold
+WARNING 
+\series default
+- don't do this on regular basis.
+ Better use CLI api or ccdb shell if it possible
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    #prepare content
+\end_layout
+
+\begin_layout Plain Layout
+
+    #create_assignment accepts tabled data
+\end_layout
+
+\begin_layout Plain Layout
+
+    #rows and columns number must correspond to table definition
+\end_layout
+
+\begin_layout Plain Layout
+
+    tabled_data = [[1,2,3][4,5,6]]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+    #add data to database
+\end_layout
+
+\begin_layout Plain Layout
+
+    provider.create_assignment(
+\end_layout
+
+\begin_layout Plain Layout
+
+        data=tabled_data,
+\end_layout
+
+\begin_layout Plain Layout
+
+        path="/test/test_vars/custom_data",
+\end_layout
+
+\begin_layout Plain Layout
+
+        variation_name="default",
+\end_layout
+
+\begin_layout Plain Layout
+
+        min_run=0,
+\end_layout
+
+\begin_layout Plain Layout
+
+        max_run=ccdb.INFINITE_RUN,
+\end_layout
+
+\begin_layout Plain Layout
+
+        comment="Sample adding some XML data to CCDB")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+More examples could be found in $CCDB_HOME/examples folder.
+ 
 \end_layout
 
 \end_body
