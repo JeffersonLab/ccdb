@@ -26,7 +26,7 @@ TEST_CASE("CCDB/Console","")
 	console.WriteLine(Console::cRed,"test colors console.SetTextParams(Console::cReset, Console::cRed, Console::cBlack);");
 
 	console.SetTextParams(0, Console::cBrightGreen, Console::cBlue);
-	console.WriteLine(Console::cRed,"test colors console.SetTextParams(0, Console::cBrightGreen, Console::cBlue);");
+	console.WriteLine(Console::cRed,"test colors console.SetTextParams(0, Console::cBrightGreen, Console::cBlue);");	
 
 	//test of resetting the params
 	console.ResetTextProperties();

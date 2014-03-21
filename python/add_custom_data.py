@@ -6,7 +6,7 @@ The problem: One wants to hold an XML in CCDB. But 'add' command allows only to 
 The solution: use python API to load such custom data to CCDB
 
 
-Suppose we want to store xml file content in CCDB
+Suppose we want to store xml file content in table /test/test_vars/custom_data
 we created the table with one string column and one row for it
 
 to create a test table use command:
@@ -15,7 +15,15 @@ to create a test table use command:
 to check the table exists
 [shell]> ccdb info /test/test_vars/custom_data
 
-Now, how to add data...
+
+Ok. This files `
+
+to check data added
+[shell]> ccdb vers /test/test_vars/custom_data
+2345
+And it is good idea to have --no-comment (or -nc) flag if you want to dump the xml,
+so no ccdb #comment line is added prior xml start
+[shell]> ccdb dump --no-comments /test/test_vars/custom_data > tt.xml
 """
 import ccdb
 import io
@@ -43,7 +51,7 @@ if __name__ == "__main__":
         variation_name="default",
         min_run=0,
         max_run=ccdb.INFINITE_RUN,
-        comment="Sample adding some data to ")
+        comment="Sample adding some XML data to CCDB")
 
     #that is it.
     #check it with

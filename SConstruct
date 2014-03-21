@@ -55,12 +55,13 @@ if ARGUMENTS.get("clang","false")=="true":
 	default_env["ENV"]["TERM"]=os.environ["TERM"]
 
 #Export 'default' environment for everything that whishes to use it
-Export('default_env') 
+Export('default_env')
 
 #Create 'working' environment
 default_env.Repository('src')
 
 #Attach SConsctipts
+SConscript('src/SQLite/SConscript', 'default_env', variant_dir='tmp/SQLite', duplicate=0)
 SConscript('src/Library/SConscript', 'default_env', variant_dir='tmp/Library', duplicate=0)
 SConscript('src/Tests/SConscript', 'default_env', variant_dir='tmp/Tests', duplicate=0)
 

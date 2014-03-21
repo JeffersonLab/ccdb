@@ -1,5 +1,4 @@
-
-Import('default_env')      #Import default environment(settings) for CCDB staff building. 
+Import('default_env', 'ccdb_sqlite_lib')
 env = default_env.Clone()  #Clone it to add library specified things
 
 
@@ -54,24 +53,22 @@ lib_sources = [
     "Providers/SQLiteDataProvider.cc",
 	"Providers/IAuthentication.cc",
 	"Providers/EnvironmentAuthentication.cc",
-    
-    #sqlite embedding
-    "#src/SQLite/sqlite3.c"
 	]
 
 #additional variables
 env.Append(LIBS = ['pthread'])
+env.Append(LIBS = ccdb_sqlite_lib)
+
 if env['PLATFORM'] != 'darwin':
 	env.Append(LIBS = ['rt'])
-env.Append(CPPDEFINES = 'SQLITE_OMIT_LOAD_EXTENSION')
-env.Append(CCFLAGS='-Wno-unknown-pragmas') #Disable unknown pragmas warnings. CCDB files have '#pragma region' records to structurize files. 
+env.Append(CCFLAGS='-Wno-unknown-pragmas -g -O0') #Disable unknown pragmas warnings. CCDB files have '#pragma region' records to structurize files. 
 
 #Build with mysql or no?                                           
 #Read user flag for using mysql dependencies or not
 if ARGUMENTS.get("mysql","no")=="yes" or ARGUMENTS.get("with-mysql","true")=="true":
 	#User wants mysql!
 	print "Building CCDB using MySQL dependencies"
-	print "To build CCDB without mysql dependencies. Run scons with 'with-mysql=false' flag"
+	print "To build CCDB without mysql dependencies. Run scons with 'with-mysql=false'"
 	print ""
 	
 	if not WhereIs("mysql_config"):
@@ -102,5 +99,5 @@ else:
 lib = env.SharedLibrary(target = lib_target, source = lib_sources)
 env.Install('#lib', lib)
 
-static_lib = env.StaticLibrary(target = lib_target, source = lib_sources)
+static_lib = env.StaticLibrary(target = lib_target,  source = lib_sources)
 env.Install('#lib', static_lib)

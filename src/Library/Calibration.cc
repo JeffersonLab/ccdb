@@ -25,6 +25,7 @@ Calibration::Calibration()
     mDefaultVariation = "default";
     mReadMutex = new PthreadMutex(new PthreadSyncObject());
     mIsAutoReconnect = true;
+    mLastActivityTime=0;
 }
 
 
@@ -43,6 +44,7 @@ Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/, 
     x = new PthreadSyncObject();
     mReadMutex = new PthreadMutex(x);
     mIsAutoReconnect = true;
+    mLastActivityTime=0;
 }
 
 
@@ -63,7 +65,7 @@ void Calibration::UseProvider( DataProvider * provider, bool lockProvider/*=true
     //if lockProvider==true, than @see Connect, @see Disconnect and @see SetConnectionString 
     //will not affect connection of provider. The provider will not be deleted in destruction. 
     Lock();
-	mProvider = provider;
+	mProvider = provider;	
 	mProviderIsLocked = lockProvider;
     Unlock();
 }
@@ -254,7 +256,9 @@ bool Calibration::GetCalib( vector< vector<double> > &values, const string & nam
         {
             bool parseResult;
             double tmpVal = StringUtils::ParseDouble(rawValues[rowIter][columnsIter], &parseResult);
-            if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< vector<double> > &, const string &)");
+            
+            cout<<"rowIter "<<rowIter<<("  columnsIter ")<< columnsIter<<endl;
+            if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< vector<double> > &, const string &) ");
             values[rowIter].push_back(tmpVal);
         }
     }
@@ -441,6 +445,8 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
 
     if(values.size() != assignment->GetTypeTable()->GetNColumns())
         throw std::logic_error("Calibration::GetCalib(vector<string> &, const string &). logic_error: Calling of single row vector<dataType> version of GetCalib method on dataset that has more than one rows. Use GetCalib vector<vector<dataType> > instead.");
+
+    return true;
 }
 
 
