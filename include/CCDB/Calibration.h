@@ -165,6 +165,21 @@ public:
     virtual bool GetCalib(vector<double> &values, const string & namepath);
     virtual bool GetCalib(vector<int> &values, const string & namepath);
 
+    /** @brief Get constant by namepath
+     *
+     * This version of function fills just one value
+     *
+     * @remark 	Actually the function calls  GetCalib(vector<string> &values, ...)
+     * 			and converts its first element to the required type
+     *
+     * @parameter [out] value
+     * @parameter [in]  namepath - data path
+     * @return true if constants were found and filled. false if namepath was not found. raises std::exception if any other error acured.
+     */
+    virtual bool GetCalib(string &value, const string & namepath);
+    virtual bool GetCalib(double &value, const string & namepath);
+    virtual bool GetCalib(int &value, const string & namepath);
+
     /** @brief gets connection string which is used for current provider
     *@return mConnectionString
     */
