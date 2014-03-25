@@ -1,15 +1,12 @@
 import collections
-
 import datetime
 import posixpath
 
-import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.types import Integer, String, Text, DateTime, Enum, Boolean
-from sqlalchemy.orm import sessionmaker, reconstructor
+from sqlalchemy.orm import reconstructor
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.sql.expression import desc
 
 Base = declarative_base()
 
@@ -281,7 +278,7 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     created = Column('created', DateTime, default=datetime.datetime.now)
-    last_action_time = Column('lastActionTime', DateTime)   # TODO ??nullable=False
+    last_action_time = Column('lastActionTime', DateTime)
     name = Column(String(100), nullable=False)
     password = Column(String(100), nullable=True)
     _roles_str = Column('roles', String, nullable=False)
@@ -548,6 +545,7 @@ def list_to_table(data, col_count):
     tabled_data = []
     for row_i in range(row_count):
         row = []
-        for col_i in range(col_count): row.append(data[row_i*col_count + col_i])
+        for col_i in range(col_count):
+            row.append(data[row_i*col_count + col_i])
         tabled_data.append(row)
     return tabled_data
