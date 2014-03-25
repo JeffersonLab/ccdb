@@ -1,0 +1,5 @@
+<root>
+    <item name='com.mysql.jdbc.integration.c3p0.MysqlConnectionTester int statusOnException(java.sql.Connection, java.lang.Throwable) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>

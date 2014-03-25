@@ -1,0 +1,32 @@
+<root>
+    <item name='com.mysql.jdbc.util.ServerController DEFAULTS_FILE_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.util.ServerController DATADIR_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.util.VersionFSHierarchyMaker void main(java.lang.String[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.util.ServerController EXECUTABLE_NAME_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.util.BaseBugReport java.lang.String getUrl()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.util.TimezoneDump void main(java.lang.String[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.util.ServerController BASEDIR_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.util.ResultSetUtil java.lang.StringBuffer appendResultSetSlashGStyle(java.lang.StringBuffer, java.sql.ResultSet) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.util.ServerController EXECUTABLE_PATH_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.util.ReadAheadInputStream int read(byte[], int, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>

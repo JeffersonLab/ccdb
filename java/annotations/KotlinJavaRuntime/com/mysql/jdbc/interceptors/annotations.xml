@@ -1,0 +1,83 @@
+<root>
+    <item name='com.mysql.jdbc.interceptors.ServerStatusDiffInterceptor com.mysql.jdbc.ResultSetInternalMethods preProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.ResultSetScannerInterceptor com.mysql.jdbc.ResultSetInternalMethods postProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.ResultSetInternalMethods, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.SessionAssociationInterceptor com.mysql.jdbc.ResultSetInternalMethods preProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.ResultSetScannerInterceptor com.mysql.jdbc.ResultSetInternalMethods postProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.ResultSetInternalMethods, com.mysql.jdbc.Connection) 3'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.ResultSetScannerInterceptor com.mysql.jdbc.ResultSetInternalMethods preProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.ServerStatusDiffInterceptor com.mysql.jdbc.ResultSetInternalMethods postProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.ResultSetInternalMethods, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.ServerStatusDiffInterceptor com.mysql.jdbc.ResultSetInternalMethods postProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.ResultSetInternalMethods, com.mysql.jdbc.Connection) 3'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.ServerStatusDiffInterceptor void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.SessionAssociationInterceptor void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.SessionAssociationInterceptor void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.SessionAssociationInterceptor sessionLocal'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.ResultSetScannerInterceptor void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.SessionAssociationInterceptor com.mysql.jdbc.ResultSetInternalMethods postProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.ResultSetInternalMethods, com.mysql.jdbc.Connection) 3'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.ServerStatusDiffInterceptor void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.SessionAssociationInterceptor com.mysql.jdbc.ResultSetInternalMethods postProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.ResultSetInternalMethods, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.interceptors.ResultSetScannerInterceptor void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>

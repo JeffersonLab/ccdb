@@ -1,0 +1,2195 @@
+<root>
+    <item name='com.mysql.jdbc.ReplicationConnection void abort(java.util.concurrent.Executor) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancingConnectionProxy com.mysql.jdbc.ConnectionImpl createConnectionForHost(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_BASE_TABLE_OR_VIEW_NOT_FOUND'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProviderSP void setClientInfo(java.sql.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getTables(java.lang.String, java.lang.String, java.lang.String, java.lang.String[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_BASE_TABLE_NOT_FOUND'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getCrossReference(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getVersionColumns(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData void getCallStmtParameterTypes(java.lang.String, java.lang.String, com.mysql.jdbc.DatabaseMetaData.ProcedureType, java.lang.String, java.util.List&lt;com.mysql.jdbc.ResultSetRow&gt;) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MySQLConnection com.mysql.jdbc.Connection duplicate()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProvider void initialize(java.sql.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement int[] executeBatchSerially(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getStringFunctions()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4PreparedStatement JDBC4PreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setInt(java.lang.String, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4LoadBalancedMySQLConnection java.sql.NClob createNClob()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement com.mysql.jdbc.PreparedStatement getInstance(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement int[] executeBatchedInserts(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setClob(java.lang.String, java.io.Reader, long) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement void setURL(int, java.net.URL) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionFeatureNotAvailableException java.lang.String getMessage()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl java.sql.ResultSetMetaData getMetaData()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementInterceptorV2 void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4Connection java.sql.Clob createClob()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils java.lang.String toAsciiString(byte[], int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement clientPrepareStatement(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement prepareStatement(java.lang.String, int[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_ERROR_IN_ROW'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setCharacterStream(java.lang.String, java.io.Reader) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl java.math.BigInteger convertLongToUlong(long)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData void getCallStmtParameterTypes(java.lang.String, java.lang.String, com.mysql.jdbc.DatabaseMetaData.ProcedureType, java.lang.String, java.util.List&lt;com.mysql.jdbc.ResultSetRow&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4MysqlSQLXML javax.xml.transform.Source getSource(java.lang.Class)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Blob java.io.InputStream getBinaryStream()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProvider void initialize(java.sql.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4PreparedStatement JDBC4PreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver DBNAME_PROPERTY_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getSearchStringEscape()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.RandomBalanceStrategy void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.EscapeTokenizer EscapeTokenizer(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_ILLEGAL_ARGUMENT'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProvider java.util.Properties getClientInfo(java.sql.Connection)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_CONNECTION_IN_USE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void registerOutParameter(java.lang.String, int, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_DISCONNECT_ERROR'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setBinaryStream(java.lang.String, java.io.InputStream) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement int executeUpdate(byte[][], java.io.InputStream[], boolean[], int[], boolean[], boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement.CallableStatementParamInfo java.lang.String getParameterClassName(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.BlobFromLocator java.io.InputStream getBinaryStream()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection void initializeExtension(com.mysql.jdbc.Extension) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setBigDecimal(java.lang.String, java.math.BigDecimal) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils int getInt(byte[], int, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setTime(java.lang.String, java.sql.Time, java.util.Calendar) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setBlob(java.lang.String, java.io.InputStream, long) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ExportControlled void transformSocketToSSLSocket(com.mysql.jdbc.MysqlIO) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.TableType LOCAL_TEMPORARY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.BalanceStrategy com.mysql.jdbc.ConnectionImpl pickConnection(com.mysql.jdbc.LoadBalancingConnectionProxy, java.util.List&lt;java.lang.String&gt;, java.util.Map&lt;java.lang.String,com.mysql.jdbc.ConnectionImpl&gt;, long[], int) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StatementInterceptor com.mysql.jdbc.ResultSetInternalMethods postProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.ResultSetInternalMethods, com.mysql.jdbc.Connection) 3'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl void initializeFromCachedMetaData(com.mysql.jdbc.CachedResultSetMetaData) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement prepareStatement(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementInterceptor com.mysql.jdbc.ResultSetInternalMethods preProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionPropertiesImpl java.util.Properties exposeAsProperties(java.util.Properties)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils long getLong(byte[], int, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.AuthenticationPlugin java.lang.String getProtocolPluginName()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setClob(java.lang.String, java.io.Reader) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getProcedures(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver HOST_PROPERTY_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement long[] computeMaxParameterSetSizeAndBatchSize(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement PreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4Connection java.sql.SQLXML createSQLXML()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver java.sql.DriverPropertyInfo[] getPropertyInfo(java.lang.String, java.util.Properties)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetRow com.mysql.jdbc.ResultSetRow setMetadata(com.mysql.jdbc.Field[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl com.mysql.jdbc.MySQLConnection checkClosed()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ResultSet T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SingleByteCharsetConverter java.lang.String toString(byte[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CharsetMapping INDEX_TO_CHARSET'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NdbLoadBalanceExceptionChecker boolean shouldExceptionTriggerFailover(java.sql.SQLException) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.BalanceStrategy com.mysql.jdbc.ConnectionImpl pickConnection(com.mysql.jdbc.LoadBalancingConnectionProxy, java.util.List&lt;java.lang.String&gt;, java.util.Map&lt;java.lang.String,com.mysql.jdbc.ConnectionImpl&gt;, long[], int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProviderSP void setClientInfo(java.sql.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement void setBytesNoEscape(int, byte[]) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.Statement createStatement()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementInterceptorV2 void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setString(java.lang.String, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getIdentifierQuoteString()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement com.mysql.jdbc.Buffer fillSendPacket(byte[][], java.io.InputStream[], boolean[], int[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_NO_DEFAULT_FOR_COLUMN'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl int processMultiCountsAndKeys(com.mysql.jdbc.StatementImpl, int, int[]) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4LoadBalancedMySQLConnection T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_DATE_TRUNCATED'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet executeMetadataQuery(java.sql.PreparedStatement)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement void setType(com.mysql.jdbc.ServerPreparedStatement.BindValue, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getCatalogTerm()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setBlob(java.lang.String, java.io.InputStream) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils long getLong(byte[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement int[] executeBatchSerially(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement int[] executePreparedBatchAsMultiStatement(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Blob void streamClosed(com.mysql.jdbc.WatchableOutputStream) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getSystemFunctions()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CommentClientInfoProvider void setClientInfo(java.sql.Connection, java.lang.String, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlIO java.util.List&lt;com.mysql.jdbc.ResultSetRow&gt; fetchRowsViaCursor(java.util.List&lt;com.mysql.jdbc.ResultSetRow&gt;, long, com.mysql.jdbc.Field[], int, boolean)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl java.sql.Time getTime(int, java.util.Calendar) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement.CallableStatementParamInfoJDBC3 CallableStatementParamInfoJDBC3(com.mysql.jdbc.CallableStatement, com.mysql.jdbc.CallableStatement.CallableStatementParamInfo) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4MySQLConnection T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setCharacterStream(java.lang.String, java.io.Reader, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancingConnectionProxy java.lang.Object invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[], boolean) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SingleByteCharsetConverter java.lang.String toString(byte[], int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.TableType TABLE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementInterceptor com.mysql.jdbc.ResultSetInternalMethods postProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.ResultSetInternalMethods, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalanceExceptionChecker boolean shouldExceptionTriggerFailover(java.sql.SQLException) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setAsciiStream(java.lang.String, java.io.InputStream, long) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver connectionPhantomRefs'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4UpdatableResultSet java.sql.SQLXML getSQLXML(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setShort(java.lang.String, short) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setURL(java.lang.String, java.net.URL) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl java.sql.Timestamp fastTimestampCreate(java.util.Calendar, int, int, int, int, int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils boolean startsWithIgnoreCase(java.lang.String, int, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl boolean execute(java.lang.String, java.lang.String[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement.CallableStatementParamInfoJDBC3 CallableStatementParamInfoJDBC3(com.mysql.jdbc.CallableStatement, com.mysql.jdbc.CallableStatement.CallableStatementParamInfo) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl int processMultiCountsAndKeys(com.mysql.jdbc.StatementImpl, int, int[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PerVmServerConfigCacheFactory com.mysql.jdbc.CacheAdapter&lt;java.lang.String,java.util.Map&lt;java.lang.String,java.lang.String&gt;&gt; getInstance(com.mysql.jdbc.Connection, java.lang.String, int, int, java.util.Properties)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4LoadBalancedMySQLConnection java.sql.SQLXML createSQLXML()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl boolean hasDeadlockOrTimeoutRolledBackTx(java.sql.SQLException) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement prepareStatement(java.lang.String, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4UpdatableResultSet boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.Savepoint setSavepoint(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.FailoverConnectionProxy java.lang.Object invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[]) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancingConnectionProxy com.mysql.jdbc.LoadBalancingConnectionProxy.ConnectionErrorFiringInvocationHandler createConnectionProxy(java.lang.Object)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl java.sql.Timestamp getTimestamp(int, java.util.Calendar) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnectionGroupManager java.util.Collection&lt;com.mysql.jdbc.ReplicationConnectionGroup&gt; getGroupsMatching(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getCrossReference(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ServerPreparedStatement JDBC4ServerPreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, int, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getColumns(java.lang.String, java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setBytes(java.lang.String, byte[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4MySQLConnection java.sql.Clob createClob()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getImportedKeys(java.lang.String, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4MySQLConnection boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setAsciiStream(java.lang.String, java.io.InputStream, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardLoadBalanceExceptionChecker boolean shouldExceptionTriggerFailover(java.sql.SQLException) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetRow float getNativeFloat(byte[], int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData int[] getForeignKeyActions(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory boolean isLocallyConnected(com.mysql.jdbc.ConnectionImpl) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl int[] executeBatch()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement clientPrepareStatement(java.lang.String, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.V1toV2StatementInterceptorAdapter void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils java.lang.String fixDecimalExponent(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils int startsWithIgnoreCaseAndWs(java.lang.String, java.lang.String[]) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory IS_LOCAL_HOSTNAME_REPLACEMENT_PROPERTY_NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_PRIVILEGE_NOT_REVOKED'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver java.util.Properties expandHostKeyValues(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4DatabaseMetaDataUsingInfoSchema java.lang.String getRoutineTypeConditionForGetProcedureColumns()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Blob java.io.InputStream getBinaryStream(long, long)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getDriverVersion()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getVersionColumns(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory TCP_RCV_BUF_DEFAULT_VALUE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils boolean startsWithIgnoreCase(java.lang.String, int, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setObject(java.lang.String, java.lang.Object) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetRow double getNativeDouble(byte[], int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetMetaData java.lang.String getColumnTypeName(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement clientPrepareStatement(java.lang.String, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_DATETIME_FIELD_OVERFLOW'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProvider void setClientInfo(java.sql.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetMetaData java.lang.String getCatalogName(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetRow java.sql.Timestamp getTimestampFast(int, byte[], int, int, java.util.Calendar, java.util.TimeZone, boolean, com.mysql.jdbc.MySQLConnection, com.mysql.jdbc.ResultSetImpl) 7'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancingConnectionProxy java.lang.Object invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[]) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlIO ZERO_DATETIME_VALUE_MARKER'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetMetaData java.lang.String getColumnClassName(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement clientPrepareStatement(java.lang.String, int, int, boolean)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Clob int setString(long, java.lang.String) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData com.mysql.jdbc.DatabaseMetaData.LocalAndReferencedColumns parseTableStatusIntoLocalAndReferencedColumns(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory TCP_KEEP_ALIVE_PROPERTY_NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.Statement createStatement(int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Util java.lang.Object readObject(java.sql.ResultSet, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils java.util.List&lt;java.lang.String&gt; splitDBdotName(java.lang.String, java.lang.String, java.lang.String, boolean)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementInterceptor void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getFunctions(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CacheAdapterFactory com.mysql.jdbc.CacheAdapter&lt;K,V&gt; getInstance(com.mysql.jdbc.Connection, java.lang.String, int, int, java.util.Properties)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.V1toV2StatementInterceptorAdapter void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement PreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, com.mysql.jdbc.PreparedStatement.ParseInfo) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Constants SPACE_STAR_SLASH_SPACE_AS_BYTES'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionPropertiesImpl ZERO_DATETIME_BEHAVIOR_EXCEPTION'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MySQLConnection void initializeResultsMetadataFromCache(java.lang.String, com.mysql.jdbc.CachedResultSetMetaData, com.mysql.jdbc.ResultSetInternalMethods) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.SocketMetadata boolean isLocallyConnected(com.mysql.jdbc.ConnectionImpl) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils java.lang.String toAsciiString(byte[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SingleByteCharsetConverter com.mysql.jdbc.SingleByteCharsetConverter initCharset(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver java.lang.String[] parseHostPortPair(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver USER_PROPERTY_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver VERSION'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProvider void setClientInfo(java.sql.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StatementInterceptor void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver int port(java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetRow long getNativeLong(byte[], int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Clob java.io.Reader getCharacterStream(long, long)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancedMySQLConnection void initializeResultsMetadataFromCache(java.lang.String, com.mysql.jdbc.CachedResultSetMetaData, com.mysql.jdbc.ResultSetInternalMethods) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_GENERAL_ERROR'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.Statement createStatement()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4DatabaseMetaData T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement com.mysql.jdbc.CallableStatement getInstance(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.AuthenticationPlugin boolean nextAuthenticationStep(com.mysql.jdbc.Buffer, java.util.List&lt;com.mysql.jdbc.Buffer&gt;) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getExportedKeys(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getExportedKeys(java.lang.String, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement PreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, com.mysql.jdbc.PreparedStatement.ParseInfo) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ServerPreparedStatement void setNClob(int, java.sql.NClob) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4MysqlSQLXML java.lang.String readerToString(java.io.Reader) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant FUNCTION_COLUMN_INOUT'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getDriverName()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement void setTime(int, java.sql.Time, java.util.Calendar) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement serverPrepareStatement(java.lang.String, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver refQueue'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl void initializeExtension(com.mysql.jdbc.Extension) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData com.mysql.jdbc.Field[] createFunctionColumnsFields()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl int getOnDuplicateKeyLocation(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_INVALID_COLUMN_NUMBER'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement int setOneBatchedParameterSet(java.sql.PreparedStatement, int, java.lang.Object) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionFeatureNotAvailableException java.lang.String getSQLState()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.BlobFromLocator long position(java.sql.Blob, long) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4UpdatableResultSet T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.Statement getMetadataSafeStatement()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.BestResponseTimeBalanceStrategy com.mysql.jdbc.ConnectionImpl pickConnection(com.mysql.jdbc.LoadBalancingConnectionProxy, java.util.List&lt;java.lang.String&gt;, java.util.Map&lt;java.lang.String,com.mysql.jdbc.ConnectionImpl&gt;, long[], int) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setClob(java.lang.String, java.sql.Clob) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlParameterMetadata boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl boolean execute(java.lang.String, int[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancingConnectionProxy.ConnectionErrorFiringInvocationHandler java.lang.Object invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[]) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement int[] executeBatch()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils boolean startsWithIgnoreCase(java.lang.String, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_TIMEOUT_EXPIRED'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant FUNCTION_NULLABLE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl int executeUpdate(java.lang.String, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setTimestamp(java.lang.String, java.sql.Timestamp, java.util.Calendar) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.Statement createStatement(int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Util void resultSetToMap(java.util.Map, java.sql.ResultSet, int, int) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection ReplicationConnection(java.util.Properties, java.util.Properties, java.util.List&lt;java.lang.String&gt;, java.util.List&lt;java.lang.String&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_CONNECTION_NOT_OPEN'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancedMySQLConnection void initializeExtension(com.mysql.jdbc.Extension) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.Security byte[] scramble411(java.lang.String, java.lang.String, com.mysql.jdbc.Connection)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getBestRowIdentifier(java.lang.String, java.lang.String, java.lang.String, int, boolean) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl java.sql.SQLException handleExceptionForBatch(int, int, int[], java.sql.SQLException)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.Statement createStatement(int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CallableStatement JDBC4CallableStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, boolean) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils java.util.List&lt;java.lang.String&gt; split(java.lang.String, java.lang.String, boolean)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils short getShort(byte[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.BestResponseTimeBalanceStrategy com.mysql.jdbc.ConnectionImpl pickConnection(com.mysql.jdbc.LoadBalancingConnectionProxy, java.util.List&lt;java.lang.String&gt;, java.util.Map&lt;java.lang.String,com.mysql.jdbc.ConnectionImpl&gt;, long[], int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetInternalMethods void initializeFromCachedMetaData(com.mysql.jdbc.CachedResultSetMetaData) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.TableType UNKNOWN'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement T getObject(int, java.lang.Class&lt;T&gt;) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProviderSP void initialize(java.sql.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement com.mysql.jdbc.PreparedStatement prepareBatchedInsertSQL(com.mysql.jdbc.MySQLConnection, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils boolean startsWithIgnoreCase(java.lang.String, java.lang.String) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.CallableStatement prepareCall(java.lang.String, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Clob java.io.OutputStream setAsciiStream(long)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl void setNetworkTimeout(java.util.concurrent.Executor, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils int indexOfIgnoreCaseRespectQuotes(int, java.lang.String, java.lang.String, char, boolean) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Connection boolean hasSameProperties(com.mysql.jdbc.Connection) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_INDEX_NOT_FOUND'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getProcedures(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetMetaData boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionPropertiesImpl java.sql.DriverPropertyInfo[] exposeAsDriverPropertyInfoInternal(java.util.Properties, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4UpdatableResultSet java.sql.SQLXML getSQLXML(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancedMySQLConnection void abort(java.util.concurrent.Executor) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement long[] computeMaxParameterSetSizeAndBatchSize(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.TableType SYSTEM_TABLE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlIO java.util.List&lt;com.mysql.jdbc.ResultSetRow&gt; fetchRowsViaCursor(java.util.List&lt;com.mysql.jdbc.ResultSetRow&gt;, long, com.mysql.jdbc.Field[], int, boolean) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setBinaryStream(java.lang.String, java.io.InputStream, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet executeMetadataQuery(java.sql.PreparedStatement) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl java.sql.Timestamp getTimestamp(java.lang.String, java.util.Calendar) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl java.sql.Time fastTimeCreate(java.util.Calendar, int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl com.mysql.jdbc.Connection duplicate()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NoSubInterceptorWrapper NoSubInterceptorWrapper(com.mysql.jdbc.StatementInterceptorV2) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PerConnectionLRUFactory com.mysql.jdbc.CacheAdapter&lt;java.lang.String,com.mysql.jdbc.PreparedStatement.ParseInfo&gt; getInstance(com.mysql.jdbc.Connection, java.lang.String, int, int, java.util.Properties)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CommunicationsException java.lang.String getMessage()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant FUNCTION_COLUMN_OUT'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SequentialBalanceStrategy com.mysql.jdbc.ConnectionImpl pickConnection(com.mysql.jdbc.LoadBalancingConnectionProxy, java.util.List&lt;java.lang.String&gt;, java.util.Map&lt;java.lang.String,com.mysql.jdbc.ConnectionImpl&gt;, long[], int) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl T getObject(int, java.lang.Class&lt;T&gt;) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4PreparedStatement JDBC4PreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setNCharacterStream(java.lang.String, java.io.Reader, long) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetMetaData java.lang.String getSchemaName(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver PROTOCOL_PROPERTY_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CommunicationsException java.lang.String getSQLState()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement serverPrepareStatement(java.lang.String, int[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.ProcedureType FUNCTION'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SequentialBalanceStrategy com.mysql.jdbc.ConnectionImpl pickConnection(com.mysql.jdbc.LoadBalancingConnectionProxy, java.util.List&lt;java.lang.String&gt;, java.util.Map&lt;java.lang.String,com.mysql.jdbc.ConnectionImpl&gt;, long[], int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SingleByteCharsetConverter java.lang.String toStringDefaultEncoding(byte[], int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProvider void setClientInfo(java.sql.Connection, java.lang.String, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl StatementImpl(com.mysql.jdbc.MySQLConnection, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setDate(java.lang.String, java.sql.Date, java.util.Calendar) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setTime(java.lang.String, java.sql.Time) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils int getInt(byte[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl void setCatalog(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProviderSP java.util.Properties getClientInfo(java.sql.Connection)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement com.mysql.jdbc.PreparedStatement getInstance(com.mysql.jdbc.MySQLConnection, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CommentClientInfoProvider void initialize(java.sql.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection boolean hasSameProperties(com.mysql.jdbc.Connection) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.TableType VIEW'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_WRONG_NO_OF_PARAMETERS'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.BestResponseTimeBalanceStrategy void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl PING_MARKER'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.TableMetaDataKey int compareTo(com.mysql.jdbc.DatabaseMetaData.TableMetaDataKey) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setDouble(java.lang.String, double) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_COMMUNICATION_LINK_FAILURE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement int getNamedParamIndex(java.lang.String, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement CallableStatement(com.mysql.jdbc.MySQLConnection, com.mysql.jdbc.CallableStatement.CallableStatementParamInfo) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver PATH_PROPERTY_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Clob void writerClosed(com.mysql.jdbc.WatchableWriter) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory TCP_SND_BUF_DEFAULT_VALUE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.RandomBalanceStrategy void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void registerOutParameter(java.lang.String, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ResultSet boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_CONNECTION_REJECTED'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CacheAdapter void invalidateAll(java.util.Set&lt;K&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.CallableStatement prepareCall(java.lang.String, int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData void convertToJdbcFunctionList(java.lang.String, java.sql.ResultSet, boolean, java.lang.String, java.util.List&lt;com.mysql.jdbc.DatabaseMetaData.ComparableWrapper&lt;java.lang.String,com.mysql.jdbc.ResultSetRow&gt;&gt;, int, com.mysql.jdbc.Field[]) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setTimestamp(java.lang.String, java.sql.Timestamp) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlIO com.mysql.jdbc.Field unpackField(com.mysql.jdbc.Buffer, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getTimeDateFunctions()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProviderSP void initialize(java.sql.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl statementExecuting'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CommentClientInfoProvider void initialize(java.sql.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ReflectiveStatementInterceptorAdapter com.mysql.jdbc.ResultSetInternalMethods preProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancedMySQLConnection void recachePreparedStatement(com.mysql.jdbc.ServerPreparedStatement) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl com.mysql.jdbc.MySQLConnection checkClosed()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setByte(java.lang.String, byte) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4Connection JDBC4Connection(java.lang.String, int, java.util.Properties, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils byte[] stripEnclosure(byte[], java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.lang.String getRoutineTypeConditionForGetProcedures()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MySQLConnection void recachePreparedStatement(com.mysql.jdbc.ServerPreparedStatement) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.BestResponseTimeBalanceStrategy void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.PreparedStatement prepareMetaDataSafeStatement(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl void recachePreparedStatement(com.mysql.jdbc.ServerPreparedStatement) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement CallableStatement(com.mysql.jdbc.MySQLConnection, com.mysql.jdbc.CallableStatement.CallableStatementParamInfo) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setDate(java.lang.String, java.sql.Date) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getColumns(java.lang.String, java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.Blob int setBytes(long, byte[]) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant FUNCTION_NULLABLE_UNKNOWN'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData com.mysql.jdbc.Field[] createColumnsFields()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getVersionColumns(java.lang.String, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory TCP_TRAFFIC_CLASS_DEFAULT_VALUE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement void setTimestamp(int, java.sql.Timestamp, java.util.Calendar) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getCrossReference(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement serverPrepareStatement(java.lang.String, java.lang.String[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl int executeUpdate(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4MySQLConnection java.sql.NClob createNClob()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement void setTime(int, java.sql.Time, java.util.Calendar) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement com.mysql.jdbc.ParameterBindings getParameterBindings()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getProcedureTerm()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionPropertiesImpl ZERO_DATETIME_BEHAVIOR_ROUND'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver LICENSE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_INVALID_TRANSACTION_TERMINATION'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4Connection T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ExceptionInterceptor java.sql.SQLException interceptException(java.sql.SQLException, com.mysql.jdbc.Connection) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setLong(java.lang.String, long) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NamedPipeSocketFactory boolean isLocallyConnected(com.mysql.jdbc.ConnectionImpl) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setCharacterStream(java.lang.String, java.io.Reader, long) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MySQLConnection java.lang.StringBuffer generateConnectionCommentBlock(java.lang.StringBuffer) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_INVALID_CONNECTION_ATTRIBUTE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetInternalMethods void populateCachedMetaData(com.mysql.jdbc.CachedResultSetMetaData) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getTables(java.lang.String, java.lang.String, java.lang.String, java.lang.String[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getExportedKeys(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement prepareStatement(java.lang.String, java.lang.String[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement clientPrepareStatement(java.lang.String, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CallableStatement JDBC4CallableStatement(com.mysql.jdbc.MySQLConnection, com.mysql.jdbc.CallableStatement.CallableStatementParamInfo) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory TCP_TRAFFIC_CLASS_PROPERTY_NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement com.mysql.jdbc.Buffer fillSendPacket(byte[][], java.io.InputStream[], boolean[], int[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.BlobFromLocator int setBytes(long, byte[]) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.AssertionFailedException AssertionFailedException(java.lang.Exception) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError java.sql.SQLException createSQLException(java.lang.String, com.mysql.jdbc.ExceptionInterceptor, com.mysql.jdbc.Connection)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getPrimaryKeys(java.lang.String, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement com.mysql.jdbc.PreparedStatement prepareBatchedInsertSQL(com.mysql.jdbc.MySQLConnection, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementInterceptorV2 com.mysql.jdbc.ResultSetInternalMethods preProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4LoadBalancedMySQLConnection boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getExportedKeys(java.lang.String, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement clientPrepareStatement(java.lang.String, int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils int indexOfIgnoreCaseRespectMarker(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement clientPrepareStatement(java.lang.String, java.lang.String[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Util java.util.Map&lt;java.lang.Object,java.lang.Object&gt; calculateDifferences(java.util.Map&lt;?,?&gt;, java.util.Map&lt;?,?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement prepareStatement(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.CallableStatement prepareCall(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Connection void setNetworkTimeout(java.util.concurrent.Executor, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory java.net.Socket connect(java.lang.String, int, java.util.Properties) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4MySQLConnection java.sql.Blob createBlob()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CallableStatement JDBC4CallableStatement(com.mysql.jdbc.MySQLConnection, com.mysql.jdbc.CallableStatement.CallableStatementParamInfo) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NoSubInterceptorWrapper com.mysql.jdbc.ResultSetInternalMethods preProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory TCP_NO_DELAY_DEFAULT_VALUE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils byte[] getBytes(java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_INVALID_AUTH_SPEC'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4LoadBalancedMySQLConnection java.sql.Blob createBlob()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setAsciiStream(java.lang.String, java.io.InputStream) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_INVALID_CHARACTER_VALUE_FOR_CAST'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl java.sql.Time getTime(java.lang.String, java.util.Calendar) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CallableStatement java.sql.SQLXML getSQLXML(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver NUM_HOSTS_PROPERTY_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema int getJDBC4FunctionConstant(com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4Connection java.sql.Blob createBlob()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.lang.String getRoutineTypeConditionForGetProcedureColumns()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlIO ZERO_DATE_VALUE_MARKER'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_DIVISION_BY_ZERO'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_NUMERIC_VALUE_OUT_OF_RANGE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver java.lang.String[] parseHostPortPair(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver java.lang.String host(java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MiniAdmin MiniAdmin(java.sql.Connection) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getCatalogSeparator()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver PROPERTIES_TRANSFORM_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4DatabaseMetaData boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4DatabaseMetaDataUsingInfoSchema java.lang.String getRoutineTypeConditionForGetProcedures()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_INDEX_ALREADY_EXISTS'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_SYNTAX_ERROR'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_CONNECTION_FAIL_DURING_TX'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement serverPrepareStatement(java.lang.String, int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancedAutoCommitInterceptor com.mysql.jdbc.ResultSetInternalMethods preProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.SQLException appendMessageToException(java.sql.SQLException, java.lang.String, com.mysql.jdbc.ExceptionInterceptor) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NoSubInterceptorWrapper void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.SQLError java.sql.SQLException createSQLException(java.lang.String, com.mysql.jdbc.ExceptionInterceptor)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant FUNCTION_COLUMN_UNKNOWN'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.Statement createStatement(int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement PreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.util.List&lt;com.mysql.jdbc.ResultSetRow&gt; extractForeignKeyForTable(java.util.ArrayList&lt;com.mysql.jdbc.ResultSetRow&gt;, java.sql.ResultSet, java.lang.String) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory TCP_KEEP_ALIVE_DEFAULT_VALUE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement serverPrepareStatement(java.lang.String, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Util java.lang.Object handleNewInstance(java.lang.reflect.Constructor&lt;?&gt;, java.lang.Object[], com.mysql.jdbc.ExceptionInterceptor) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnectionGroupManager java.util.Collection&lt;java.lang.String&gt; getSlaveHosts(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData com.mysql.jdbc.Field[] createFkMetadataFields()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.util.List&lt;com.mysql.jdbc.ResultSetRow&gt; extractForeignKeyForTable(java.util.ArrayList&lt;com.mysql.jdbc.ResultSetRow&gt;, java.sql.ResultSet, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.BufferRow com.mysql.jdbc.ResultSetRow setMetadata(com.mysql.jdbc.Field[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.ComparableWrapper int compareTo(com.mysql.jdbc.DatabaseMetaData.ComparableWrapper&lt;K,V&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getDatabaseProductName()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancingConnectionProxy java.util.Map&lt;java.lang.String,java.lang.Long&gt; getGlobalBlacklist()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement serverPrepareStatement(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl int executeUpdate(java.lang.String, int[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_DRIVER_NOT_CAPABLE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getPrimaryKeys(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory TCP_NO_DELAY_PROPERTY_NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setNull(java.lang.String, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MySQLConnection java.sql.Statement getMetadataSafeStatement()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.SQLException appendMessageToException(java.sql.SQLException, java.lang.String, com.mysql.jdbc.ExceptionInterceptor) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement void setURL(int, java.net.URL) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement PreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.util.List&lt;com.mysql.jdbc.ResultSetRow&gt; extractForeignKeyForTable(java.util.ArrayList&lt;com.mysql.jdbc.ResultSetRow&gt;, java.sql.ResultSet, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Util void resultSetToMap(java.util.Map, java.sql.ResultSet) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlIO com.mysql.jdbc.Buffer readPacket()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionPropertiesImpl ZERO_DATETIME_BEHAVIOR_CONVERT_TO_NULL'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4Connection boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl int getNextRoundRobinHostIndex(java.lang.String, java.util.List&lt;?&gt;) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getSchemaTerm()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement clientPrepareStatement(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MySQLConnection java.lang.StringBuffer generateConnectionCommentBlock(java.lang.StringBuffer)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.MysqlIO com.mysql.jdbc.Buffer checkErrorPacket()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.util.Properties getProperties()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement int[] executeBatch()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_COLUMN_NOT_FOUND'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.RowDataCursor RowDataCursor(com.mysql.jdbc.MysqlIO, com.mysql.jdbc.ServerPreparedStatement, com.mysql.jdbc.Field[]) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl void populateCachedMetaData(com.mysql.jdbc.CachedResultSetMetaData) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setNCharacterStream(java.lang.String, java.io.Reader) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement clientPrepareStatement(java.lang.String, int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement com.mysql.jdbc.CallableStatement getInstance(com.mysql.jdbc.MySQLConnection, com.mysql.jdbc.CallableStatement.CallableStatementParamInfo) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ResultSet java.sql.SQLXML getSQLXML(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ClientInfoProviderSP void setClientInfo(java.sql.Connection, java.lang.String, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory TCP_SND_BUF_PROPERTY_NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CommentClientInfoProvider void setClientInfo(java.sql.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Clob void streamClosed(com.mysql.jdbc.WatchableOutputStream) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver java.lang.String property(java.lang.String, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getColumnPrivileges(java.lang.String, java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl boolean hasSameProperties(com.mysql.jdbc.Connection) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement clientPrepareStatement(java.lang.String, int[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement com.mysql.jdbc.PreparedStatement prepareBatchedInsertSQL(com.mysql.jdbc.MySQLConnection, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setBinaryStream(java.lang.String, java.io.InputStream, long) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlParameterMetadata java.lang.String getParameterClassName(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement prepareStatement(java.lang.String, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CallableStatement JDBC4CallableStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Util void resultSetToMap(java.util.Map, java.sql.ResultSet, java.lang.String, java.lang.String) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getProcedureOrFunctionColumns(com.mysql.jdbc.Field[], java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NoSubInterceptorWrapper void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement serverPrepareStatement(java.lang.String, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Connection void initializeExtension(com.mysql.jdbc.Extension) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_TRANSACTION_RESOLUTION_UNKNOWN'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant FUNCTION_COLUMN_RETURN'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CommentClientInfoProvider void setClientInfo(java.sql.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl java.sql.ResultSet executeQuery(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.Savepoint setSavepoint(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement int setOneBatchedParameterSet(java.sql.PreparedStatement, int, java.lang.Object) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getIndexInfo(java.lang.String, java.lang.String, java.lang.String, boolean, boolean)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancedMySQLConnection java.lang.StringBuffer generateConnectionCommentBlock(java.lang.StringBuffer) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void registerOutParameter(java.lang.String, int, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement prepareStatement(java.lang.String, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetRow int getNativeInt(byte[], int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReflectiveStatementInterceptorAdapter void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancingConnectionProxy BLACKLIST_TIMEOUT_PROPERTY_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData com.mysql.jdbc.Field[] createFieldMetadataForGetProcedures()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils byte[] stripEnclosure(byte[], java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetRow short getNativeShort(byte[], int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData void convertToJdbcProcedureList(boolean, java.lang.String, java.sql.ResultSet, boolean, java.lang.String, java.util.List&lt;com.mysql.jdbc.DatabaseMetaData.ComparableWrapper&lt;java.lang.String,com.mysql.jdbc.ResultSetRow&gt;&gt;, int) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardLoadBalanceExceptionChecker void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Connection void abort(java.util.concurrent.Executor) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl void initializeResultsMetadataFromCache(java.lang.String, com.mysql.jdbc.CachedResultSetMetaData, com.mysql.jdbc.ResultSetInternalMethods) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement T getObject(java.lang.String, java.lang.Class&lt;T&gt;) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement CallableStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, boolean) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver PASSWORD_PROPERTY_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StandardSocketFactory TCP_RCV_BUF_PROPERTY_NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver USE_CONFIG_PROPERTY_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SingleByteCharsetConverter java.lang.String toString(byte[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection void setNetworkTimeout(java.util.concurrent.Executor, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ReflectiveStatementInterceptorAdapter void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setBoolean(java.lang.String, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl int executeUpdate(java.lang.String, boolean, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Clob int setString(long, java.lang.String, int, int) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getColumnPrivileges(java.lang.String, java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.TableMetaDataKey int compareTo(java.lang.Object) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionGroup void closeConnectionProxy(com.mysql.jdbc.LoadBalancingConnectionProxy) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getImportedKeys(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.RandomBalanceStrategy com.mysql.jdbc.ConnectionImpl pickConnection(com.mysql.jdbc.LoadBalancingConnectionProxy, java.util.List&lt;java.lang.String&gt;, java.util.Map&lt;java.lang.String,com.mysql.jdbc.ConnectionImpl&gt;, long[], int) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement clientPrepareStatement(java.lang.String, int[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils byte[] stripEnclosure(byte[], java.lang.String, java.lang.String) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl void checkNullOrEmptyQuery(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancedAutoCommitInterceptor void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.StandardLoadBalanceExceptionChecker void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl java.sql.Date fastDateCreate(java.util.Calendar, int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getExtraNameCharacters()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.IndexMetaDataKey int compareTo(java.lang.Object) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData com.mysql.jdbc.DatabaseMetaData.IteratorWithCleanup&lt;java.lang.String&gt; getCatalogIterator(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Util java.util.Map&lt;java.lang.Object,java.lang.Object&gt; calculateDifferences(java.util.Map&lt;?,?&gt;, java.util.Map&lt;?,?&gt;)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetRow java.sql.Time getNativeTime(int, byte[], int, int, java.util.Calendar, java.util.TimeZone, boolean, com.mysql.jdbc.MySQLConnection, com.mysql.jdbc.ResultSetImpl) 8'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement prepareStatement(java.lang.String, int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData com.mysql.jdbc.Field[] createTablesFields()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils java.lang.String toAsciiString(byte[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver LOADBALANCE_URL_PREFIX'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlIO com.mysql.jdbc.NetworkResources getNetworkResources()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.RandomBalanceStrategy com.mysql.jdbc.ConnectionImpl pickConnection(com.mysql.jdbc.LoadBalancingConnectionProxy, java.util.List&lt;java.lang.String&gt;, java.util.Map&lt;java.lang.String,com.mysql.jdbc.ConnectionImpl&gt;, long[], int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_DEADLOCK'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_BASE_TABLE_OR_VIEW_ALREADY_EXISTS'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement com.mysql.jdbc.PreparedStatement getInstance(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, com.mysql.jdbc.PreparedStatement.ParseInfo) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl int executeUpdate(java.lang.String, java.lang.String[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.lang.StringBuffer generateConnectionCommentBlock(java.lang.StringBuffer) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils java.util.List&lt;java.lang.String&gt; split(java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver java.lang.String database(java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancedAutoCommitInterceptor void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils byte[] stripEnclosure(byte[], java.lang.String, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ResultSet T getObject(int, java.lang.Class&lt;T&gt;) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ResultSetImpl T getObject(java.lang.String, java.lang.Class&lt;T&gt;) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4MySQLConnection java.sql.SQLXML createSQLXML()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setNull(java.lang.String, int, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setBlob(java.lang.String, java.sql.Blob) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement void setTimestamp(int, java.sql.Timestamp, java.util.Calendar) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_MEMORY_ALLOCATION_FAILURE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Clob long position(java.sql.Clob, long) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getProceduresAndOrFunctions(com.mysql.jdbc.Field[], java.lang.String, java.lang.String, java.lang.String, boolean, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getPrimaryKeys(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.Buffer Buffer(byte[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReflectiveStatementInterceptorAdapter ReflectiveStatementInterceptorAdapter(com.mysql.jdbc.StatementInterceptor) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4DatabaseMetaDataUsingInfoSchema T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Util java.util.List&lt;com.mysql.jdbc.Extension&gt; loadExtensions(com.mysql.jdbc.Connection, java.util.Properties, java.lang.String, java.lang.String, com.mysql.jdbc.ExceptionInterceptor)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SocketFactory java.net.Socket connect(java.lang.String, int, java.util.Properties) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnection java.sql.PreparedStatement prepareStatement(java.lang.String, java.lang.String[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement prepareStatement(java.lang.String, int, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.V1toV2StatementInterceptorAdapter com.mysql.jdbc.ResultSetInternalMethods preProcess(java.lang.String, com.mysql.jdbc.Statement, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getFunctions(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl java.sql.SQLException handleExceptionForBatch(int, int, int[], java.sql.SQLException) 3'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_COLUMN_ALREADY_EXISTS'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getVersionColumns(java.lang.String, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement CallableStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4PreparedStatement JDBC4PreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, com.mysql.jdbc.PreparedStatement.ParseInfo) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_UNABLE_TO_CONNECT_TO_DATASOURCE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Constants SLASH_STAR_SPACE_AS_BYTES'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.FailoverConnectionProxy com.mysql.jdbc.LoadBalancingConnectionProxy.ConnectionErrorFiringInvocationHandler createConnectionProxy(java.lang.Object)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4DatabaseMetaDataUsingInfoSchema int getJDBC4FunctionConstant(com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData int[] getForeignKeyActions(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement serverPrepareStatement(java.lang.String, int[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.IndexMetaDataKey int compareTo(com.mysql.jdbc.DatabaseMetaData.IndexMetaDataKey) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement clientPrepareStatement(java.lang.String, int, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl ConnectionImpl(java.lang.String, int, java.util.Properties, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NamedPipeSocketFactory NAMED_PIPE_PROP_NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Blob long position(java.sql.Blob, long) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl boolean execute(java.lang.String, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SequentialBalanceStrategy void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData com.mysql.jdbc.Field[] createProcedureColumnsFields()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancedMySQLConnection boolean hasSameProperties(com.mysql.jdbc.Connection) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.MysqlParameterMetadata java.lang.String getParameterTypeName(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_MORE_THAN_ONE_ROW_UPDATED_OR_DELETED'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4Connection java.sql.NClob createNClob()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getPrimaryKeys(java.lang.String, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant FUNCTION_NO_NULLS'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4PreparedStatement JDBC4PreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, com.mysql.jdbc.PreparedStatement.ParseInfo) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl void abort(java.util.concurrent.Executor) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4CallableStatement java.sql.SQLXML getSQLXML(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4ResultSet java.sql.SQLXML getSQLXML(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl boolean execute(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Blob java.io.OutputStream setBinaryStream(long)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlIO com.mysql.jdbc.Field unpackField(com.mysql.jdbc.Buffer, boolean)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Clob java.io.Writer setCharacterStream(long)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Extension void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.BlobFromLocator java.io.InputStream getBinaryStream(long, long)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4DatabaseMetaDataUsingInfoSchema boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_NO_ROWS_UPDATED_OR_DELETED'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getImportedKeys(java.lang.String, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement.CallableStatementParamInfoJDBC3 boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CharsetMapping INDEX_TO_COLLATION'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Constants EMPTY_BYTE_ARRAY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Buffer void writeBytesNoNull(byte[]) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ServerPreparedStatement ServerPreparedStatement(com.mysql.jdbc.MySQLConnection, java.lang.String, java.lang.String, int, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.ComparableWrapper int compareTo(java.lang.Object) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnectionGroupManager java.util.Collection&lt;java.lang.String&gt; getMasterHosts(java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StringUtils int indexOfQuoteDoubleAware(java.lang.String, java.lang.String, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.sql.ResultSet getImportedKeys(java.lang.String, java.lang.String, java.lang.String)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.NamedPipeSocketFactory java.net.Socket connect(java.lang.String, int, java.util.Properties) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData java.lang.String getNumericFunctions()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Extension void init(com.mysql.jdbc.Connection, java.util.Properties) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.Savepoint setSavepoint()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant FUNCTION_COLUMN_RESULT'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NonRegisteringDriver PORT_PROPERTY_KEY'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SQLError SQL_STATE_INSERT_VALUE_LIST_NO_MATCH_COL_LIST'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement serverPrepareStatement(java.lang.String, java.lang.String[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.lang.StringBuffer generateConnectionCommentBlock(java.lang.StringBuffer)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Connection java.util.Properties getProperties()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setObject(java.lang.String, java.lang.Object, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getIndexInfo(java.lang.String, java.lang.String, java.lang.String, boolean, boolean)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.CallableStatement void setFloat(java.lang.String, float) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.NoSubInterceptorWrapper com.mysql.jdbc.StatementInterceptorV2 getUnderlyingInterceptor()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ReplicationConnectionGroup void handleCloseConnection(com.mysql.jdbc.ReplicationConnection) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema java.sql.ResultSet getCrossReference(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.PreparedStatement com.mysql.jdbc.PreparedStatement prepareBatchedInsertSQL(com.mysql.jdbc.MySQLConnection, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.Blob byte[] getBytes(long, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl boolean containsOnDuplicateKeyInString(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancedMySQLConnection void setNetworkTimeout(java.util.concurrent.Executor, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.Security byte[] scramble411(java.lang.String, java.lang.String, com.mysql.jdbc.Connection) 2'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.TableType SYSTEM_VIEW'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.SequentialBalanceStrategy void init(com.mysql.jdbc.Connection, java.util.Properties) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaDataUsingInfoSchema.JDBC4FunctionConstant FUNCTION_COLUMN_IN'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.MysqlIO com.mysql.jdbc.ResultSetImpl readResultsForQueryOrUpdate(com.mysql.jdbc.StatementImpl, int, int, int, boolean, java.lang.String, com.mysql.jdbc.Buffer, boolean, long, com.mysql.jdbc.Field[]) 6'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.JDBC4LoadBalancedMySQLConnection java.sql.Clob createClob()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.StatementImpl void executeSimpleNonQuery(com.mysql.jdbc.MySQLConnection, java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData com.mysql.jdbc.Field[] createIndexInfoFields()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement prepareStatement(java.lang.String, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl DEFAULT_LOGGER_CLASS'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.BlobFromLocator int setBytes(long, byte[], int, int) 1'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement prepareStatement(java.lang.String, int[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.DatabaseMetaData.ProcedureType PROCEDURE'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.ConnectionImpl java.sql.PreparedStatement clientPrepareStatement(java.lang.String, java.lang.String[])'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.LoadBalancingConnectionProxy com.mysql.jdbc.ConnectionImpl createConnectionForHost(java.lang.String) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>

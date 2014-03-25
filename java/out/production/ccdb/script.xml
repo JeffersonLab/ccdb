@@ -1,0 +1,42 @@
+<modules>
+    <!-- Module script for production -->
+    <module name="ccdb" outputDir="D:/Projects/CCDB/trunk/java/out/production/ccdb">
+        <sources path="D:/Projects/CCDB/trunk/java/src/CalibrationProvider.kt"/>
+        <sources path="D:/Projects/CCDB/trunk/java/src/main.kt"/>
+        <sources path="D:/Projects/CCDB/trunk/java/src/model.kt"/>
+        <sources path="D:/Projects/CCDB/trunk/java/src/PathUtils.kt"/>
+        <sources path="D:/Projects/CCDB/trunk/java/src/Variation.kt"/>
+        <!-- Classpath -->
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/charsets.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/deploy.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/javaws.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/jce.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/jfr.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/jfxrt.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/jsse.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/management-agent.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/plugin.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/resources.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/rt.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/ext/access-bridge-64.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/ext/dnsns.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/ext/jaccess.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/ext/localedata.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/ext/sunec.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/ext/sunjce_provider.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/ext/sunmscapi.jar"/>
+        <classpath path="C:/Program Files/Java/jdk1.7.0_51/jre/lib/ext/zipfs.jar"/>
+        <!-- Output directory, commented out -->
+        <!-- 
+            <classpath path="D:/Projects/CCDB/trunk/java/out/production/ccdb"/>
+        -->
+        <classpath path="D:/Projects/CCDB/trunk/java/lib/kotlin-runtime.jar"/>
+        <classpath path="C:/Program Files (x86)/MySQL/MySQL Connector J/mysql-connector-java-5.1.29-bin.jar"/>
+        <!-- Java Source Roots -->
+        <classpath path="D:/Projects/CCDB/trunk/java/src"/>
+        <!-- External annotations -->
+        <externalAnnotations path= "C:/Program Files (x86)/JetBrains/IntelliJ IDEA Community Edition 13.1.1/lib/jdkAnnotations.jar"/>
+        <externalAnnotations path= "C:/Users/Dmitry/.IdeaIC13/config/plugins/Kotlin/kotlinc/lib/kotlin-jdk-annotations.jar"/>
+        <externalAnnotations path= "D:/Projects/CCDB/trunk/java/annotations/KotlinJavaRuntime"/>
+    </module>
+</modules>

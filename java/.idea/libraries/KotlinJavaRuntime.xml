@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="KotlinJavaRuntime">
+    <ANNOTATIONS>
+      <root url="file://$PROJECT_DIR$/annotations/KotlinJavaRuntime" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-runtime.jar!/" />
+      <root url="jar://C:/Program Files (x86)/MySQL/MySQL Connector J/mysql-connector-java-5.1.29-bin.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-runtime-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

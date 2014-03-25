@@ -1,0 +1,131 @@
+<root>
+    <item name='com.mysql.jdbc.jdbc2.optional.JDBC4ConnectionWrapper boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection int prepare(javax.transaction.xa.Xid) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection void start(javax.transaction.xa.Xid, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.JDBC4ConnectionWrapper T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.SuspendableXAConnection void commit(javax.transaction.xa.Xid, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.SuspendableXAConnection void start(javax.transaction.xa.Xid, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.SuspendableXAConnection void end(javax.transaction.xa.Xid, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection com.mysql.jdbc.jdbc2.optional.MysqlXAConnection getInstance(com.mysql.jdbc.ConnectionImpl, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.ConnectionWrapper void initializeExtension(com.mysql.jdbc.Extension) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection MysqlXAConnection(com.mysql.jdbc.ConnectionImpl, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection void rollback(javax.transaction.xa.Xid) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.JDBC4PreparedStatementWrapper boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.ConnectionWrapper void setNetworkTimeout(java.util.concurrent.Executor, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.SuspendableXAConnection javax.transaction.xa.Xid[] recover(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.JDBC4CallableStatementWrapper boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.JDBC4MysqlXAConnection JDBC4MysqlXAConnection(com.mysql.jdbc.ConnectionImpl, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection javax.transaction.xa.XAException mapXAExceptionFromSQLException(java.sql.SQLException) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection javax.transaction.xa.Xid[] recover(int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.JDBC4CallableStatementWrapper T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection void end(javax.transaction.xa.Xid, int) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection void commit(javax.transaction.xa.Xid, boolean) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlDataSource javax.naming.Reference getReference()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.ConnectionWrapper void abort(java.util.concurrent.Executor) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.ConnectionWrapper boolean hasSameProperties(com.mysql.jdbc.Connection) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='org.jetbrains.kannotator.runtime.annotations.Propagated'>
+            <val name="value" val="{org.jetbrains.kannotator.controlFlow.builder.analysis.NullabilityKey.class}"/>
+        </annotation>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory java.lang.Object getObjectInstance(java.lang.Object, javax.naming.Name, javax.naming.Context, java.util.Hashtable&lt;?,?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.JDBC4PreparedStatementWrapper T unwrap(java.lang.Class&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection javax.transaction.xa.XAException mapXAExceptionFromSQLException(java.sql.SQLException)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory DATA_SOURCE_CLASS_NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.SuspendableXAConnection javax.transaction.xa.XAResource getXAResource()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection javax.transaction.xa.Xid[] recover(java.sql.Connection, int)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlXAConnection javax.transaction.xa.XAResource getXAResource()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory POOL_DATA_SOURCE_CLASS_NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper boolean isWrapperFor(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.SuspendableXAConnection void rollback(javax.transaction.xa.Xid) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.SuspendableXAConnection void forget(javax.transaction.xa.Xid) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlDataSource mysqlDriver'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.MysqlDataSourceFactory XA_DATA_SOURCE_CLASS_NAME'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.mysql.jdbc.jdbc2.optional.SuspendableXAConnection int prepare(javax.transaction.xa.Xid) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>
