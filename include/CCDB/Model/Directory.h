@@ -93,7 +93,7 @@ protected:
 	 * So one uses only AddSubdirecrory to generate directories structure
 	 * @param parent Parent directory. Might be NULL if No parent is present
 	 */
-	void SetParent(Directory *parent);
+	void SetParent(Directory *parent); //TODO delete this and check everything works
 	
 private:
 	string mName;		///Name of directorey like in db
