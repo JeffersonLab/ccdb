@@ -32,6 +32,7 @@ class CcdbSchemaVersion(Base):
     __tablename__ = 'schemaVersions'
     id = Column(Integer, primary_key=True)
     version = Column("schemaVersion", Integer)
+
     def __repr__(self):
         return "<CcdbSchemaVersion {0} version: '{1}'>".format(self.id, self.version)
 
@@ -48,10 +49,10 @@ class Directory(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
     comment = Column(Text)
-    created = Column(DateTime, default = datetime.datetime.now)
-    modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
+    created = Column(DateTime, default=datetime.datetime.now)
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     parent_id = Column('parentId', Integer)
-    author_id = Column('authorId', Integer, default = 1)
+    author_id = Column('authorId', Integer, default=1)
 
     def __init__(self):
         self.path = ""
@@ -76,15 +77,18 @@ class TypeTable(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
     comment = Column(Text)
-    created = Column(DateTime, default = datetime.datetime.now)
-    modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
-    parent_dir_id = Column('directoryId',Integer, ForeignKey('directories.id'))
+    created = Column(DateTime, default=datetime.datetime.now)
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+    parent_dir_id = Column('directoryId', Integer, ForeignKey('directories.id'))
     parent_dir = relationship("Directory", backref=backref('type_tables', order_by=id))
     constant_sets = relationship("ConstantSet", backref=backref('type_table'))
-    columns = relationship("TypeTableColumn", order_by="TypeTableColumn.order", cascade="all, delete, delete-orphan", backref=backref("type_table") )
-    rows_count = Column('nRows',Integer)
-    _columns_count = Column('nColumns',Integer)
-    author_id = Column('authorId', Integer, default = 1)
+    columns = relationship("TypeTableColumn",
+                           order_by="TypeTableColumn.order",
+                           cascade="all, delete, delete-orphan",
+                           backref=backref("type_table"))
+    rows_count = Column('nRows', Integer)
+    _columns_count = Column('nColumns', Integer)
+    author_id = Column('authorId', Integer, default=1)
 
     @property
     def columns_count(self):
@@ -114,12 +118,11 @@ class TypeTableColumn(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
     comment = Column(Text)
-    created = Column(DateTime, default = datetime.datetime.now)
-    modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
+    created = Column(DateTime, default=datetime.datetime.now)
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     order = Column(Integer)
     type = Column('columnType', Enum('int', 'uint', 'long', 'ulong', 'double', 'string', 'bool'))
-    type_table_id = Column('typeId',Integer, ForeignKey('typeTables.id'))
-
+    type_table_id = Column('typeId', Integer, ForeignKey('typeTables.id'))
 
     @property
     def path(self):
@@ -136,12 +139,10 @@ class ConstantSet(Base):
     __tablename__ = 'constantSets'
     id = Column(Integer, primary_key=True)
     _vault = Column('vault', Text)
-    created = Column(DateTime, default = datetime.datetime.now)
-    modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
+    created = Column(DateTime, default=datetime.datetime.now)
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     assignment = relationship("Assignment", uselist=False, back_populates="constant_set")
-    type_table_id = Column('constantTypeId',Integer, ForeignKey('typeTables.id'))
-
-
+    type_table_id = Column('constantTypeId', Integer, ForeignKey('typeTables.id'))
 
     @property
     def vault(self):
@@ -157,8 +158,8 @@ class ConstantSet(Base):
         return blob_to_list(self._vault)
 
     @data_list.setter
-    def data_list(self, list):
-        self._vault = list_to_blob(list)
+    def data_list(self, data_list):
+        self._vault = list_to_blob(data_list)
 
     @property
     def data_table(self):
@@ -167,7 +168,6 @@ class ConstantSet(Base):
     @data_table.setter
     def data_table(self, data):
         self.data_list = list(gen_flatten_data(data))
-
 
     def __repr__(self):
         return "<ConstantSet '{0}'>".format(self.id)
@@ -180,16 +180,20 @@ class Assignment(Base):
     __tablename__ = 'assignments'
 
     id = Column(Integer, primary_key=True)
-    created = Column(DateTime, default = datetime.datetime.now)
-    modified = Column(DateTime, default = datetime.datetime.now, onupdate = datetime.datetime.now)
+    created = Column(DateTime, default=datetime.datetime.now)
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'))
-    constant_set = relationship("ConstantSet", uselist=False, back_populates="assignment", cascade="all, delete, delete-orphan", single_parent=True)
-    run_range_id = Column('runRangeId',Integer, ForeignKey('runRanges.id'))
+    constant_set = relationship("ConstantSet",
+                                uselist=False,
+                                back_populates="assignment",
+                                cascade="all, delete, delete-orphan",
+                                single_parent=True)
+    run_range_id = Column('runRangeId', Integer, ForeignKey('runRanges.id'))
     run_range = relationship("RunRange", backref=backref('assignments'))
-    variation_id = Column('variationId',Integer, ForeignKey('variations.id'))
+    variation_id = Column('variationId', Integer, ForeignKey('variations.id'))
     variation = relationship("Variation", backref=backref('assignments'))
     _comment = Column('comment', Text)
-    author_id = Column('authorId', Integer, default = 1)
+    author_id = Column('authorId', Integer, default=1)
 
     @property
     def comment(self):
@@ -217,16 +221,15 @@ class Assignment(Base):
 
         return "{0}:{1}:{2}:{3}".format(path, run, variation, time)
 
-
     def __repr__(self):
         return "<Assignment '{0}'>".format(self.id)
 
     def print_deps(self):
         print " ASSIGNMENT: " + repr(self) \
-              + " TABLE: " + repr (self.constant_set.type_table)\
+              + " TABLE: " + repr(self.constant_set.type_table)\
               + " RUN RANGE: " + repr(self.run_range)\
               + " VARIATION: " + repr(self.variation)\
-              + " SET: " + repr (self.constant_set)
+              + " SET: " + repr(self.constant_set)
         print "      |"
         print "      +-->" + repr(self.constant_set.vault)
         print "      +-->" + repr(self.constant_set.data_list)
@@ -243,8 +246,8 @@ class RunRange(Base):
     created = Column(DateTime, default=datetime.datetime.now)
     modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     comment = Column(Text)
-    min = Column('runMin',Integer)
-    max = Column('runMax',Integer)
+    min = Column('runMin', Integer)
+    max = Column('runMax', Integer)
 
     def __repr__(self):
         if self.name != "":
@@ -260,9 +263,9 @@ class Variation(Base):
     __tablename__ = 'variations'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    created = Column(DateTime, default = datetime.datetime.now)
+    created = Column(DateTime, default=datetime.datetime.now)
     comment = Column(Text)
-    author_id = Column('authorId', Integer, default = 1)
+    author_id = Column('authorId', Integer, default=1)
 
     def __repr__(self):
         return "<Variation {0} '{1}'>".format(self.id, self.name)
@@ -278,7 +281,7 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     created = Column('created', DateTime, default=datetime.datetime.now)
-    last_action_time = Column('lastActionTime', DateTime) #, nullable=False
+    last_action_time = Column('lastActionTime', DateTime)   # TODO ??nullable=False
     name = Column(String(100), nullable=False)
     password = Column(String(100), nullable=True)
     _roles_str = Column('roles', String, nullable=False)
@@ -310,8 +313,8 @@ class LogRecord(Base):
     """
     __tablename__ = 'logs'
     id = Column(Integer, primary_key=True, nullable=False)
-    created = Column('created', DateTime, default = datetime.datetime.now)
-    affected_ids = Column('affectedIds', String)#, nullable=False
+    created = Column('created', DateTime, default=datetime.datetime.now)
+    affected_ids = Column('affectedIds', String)
     action = Column(String(7), nullable=False)
     description = Column(String(255), nullable=False)
     comment = Column(String, nullable=True)
@@ -472,19 +475,21 @@ def list_to_blob(data):
     """
     def prepare_item(item):
         if not isinstance(item, basestring):
-            str = repr(item)
+            item_str = repr(item)
         else:
-            str = item
-        return str.replace(blob_delimiter, blob_delimiter_replacement)
+            item_str = item
+        return item_str.replace(blob_delimiter, blob_delimiter_replacement)
 
-    if len(data) == 0: return ""
-    if len(data) == 1: return prepare_item(data[0])
+    if len(data) == 0:
+        return ""
+    if len(data) == 1:
+        return prepare_item(data[0])
 
     #this for data[:-1] makes result like a1|a2|a3
     blob = ""
     for item in data[:-1]:
         blob += prepare_item(item) + blob_delimiter
-    blob+=prepare_item(data[-1])
+    blob += prepare_item(data[-1])
 
     return blob
 
@@ -526,25 +531,24 @@ def list_to_table(data, col_count):
     :return: tabled data
     :rtype:[]
 
-
     >>> list_to_table([1,2,3,4,5,6], 3)
     [[1,2,3],[4,5,6]]
     """
 
     if len(data) % col_count != 0:
-        message = "Cannot convert list to table."\
-                + "The total number of cells ({0}) is not compatible with the number of columns ({1})"\
-                .format(len(data), col_count)
+        message = "Cannot convert list to table. " \
+                  "The total number of cells ({0}) is not compatible with the number of columns ({1})"\
+            .format(len(data), col_count)
         raise ValueError(message)
 
     row_count = len(data) / col_count
     #cpp way
-    table = []
+    tabled_data = []
     for row_i in range(row_count):
         row = []
         for col_i in range(col_count): row.append(data[row_i*col_count + col_i])
-        table.append(row)
-    return table
+        tabled_data.append(row)
+    return tabled_data
 
 
 def decode_data(data):
