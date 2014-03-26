@@ -1,15 +1,16 @@
 import unittest
 import os
 from ccdb import get_ccdb_home_path
-from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table
+from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table, TypeTableColumn
 from ccdb.model import LogRecord, User
 from ccdb.errors import DatabaseStructureError, TypeTableNotFound, DirectoryNotFound, \
     UserNotFoundError, VariationNotFound, RunRangeNotFound
 
 from ccdb import AlchemyProvider
 
+
 def load_tests(loader, tests, pattern):
-    suite = TestSuite()
+    suite = unittest.TestSuite()
     return suite
 
 class AlchemyProviderTest(unittest.TestCase):
@@ -383,3 +384,24 @@ class AlchemyProviderTest(unittest.TestCase):
         self.provider.connect(self.connection_str)   # this test requires the connection
         users = self.provider.get_users()
         self.assertGreater(len(users), 0)
+
+    def test_validate_data(self):
+        column = TypeTableColumn()
+
+        #int type
+        column.type = 'int'
+        self.assertEqual(self.provider.validate_data_value('1', column), 1)
+        self.assertRaises(ValueError, self.provider.validate_data_value, 'hren', column)
+
+        #lets check bool type
+        column.type = 'bool'
+        self.assertEqual(self.provider.validate_data_value('TrUe', column), True)
+        self.assertEqual(self.provider.validate_data_value('FalSe', column), False)
+        self.assertEqual(self.provider.validate_data_value('1', column), True)
+        self.assertEqual(self.provider.validate_data_value('0', column), False)
+        self.assertRaises(ValueError, self.provider.validate_data_value, 'hren', column)
+
+        #uint!
+        column.type = 'uint'
+        self.assertEqual(self.provider.validate_data_value('1', column), 1)
+        self.assertRaises(ValueError, self.provider.validate_data_value, '-1', column)

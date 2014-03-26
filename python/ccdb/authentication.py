@@ -112,7 +112,7 @@ class Authentication(object):
 #	E N V I R O N M E N T   A U T H E N T I C A T I O N
 #
 #----------------------------------------------------------------------------------------
-class EnvironmentAuthentication(Authentication):
+class EnvironmentAuthentication(Authentication, object):
     """
     Authentication provided by CCDB_USER or USER environment variables.
     if current_user_name is externally SET, this name is used regardless to environment variables
@@ -125,7 +125,7 @@ class EnvironmentAuthentication(Authentication):
     #------------------------------------------------------------------------------------
     def __init__(self, prov):
         assert(isinstance(prov, provider.AlchemyProvider))
-        super(Authentication,self).__init__( prov )
+        super(EnvironmentAuthentication,self).__init__(prov)
         self._username = ""
         self._env_variable = ""
         self._is_validated = False

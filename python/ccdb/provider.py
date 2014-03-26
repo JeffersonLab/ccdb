@@ -33,6 +33,10 @@ class AlchemyProvider(object):
     CCDB data provider that uses SQLAlchemy for accessing databases
     """
 
+    error_parse_value_message = "Error parsing data value. " \
+                                "Column '{0}' column_index='{1}' row_index='{2}'. " \
+                                "The type of column is '{3}'. The value='{4}'"
+
     def __init__(self):
         self._is_connected = False
         self._are_dirs_loaded = False
@@ -1167,6 +1171,13 @@ class AlchemyProvider(object):
                       "".format(data_rows_count, data_cols_count, table.rows_count, table._columns_count)
             raise ValueError(message)
 
+        #check for type
+        for row_index, row in enumerate(rows):
+            for column_index, cell in enumerate(row):
+                column = table.columns[column_index]
+                self.validate_data_value(cell, column, column_index, row_index)
+
+
         #Get user
         user = self.get_current_user()
 
@@ -1237,6 +1248,68 @@ class AlchemyProvider(object):
         #Log
         self.create_log_record(user, affected_ids, action, description, comment)
 
+    #------------------------------------------------
+    # validate value
+    #------------------------------------------------
+    def validate_data_value(self, value, column, column_index=0, row_index=0):
+        col_type = column.type
+        failure = False
+
+        if col_type == 'int':
+            try:
+                value = int(value)
+            except ValueError as e:
+                failure = True
+
+        elif col_type == 'uint':
+            try:
+                value = int(value)
+                if value < 0:
+                    raise ValueError()
+            except ValueError:
+                failure = True
+
+        elif col_type == 'long':
+            try:
+                value = long(value)
+            except ValueError:
+                failure = True
+
+        elif col_type == 'ulong':
+            try:
+                value = long(value)
+                if value < 0:
+                    raise ValueError()
+            except ValueError:
+                failure = True
+
+        elif col_type == 'double':
+            try:
+                value = float(value)
+            except ValueError:
+                failure = True
+
+        elif col_type == 'bool':
+            try:
+                if value.lower() in ("yes", "true", "t", "1"):
+                    return True
+                elif value.lower() in ("no", "false", "f", "0"):
+                    return False
+                else:
+                    value = bool(int(value))
+            except ValueError:
+                failure = True
+
+        else:
+            # 'string'
+            pass
+
+        if failure:
+            message = self.error_parse_value_message.format(column.name, column_index,
+                                                            row_index, column.type, value)
+            raise ValueError(message)
+
+        return value
 
     #------------------------------------------------
     # fill_assignment
