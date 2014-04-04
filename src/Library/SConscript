@@ -64,6 +64,12 @@ if env['PLATFORM'] != 'darwin':
 
 env.Append(CCFLAGS='-Wno-unknown-pragmas -g -O2') #Disable unknown pragmas warnings. CCDB files have '#pragma region' records to structurize files. 
 
+if ARGUMENTS.get("with-m32","false")=="true":
+    print("compile with -m32 flag")
+    env.Append(CCFLAGS='-m32') #Disable unknown pragmas warnings. CCDB files have '#pragma region' records to structurize files. 
+else:
+    print("To compile with -m32 forced use 'with-m32=true' flag")
+
 #Build with mysql or no?                                           
 #Read user flag for using mysql dependencies or not
 if ARGUMENTS.get("mysql","no")=="yes" or ARGUMENTS.get("with-mysql","true")=="true":
