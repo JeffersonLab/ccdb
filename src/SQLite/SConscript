@@ -1,0 +1,15 @@
+##
+ # SQLite SConstcipt files
+ #
+ ##
+Import('default_env')
+env = default_env.Clone()
+
+#disable SQLite load extensions
+env.Append(CPPDEFINES = 'SQLITE_OMIT_LOAD_EXTENSION')
+
+#Making tests
+ccdb_sqlite_lib = env.StaticLibrary('ccdb_sqlite', source = "sqlite3.c", LIBPATH='#lib', CPPFLAGS = '-fPIC')
+#ccdb_sqlite_install = env.Install('#lib', ccdb_sqlite_lib)
+
+Export('ccdb_sqlite_lib')

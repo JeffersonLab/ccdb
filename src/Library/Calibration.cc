@@ -147,9 +147,7 @@ bool Calibration::GetCalib( vector< map<string, double> > &values, const string 
         map<string, string>::iterator iter;
         for ( iter=rawValues[rowIter].begin() ; iter != rawValues[rowIter].end(); iter++ )
         {
-            bool parseResult;
             double tmpVal = StringUtils::ParseDouble(iter->second);
-            if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< map<string, double> > &, const string &)");
             values[rowIter][iter->first] = tmpVal;
         }
     }
@@ -187,9 +185,7 @@ bool Calibration::GetCalib( vector< map<string, int> > &values, const string & n
         map<string, string>::iterator iter;
         for ( iter=rawValues[rowIter].begin() ; iter != rawValues[rowIter].end(); iter++ )
         {
-            bool parseResult;
             int intlVal = StringUtils::ParseInt(iter->second);
-            if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< map<string, int> > &, const string &)");
             values[rowIter][iter->first] = intlVal;
         }
     }
@@ -254,11 +250,7 @@ bool Calibration::GetCalib( vector< vector<double> > &values, const string & nam
     {   
         for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
         {
-            bool parseResult;
             double tmpVal = StringUtils::ParseDouble(rawValues[rowIter][columnsIter]);
-            
-            cout<<"rowIter "<<rowIter<<("  columnsIter ")<< columnsIter<<endl;
-            if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< vector<double> > &, const string &) ");
             values[rowIter].push_back(tmpVal);
         }
     }
@@ -292,9 +284,7 @@ bool Calibration::GetCalib( vector< vector<int> > &values, const string & namepa
     {   
         for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
         {
-            bool parseResult;
             int tmpVal = StringUtils::ParseInt(rawValues[rowIter][columnsIter]);
-            if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< vector<int> > &, const string &)");
             values[rowIter].push_back(tmpVal);
         }
     }
@@ -374,9 +364,7 @@ bool Calibration::GetCalib( map<string, double> &values, const string & namepath
     map<string, string>::iterator iter;
     for ( iter=rawValues.begin() ; iter != rawValues.end(); iter++ )
     {
-        bool parseResult;
         double tmpVal = StringUtils::ParseDouble(iter->second);
-        if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib(  map<string, double> &, const string &)");
         values[iter->first] = tmpVal;
     }
 
@@ -407,9 +395,7 @@ bool Calibration::GetCalib( map<string, int> &values, const string & namepath )
     map<string, string>::iterator iter;
     for ( iter=rawValues.begin() ; iter != rawValues.end(); iter++ )
     {
-        bool parseResult;
         int tmpVal = StringUtils::ParseInt(iter->second);
-        if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib(  map<string, int> &, const string &)");
         values[iter->first] = tmpVal;
     }
 
@@ -471,9 +457,7 @@ bool Calibration::GetCalib( vector<double> &values, const string & namepath )
     //compose values
     for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
     {
-        bool parseResult;
         double tmpVal = StringUtils::ParseDouble(rawValues[columnsIter]);
-        if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< vector<double> > &, const string &)");
         values.push_back(tmpVal);
     }
     return true;
@@ -501,9 +485,7 @@ bool Calibration::GetCalib( vector<int> &values, const string & namepath )
     //compose values
     for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
     {
-        bool parseResult;
         int tmpVal = StringUtils::ParseInt(rawValues[columnsIter]);
-        if(!parseResult) throw logic_error("Error parsing double in DCalibration::GetCalib( vector< vector<int> > &, const string &)");
         values.push_back(tmpVal);
     }
     return true;
