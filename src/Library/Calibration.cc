@@ -421,7 +421,7 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
     if(assignment == NULL) return false; //TODO possibly exception throwing?
 
     //Get data
-    assert(values.empty());
+    values.clear();
     assignment->GetVectorData(values);
 
     delete assignment;
@@ -448,9 +448,8 @@ bool Calibration::GetCalib( vector<double> &values, const string & namepath )
     {
         throw;
     }
-
-    assert(values.empty());
-    int columnsNum = rawValues.size(); //rawTableValues[0] - size was checked in GetCalib
+    
+    int columnsNum = rawValues.size(); //rawTableValues[0] - size was checked in GetCalib    
 
     values.resize(rawValues.size());
 
@@ -458,7 +457,7 @@ bool Calibration::GetCalib( vector<double> &values, const string & namepath )
     for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
     {
         double tmpVal = StringUtils::ParseDouble(rawValues[columnsIter]);
-        values.push_back(tmpVal);
+        values[columnsIter] = tmpVal;
     }
     return true;
 }
@@ -477,7 +476,6 @@ bool Calibration::GetCalib( vector<int> &values, const string & namepath )
         throw;
     }
 
-    values.clear();
     int columnsNum = rawValues.size(); //rawTableValues[0] - size was checked in GetCalib
 
     values.resize(rawValues.size());
@@ -486,7 +484,7 @@ bool Calibration::GetCalib( vector<int> &values, const string & namepath )
     for (int columnsIter = 0; columnsIter < columnsNum; columnsIter++)
     {
         int tmpVal = StringUtils::ParseInt(rawValues[columnsIter]);
-        values.push_back(tmpVal);
+        values[columnsIter] = tmpVal;
     }
     return true;
 }
@@ -571,23 +569,23 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
     CheckConnection();  // Check if is connected and reconnect if needed (and allowed)
 	
     //Lock();Unlock();
+    cout<<namepath<<endl;
     mReadMutex->Lock();
     if(result.WasParsedTime)
-    {   
+    {
         assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation,loadColumns);
     }
 	else if (mDefaultTime>0)
 	{
 		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), mDefaultTime, variation,loadColumns);
 	}
-    else
-    {
-        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns);
-    }
+	else
+	{
+		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns);
+	}
 	
     mReadMutex->Release();
     return assigment;
-
 }
 
 

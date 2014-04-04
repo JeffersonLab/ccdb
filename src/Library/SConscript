@@ -61,6 +61,7 @@ env.Append(LIBS = ccdb_sqlite_lib)
 
 if env['PLATFORM'] != 'darwin':
 	env.Append(LIBS = ['rt'])
+
 env.Append(CCFLAGS='-Wno-unknown-pragmas -g -O0') #Disable unknown pragmas warnings. CCDB files have '#pragma region' records to structurize files. 
 
 #Build with mysql or no?                                           

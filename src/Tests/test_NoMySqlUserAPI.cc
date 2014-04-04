@@ -111,15 +111,25 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 	REQUIRE(tabledValues.size()==2);
 	REQUIRE(tabledValues[0].size()==3);
 	
+	//ask for vecor
 	vector<vector<int> > tabledDoubleValues;
 	REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledDoubleValues, "/test/test_vars/test_table2::test"));
 	REQUIRE(result);
-	REQUIRE(tabledValues.size()>0);
-	REQUIRE(tabledValues.size()==1);
-	REQUIRE(tabledValues[0].size()==3);
-	REQUIRE(tabledValues[0][0]==10);
-	REQUIRE(tabledValues[0][1]==20);
-	REQUIRE(tabledValues[0][2]==30);
+	REQUIRE(tabledDoubleValues.size()>0);
+	REQUIRE(tabledDoubleValues.size()==1);
+	REQUIRE(tabledDoubleValues[0].size()==3);
+	REQUIRE(tabledDoubleValues[0][0]==10);
+	REQUIRE(tabledDoubleValues[0][1]==20);
+	REQUIRE(tabledDoubleValues[0][2]==30);
+	
+	vector<int> lineOfIntValues;
+	REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(lineOfIntValues, "/test/test_vars/test_table2:0:test:2012-09-30 23-48-42"));
+	REQUIRE(result);
+	REQUIRE(lineOfIntValues.size()==3);
+	REQUIRE(lineOfIntValues[0]==10);
+	REQUIRE(lineOfIntValues[1]==20);
+	REQUIRE(lineOfIntValues[2]==30);
+	
 
 	Calibration* sqliteCalib2 = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, "default");
 	REQUIRE(sqliteCalib == sqliteCalib2);

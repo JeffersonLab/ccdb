@@ -1142,7 +1142,8 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
         ((time>0)? string("AND  `assignments`.`created` <= datetime(?4, 'unixepoch', 'localtime') ") : string()) +
         "ORDER BY `assignments`.`id` DESC "
         "LIMIT 1 ");
-		
+	
+//	cout<<query<<endl;
 
 	// prepare the SQL statement from the command line
 	int result = sqlite3_prepare_v2(mDatabase, query.c_str(), -1, &mStatement, 0);
@@ -1162,7 +1163,7 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
         result = sqlite3_bind_int64(mStatement, 4, time);	/*` `assignments`.`created``*/
         if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
     }
-
+	//cout<<endl<<"time "<<time<<endl;
 	mQueryColumns = sqlite3_column_count(mStatement);
     int selectedRows = 0;
 	// execute the statement
@@ -1191,6 +1192,8 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
 			break;
 		}
 	} while(result==SQLITE_ROW );
+	
+	if(assignment == NULL) return NULL;
 
     // finalize the statement to release resources
     sqlite3_finalize(mStatement);

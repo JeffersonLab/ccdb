@@ -1,0 +1,22 @@
+##
+ # Tests SConstcipt files
+ #
+ ##
+Import('default_env')
+env = default_env.Clone()
+
+
+#Read user flag for using mysql dependencies or not
+if ARGUMENTS.get("mysql","no")=="yes" or ARGUMENTS.get("with-mysql","true")=="true":
+    #User wants mysql!
+    print("Compiling examples with MySQL")
+    #model and provider
+    env.Append(CPPDEFINES='CCDB_MYSQL')
+    env.ParseConfig('mysql_config --libs --cflags')
+	
+#Making tests
+ccdb_simple_program = env.Program('example_ccdb_simple', source = 'simple.cc', LIBS=["ccdb"], LIBPATH='#lib')
+ccdb_simple_install = env.Install('#bin', ccdb_simple_program)
+
+ccdb_requests_program = env.Program('example_ccdb_requests', source = 'requests.cc', LIBS=["ccdb"], LIBPATH='#lib')
+ccdb_requests_install = env.Install('#bin', ccdb_requests_program)
