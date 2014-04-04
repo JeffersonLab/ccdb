@@ -569,7 +569,6 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
     CheckConnection();  // Check if is connected and reconnect if needed (and allowed)
 	
     //Lock();Unlock();
-    cout<<namepath<<endl;
     mReadMutex->Lock();
     if(result.WasParsedTime)
     {
