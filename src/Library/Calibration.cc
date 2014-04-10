@@ -555,7 +555,7 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
      *
      * @remark the function is thread safe
      * 
-     * @parameter [in] namepath -  full namepath is /path/to/data:run:variation:time but usually it is only /path/to/data
+     * @parameter [in] namepath - full namepath is /path/to/data:run:variation:time but usually it is only /path/to/data
      * @return   DAssignment *
      */
 

@@ -15,6 +15,66 @@ using namespace std;
 namespace ccdb
 {
 
+
+//______________________________________________________________________________
+Calibration* CalibrationGenerator::CreateCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time )
+{
+	/** @brief Creates @see Calibration by run number and desirable variation
+	 *
+     * @parameter [in] connectionString - Connection string to the data source
+	 * @parameter [in] int run - run number
+	 * @parameter [in] variation - desirable variation
+	 * @parameter [in] time - default time of constants
+	 * @return Calibration*
+	 */
+
+
+	//is it sqlite or mysql
+	bool isMySql = false; //if false SQlite provider is used		
+	if(connectionString.find("mysql://")==0)
+	{		
+		isMySql = true;  //It is mysql
+		
+		#ifndef CCDB_MYSQL
+		throw std::logic_error("Cannot be used with MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using with-mysql=true flag. The connection string: " + connectionString);
+		#endif //CCDB_MYSQL
+	}
+	else
+	{
+		//It should be sqlite, but lets check then...
+		if(connectionString.find("sqlite://")!=0)
+		{	
+			//something wrong here!!!
+			throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now. The connection string: " + connectionString);
+		}
+	}
+	
+	//now we create calibration
+	Calibration * calib = CreateCalibration(isMySql, run, variation, time);    
+
+    //Connect!
+    if(!calib->Connect(connectionString))
+    {
+        string message = GetConnectionErrorMessage(calib);
+        throw std::logic_error(message);
+    }
+
+	return calib;
+}
+    
+//______________________________________________________________________________
+bool CalibrationGenerator::CheckOpenable( const std::string & str)
+{
+    //Check through known connections
+	#ifdef CCDB_MYSQL
+	if(str.find("mysql://")== 0) return true;
+	#endif
+
+	if(str.find("sqlite://")== 0) return true;
+    return false;
+}
+
+
 //______________________________________________________________________________
 CalibrationGenerator::CalibrationGenerator()
 {
@@ -94,7 +154,7 @@ Calibration* CalibrationGenerator::CreateCalibration( bool isMySQL, int run, con
 	
 	if (isMySQL)
 	{
-		#ifdef CCDB_MYSQL
+        #ifdef CCDB_MYSQL
 			return new MySQLCalibration(run, variation, time);
 		#else
 			return NULL;
@@ -120,19 +180,6 @@ string CalibrationGenerator::GetCalibrationHash( const std::string & connectionS
     ostringstream strstrm;
     strstrm<<connectionString<<run<<variation<<time;
     return strstrm.str();
-}
-
-
-//______________________________________________________________________________
-bool CalibrationGenerator::CheckOpenable( const std::string & str)
-{
-    //Check through known connections
-	#ifdef CCDB_MYSQL
-	if(str.find("mysql://")== 0) return true;
-	#endif
-
-	if(str.find("sqlite://")== 0) return true;
-    return false;
 }
 
 

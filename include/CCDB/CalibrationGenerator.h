@@ -12,31 +12,43 @@ namespace ccdb
 {
 class CalibrationGenerator {
 public:
-	/** @brief   default constructor*/
-	CalibrationGenerator();
-
-	/** @brief destructor	 */
-	virtual ~CalibrationGenerator();
-
-
-	/** @brief Creates @see Calibration by connectionString, run number and desirable variation
-	 *
-	 * @parameter [in] connectionString - Connection string to the data source
-	 * @parameter [in] int run - run number
-	 * @parameter [in] variation - desirable variation
-	 * @parameter [in] time - default time of constants
-	 * @return Calibration*
-	 */
-	virtual Calibration* MakeCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time=0); 
-
-
-	/** @brief    CheckOpenable
-	 *
-	 * @parameter [in] const std::string &
-	 * @return   bool
-	 */
-	static bool CheckOpenable(const std::string &str); ///< Instantiate an JCalibration object (subclass)
     
+    /** @brief Creates @see Calibration by run number and desirable variation
+     *
+     * @parameter [in] connectionString - Connection string to the data source
+     * @parameter [in] int run - run number
+     * @parameter [in] variation - desirable variation
+     * @parameter [in] time - default time of constants
+     * @return Calibration*
+     */
+    static Calibration* CreateCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time);
+    
+    
+    /** @brief Checks if ccdb can work with this datasource (by connection string)
+     *
+     * @parameter [in] const std::string &
+     * @return   true if CCDB can work with it
+     */
+    static bool CheckOpenable(const std::string &str); ///< Instantiate an JCalibration object (subclass)
+    
+    
+    /** @brief   default constructor*/
+    CalibrationGenerator();
+
+    /** @brief destructor	 */
+    virtual ~CalibrationGenerator();
+
+
+    /** @brief Creates @see Calibration by connectionString, run number and desirable variation
+     *
+     * @parameter [in] connectionString - Connection string to the data source
+     * @parameter [in] int run - run number
+     * @parameter [in] variation - desirable variation
+     * @parameter [in] time - default time of constants
+     * @return Calibration*
+     */
+    virtual Calibration* MakeCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time=0); 
+
 
     /** @brief gets string hash based on  connectionString, run, and variation
      *
@@ -87,11 +99,12 @@ public:
 
 private:	
 
-	Calibration* CreateCalibration(bool isMySQL, int run, const std::string& variation, const time_t time);
+    //@parameter [in] connectionString - Connection string to the data source
+    static Calibration* CreateCalibration(bool isMySQL, int run, const std::string& variation, const time_t time);
 
-	CalibrationGenerator(const CalibrationGenerator& rhs);
-	CalibrationGenerator& operator=(const CalibrationGenerator& rhs);
-    string GetConnectionErrorMessage( Calibration * calib );
+    CalibrationGenerator(const CalibrationGenerator& rhs);
+    CalibrationGenerator& operator=(const CalibrationGenerator& rhs);
+    static string GetConnectionErrorMessage( Calibration * calib );
     std::vector<Calibration *> mCalibrations;					///Created Calibrations
 	std::map<std::string, Calibration*> mCalibrationsByHash;    ///map of connection string => DCallibration
     

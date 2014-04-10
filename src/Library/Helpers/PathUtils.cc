@@ -113,7 +113,8 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
      * @parameter [out] succsess true if success
      * @return   time_t
      */
-
+    
+    
     //default result
     tm time;
     time.tm_hour = 23;
@@ -121,7 +122,9 @@ time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
     time.tm_min = 59;
     time.tm_mon = 11;
     time.tm_sec = 59;
-    time.tm_isdst=false;
+    time.tm_isdst=-1;   //auto determine. It is not always work automatically. 
+                        //See http://stackoverflow.com/questions/8558919/mktime-and-tm-isdst
+    
     if(succsess!=NULL) *succsess = true;
 
     //some tmp values
