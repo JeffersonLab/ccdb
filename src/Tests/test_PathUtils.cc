@@ -77,7 +77,7 @@ TEST_CASE("CCDB/PathUtils/Time", "Time parse")
 	time.tm_hour = 23;
 	time.tm_min = 59;	
 	time.tm_sec = 59;	
-	time.tm_isdst = 0;
+	time.tm_isdst = -1;
 
 	bool success; 
 	time_t tester = mktime(&time);
