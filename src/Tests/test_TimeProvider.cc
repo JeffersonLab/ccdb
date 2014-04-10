@@ -1,4 +1,4 @@
-#include "Tests/catch.h"
+#include "Tests/catch.hpp"
 
 #include "CCDB/Helpers/TimeProvider.h"
 #include <vector>
@@ -8,7 +8,7 @@
 using namespace std;
 using namespace ccdb;
 
-TEST_CASE("CCDB/TimeProvider", "System get time tests")
+TEST_CASE("CCDB/TimeProvider/Success", "System get time tests")
 {
 	// global setup...
     time_t x = 0; 
@@ -16,7 +16,7 @@ TEST_CASE("CCDB/TimeProvider", "System get time tests")
 
 }
 
-TEST_CASE("CCDB/TimeProvider", "Test feature")
+TEST_CASE("CCDB/TimeProvider/Failure", "Test feature")
 {
     // global setup...
     time_t x = 0; 

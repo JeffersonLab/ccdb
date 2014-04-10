@@ -1,7 +1,7 @@
 #pragma warning(disable:4800)
 #ifdef CCDB_MYSQL
 #include "Tests/tests.h"
-#include "Tests/catch.h"
+#include "Tests/catch.hpp"
 
 #include "CCDB/Console.h"
 #include "CCDB/Helpers/StringUtils.h"

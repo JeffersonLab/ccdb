@@ -1,7 +1,7 @@
 #ifndef test_StringUtils_h
 #define test_StringUtils_h
 
-#include "Tests/catch.h"
+#include "Tests/catch.hpp"
 
 #include "CCDB/Helpers/StringUtils.h"
 #include <vector>
@@ -45,6 +45,8 @@ TEST_CASE("CCDB/StringUtils/Split", "Test of lexical splittiong string to tokens
 	REQUIRE(tokens[1]=="123.12");
 	REQUIRE(tokens[2]=="555");
 	REQUIRE(tokens[3]=="#John 987");
+    
+    
 	
 	//string tests
 	StringUtils::LexicalSplit(tokens, " \"John Smith\"  \"Sarah O Conor\"");

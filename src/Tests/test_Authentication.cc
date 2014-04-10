@@ -1,7 +1,7 @@
 
 #pragma warning(disable:4800)
 
-#include "Tests/catch.h"
+#include "Tests/catch.hpp"
 
 #include "CCDB/Providers/IAuthentication.h"
 #include "CCDB/Providers/EnvironmentAuthentication.h"

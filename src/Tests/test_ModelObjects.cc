@@ -1,7 +1,7 @@
 #ifndef test_ModelObjects_h__
 #define test_ModelObjects_h__
 
-#include "Tests/catch.h"
+#include "Tests/catch.hpp"
 
 //Disable posix warning on getch()
 #pragma warning(disable : 4800)

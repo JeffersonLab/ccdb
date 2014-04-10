@@ -26,7 +26,6 @@ test_sources = [
 	"test_SQLiteProvider_Directories.cc",
 	"test_SQLiteProvider_TypeTables.cc",
 	"test_SQLiteProvider_Variations.cc",
-	"test_SQLiteProvider_Variations.cc",
 	"test_TimeProvider.cc",
 	]
 	

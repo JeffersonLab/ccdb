@@ -2,7 +2,7 @@
 #define test_StringUtils_h
 
 
-#include "Tests/catch.h"
+#include "Tests/catch.hpp"
 
 #include "CCDB/Helpers/PathUtils.h"
 
@@ -67,7 +67,7 @@ TEST_CASE("CCDB/PathUtils", "Request parse")
 }
 
 
-TEST_CASE("CCDB/PathUtils", "Time parse")
+TEST_CASE("CCDB/PathUtils/Time", "Time parse")
 {
 	//new year eve of 2011
 	tm time;
@@ -94,7 +94,7 @@ TEST_CASE("CCDB/PathUtils", "Time parse")
 	tester = mktime(&time);
 	result = PathUtils::ParseTime("2011-08", &success);
 	REQUIRE(tester == result);
-	REQUIRE(success)
+	REQUIRE(success);
 
 	time.tm_year = 111; //+1900 = 2011
 	time.tm_mon = 7; //since month [0-11]
@@ -106,7 +106,7 @@ TEST_CASE("CCDB/PathUtils", "Time parse")
 	tester = mktime(&time);
 	result = PathUtils::ParseTime("2011-08-17", &success);
 	REQUIRE(tester == result);
-	REQUIRE(success)
+	REQUIRE(success);
 
 	time.tm_year = 111; //+1900 = 2011
 	time.tm_mon = 7; //since month [0-11]
@@ -118,7 +118,7 @@ TEST_CASE("CCDB/PathUtils", "Time parse")
 	tester = mktime(&time);
 	result = PathUtils::ParseTime("2011-08-17 14:30", &success);
 	REQUIRE(tester == result);
-	REQUIRE(success)
+	REQUIRE(success);
 
 	time.tm_year = 111; //+1900 = 2011
 	time.tm_mon = 7; //since month [0-11]
@@ -130,7 +130,7 @@ TEST_CASE("CCDB/PathUtils", "Time parse")
 	tester = mktime(&time);
 	result = PathUtils::ParseTime("2011-08-17 14:30:20", &success);
 	REQUIRE(tester == result);
-	REQUIRE(success)
+	REQUIRE(success);
 
 	time.tm_year = 112; //+1900 = 2011
 	time.tm_mon = 6;
@@ -142,30 +142,29 @@ TEST_CASE("CCDB/PathUtils", "Time parse")
 	tester = mktime(&time);
 	result = PathUtils::ParseTime("2012 07 12 06:30:15", &success);
 	REQUIRE(tester == result);
-	REQUIRE(success)
+	REQUIRE(success);
 
-	//!sucsess
+	//! success
 	result = PathUtils::ParseTime("2011-08-17 14:30:", &success);
-	REQUIRE_FALSE(success)
+	REQUIRE_FALSE(success);
 }
 
 
-TEST_CASE("CCDB/PathUtils", "Context parse")
+TEST_CASE("CCDB/PathUtils/Context", "Context parse")
 {
 	//empty string
 	ContextParseResult result = PathUtils::ParseContext("");
-	REQUIRE(result.ConstantsTimeIsParsed == false)
-	REQUIRE(result.VariationIsParsed == false)
+	REQUIRE(result.ConstantsTimeIsParsed == false);
+	REQUIRE(result.VariationIsParsed == false);
 
 	//empty string 2
 	result = PathUtils::ParseContext(" ");
-	REQUIRE(result.ConstantsTimeIsParsed == false)
-	REQUIRE(result.VariationIsParsed == false)
+	REQUIRE(result.ConstantsTimeIsParsed == false);
+	REQUIRE(result.VariationIsParsed == false);
 
 	result = PathUtils::ParseContext("variation=james time=2012");
-	REQUIRE(result.ConstantsTimeIsParsed == false)
-	REQUIRE(result.VariationIsParsed == true)
-	REQUIRE(result.Variation == "james")
-
+	REQUIRE(result.ConstantsTimeIsParsed == false);
+	REQUIRE(result.VariationIsParsed == true);
+	REQUIRE(result.Variation == "james");
 }
 #endif //test_StringUtils_h

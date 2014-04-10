@@ -1,5 +1,5 @@
 #pragma warning(disable:4800)
-#include "Tests/catch.h"
+#include "Tests/catch.hpp"
 #include "Tests/tests.h"
 
 #include "CCDB/Providers/MySQLDataProvider.h"
@@ -37,33 +37,6 @@ TEST_CASE("CCDB/MySQLDataProvider/RunRanges","RunRanges tests")
     //Get run range that is not defined
     rrange = prov->GetRunRange(0, 2001);
 
-    if(rrange)  //oh... It shouldn't be... Maybe it is left because of the last tests... 
-    {  
-        cout<<"WARNING prov->GetRunRange(0, 2001) found run range (should not be there)"<<endl<<
-              "trying to delete rrange and do the test one more time... "<<endl;
-        prov->DeleteRunRange(rrange);           //(!) <-- test of this function is further
-        rrange = prov->GetRunRange(0, 2001);
-    }
-
-    REQUIRE(rrange==NULL);
-
-    // GET OR CREATE RUNRANGE
-    //----------------------------------------------------
-
-    //Get or create run-range is the main function to get RunRange without name
-    // 0-2001 should be absent or deleted so this function will create run-range
-    rrange = prov->GetOrCreateRunRange(0, 2001); 
-    REQUIRE(rrange!=NULL);
-    REQUIRE(rrange->GetId()!=0);
-
-    //this time the run range should be just loaded
-    rrange = prov->GetOrCreateRunRange(0, 2001); 
-    REQUIRE(rrange!=NULL);
-
-
-    // DELETE RUN-RANGE TEST
-    //----------------------------------------------------
-    bool result = prov->DeleteRunRange(rrange);
-    REQUIRE(result)
+    
 	
 }

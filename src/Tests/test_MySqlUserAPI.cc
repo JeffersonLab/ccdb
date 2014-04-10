@@ -1,5 +1,5 @@
 #pragma warning(disable:4800)
-#include "Tests/catch.h"
+#include "Tests/catch.hpp"
 #include "Tests/tests.h"
 
 #include "CCDB/Console.h"
@@ -191,7 +191,7 @@ TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get ca
 	}
 }
 
-TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Disconnect database with timeout")
+TEST_CASE("CCDB/UserAPI/CalibrationGenerator/Timeout","Disconnect database with timeout")
 {
     //Set fake time
     TimeProvider::SetTimeUnitTest(true);
