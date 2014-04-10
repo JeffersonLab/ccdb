@@ -11,7 +11,7 @@
 
 # Thanks to and @artemyk and @gkuenning for their nice tweaks.
 
-mysqldump  --compatible=ansi --skip-extended-insert --compact  "$@" | \
+mysqldump --skip-tz-utc --compatible=ansi --skip-extended-insert --compact  "$@" | \
 
 awk '
 
