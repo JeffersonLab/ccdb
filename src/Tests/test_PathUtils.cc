@@ -90,7 +90,7 @@ TEST_CASE("CCDB/PathUtils/Time", "Time parse")
 	time.tm_hour = 23;
 	time.tm_min = 59;	
 	time.tm_sec = 59;	
-	time.tm_isdst = 0;
+	time.tm_isdst = -1;
 	tester = mktime(&time);
 	result = PathUtils::ParseTime("2011-08", &success);
 	REQUIRE(tester == result);
@@ -102,7 +102,7 @@ TEST_CASE("CCDB/PathUtils/Time", "Time parse")
 	time.tm_hour = 23;
 	time.tm_min = 59;	
 	time.tm_sec = 59;	
-	time.tm_isdst = 0;
+	time.tm_isdst = -1;
 	tester = mktime(&time);
 	result = PathUtils::ParseTime("2011-08-17", &success);
 	REQUIRE(tester == result);
@@ -114,7 +114,7 @@ TEST_CASE("CCDB/PathUtils/Time", "Time parse")
 	time.tm_hour = 14;
 	time.tm_min = 30;	
 	time.tm_sec = 59;	
-	time.tm_isdst = 0;
+	time.tm_isdst = -1;
 	tester = mktime(&time);
 	result = PathUtils::ParseTime("2011-08-17 14:30", &success);
 	REQUIRE(tester == result);
@@ -126,7 +126,7 @@ TEST_CASE("CCDB/PathUtils/Time", "Time parse")
 	time.tm_hour = 14;
 	time.tm_min = 30;	
 	time.tm_sec = 20;	
-	time.tm_isdst = 0;
+	time.tm_isdst = -1;
 	tester = mktime(&time);
 	result = PathUtils::ParseTime("2011-08-17 14:30:20", &success);
 	REQUIRE(tester == result);
@@ -138,7 +138,7 @@ TEST_CASE("CCDB/PathUtils/Time", "Time parse")
 	time.tm_hour = 06;
 	time.tm_min = 30;	
 	time.tm_sec = 15;	
-	time.tm_isdst=false;
+	time.tm_isdst=-1;
 	tester = mktime(&time);
 	result = PathUtils::ParseTime("2012 07 12 06:30:15", &success);
 	REQUIRE(tester == result);
