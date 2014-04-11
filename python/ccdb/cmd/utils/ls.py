@@ -5,7 +5,7 @@ import os
 from ccdb.errors import DirectoryNotFound
 from ccdb.model import Directory, TypeTable
 from ccdb.provider import AlchemyProvider
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
 from ccdb import BraceMessage as LogFmt
 
 log = logging.getLogger("ccdb.cmd.utils.ls")
@@ -15,13 +15,14 @@ def create_util_instance():
     log.debug("      registering ListUtil")
     return List()
 
+
 #*********************************************************************
 #   Class List - List objects in a given directory                   *
 #                                                                    *
 #*********************************************************************
 class List(ConsoleUtilBase):
     """ List objects in a given directory """
-    
+
     # ccdb utility class descr part 
     #------------------------------
     command = "ls"
@@ -29,23 +30,28 @@ class List(ConsoleUtilBase):
     short_descr = "List objects in a given directory"
     uses_db = True
 
-
     def __init__(self):
         ConsoleUtilBase.__init__(self)
-        self.reset()
+        self.raw_entry = "/"  # object path with possible pattern, like /mole/*
+        self.parent_path = "/"  # parent path
+        self.parent_dir = None  # @type parent_dir DDirectory
+        self.pattern = ""  # pattern on the end of parent path like file?*
+        self.is_extended = False
 
     def reset(self):
         """Resets variables for each 'process'"""
-        self.raw_entry = "/"       #object path with possible pattern, like /mole/*
-        self.parent_path = "/"    #parent path
-        self.parent_dir = None    # @type parent_dir DDirectory
-        self.pattern = ""         #pattern on the end of parent path like file?*
+        self.raw_entry = "/"  # object path with possible pattern, like /mole/*
+        self.parent_path = "/"  # parent path
+        self.parent_dir = None  # @type parent_dir DDirectory
+        self.pattern = ""  # pattern on the end of parent path like file?*
+        self.is_extended = False
 
 
     def process(self, args):
-        log.debug("ListUtil gained control")
-        log.debug("Arguments: " + " ".join(args))
-        
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(LogFmt("{0}List is in charge{0}\\".format(os.linesep)))
+            log.debug(LogFmt(" |- arguments : '" + "' '".join(args) + "'"))
+
         assert self.context is not None
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
@@ -53,98 +59,85 @@ class List(ConsoleUtilBase):
 
         #PARSE ARGUMENTS
         #-------------------------------
+        raw_path, task, is_extended = self._process_arguments(args)
 
         #dump as tree
-        if "--dump-tree" in args:
+        if task == ListTasks.directory_tree:
             self.parent_dir = provider.get_root_directory()
             self.print_directory_tree(self.parent_dir, False, 0)
             return
 
-        #dump as dump
-        if "--dump" in args:
+        #dump as directories
+        if task == ListTasks.directories:
             self.parent_dir = provider.get_root_directory()
             self.print_directory_tree(self.parent_dir, True, 0)
             return
 
         #dump variations
-        if "-v" in args or "--variations" in args:
+        if task == ListTasks.variations:
             self.print_variations()
             return
 
         #dump type_tables
-        if "-t" in args or "--tables" in args:
+        if task == ListTasks.type_tables:
             self.print_tables()
             return
 
         if len(args) > 0:
-            self.raw_entry = args[0]
+            self.raw_entry = raw_path
         else:
             self.raw_entry = self.context.current_path
 
-        #print self.get_name_pathes(self.raw_entry)
 
-        #prepare path
-        #self.raw_entry = self.prepare_path(self.raw_entry)
 
-        dir_names, table_names = self.get_name_pathes(self.raw_entry)
+        dirs, tables = self.get_name_pathes(self.raw_entry)
 
-        if (not dir_names) and (not table_names):
+        if (not dirs) and (not tables):
             log.info("Can't find the directory or tables")
 
-        for dir_name in dir_names:
-            log.info(self.theme.Directories + dir_name + self.theme.Reset)
+        # it is not a wild card search, and
+        if ("*" not in self.raw_entry) and\
+           ("?" not in self.raw_entry) and\
+           (not dirs) and\
+           (len(tables) == 1):
+            self.table_info(tables[0], is_extended)
+            return
 
-        for table_name in table_names:
-            log.info(table_name)
-        
-        #SEARCH LOGIC
+        for directory in dirs:
+            log.info(self.theme.Directories + directory.name + self.theme.Reset)
 
-        #brute assumption that user has entered a simple dir path
-        # try:
-        #     self.parent_dir = provider.get_directory(self.raw_entry)
-        # except KeyError:
-        #     #we have not find the directory by brute rawentry.
-        #     #but maybe it is just /path/plus*some*pattern
-        #     (head, tale) = posixpath.split(self.raw_entry)
-        #     self.parent_path = head
-        #     self.pattern = tale
-        #
-        #     #try to find such dir once more
-        #     try:
-        #         self.parent_dir = provider.get_directory(self.parent_path)
-        #     except KeyError:
-        #         self.parent_dir = None
-        #
-        # #found a directory
-        # if self.parent_dir:
-        #     assert isinstance(self.parent_dir, Directory)
-        #
-        #     #>oO debug
-        #     log.debug("  path: {0}".format(self.parent_path))
-        #     if len(self.pattern): log.debug("  pattern: {0}".format(self.pattern))
-        #
-        #     #part 1 directories for this path
-        #     sub_dirs = []
-        #     if self.pattern == "":
-        #         sub_dirs = self.parent_dir.sub_dirs
-        #     else:
-        #         sub_dirs = self.context.provider.search_directories(self.pattern, self.parent_path)
-        #
-        #     for subdir in sub_dirs:
-        #         print self.theme.Directories + subdir.name + "    "
-        #
-        #     #part 2 is tables for this path
-        #     tables = []
-        #     if self.pattern == "":
-        #         tables = self.context.provider.get_type_tables(self.parent_dir)
-        #     else:
-        #         tables = self.context.provider.search_type_tables(self.pattern, self.parent_path)
-        #
-        #     for table in tables:
-        #         print table.name
-        #     print
-        # else:
-        #     print "Can't find the directory"
+        for table in tables:
+            log.info(table.name)
+
+    @staticmethod
+    def _process_arguments(args):
+        #solo arguments
+
+        #utility argument parser is argparse which raises errors instead of exiting app
+        parser = UtilityArgumentParser()
+        parser.add_argument("raw_path", nargs='?', default="")
+        parser.add_argument("-x", "--dtree", action="store_true")
+        parser.add_argument("-d", "--directories", action="store_true")
+        parser.add_argument("-t", "--tables", action="store_true")
+        parser.add_argument("-v", "--variations", action="store_true")
+        parser.add_argument("-l", "--extended", action="store_true")
+
+        result = parser.parse_args(args)
+
+        if result.variations:
+            task = ListTasks.variations
+        elif result.directories:
+            task = ListTasks.directories
+        elif result.dtree:
+            task = ListTasks.directory_tree
+        elif result.tables:
+            task = ListTasks.type_tables
+        else:
+            task = ListTasks.default
+
+        log.debug(LogFmt(" |- parsed as (obj: '{0}', type: '{1}')", result.raw_path, task))
+
+        return result.raw_path, task, result.extended
 
     def get_name_pathes(self, path):
         assert self.context is not None
@@ -159,7 +152,7 @@ class List(ConsoleUtilBase):
 
         self.raw_entry = self.prepare_path(path)
         log.debug(" |  |  |- after prepare_path:  " + self.raw_entry)
-        
+
         #SEARCH LOGIC
         #---------------------------
 
@@ -213,10 +206,7 @@ class List(ConsoleUtilBase):
         else:
             tables = self.context.provider.search_type_tables(self.pattern, self.parent_path)
 
-        #fill list of tables
-        table_list = [table.name for table in tables]
-
-        return dir_list, table_list
+        return sub_dirs, tables
 
 
     def prepare_path(self, path):
@@ -237,7 +227,7 @@ class List(ConsoleUtilBase):
 
         #local or absolute path?
         if not path.startswith("/"):
-            path = posixpath.join(self.context.current_path , path)
+            path = posixpath.join(self.context.current_path, path)
 
         #normalize
         path = posixpath.normpath(path)
@@ -256,9 +246,9 @@ class List(ConsoleUtilBase):
 
         #print subdirectories recursively
         sub_dirs = directory.sub_dirs
-        if len(sub_dirs)>0:
+        if len(sub_dirs) > 0:
             for subDir in sub_dirs:
-                self.print_directory_tree(subDir, printFullPath, level+1)
+                self.print_directory_tree(subDir, printFullPath, level + 1)
 
     def print_variations(self):
         variations = self.context.provider.get_variations()
@@ -270,19 +260,40 @@ class List(ConsoleUtilBase):
         tables = self.context.provider.search_type_tables("*")
         for table in tables:
             assert (isinstance(table, TypeTable))
-            print(str(table.parent_dir.path)+"==>"+table.path)
+            print(table.path)
+
+    def table_info(self, table, is_extended):
+        log.info(table.path)
+        if is_extended:
+            self.context.process_command("info", [table.path])
+        self.context.process_command("vers", [table.path])
 
     def print_help(self):
-        "Prints help of the command"
+        """Prints help of the command"""
+
         print """
-Displays directories and tables for current directory
+Lists directories and tables for current directory
+
+- Accepts wildcards symbols '*', and '?'
+
+- When used on single table name, gives table data version as 'vers <table name>' command
 
 keys:
-    -v or --variations - prints all variations
-    -t or --tables     - prints full path for all tables
-          --dump       - prints all directories
-          --dump-tree  - draws directory tree
+    -v or --variations   - prints all variations
+    -t or --tables       - prints full path for all tables
+    -d or --directories  - prints all directories
+    -x or --dtree        - draws directory tree
+
+    -l or --extended     - shows extended info when is used on table
 """
+
+
+class ListTasks(object):
+    default = "default"
+    variations = "variations"
+    type_tables = "type_tables"
+    directories = "directories"
+    directory_tree = "directory_tree"
 
 
 

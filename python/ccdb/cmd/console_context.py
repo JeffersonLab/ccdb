@@ -529,14 +529,18 @@ class ConsoleContext(object):
             self.check_connection(self._ls)
             try:
                 result = self._ls.get_name_pathes(path_prefix)
+
             except:
                 result = None
 
             if result is None or (len(result[0]) == 0 and len(result[1]) == 0):
                 result = self._ls.get_name_pathes(path_prefix + "*")
 
-            self.matching_words.extend(result[0])
-            self.matching_words.extend(result[1])
+            dir_list = [subdir.name for subdir in result[0]]
+            table_list = [table.name for table in result[1]]
+
+            self.matching_words.extend(dir_list)
+            self.matching_words.extend(table_list)
 
         except Exception as ex:
             log.debug("error getting competition paths: " + ex.message)

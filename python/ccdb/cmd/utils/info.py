@@ -35,7 +35,7 @@ class Info(ConsoleUtilBase):
     #----------------------------------------
     def process(self, args):
         if log.isEnabledFor(logging.DEBUG):
-            log.debug(LogFmt("{0}Empty is in charge{0}\\".format(os.linesep)))
+            log.debug(LogFmt("{0}Info is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args) + "'"))
 
         assert self.context

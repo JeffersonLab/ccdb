@@ -109,6 +109,11 @@ class ConsoleContextTests(unittest.TestCase):
         self.context.process_command_line("ls")
         self.assertIn("test", self.output.getvalue())
 
+    def test_ls_table(self):
+        """ls. General test"""
+        self.context.process_command_line("ls /test/test_vars/test_table")
+        self.assertIn("test", self.output.getvalue())
+
 
     def test_mk_rm_dir(self):
         """mkdir, rm. Create directory and delete it"""
