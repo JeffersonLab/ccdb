@@ -72,7 +72,7 @@ class AddData(ConsoleUtilBase):
     def process(self, args):
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}AddData is in charge{0}\\".format(os.linesep)))
-            log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
+            log.debug(LogFmt(" |- arguments : '" + "' '".join(args) + "'"))
 
         self.reset()
 
@@ -83,10 +83,6 @@ class AddData(ConsoleUtilBase):
         if not self.process_arguments(args):
             log.debug(LogFmt(" |- process arguments {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
             raise ValueError("Problem parsing arguments")
-        
-        #by "" user means default variation
-        #self.variation = "default" if not bool(self.variation) else self.variation
-        #TODO commented as self.variation is set in self.reset() need to be tested
         
         #validate what we've got
         if not self.validate():
@@ -109,7 +105,7 @@ class AddData(ConsoleUtilBase):
         
         #check what we've got
         assert isinstance(dom, TextFileDOM)     
-        if not dom.data_is_consistant:
+        if not dom.data_is_consistent:
             message = "Inconsistency error. " + dom.inconsistent_reason
             log.warning(message)
             raise ValueError(message=message)
@@ -120,13 +116,13 @@ class AddData(ConsoleUtilBase):
         # >oO debug record
         log.debug(" |- adding constants")
         log.debug(LogFmt(" |- columns: '{0}'  rows: '{1}'  comment lines:  '{2}'  metas: '{3}'",
-                      len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
+                         len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
 
         try:
             table = provider.get_type_table(self.table_path)
         except Exception as ex:
-            if 'No table found by exact path' in ex.message: #TODO replace with good exception type
-                #it is safe to use len(dom.rows[0]) because dom.data_is_consistant checked that
+            if 'No table found by exact path' in ex.message:    # TODO replace with good exception type
+                #it is safe to use len(dom.rows[0]) because dom.data_is_consistent checked that
                 print(self._get_notable_instruction(self.table_path, len(dom.rows[0]), len(dom.rows)))
 
         #try to create

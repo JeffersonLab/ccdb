@@ -26,7 +26,6 @@ class ConsoleContextTests(unittest.TestCase):
         self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
 
-
         #initialize but disable colorama
         ccdb.cmd.colorama.init(autoreset=True)
         ccdb.cmd.colorama.deinit()
@@ -117,6 +116,15 @@ class ConsoleContextTests(unittest.TestCase):
         #TODO check test table internals are right
         self.context.process_command_line("rm --force -d /test/auto_testing_dir")
 
+    def test_mktbl_from_file(self):
+        """mkdir infer table structure from file"""
+        tests_dir = os.path.dirname(os.path.realpath(__file__))
+        test_file = os.path.join(tests_dir, "test_table.txt")
+        print(test_file)
+        self.context.process_command_line("mktbl -f " + test_file)
+        out_str = self.output.getvalue()
+        print(out_str)
+        self.assertIn("mktbl <name> -r 2 X Y Z #<comments>", out_str)
 
     def test_mk_rm_table(self):
         """mktbl, rm. Create table and delete it"""
@@ -137,7 +145,7 @@ class ConsoleContextTests(unittest.TestCase):
         tests_dir = os.path.dirname(os.path.realpath(__file__))
         test_file = os.path.join(tests_dir, "test_table.txt")
         print(test_file)
-        self.context.process_command_line("add /test/test_vars/test_table "+test_file)
+        self.context.process_command_line("add /test/test_vars/test_table " + test_file)
         self.output.truncate(0)
         self.context.process_command_line("vers /test/test_vars/test_table")
         text = str(self.output.getvalue())

@@ -1,3 +1,4 @@
+from os import linesep
 import posixpath
 import re
 import logging
@@ -5,6 +6,7 @@ import os
 
 from ccdb.cmd import ConsoleUtilBase
 from ccdb import BraceMessage as LogFmt
+from ccdb.table_file import read_ccdb_text_file, TextFileDOM, META_VARIATION
 
 log = logging.getLogger("ccdb.cmd.utils.mktbl")
 
@@ -47,6 +49,8 @@ class MakeTable(ConsoleUtilBase):
         self.table_path = ""
         self.table_path_set = False
         self.no_columns_quantity = False
+        self.infer_from_file = False
+        self.file_name = ""
 
     #--------------------------------------------------------------------------------
     #   reset_on_process - sets values to be ready for new process function
@@ -67,6 +71,8 @@ class MakeTable(ConsoleUtilBase):
         self.no_columns_quantity = False
         #set interactive mode as context by default
         self.interactive = self.context.is_interactive
+        self.infer_from_file = False
+        self.file_name = ""
 
     #----------------------------------------
     #   process - processes commands
@@ -75,13 +81,18 @@ class MakeTable(ConsoleUtilBase):
 
         #>oO debug
         log.debug(LogFmt("{0}MakeTable is in charge{0}\\".format(os.linesep)))
-        log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
+        log.debug(LogFmt(" |- arguments : '" + "' '".join(args) + "'"))
 
         #reset all needed variables
         self.reset_on_process()
 
         #process arguments
         self.process_arguments(args)
+
+        #do we need just infer mktable from file?
+        if self.infer_from_file:
+            self.analyse_file()
+            return 0
 
         if self.interactive:
             self.interactive_mode()
@@ -146,7 +157,7 @@ class MakeTable(ConsoleUtilBase):
         while i < len(args):
             token = args[i].strip()
             i += 1
-            if token.startswith('-'): #it is some command
+            if token.startswith('-'):    # it is some command
 
                 #rows number
                 if token == "-r" or token.startswith("--rows"):
@@ -160,6 +171,13 @@ class MakeTable(ConsoleUtilBase):
                             self.rows_set = False
 
                         i += 1
+
+                if token == "-f" or token.startswith("--file"):
+                    if i < len(args):
+                        self.infer_from_file = True
+                        self.file_name = args[i]
+                    else:
+                        log.warning("Cannot parse file name from -f (--file) flag")
 
                 #no columns quantity 
                 if token == "-nq" or token.startswith("--no-quantity"):
@@ -179,7 +197,7 @@ class MakeTable(ConsoleUtilBase):
                     self.comment += " ".join(args[i - 1:])
                     self.comment = self.comment[1:]        # remove '#' sign in the beginning
                     self.comment_set = True
-                    break #break the loop since everething next are comment
+                    break    # break the loop since everything next are comment
 
                 #if table_path is NOT set it is table_path 
                 elif not self.table_path_set:
@@ -262,6 +280,37 @@ class MakeTable(ConsoleUtilBase):
 
         return result
 
+    def analyse_file(self):
+
+        #reading file
+        try:
+            dom = read_ccdb_text_file(self.file_path)
+        except IOError as error:
+            log.warning(LogFmt("Unable to read file '{0}'. The error message is: '{1}'", self.file_path, error))
+            raise
+
+        #Is there data at all?
+        if not dom.has_data:
+            message = "Seems like file has no appropriate data"
+            log.warning(message)
+            raise ValueError(message=message)
+
+        #check what we've got
+        assert isinstance(dom, TextFileDOM)
+        if not dom.data_is_consistent:
+            message = "Inconsistency error. " + dom.inconsistent_reason
+            log.warning(message)
+            raise ValueError(message=message)
+
+        if dom.column_names:
+            columns_str = " ".join([col_name for col_name in dom.column_names])
+        else:
+            columns_str = str(len(dom.rows[0])) + "col"
+
+        log.info(LogFmt("mktbl <name> -r {0} {1} #<comments>", len(dom.rows), columns_str))
+
+        if dom.comment_lines:
+            log.info(LogFmt("{0}Comments in file: {0}{1}", linesep, linesep.join(ln for ln in dom.comment_lines)))
 
     #----------------------------------------------
     #   print_help - prints help for MakeTable
@@ -275,6 +324,7 @@ MakeTable or mktbl - create type table with the specified namepath and parameter
 usage: 
      
     mktbl <name> -r <rows_number> <columns> #<comments>
+    mktbl -f <file_name>
 
     name        - is a /name/path
     rows_number - number of rows
@@ -299,7 +349,7 @@ columns format:
     2) 'index=int digit=double descr=string' - create 3 columns: 'index', 'digit' and 'descr' of types int, double and string
     
     Imagine, one needs to create 50 columns for 50 channels?
-    3) '50channel'        -  create 50 columns channel0,channel1, ..., channel49. The type is considered to be 'double' by default
+    3) '50channel'        -  create 50 columns channel0,channel1, ..., channel49. The type is 'double' by default
     4) '50channel=int'    -  create 50 columns channel0,channel1, ..., channel49 of type (int)
     
     The last one is change start index of auto naming the colums
@@ -326,10 +376,12 @@ keys:
     -r <N> or  --rows <N>       Number of rows
     -c <N> or  --columns <N>    Number of columns
     -I     or  --interactive    Interactively ask information that is not provided (rows number, comments)
-                                (This option is switched ON by default if ccdbcmd is in interactive mode)
+                                (This option is switched ON by default if ccdb is in interactive mode)
     -nq    or  --no-quantity    if set digits before column names are NOT treated as quantities
                                 i.e  mktbl ... 10val      - creates 10 columns named 'val0' ... 'val9'
                                      mktbl -nq ... 10val  - creates 1 column named '10val'
+
+    -f <file> or --file <file>  Infer type table from text table file.(Hint: column names row should start with #&)
             """
 
     #----------------------------------------------
