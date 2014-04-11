@@ -1,7 +1,7 @@
 import logging
 import os
 
-from ccdb import Directory, TypeTable, Variation
+from ccdb import Directory, TypeTable, Variation, read_ccdb_text_file, TextFileDOM
 from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
 from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
@@ -61,6 +61,10 @@ class Info(ConsoleUtilBase):
         if obj_type == InfoTypes.variation:
             self.print_variation(provider.get_variation(obj_name))
 
+        #it is a file!!!
+        if obj_type == InfoTypes.file:
+            self.print_file(obj_name)
+
         #everything is fine!
         return 0
 
@@ -77,6 +81,7 @@ class Info(ConsoleUtilBase):
         parser.add_argument("obj_name", default="")
         parser.add_argument("-v", "--variation", action="store_true")
         parser.add_argument("-d", "--directory", action="store_true")
+        parser.add_argument("-f", "--file", action="store_true")
 
         result = parser.parse_args(args)
 
@@ -84,6 +89,8 @@ class Info(ConsoleUtilBase):
             obj_type = InfoTypes.variation
         elif result.directory:
             obj_type = InfoTypes.directory
+        elif result.file:
+            obj_type = InfoTypes.file
         else:
             obj_type = InfoTypes.type_table
 
@@ -172,11 +179,63 @@ class Info(ConsoleUtilBase):
     info <type table path>   - info about type table with given path
     info -d <directory path> - info about directory with given path
     info -v <variation name> - info about variation with given name
+    info -f <file name>      - info about text file (col. names), rows, etc.
     
     """
+
+    def print_file(self, file_path):
+        #reading file
+        try:
+            dom = read_ccdb_text_file(file_path)
+        except IOError as error:
+            log.warning(LogFmt("Unable to read file '{0}'. The error message is: '{1}'", file_path, error))
+            raise
+
+        #Is there data at all?
+        if not dom.has_data:
+            message = "Seems like file has no data"
+            log.warning(message)
+            raise ValueError(message=message)
+
+        #check what we've got
+        assert isinstance(dom, TextFileDOM)
+        if not dom.data_is_consistent:
+            message = "Inconsistency error. " + dom.inconsistent_reason
+            log.warning(message)
+            raise ValueError(message=message)
+
+        log.info(LogFmt("Rows: {}{}{}", self.theme.Accent, len(dom.rows), self.theme.Reset))
+        log.info(LogFmt("Columns: {}{}{}", self.theme.Accent, len(dom.rows[0]), self.theme.Reset))
+
+
+        #column names
+        if dom.column_names:
+            log.info("Column names:")
+            log.info("    " + (os.linesep + "    ").join(
+                [self.theme.Accent + col_name + self.theme.Reset for col_name in dom.column_names]))
+        else:
+            log.info("No column names found (column name string starts with #&)")
+
+        #meta data
+        if dom.metas:
+            log.info("Meta data:")
+            log.info((os.linesep + "    ").join([key + " = " + val for key, val in dom.metas]))
+
+        #comments
+        if dom.comment_lines:
+            log.info(LogFmt("{0}Comments in file: {0}{1}", os.linesep, os.linesep.join(ln for ln in dom.comment_lines)))
+        else:
+            log.info("No comments in file found")
+
+        ccdb_prefix = "ccdb " if not self.context.is_interactive else ""
+        log.info("")
+        log.info(LogFmt("Type '{1}mktbl -f {0}' to see how to create a table for the file", file_path, ccdb_prefix))
+        log.info(LogFmt("Type '{1}add <table name> {0} #<comments>' to add the file to existing table"
+                        " (rows and columns must consist)", file_path, ccdb_prefix))
 
 
 class InfoTypes(object):
     variation = "variation"
     type_table = "type_table"
     directory = "directory"
+    file = "file"

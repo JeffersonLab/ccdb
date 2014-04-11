@@ -176,6 +176,7 @@ class MakeTable(ConsoleUtilBase):
                     if i < len(args):
                         self.infer_from_file = True
                         self.file_name = args[i]
+                        i += 1
                     else:
                         log.warning("Cannot parse file name from -f (--file) flag")
 
@@ -284,9 +285,9 @@ class MakeTable(ConsoleUtilBase):
 
         #reading file
         try:
-            dom = read_ccdb_text_file(self.file_path)
+            dom = read_ccdb_text_file(self.file_name)
         except IOError as error:
-            log.warning(LogFmt("Unable to read file '{0}'. The error message is: '{1}'", self.file_path, error))
+            log.warning(LogFmt("Unable to read file '{0}'. The error message is: '{1}'", self.file_name, error))
             raise
 
         #Is there data at all?
@@ -307,9 +308,12 @@ class MakeTable(ConsoleUtilBase):
         else:
             columns_str = str(len(dom.rows[0])) + "col"
 
+        name = self.table_path if self.table_path else "<name>"
+        comment = self.comment if self.comment else "<comments>"
 
-        log.info(LogFmt("mktbl <name> -r {0} {1} #<comments>", len(dom.rows), columns_str))
-
+        log.info("Command to create a table: " + linesep)
+        log.info(LogFmt("mktbl {0} -r {1} {2} #{3}", name, len(dom.rows), columns_str, comment))
+        log.info(linesep)
         if dom.comment_lines:
             log.info(LogFmt("{0}Comments in file: {0}{1}", linesep, linesep.join(ln for ln in dom.comment_lines)))
 

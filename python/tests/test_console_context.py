@@ -120,11 +120,15 @@ class ConsoleContextTests(unittest.TestCase):
         """mkdir infer table structure from file"""
         tests_dir = os.path.dirname(os.path.realpath(__file__))
         test_file = os.path.join(tests_dir, "test_table.txt")
-        print(test_file)
         self.context.process_command_line("mktbl -f " + test_file)
         out_str = self.output.getvalue()
-        print(out_str)
         self.assertIn("mktbl <name> -r 2 X Y Z #<comments>", out_str)
+
+        #Now lets check more complex example, where we set table name and comment
+        self.output.truncate(0)
+        self.context.process_command_line("mktbl /test/haha -f " + test_file + " #harasho")
+        out_str = str(self.output.getvalue())
+        self.assertIn("mktbl /test/haha -r 2 X Y Z #harasho", out_str)
 
     def test_mk_rm_table(self):
         """mktbl, rm. Create table and delete it"""
