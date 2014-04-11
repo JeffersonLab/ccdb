@@ -307,6 +307,7 @@ class MakeTable(ConsoleUtilBase):
         else:
             columns_str = str(len(dom.rows[0])) + "col"
 
+
         log.info(LogFmt("mktbl <name> -r {0} {1} #<comments>", len(dom.rows), columns_str))
 
         if dom.comment_lines:
