@@ -593,7 +593,7 @@ class AlchemyProvider(object):
     # Creates  constants type table in database and returns reference to
     # created table if operation is succeeded (NULL otherwise)
     #
-    # The map "columns" should contains <"name", "type"> string pairs where:
+    # The map "columns" should contains [("name", "type")] string pairs where:
     #  -- "name" is the name of the column.
     #      Should have the same naming conventions
     #      as names of directories and type tables  @see ValidateName()
@@ -612,12 +612,12 @@ class AlchemyProvider(object):
     #/
     #------------------------------------------------
     #------------------------------------------------
-    def create_type_table(self, name, dir_obj_or_path, rowsNumber, columns, comment=""):
+    def create_type_table(self, name, dir_obj_or_path, rows_num, columns, comment=""):
         """Creates constant table in database"""
         #return self._provider.CreateConstantsTypeTable(name, parentPath, rowsNumber, columns, comments)
 
         assert len(columns) > 0
-        assert rowsNumber > 0
+        assert rows_num > 0
 
         self._ensure_dirs_loaded()
 
@@ -640,7 +640,7 @@ class AlchemyProvider(object):
         table = TypeTable()
         table.name = name
         table.comment = comment
-        table.rows_count = rowsNumber
+        table.rows_count = rows_num
         table.parent_dir = parent_dir
         table.parent_dir_id = parent_dir.id
         table.author_id = user.id

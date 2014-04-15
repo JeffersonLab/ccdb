@@ -9,10 +9,6 @@ from ccdb.errors import DatabaseStructureError, TypeTableNotFound, DirectoryNotF
 from ccdb import AlchemyProvider
 
 
-def load_tests(loader, tests, pattern):
-    suite = unittest.TestSuite()
-    return suite
-
 class AlchemyProviderTest(unittest.TestCase):
     ccdb_path = get_ccdb_home_path()
     sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
@@ -174,7 +170,7 @@ class AlchemyProviderTest(unittest.TestCase):
         table = self.provider.create_type_table(
             name="new_table",
             dir_obj_or_path="/test/test_vars",
-            rowsNumber=5,
+            rows_num=5,
             columns=[('c', 'double'), ('a', 'double'), ('b', 'int')],
             comment="This is temporary created table for test reasons")
 
