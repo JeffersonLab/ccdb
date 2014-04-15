@@ -2,7 +2,7 @@
  * Created by Dmitry on 3/24/2014.
  */
 
-package ccdb.helpers
+package org.ccdb.helpers
 
 /** @brief Extracts Directory from object path
  *

@@ -8,12 +8,12 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 import java.util.Date
 import java.sql.DriverManager
-import ccdb.helpers.combinePath
+import org.ccdb.helpers.combinePath
 import java.sql.SQLException
 import java.sql.ResultSet
 import org.ccdb.model.TypeTable
-import ccdb.helpers.extractDirectory
-import ccdb.helpers.extractObjectname
+import org.ccdb.helpers.extractDirectory
+import org.ccdb.helpers.extractObjectname
 import org.ccdb.model.TypeTableColumn
 import org.ccdb.model.CellTypes
 import org.ccdb.model.Assignment
@@ -48,7 +48,6 @@ public class CalibrationProvider{
         val url = "jdbc:mysql://localhost:3306/ccdb"
         val user = "ccdb_user"
         val password = ""
-        val name:String? = null
 
         connection = DriverManager.getConnection(url, user, password)
         val con:Connection = connection!!

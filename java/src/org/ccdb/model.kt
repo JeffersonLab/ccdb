@@ -8,7 +8,7 @@ package org.ccdb.model
 import java.util.Date
 import java.util.Vector
 import com.sun.javafx.scene.shape.PathUtils
-import ccdb.helpers.combinePath
+import org.ccdb.helpers.combinePath
 import java.util.HashMap
 
 val dataSeparator = '|'
