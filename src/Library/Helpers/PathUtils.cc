@@ -306,6 +306,9 @@ ccdb::RequestParseResult ccdb::PathUtils::ParseRequest( const string& requestStr
         else //the symbol is colon (symbol==':')
         {
             colonCount++;
+
+			//This addition is for situation when ':' is found in time string 
+			if (colonCount > 3) result.TimeString.push_back(':');
         }
     }
 
