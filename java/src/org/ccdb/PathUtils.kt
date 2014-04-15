@@ -24,8 +24,8 @@ fun extractDirectory(path:String): String{
  */
 fun extractObjectname(path:String ):String{
     val index = path.lastIndexOf("/")
-    if(index <= 0) return ""
-    return path.substring(index)
+    if(index < 0 || index == path.size - 1) return ""
+    return path.substring(index + 1)
 }
 
 

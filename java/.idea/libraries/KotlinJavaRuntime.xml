@@ -5,7 +5,6 @@
     </ANNOTATIONS>
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/kotlin-runtime.jar!/" />
-      <root url="jar://C:/Program Files (x86)/MySQL/MySQL Connector J/mysql-connector-java-5.1.29-bin.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
