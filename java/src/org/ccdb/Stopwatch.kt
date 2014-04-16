@@ -1,4 +1,4 @@
-package org.ccdb
+package org.jlab.ccdb
 
 public class Stopwatch{
 

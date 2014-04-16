@@ -3,26 +3,29 @@
  */
 package kotlinExamples
 import java.sql.DriverManager
-import org.ccdb.model.Directory
 import java.util.Vector
-
-import org.ccdb.DatabaseProvider
 import java.util.Date
 import java.text.SimpleDateFormat
-import org.ccdb.Stopwatch
-import org.ccdb.MySqlProvider
-import org.ccdb.SQLiteProvider
+
+import org.jlab.ccdb.JDBCProvider
+import org.jlab.ccdb.Directory
+import org.jlab.ccdb.Stopwatch
+import org.jlab.ccdb.MySqlProvider
+import org.jlab.ccdb.SQLiteProvider
+
+
+
 
 fun testSQLite(){
-    val provider = SQLiteProvider()
-    provider.connect("sqlite:///‪D:/Projects/CCDB/trunk/sql/ccdb.sqlite")
-}
 
-fun main(args: Array<String>) {
-    val provider = MySqlProvider()
-    provider.connect("mysql://localhost")
-    provider.loadDirectories()
-
+    val ccdbHome = System.getenv("CCDB_HOME")
+    if(ccdbHome == null){
+        println("\$CCDB_HOME is not set")
+        return
+    }
+    println("------------SQLITE---------------")
+    val provider = SQLiteProvider("sqlite:///$ccdbHome/sql/ccdb.sqlite")
+    provider.connect()
     val sw = Stopwatch()
     sw.start()
     val variation = provider.getVariation("default")
@@ -32,7 +35,30 @@ fun main(args: Array<String>) {
     sw.stop()
     println("time for request is $sw")
 
-    println("Data is '${asgmt1.data}'")
+    println("Data is '${asgmt1.blob}'")
+    println("table full path: '${table.fullPath}' columns are: ")
+    for (column in table.columns){
+        println("    name: '${column.name}'   type:'${column.cellType}'")
+    }
+
+}
+
+fun main(args: Array<String>) {
+    val provider = MySqlProvider("mysql://localhost")
+    provider.connect()
+    provider.loadDirectories()
+
+    val sw = Stopwatch()
+    sw.start()
+    val variation = provider.getVariation("default")
+    val table = provider.getTypeTable("/test/test_vars/test_table")
+    var asgmt1 = provider.getAssignment(0, table, Date(), variation)
+
+
+    sw.stop()
+    println("time for request is $sw")
+
+    println("Data is '${asgmt1.blob}'")
     println("table full path: '${table.fullPath}' columns are: ")
     for (column in table.columns){
         println("    name: '${column.name}'   type:'${column.cellType}'")
@@ -60,7 +86,7 @@ fun main(args: Array<String>) {
     }
 
 
-    println("Data is '${asgmt2.data}'")
+    println("Data is '${asgmt2.blob}'")
 
 
     testSQLite()

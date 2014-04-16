@@ -1,21 +1,21 @@
-package org.ccdb
+package org.jlab.ccdb
 
 import java.sql.DriverManager
 import java.sql.Connection
 
-public class SQLiteProvider: DatabaseProvider() {
+public class SQLiteProvider(connectionString:String): JDBCProvider(connectionString) {
 
 
-    override fun connect(conStr:String)
+    override fun connect()
     {
         //first check for uri type
-        val typePos = conStr.indexOf("sqlite:///")
+        val typePos = connectionString.indexOf("sqlite:///")
         if(typePos != 0){
             throw IllegalArgumentException("Connection string doesn't start with sqlite:/// but is given to SQLiteProvider. (Notice 3 slashes ///)")
         }
 
-        //ok we replace CCDB sqlite:/// to JDBC jdbc:sqlite:
-        val host = "jdbc:sqlite:" + conStr.substring(10)
+        //ok we replace CCDB 'sqlite:///' to JDBC 'jdbc:sqlite:'
+        val host = "jdbc:sqlite:" + connectionString.substring(10)
 
         //Connect to through JDBC
         connectJDBC(host)
@@ -39,7 +39,6 @@ public class SQLiteProvider: DatabaseProvider() {
                 "`constantSets`.`vault` AS `blob`, "+
                 "`assignments`.`modified` as `asModified`"+
                 "FROM  `assignments` "+
-                "USE INDEX (id_UNIQUE) "+
                 "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "+
                 "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "+
                 "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "+
@@ -48,7 +47,7 @@ public class SQLiteProvider: DatabaseProvider() {
                 "AND `assignments`.`variationId`= ? "+
                 "AND `constantSets`.`constantTypeId` = ? "
 
-        val timeConstrain = "AND UNIX_TIMESTAMP(`assignments`.`created`) <= ? "
+        val timeConstrain = "AND `assignments`.`created` <= datetime(?, 'unixepoch', 'localtime')"
         val orderBy = "ORDER BY `assignments`.`id` DESC LIMIT 1 "
         prsData = con.prepareStatement(dataQuery + timeConstrain + orderBy)
 

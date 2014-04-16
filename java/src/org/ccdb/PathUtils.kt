@@ -2,7 +2,7 @@
  * Created by Dmitry on 3/24/2014.
  */
 
-package org.ccdb.helpers
+package org.jlab.ccdb.helpers
 
 import java.util.Date
 import java.text.SimpleDateFormat

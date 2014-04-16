@@ -3,12 +3,12 @@
  */
 
 
-package org.ccdb.model
+package org.jlab.ccdb
 
 import java.util.Date
 import java.util.Vector
 import com.sun.javafx.scene.shape.PathUtils
-import org.ccdb.helpers.combinePath
+import org.jlab.ccdb.helpers.combinePath
 import java.util.HashMap
 
 val dataSeparator = '|'
@@ -103,35 +103,36 @@ class TypeTableColumn(
         val cellType:CellTypes)
 
 
-
-
+/**
+ * Class that represents CCDB data set
+ */
 class Assignment(
         val id:Int,
-        val data:String,
-        val table:TypeTable,
+        val blob:String,
+        val typeTable:TypeTable,
         val created:Date
 ){
 
-    private var isDoneStringVector = false
-    private var isDoneStringTable = false
-    private var isDoneStringMap = false
-
-    /** gets data represented as number of columns */
+    /**
+     * gets data represented as number of columns
+     */
     public val stringVector: Vector<String> = Vector<String>()
     get(){
-        if(!isDoneStringVector){
-            for (token in data.split(dataSeparator)) $stringVector.add(token)
-            isDoneStringVector = true
+        if($stringVector.empty){
+            for (token in blob.split(dataSeparator)) $stringVector.add(token)
         }
         return $stringVector
     }
 
-    /** gets data represented as number of columns */
+
+    /**
+     * gets data represented as number of columns
+     */
     public val stringTable:Vector<Vector<String>> = Vector<Vector<String>>()
         get(){
-            if(!isDoneStringTable){
-                val ncols = table.columns.size
-                val nrows = stringVector.size / ncols
+            if($stringTable.empty){
+                val ncols = typeTable.columns.size
+                val nrows = typeTable.rowsCount
 
                 for(rowIndex in 0..nrows-1){
                     val row = Vector<String>()
@@ -140,28 +141,25 @@ class Assignment(
                     }
                     $stringTable.add(row)
                 }
-                isDoneStringTable = true
             }
             return $stringTable
         }
 
-    /** gets data represented as number of columns */
+
+    /**
+     * gets data represented as number of columns
+     */
     public val stringMap: HashMap<String, String> = HashMap<String, String>()
         get(){
-            if(!isDoneStringMap) {
-                val ncols = table.columns.size
+            if(stringMap.empty) {
+                val ncols = typeTable.columns.size
 
                 for (colIndex in 0..ncols - 1) {
-                    $stringMap[table.columns[colIndex].name] = stringVector[colIndex]
+                    $stringMap[typeTable.columns[colIndex].name] = stringVector[colIndex]
                 }
-                isDoneStringMap = true
             }
             return $stringMap
         }
-
-
-
-
 }
 
 /**

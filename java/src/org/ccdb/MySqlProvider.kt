@@ -1,25 +1,26 @@
 /**
  * Created by Dmitry on 4/15/2014.
  */
-package org.ccdb
+package org.jlab.ccdb
 
-import org.ccdb.DatabaseProvider
 import java.sql.DriverManager
 import java.sql.Connection
 
-public class MySqlProvider: DatabaseProvider() {
+import org.jlab.ccdb.JDBCProvider
 
 
-    override fun connect(conStr:String)
+public class MySqlProvider(connectionString:String): JDBCProvider(connectionString) {
+
+    override fun connect()
     {
         //first check for uri type
-        val typePos = conStr.indexOf("mysql://")
+        val typePos = connectionString.indexOf("mysql://")
         if(typePos != 0){
             throw IllegalArgumentException("Connection string doesn't start with mysql:// but is given to MySqlProvider")
         }
 
         //ok we don't need mysql:// in the future. Moreover it will mess our separation logic
-        var workStr = conStr.substring(8)
+        var workStr = connectionString.substring(8)
         var userName = "ccdb_user"
         var password = ""
 
