@@ -143,8 +143,8 @@ bool ccdb::MySQLDataProvider::ParseConnectionString(std::string conStr, MySQLCon
 		if(atPos == conStr.length()-1)
 		{
 			//it is like 'login:pwd@' string
+			logPassStr = conStr.substr(0, atPos);
 			conStr=string("");
-			logPassStr=conStr.substr(0,atPos);
 		}
 		else if(atPos==0)
 		{
