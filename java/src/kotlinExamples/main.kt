@@ -6,14 +6,21 @@ import java.sql.DriverManager
 import org.ccdb.model.Directory
 import java.util.Vector
 
-import org.ccdb.CalibrationProvider
+import org.ccdb.DatabaseProvider
 import java.util.Date
 import java.text.SimpleDateFormat
 import org.ccdb.Stopwatch
+import org.ccdb.MySqlProvider
+import org.ccdb.SQLiteProvider
+
+fun testSQLite(){
+    val provider = SQLiteProvider()
+    provider.connect("sqlite:///‪D:/Projects/CCDB/trunk/sql/ccdb.sqlite")
+}
 
 fun main(args: Array<String>) {
-    val provider = CalibrationProvider()
-    provider.connect()
+    val provider = MySqlProvider()
+    provider.connect("mysql://localhost")
     provider.loadDirectories()
 
     val sw = Stopwatch()
@@ -54,5 +61,7 @@ fun main(args: Array<String>) {
 
 
     println("Data is '${asgmt2.data}'")
-    print("Hello")
+
+
+    testSQLite()
 }

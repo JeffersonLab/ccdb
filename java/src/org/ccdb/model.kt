@@ -76,7 +76,8 @@ public class TypeTable(
         public val id:Int,
         public val directory:Directory,
         public val name:String,
-        public val columns: Vector<TypeTableColumn>)
+        public val columns: Vector<TypeTableColumn>,
+        public val rowsCount:Int)
 {
     public val fullPath: String
         get(){
@@ -85,7 +86,7 @@ public class TypeTable(
 
     private var isDoneColumnsByName=false
 
-    val columnsByName = HashMap<String, TypeTableColumn>()
+    public val columnsByName: HashMap<String, TypeTableColumn> = HashMap<String, TypeTableColumn>()
         get(){
             if(!isDoneColumnsByName){
                 for(column in columns) $columnsByName[column.name]=column

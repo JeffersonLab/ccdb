@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="ccdb:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="edee64c9-2ebb-42da-846e-42e2c8ba8330" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/ccdb/PathUtils.kt" afterPath="$PROJECT_DIR$/src/org/ccdb/PathUtils.kt" />
+    <list default="true" readonly="true" id="edee64c9-2ebb-42da-846e-42e2c8ba8330" name="Default" comment="Java version code gardening">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/org/ccdb/MySqlProvider.kt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/org/ccdb/SQLiteProvider.kt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/sqlite_jdbc_3_7_2.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/javaExamples/SimpleExample.java" afterPath="$PROJECT_DIR$/src/javaExamples/SimpleExample.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb.iml" afterPath="$PROJECT_DIR$/ccdb.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/kotlinExamples/main.kt" afterPath="$PROJECT_DIR$/src/kotlinExamples/main.kt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/ccdb/model.kt" afterPath="$PROJECT_DIR$/src/org/ccdb/model.kt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MOVED" beforePath="D:\Projects\CCDB\trunk\java\src\org\ccdb\CalibrationProvider.kt" afterPath="$PROJECT_DIR$/src/org/ccdb/DatabaseProvider.kt" />
     </list>
     <ignored path="ccdb.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -27,33 +39,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="SimpleExample.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/javaExamples/SimpleExample.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
-              <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="javaExamples.iml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/javaExamples/javaExamples.iml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="285">
-              <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="main.kt" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/kotlinExamples/main.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="337" max-vertical-offset="915">
-              <caret line="35" column="67" selection-start-line="34" selection-start-column="4" selection-end-line="35" selection-end-column="67" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="1190">
+              <caret line="42" column="67" selection-start-line="42" selection-start-column="67" selection-end-line="42" selection-end-column="67" />
               <folding>
-                <element signature="e#66#270#0" expanded="true" />
+                <element signature="e#66#328#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -62,21 +54,44 @@
       <file leaf-file-name="model.kt" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/ccdb/model.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1230" max-vertical-offset="2925">
-              <caret line="82" column="23" selection-start-line="82" selection-start-column="23" selection-end-line="82" selection-end-column="23" />
+            <state vertical-scroll-proportion="-3.2142856" vertical-offset="2052" max-vertical-offset="3230">
+              <caret line="132" column="0" selection-start-line="132" selection-start-column="0" selection-end-line="132" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CalibrationProvider.kt" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/org/ccdb/CalibrationProvider.kt">
+      <file leaf-file-name="SQLiteProvider.kt" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/org/ccdb/SQLiteProvider.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.688928" vertical-offset="2295" max-vertical-offset="5055">
-              <caret line="51" column="48" selection-start-line="51" selection-start-column="20" selection-end-line="51" selection-end-column="48" />
+            <state vertical-scroll-proportion="0.3908046" vertical-offset="555" max-vertical-offset="1650">
+              <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
               <folding>
-                <element signature="e#18#552#0" expanded="true" />
+                <element signature="e#18#74#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MySqlProvider.kt" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/ccdb/MySqlProvider.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2616">
+              <caret line="15" column="46" selection-start-line="15" selection-start-column="38" selection-end-line="15" selection-end-column="46" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+                <element signature="e#61#150#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StringsJVM.kt" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/lib/kotlin-runtime-sources.jar!/kotlin/text/StringsJVM.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="577" max-vertical-offset="9673">
+              <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -84,18 +99,8 @@
       <file leaf-file-name="Stopwatch.kt" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/ccdb/Stopwatch.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="270" max-vertical-offset="1065">
+            <state vertical-scroll-proportion="0.0" vertical-offset="306" max-vertical-offset="1207">
               <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ccdb.iml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccdb.iml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="315">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -104,12 +109,9 @@
       <file leaf-file-name="PathUtils.kt" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/ccdb/PathUtils.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-435.5" vertical-offset="6279" max-vertical-offset="8910">
+            <state vertical-scroll-proportion="0.0" vertical-offset="5457" max-vertical-offset="6817">
               <caret line="325" column="0" selection-start-line="325" selection-start-column="0" selection-end-line="325" selection-end-column="0" />
-              <folding>
-                <element signature="n#!!doc" expanded="true" />
-                <element signature="e#70#154#0" expanded="true" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -135,12 +137,16 @@
         <option value="$PROJECT_DIR$/src/model.kt" />
         <option value="$PROJECT_DIR$/src/Stopwatch.kt" />
         <option value="$PROJECT_DIR$/src/org/ccdb/Stopwatch.kt" />
-        <option value="$PROJECT_DIR$/src/kotlinExamples/main.kt" />
-        <option value="$PROJECT_DIR$/src/org/ccdb/model.kt" />
         <option value="$PROJECT_DIR$/src/org/ccdb/ccdb.iml" />
-        <option value="$PROJECT_DIR$/src/org/ccdb/CalibrationProvider.kt" />
-        <option value="$PROJECT_DIR$/src/javaExamples/SimpleExample.java" />
         <option value="$PROJECT_DIR$/src/org/ccdb/PathUtils.kt" />
+        <option value="$PROJECT_DIR$/src/org/ccdb/MySqlConnectionInfo.kt" />
+        <option value="$PROJECT_DIR$/src/org/ccdb/CalibrationProvider.kt" />
+        <option value="$PROJECT_DIR$/src/org/ccdb/model.kt" />
+        <option value="$PROJECT_DIR$/src/org/ccdb/DatabaseProvider.kt" />
+        <option value="$PROJECT_DIR$/src/org/ccdb/MySqlProvider.kt" />
+        <option value="$PROJECT_DIR$/src/javaExamples/SimpleExample.java" />
+        <option value="$PROJECT_DIR$/src/kotlinExamples/main.kt" />
+        <option value="$PROJECT_DIR$/src/org/ccdb/SQLiteProvider.kt" />
       </list>
     </option>
   </component>
@@ -148,9 +154,10 @@
     <treeState />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-2" />
-    <option name="width" value="1684" />
-    <option name="height" value="1027" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1552" />
+    <option name="height" value="842" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -285,14 +292,14 @@
     <property name="MemberChooser.sorted" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="MemberChooser.copyJavadoc" value="false" />
-    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="options.lastSelected" value="editor" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/mysql-connector-java-5.1.29-bin.jar!/" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/sqlite-jdbc-3.7.2.jar!/" />
     <property name="recentsLimit" value="5" />
     <property name="dynamic.classpath" value="false" />
     <property name="FullScreen" value="false" />
@@ -309,7 +316,7 @@
       <recent name="D:\Projects\CCDB\trunk\java\kotlinExamples" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.SimpleExample">
+  <component name="RunManager" selected="Kotlin.kotlinExamples.KotlinExamplesPackage">
     <configuration default="false" name="_DefaultPackage" type="JetRunConfigurationType" factoryName="Kotlin" temporary="true">
       <option name="MAIN_CLASS_NAME" value="_DefaultPackage" />
       <option name="VM_PARAMETERS" />
@@ -377,19 +384,6 @@
       <envs />
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method />
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -415,6 +409,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -481,7 +488,13 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="kotlinExamples" />
       <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
@@ -518,35 +531,35 @@
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="SvnConfiguration" cleanupOnStartRun="true">
-    <configuration>$USER_HOME$/.subversion</configuration>
+    <configuration>C:\Users\Dmitry\AppData\Roaming\Subversion</configuration>
     <supportedVersion>125</supportedVersion>
   </component>
   <component name="SvnFileUrlMappingImpl">
     <option name="myMappingRoots">
       <list>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="$PROJECT_DIR$" />
-          <option name="myCopyRoot" value="$PROJECT_DIR$" />
+          <option name="myVcsRoot" value="D:\Projects\CCDB\trunk\java" />
+          <option name="myCopyRoot" value="D:\Projects\CCDB\trunk\java" />
         </SvnCopyRootSimple>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="$PROJECT_DIR$/.idea" />
-          <option name="myCopyRoot" value="$PROJECT_DIR$/.idea" />
+          <option name="myVcsRoot" value="D:\Projects\CCDB\trunk\java\.idea" />
+          <option name="myCopyRoot" value="D:\Projects\CCDB\trunk\java\.idea" />
         </SvnCopyRootSimple>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="$PROJECT_DIR$/src/javaExamples" />
-          <option name="myCopyRoot" value="$PROJECT_DIR$/src/javaExamples" />
+          <option name="myVcsRoot" value="D:\Projects\CCDB\trunk\java\src\javaExamples" />
+          <option name="myCopyRoot" value="D:\Projects\CCDB\trunk\java\src\javaExamples" />
         </SvnCopyRootSimple>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="$PROJECT_DIR$/src/kotlinExamples" />
-          <option name="myCopyRoot" value="$PROJECT_DIR$/src/kotlinExamples" />
+          <option name="myVcsRoot" value="D:\Projects\CCDB\trunk\java\src\kotlinExamples" />
+          <option name="myCopyRoot" value="D:\Projects\CCDB\trunk\java\src\kotlinExamples" />
         </SvnCopyRootSimple>
       </list>
     </option>
     <option name="myMoreRealMappingRoots">
       <list>
         <SvnCopyRootSimple>
-          <option name="myVcsRoot" value="$PROJECT_DIR$" />
-          <option name="myCopyRoot" value="$PROJECT_DIR$" />
+          <option name="myVcsRoot" value="D:\Projects\CCDB\trunk\java" />
+          <option name="myCopyRoot" value="D:\Projects\CCDB\trunk\java" />
         </SvnCopyRootSimple>
       </list>
     </option>
@@ -569,11 +582,11 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-2" y="0" width="1684" height="1027" extended-state="6" />
+    <frame x="-8" y="-8" width="1552" height="842" extended-state="6" />
     <editor active="false" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32957748" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -583,20 +596,46 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32929516" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.13447432" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33370045" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24396783" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33239436" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5380282" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Kotlin" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24396783" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33370045" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+    </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -620,13 +659,19 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/org/ccdb/model.kt</url>
-          <line>131</line>
+          <url>file://$PROJECT_DIR$/src/org/ccdb/SQLiteProvider.kt</url>
+          <line>17</line>
           <properties />
-          <option name="timeStamp" value="5" />
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$PROJECT_DIR$/lib/sqlite-jdbc-3.7.2.jar!/org/sqlite/Conn.java</url>
+          <line>95</line>
+          <properties />
+          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="7" />
+      <option name="time" value="9" />
     </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
@@ -634,20 +679,12 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/javaExamples/javaExamples.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="285">
-          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/kotlinExamples/main.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="60" max-vertical-offset="945">
           <caret line="4" column="26" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
           <folding>
-            <element signature="e#66#270#0" expanded="true" />
+            <element signature="e#66#328#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -660,12 +697,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/ccdb/CalibrationProvider.kt">
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/DatabaseProvider.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1900" max-vertical-offset="5055">
           <caret line="146" column="31" selection-start-line="146" selection-start-column="31" selection-end-line="146" selection-end-column="31" />
           <folding>
-            <element signature="e#18#552#0" expanded="true" />
+            <element signature="e#18#523#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -698,10 +735,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="6390">
           <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#70#154#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -709,7 +743,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="255">
           <caret line="9" column="58" selection-start-line="9" selection-start-column="58" selection-end-line="9" selection-end-column="58" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -726,7 +762,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="60" max-vertical-offset="945">
           <caret line="4" column="26" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
           <folding>
-            <element signature="e#66#270#0" expanded="true" />
+            <element signature="e#66#328#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -739,12 +775,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/ccdb/CalibrationProvider.kt">
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/DatabaseProvider.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="795" max-vertical-offset="5055">
           <caret line="53" column="0" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
           <folding>
-            <element signature="e#18#552#0" expanded="true" />
+            <element signature="e#18#523#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -777,10 +813,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="6390">
           <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#70#154#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -788,7 +821,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
           <caret line="9" column="58" selection-start-line="9" selection-start-column="58" selection-end-line="9" selection-end-column="58" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -805,7 +840,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="238" max-vertical-offset="408">
           <caret line="14" column="51" selection-start-line="14" selection-start-column="51" selection-end-line="14" selection-end-column="51" />
           <folding>
-            <element signature="e#66#270#0" expanded="true" />
+            <element signature="e#66#328#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -818,12 +853,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/ccdb/CalibrationProvider.kt">
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/DatabaseProvider.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="735" max-vertical-offset="5055">
           <caret line="49" column="25" selection-start-line="49" selection-start-column="25" selection-end-line="49" selection-end-column="25" />
           <folding>
-            <element signature="e#18#552#0" expanded="true" />
+            <element signature="e#18#523#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -856,10 +891,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="6390">
           <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#70#154#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -867,7 +899,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="969">
           <caret line="17" column="34" selection-start-line="17" selection-start-column="34" selection-end-line="17" selection-end-column="34" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -876,7 +910,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="238" max-vertical-offset="408">
           <caret line="14" column="51" selection-start-line="14" selection-start-column="51" selection-end-line="14" selection-end-column="51" />
           <folding>
-            <element signature="e#66#270#0" expanded="true" />
+            <element signature="e#66#328#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -901,10 +935,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="542" max-vertical-offset="7242">
           <caret line="359" column="3" selection-start-line="359" selection-start-column="3" selection-end-line="359" selection-end-column="3" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#70#154#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -912,7 +943,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="969">
           <caret line="17" column="34" selection-start-line="17" selection-start-column="34" selection-end-line="17" selection-end-column="34" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -921,7 +954,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="238" max-vertical-offset="408">
           <caret line="14" column="51" selection-start-line="14" selection-start-column="51" selection-end-line="14" selection-end-column="51" />
           <folding>
-            <element signature="e#66#270#0" expanded="true" />
+            <element signature="e#66#328#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -946,10 +979,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="542" max-vertical-offset="7242">
           <caret line="359" column="3" selection-start-line="359" selection-start-column="3" selection-end-line="359" selection-end-column="3" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#70#154#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -975,68 +1005,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/kotlin-runtime-sources.jar!/kotlin/text/StringsJVM.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37241378" vertical-offset="450" max-vertical-offset="9673">
-          <caret line="41" column="95" selection-start-line="41" selection-start-column="95" selection-end-line="41" selection-end-column="95" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/ccdb/model.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1211" max-vertical-offset="3281">
-          <caret line="82" column="23" selection-start-line="82" selection-start-column="23" selection-end-line="82" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/ccdb/Stopwatch.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="270" max-vertical-offset="1065">
-          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/lib/jvm/java-7-oracle/src.zip!/java/lang/Character.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8745704" vertical-offset="80176" max-vertical-offset="103530">
-          <caret line="5443" column="26" selection-start-line="5443" selection-start-column="26" selection-end-line="5443" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/lib/kotlin-runtime-sources.jar!/kotlin/text/Char.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.10309278" vertical-offset="0" max-vertical-offset="705">
           <caret line="4" column="51" selection-start-line="4" selection-start-column="51" selection-end-line="4" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/javaExamples/SimpleExample.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="255">
-          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/javaExamples/javaExamples.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="323">
-          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/kotlinExamples/main.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="337" max-vertical-offset="915">
-          <caret line="35" column="67" selection-start-line="34" selection-start-column="4" selection-end-line="35" selection-end-column="67" />
-          <folding>
-            <element signature="e#66#270#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1048,31 +1020,101 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar:///usr/lib/jvm/java-7-oracle/src.zip!/java/lang/Integer.java">
+    <entry file="jar://$PROJECT_DIR$/lib/kotlin-runtime-sources.jar!/kotlin/text/StringsJVM.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.48788926" vertical-offset="7113" max-vertical-offset="17775">
-          <caret line="522" column="40" selection-start-line="522" selection-start-column="19" selection-end-line="522" selection-end-column="40" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="577" max-vertical-offset="9673">
+          <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/javaExamples/SimpleExample.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.20637329" vertical-offset="0" max-vertical-offset="659">
+          <caret line="8" column="46" selection-start-line="8" selection-start-column="46" selection-end-line="8" selection-end-column="46" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/javaExamples/javaExamples.iml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.051593322" vertical-offset="0" max-vertical-offset="659">
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/DatabaseProvider.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.29596412" vertical-offset="198" max-vertical-offset="6798">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="16" />
+          <folding>
+            <element signature="e#18#523#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/MySqlProvider.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2616">
+          <caret line="15" column="46" selection-start-line="15" selection-start-column="38" selection-end-line="15" selection-end-column="46" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="e#61#150#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/Stopwatch.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="270" max-vertical-offset="1065">
+          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/ccdb/PathUtils.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-435.5" vertical-offset="6279" max-vertical-offset="8910">
+        <state vertical-scroll-proportion="0.0" vertical-offset="5525" max-vertical-offset="6885">
           <caret line="325" column="0" selection-start-line="325" selection-start-column="0" selection-end-line="325" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/kotlinExamples/main.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="1190">
+          <caret line="42" column="67" selection-start-line="42" selection-start-column="67" selection-end-line="42" selection-end-column="67" />
           <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#70#154#0" expanded="true" />
+            <element signature="e#66#328#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/ccdb/CalibrationProvider.kt">
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/model.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.688928" vertical-offset="2295" max-vertical-offset="5055">
-          <caret line="51" column="48" selection-start-line="51" selection-start-column="20" selection-end-line="51" selection-end-column="48" />
+        <state vertical-scroll-proportion="-3.2142856" vertical-offset="2052" max-vertical-offset="3230">
+          <caret line="132" column="0" selection-start-line="132" selection-start-column="0" selection-end-line="132" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/lib/sqlite-jdbc-3.7.2.jar!/org/sqlite/Conn.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.28333333" vertical-offset="0" max-vertical-offset="6290">
+          <caret line="37" column="24" selection-start-line="37" selection-start-column="24" selection-end-line="37" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/SQLiteProvider.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3908046" vertical-offset="555" max-vertical-offset="1650">
+          <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
           <folding>
-            <element signature="e#18#552#0" expanded="true" />
+            <element signature="e#18#74#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1083,10 +1125,12 @@
       <state key="ArtifactsStructureConfigurable.UI">
         <settings>
           <artifact-editor />
+          <last-edited>ccdb:jar</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
                 <option value="0.2" />
+                <option value="0.5" />
               </list>
             </option>
           </splitter-proportions>
@@ -1134,6 +1178,7 @@
             <option name="proportions">
               <list>
                 <option value="0.2" />
+                <option value="0.6" />
               </list>
             </option>
           </splitter-proportions>
@@ -1141,7 +1186,7 @@
       </state>
       <state key="ProjectLibrariesConfigurable.UI">
         <settings>
-          <last-edited>KotlinJavaRuntime</last-edited>
+          <last-edited>sqlite-jdbc-3.7.2</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

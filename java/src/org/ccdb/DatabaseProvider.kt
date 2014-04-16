@@ -1,24 +1,24 @@
 package org.ccdb
 
 import java.util.HashMap
-import org.ccdb.model.Directory
+
 import java.util.Vector
-import org.ccdb.model.Variation
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.util.Date
-import java.sql.DriverManager
-import org.ccdb.helpers.combinePath
 import java.sql.SQLException
 import java.sql.ResultSet
-import org.ccdb.model.TypeTable
 import org.ccdb.helpers.extractDirectory
 import org.ccdb.helpers.extractObjectname
+import org.ccdb.model.TypeTable
 import org.ccdb.model.TypeTableColumn
 import org.ccdb.model.CellTypes
 import org.ccdb.model.Assignment
+import org.ccdb.model.Variation
+import org.ccdb.model.Directory
+import org.ccdb.helpers.combinePath
 
-public class CalibrationProvider{
+public abstract class DatabaseProvider {
 
     var directoriesByFullPath = HashMap<String,Directory>()
     var directoriesById = HashMap<Int, Directory>()
@@ -27,13 +27,13 @@ public class CalibrationProvider{
     private var variationsById = HashMap<Int, Variation>()
     private var variationsByName = HashMap<String, Variation>()
     private var dirsAreLoaded = false;
-    private var connection: Connection? = null
-    private var prsSelectDirectories: PreparedStatement? = null
-    private var prsSelectVariationById: PreparedStatement? = null
-    private var prsSelectVariationByName: PreparedStatement? = null
-    private var prsSelectData: PreparedStatement?=null
-    private var prsSelectTable: PreparedStatement?=null
-    private var prsSelectColumns: PreparedStatement?=null
+    protected var connection: Connection? = null
+    protected var prsDirectories: PreparedStatement? = null
+    protected var prsVariationById: PreparedStatement? = null
+    protected var prsVariationByName: PreparedStatement? = null
+    protected var prsData: PreparedStatement?=null
+    protected var prsTable: PreparedStatement?=null
+    protected var prsColumns: PreparedStatement?=null
 
     val rootDir = Directory(0, 0, "", Date(0), Date(0), "root directory"); {
         rootDir.fullPath = "/"
@@ -44,39 +44,10 @@ public class CalibrationProvider{
             return !(connection?.isClosed() ?: true)
         }
 
-    fun connect(){
-        val url = "jdbc:mysql://localhost:3306/ccdb"
-        val user = "ccdb_user"
-        val password = ""
 
-        connection = DriverManager.getConnection(url, user, password)
-        val con:Connection = connection!!
+    public abstract fun connect(conStr:String)
 
-        prsSelectDirectories = con.prepareStatement("SELECT id, parentId, name, created, modified, comment FROM directories");
-        prsSelectVariationById = con.prepareStatement("SELECT id, parentId, name FROM variations WHERE id = ?")
-        prsSelectVariationByName = con.prepareStatement("SELECT id, parentId, name FROM variations WHERE name = ?")
-        //ok now we must build our mighty query...
-        val dataQuery=
-        "SELECT `assignments`.`id` AS `asId`, "+
-        "`constantSets`.`vault` AS `blob`, "+
-        "`assignments`.`modified` as `asModified`"+
-        "FROM  `assignments` "+
-        "USE INDEX (id_UNIQUE) "+
-        "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "+
-        "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "+
-        "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "+
-        "WHERE  `runRanges`.`runMin` <= ? "+
-        "AND `runRanges`.`runMax` >= ? "+
-        "AND `assignments`.`variationId`= ? "+
-        "AND `constantSets`.`constantTypeId` = ? "
-
-        val timeConstrain = "AND UNIX_TIMESTAMP(`assignments`.`created`) <= ? "
-        val orderBy = "ORDER BY `assignments`.`id` DESC LIMIT 1 "
-        prsSelectData = con.prepareStatement(dataQuery + timeConstrain + orderBy)
-
-        prsSelectTable = con.prepareStatement("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM `typeTables` WHERE `name` = ? AND `directoryId` = ?;")
-        prsSelectColumns = con.prepareStatement("SELECT `id`, `name`, `columnType` FROM `columns` WHERE `typeId` = ? ORDER BY `order`;")
-
+    protected open fun postConnect(){
         dirsAreLoaded = false;
 
         //clear variations maps
@@ -121,7 +92,7 @@ public class CalibrationProvider{
         if (!isConnected) return
 
         try {
-            val rs = prsSelectDirectories!!.executeQuery();
+            val rs = prsDirectories!!.executeQuery();
 
             //clear diretory arrays
             directories.clear();
@@ -174,8 +145,8 @@ public class CalibrationProvider{
         if(variationsByName.containsKey(name)) return variationsByName[name] as Variation
 
         //read variation from database
-        prsSelectVariationByName!!.setString(1, name)
-        val result = readVariationFromResultSet(prsSelectVariationByName!!.executeQuery())
+        prsVariationByName!!.setString(1, name)
+        val result = readVariationFromResultSet(prsVariationByName!!.executeQuery())
 
         //Check we've got a variation
         if(result == null) throw SQLException("Variation with name='$name' is not found in the DB")
@@ -186,8 +157,8 @@ public class CalibrationProvider{
         if(variationsById.containsKey(id)) return variationsById[id] as Variation
 
         //read variation from database
-        prsSelectVariationById!!.setInt(1, id)
-        val result = readVariationFromResultSet(prsSelectVariationById!!.executeQuery())
+        prsVariationById!!.setInt(1, id)
+        val result = readVariationFromResultSet(prsVariationById!!.executeQuery())
 
         //Check we've got a variation
         if(result == null) throw SQLException("Variation with name='$id' is not found in the DB")
@@ -233,7 +204,7 @@ public class CalibrationProvider{
 
     fun getTypeTable(name: String, parentDir: Directory):TypeTable
     {
-        val prs = prsSelectTable!!
+        val prs = prsTable!!
         prs.setString(1, name)
         prs.setInt(2, parentDir.id)
         val result = prs.executeQuery()
@@ -249,7 +220,8 @@ public class CalibrationProvider{
                     tableId,
                     parentDir,
                     tableName,
-                    columns
+                    columns,
+                    result.getInt("nRows")
             )
             return table
         }
@@ -260,7 +232,7 @@ public class CalibrationProvider{
 
     fun loadColumns(tableId: Int):Vector<TypeTableColumn>
     {
-        val prs = prsSelectColumns!!
+        val prs = prsColumns!!
         prs.setInt(1, tableId)
         val result = prs.executeQuery()
 
@@ -294,7 +266,7 @@ public class CalibrationProvider{
 
     fun getAssignment(run:Int, table: TypeTable, time:Date, variation:Variation) :Assignment{
 
-        val prs = prsSelectData!!
+        val prs = prsData!!
         "WHERE  `runRanges`.`runMin` <= ? "+
         "AND `runRanges`.`runMax` >= ? "+
         "AND `assignments`.`variationId`= ? "+
