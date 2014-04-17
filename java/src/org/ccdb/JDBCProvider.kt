@@ -17,8 +17,9 @@ import org.jlab.ccdb.Directory
 import org.jlab.ccdb.helpers.extractObjectname
 import org.jlab.ccdb.helpers.extractDirectory
 import org.jlab.ccdb.helpers.combinePath
+import org.jlab.ccdb.helpers.parseRequest
 
-abstract public class JDBCProvider(public val connectionString: String) {
+open public class JDBCProvider(public val connectionString: String) {
 
     private var directoriesByFullPath = HashMap<String,Directory>()
     private var directoriesById = HashMap<Int, Directory>()
@@ -34,6 +35,8 @@ abstract public class JDBCProvider(public val connectionString: String) {
     protected var prsData: PreparedStatement?=null
     protected var prsTable: PreparedStatement?=null
     protected var prsColumns: PreparedStatement?=null
+
+    private var stopwatch = Stopwatch()
 
 
     /**
@@ -62,6 +65,16 @@ abstract public class JDBCProvider(public val connectionString: String) {
         rootDir.fullPath = "/"
     }
 
+    /**
+     * Collect statistics of getData function
+     */
+    public var statisticsIsCollecting:Boolean = false
+
+    /**
+     * Gets statistics of getData function
+     */
+    public val statistics:RequestStatistics = RequestStatistics()
+
 
     /**
      * Flag indicating the connection to database is established
@@ -75,7 +88,7 @@ abstract public class JDBCProvider(public val connectionString: String) {
     /**
      * Connects to database using connection string
      */
-    abstract public fun connect()
+    open public fun connect(){}
 
 
     /**
@@ -91,11 +104,14 @@ abstract public class JDBCProvider(public val connectionString: String) {
      * @warning (!) the function must be called after connect
      */
     protected open fun postConnect(){
-        dirsAreLoaded = false;
+        dirsAreLoaded = false
 
         //clear variations maps
-        variationsById.clear();
-        variationsByName.clear();
+        variationsById.clear()
+        variationsByName.clear()
+
+        //reset stopwatch
+        stopwatch.clear()
     }
 
 
@@ -340,6 +356,7 @@ abstract public class JDBCProvider(public val connectionString: String) {
         return columns
     }
 
+
     /**
      * Returns assignment object with is a class that holds CCDB data
      */
@@ -372,6 +389,55 @@ abstract public class JDBCProvider(public val connectionString: String) {
                 table,
                 Date(result.getDate("asModified")?.getTime() ?: Date().getTime())
         )
+        return assignment
+    }
+
+    public fun getData(request:String):Assignment{
+
+        //Start statistics collection
+        if(statisticsIsCollecting){
+            stopwatch.start()
+        }
+
+        val parseResult = parseRequest(request)
+
+        if(!parseResult.wasParsedPath){
+            throw IllegalArgumentException("Request should be in from '<path>:<run>:<variation>:<date>', where " +
+                                           "at least <path> should be provided. Original request is '$request'")
+        }
+
+        val table = getTypeTable(parseResult.path)
+
+        //get variation?
+        if(!parseResult.wasParsedVariation) parseResult.variation = defaultVariation
+        val variation = getVariation(parseResult.variation)
+
+        //got run?
+        if(!parseResult.wasParsedRunNumber) parseResult.runNumber = defaultRun
+
+        //got the date?
+        if(!parseResult.wasParsedTime) parseResult.time = defaultDate
+
+        //Date(0) means we have to use current time
+        if(parseResult.time == Date(0)) parseResult.time = Date()
+
+        //Read assignment from the database
+        val assignment = getAssignment(parseResult.runNumber, table, parseResult.time, variation)
+
+        //End statistics collection
+        if(statisticsIsCollecting){
+            stopwatch.stop()
+            statistics.requests.add(parseResult)
+
+            statistics.totalTime = stopwatch.totalTime
+            statistics.lastRequestTime = stopwatch.elapsedTime
+
+            //first time after connection takes longer. Separate it to another case
+            if(statistics.requests.size == 1){
+                statistics.firstTime = stopwatch.elapsedTime
+            }
+        }
+
         return assignment
     }
 

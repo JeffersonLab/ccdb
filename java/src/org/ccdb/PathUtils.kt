@@ -7,6 +7,7 @@ package org.jlab.ccdb.helpers
 import java.util.Date
 import java.text.SimpleDateFormat
 import org.omg.CORBA.Request
+import org.jlab.ccdb.RequestParseResult
 
 /** @brief Extracts Directory from object path
  *
@@ -239,23 +240,6 @@ fun parseTime(timeStr: String): Date {
     return Date(year, mon, day, hour, min, sec)
 }
 
-//Set default parameters
-// result
-class RequestParseResult {
-    var runNumber=0;	           // Run number
-    var wasParsedRunNumber=false   // true if Run number was non empty
-    var isInvalidRunNumber=false   // true if was an error parsing runnumber
-    var path = "";                 // Object path
-    var wasParsedPath=false        // true if Path was nonempty
-    var variation=""               // Variation name
-    var wasParsedVariation=false   // true if variation was not empty
-    var time=Date()                // Time stamp
-    var wasParsedTime=false        // true if time stamp was not empty
-    var timeString=""              // Original string with time
-}
-
-
-
 fun parseRequest( requestStr:String ): RequestParseResult{
 ///** @brief    Parses request string and returns corresponding
 // * @see DParseRequestResult structure.
@@ -272,7 +256,7 @@ fun parseRequest( requestStr:String ): RequestParseResult{
 // * @return structure that represent user result
 // */
 //
-    val result = RequestParseResult()
+    val result = RequestParseResult(requestStr)
     var colonCount = 0
     var runStr = ""
     for (i in 0..(requestStr.size-1)) {

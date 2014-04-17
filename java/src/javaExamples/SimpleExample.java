@@ -9,9 +9,7 @@ public class SimpleExample {
 //        MySqlProvider provider = new MySqlProvider("mysql://localhost");
         JDBCProvider provider = CcdbPackage.createProvider("mysql://localhost")  ;
         provider.connect();
-        TypeTable table = provider.getTypeTable("/test/test_vars/test_table");
-        Variation variation = provider.getVariation("default");
-        Assignment asgmt = provider.getAssignment(0, table, new Date(), variation);
+        Assignment asgmt = provider.getData("/test/test_vars/test_table");
 //
         System.out.println(asgmt.getBlob());
         System.out.println(asgmt.getTypeTable().getFullPath());

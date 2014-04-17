@@ -29,7 +29,7 @@ public class MySqlProvider(connectionString:String): JDBCProvider(connectionStri
 
         if(atPos != -1)
         {
-            var logPassStr = ""
+            var logPassStr:String
             when(atPos){
                 (workStr.length - 1) -> {
                     //it is like 'login:pwd@' string
