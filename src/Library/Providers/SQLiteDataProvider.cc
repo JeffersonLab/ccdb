@@ -983,6 +983,7 @@ Variation* ccdb::SQLiteDataProvider::GetVariation( const string& name )
 	result = sqlite3_bind_text(mStatement, 1, name.c_str(), -1, SQLITE_TRANSIENT);
 	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
 
+	mQueryColumns = sqlite3_column_count(mStatement);
     //select variation
     mLastVariation = SelectVariation();
     return mLastVariation;

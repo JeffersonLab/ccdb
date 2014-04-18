@@ -26,6 +26,7 @@ StoredObject(owner, provider)
 	mUpdateTime = 0;		//update time
 	mNRows = 0;
 	mNColumnsFromDB = 0;		//
+	mColumns.clear();
 }
 
 
@@ -298,6 +299,18 @@ void ConstantsTypeTable::SetName(const string& name)
 		}
 		return types;
 	}
+
+	map<string, ConstantsTypeColumn *> & ConstantsTypeTable::GetColumnsByName()
+	{
+		if (mColumnsByName.size() == 0)
+		{
+			for (size_t i = 0; i < mColumns.size(); i++){
+				mColumnsByName[mColumns[i]->GetName()] = mColumns[i];
+			}
+		}
+		return mColumnsByName;
+	}
+
 
 
 

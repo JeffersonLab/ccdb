@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <assert.h>
 #include <iostream>
+#include <memory>
 
 #include "CCDB/Calibration.h"
 #include "CCDB/GlobalMutex.h"
@@ -94,9 +95,9 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
 	 * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
 	 */  
 
-    Assignment* assignment = GetAssignment(namepath, true);
+    auto_ptr<Assignment> assignment(GetAssignment(namepath, true));
         
-    if(!assignment)
+    if(!assignment.get())
     {       
         return false; //TODO possibly exception throwing?
     }
@@ -106,8 +107,7 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
     assert(values.empty());
     
     assignment->GetMappedData(values);
-
-    delete assignment;
+    
     //check data, get columns 
     if(values.size() == 0){
         throw std::logic_error("Calibration::GetCalib( vector< map<string, string> >&, const string&). Data has no rows. Zero rows are not supposed to be.");
@@ -207,18 +207,15 @@ bool Calibration::GetCalib( vector< vector<string> > &values, const string & nam
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
     
-    Assignment* assignment = GetAssignment(namepath, false);
+    auto_ptr<Assignment> assignment(GetAssignment(namepath, false));
     
-    if(assignment == NULL) 
+    if(!assignment.get()) 
     {
-        //TODO possibly exception throwing?
         return false;
     }
    
     assignment->GetData(values);
-        
-    delete assignment;
-
+    
     return true;
 }
 
@@ -306,9 +303,9 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
     
-    Assignment* assignment = GetAssignment(namepath, true);
+    auto_ptr<Assignment> assignment(GetAssignment(namepath, true));
     
-    if(assignment == NULL) 
+    if(assignment.get() == NULL) 
     {
         //TODO possibly exception throwing?
         return false;
@@ -340,7 +337,6 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
     for (int i=0; i<columnsNum; i++) values[columnNames[i]] = rawValues[i];
     
     //finishing
-    delete assignment;
     return true;
 }
 
@@ -415,16 +411,16 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
 
+	
     
-    Assignment* assignment = GetAssignment(namepath, false);
+	auto_ptr <Assignment> assignment(GetAssignment(namepath, true));
     
-    if(assignment == NULL) return false; //TODO possibly exception throwing?
+    if(assignment.get() == NULL) return false; //TODO possibly exception throwing?
 
     //Get data
     values.clear();
     assignment->GetVectorData(values);
-
-    delete assignment;
+   
     //check data and check that the user will get what he ment...
     if(values.size() == 0)
         throw std::logic_error("Calibration::GetCalib(vector<string> &, const string &). Data has no rows. Zero rows are not supposed to be.");

@@ -1,8 +1,5 @@
 /*
- * DAssignment.h
- *
- *  Created on: Sep 15, 2010
- *      Author: romanov
+ * Assignment.h
  */
 
 #ifndef _DAssignment_
@@ -14,6 +11,7 @@
 #include "CCDB/Model/StoredObject.h"
 #include "CCDB/Model/ObjectsOwner.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
+#include "CCDB/Model/ConstantsTypeColumn.h"
 #include "CCDB/Helpers/StringUtils.h"
 
 using namespace std;
@@ -128,10 +126,10 @@ public:
 	void SetTypeTable(ConstantsTypeTable* typeTable) { this->mTypeTable = typeTable;}
 	ConstantsTypeTable* GetTypeTable() const { return mTypeTable; }
 
-	string GetVelue(size_t columnIndex) { return GetVectorData()[columnIndex]; }
-	string GetVelue(size_t rowIndex, size_t columnIndex) { return GetData()[rowIndex][columnIndex]; }
-	string GetVelue(string columnName) { return GetMappedData()[0][columnName]; }
-	string GetVelue(size_t rowIndex, string columnName) { return GetMappedData()[0][columnName]; }
+	string GetVelue(size_t columnIndex);
+	string GetVelue(size_t rowIndex, size_t columnIndex);
+	string GetVelue(string columnName);
+	string GetVelue(size_t rowIndex, string columnName);
 	int GetVelueInt(size_t columnIndex) { return StringUtils::ParseInt(GetVelue(columnIndex)); }
 	int GetVelueInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseInt(GetVelue(rowIndex, columnIndex)); }
 	int GetVelueInt(string columnName) { return StringUtils::ParseInt(GetVelue(columnName)); }
@@ -141,11 +139,11 @@ public:
 	double GetVelueDouble(string columnName) { return StringUtils::ParseDouble(GetVelue(columnName)); }
 	double GetVelueDouble(size_t rowIndex, string columnName) { return StringUtils::ParseDouble(GetVelue(rowIndex, columnName)); }
 	
-	ConstantsTypeColumn::ColumnTypes GetVelueType(size_t column) { return mTypeTable->GetColumns()[column]->GetType(); }
+	ConstantsTypeColumn::ColumnTypes GetValueType(size_t columnIndex) { return mTypeTable->GetColumns()[columnIndex]->GetType(); }
+	ConstantsTypeColumn::ColumnTypes GetValueType(const string& columnName);
 private:
 
 	vector<map<string,string> > mRows;	// cache for blob data by rows
-	vector<string> mValues;				// cache for blob data by array of tokens
 	string mRawData;					// data blob
 	int mId;							// id in database
 	int mDataBlobId;					// blob id in database

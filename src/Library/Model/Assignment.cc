@@ -221,7 +221,7 @@ string ccdb::Assignment::VectorToBlob(const vector<string>& values)
 //______________________________________________________________________________
 vector<map<string,string> > ccdb::Assignment::GetMappedData() const
 {
-	vector<map<string,string> > result;
+	vector<map<string,string>> result;
 	GetMappedData(result);
 	return result;
 }
@@ -311,6 +311,7 @@ void ccdb::Assignment::GetVectorData(vector<string>& vectorData) const
 void ccdb::Assignment::SetRawData(std::string val)
 {
 	mVectorData.clear();
+	mRows.clear();
 	mRawData = val;
 
 	mVectorData = StringUtils::Split(mRawData, CCDB_DATA_BLOB_DELIMETER);
@@ -319,6 +320,46 @@ void ccdb::Assignment::SetRawData(std::string val)
 		mVectorData[i] = DecodeBlobSeparator(mVectorData[i]); //Decode blob separators
 	}
 }
+
+std::string ccdb::Assignment::GetVelue(string columnName)
+{
+	if (mRows.size() == 0)
+	{
+		//fill data
+		MapData(mRows, GetVectorData(), mTypeTable->GetColumnNames());
+	}
+	return mRows[0][columnName];
+}
+
+std::string ccdb::Assignment::GetVelue(size_t rowIndex, string columnName)
+{
+	if (mRows.size() == 0)
+	{
+		//fill data
+		MapData(mRows, GetVectorData(), mTypeTable->GetColumnNames());
+	}
+	return GetMappedData()[0][columnName];
+}
+
+std::string ccdb::Assignment::GetVelue(size_t rowIndex, size_t columnIndex)
+{
+	return GetData()[rowIndex][columnIndex];
+}
+
+std::string ccdb::Assignment::GetVelue(size_t columnIndex)
+{
+	return GetVectorData()[columnIndex];
+}
+
+ConstantsTypeColumn::ColumnTypes ccdb::Assignment::GetValueType(const string& columnName)
+{
+	return mTypeTable->GetColumnsByName()[columnName]->GetType();
+}
+
+
+
+
+
 
 
 

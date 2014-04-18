@@ -136,9 +136,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 	REQUIRE(table->GetColumns()[0]->GetType() == ConstantsTypeColumn::cIntColumn);
 	
 
-	//Get data info by Assignment object
-
-	Assignment *a = sqliteCalib->GetAssignment("/test/test_vars/test_table2", true);
+	
 	//a->GetVa
 
 	
@@ -163,13 +161,31 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		REQUIRE(tabledValues[0][0]=="1.11");
 
 		//No such calibration exist in mc variation, but constants should fallback to default varitaion
-		res = PathUtils::ParseContext("variation=mc calibtime=2012-08");
+		res = PathUtils::ParseContext("variation=subtest calibtime=2012-11");
 		sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime);
 		REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
 		REQUIRE(result);
 		REQUIRE(tabledValues.size()>0);
 		REQUIRE(tabledValues.size()==2);
 		REQUIRE(tabledValues[0].size()==3);
-		REQUIRE(tabledValues[0][0]=="1.11");
+		REQUIRE(tabledValues[0][0]=="10");
+	}
+
+	SECTION("Get Assignment test", "Test all elements of getting data through get assignment")
+	{
+		Assignment *a;
+		REQUIRE_NOTHROW(a = sqliteCalib->GetAssignment("/test/test_vars/test_table2:0:test"));
+		REQUIRE(result);
+		REQUIRE(a->GetValueType(0) == ConstantsTypeColumn::cIntColumn);
+		REQUIRE(a->GetValueType("c3") == ConstantsTypeColumn::cIntColumn);
+		REQUIRE(a->GetVelue(1) == "20");
+		REQUIRE(a->GetVelue(0, 1) == "20");
+		REQUIRE(a->GetVelue("c1") == "10");
+		REQUIRE(a->GetVelue(0, "c3") == "30");
+		REQUIRE(a->GetVelueInt(1) == 20);
+		REQUIRE(a->GetVelueInt(0, 1) == 20);
+		REQUIRE(a->GetVelueInt("c1") == 10);
+		REQUIRE(a->GetVelueInt(0, "c3") == 30);
+		REQUIRE(a->GetVelueDouble(2) > 29);
 	}
 }

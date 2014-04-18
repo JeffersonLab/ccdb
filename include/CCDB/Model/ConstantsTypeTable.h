@@ -128,6 +128,8 @@ public:
 	vector<string>			GetColumnNames() const;
 	vector<string>			GetColumnTypeStrings() const;
 
+	/** @brief gets map of pointer to columns by name of columns*/
+	map<string, ConstantsTypeColumn *> &GetColumnsByName();
 private:
 	string		mName;			//Name of the table of constants
 	string		mFullPath;		//Full path of the constant
@@ -141,7 +143,8 @@ private:
 	int			mNRows;			// Number of rows
 	int			mNColumnsFromDB;// Value of nColumns of constantType table in DB
 								
-
+	map<string, ConstantsTypeColumn *> mColumnsByName;
+	
 	vector<ConstantsTypeColumn *> mColumns; //Columns object
 	ConstantsTypeTable(const ConstantsTypeTable& rhs);	
 	ConstantsTypeTable& operator=(const ConstantsTypeTable& rhs);
