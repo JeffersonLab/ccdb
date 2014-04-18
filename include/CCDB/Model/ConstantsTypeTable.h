@@ -103,7 +103,7 @@ public:
 	 * @param name
 	 * @param type
 	 */
-	void	AddColumn(const string& name, ConstantsTypeColumn::DColumnTypes type=ConstantsTypeColumn::cDoubleColumn);
+	void	AddColumn(const string& name, ConstantsTypeColumn::ColumnTypes type=ConstantsTypeColumn::cDoubleColumn);
 
 	/**
 	 * @brief Adds Column to array and sets order to it as in array

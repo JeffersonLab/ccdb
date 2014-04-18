@@ -22,7 +22,7 @@ class ConstantsTypeTable;
 class ConstantsTypeColumn: public StoredObject {
 	friend class ConstantsTypeTable;
 public:
-	enum DColumnTypes
+	enum ColumnTypes
 	{
 		cIntColumn,
 		cUIntColumn,
@@ -45,7 +45,7 @@ public:
 	 * @param     val
 	 * @return   ccdb::ConstantsTypeColumn::DColumnTypes
 	 */
-	static DColumnTypes StringToType(string val);
+	static ColumnTypes StringToType(string val);
 
 	/** @brief Converts  DColumnTypes to string
 	 *
@@ -59,7 +59,7 @@ public:
 	 * @param     val
 	 * @return   ccdb::ConstantsTypeColumn::DColumnTypes
 	 */
-	static string  TypeToString(DColumnTypes val);
+	static string  TypeToString(ColumnTypes val);
 
 	ConstantsTypeColumn(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);	///Constructor
 	virtual ~ConstantsTypeColumn();					///Destructor
@@ -112,10 +112,10 @@ public:
 	 */
 	void			SetDBTypeTableId(dbkey_t val);
 
-	DColumnTypes	GetType() const;					///Gets type of column
+	ColumnTypes	GetType() const;					///Gets type of column
 	string			GetTypeString() const;				///Gets type of column by string
 	void			SetType(string val);				///Sets type of column
-	void			SetType(DColumnTypes val);			///Sets type of column
+	void			SetType(ColumnTypes val);			///Sets type of column
 
 	ConstantsTypeTable * GetTypeTable() const;
 	void SetTypeTable(ConstantsTypeTable * val);
@@ -135,7 +135,7 @@ private:
 	dbkey_t			mDBTypeTableId; //gets Type table Id
 	
 	unsigned int	mOrder;			//order of the column
-	DColumnTypes	mType;			//column type
+	ColumnTypes	mType;			//column type
 
 	ConstantsTypeTable *mTypeTable; //ref to type table; 
 	

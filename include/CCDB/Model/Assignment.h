@@ -14,6 +14,7 @@
 #include "CCDB/Model/StoredObject.h"
 #include "CCDB/Model/ObjectsOwner.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
+#include "CCDB/Helpers/StringUtils.h"
 
 using namespace std;
 
@@ -44,7 +45,6 @@ public:
 	 * @return bool
 	 */
 	static bool MapData( vector<vector<string> > & mappedData, const vector<string>& data, int columnsNum );
-
 
 	/**
 	 * @brief makes a string blob from tokens
@@ -103,8 +103,8 @@ public:
 	time_t	GetModifiedTime() const { return mModifiedTime;}   ///Time of last modification
     void	SetModifiedTime(time_t val) {mModifiedTime = val;} ///Time of last modification
 
-	string	GetRawData() const { return mRawData; }          ///Raw data blob
-	void	SetRawData(std::string val) { mRawData = val; }  ///Raw data blob
+	string	GetRawData() const { return mRawData; }            ///Raw data blob
+	void	SetRawData(std::string val);					   ///Raw data blob
 
 	
 	/** @brief GetMappedData returns rows vector of maps of column_name => data_value
@@ -127,6 +127,21 @@ public:
 	
 	void SetTypeTable(ConstantsTypeTable* typeTable) { this->mTypeTable = typeTable;}
 	ConstantsTypeTable* GetTypeTable() const { return mTypeTable; }
+
+	string GetVelue(size_t columnIndex) { return GetVectorData()[columnIndex]; }
+	string GetVelue(size_t rowIndex, size_t columnIndex) { return GetData()[rowIndex][columnIndex]; }
+	string GetVelue(string columnName) { return GetMappedData()[0][columnName]; }
+	string GetVelue(size_t rowIndex, string columnName) { return GetMappedData()[0][columnName]; }
+	int GetVelueInt(size_t columnIndex) { return StringUtils::ParseInt(GetVelue(columnIndex)); }
+	int GetVelueInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseInt(GetVelue(rowIndex, columnIndex)); }
+	int GetVelueInt(string columnName) { return StringUtils::ParseInt(GetVelue(columnName)); }
+	int GetVelueInt(size_t rowIndex, string columnName) { return StringUtils::ParseInt(GetVelue(rowIndex, columnName)); }
+	double GetVelueDouble(size_t columnIndex) { return StringUtils::ParseDouble(GetVelue(columnIndex)); }
+	double GetVelueDouble(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseDouble(GetVelue(rowIndex, columnIndex)); }
+	double GetVelueDouble(string columnName) { return StringUtils::ParseDouble(GetVelue(columnName)); }
+	double GetVelueDouble(size_t rowIndex, string columnName) { return StringUtils::ParseDouble(GetVelue(rowIndex, columnName)); }
+	
+	ConstantsTypeColumn::ColumnTypes GetVelueType(size_t column) { return mTypeTable->GetColumns()[column]->GetType(); }
 private:
 
 	vector<map<string,string> > mRows;	// cache for blob data by rows
@@ -149,10 +164,10 @@ private:
 	time_t mModifiedTime;				// time of last modification
 	string mComment;					// Comment of assignment
 
+	vector<string> mVectorData;         // Vectorized blob
+
 	Assignment(const Assignment& rhs);	
 	Assignment& operator=(const Assignment& rhs);
-	
-	
 };
 
 }

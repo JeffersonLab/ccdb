@@ -416,7 +416,7 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
      */
 
     
-    Assignment* assignment = GetAssignment(namepath);
+    Assignment* assignment = GetAssignment(namepath, false);
     
     if(assignment == NULL) return false; //TODO possibly exception throwing?
 
@@ -548,7 +548,7 @@ string Calibration::GetConnectionString() const
 
 
 //______________________________________________________________________________
-Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns /*=false*/)
+Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns /*=true*/)
 {
     /** @brief Gets the assignment from provider using namepath
      * namepath is the common ccdb request; @see GetCalib

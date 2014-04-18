@@ -107,7 +107,7 @@ void ConstantsTypeTable::AddColumn( const std::string& name, const std::string& 
 }
 
 
-void ccdb::ConstantsTypeTable::AddColumn(const string& name, ConstantsTypeColumn::DColumnTypes type)
+void ccdb::ConstantsTypeTable::AddColumn(const string& name, ConstantsTypeColumn::ColumnTypes type)
 {
 	ConstantsTypeColumn *column = new ConstantsTypeColumn(this);
 	column->SetName(name);

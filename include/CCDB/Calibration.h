@@ -247,21 +247,21 @@ public:
 	 */
 	time_t GetLastActivityTime() const {return mLastActivityTime;}
 
+	/** @brief Gets the assignment from provider using namepath
+	* namepath is the common ccdb request; @see GetCalib
+	*
+	* @remark the function is thread safe
+	*
+	* @parameter [in] namepath -  full namepath is /path/to/data:run:variation:time but usually it is only /path/to/data
+	* @return   DAssignment *
+	*/
+	virtual Assignment * GetAssignment(const string& namepath, bool loadColumns = true);
+
 protected:
 
 
-    virtual void Lock();   ///Thread mutex lock for multithreaded operations
-    virtual void Unlock(); ///Thread mutex Unlock lock for multithreaded operations
-
-    /** @brief Gets the assignment from provider using namepath
-     * namepath is the common ccdb request; @see GetCalib
-     *
-     * @remark the function is thread safe
-     *
-     * @parameter [in] namepath -  full namepath is /path/to/data:run:variation:time but usually it is only /path/to/data
-     * @return   DAssignment *
-     */
-    virtual Assignment * GetAssignment(const string& namepath, bool loadColumns=false);
+    virtual void Lock();   ///Thread mutex lock for multi threaded operations
+    virtual void Unlock(); ///Thread mutex Unlock lock for multi threaded operations
 
 
     /**@brief Try to auto-reconnect if possible 

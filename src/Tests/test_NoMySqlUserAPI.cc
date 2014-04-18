@@ -7,6 +7,7 @@
 #include "CCDB/Providers/SQLiteDataProvider.h"
 #include "CCDB/Model/Directory.h"
 #include "CCDB/Model/Variation.h"
+#include "CCDB/Model/Assignment.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/WorkUtils.h"
 #include "CCDB/Helpers/Stopwatch.h"
@@ -129,6 +130,17 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 	REQUIRE(lineOfIntValues[0]==10);
 	REQUIRE(lineOfIntValues[1]==20);
 	REQUIRE(lineOfIntValues[2]==30);
+
+	//Get Type table through the Provider()
+	ConstantsTypeTable* table = sqliteCalib->GetProvider()->GetConstantsTypeTable("/test/test_vars/test_table2", true);
+	REQUIRE(table->GetColumns()[0]->GetType() == ConstantsTypeColumn::cIntColumn);
+	
+
+	//Get data info by Assignment object
+
+	Assignment *a = sqliteCalib->GetAssignment("/test/test_vars/test_table2", true);
+	//a->GetVa
+
 	
 
 	Calibration* sqliteCalib2 = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, "default");
@@ -136,6 +148,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		
 	REQUIRE(CalibrationGenerator::CheckOpenable(TESTS_SQLITE_STRING));
 	REQUIRE_FALSE(CalibrationGenerator::CheckOpenable("abra_kadabra://protocol"));
+
 
 	//=== Default time ===
 	SECTION("Default Time SQLite", "Test that test vars are opened with default date")

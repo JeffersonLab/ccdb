@@ -44,10 +44,13 @@ ccdb::Assignment::~Assignment() {
 //______________________________________________________________________________
 bool ccdb::Assignment::MapData(vector<map<string,string> > & mappedData, const vector<string>& data, const vector<string>& columns )
 {
-	//check error
-    //TODO print error;
-    assert(data.size()!=0);
-    assert(columns.size() !=0);
+	//Validate what we have
+	assert(columns.size() != 0);
+	if (data.size() == 0)
+	{
+		mappedData.clear();
+		return true;
+	}
 
 	//loop
 	int rows = data.size() / columns.size();
@@ -67,9 +70,12 @@ bool ccdb::Assignment::MapData(vector<map<string,string> > & mappedData, const v
 //______________________________________________________________________________
 bool ccdb::Assignment::MapData( vector<vector<string> > & mappedData, const vector<string>& data, int columnsNum )
 {
-	//check error
-    //TODO error report?
-    assert(data.size()!=0);
+	//Validate what we have
+	if (data.size() == 0)
+	{
+		mappedData.clear();
+		return true;
+	}
     assert(columnsNum!=0);
 
 	//loop
@@ -260,7 +266,6 @@ void ccdb::Assignment::GetData(std::vector<std::vector<std::string> >& data) con
 
 	//fill data
 	MapData(data, GetVectorData(), mTypeTable->GetNColumns());
-
 }
 
 
@@ -293,15 +298,27 @@ vector<string> ccdb::Assignment::GetVectorData() const
 void ccdb::Assignment::GetVectorData(vector<string>& vectorData) const
 {
 	//split data
-	vector<string> values = StringUtils::Split(mRawData, CCDB_DATA_BLOB_DELIMETER);
-
 	vectorData.clear();
-	vector<string>::iterator iter=values.begin();
-	while(iter<values.end())
+	vector<string>::const_iterator iter = mVectorData.begin();
+	while (iter<mVectorData.end())
 	{	
 		vectorData.push_back(DecodeBlobSeparator(*iter));
 		iter++;
 	}
 }
+
+//______________________________________________________________________________
+void ccdb::Assignment::SetRawData(std::string val)
+{
+	mVectorData.clear();
+	mRawData = val;
+
+	mVectorData = StringUtils::Split(mRawData, CCDB_DATA_BLOB_DELIMETER);
+	for (size_t i = 0; i < mVectorData.size(); i++)
+	{
+		mVectorData[i] = DecodeBlobSeparator(mVectorData[i]); //Decode blob separators
+	}
+}
+
 
 

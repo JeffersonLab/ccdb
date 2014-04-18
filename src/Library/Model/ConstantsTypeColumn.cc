@@ -1,8 +1,5 @@
 /*
  * Column.cpp
- *
- *  Created on: Sep 28, 2010
- *      Author: romanov
  */
 
 #include "CCDB/Model/ConstantsTypeColumn.h"
@@ -27,14 +24,14 @@ StoredObject(owner, provider)
 
 
 
-ConstantsTypeColumn::DColumnTypes ConstantsTypeColumn::StringToType( string val )
+ConstantsTypeColumn::ColumnTypes ConstantsTypeColumn::StringToType( string val )
 {
-	if(val == "int"	) return cIntColumn	  ;
-	else if(val == "uint"	) return cUIntColumn  ;
-	else if(val == "long"	) return cLongColumn  ;
-	else if(val == "ulong"	) return cULongColumn ;
+	if(val == "int"	) return cIntColumn;
+	else if (val == "uint") return cUIntColumn;
+	else if(val == "long"	) return cLongColumn;
+	else if(val == "ulong"	) return cULongColumn;
 	else if(val == "double"	) return cDoubleColumn;
-	else if(val == "bool"	) return cBoolColumn  ;
+	else if(val == "bool"	) return cBoolColumn;
 	else if(val == "string"	) return cStringColumn;
 	else
 	{
@@ -44,14 +41,14 @@ ConstantsTypeColumn::DColumnTypes ConstantsTypeColumn::StringToType( string val 
 
 }
 
-string ConstantsTypeColumn::TypeToString( ConstantsTypeColumn::DColumnTypes val )
+string ConstantsTypeColumn::TypeToString( ConstantsTypeColumn::ColumnTypes val )
 {
-	if(val == cIntColumn   ) return string("int"	);
-	else if(val == cUIntColumn  ) return string("uint"	);
-	else if(val == cLongColumn  ) return string("long"	);
-	else if(val == cULongColumn ) return string("ulong"	);
+	if(val == cIntColumn   ) return string("int");
+	else if(val == cUIntColumn  ) return string("uint");
+	else if(val == cLongColumn  ) return string("long");
+	else if(val == cULongColumn ) return string("ulong");
 	else if(val == cDoubleColumn) return string("double");	
-	else if(val == cBoolColumn  ) return string("bool"	);
+	else if(val == cBoolColumn  ) return string("bool");
 	else if(val == cStringColumn) return string("string");	
 
 	return string("string"); //
@@ -120,7 +117,7 @@ dbkey_t ConstantsTypeColumn::GetTypeTableId() const
 }
 
 
-ConstantsTypeColumn::DColumnTypes ConstantsTypeColumn::GetType() const
+ConstantsTypeColumn::ColumnTypes ConstantsTypeColumn::GetType() const
 {
 	return mType;
 }
@@ -134,7 +131,7 @@ void ConstantsTypeColumn::SetType( string val )
 {
 	mType = StringToType(val);
 }
-void ConstantsTypeColumn::SetType( DColumnTypes val )
+void ConstantsTypeColumn::SetType( ColumnTypes val )
 {	
 	mType = val;
 }
