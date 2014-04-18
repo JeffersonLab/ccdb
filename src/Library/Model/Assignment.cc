@@ -221,7 +221,7 @@ string ccdb::Assignment::VectorToBlob(const vector<string>& values)
 //______________________________________________________________________________
 vector<map<string,string> > ccdb::Assignment::GetMappedData() const
 {
-	vector<map<string,string>> result;
+	vector<map<string,string> > result;
 	GetMappedData(result);
 	return result;
 }
