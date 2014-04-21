@@ -10,9 +10,6 @@ public class SimpleExample {
         JDBCProvider provider = CcdbPackage.createProvider("mysql://localhost")  ;
         provider.connect();
         Assignment asgmt = provider.getData("/test/test_vars/test_table");
-
-        System.out.println(asgmt.getBlob());
-        System.out.println(asgmt.getTypeTable().getFullPath());
         
         // gets data represented as number of columns
         for(Vector<String> row : asgmt.getStringTable()){
@@ -21,5 +18,8 @@ public class SimpleExample {
 			}
 			System.out.println(); //next line after a row
         }
+        
+        //gets some extended info about data
+        System.out.println(asgmt.getTypeTable().getFullPath());
     }
 }
