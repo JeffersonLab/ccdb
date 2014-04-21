@@ -21,7 +21,7 @@ public:
      * @parameter [in] time - default time of constants
      * @return Calibration*
      */
-    static Calibration* CreateCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time);
+    static Calibration* CreateCalibration(const std::string & connectionString, int run=0, const std::string& variation="default", const time_t time=0);
     
     
     /** @brief Checks if ccdb can work with this datasource (by connection string)
@@ -111,8 +111,6 @@ private:
 	time_t mMaxInactiveTime;                                    ///Max inactive time for calibration secs
     time_t mLastInactivityCheckTime;                            ///Last time of inactivity check from Unix epoch
     time_t mInactivityCheckInterval;                            ///Interval to check inactivity secs
-    
-
 };
 }
 
