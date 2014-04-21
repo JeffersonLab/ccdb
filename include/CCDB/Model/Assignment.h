@@ -136,10 +136,10 @@ public:
 	int GetValueInt(string columnName) { return StringUtils::ParseInt(GetValue(columnName)); }
 	int GetValueInt(size_t rowIndex, string columnName) { return StringUtils::ParseInt(GetValue(rowIndex, columnName)); }
 	
-	unsigned int GetValueUint(size_t columnIndex)                  { return StringUtils::ParseUInt(GetValue(columnIndex)); }
-	unsigned int GetValueUint(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseUInt(GetValue(rowIndex, columnIndex)); }
-	unsigned int GetValueUint(string columnName)                   { return StringUtils::ParseUInt(GetValue(columnName)); }
-	unsigned int GetValueUint(size_t rowIndex, string columnName)  { return StringUtils::ParseUInt(GetValue(rowIndex, columnName)); }
+	unsigned int GetValueUInt(size_t columnIndex)                  { return StringUtils::ParseUInt(GetValue(columnIndex)); }
+	unsigned int GetValueUInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseUInt(GetValue(rowIndex, columnIndex)); }
+	unsigned int GetValueUInt(string columnName)                   { return StringUtils::ParseUInt(GetValue(columnName)); }
+	unsigned int GetValueUInt(size_t rowIndex, string columnName)  { return StringUtils::ParseUInt(GetValue(rowIndex, columnName)); }
 			   
 	double GetValueDouble(size_t columnIndex) { return StringUtils::ParseDouble(GetValue(columnIndex)); }
 	double GetValueDouble(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseDouble(GetValue(rowIndex, columnIndex)); }
