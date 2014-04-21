@@ -31,6 +31,9 @@ SConscript('src/Library/SConscript', 'default_env', variant_dir='tmp/Library', d
 SConscript('src/Tests/SConscript', 'default_env', variant_dir='tmp/Tests', duplicate=0)
 
 if ARGUMENTS.get("with-examples","false")=="true":
-  SConscript('examples/SConscript', 'default_env', variant_dir='tmp/Examples', duplicate=0)
+    print("Building with examples. To run example print example_ccdb_<example name> in console")
+    SConscript('examples/SConscript', 'default_env', variant_dir='tmp/Examples', duplicate=0)
+else:
+    print("Building without examples. To build with examples add 'with-examples=true' flag")
     
 
