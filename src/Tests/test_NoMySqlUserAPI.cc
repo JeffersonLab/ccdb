@@ -174,7 +174,6 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 	{
 		Assignment *a;
 		REQUIRE_NOTHROW(a = sqliteCalib->GetAssignment("/test/test_vars/test_table2:0:test"));
-		with-examples=true
 		REQUIRE(result);
 		REQUIRE(a->GetValueType(0) == ConstantsTypeColumn::cIntColumn);
 		REQUIRE(a->GetValueType("c3") == ConstantsTypeColumn::cIntColumn);
