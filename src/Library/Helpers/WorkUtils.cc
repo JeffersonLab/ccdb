@@ -124,7 +124,7 @@ void PrintConstantsTypeTable( ConstantsTypeTable *table )
 	Console console;
 	console.WriteLine("Table : %s", table->GetName().c_str());
 	console.WriteLine("Comment: %s", table->GetComment().c_str());
-	console.WriteLine("Columns: %i Rows: %i", table->GetNColumns(), table->GetNColumnsFromDB(), table->GetNRows());
+	console.WriteLine("Columns: %i Rows: %i", table->GetColumnsCount(), table->GetNColumnsFromDB(), table->GetRowsCount());
 
 	vector<string> columnNames = table->GetColumnNames();
 	vector<string> columnTypes = table->GetColumnTypeStrings();

@@ -425,7 +425,7 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
     if(values.size() == 0)
         throw std::logic_error("Calibration::GetCalib(vector<string> &, const string &). Data has no rows. Zero rows are not supposed to be.");
 
-    if(values.size() != assignment->GetTypeTable()->GetNColumns())
+    if(values.size() != assignment->GetTypeTable()->GetColumnsCount())
         throw std::logic_error("Calibration::GetCalib(vector<string> &, const string &). logic_error: Calling of single row vector<dataType> version of GetCalib method on dataset that has more than one rows. Use GetCalib vector<vector<dataType> > instead.");
 
     return true;

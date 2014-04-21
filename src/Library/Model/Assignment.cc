@@ -265,7 +265,7 @@ void ccdb::Assignment::GetData(std::vector<std::vector<std::string> >& data) con
 	data.clear();
 
 	//fill data
-	MapData(data, GetVectorData(), mTypeTable->GetNColumns());
+	MapData(data, GetVectorData(), mTypeTable->GetColumnsCount());
 }
 
 

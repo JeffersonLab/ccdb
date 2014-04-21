@@ -141,6 +141,12 @@ public:
 	
 	ConstantsTypeColumn::ColumnTypes GetValueType(size_t columnIndex) { return mTypeTable->GetColumns()[columnIndex]->GetType(); }
 	ConstantsTypeColumn::ColumnTypes GetValueType(const string& columnName);
+
+	/** Gets number or rows */
+	size_t GetRowsCount() const { return mTypeTable->GetRowsCount(); }
+
+	/** Gets number of columns */
+	size_t GetColumnsCount() const { return mTypeTable->GetColumnsCount(); }
 private:
 
 	vector<map<string,string> > mRows;	// cache for blob data by rows

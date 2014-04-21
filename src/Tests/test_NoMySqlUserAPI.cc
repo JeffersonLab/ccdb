@@ -26,7 +26,6 @@ void test_UserAPI_PrintData(const vector<int> & data);
 void test_UserAPI_PrintData(const map<string,int> & data);
 
 
-
 /** ********************************************************************* 
  * @brief Test of CCDB USER API work
  *
@@ -112,7 +111,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 	REQUIRE(tabledValues.size()==2);
 	REQUIRE(tabledValues[0].size()==3);
 	
-	//ask for vecor
+	//ask for vector
 	vector<vector<int> > tabledDoubleValues;
 	REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledDoubleValues, "/test/test_vars/test_table2::test"));
 	REQUIRE(result);
@@ -175,6 +174,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 	{
 		Assignment *a;
 		REQUIRE_NOTHROW(a = sqliteCalib->GetAssignment("/test/test_vars/test_table2:0:test"));
+		with-examples=true
 		REQUIRE(result);
 		REQUIRE(a->GetValueType(0) == ConstantsTypeColumn::cIntColumn);
 		REQUIRE(a->GetValueType("c3") == ConstantsTypeColumn::cIntColumn);

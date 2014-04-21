@@ -47,7 +47,7 @@ const vector<ConstantsTypeColumn *>& ConstantsTypeTable::GetColumns() const
 	return mColumns;
 }
 
-int ConstantsTypeTable::GetNColumns() const
+int ConstantsTypeTable::GetColumnsCount() const
 {
 	//Here is a trick. Maybe we loaded it from db with no columns objects
 	if(mColumns.size() ==0 && IsLoaded()) return mNColumnsFromDB;
@@ -134,7 +134,7 @@ ConstantsTypeColumn * ConstantsTypeTable::RemoveColumn( int order )
 
 }
 
-int ConstantsTypeTable::GetNRows() const
+int ConstantsTypeTable::GetRowsCount() const
 {
 	return mNRows;
 }

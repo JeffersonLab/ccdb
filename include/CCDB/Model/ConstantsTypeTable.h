@@ -54,7 +54,7 @@ public:
 	time_t			GetModifiedTime() const;		/// Time when last updated
 	void			SetModifiedTime(time_t val);	/// Time when last updated
 	
-	int				GetNRows() const;				///Number of rows
+	int				GetRowsCount() const;				///Number of rows
 	void			SetNRows(int val);				///Number of rows
 
 	/** @brief GetNColumns
@@ -68,7 +68,7 @@ public:
 	 * because no updates with adding a column is possible. 
 	 * @return   int
 	 */
-	int				GetNColumns() const;
+	int				GetColumnsCount() const;
 
 	int				GetNColumnsFromDB() const;	/// Value of nColumns of constantType table in DB
 	void 			SetNColumnsFromDB(int val);	/// Value of nColumns of constantType table in DB
