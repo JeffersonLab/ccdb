@@ -1,7 +1,7 @@
 import org.jlab.ccdb.*;
 import org.jlab.ccdb.JDBCProvider;
 
-import java.util.Vector
+import java.util.Vector;
 import java.util.Date;
 
 public class SimpleExample {
