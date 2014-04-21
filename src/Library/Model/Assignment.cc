@@ -321,7 +321,7 @@ void ccdb::Assignment::SetRawData(std::string val)
 	}
 }
 
-std::string ccdb::Assignment::GetVelue(string columnName)
+std::string ccdb::Assignment::GetValue(string columnName)
 {
 	if (mRows.size() == 0)
 	{
@@ -331,7 +331,7 @@ std::string ccdb::Assignment::GetVelue(string columnName)
 	return mRows[0][columnName];
 }
 
-std::string ccdb::Assignment::GetVelue(size_t rowIndex, string columnName)
+std::string ccdb::Assignment::GetValue(size_t rowIndex, string columnName)
 {
 	if (mRows.size() == 0)
 	{
@@ -341,12 +341,12 @@ std::string ccdb::Assignment::GetVelue(size_t rowIndex, string columnName)
 	return GetMappedData()[0][columnName];
 }
 
-std::string ccdb::Assignment::GetVelue(size_t rowIndex, size_t columnIndex)
+std::string ccdb::Assignment::GetValue(size_t rowIndex, size_t columnIndex)
 {
 	return GetData()[rowIndex][columnIndex];
 }
 
-std::string ccdb::Assignment::GetVelue(size_t columnIndex)
+std::string ccdb::Assignment::GetValue(size_t columnIndex)
 {
 	return GetVectorData()[columnIndex];
 }

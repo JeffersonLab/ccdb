@@ -126,19 +126,41 @@ public:
 	void SetTypeTable(ConstantsTypeTable* typeTable) { this->mTypeTable = typeTable;}
 	ConstantsTypeTable* GetTypeTable() const { return mTypeTable; }
 
-	string GetVelue(size_t columnIndex);
-	string GetVelue(size_t rowIndex, size_t columnIndex);
-	string GetVelue(string columnName);
-	string GetVelue(size_t rowIndex, string columnName);
-	int GetVelueInt(size_t columnIndex) { return StringUtils::ParseInt(GetVelue(columnIndex)); }
-	int GetVelueInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseInt(GetVelue(rowIndex, columnIndex)); }
-	int GetVelueInt(string columnName) { return StringUtils::ParseInt(GetVelue(columnName)); }
-	int GetVelueInt(size_t rowIndex, string columnName) { return StringUtils::ParseInt(GetVelue(rowIndex, columnName)); }
-	double GetVelueDouble(size_t columnIndex) { return StringUtils::ParseDouble(GetVelue(columnIndex)); }
-	double GetVelueDouble(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseDouble(GetVelue(rowIndex, columnIndex)); }
-	double GetVelueDouble(string columnName) { return StringUtils::ParseDouble(GetVelue(columnName)); }
-	double GetVelueDouble(size_t rowIndex, string columnName) { return StringUtils::ParseDouble(GetVelue(rowIndex, columnName)); }
+	string GetValue(size_t columnIndex);
+	string GetValue(size_t rowIndex, size_t columnIndex);
+	string GetValue(string columnName);
+	string GetValue(size_t rowIndex, string columnName);
+
+	int GetValueInt(size_t columnIndex) { return StringUtils::ParseInt(GetValue(columnIndex)); }
+	int GetValueInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseInt(GetValue(rowIndex, columnIndex)); }
+	int GetValueInt(string columnName) { return StringUtils::ParseInt(GetValue(columnName)); }
+	int GetValueInt(size_t rowIndex, string columnName) { return StringUtils::ParseInt(GetValue(rowIndex, columnName)); }
 	
+	double GetValueUint(size_t columnIndex)                  { return StringUtils::ParseUInt(GetValue(columnIndex)); }
+	double GetValueUint(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseUInt(GetValue(rowIndex, columnIndex)); }
+	double GetValueUint(string columnName)                   { return StringUtils::ParseUInt(GetValue(columnName)); }
+	double GetValueUint(size_t rowIndex, string columnName)  { return StringUtils::ParseUInt(GetValue(rowIndex, columnName)); }
+			   
+	double GetValueDouble(size_t columnIndex) { return StringUtils::ParseDouble(GetValue(columnIndex)); }
+	double GetValueDouble(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseDouble(GetValue(rowIndex, columnIndex)); }
+	double GetValueDouble(string columnName) { return StringUtils::ParseDouble(GetValue(columnName)); }
+	double GetValueDouble(size_t rowIndex, string columnName) { return StringUtils::ParseDouble(GetValue(rowIndex, columnName)); }
+			   
+	double GetValueLong(size_t columnIndex)                  { return StringUtils::ParseLong(GetValue(columnIndex)); }
+	double GetValueLong(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseLong(GetValue(rowIndex, columnIndex)); }
+	double GetValueLong(string columnName)                   { return StringUtils::ParseLong(GetValue(columnName)); }
+	double GetValueLong(size_t rowIndex, string columnName)  { return StringUtils::ParseLong(GetValue(rowIndex, columnName)); }
+			   
+	double GetValueULong(size_t columnIndex)                  { return StringUtils::ParseULong(GetValue(columnIndex)); }
+	double GetValueULong(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseULong(GetValue(rowIndex, columnIndex)); }
+	double GetValueULong(string columnName)                   { return StringUtils::ParseULong(GetValue(columnName)); }
+	double GetValueULong(size_t rowIndex, string columnName)  { return StringUtils::ParseULong(GetValue(rowIndex, columnName)); }
+			   
+	double GetValueBool(size_t columnIndex)                  { return StringUtils::ParseBool(GetValue(columnIndex)); }
+	double GetValueBool(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseBool(GetValue(rowIndex, columnIndex)); }
+	double GetValueBool(string columnName)                   { return StringUtils::ParseBool(GetValue(columnName)); }
+	double GetValueBool(size_t rowIndex, string columnName)  { return StringUtils::ParseBool(GetValue(rowIndex, columnName)); }
+
 	ConstantsTypeColumn::ColumnTypes GetValueType(size_t columnIndex) { return mTypeTable->GetColumns()[columnIndex]->GetType(); }
 	ConstantsTypeColumn::ColumnTypes GetValueType(const string& columnName);
 
