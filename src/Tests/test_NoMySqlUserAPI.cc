@@ -177,14 +177,14 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		REQUIRE(result);
 		REQUIRE(a->GetValueType(0) == ConstantsTypeColumn::cIntColumn);
 		REQUIRE(a->GetValueType("c3") == ConstantsTypeColumn::cIntColumn);
-		REQUIRE(a->GetVelue(1) == "20");
-		REQUIRE(a->GetVelue(0, 1) == "20");
-		REQUIRE(a->GetVelue("c1") == "10");
-		REQUIRE(a->GetVelue(0, "c3") == "30");
-		REQUIRE(a->GetVelueInt(1) == 20);
-		REQUIRE(a->GetVelueInt(0, 1) == 20);
-		REQUIRE(a->GetVelueInt("c1") == 10);
-		REQUIRE(a->GetVelueInt(0, "c3") == 30);
-		REQUIRE(a->GetVelueDouble(2) > 29);
+		REQUIRE(a->GetValue(1) == "20");
+		REQUIRE(a->GetValue(0, 1) == "20");
+		REQUIRE(a->GetValue("c1") == "10");
+		REQUIRE(a->GetValue(0, "c3") == "30");
+		REQUIRE(a->GetValueInt(1) == 20);
+		REQUIRE(a->GetValueInt(0, 1) == 20);
+		REQUIRE(a->GetValueInt("c1") == 10);
+		REQUIRE(a->GetValueInt(0, "c3") == 30);
+		REQUIRE(a->GetValueDouble(2) > 29);
 	}
 }
