@@ -13,6 +13,9 @@ package org.jlab.ccdb
 
                 override fun connect()
                 {
+                    // load the sqlite-JDBC driver using the current class loader
+                    Class.forName("com.mysql.jdbc.Driver");
+
                     //first check for uri type
                     val typePos = connectionString.indexOf("mysql://")
                     if(typePos != 0){
