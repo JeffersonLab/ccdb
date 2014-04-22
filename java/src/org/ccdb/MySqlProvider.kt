@@ -3,34 +3,34 @@
  */
 package org.jlab.ccdb
 
-import java.sql.DriverManager
-import java.sql.Connection
+                import java.sql.DriverManager
+                import java.sql.Connection
 
-import org.jlab.ccdb.JDBCProvider
+                import org.jlab.ccdb.JDBCProvider
 
 
-public class MySqlProvider(connectionString:String): JDBCProvider(connectionString) {
+                public class MySqlProvider(connectionString:String): JDBCProvider(connectionString) {
 
-    override fun connect()
-    {
-        //first check for uri type
-        val typePos = connectionString.indexOf("mysql://")
-        if(typePos != 0){
-            throw IllegalArgumentException("Connection string doesn't start with mysql:// but is given to MySqlProvider")
-        }
+                override fun connect()
+                {
+                    //first check for uri type
+                    val typePos = connectionString.indexOf("mysql://")
+                    if(typePos != 0){
+                        throw IllegalArgumentException("Connection string doesn't start with mysql:// but is given to MySqlProvider")
+                    }
 
-        //ok we don't need mysql:// in the future. Moreover it will mess our separation logic
-        var workStr = connectionString.substring(8)
-        var userName = "ccdb_user"
-        var password = ""
+                    //ok we don't need mysql:// in the future. Moreover it will mess our separation logic
+                    var workStr = connectionString.substring(8)
+                    var userName = "ccdb_user"
+                    var password = ""
 
-        //then if there is '@' that separates login/password part of uri
-        val atPos = workStr.indexOf('@')
+                    //then if there is '@' that separates login/password part of uri
+                    val atPos = workStr.indexOf('@')
 
-        if(atPos != -1)
-        {
-            var logPassStr:String
-            when(atPos){
+                    if(atPos != -1)
+                    {
+                        var logPassStr:String
+                        when(atPos){
                 (workStr.length - 1) -> {
                     //it is like 'login:pwd@' string
                     logPassStr = workStr.substring(0,atPos)

@@ -30,8 +30,28 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="SimpleExample.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="SimpleExample.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/javaExamples/SimpleExample.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.27659574" vertical-offset="172" max-vertical-offset="595">
+              <caret line="20" column="67" selection-start-line="20" selection-start-column="46" selection-end-line="20" selection-end-column="67" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GetStatistics.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/javaExamples/GetStatistics.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="918">
+              <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="8" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ccdb.iml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccdb.iml">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="374">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -43,7 +63,7 @@
       <file leaf-file-name="main.kt" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/kotlinExamples/main.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1156" max-vertical-offset="1666">
+            <state vertical-scroll-proportion="0.0" vertical-offset="795" max-vertical-offset="1479">
               <caret line="68" column="67" selection-start-line="68" selection-start-column="67" selection-end-line="68" selection-end-column="67" />
               <folding />
             </state>
@@ -60,15 +80,63 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MySqlProvider.kt" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="MySqlProvider.kt" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/ccdb/MySqlProvider.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.15632184" vertical-offset="0" max-vertical-offset="1870">
-              <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1540">
+              <caret line="27" column="40" selection-start-line="27" selection-start-column="40" selection-end-line="27" selection-end-column="40" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <element signature="e#66#157#0" expanded="true" />
+                <element signature="e#82#205#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="model.kt" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/ccdb/model.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1911">
+              <caret line="108" column="6" selection-start-line="108" selection-start-column="6" selection-end-line="108" selection-end-column="6" />
+              <folding>
+                <element signature="n#!!block;n#Directory#0" expanded="false" />
+                <element signature="e#878#1109#0" expanded="false" />
+                <element signature="n#!!block;n#addSubdirectory#0;n#!!block;n#Directory#0" expanded="false" />
+                <element signature="e#1258#1322#0" expanded="false" />
+                <element signature="n#!!block;n#disposeSubdirectories#0;n#!!block;n#Directory#0" expanded="false" />
+                <element signature="e#1447#1609#1" expanded="false" />
+                <element signature="e#1496#1564#1" expanded="false" />
+                <element signature="n#!!block;n#Variation#0" expanded="false" />
+                <element signature="n#!!block;n#setParent#0;n#!!block;n#Variation#0" expanded="false" />
+                <element signature="n#!!block;n#TypeTable#0" expanded="false" />
+                <element signature="e#2167#2239#0" expanded="false" />
+                <element signature="e#2397#2612#0" expanded="false" />
+                <element signature="e#2435#2568#1" expanded="false" />
+                <element signature="e#2741#2787#0" expanded="false" />
+                <element signature="e#3049#3110#0" expanded="false" />
+                <element signature="e#3183#3340#0" expanded="false" />
+                <element signature="e#3216#3305#1" expanded="false" />
+                <element signature="e#3347#3408#0" expanded="false" />
+                <element signature="e#3535#3946#1" expanded="false" />
+                <element signature="e#3680#3932#1" expanded="false" />
+                <element signature="e#3776#3872#1" expanded="false" />
+                <element signature="e#3995#4056#0" expanded="false" />
+                <element signature="e#4182#4406#1" expanded="false" />
+                <element signature="e#4283#4392#1" expanded="false" />
+                <element signature="e#4907#4990#0" expanded="false" />
+                <element signature="n#!!block;n#CellTypes#0" expanded="false" />
+                <element signature="n#!!block;n#toString#0;n#!!block;n#CellTypes#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="kotlinExamples.iml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/kotlinExamples/kotlinExamples.iml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="340">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -118,12 +186,12 @@
         <option value="$PROJECT_DIR$/src/org/ccdb/PathUtils.kt" />
         <option value="$PROJECT_DIR$/src/org/ccdb/MySqlConnectionInfo.kt" />
         <option value="$PROJECT_DIR$/src/org/ccdb/CalibrationProvider.kt" />
-        <option value="$PROJECT_DIR$/src/org/ccdb/model.kt" />
         <option value="$PROJECT_DIR$/src/org/ccdb/DatabaseProvider.kt" />
-        <option value="$PROJECT_DIR$/src/javaExamples/SimpleExample.java" />
         <option value="$PROJECT_DIR$/src/kotlinExamples/main.kt" />
         <option value="$PROJECT_DIR$/src/org/ccdb/SQLiteProvider.kt" />
         <option value="$PROJECT_DIR$/src/org/ccdb/MySqlProvider.kt" />
+        <option value="$PROJECT_DIR$/src/org/ccdb/model.kt" />
+        <option value="$PROJECT_DIR$/src/javaExamples/SimpleExample.java" />
       </list>
     </option>
   </component>
@@ -162,8 +230,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -260,6 +326,8 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -293,144 +361,7 @@
       <recent name="D:\Projects\CCDB\trunk\java\kotlinExamples" />
     </key>
   </component>
-  <component name="RestoreUpdateTree">
-    <UpdateInfo date="Moments ago" ActionInfo="_Update">
-      <UpdatedFiles>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Updated from server" />
-          <option name="myStatusName" value="Changed on server" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="CHANGED_ON_SERVER" />
-          <FILE-GROUP>
-            <option name="myUpdateName" value="Updated" />
-            <option name="myStatusName" value="Changed" />
-            <option name="mySupportsDeletion" value="false" />
-            <option name="myCanBeAbsent" value="false" />
-            <option name="myId" value="UPDATED" />
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\kotlinExamples\main.kt</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\javaExamples\SimpleExample.java</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\org\ccdb\SQLiteProvider.kt</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\org\ccdb\MySqlProvider.kt</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\org\ccdb\model.kt</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\org\ccdb\Stopwatch.kt</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\org\ccdb\PathUtils.kt</PATH>
-          </FILE-GROUP>
-          <FILE-GROUP>
-            <option name="myUpdateName" value="Created" />
-            <option name="myStatusName" value="Created" />
-            <option name="mySupportsDeletion" value="false" />
-            <option name="myCanBeAbsent" value="false" />
-            <option name="myId" value="CREATED" />
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\javaExamples\GetStatistics.java</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\org\ccdb\RequestParseResult.kt</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\org\ccdb\RequestStatistics.kt</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\org\ccdb\CCDB.kt</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\org\ccdb\JDBCProvider.kt</PATH>
-          </FILE-GROUP>
-          <FILE-GROUP>
-            <option name="myUpdateName" value="Deleted" />
-            <option name="myStatusName" value="Deleted" />
-            <option name="mySupportsDeletion" value="false" />
-            <option name="myCanBeAbsent" value="true" />
-            <option name="myId" value="REMOVED_FROM_REPOSITORY" />
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\src\org\ccdb\DatabaseProvider.kt</PATH>
-          </FILE-GROUP>
-          <FILE-GROUP>
-            <option name="myUpdateName" value="Restored" />
-            <option name="myStatusName" value="Will be restored" />
-            <option name="mySupportsDeletion" value="false" />
-            <option name="myCanBeAbsent" value="false" />
-            <option name="myId" value="RESTORED" />
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\_DefaultPackage-main-dfa3ca56.class</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\_DefaultPackage.class</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\HaHa.class</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\ccdb</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\ccdb\model</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\ccdb\model\Variation.class</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\ccdb\model\Directory.class</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\ccdb\helpers</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\ccdb\helpers\HelpersPackage-PathUtils-7d204993.class</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\ccdb\helpers\HelpersPackage.class</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\ccdb\providers</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\ccdb\providers\CalibrationProvider.class</PATH>
-            <PATH vcs="svn" revision="0">D:\Projects\CCDB\trunk\java\out\production\ccdb\TryCcdb.class</PATH>
-          </FILE-GROUP>
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Modified" />
-          <option name="myStatusName" value="Modified" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="MODIFIED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Skipped" />
-          <option name="myStatusName" value="Skipped" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="SKIPPED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Merged with conflicts" />
-          <option name="myStatusName" value="Will be merged with conflicts" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="MERGED_WITH_CONFLICTS" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Merged with tree conflicts" />
-          <option name="myStatusName" value="Merged with tree conflicts" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Merged with property conflicts" />
-          <option name="myStatusName" value="Will be merged with property conflicts" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Merged" />
-          <option name="myStatusName" value="Will be merged" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="MERGED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Not in repository" />
-          <option name="myStatusName" value="Not in repository" />
-          <option name="mySupportsDeletion" value="true" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="UNKNOWN" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Locally added" />
-          <option name="myStatusName" value="Locally added" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="LOCALLY_ADDED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Locally removed" />
-          <option name="myStatusName" value="Locally removed" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="LOCALLY_REMOVED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Switched" />
-          <option name="myStatusName" value="Switched" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="SWITCHED" />
-        </FILE-GROUP>
-      </UpdatedFiles>
-    </UpdateInfo>
-  </component>
-  <component name="RunManager" selected="Kotlin.kotlinExamples.KotlinExamplesPackage">
+  <component name="RunManager" selected="Application.GetStatistics">
     <configuration default="false" name="_DefaultPackage" type="JetRunConfigurationType" factoryName="Kotlin" temporary="true">
       <option name="MAIN_CLASS_NAME" value="_DefaultPackage" />
       <option name="VM_PARAMETERS" />
@@ -448,6 +379,22 @@
       </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="GetStatistics" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="GetStatistics" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="javaExamples" />
+      <envs />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
@@ -498,19 +445,6 @@
       <envs />
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method />
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -536,6 +470,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -628,14 +575,16 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <list size="3">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="Kotlin.kotlinExamples.KotlinExamplesPackage" />
       <item index="1" class="java.lang.String" itemvalue="Application.SimpleExample" />
       <item index="2" class="java.lang.String" itemvalue="Kotlin._DefaultPackage" />
+      <item index="3" class="java.lang.String" itemvalue="Application.GetStatistics" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="Kotlin._DefaultPackage" />
+      <list size="2">
+        <item index="0" class="java.lang.String" itemvalue="Application.GetStatistics" />
+        <item index="1" class="java.lang.String" itemvalue="Kotlin._DefaultPackage" />
       </list>
     </recent_temporary>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
@@ -720,7 +669,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1552" height="842" extended-state="7" />
+    <frame x="-8" y="-8" width="1552" height="842" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -734,19 +683,19 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32957748" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24396783" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33239436" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33239436" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -759,20 +708,20 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5380282" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Kotlin" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32957748" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24396783" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33370045" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33370045" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -817,6 +766,22 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="jar://$PROJECT_DIR$/lib/kotlin-runtime-sources.jar!/kotlin/text/StringsJVM.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="816" max-vertical-offset="9758">
+          <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/Stopwatch.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="323" max-vertical-offset="1207">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/kotlinExamples/main.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="60" max-vertical-offset="945">
@@ -829,7 +794,35 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1230" max-vertical-offset="2925">
           <caret line="82" column="23" selection-start-line="82" selection-start-column="23" selection-end-line="82" selection-end-column="23" />
-          <folding />
+          <folding>
+            <element signature="n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#878#1109#0" expanded="false" />
+            <element signature="n#!!block;n#addSubdirectory#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1258#1322#0" expanded="false" />
+            <element signature="n#!!block;n#disposeSubdirectories#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1447#1609#1" expanded="false" />
+            <element signature="e#1496#1564#1" expanded="false" />
+            <element signature="n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#setParent#0;n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#TypeTable#0" expanded="false" />
+            <element signature="e#2167#2239#0" expanded="false" />
+            <element signature="e#2397#2612#0" expanded="false" />
+            <element signature="e#2435#2568#1" expanded="false" />
+            <element signature="e#2741#2787#0" expanded="false" />
+            <element signature="e#3049#3110#0" expanded="false" />
+            <element signature="e#3183#3340#0" expanded="false" />
+            <element signature="e#3216#3305#1" expanded="false" />
+            <element signature="e#3347#3408#0" expanded="false" />
+            <element signature="e#3535#3946#1" expanded="false" />
+            <element signature="e#3680#3932#1" expanded="false" />
+            <element signature="e#3776#3872#1" expanded="false" />
+            <element signature="e#3995#4056#0" expanded="false" />
+            <element signature="e#4182#4406#1" expanded="false" />
+            <element signature="e#4283#4392#1" expanded="false" />
+            <element signature="e#4907#4990#0" expanded="false" />
+            <element signature="n#!!block;n#CellTypes#0" expanded="false" />
+            <element signature="n#!!block;n#toString#0;n#!!block;n#CellTypes#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -890,7 +883,35 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1230" max-vertical-offset="2925">
           <caret line="82" column="23" selection-start-line="82" selection-start-column="23" selection-end-line="82" selection-end-column="23" />
-          <folding />
+          <folding>
+            <element signature="n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#878#1109#0" expanded="false" />
+            <element signature="n#!!block;n#addSubdirectory#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1258#1322#0" expanded="false" />
+            <element signature="n#!!block;n#disposeSubdirectories#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1447#1609#1" expanded="false" />
+            <element signature="e#1496#1564#1" expanded="false" />
+            <element signature="n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#setParent#0;n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#TypeTable#0" expanded="false" />
+            <element signature="e#2167#2239#0" expanded="false" />
+            <element signature="e#2397#2612#0" expanded="false" />
+            <element signature="e#2435#2568#1" expanded="false" />
+            <element signature="e#2741#2787#0" expanded="false" />
+            <element signature="e#3049#3110#0" expanded="false" />
+            <element signature="e#3183#3340#0" expanded="false" />
+            <element signature="e#3216#3305#1" expanded="false" />
+            <element signature="e#3347#3408#0" expanded="false" />
+            <element signature="e#3535#3946#1" expanded="false" />
+            <element signature="e#3680#3932#1" expanded="false" />
+            <element signature="e#3776#3872#1" expanded="false" />
+            <element signature="e#3995#4056#0" expanded="false" />
+            <element signature="e#4182#4406#1" expanded="false" />
+            <element signature="e#4283#4392#1" expanded="false" />
+            <element signature="e#4907#4990#0" expanded="false" />
+            <element signature="n#!!block;n#CellTypes#0" expanded="false" />
+            <element signature="n#!!block;n#toString#0;n#!!block;n#CellTypes#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -951,7 +972,35 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1230" max-vertical-offset="2925">
           <caret line="82" column="23" selection-start-line="82" selection-start-column="23" selection-end-line="82" selection-end-column="23" />
-          <folding />
+          <folding>
+            <element signature="n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#878#1109#0" expanded="false" />
+            <element signature="n#!!block;n#addSubdirectory#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1258#1322#0" expanded="false" />
+            <element signature="n#!!block;n#disposeSubdirectories#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1447#1609#1" expanded="false" />
+            <element signature="e#1496#1564#1" expanded="false" />
+            <element signature="n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#setParent#0;n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#TypeTable#0" expanded="false" />
+            <element signature="e#2167#2239#0" expanded="false" />
+            <element signature="e#2397#2612#0" expanded="false" />
+            <element signature="e#2435#2568#1" expanded="false" />
+            <element signature="e#2741#2787#0" expanded="false" />
+            <element signature="e#3049#3110#0" expanded="false" />
+            <element signature="e#3183#3340#0" expanded="false" />
+            <element signature="e#3216#3305#1" expanded="false" />
+            <element signature="e#3347#3408#0" expanded="false" />
+            <element signature="e#3535#3946#1" expanded="false" />
+            <element signature="e#3680#3932#1" expanded="false" />
+            <element signature="e#3776#3872#1" expanded="false" />
+            <element signature="e#3995#4056#0" expanded="false" />
+            <element signature="e#4182#4406#1" expanded="false" />
+            <element signature="e#4283#4392#1" expanded="false" />
+            <element signature="e#4907#4990#0" expanded="false" />
+            <element signature="n#!!block;n#CellTypes#0" expanded="false" />
+            <element signature="n#!!block;n#toString#0;n#!!block;n#CellTypes#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1005,7 +1054,35 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="646" max-vertical-offset="1411">
           <caret line="38" column="5" selection-start-line="38" selection-start-column="5" selection-end-line="38" selection-end-column="5" />
-          <folding />
+          <folding>
+            <element signature="n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#878#1109#0" expanded="false" />
+            <element signature="n#!!block;n#addSubdirectory#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1258#1322#0" expanded="false" />
+            <element signature="n#!!block;n#disposeSubdirectories#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1447#1609#1" expanded="false" />
+            <element signature="e#1496#1564#1" expanded="false" />
+            <element signature="n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#setParent#0;n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#TypeTable#0" expanded="false" />
+            <element signature="e#2167#2239#0" expanded="false" />
+            <element signature="e#2397#2612#0" expanded="false" />
+            <element signature="e#2435#2568#1" expanded="false" />
+            <element signature="e#2741#2787#0" expanded="false" />
+            <element signature="e#3049#3110#0" expanded="false" />
+            <element signature="e#3183#3340#0" expanded="false" />
+            <element signature="e#3216#3305#1" expanded="false" />
+            <element signature="e#3347#3408#0" expanded="false" />
+            <element signature="e#3535#3946#1" expanded="false" />
+            <element signature="e#3680#3932#1" expanded="false" />
+            <element signature="e#3776#3872#1" expanded="false" />
+            <element signature="e#3995#4056#0" expanded="false" />
+            <element signature="e#4182#4406#1" expanded="false" />
+            <element signature="e#4283#4392#1" expanded="false" />
+            <element signature="e#4907#4990#0" expanded="false" />
+            <element signature="n#!!block;n#CellTypes#0" expanded="false" />
+            <element signature="n#!!block;n#toString#0;n#!!block;n#CellTypes#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1044,7 +1121,35 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="646" max-vertical-offset="1411">
           <caret line="38" column="5" selection-start-line="38" selection-start-column="5" selection-end-line="38" selection-end-column="5" />
-          <folding />
+          <folding>
+            <element signature="n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#878#1109#0" expanded="false" />
+            <element signature="n#!!block;n#addSubdirectory#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1258#1322#0" expanded="false" />
+            <element signature="n#!!block;n#disposeSubdirectories#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1447#1609#1" expanded="false" />
+            <element signature="e#1496#1564#1" expanded="false" />
+            <element signature="n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#setParent#0;n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#TypeTable#0" expanded="false" />
+            <element signature="e#2167#2239#0" expanded="false" />
+            <element signature="e#2397#2612#0" expanded="false" />
+            <element signature="e#2435#2568#1" expanded="false" />
+            <element signature="e#2741#2787#0" expanded="false" />
+            <element signature="e#3049#3110#0" expanded="false" />
+            <element signature="e#3183#3340#0" expanded="false" />
+            <element signature="e#3216#3305#1" expanded="false" />
+            <element signature="e#3347#3408#0" expanded="false" />
+            <element signature="e#3535#3946#1" expanded="false" />
+            <element signature="e#3680#3932#1" expanded="false" />
+            <element signature="e#3776#3872#1" expanded="false" />
+            <element signature="e#3995#4056#0" expanded="false" />
+            <element signature="e#4182#4406#1" expanded="false" />
+            <element signature="e#4283#4392#1" expanded="false" />
+            <element signature="e#4907#4990#0" expanded="false" />
+            <element signature="n#!!block;n#CellTypes#0" expanded="false" />
+            <element signature="n#!!block;n#toString#0;n#!!block;n#CellTypes#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1091,13 +1196,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ccdb.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="448">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/lib/kotlin-runtime-sources.jar!/kotlin/text/StringsJVM.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="577" max-vertical-offset="9673">
@@ -1129,22 +1227,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/ccdb/model.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.52619046" vertical-offset="510" max-vertical-offset="3230">
-          <caret line="49" column="10" selection-start-line="49" selection-start-column="10" selection-end-line="49" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/kotlinExamples/main.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1156" max-vertical-offset="1666">
-          <caret line="68" column="67" selection-start-line="68" selection-start-column="67" selection-end-line="68" selection-end-column="67" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/ccdb/PathUtils.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33333334" vertical-offset="6111" max-vertical-offset="6817">
@@ -1161,22 +1243,90 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/javaExamples/SimpleExample.java">
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/MySqlProvider.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="306">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1540">
+          <caret line="27" column="40" selection-start-line="27" selection-start-column="40" selection-end-line="27" selection-end-column="40" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+            <element signature="e#82#205#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccdb.iml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="682">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/ccdb/MySqlProvider.kt">
+    <entry file="file://$PROJECT_DIR$/src/kotlinExamples/kotlinExamples.iml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.15632184" vertical-offset="0" max-vertical-offset="1870">
-          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="446">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/kotlinExamples/main.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="795" max-vertical-offset="1479">
+          <caret line="68" column="67" selection-start-line="68" selection-start-column="67" selection-end-line="68" selection-end-column="67" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/javaExamples/GetStatistics.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="918">
+          <caret line="28" column="8" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/ccdb/model.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1911">
+          <caret line="108" column="6" selection-start-line="108" selection-start-column="6" selection-end-line="108" selection-end-column="6" />
           <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#66#157#0" expanded="true" />
+            <element signature="n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#878#1109#0" expanded="false" />
+            <element signature="n#!!block;n#addSubdirectory#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1258#1322#0" expanded="false" />
+            <element signature="n#!!block;n#disposeSubdirectories#0;n#!!block;n#Directory#0" expanded="false" />
+            <element signature="e#1447#1609#1" expanded="false" />
+            <element signature="e#1496#1564#1" expanded="false" />
+            <element signature="n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#setParent#0;n#!!block;n#Variation#0" expanded="false" />
+            <element signature="n#!!block;n#TypeTable#0" expanded="false" />
+            <element signature="e#2167#2239#0" expanded="false" />
+            <element signature="e#2397#2612#0" expanded="false" />
+            <element signature="e#2435#2568#1" expanded="false" />
+            <element signature="e#2741#2787#0" expanded="false" />
+            <element signature="e#3049#3110#0" expanded="false" />
+            <element signature="e#3183#3340#0" expanded="false" />
+            <element signature="e#3216#3305#1" expanded="false" />
+            <element signature="e#3347#3408#0" expanded="false" />
+            <element signature="e#3535#3946#1" expanded="false" />
+            <element signature="e#3680#3932#1" expanded="false" />
+            <element signature="e#3776#3872#1" expanded="false" />
+            <element signature="e#3995#4056#0" expanded="false" />
+            <element signature="e#4182#4406#1" expanded="false" />
+            <element signature="e#4283#4392#1" expanded="false" />
+            <element signature="e#4907#4990#0" expanded="false" />
+            <element signature="n#!!block;n#CellTypes#0" expanded="false" />
+            <element signature="n#!!block;n#toString#0;n#!!block;n#CellTypes#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/javaExamples/SimpleExample.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.27659574" vertical-offset="172" max-vertical-offset="595">
+          <caret line="20" column="67" selection-start-line="20" selection-start-column="46" selection-end-line="20" selection-end-column="67" />
+          <folding />
         </state>
       </provider>
     </entry>

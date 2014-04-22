@@ -112,54 +112,70 @@ class Assignment(
         val typeTable:TypeTable,
         val created:Date
 ){
+    public val rowCount:Int get(){ return typeTable.rowsCount}
+
+    public val columnCount:Int get(){return typeTable.columns.size}
 
     /**
      * gets data represented as number of columns
      */
-    public val stringVector: Vector<String> = Vector<String>()
+    public val vectorString: Vector<String> = Vector<String>()
     get(){
-        if($stringVector.empty){
-            for (token in blob.split(dataSeparator)) $stringVector.add(token)
+        if($vectorString.empty){
+            for (token in blob.split(dataSeparator)) $vectorString.add(token)
         }
-        return $stringVector
+        return $vectorString
     }
 
 
     /**
      * gets data represented as number of columns
      */
-    public val stringTable:Vector<Vector<String>> = Vector<Vector<String>>()
+    public val tableString:Vector<Vector<String>> = Vector<Vector<String>>()
         get(){
-            if($stringTable.empty){
+            if($tableString.empty){
                 val ncols = typeTable.columns.size
                 val nrows = typeTable.rowsCount
 
                 for(rowIndex in 0..nrows-1){
                     val row = Vector<String>()
                     for(colIndex in 0..ncols-1){
-                        row.add(stringVector[rowIndex*ncols + colIndex])
+                        row.add(vectorString[rowIndex*ncols + colIndex])
                     }
-                    $stringTable.add(row)
+                    $tableString.add(row)
                 }
             }
-            return $stringTable
+            return $tableString
         }
 
 
     /**
      * gets data represented as number of columns
      */
-    public val stringMap: HashMap<String, String> = HashMap<String, String>()
+    public val mapString: HashMap<String, String> = HashMap<String, String>()
         get(){
-            if(stringMap.empty) {
+            if(mapString.empty) {
                 val ncols = typeTable.columns.size
 
                 for (colIndex in 0..ncols - 1) {
-                    $stringMap[typeTable.columns[colIndex].name] = stringVector[colIndex]
+                    $mapString[typeTable.columns[colIndex].name] = vectorString[colIndex]
                 }
             }
-            return $stringMap
+            return $mapString
         }
+
+    public fun getColumnValuesString(columnName:String): Vector<String>{
+        val column = typeTable.columnsByName[columnName]!!;
+        return getColumnValuesString(column.index)
+    }
+
+    public fun getColumnValuesString(columnIndex:Int): Vector<String>{
+        val result = Vector<String>()
+        for(rowIndex in 0 .. rowCount - 1){
+            result.add(vectorString[rowIndex*columnCount + columnIndex])
+        }
+        return result;
+    }
 }
 
 /**

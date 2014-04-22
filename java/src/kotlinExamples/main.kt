@@ -73,12 +73,12 @@ fun main(args: Array<String>) {
     println("time for request2 is $sw")
 
     println("asgmt2 values: ")
-    for (value in asgmt2.stringVector){
+    for (value in asgmt2.vectorString){
         println("   $value")
     }
 
     println("asgmt2 values as table: ")
-    for (row in asgmt2.stringTable){
+    for (row in asgmt2.tableString){
         for(cell in row){
             print(" $cell ")
         }
