@@ -38,6 +38,8 @@ open public class JDBCProvider(public val connectionString: String) {
 
     private var stopwatch = Stopwatch()
 
+    private var cachedTypeTable: TypeTable? = null
+
 
     /**
      * Default run number which is used if no other run is defined
@@ -289,10 +291,10 @@ open public class JDBCProvider(public val connectionString: String) {
         return getTypeTable(name, dir)
     }
 
-
-    /** @brief Gets ConstantsType information from the DB */
-    fun getTypeTable(name: String, parentDir: Directory):TypeTable
-    {
+    /**
+     * Gets type table from db or returns null if no such table found in the DB
+     */
+    private fun getTypeTableUnsafe(name: String, parentDir: Directory):TypeTable?{
         val prs = prsTable!!
         prs.setString(1, name)
         prs.setInt(2, parentDir.id)
@@ -315,8 +317,43 @@ open public class JDBCProvider(public val connectionString: String) {
             return table
         }
         else{
-            throw SQLException("TypeTable with name='${combinePath(parentDir.fullPath, name)}' is not found in the DB")
+            return null;
         }
+    }
+
+
+    /** @brief Gets ConstantsType information from the DB */
+    fun getTypeTable(name: String, parentDir: Directory):TypeTable
+    {
+        //Maybe we already have the table cached?
+        val cached = cachedTypeTable
+        if(cached!=null && cached.name == name && parentDir == cached.directory) return cached
+
+        //Read the table
+        val table = getTypeTableUnsafe(name, parentDir)
+        if(table == null) throw SQLException("TypeTable with name='${combinePath(parentDir.fullPath, name)}' is not found in the DB")
+        cachedTypeTable = table
+        return table
+    }
+
+    /** @brief Gets ConstantsType information from the DB
+     *
+     * @param  [in] fullPath  full path of the table
+     * @return new TypeTable object
+     */
+    public fun isTypeTableAvailable(fullPath:String):Boolean{
+        val dir = getDirectory(extractDirectory(fullPath))      // get directory path and directory
+        val name = extractObjectname(fullPath)                  // retrieve name of our constant table
+        return isTypeTableAvailable(name, dir)                  // get it from db etc...
+    }
+
+    /** @brief Gets ConstantsType information from the DB */
+    fun isTypeTableAvailable(name: String, parentDir: Directory):Boolean
+    {
+        // The most common scenario is to check isTypeTableAvailable() first, then to call getTypeTable()
+        // We cache TypeTable in isTypeTableAvailable, so getTypeTable() can use it
+        cachedTypeTable = getTypeTableUnsafe(name, parentDir)
+        return  if(cachedTypeTable != null) true else false
     }
 
 
@@ -384,14 +421,16 @@ open public class JDBCProvider(public val connectionString: String) {
 
         //Data is found if we here
         val assignment = Assignment(
-                result.getInt("asId"),
-                result.getString("blob")?:"",
-                table,
-                Date(result.getDate("asModified")?.getTime() ?: Date().getTime())
-        )
+                            result.getInt("asId"),
+                            result.getString("blob")?:"",
+                            table,
+                            Date(result.getDate("asModified")?.getTime() ?: Date().getTime()),
+                            variation,
+                            run)
         return assignment
     }
 
+    /** Returns the Assignment objects which holds data values and infromation about them */
     public fun getData(request:String):Assignment{
 
         //Start statistics collection
