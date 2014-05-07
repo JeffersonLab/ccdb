@@ -17,9 +17,9 @@
 
 
 /* @class DataProvider
- * This is the main base interface to the Providers class family. Each specialized Provider,
- * derived from this class, provides data from/to a specified data source. 
- * I.e. MySQLDataProvider works with MySQL database.
+ * This is the main base interface to the Providers class family. 
+ * Each derived <Something>Provider, provides access to data from a specified data source
+ * I.e. MySQLDataProvider works with MySQL database, SQLiteDataProvider works with SQLite
  *
  *==============================================
  *Low Level API
@@ -33,13 +33,13 @@
  *                       |                              
  *                       |                              
  *  +------------------------------------------+        
- *  |    DataProvider - Interface to database  |    -   User get data by using DDataProvider functions
+ *  |    DataProvider - Interface to database  |    -   User calls DataProvider functions to get data user needs
  *  +------------------------------------------+        
  *                       |                              
  *             +---------------------+                  
  *            /                       \                 
  *  +----------------+        +----------------+        
- *  |  MySQLProvider |        |  SQLiteProvider|    -   These classes are inherited from DDataProvider and do actual querries to related sources
+ *  |  MySQLProvider |        |  SQLiteProvider|    -   Classes inherited from DataProvider do actual queries to data sources
  *  +----------------+        +----------------+        
  *          |                          |                
  *  <================>        <================>        
