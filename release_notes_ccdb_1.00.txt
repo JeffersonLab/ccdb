@@ -1,3 +1,185 @@
+CCDB 1.00
+
+   CCDB 1.00 release notes
+
+	Available at https://halldweb1.jlab.org/wiki/index.php/CCDB_1.00
+
+Command line tools
+
+Creating tables from text files
+
+   CCDB now can help to create a table from text file with data. It infers
+   number of columns, rows and column names (if file provides it)
+
+   It is usual situation when one already has text data file and want to
+   create table to store the data.
+
+   mktbl -f helps with this
+
+> mktbl /test/haha -f python/tests/test_table.txt #my lonely comment
+The command to create table:
+
+mktbl /test/haha -r 2 X Y Z #my lonely comment
+
+Comments in file:
+Test assignment for software tests
+
+   Now one can copy it and run. It is not done automatically to be sure
+   the values are reviewed.
+
+   The file format is:
+#Test assignment for software tests
+#& X            Y            Z
+  2.2          2.3          2.4
+  2.5          2.6          2.7
+
+   You may notice that line with column names starts with #& while normal
+   comments starts with plain #
+
+   (Please, read ccdb_file_format.pdf in doc directory of CCDB for more
+   info about how CCDB reads text files)
+
+   One can use column types right there:
+#& X=int            Y=int            NOT_Z=string
+
+information about files
+
+   -f flag added to Info command also. info -f gives the info of text
+   files, how CCDB sees it.
+ ~/halld/ccdb/trunk $ ccdb info -f $CCDB_HOME/python/tests/test_table.txt
+Rows: 2
+Columns: 3
+Column names:
+    X
+    Y
+    Z
+
+Comments in file:
+Test assignment for software unit tests
+
+Type 'ccdb mktbl -f /home/romanov/halld/ccdb/trunk/python/tests/test_table.txt'
+to see how to create a table for the file
+Type 'ccdb add <table name> /home/romanov/halld/ccdb/trunk/python/tests/test_tab
+le.txt #<comments>' to add the file to existing table (rows and columns must con
+sist)
+
+'ls' command update
+
+   When ls is used directly on a table name, it gives data versions (as
+   vers command):
+ ccdb ls /test/test_vars/test_table
+/test/test_vars/test_table
+(ID)   (Created)              (Modified)              (variation)     (run range)      (comments)
+ 5      2012-10-30 23-48-43    2012-10-30 23-48-43     subtest         0-inf       Test assignment for
+ 4      2012-10-30 23-48-42    2012-10-30 23-48-42     default         0-inf       Test assignment for
+ 1      2012-07-30 23-48-42    2012-07-30 23-48-42     default         0-inf       Test assignment for
+
+   -l flag adds info about table like (info) command.
+ccdb ls -l /test/test_vars/test_table
+
+   The flags of ls command changed too:
+Lists directories and tables for current directory
+
+- Accepts wildcards symbols '*', and '?'
+
+- When used on single table name, gives table data version as 'vers <table name>
+' command
+
+keys:
+    -v or --variations   - prints all variations
+    -t or --tables       - prints full path for all tables
+    -d or --directories  - prints all directories
+    -x or --dtree        - draws directory tree
+
+    -l or --extended     - shows extended info when is used on table
+
+JAVA API
+
+   Users can use JAVA to access CCDB data. Or even Kotlin JVM
+   language (http://kotlin.jetbrains.org/).
+
+   That is how it looks:
+        JDBCProvider provider = CcdbPackage.createProvider("mysql://localhost");
+        provider.connect();
+        Assignment asgmt = provider.getData("/test/test_vars/test_table");
+
+        // gets data represented as number of columns
+        for(Vector<String> row : asgmt.getStringTable()){
+            for(String cell: row){
+                                System.out.print(cell + " ");
+                        }
+                        System.out.println(); //next line after a row
+        }
+
+        //gets some extended info about data
+        System.out.println(asgmt.getTypeTable().getFullPath());
+
+   CCDB is provided as jar file including all required database drivers.
+   The file could be found in:
+$CCDB_HOME/java/out/artifacts
+
+C++ API update
+
+Cell by cell readout and extended data inforation
+
+   In 0.9 users can read data like:
+vector<vector<int> > tabledValues;
+calib->GetCalib(tabledValues, "/test/test_vars/test_table2"));
+
+   So there is no extended information about the data, like column types
+   or date. In CCDB 1.00 new GetAssignment function is introduced, which
+   returns Assignment object. Assignment holds information about data and
+   its type table. For example that is the way of getting columns
+   information:
+auto_ptr<Assignment> a(calib->GetAssignment("/test/test_vars/test_table"));    /
+/ auto_ptr to delete assignment after
+                                                                               /
+/ auto_ptr is deprecated in C++11 btw
+
+//Get type table and it holds information about columns
+const vector<ConstantsTypeColumn *> &columns = a->GetTypeTable()->GetColumns();
+
+cout<<"Columns:"<<endl;
+for(size_t i=0; i< columns.size(); i++)
+{
+    cout<<"   name: '"<< columns[i]->GetName()
+        <<"'  type: '"<< columns[i]->GetTypeString() <<"'"
+        <<endl;
+}
+
+   But Assignment has even more handy feature. CCDB can have columns of
+   different types in one table. For example: 2 columns of ints, 1 column
+   of doubles and 1 column of strings (with some descriptions). There was
+   no direct way to read it that way in 0.9. But with assignment you can
+   do:
+a->GetValueInt(0, 0)
+a->GetValueInt(0, 1)
+a->GetValueDouble(0, 2)
+a->GetValue(0, 3)       //string
+
+   Or even better! If column names are "x", "y", "gain", "description" one
+   can use
+a->GetValueInt("x")
+a->GetValueInt("y")
+a->GetValueDouble("gain")
+a->GetValue("description")       //string
+//assuming row is 0. if it is not 0, one can use:
+a->GetValueInt(101, "x")
+
+Examples
+
+   CCDB now ships examples folder:
+ $CCDB_HOME/examples
+
+   Where you can find some simple examples of how to use CCDB C++ user
+   api. Add 'with-examples=true' flag to scons to compile the examples.
+   scons with-examples=true
+
+   After the compilation examples can be run from console as
+   example_ccdb_(example name)
+
+Files changed since version 0.09:
+
 ------------------------------------------------------------------------
 r1480 | romanov | 2014-01-09 18:27:52 -0500 (Thu, 09 Jan 2014) | 3 lines
 
