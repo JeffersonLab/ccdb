@@ -320,22 +320,50 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
     {
         throw std::logic_error("Calibration::GetCalib( map<string, string>&, const string&). Data has no rows. Zero rows are not supposed to be.");
     }
+	
+	//VALUES VALIDATION
+	assert(values.empty());
 
-    //TODO should we check that rawTableValues have only one row?
-    //now we take only first row of table
-    vector<string> rawValues = rawTableValues[0];
+	// This method is used to return a 1-D array of values (in the form of a
+	// map<string, string>). The data may be stored in either column-wise (1 
+	// row with many columns) or row-wise (1 column with many rows). We wish
+	// to support either so we must check which format it is in. If it is
+	// stored row-wise, then we'll need to make up the column names so that
+	// the map being returned is properly ordered.
+	// 5/25/2014  D. Lawrence
+	
+	// Make sure at least one dimension is exactly 1. (Assume all inner vectors
+	// are the same size as the zeroth one.)
+	int rowsNum = rawTableValues.size();
+	int columnsNum = rawTableValues[0].size();
+	if(rowsNum>1 && columnsNum>1){
+		throw std::logic_error("Calibration::GetCalib( map<string, string>&, const string&). Appears to be a table (both dimensions are > 1).");
+	}
+	
+	if(rowsNum>1){
+		// ---- ROW-WISE ----
+		
+		// Loop over rows, generating a column name for each and filling "values"
+		for(unsigned int i=0; i<rowsNum; i++){
+			char colName[16];
+			sprintf(colName, "v%04d", i); // TODO this will be a problem for more than 10k values!
+			values[colName] = rawTableValues[i][0];
+		}
+		
+	}else{
+		// ---- COLUMN-WISE ----
 
-    //get columns names
-    vector<string> columnNames = assignment->GetTypeTable()->GetColumnNames();
-    int columnsNum = columnNames.size();
-    assert(columnsNum == rawValues.size());
+		//now we take only first row of table
+		vector<string> rawValues = rawTableValues[0];
 
-    //VALUES VALIDATION
-    assert(values.empty());
-    
-    //compose values
-    for (int i=0; i<columnsNum; i++) values[columnNames[i]] = rawValues[i];
-    
+		//get columns names
+		vector<string> columnNames = assignment->GetTypeTable()->GetColumnNames();
+		assert(columnsNum == columnNames.size());
+
+		//compose values
+		for (int i=0; i<columnsNum; i++) values[columnNames[i]] = rawValues[i];
+	}
+
     //finishing
     return true;
 }

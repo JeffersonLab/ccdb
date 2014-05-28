@@ -185,6 +185,6 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		REQUIRE(a->GetValueInt(0, 1) == 20);
 		REQUIRE(a->GetValueInt("c1") == 10);
 		REQUIRE(a->GetValueInt(0, "c3") == 30);
-		REQUIRE(a->GetValueDouble(2) > 29);		
+		REQUIRE(a->GetValueDouble(2) > 29);
 	}
 }
