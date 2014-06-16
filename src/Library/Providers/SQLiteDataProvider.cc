@@ -1193,18 +1193,21 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
 			break;
 		}
 	} while(result==SQLITE_ROW );
-	
-	if(assignment == NULL) return NULL;
 
     // finalize the statement to release resources
     sqlite3_finalize(mStatement);
         
     //If We have not found data for this variation, getting data for parent variation
-    if(selectedRows==0 && variation->GetParentDbId()!=0)
+    if((assignment == NULL && selectedRows==0) && variation->GetParentDbId()!=0)
     {
-        delete table;
         return GetAssignmentShort(run, path, time, variation->GetParent()->GetName());
     }
+    
+	if(assignment == NULL) 
+	{
+		delete table;
+		return NULL;
+	}
 
     assignment->SetTypeTable(table);
     assignment->BeOwner(table);

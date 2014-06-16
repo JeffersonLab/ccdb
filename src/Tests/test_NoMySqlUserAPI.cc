@@ -69,14 +69,7 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
     REQUIRE_NOTHROW(result = calib->GetCalib(tabledValues, "test/test_vars/test_table"));
     REQUIRE(result);
     REQUIRE(tabledValues.size()>0);
-
-    //test of getting data as map
-    //----------------------------------------------------
-    map<string, string> mappedValues;
-    REQUIRE_NOTHROW(result = calib->GetCalib(mappedValues, "test/test_vars/test_table"));
-    REQUIRE(result);
-    REQUIRE(mappedValues.size()>0);
-
+   
     //test of getting data without / in the beginning
     //----------------------------------------------------
     vector<map<string, string> > vectorOfMapsdValues;
@@ -168,6 +161,16 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		REQUIRE(tabledValues.size()==2);
 		REQUIRE(tabledValues[0].size()==3);
 		REQUIRE(tabledValues[0][0]=="10");
+		
+		//No such calibration exist in test variation, but constants should fallback to default varitaion
+		res = PathUtils::ParseContext("variation=test");
+		sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime);
+		REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
+		REQUIRE(result);
+		REQUIRE(tabledValues.size()>0);
+		REQUIRE(tabledValues.size()==2);
+		REQUIRE(tabledValues[0].size()==3);
+		REQUIRE(tabledValues[0][0]=="2.2");
 	}
 
 	SECTION("Get Assignment test", "Test all elements of getting data through get assignment")
