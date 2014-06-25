@@ -1200,7 +1200,7 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
     //If We have not found data for this variation, getting data for parent variation
     if((assignment == NULL && selectedRows==0) && variation->GetParentDbId()!=0)
     {
-        return GetAssignmentShort(run, path, time, variation->GetParent()->GetName());
+        return GetAssignmentShort(run, path, time, variation->GetParent()->GetName(), loadColumns);
     }
     
 	if(assignment == NULL) 

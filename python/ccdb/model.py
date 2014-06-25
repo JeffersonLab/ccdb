@@ -5,7 +5,7 @@ import posixpath
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.types import Integer, String, Text, DateTime, Enum, Boolean
-from sqlalchemy.orm import reconstructor
+from sqlalchemy.orm import reconstructor, relation
 from sqlalchemy.orm import relationship, backref
 
 Base = declarative_base()
@@ -221,7 +221,7 @@ class Assignment(Base):
     def __repr__(self):
         return "<Assignment '{0}'>".format(self.id)
 
-    def print_deps(self):
+    def print_info(self):
         print " ASSIGNMENT: " + repr(self) \
               + " TABLE: " + repr(self.constant_set.type_table)\
               + " RUN RANGE: " + repr(self.run_range)\
@@ -263,6 +263,8 @@ class Variation(Base):
     created = Column(DateTime, default=datetime.datetime.now)
     comment = Column(Text)
     author_id = Column('authorId', Integer, default=1)
+    parent_id = Column('parentId', Integer, ForeignKey('variations.id'), default=1)
+    parent = relation('Variation', remote_side=[id])
 
     def __repr__(self):
         return "<Variation {0} '{1}'>".format(self.id, self.name)
@@ -546,6 +548,6 @@ def list_to_table(data, col_count):
     for row_i in range(row_count):
         row = []
         for col_i in range(col_count):
-            row.append(data[row_i*col_count + col_i])
+            row.append(data[row_i * col_count + col_i])
         tabled_data.append(row)
     return tabled_data

@@ -1,8 +1,9 @@
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
 from ccdb.path_utils import validate_name
 import logging
 
 log = logging.getLogger("ccdb.cmd.utils.mkvar")
+
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -16,7 +17,7 @@ def create_util_instance():
 #*********************************************************************
 class MakeVariation(ConsoleUtilBase):
     """ Create variation """
-    
+
     # ccdb utility class descr part 
     #------------------------------
     command = "mkvar"
@@ -28,46 +29,45 @@ class MakeVariation(ConsoleUtilBase):
     def process(self, args):
         log.debug("MakeVariation module gained control")
         log.debug("Arguments: \n " + "     ".join(args))
-        
-        if not len(args): return
 
+        if not len(args):
+            return
+
+        #find #comment
         comment = ""
-        raw_str = args[0] #hello dynamic language!
+        for i in range(len(args)):
+            arg = args[i]
+            if arg.startswith("#"):
+                comment = (" ".join(args[i:]))[1:]  # [1:] to remove #
+                args = args[:i]
+                break
 
-        #try to extract comment from /path/#comment
-        if "#" in raw_str:
-            var_name = raw_str[:raw_str.index("#")]
-            comment = raw_str[raw_str.index("#") + 1:]
-        else:
-            var_name = raw_str
+        #utility argument parser is argparse which raises errors instead of exiting app
+        parser = UtilityArgumentParser()
+        parser.add_argument("name", default="")
+        parser.add_argument("-p", "--parent", default="")
+        result = parser.parse_args(args)
+
+        parser.add_argument("--verbose", help="increase output verbosity",
+                            action="store_true")
 
         #in case there is a space between comments and name
 
-        if len(args)>=2 and str(args[1]).startswith("#"):
-            comment = comment + args[1][1:]
-            if len(args)>=3:
-                comment = comment + " " + " ".join(args[2:])
-
-        if not validate_name(var_name):
-            log.warning("Invalid variation name. Only [a-z A-Z 0-9 _] symbols are allowed for variation name")
-            return 1
+        if not validate_name(result.name):
+            raise ValueError("Invalid variation name. Only [a-z A-Z 0-9 _] symbols are allowed for variation name")
 
         #try to create directory
-        log.debug("  creating variation. Name: {0},  comment: {1}".format(var_name, comment))
+        log.debug("  creating variation. Name: {0},  comment: {1}".format(result.name, comment))
 
-        try:
-            self.context.provider.create_variation(var_name, comment)
-        except Exception as ex:
-            log.warning("Failed to create directory. Exception message: {0}".format(ex))
+        self.context.provider.create_variation(result.name, comment, result.parent)
 
-        log.info("Variation " + var_name + self.theme.Success + " created" + self.theme.Reset)
-
+        log.info("Variation " + result.name + self.theme.Success + " created" + self.theme.Reset)
 
     #----------------------------------------------
     #   print_help - prints help
     #----------------------------------------------
     def print_help(self):
-        "prints help to user"
+        """prints help to user"""
 
         print """
 MakeVariation or mkvar - create variation with specified name
@@ -75,7 +75,9 @@ MakeVariation or mkvar - create variation with specified name
 usage:
 
     mkvar <name> #<comments>
+    mkvar <name> -p <parent> #<comments>
 
-    name        - is a variation name. [a-z A-Z 0-9 _] are allowed symbols
-    comments    - are comments...
+    name           - is a variation name. [a-z A-Z 0-9 _] are allowed symbols
+    comments       - are comments... don't forget space before #
+    -p or --parent - name of parent variation. If no name provided, "default" variation is the parent
             """

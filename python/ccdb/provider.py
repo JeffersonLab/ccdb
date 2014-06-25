@@ -17,7 +17,8 @@ import sqlalchemy.orm
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
-from ccdb.errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError, UserNotFoundError, UserExistsError, \
+from ccdb.errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError, \
+    UserNotFoundError, UserExistsError, \
     VariationNotFound
 
 import table_file
@@ -51,9 +52,9 @@ class AlchemyProvider(object):
         self._auth = authentication.Authentication(self)
         self._auth.current_user_name = "anonymous"
         self.logging_enabled = True
-        self._no_structure_message = "No database structure found. Possibly you are trying to connect " +\
-                       "to wrong SQLite file or to MySQL database without schema. " +\
-                       "Original SqlAlchemy error is: " + os.linesep + os.linesep + "{0}"
+        self._no_structure_message = "No database structure found. Possibly you are trying to connect " + \
+                                     "to wrong SQLite file or to MySQL database without schema. " + \
+                                     "Original SqlAlchemy error is: " + os.linesep + os.linesep + "{0}"
 
 
     #----------------------------------------------------------------------------------------
@@ -907,7 +908,7 @@ class AlchemyProvider(object):
     #----------------------.--------------------------
     # Create variation by name
     #------------------------------------------------
-    def create_variation(self, name, comment=""):
+    def create_variation(self, name, comment="", parent_name=""):
         """
         Create variation by name
 
@@ -923,8 +924,12 @@ class AlchemyProvider(object):
         variation = Variation()
 
         if self.session.query(Variation).filter(Variation.name == name).count() > 0:
-            raise ValueError(
-                "Cannot create a new variation with name {0}. Variation with that name already exists".format(name))
+            raise ValueError("Cannot create a new variation with name {0}. "
+                             "Variation with that name already exists".format(name))
+
+        if parent_name:
+            parent = self.get_variation(parent_name)
+            variation.parent = parent
 
         variation.comment = comment
         variation.name = name
@@ -936,7 +941,8 @@ class AlchemyProvider(object):
         self.create_log_record(user=user,
                                affected_ids=[variation.__tablename__ + str(variation.id)],
                                action="create",
-                               description="Created variation '{0}'".format(variation.name),
+                               description="Created variation '{0}' parent is '{1}'".format(variation.name,
+                                                                                            variation.parent.name),
                                comment=variation.comment)
 
         return variation
@@ -1367,7 +1373,7 @@ class AlchemyProvider(object):
             if user.is_deleted:
                 user.is_deleted = False
             else:
-                raise UserExistsError("The user with name '"+name+"' exists in the database", name)
+                raise UserExistsError("The user with name '" + name + "' exists in the database", name)
         except UserNotFoundError:
             user = User()
             user.last_action_time = datetime.now()
@@ -1391,11 +1397,6 @@ class AlchemyProvider(object):
         user = self.get_user(name)
         user.is_deleted = True
         self.session.commit()
-
-
-
-
-
 
 
     def get_current_user(self):

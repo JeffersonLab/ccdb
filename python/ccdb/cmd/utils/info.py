@@ -165,6 +165,7 @@ class Info(ConsoleUtilBase):
         print " Name       :  " + self.theme.Success + variation.name
         print " Created    :  " + variation.created.strftime("%Y-%m-%d %H-%M-%S")
         print " DB Id      :  " + repr(int(variation.id))
+        print " Parent     :  " + (variation.parent.name if variation.parent else "--")
         print " Comment:  "
         print variation.comment
         print

@@ -281,12 +281,22 @@ class AlchemyProviderTest(unittest.TestCase):
         v = self.provider.create_variation("abra_kozyabra")
         self.assertIsNotNone(v)
         self.assertNotEquals(v.id, 0)
+        self.assertEquals(v.parent_id, 1)
         self.assertEquals(v.name, "abra_kozyabra")
 
         # DELETE RUN-RANGE TEST
         #----------------------------------------------------
         self.provider.delete_variation(v)
         self.assertRaises(VariationNotFound, self.provider.get_variation, "abra_kozyabra")
+
+        #Now create with comment and parent
+        v = self.provider.create_variation("abra_kozyabra", "Abra!!!", "test")
+        self.assertEquals(v.parent.name, "test")
+        self.assertEquals(v.comment, "Abra!!!")
+
+        #cleanup
+        self.provider.delete_variation(v)
+
 
     def test_assignments(self):
         """Test Assignments"""

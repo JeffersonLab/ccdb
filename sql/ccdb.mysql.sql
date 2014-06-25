@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `ccdb`.`variations` (
   `description` VARCHAR(255) NULL,
   `authorId` INT NOT NULL DEFAULT 1,
   `comment` TEXT NULL DEFAULT NULL,
-  `parentId` INT NOT NULL DEFAULT 0,
+  `parentId` INT NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `name_search` USING HASH (`name` ASC),

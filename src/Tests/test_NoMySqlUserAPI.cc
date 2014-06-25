@@ -15,6 +15,8 @@
 #include "CCDB/Log.h"
 #include "CCDB/CalibrationGenerator.h"
 
+#include <map>
+
 using namespace std;
 using namespace ccdb;
 
@@ -171,6 +173,10 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		REQUIRE(tabledValues.size()==2);
 		REQUIRE(tabledValues[0].size()==3);
 		REQUIRE(tabledValues[0][0]=="2.2");
+
+		//Error regression test for bug with absent column names. Filling map will test the column names are OK
+		vector<map<string, string> > tableMapValues;
+		REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tableMapValues, "/test/test_vars/test_table"));
 	}
 
 	SECTION("Get Assignment test", "Test all elements of getting data through get assignment")

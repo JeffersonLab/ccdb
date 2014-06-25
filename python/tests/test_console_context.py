@@ -144,7 +144,7 @@ class ConsoleContextTests(unittest.TestCase):
 
     def test_mk_rm_variation(self):
         """mkvar, rm. Create variation and delete it"""
-        self.context.process_command_line("mkvar auto_testing_variation")
+        self.context.process_command_line("mkvar auto_testing_variation -p test #hahaha")
         #TODO check test table internals are right
         self.context.process_command_line("rm --force -v auto_testing_variation")
 
