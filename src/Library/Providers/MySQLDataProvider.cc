@@ -1165,7 +1165,7 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
     if(mReturnedRowsNum==0 && variation->GetParentDbId()!=0)
     {
         delete table;
-        return GetAssignmentShort(run, path, time, variation->GetParent()->GetName());
+		return GetAssignmentShort(run, path, time, variation->GetParent()->GetName(), loadColumns);
     }
 
 	//Ok! We queried our run range! lets catch it! 
