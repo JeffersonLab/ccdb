@@ -640,7 +640,10 @@ void Calibration::GetListOfNamepaths( vector<string> &namepaths )
     UpdateActivityTime();
 
     vector<ConstantsTypeTable*> tables;
-    if(!mProvider->SearchConstantsTypeTables(tables, "*"))
+    mReadMutex->Lock();
+	 bool ok = mProvider->SearchConstantsTypeTables(tables, "*");
+    mReadMutex->Release();
+    if(!ok)
     {
         throw logic_error("Error selecting all type tables");
     }
