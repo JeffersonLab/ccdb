@@ -1,0 +1,7 @@
+------------------------------------------------------------------------
+r2096 | davidl | 2014-09-09 14:30:53 -0400 (Tue, 09 Sep 2014) | 1 line
+Changed paths:
+   M /trunk/ccdb/src/Library/Calibration.cc
+
+Wrap call to DataProvider method from GetListOfNamepaths in mutex lock to prevent conflict with GetCalib (which is already protected by the same mutex.)
+------------------------------------------------------------------------
