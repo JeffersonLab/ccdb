@@ -20,3 +20,9 @@ ccdb_simple_install = env.Install('#bin', ccdb_simple_program)
 
 ccdb_requests_program = env.Program('example_ccdb_requests', source = 'requests.cc', LIBS=["ccdb"], LIBPATH='#lib')
 ccdb_requests_install = env.Install('#bin', ccdb_requests_program)
+
+ccdb_assignments_program = env.Program('example_ccdb_assignments', source = 'assignments.cc', LIBS=["ccdb"], LIBPATH='#lib')
+ccdb_assignments_install = env.Install('#bin', ccdb_assignments_program)
+
+ccdb_helpers_program = env.Program('example_ccdb_helpers', source = 'helpers.cc', LIBS=["ccdb"], LIBPATH='#lib')
+ccdb_helpers_install = env.Install('#bin', ccdb_helpers_program)
