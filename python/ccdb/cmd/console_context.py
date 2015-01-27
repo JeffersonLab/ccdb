@@ -587,14 +587,14 @@ class ConsoleContext(object):
     #--------------------------------
     def prepare_path(self, path):
 
-        #correct ending /
+        # correct ending /
         if path.endswith("/"):
             path = path[:-1]
 
-        #local or absolute path?
+        # local or absolute path?
         if not path.startswith("/"):
             path = posixpath.join(self.current_path, path)
-            #normalize
+            # normalize
         path = posixpath.normpath(path)
 
         return path

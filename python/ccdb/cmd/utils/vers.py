@@ -1,15 +1,17 @@
 import logging
 import os
 
-import ccdb
+
 from ccdb import AlchemyProvider
-from ccdb.cmd import ConsoleUtilBase
+import ccdb
+from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
 from ccdb.brace_log_message import BraceMessage as LogFmt
-from sqlalchemy.orm.exc import NoResultFound
+
 
 log = logging.getLogger("ccdb.cmd.utils.vers")
 
-#ccdbcmd module interface
+
+# ccdbcmd module interface
 def create_util_instance():
     log.debug("      registering Versions")
     return Versions()
@@ -20,66 +22,68 @@ def create_util_instance():
 #                                                                    *
 #*********************************************************************
 class Versions(ConsoleUtilBase):
-    """" Show versions of data """
+    """" Show versions of data. Assignments in terms of CCDB """
     
     # ccdb utility class descr part 
-    #------------------------------
+    # ------------------------------
     command = "vers"
     name = "Versions"
     short_descr = "Show versions of data for specified type table"
     uses_db = True
 
-    #variables for each process
-
-    raw_entry = "/"   #object path with possible pattern, like /mole/*
-    path = "/"       #parent path
-    
-#----------------------------------------
-#   process 
-#----------------------------------------  
+    # - - - - - - - - - - - - - - - - - - - - -
     def process(self, args):
+        """Main function that do the job"""
+
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}Versions is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
 
-        #preparations
+        # preparations
         assert self.context is not None
         provider = self.context.provider
         isinstance(provider, AlchemyProvider)
         
-        #process arguments
-        self.raw_table_path = ""
-        self.variation = ""
-        self.run = -1
+        # process arguments
+        (raw_table_path, variation, run) = self._process_arguments(args)
 
-
-
-        if not self.process_arguments(args):
-            return 1    # BAD return TODO raise exceptions instead of returns here
-
-        if not bool(self.raw_table_path):
+        if not raw_table_path:
             log.info("Table name (path) is required. See 'help vers'")
             return 0    # OK return
 
-        if self.run == -1: 
-            self.run = self.context.current_run
+        # correct path
+        table_path = self.context.prepare_path(raw_table_path)
+
+        # get and print assignments
+        assignments = provider.get_assignments(table_path, run, variation)
+        self.print_assignments(assignments, variation, run)
+        return 0
             
-        if not self.validate():
-            return 1
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @staticmethod
+    def _process_arguments(args):
+        parser = UtilityArgumentParser()
+        parser.add_argument("raw_path", nargs='?', default="")
+        parser.add_argument("-v", "--variation", default="")
+        parser.add_argument("-r", "--run", type=int, default=-1)
         
-        #correct path
-        self.table_path = self.context.prepare_path(self.raw_table_path)
-        
-        #check such table really exists
-        #try:
-         #   provider.get_type_table(self.table_path)
-        #except NoResultFound:
-        #    log.warning(LogFmt("Type table is not found in the DB. The path given is '{}'", self.table_path))
-        #except KeyError:
-        #    log.warning(LogFmt("Directory of the table is not found in the DB. The path given '{}'", self.table_path))
-         #   return 1
-        
-        assignments = provider.get_assignments(self.table_path, self.run, self.variation)
+        # parse
+        result = parser.parse_args(args)
+
+        return result.raw_path, result.variation, result.run
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    def print_assignments(self, assignments, variation, run):
+
+        # if user specifies run, show it!
+        if run != -1:
+            print("For run: {}".format(run))
+
+        # if user specified variation, show it!
+        if variation:
+            print("For variation: {}".format(variation))
+
+        # table header... and table =)
         print self.theme.Directories + "(ID)   (Created)              (Modified)              (variation)     (run range)      (comments)"
         for asgmnt in assignments:
             assert isinstance(asgmnt, ccdb.Assignment)
@@ -93,55 +97,7 @@ class Versions(ConsoleUtilBase):
                   " %-15s "%(repr(asgmnt.run_range.min) + "-" + max_str) +\
                   asgmnt.comment[0:20].replace("\n", " ")
 
-        
-        return 0
-            
-#----------------------------------------
-#   process_arguments 
-#----------------------------------------  
-    def process_arguments(self, args):
-        
-        #parse loop
-        i=0
-
-        while i < len(args):
-            token = args[i].strip()
-            i+=1
-            if token.startswith('-'):
-                #it is some command, lets parse what is the command
-
-                #variation
-                if token == "-v" or token.startswith("--variation"):
-                    if i<len(args):
-                        self.variation = args[i]
-                        i+=1
-                                                
-                #runrange
-                if token == "-r" or token == "--run":
-                    try:
-                        self.run = int(args[i])
-                    except ValueError:
-                        log.warning("cannot read run from %s command", token)
-                        return False
-                
-            else:
-                #it probably must be a type table path
-                self.raw_table_path = token
-        
-        return True
-    
-    
-#----------------------------------------
-#   validate 
-#----------------------------------------  
-    def validate(self):
-        if not self.raw_table_path: return False
-        return True
-
-    
-#----------------------------------------
-#   print_help 
-#----------------------------------------
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def print_help(self):
         """Prints help of the command"""
           

@@ -111,9 +111,9 @@ class List(ConsoleUtilBase):
 
     @staticmethod
     def _process_arguments(args):
-        #solo arguments
+        # solo arguments
 
-        #utility argument parser is argparse which raises errors instead of exiting app
+        # utility argument parser is argparse which raises errors instead of exiting app
         parser = UtilityArgumentParser()
         parser.add_argument("raw_path", nargs='?', default="")
         parser.add_argument("-x", "--dtree", action="store_true")
@@ -208,7 +208,6 @@ class List(ConsoleUtilBase):
 
         return sub_dirs, tables
 
-
     def prepare_path(self, path):
         """
         prepares path:
@@ -220,7 +219,7 @@ class List(ConsoleUtilBase):
         :return: Well done path
         :rtype: str
         """
-        #correct ending /
+        # correct ending /
 
         if path.endswith("/"):
             path = path[:-1]
@@ -277,6 +276,7 @@ Lists directories and tables for current directory
 - Accepts wildcards symbols '*', and '?'
 
 - When used on single table name, gives table data version as 'vers <table name>' command
+  note(!): vers command allows you to filter data by variation or run, ls - not
 
 keys:
     -v or --variations   - prints all variations

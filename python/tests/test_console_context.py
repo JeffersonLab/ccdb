@@ -206,12 +206,19 @@ class ConsoleContextTests(unittest.TestCase):
     def test_vers(self):
         """vers. General usage test"""
         self.context.process_command_line("vers /test/test_vars/test_table")
+        result = self.output.getvalue()
+
+        # REGRESSION test: for v. 1.02, doesn't show data if context default run is not in run-range
+        self.assertIn("500-3000", result, "Because test_table has data for 500-3000 run-range")
 
 
-    def test_vers_variation(self):
-        """vers. Test if vers limits variation"""
-        self.context.process_command_line("vers /test/test_vars/test_table -v default")
-        self.assertNotIn("subtest", self.output.getvalue())
+    def test_vers_variation_run(self):
+        """vers. Test if vers limits variation and run range if -v and -r flags are given"""
+        self.context.process_command_line("vers /test/test_vars/test_table -v default -r 0")
+        result = self.output.getvalue()
+
+        self.assertNotIn("subtest", result)
+        self.assertNotIn("500-3000", result)    # There is test data for 500-3000 run-range
 
 
     def test_vers_bad_params(self):
