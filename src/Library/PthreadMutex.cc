@@ -18,10 +18,8 @@ ccdb::PthreadMutex::PthreadMutex( PthreadSyncObject * obj) : IMutex(obj)
 //______________________________________________________________________________
 void ccdb::PthreadMutex::Lock()
 {
-    //
-    mIsLocked = true;
     pthread_mutex_lock(mSyncObject->GetPthreadMutex());
-
+    mIsLocked = true;
 }
 
 //______________________________________________________________________________
