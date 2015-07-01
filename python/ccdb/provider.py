@@ -49,7 +49,7 @@ class AlchemyProvider(object):
         self.root_dir.id = 0
         self.path_name_regex = re.compile('^[\w\-_]+$', re.IGNORECASE)
         self._connection_string = ""
-        self._auth = authentication.Authentication(self)
+        self._auth = Authentication(self)
         self._auth.current_user_name = "anonymous"
         self.logging_enabled = True
         self._no_structure_message = "No database structure found. Possibly you are trying to connect " + \

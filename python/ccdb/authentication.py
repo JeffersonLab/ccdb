@@ -40,7 +40,7 @@ class Authentication(object):
     #   Init
     #------------------------------------------------------------------------------------
     def __init__(self, prov):
-        assert(isinstance(prov, provider.AlchemyProvider))
+        #assert(isinstance(prov, provider.AlchemyProvider))
         self._provider = prov
         self._username = ""
 
