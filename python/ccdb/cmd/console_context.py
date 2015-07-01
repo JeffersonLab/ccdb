@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os
 import re
 import imp
@@ -11,7 +13,7 @@ import ccdb.cmd
 import ccdb.path_utils
 from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
-import themes
+from . import themes
 
 import colorama
 import readline
@@ -170,7 +172,7 @@ class ConsoleContext(object):
                     if util.command == "ls":
                         self._ls = util
 
-            except AttributeError, ex:
+            except AttributeError as ex:
                 log.debug("Error registering module : " + repr(ex))
             except Exception as ex:
                 log.debug("Error registering module : " + repr(ex))
@@ -213,7 +215,7 @@ class ConsoleContext(object):
             try:
                 f, filename, desc = imp.find_module(m, [path])
                 modules.append(imp.load_module(m, f, filename, desc))
-            except ImportError, ex:
+            except ImportError as ex:
                 log.debug(lfm(" |- error importing module: {0}", m))
                 log.debug(lfm(" |\\{0} ||-{1}", os.linesep, repr(ex)))
                 continue
@@ -483,7 +485,7 @@ class ConsoleContext(object):
 
             colorama.reinit()
 
-            # exit if user wishes so    
+            # exit if user wishes so
             if user_input in ("quit", "q", "exit"):
                 break #quit!
 
@@ -507,10 +509,10 @@ class ConsoleContext(object):
     # show_completions
     #--------------------------------
     def show_completions(self, substitution, matches, longest_match_length):
-        print self
-        print substitution
-        print matches
-        print longest_match_length
+        print(self                )
+        print(substitution        )
+        print(matches             )
+        print(longest_match_length)
 
 
     #--------------------------------
@@ -606,7 +608,7 @@ class ConsoleContext(object):
         """ @brief parse run range string in form of <run_min>-<run-max>
 
             if one inputs '<run_min>-' this means <run_min>-<infinite run>
-            if one inputs '-<run_max>' this means <0>-<run_max> 
+            if one inputs '-<run_max>' this means <0>-<run_max>
 
             @return (run_min, run_max, run_min_set, run_max_set)
             run_min_set, run_max_set - are flags indicating that values was set by user
@@ -616,21 +618,21 @@ class ConsoleContext(object):
         if not "-" in run_range_str:
             return None
 
-        #split <>-<>     
+        #split <>-<>
         (str_min, str_max) = run_range_str.split("-")
         run_min = 0
         run_min_set = False
         run_max = ccdb.INFINITE_RUN
         run_max_set = False
 
-        #parse run min 
+        #parse run min
         try:
             run_min = int(str_min)
             run_min_set = True
         except ValueError:
             self.run_min = 0
 
-        #parse run max 
+        #parse run max
         try:
             run_max = int(str_max)
             run_max_set = True
@@ -645,9 +647,9 @@ class ConsoleContext(object):
     #=====================================================================================
 
     def print_general_usage(self):
-        print "Use '-i'   option to enter interactive shell"
-        print "Use 'help' option for help"
-        print "Use 'help command' to get help for particular command"
+        print("Use '-i'   option to enter interactive shell"         )
+        print("Use 'help' option for help"                           )
+        print("Use 'help command' to get help for particular command")
 
 
     def print_info(self):
@@ -658,22 +660,22 @@ class ConsoleContext(object):
 
 
     def print_interactive_intro(self):
-        print """
+        print("""
 +--------------------------+
   CCDB shell v.1.02
   HallD JLab
 +--------------------------+
-       """
-        print self.theme.Title + "Interactive mode"
-        print "print " + self.theme.Accent + "help" + self.theme.Reset + " to get help"
-        print "print " + self.theme.Accent + "quit" + self.theme.Reset + " or " + self.theme.Accent + "q" + self.theme.Reset + " to exit"
-        print "print !<command> to execute shell command"
-        print
+       """)
+        print(self.theme.Title + "Interactive mode")
+        print("print " + self.theme.Accent + "help" + self.theme.Reset + " to get help")
+        print("print " + self.theme.Accent + "quit" + self.theme.Reset + " or " + self.theme.Accent + "q" + self.theme.Reset + " to exit")
+        print("print !<command> to execute shell command")
+        print()
         self.print_info()
-        
-        
-                
-                    
+
+
+
+
 
 
 

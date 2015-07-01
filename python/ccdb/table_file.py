@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import shlex
 
 __all__ = ["TextFileDOM"]
@@ -71,8 +73,8 @@ class TextFileDOM(object):
 
 
 #----------------------------------------
-#   read_ccdb_text_file 
-#---------------------------------------- 
+#   read_ccdb_text_file
+#----------------------------------------
 def read_ccdb_text_file(file_name):
     dom = TextFileDOM()
     try:
@@ -123,8 +125,8 @@ def read_ccdb_text_file(file_name):
 
 
 #----------------------------------------
-#   read_namevalue_text_file 
-#---------------------------------------- 
+#   read_namevalue_text_file
+#----------------------------------------
 def read_namevalue_text_file(file_name, replace_c_comments=False):
     """
     :param replace_c_comments: - if file contains // - 'C' style comments, replace them by # first
@@ -154,12 +156,12 @@ def read_namevalue_text_file(file_name, replace_c_comments=False):
 
                     #check we have name and value
                     if len(tokens) < 2:
-                        print "ERROR. The name-value file have less than 2 columns. So where are names and values?"
+                        print("ERROR. The name-value file have less than 2 columns. So where are names and values?")
                         raise IOError()
                     values.append(tokens[1])
                     dom.column_names.append(tokens[0])
 
-            #add line       
+            #add line
             dom.rows.append(values)
 
     except IOError as error:
@@ -167,4 +169,4 @@ def read_namevalue_text_file(file_name, replace_c_comments=False):
         raise error
 
     #everything is fine?
-    return dom                   
+    return dom

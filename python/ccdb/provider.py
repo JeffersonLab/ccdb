@@ -7,8 +7,8 @@ More details.
 import re
 import os
 import logging
-from ccdb.model import CcdbSchemaVersion
-import path_utils
+from .model import CcdbSchemaVersion
+from . import path_utils
 from datetime import datetime
 
 import sqlalchemy
@@ -17,12 +17,12 @@ import sqlalchemy.orm
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
-from ccdb.errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError, \
+from .errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError, \
     UserNotFoundError, UserExistsError, \
     VariationNotFound
 
-import table_file
-import authentication
+from .table_file import TextFileDOM
+from .authentication import Authentication
 
 import posixpath
 
@@ -58,7 +58,7 @@ class AlchemyProvider(object):
 
 
     #----------------------------------------------------------------------------------------
-    #	C O N N E C T I O N
+    #   C O N N E C T I O N
     #----------------------------------------------------------------------------------------
 
     #------------------------------------------------
@@ -77,7 +77,7 @@ class AlchemyProvider(object):
         """
         try:
             self.engine = sqlalchemy.create_engine(connection_string)
-        except ImportError, err:
+        except ImportError as err:
             #sql alchemy uses MySQLdb by default. But it might not be installed in the system
             #in such case we fallback to mysqlconnector which is included in CCDB
             if connection_string.startswith("mysql://") and "No module named MySQLdb" in repr(err):
@@ -147,7 +147,7 @@ class AlchemyProvider(object):
 
 
     #----------------------------------------------------------------------------------------
-    #	D I R E C T O R Y   M A N G E M E N T
+    #   D I R E C T O R Y   M A N G E M E N T
     #----------------------------------------------------------------------------------------
 
 
@@ -448,7 +448,7 @@ class AlchemyProvider(object):
 
 
     #----------------------------------------------------------------------------------------
-    #	C O N S T A N T   T Y P E   T A B L E
+    #   C O N S T A N T   T Y P E   T A B L E
     #----------------------------------------------------------------------------------------
 
 
@@ -604,11 +604,11 @@ class AlchemyProvider(object):
     #     @see ccdb::ConstantsTypeColumn::StringToType
     #     Thus <"px", "">, <"py", ""> will create two double typed columns
     #
-    # @param [in] name			name of the new constants type table
+    # @param [in] name          name of the new constants type table
     # @param [in] parentPath   parent directory path
     # @param [in] rowsNumber  Number of rows
     # @param [in] columns     a map fo "name", "type" pairs
-    # @param [in] comments		description for this type table
+    # @param [in] comments      description for this type table
     # @return NULL if failed, pointer to created object otherwise
     #/
     #------------------------------------------------
@@ -724,7 +724,7 @@ class AlchemyProvider(object):
                                comment=type_table.comment)
 
     #----------------------------------------------------------------------------------------
-    #	R U N   R A N G E S
+    #   R U N   R A N G E S
     #----------------------------------------------------------------------------------------
     #------------------------------------------------
     # GetRun Range from db by name or max and min run
@@ -822,7 +822,7 @@ class AlchemyProvider(object):
         self.session.commit()
 
     #----------------------------------------------------------------------------------------
-    #	V A R I A T I O N S
+    #   V A R I A T I O N S
     #----------------------------------------------------------------------------------------
     #------------------------------------------------
     # Get variation by name
@@ -1003,7 +1003,7 @@ class AlchemyProvider(object):
                                comment=variation.comment)
 
     #----------------------------------------------------------------------------------------
-    #	A S S I G N M E N T S
+    #   A S S I G N M E N T S
     #----------------------------------------------------------------------------------------
     #------------------------------------------------
     # Get last Assignment that matches parameters
@@ -1146,7 +1146,7 @@ class AlchemyProvider(object):
         """
 
         #maybe it is a dom?
-        if isinstance(data, table_file.TextFileDOM):
+        if isinstance(data, TextFileDOM):
             rows = data.rows
         else:
             #it should be list than...
@@ -1332,7 +1332,7 @@ class AlchemyProvider(object):
         raise NotImplementedError()
 
     #----------------------------------------------------------------------------------------
-    #	U S E R S
+    #   U S E R S
     #----------------------------------------------------------------------------------------
     def get_user(self, username):
         """
@@ -1422,11 +1422,11 @@ class AlchemyProvider(object):
         self._auth = auth
 
     #----------------------------------------------------------------------------------------
-    #	E R R O R   H A N D L I N G
+    #   E R R O R   H A N D L I N G
     #----------------------------------------------------------------------------------------
 
     #----------------------------------------------------------------------------------------
-    #	O T H E R   F U N C T I O N S
+    #   O T H E R   F U N C T I O N S
     #----------------------------------------------------------------------------------------
 
     ## @brief Validates name for constant type table or directory or column
@@ -1438,7 +1438,7 @@ class AlchemyProvider(object):
         return path_utils.validate_name(name)
 
     #----------------------------------------------------------------------------------------
-    #	L O G G I N G
+    #   L O G G I N G
     #----------------------------------------------------------------------------------------
     def create_log_record(self, user, affected_ids, action, description, comment):
         if not self.logging_enabled:

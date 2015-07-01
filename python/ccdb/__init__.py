@@ -26,8 +26,8 @@ from .model import Variation, RunRange, Assignment, ConstantSet, Directory, Type
 from .table_file import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
 from .cmd.themes import NoColorTheme, ColoredTheme
 from .brace_log_message import BraceMessage
-import cmd.themes
-import path_utils
+from .cmd import themes
+from . import path_utils
 
 #the default ccdb logger
 logger = logging.getLogger("ccdb")
