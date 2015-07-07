@@ -130,13 +130,14 @@ class MySQLDBConnector(Connector):
 
         # Note: MySQL-python 1.2.1c7 seems to ignore changes made
         # on a connection via set_character_set()
-        if self.server_version_info < (4, 1, 0):
-            try:
-                return connection.connection.character_set_name()
-            except AttributeError:
-                # < 1.2.1 final MySQL-python drivers have no charset support.
-                # a query is needed.
-                pass
+        if self.server_version_info is not None:
+            if self.server_version_info < (4, 1, 0):
+                try:
+                    return connection.connection.character_set_name()
+                except AttributeError:
+                    # < 1.2.1 final MySQL-python drivers have no charset support.
+                    # a query is needed.
+                    pass
 
         # Prefer 'character_set_results' for the current connection over the
         # value in the driver.  SET NAMES or individual variable SETs will

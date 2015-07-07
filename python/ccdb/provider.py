@@ -1078,8 +1078,12 @@ class AlchemyProvider(object):
         """
 
         #TODO do for named run
+        try:
+            isstring = isinstance(path_or_table, basestring)
+        except NameError:
+            isstring = isinstance(path_or_table, str)
 
-        if isinstance(path_or_table, basestring):
+        if isstring:
             table = self.get_type_table(path_or_table)
         else:
             assert isinstance(path_or_table, TypeTable)

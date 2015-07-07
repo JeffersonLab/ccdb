@@ -544,7 +544,7 @@ def list_to_table(data, col_count):
             .format(len(data), col_count)
         raise ValueError(message)
 
-    row_count = len(data) / col_count
+    row_count = len(data) // col_count
     #cpp way
     tabled_data = []
     for row_i in range(row_count):
