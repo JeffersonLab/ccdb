@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import collections
 import datetime
 import posixpath
@@ -222,15 +224,15 @@ class Assignment(Base):
         return "<Assignment '{0}'>".format(self.id)
 
     def print_info(self):
-        print " ASSIGNMENT: " + repr(self) \
+        print(" ASSIGNMENT: " + repr(self) \
               + " TABLE: " + repr(self.constant_set.type_table)\
               + " RUN RANGE: " + repr(self.run_range)\
               + " VARIATION: " + repr(self.variation)\
-              + " SET: " + repr(self.constant_set)
-        print "      |"
-        print "      +-->" + repr(self.constant_set.vault)
-        print "      +-->" + repr(self.constant_set.data_list)
-        print "      +-->" + repr(self.constant_set.data_table)
+              + " SET: " + repr(self.constant_set))
+        print("      |"                                        )
+        print("      +-->" + repr(self.constant_set.vault)     )
+        print("      +-->" + repr(self.constant_set.data_list) )
+        print("      +-->" + repr(self.constant_set.data_table))
 
 
 #--------------------------------------------
@@ -542,7 +544,7 @@ def list_to_table(data, col_count):
             .format(len(data), col_count)
         raise ValueError(message)
 
-    row_count = len(data) / col_count
+    row_count = len(data) // col_count
     #cpp way
     tabled_data = []
     for row_i in range(row_count):

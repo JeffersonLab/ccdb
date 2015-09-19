@@ -1,12 +1,11 @@
 import os
 import getpass
 
-import provider
-import errors
+from .errors import AuthVerificationError
 
 #----------------------------------------------------------------------------------------
 #
-#	A U T H E N T I C A T I O N   P R O V I D E R
+#   A U T H E N T I C A T I O N   P R O V I D E R
 #
 #----------------------------------------------------------------------------------------
 class Authentication(object):
@@ -38,15 +37,15 @@ class Authentication(object):
 
 
     #------------------------------------------------------------------------------------
-    #	Init
+    #   Init
     #------------------------------------------------------------------------------------
     def __init__(self, prov):
-        assert(isinstance(prov, provider.AlchemyProvider))
+        #assert(isinstance(prov, provider.AlchemyProvider))
         self._provider = prov
         self._username = ""
 
     #------------------------------------------------------------------------------------
-    #	getting_username_is_implicit
+    #   getting_username_is_implicit
     #------------------------------------------------------------------------------------
     def getting_username_is_implicit(self):
         """
@@ -67,7 +66,7 @@ class Authentication(object):
 
 
     #------------------------------------------------------------------------------------
-    #	current_user_name
+    #   current_user_name
     #------------------------------------------------------------------------------------
     @property
     def current_user_name(self):
@@ -85,12 +84,15 @@ class Authentication(object):
 
     @current_user_name.setter
     def current_user_name(self, username):
-        assert (isinstance(username, basestring))
+        try:
+            assert isinstance(username, basestring)
+        except NameError:
+            assert isinstance(username, str)
         self._username = username
 
 
     #------------------------------------------------------------------------------------
-    #	validate_current_user
+    #   validate_current_user
     #------------------------------------------------------------------------------------
     def validate_current_user(self):
         """
@@ -109,7 +111,7 @@ class Authentication(object):
 
 #----------------------------------------------------------------------------------------
 #
-#	E N V I R O N M E N T   A U T H E N T I C A T I O N
+#   E N V I R O N M E N T   A U T H E N T I C A T I O N
 #
 #----------------------------------------------------------------------------------------
 class EnvironmentAuthentication(Authentication, object):
@@ -121,17 +123,17 @@ class EnvironmentAuthentication(Authentication, object):
     """
 
     #------------------------------------------------------------------------------------
-    #	validate_current_user
+    #   validate_current_user
     #------------------------------------------------------------------------------------
     def __init__(self, prov):
-        assert(isinstance(prov, provider.AlchemyProvider))
+        #assert(isinstance(prov, provider.AlchemyProvider))
         super(EnvironmentAuthentication,self).__init__(prov)
         self._username = ""
         self._env_variable = ""
         self._is_validated = False
 
     #------------------------------------------------------------------------------------
-    #	validate_current_user
+    #   validate_current_user
     #------------------------------------------------------------------------------------
     @Authentication.current_user_name.getter
     def current_user_name(self):
@@ -155,7 +157,7 @@ class EnvironmentAuthentication(Authentication, object):
         return "anonymous"
 
     #------------------------------------------------------------------------------------
-    #	validate_current_user
+    #   validate_current_user
     #------------------------------------------------------------------------------------
     def validate_current_user(self):
         #check validation result is cached
@@ -170,13 +172,13 @@ class EnvironmentAuthentication(Authentication, object):
             message = "User name '{0}' is set by '{1}' environment variable. "\
                       "The user with username doesn't exist in the database. " \
                       "Set user name explicitly by CCDB_USER environment var".format(self._username, self._env_variable)
-            raise errors.AuthVerificationError(message)
+            raise AuthVerificationError(message)
 
 
 
 #----------------------------------------------------------------------------------------
 #
-#	S H E L L   P A S S W O R D   A U T H E N T I C A T I O N
+#   S H E L L   P A S S W O R D   A U T H E N T I C A T I O N
 #
 #----------------------------------------------------------------------------------------
 class ShellPasswordAuthentication(EnvironmentAuthentication):
@@ -185,16 +187,16 @@ class ShellPasswordAuthentication(EnvironmentAuthentication):
     """
 
     #------------------------------------------------------------------------------------
-    #	Init
+    #   Init
     #------------------------------------------------------------------------------------
     def __init__(self, prov):
-        assert(isinstance(prov, provider.AlchemyProvider))
+        #assert(isinstance(prov, provider.AlchemyProvider))
         EnvironmentAuthentication.__init__( self, prov )
         self._username = ""
 
 
     #------------------------------------------------------------------------------------
-    #	validate_current_user
+    #   validate_current_user
     #------------------------------------------------------------------------------------
     def validate_current_user(self):
         #check validation result is cached
@@ -207,12 +209,12 @@ class ShellPasswordAuthentication(EnvironmentAuthentication):
             message = "User name '{0}' is set by '{1}' environment variable. "\
                       "The user with username doesn't exist in the database. "\
                       "Set user name explicitly by CCDB_USER environment var.".format(self._username, self._env_variable)
-            raise errors.AuthVerificationError(message)
+            raise AuthVerificationError(message)
 
         pw = getpass.getpass()
         if user.password != pw:
             message = "User '{0}' password is incorrect".format(self._username)
-            raise errors.AuthVerificationError(message)
+            raise AuthVerificationError(message)
 
         self._is_validated = True
         return True
