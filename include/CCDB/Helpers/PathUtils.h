@@ -44,7 +44,7 @@ struct RequestParseResult
 
 /** @brief represents parse result of JANA context
  * 
- * context is given like 'variation=default time=2012'
+ * context is given like 'variation=default time=2012 run=303'
  */
 struct ContextParseResult
 {
@@ -52,6 +52,9 @@ struct ContextParseResult
 	bool		VariationIsParsed;      /// true if variation was not empty
 	time_t      ConstantsTime;
 	bool        ConstantsTimeIsParsed;
+
+    int         RunNumber;              /// The run number that
+    bool        RunNumberIsParsed;      /// The run number is parsed
 
 	/*ContextParseResult()
 	{

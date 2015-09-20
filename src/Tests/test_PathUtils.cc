@@ -156,15 +156,28 @@ TEST_CASE("CCDB/PathUtils/Context", "Context parse")
 	ContextParseResult result = PathUtils::ParseContext("");
 	REQUIRE(result.ConstantsTimeIsParsed == false);
 	REQUIRE(result.VariationIsParsed == false);
+	REQUIRE(result.RunNumberIsParsed == false);
 
 	//empty string 2
 	result = PathUtils::ParseContext(" ");
 	REQUIRE(result.ConstantsTimeIsParsed == false);
 	REQUIRE(result.VariationIsParsed == false);
+	REQUIRE(result.RunNumberIsParsed == false);
 
-	result = PathUtils::ParseContext("variation=james time=2012");
+	result = PathUtils::ParseContext("variation=james time=2012 run=123");
 	REQUIRE(result.ConstantsTimeIsParsed == false);
 	REQUIRE(result.VariationIsParsed == true);
+	REQUIRE(result.RunNumberIsParsed == true);
 	REQUIRE(result.Variation == "james");
+	REQUIRE(result.RunNumber == 123);
+
+	result = PathUtils::ParseContext("run=123 variation=james calibtime=2012 ");
+	REQUIRE(result.ConstantsTimeIsParsed == false);
+	REQUIRE(result.VariationIsParsed == true);
+	REQUIRE(result.RunNumberIsParsed == true);
+	REQUIRE(result.Variation == "james");
+	REQUIRE(result.RunNumber == 123);
+
+
 }
 #endif //test_StringUtils_h

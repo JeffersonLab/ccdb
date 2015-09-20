@@ -397,6 +397,15 @@ ccdb::ContextParseResult ccdb::PathUtils::ParseContext( const string& context )
 			result.ConstantsTime = PathUtils::ParseTime(StringUtils::Replace("calibtime=","",token), &parseResult);
 			if(!parseResult) result.ConstantsTime = 0;
 		}
+
+        //calibtime is found?
+        if(token.find("run=")==0)
+        {
+            result.RunNumberIsParsed = true;
+            bool parseResult = false;
+            result.RunNumber = StringUtils::ParseInt(StringUtils::Replace("run=","",token));
+            if(!parseResult) result.RunNumber = 0;
+        }
 	}
 
 	return result;
