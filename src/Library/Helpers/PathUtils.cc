@@ -369,6 +369,7 @@ ccdb::ContextParseResult ccdb::PathUtils::ParseContext( const string& context )
 	ContextParseResult result;	
 	result.ConstantsTimeIsParsed = false;
 	result.VariationIsParsed = false;
+    result.RunNumberIsParsed = false;
 	
 	//check empty string
 	if(context.size()<=0) return result;
@@ -402,9 +403,7 @@ ccdb::ContextParseResult ccdb::PathUtils::ParseContext( const string& context )
         if(token.find("run=")==0)
         {
             result.RunNumberIsParsed = true;
-            bool parseResult = false;
             result.RunNumber = StringUtils::ParseInt(StringUtils::Replace("run=","",token));
-            if(!parseResult) result.RunNumber = 0;
         }
 	}
 

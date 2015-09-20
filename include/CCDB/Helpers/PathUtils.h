@@ -6,8 +6,6 @@
 #include <Windows.h>
 #endif
 
-//#include <stdargs.h>
-//#include <varargs.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string>
@@ -21,6 +19,16 @@
 #include <time.h>
 
 #include "CCDB/Helpers/StringUtils.h"
+
+
+/** CCDB prior 1.05.00 didnt parse "run=X" in the context string.
+ * ContextParseResult didn't have RunNumber... fields.
+ * This define introduced to avoid API change error. So one can do:
+ * #ifdef CCDB_PARSES_CONTEXT_RUN
+ * parseResult.RunIsParsed...
+ * #endif
+ */
+#define CCDB_PARSES_CONTEXT_RUN 1
 
 using namespace std;
 
@@ -53,7 +61,7 @@ struct ContextParseResult
 	time_t      ConstantsTime;
 	bool        ConstantsTimeIsParsed;
 
-    int         RunNumber;              /// The run number that
+    int         RunNumber;              /// The run number that is HAS to be used for CCDB
     bool        RunNumberIsParsed;      /// The run number is parsed
 
 	/*ContextParseResult()
