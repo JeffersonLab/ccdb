@@ -6,9 +6,9 @@
 #include "CCDB/ISyncObject.h"
 
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #include "winpthreads.h"
-#else //posix
+#else   // GCC?
 #include <pthread.h>
 #endif
 

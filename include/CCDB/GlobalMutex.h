@@ -11,12 +11,11 @@
 
 using namespace std;
 
-#ifdef WIN32
-#include "winpthreads.h"
-#else //posix
-#include <pthread.h>
+#ifdef _MSC_VER
+    #include "winpthreads.h"
+#else   // GCC?
+    #include <pthread.h>
 #endif
-
 
 
 namespace ccdb
