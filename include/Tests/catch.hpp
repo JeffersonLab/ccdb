@@ -846,6 +846,7 @@ namespace Catch {
 #endif
 
 #include <cstddef>
+#undef CATCH_CONFIG_CPP11_NULLPTR
 
 namespace Catch {
 namespace Internal {
