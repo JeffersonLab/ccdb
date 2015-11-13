@@ -3,6 +3,7 @@ import getpass
 
 from .errors import AuthVerificationError
 
+
 #----------------------------------------------------------------------------------------
 #
 #   A U T H E N T I C A T I O N   P R O V I D E R

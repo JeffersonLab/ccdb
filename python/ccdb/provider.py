@@ -57,13 +57,13 @@ class AlchemyProvider(object):
                                      "Original SqlAlchemy error is: " + os.linesep + os.linesep + "{0}"
 
 
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     #   C O N N E C T I O N
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
 
-    #------------------------------------------------
+    # ------------------------------------------------
     #  Connects to database using connection string
-    #------------------------------------------------
+    # ------------------------------------------------
     def connect(self, connection_string=""):
         """
         Connects to database using connection string
@@ -109,9 +109,9 @@ class AlchemyProvider(object):
                 raise
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Closes connection to data
-    #------------------------------------------------
+    # ------------------------------------------------
     def disconnect(self):
         """Closes connection to database"""
         #TODO close pool logic???
@@ -119,9 +119,9 @@ class AlchemyProvider(object):
         self.session.close()
 
 
-    #-------------------------------------------------
+    # -------------------------------------------------
     # indicates ether the connection is open or not
-    #-------------------------------------------------
+    # -------------------------------------------------
     @property
     def is_connected(self):
         """
@@ -132,9 +132,9 @@ class AlchemyProvider(object):
         """
         return self._is_connected
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Connection string that was used
-    #------------------------------------------------
+    # ------------------------------------------------
     @property
     def connection_string(self):
         """
@@ -146,14 +146,14 @@ class AlchemyProvider(object):
         return self._connection_string
 
 
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     #   D I R E C T O R Y   M A N G E M E N T
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Gets directory by its full path
-    #------------------------------------------------
+    # ------------------------------------------------
     def get_directory(self, path):
         """
         Gets directory by its full path
@@ -172,9 +172,9 @@ class AlchemyProvider(object):
         return self.dirs_by_path[path]
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # return reference to root directory
-    #------------------------------------------------
+    # ------------------------------------------------
     def get_root_directory(self):
         """
         return reference to root directory
@@ -188,9 +188,9 @@ class AlchemyProvider(object):
         return self.root_dir
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Searches directories that matches the pattern
-    #------------------------------------------------
+    # ------------------------------------------------
     def search_directories(self, searchPattern, parentPath="", limit=0, offset=0):
         """
         Searches directories that matches the pattern
@@ -236,9 +236,9 @@ class AlchemyProvider(object):
         return result
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Creates directory using parent path
-    #------------------------------------------------
+    # ------------------------------------------------
     def create_directory(self, new_dir_name, parent_dir_or_path, comment=""):
         """
         Creates directory using parent with parentDirFullPath
@@ -326,9 +326,9 @@ class AlchemyProvider(object):
         #refresh directory structure
         self._load_dirs()
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Deletes directory using path or Directory obj
-    #------------------------------------------------
+    # ------------------------------------------------
     def delete_directory(self, dir_or_path):
         """
         Deletes directory using parent path or Directory object
@@ -370,9 +370,9 @@ class AlchemyProvider(object):
                                comment=directory.comment)
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Load all directories
-    #------------------------------------------------
+    # ------------------------------------------------
     def _load_dirs(self):
         try:
             self.dirs_by_id = self._get_dirs_by_id_dic(self.session.query(Directory).all())
@@ -387,9 +387,9 @@ class AlchemyProvider(object):
         self.dirs_by_path = self._structure_dirs(self.dirs_by_id)
         self._are_dirs_loaded = True
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Structure directories by hierarchy
-    #------------------------------------------------
+    # ------------------------------------------------
     def _structure_dirs(self, directories):
         """
         :type directories: {} dictionary with dir.id as a key
@@ -427,9 +427,9 @@ class AlchemyProvider(object):
 
     #end of structure_dirs()
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # create dictionary by directory id
-    #------------------------------------------------
+    # ------------------------------------------------
     def _get_dirs_by_id_dic(self, dirs):
         result = {}
         for directory in dirs:
@@ -438,23 +438,23 @@ class AlchemyProvider(object):
 
         return result
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Checks that directory structure is loaded
     # and ready for use. Loads everything if not
-    #------------------------------------------------
+    # ------------------------------------------------
     def _ensure_dirs_loaded(self):
         if not self._are_dirs_loaded:
             self._load_dirs()
 
 
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     #   C O N S T A N T   T Y P E   T A B L E
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Gets TypeTable from the DB by absolute path
-    #------------------------------------------------
+    # ------------------------------------------------
     def get_type_table(self, exact_path):
         """
         Gets TypeTable from the DB by absolute path
@@ -481,9 +481,9 @@ class AlchemyProvider(object):
         return table
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Get all tables in the directory
-    #------------------------------------------------
+    # ------------------------------------------------
     def get_type_tables(self, dir_obj_or_path):
         """
         Get all tables in the directory
@@ -504,9 +504,9 @@ class AlchemyProvider(object):
         return self.session.query(TypeTable).filter(TypeTable.parent_dir_id == parent_dir.id).all()
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Searches for type tables that matches the patten
-    #------------------------------------------------
+    # ------------------------------------------------
     def search_type_tables(self, pattern, dir_obj_or_path=None, limit=0, offset=0):
         """
         Searches for type tables that matches the patten
@@ -564,9 +564,9 @@ class AlchemyProvider(object):
         return query.all()
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Counts number of type tables for a given directory
-    #------------------------------------------------
+    # ------------------------------------------------
     def count_type_tables(self, dir_obj_or_path):
         """
         Counts number of type tables for a given directory
@@ -611,8 +611,8 @@ class AlchemyProvider(object):
     # @param [in] comments      description for this type table
     # @return NULL if failed, pointer to created object otherwise
     #/
-    #------------------------------------------------
-    #------------------------------------------------
+    # ------------------------------------------------
+    # ------------------------------------------------
     def create_type_table(self, name, dir_obj_or_path, rows_num, columns, comment=""):
         """Creates constant table in database"""
         #return self._provider.CreateConstantsTypeTable(name, parentPath, rowsNumber, columns, comments)
@@ -669,9 +669,9 @@ class AlchemyProvider(object):
         return table
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Updates constant table in database
-    #------------------------------------------------
+    # ------------------------------------------------
     def update_type_table(self, type_table):
 
         #get user here to fail if no such user
@@ -687,9 +687,9 @@ class AlchemyProvider(object):
                                comment=type_table.comment)
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Deletes constant type table
-    #------------------------------------------------
+    # ------------------------------------------------
     def delete_type_table(self, type_table):
         """
         @brief Deletes constant type table
@@ -723,12 +723,12 @@ class AlchemyProvider(object):
                                description="Deleted table with path '{0}'".format(type_table.path),
                                comment=type_table.comment)
 
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     #   R U N   R A N G E S
-    #----------------------------------------------------------------------------------------
-    #------------------------------------------------
+    # ----------------------------------------------------------------------------------------
+    # ------------------------------------------------
     # GetRun Range from db by name or max and min run
-    #------------------------------------------------
+    # ------------------------------------------------
     def get_run_range(self, min_run, max_run, name=""):
         if name:
             return self.get_named_run_range(name)
@@ -738,9 +738,9 @@ class AlchemyProvider(object):
         except sqlalchemy.orm.exc.NoResultFound:
             raise RunRangeNotFound("Run range '{0}-{1}' is not found".format(min_run, max_run))
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # GetRun Range from db by name
-    #------------------------------------------------
+    # ------------------------------------------------
     def get_named_run_range(self, name):
         """
         Get named run range from db
@@ -753,9 +753,9 @@ class AlchemyProvider(object):
         except sqlalchemy.orm.exc.NoResultFound:
             raise RunRangeNotFound("Run range with name '{0}' is not found".format(name))
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Gets run range from DB Or Creates RunRange in DB
-    #------------------------------------------------
+    # ------------------------------------------------
     #noinspection PyBroadException
     def get_or_create_run_range(self, min_run, max_run, name="", comment=""):
         """
@@ -786,9 +786,9 @@ class AlchemyProvider(object):
         self.session.commit()
         return run_range
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Updates run range
-    #------------------------------------------------
+    # ------------------------------------------------
     def update_run_range(self):
         """
         Updates run range
@@ -796,9 +796,9 @@ class AlchemyProvider(object):
 
         self.session.commit()
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Deletes run range
-    #------------------------------------------------
+    # ------------------------------------------------
     def delete_run_range(self, run_range):
         """
         Deletes run range
@@ -821,12 +821,12 @@ class AlchemyProvider(object):
         self.session.delete(run_range)
         self.session.commit()
 
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     #   V A R I A T I O N S
-    #----------------------------------------------------------------------------------------
-    #------------------------------------------------
+    # ----------------------------------------------------------------------------------------
+    # ------------------------------------------------
     # Get variation by name
-    #------------------------------------------------
+    # ------------------------------------------------
     def get_variation(self, name):
         """
         Get variation by name
@@ -842,9 +842,9 @@ class AlchemyProvider(object):
             raise VariationNotFound(message)
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Searches all variations associated with this type table
-    #------------------------------------------------
+    # ------------------------------------------------
     #noinspection PyUnresolvedReferences
     def get_variations(self, pattern=""):
         """
@@ -864,9 +864,9 @@ class AlchemyProvider(object):
 
         return query.all()
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Searches all variations associated with this type table
-    #------------------------------------------------
+    # ------------------------------------------------
     #noinspection PyUnresolvedReferences
     def search_variations(self, table_or_path, run=0, name=None, limit=0, offset=0):
         """
@@ -905,9 +905,9 @@ class AlchemyProvider(object):
 
         return query.all()
 
-    #----------------------.--------------------------
+    # ----------------------.--------------------------
     # Create variation by name
-    #------------------------------------------------
+    # ------------------------------------------------
     def create_variation(self, name, comment="", parent_name=""):
         """
         Create variation by name
@@ -956,8 +956,8 @@ class AlchemyProvider(object):
     # @param   [in]  variation to update
     # @return true if success
     #/
-    #------------------------------------------------
-    #------------------------------------------------
+    # ------------------------------------------------
+    # ------------------------------------------------
     def update_variation(self, variation):
 
         #get user here to fail if no such user
@@ -978,8 +978,8 @@ class AlchemyProvider(object):
     # @param    [in] variation to delete
     # @return   bool
     #/
-    #------------------------------------------------
-    #------------------------------------------------
+    # ------------------------------------------------
+    # ------------------------------------------------
     def delete_variation(self, variation):
         assert isinstance(variation, Variation)
 
@@ -1002,12 +1002,12 @@ class AlchemyProvider(object):
                                description="Deleted variation '{0}'".format(variation.name),
                                comment=variation.comment)
 
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     #   A S S I G N M E N T S
-    #----------------------------------------------------------------------------------------
-    #------------------------------------------------
+    # ----------------------------------------------------------------------------------------
+    # ------------------------------------------------
     # Get last Assignment that matches parameters
-    #------------------------------------------------
+    # ------------------------------------------------
     def get_assignment(self, run, path_or_table, variation):
         """
         Gets the latest assignment that matches the parameters
@@ -1040,9 +1040,9 @@ class AlchemyProvider(object):
 
         return query.limit(1).one()
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # get list of assignments
-    #------------------------------------------------
+    # ------------------------------------------------
     def get_assignment_by_id(self, assignment_id):
         """
 
@@ -1052,9 +1052,9 @@ class AlchemyProvider(object):
         """
         return self.session.query(Assignment).filter(Assignment.id == assignment_id).one()
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # get list of assignments
-    #------------------------------------------------
+    # ------------------------------------------------
     def get_assignments(self, path_or_table, run=-1, variation="", date_and_time=None, limit=0, offset=0):
         """
         returns list of assignments
@@ -1120,16 +1120,16 @@ class AlchemyProvider(object):
 
         return query.all()
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Creates Assignment using related object
-    #------------------------------------------------
+    # ------------------------------------------------
     def copy_assignment(self, assignment):
         raise NotImplementedError("copy_assignment is not implemented")
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Creates Assignment
-    #------------------------------------------------
+    # ------------------------------------------------
     def create_assignment(self, data, path, min_run, max_run, variation_name, comment):
         """
         Validation:
@@ -1215,9 +1215,9 @@ class AlchemyProvider(object):
         return assignment
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # updates assignment comments
-    #------------------------------------------------
+    # ------------------------------------------------
     def update_assignment(self, assignment):
 
         #get user here to fail if no such user
@@ -1233,9 +1233,9 @@ class AlchemyProvider(object):
                                comment=assignment.comment)
 
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # Deletes assignment
-    #------------------------------------------------
+    # ------------------------------------------------
     def delete_assignment(self, assignment):
         """
          Deletes assignment
@@ -1258,9 +1258,9 @@ class AlchemyProvider(object):
         #Log
         self.create_log_record(user, affected_ids, action, description, comment)
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # validate value
-    #------------------------------------------------
+    # ------------------------------------------------
     def validate_data_value(self, value, column, column_index=0, row_index=0):
         col_type = column.type
         failure = False
@@ -1321,9 +1321,9 @@ class AlchemyProvider(object):
 
         return value
 
-    #------------------------------------------------
+    # ------------------------------------------------
     # fill_assignment
-    #------------------------------------------------
+    # ------------------------------------------------
     def fill_assignment(self, assignment):
         """
          @brief Fill assignment with data if it has proper ID
@@ -1335,9 +1335,9 @@ class AlchemyProvider(object):
         #TODO decide is it useless or not
         raise NotImplementedError()
 
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     #   U S E R S
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     def get_user(self, username):
         """
         Find user in the database by user name
@@ -1425,13 +1425,13 @@ class AlchemyProvider(object):
     def authentication(self, auth):
         self._auth = auth
 
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     #   E R R O R   H A N D L I N G
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
 
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     #   O T H E R   F U N C T I O N S
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
 
     ## @brief Validates name for constant type table or directory or column
     #
@@ -1441,9 +1441,9 @@ class AlchemyProvider(object):
     def validate_name(self, name):
         return path_utils.validate_name(name)
 
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     #   L O G G I N G
-    #----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------
     def create_log_record(self, user, affected_ids, action, description, comment):
         if not self.logging_enabled:
             return None

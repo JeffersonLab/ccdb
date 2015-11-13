@@ -143,11 +143,20 @@ class Cat(ConsoleUtilBase):
         return self.context.provider.get_assignment_by_id(id)
 
 
-    #----------------------------------------
+    # ----------------------------------------
     #   gets assignment by parsed request
-    #----------------------------------------
+    # ----------------------------------------
     def get_assignment_by_request(self, request):
-        """gets assignment by parsed request"""
+        """gets assignment by parsed request
+        @param request: Parsed request
+        @type request: ParseRequestResult
+        """
+        return self._get_assignment_by_request(request)
+
+    # ----------------------------------------
+    #   gets assignment by parsed request
+    # ----------------------------------------
+    def _get_assignment_by_request(self, request, recursion_depth = 0):
 
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
@@ -159,11 +168,11 @@ class Cat(ConsoleUtilBase):
         if not request.run_is_parsed:
             request.run = self.context.current_run
 
-        #correct path
+        # correct path
         table_path = self.context.prepare_path(request.path)
         time = request.time if request.time_is_parsed else None
 
-        #check such table really exists (otherwise exception will be thrown)
+        # check such table really exists (otherwise exception will be thrown)
         try:
             provider.get_type_table(table_path)
         except:
@@ -177,17 +186,25 @@ class Cat(ConsoleUtilBase):
         if assignments and len(assignments) > 0:
             return assignments[0]
 
-        #if we here there were no assignments selected
+        # if we here there were no assignments selected
         log.warning("There is no data for table {}, run {}, variation '{}'"
                     "".format(table_path, request.run, request.variation))
         if request.time_is_parsed:
             log.warning("    on ".format(request.time_str))
+
+        if request.variation != "default" and recursion_depth < 10000:
+            # go to parent variation
+            variation = provider.get_variation(request.variation)
+            request.variation = variation.parent.name
+            log.warning("Trying parent variation '{}'".format().request.variation)
+            return self._get_assignment_by_request(request, recursion_depth + 1)
+
         return None
 
 
-    #----------------------------------------
+    # ----------------------------------------
     #   process_arguments
-    #----------------------------------------
+    # ----------------------------------------
     def process_arguments(self, args):
         #solo arguments
         if ("-b" in args) or ("--borders" in args):

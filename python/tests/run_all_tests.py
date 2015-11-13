@@ -13,9 +13,9 @@ if dir_backup != script_dir:
 
 try:
     test_file_strings = glob.glob('test_*.py')
-    module_strings = [str[0:len(str)-3] for str in test_file_strings]
+    module_strings = [module_string[0:len(module_string)-3] for module_string in test_file_strings]
 
-    suites = [unittest.defaultTestLoader.loadTestsFromName(str) for str in module_strings]
+    suites = [unittest.defaultTestLoader.loadTestsFromName(module_string) for module_string in module_strings]
     testSuite = unittest.TestSuite(suites)
     text_runner = unittest.TextTestRunner().run(testSuite)
 
