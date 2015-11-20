@@ -4,12 +4,7 @@ Example of using Low Level python API to readout data from CCDB
 
 """
 
-
-
-
-import io
 import os
-import sys
 
 if __name__ == "__main__":
     
