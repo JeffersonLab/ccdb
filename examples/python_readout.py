@@ -3,35 +3,45 @@
 Example of using Low Level python API to readout data from CCDB
 
 """
-import ccdb
-import io
 
+
+
+
+import io
+import os
+import sys
 
 if __name__ == "__main__":
     
-    ccdb_home = os.environ["CCDB_HOME"]
+    ccdb_home = os.environ["CCDB_HOME"]                      # Should be set!
+    sys.path.append(os.path.join(ccdb_home, "python"))       # Set env. variable PYTHONPATH=$CCDB_HOME/python;$PYTHONPATH instead of this line
 
-    #create CCDB api class
+    import ccdb
+    from ccdb import Directory, TypeTable, Assignment
+
+    sqlite_connect_str = "sqlite:///" + os.path.join(ccdb_home,"sql", "ccdb.sqlite")
+
+    # create CCDB api class
     provider = ccdb.AlchemyProvider()                        # this class has all CCDB manipulation functions
-    provider.connect("mysql://ccdb_user@localhost/ccdb")     # use usual connection string to connect to database
+    provider.connect(sqlite_connect_str)                     # use usual connection string to connect to database
     provider.authentication.current_user_name = "anonymous"  # to have a name in logs
 
-    #read file
-    xml_content = io.open("tt.xml", "r").read()
+    # read directory
+    directory = provider.get_directory("/test/test_vars")
+    print(directory)
 
-    #prepare content
-    #create_assignment accepts tabled data
-    #rows and columns number must correspond to table definition
-    tabled_data = [[xml_content]]
 
-    #add data to database
-    provider.create_assignment(
-        data=tabled_data,
-        path="/test/test_vars/custom_data",
-        variation_name="default",
-        min_run=0,
-        max_run=ccdb.INFINITE_RUN,
-        comment="Sample adding some XML data to CCDB")
+    assert (isinstance(directory, Directory))
+
+    print(directory.name)
+    print(directory.path)
+
+    for table in directory.type_tables:
+        print (table.path)
+        print (table.assignments)
+
+
+
 
     #that is it.
     #check it with
