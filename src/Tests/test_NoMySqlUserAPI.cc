@@ -5,27 +5,12 @@
 #include "CCDB/Console.h"
 #include "CCDB/SQLiteCalibration.h"
 #include "CCDB/Providers/SQLiteDataProvider.h"
-#include "CCDB/Model/Directory.h"
-#include "CCDB/Model/Variation.h"
-#include "CCDB/Model/Assignment.h"
-#include "CCDB/Helpers/StringUtils.h"
-#include "CCDB/Helpers/WorkUtils.h"
-#include "CCDB/Helpers/Stopwatch.h"
 #include "CCDB/Helpers/PathUtils.h"
-#include "CCDB/Log.h"
 #include "CCDB/CalibrationGenerator.h"
 
-#include <map>
 
 using namespace std;
 using namespace ccdb;
-
-//Next functions is for data printing
-void test_UserAPI_PrintData(const vector<vector<string> > & data);
-void test_UserAPI_PrintData(const vector<vector<double> > & data);
-void test_UserAPI_PrintData(const vector<map<string,double> > & data);
-void test_UserAPI_PrintData(const vector<int> & data);
-void test_UserAPI_PrintData(const map<string,int> & data);
 
 
 /** ********************************************************************* 
@@ -128,12 +113,6 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 	//Get Type table through the Provider()
 	ConstantsTypeTable* table = sqliteCalib->GetProvider()->GetConstantsTypeTable("/test/test_vars/test_table2", true);
 	REQUIRE(table->GetColumns()[0]->GetType() == ConstantsTypeColumn::cIntColumn);
-	
-
-	
-	//a->GetVa
-
-	
 
 	Calibration* sqliteCalib2 = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, "default");
 	REQUIRE(sqliteCalib == sqliteCalib2);
@@ -164,9 +143,9 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		REQUIRE(tabledValues[0].size()==3);
 		REQUIRE(tabledValues[0][0]=="10");
 		
-		//No such calibration exist in test variation, but constants should fallback to default varitaion
+		//No such calibration exist in test variation run 100, but constants should fallback to variation
 		res = PathUtils::ParseContext("variation=test");
-		sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime);
+		sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation);
 		REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
 		REQUIRE(result);
 		REQUIRE(tabledValues.size()>0);

@@ -4,12 +4,12 @@
 
 #include "CCDB/Console.h"
 #include "CCDB/Providers/SQLiteDataProvider.h"
-#include "CCDB/Model/Directory.h"
+
 
 using namespace std;
 using namespace ccdb;
 
-bool test_DMySQLDataProviderConnection();  //Test basic connection
+
 
 /********************************************************************* ** 
  * @brief Test basic connection

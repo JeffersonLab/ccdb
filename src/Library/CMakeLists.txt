@@ -7,12 +7,6 @@ include_directories("../../include")
 include_directories("../../include/SQLite")
 include_directories(${MYSQL_INCLUDE_DIR})
 
-#find_package(MySql )
-include(../FindMySQL.cmake)
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "../")
-
-#add_definitions(-DCCDB_MYSQL)
-
 set(SOURCE_FILES
 
         #some global objects

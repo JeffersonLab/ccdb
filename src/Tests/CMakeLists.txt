@@ -14,7 +14,7 @@ set(SOURCE_FILES
         "test_StringUtils.cc"
         "test_PathUtils.cc"
         "test_ModelObjects.cc"
-        #"test_NoMySqlUserAPI.cc"
+        "test_NoMySqlUserAPI.cc"
         "test_Authentication.cc"
         "test_SQLiteProvider_Assignments.cc"
         "test_SQLiteProvider_Connection.cc"
