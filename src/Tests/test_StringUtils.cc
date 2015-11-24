@@ -4,8 +4,6 @@
 #include "Tests/catch.hpp"
 
 #include "CCDB/Helpers/StringUtils.h"
-#include <vector>
-#include <string>
 
 
 using namespace std;
@@ -17,7 +15,7 @@ TEST_CASE("CCDB/StringUtils/Format", "Format tests")
 
     std::string result;
 
-    //Simpliest test of the string formatting
+    //Simplest test of the string formatting
     result = StringUtils::Format("test console.Format %i %4.2f", 5, 3.14);
     REQUIRE(result == "test console.Format 5 3.14");
 
