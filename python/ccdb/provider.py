@@ -359,7 +359,7 @@ class AlchemyProvider(object):
         self.session.delete(directory)
         self.session.commit()
 
-        #refresh directory structure
+        # refresh directory structure
         self._load_dirs()
 
         #Log
@@ -610,12 +610,12 @@ class AlchemyProvider(object):
     # @param [in] columns     a map fo "name", "type" pairs
     # @param [in] comments      description for this type table
     # @return NULL if failed, pointer to created object otherwise
-    #/
+    #
     # ------------------------------------------------
     # ------------------------------------------------
     def create_type_table(self, name, dir_obj_or_path, rows_num, columns, comment=""):
         """Creates constant table in database"""
-        #return self._provider.CreateConstantsTypeTable(name, parentPath, rowsNumber, columns, comments)
+        # return self._provider.CreateConstantsTypeTable(name, parentPath, rowsNumber, columns, comments)
 
         assert len(columns) > 0
         assert rows_num > 0
@@ -628,7 +628,7 @@ class AlchemyProvider(object):
             assert isinstance(dir_obj_or_path, Directory)
             parent_dir = dir_obj_or_path
 
-        #check the table already exists
+        # check, if the table already exists
         data_count = self.session.query(TypeTable).filter(TypeTable.parent_dir_id == parent_dir.id).filter(
             TypeTable.name == name).count()
         if data_count > 0:
@@ -668,13 +668,12 @@ class AlchemyProvider(object):
 
         return table
 
-
     # ------------------------------------------------
     # Updates constant table in database
     # ------------------------------------------------
     def update_type_table(self, type_table):
 
-        #get user here to fail if no such user
+        # get user here to fail if no such user
         user = self.get_current_user()
 
         self.session.commit()
@@ -685,7 +684,6 @@ class AlchemyProvider(object):
                                action="update",
                                description="Updated table with path '{0}'".format(type_table.path),
                                comment=type_table.comment)
-
 
     # ------------------------------------------------
     # Deletes constant type table
@@ -966,7 +964,7 @@ class AlchemyProvider(object):
         self.session.commit()
         #Log
         self.create_log_record(user=user,
-                               affected_ids=[variation.__tablename__ + variation(variation.id)],
+                               affected_ids=[variation.__tablename__ + str(variation.id)],
                                action="update",
                                description="Updated variation '{0}'".format(variation.name),
                                comment=variation.comment)
@@ -983,7 +981,7 @@ class AlchemyProvider(object):
     def delete_variation(self, variation):
         assert isinstance(variation, Variation)
 
-        #get user here to fail if no such user
+        # get user here to fail if no such user
         user = self.get_current_user()
 
         data_count = self.session.query(Assignment).filter(Assignment.variation_id == variation.id).count()
@@ -1126,7 +1124,6 @@ class AlchemyProvider(object):
     def copy_assignment(self, assignment):
         raise NotImplementedError("copy_assignment is not implemented")
 
-
     # ------------------------------------------------
     # Creates Assignment
     # ------------------------------------------------
@@ -1149,29 +1146,29 @@ class AlchemyProvider(object):
         :rtype: Assignment
         """
 
-        #maybe it is a dom?
+        # maybe it is a dom?
         if isinstance(data, TextFileDOM):
             rows = data.rows
         else:
-            #it should be list than...
+            # it should be list than...
             assert isinstance(data, list)
             rows = data
 
-        #get objects
+        # get objects
         table = self.get_type_table(path)  # TODO create path_or_table variable
 
         variation = self.get_variation(variation_name)  # TODO create variation_name_or_obj instead of variation_name
         run_range = self.get_or_create_run_range(min_run, max_run)
 
-        #validate data.. a little =)
+        # validate data.. a little =)
         if len(rows) == 0: raise ValueError(
             "Try to create variation with data length = 0. Fill data prior inserting into database")
         if not isinstance(rows[0], list):
-            #the data is plain list, like [1,2,3,4,5,6]
-            #rows_count = len(data) / table._columns_count
+            # the data is plain list, like [1,2,3,4,5,6]
+            # rows_count = len(data) / table._columns_count
             raise NotImplementedError()  # TODO check and implement this branch
 
-        #validate that the data rows and cols correspond to table rows and cols
+        # validate that the data rows and cols correspond to table rows and cols
         data_rows_count = len(rows)
         data_cols_count = len(rows[0])
 
@@ -1181,17 +1178,16 @@ class AlchemyProvider(object):
                       "".format(data_rows_count, data_cols_count, table.rows_count, table._columns_count)
             raise ValueError(message)
 
-        #check for type
+        # check for type
         for row_index, row in enumerate(rows):
             for column_index, cell in enumerate(row):
                 column = table.columns[column_index]
                 self.validate_data_value(cell, column, column_index, row_index)
 
-
-        #Get user
+        # Get user
         user = self.get_current_user()
 
-        #construct assignment
+        # construct assignment
         assignment = Assignment()
         assignment.constant_set = ConstantSet()
         assignment.constant_set.type_table_id = table.id
@@ -1206,7 +1202,7 @@ class AlchemyProvider(object):
         self.session.add(assignment)
         self.session.commit()
 
-        #add log
+        # add log
         self.create_log_record(user=user,
                                affected_ids=[assignment.__tablename__ + str(assignment.id)],
                                action="create",
@@ -1214,24 +1210,22 @@ class AlchemyProvider(object):
                                comment=assignment.comment)
         return assignment
 
-
     # ------------------------------------------------
     # updates assignment comments
     # ------------------------------------------------
     def update_assignment(self, assignment):
 
-        #get user here to fail if no such user
+        # get user here to fail if no such user
         user = self.get_current_user()
 
         self.session.commit()
 
-        #Log
+        # Log
         self.create_log_record(user=user,
                                affected_ids=[assignment.__tablename__ + assignment(assignment.id)],
                                action="update",
                                description="Updated assignment '{0}'".format(assignment.request),
                                comment=assignment.comment)
-
 
     # ------------------------------------------------
     # Deletes assignment
@@ -1251,11 +1245,11 @@ class AlchemyProvider(object):
         comment = assignment.comment
 
 
-        #delete it
+        # delete it
         self.session.delete(assignment)
         self.session.commit()
 
-        #Log
+        # Log
         self.create_log_record(user, affected_ids, action, description, comment)
 
     # ------------------------------------------------

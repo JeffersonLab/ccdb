@@ -1,6 +1,6 @@
 """
 
-Example of using Low Level python API to readout data from CCDB
+Example of using Low Level python API to manage or change variations
 
 """
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     # create child variation. We specify its name, comment and parent variation
     child_var = provider.create_variation("test_pyllapi", "Test how to work from py llapi", "test_pyllapi_parent")
     print("Created variations: ")
-    print("{} , parent {}".format(child_var, child_var.parent))                 # 'test_pyllapi' has parent 'test_pyllapi_parent'
+    print("{} , parent {}".format(child_var, child_var.parent))     # 'test_pyllapi' has parent 'test_pyllapi_parent'
     print("{} , parent {}".format(parent_var, parent_var.parent))   # 'test_pyllapi_parent' has 'parent default'
 
     # Modify variation comment
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     # Just to be sure the magic works, we reread variation (one doesn't have to reread variations after update actually)
     print("Changed variation parent: ")
-    print("{} , parent {}".format(child_var, child_var.parent))                    # 'test_pyllapi' has parent 'test_pyllapi_parent'
+    print("{} , parent {}".format(child_var, child_var.parent))        # 'test_pyllapi' has parent 'test_pyllapi_parent'
     print("{} , parent {}".format(new_parent_var, parent_var.parent))  # 'test_pyllapi_parent' has 'parent default'
     print
 
