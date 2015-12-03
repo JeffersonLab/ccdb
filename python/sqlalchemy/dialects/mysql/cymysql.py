@@ -1,5 +1,6 @@
 # mysql/cymysql.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -9,14 +10,17 @@
 .. dialect:: mysql+cymysql
     :name: CyMySQL
     :dbapi: cymysql
-    :connectstring: mysql+cymysql://<username>:<password>@<host>/<dbname>[?<options>]
+    :connectstring: mysql+cymysql://<username>:<password>@<host>/<dbname>\
+[?<options>]
     :url: https://github.com/nakagami/CyMySQL
 
 """
+import re
 
 from .mysqldb import MySQLDialect_mysqldb
 from .base import (BIT, MySQLDialect)
 from ... import util
+
 
 class _cymysqlBIT(BIT):
     def result_processor(self, dialect, coltype):
@@ -54,7 +58,13 @@ class MySQLDialect_cymysql(MySQLDialect_mysqldb):
 
     def _get_server_version_info(self, connection):
         dbapi_con = connection.connection
-        version = [int(v) for v in dbapi_con.server_version.split('.')]
+        version = []
+        r = re.compile('[.\-]')
+        for n in r.split(dbapi_con.server_version):
+            try:
+                version.append(int(n))
+            except ValueError:
+                version.append(n)
         return tuple(version)
 
     def _detect_charset(self, connection):
@@ -66,7 +76,7 @@ class MySQLDialect_cymysql(MySQLDialect_mysqldb):
     def is_disconnect(self, e, connection, cursor):
         if isinstance(e, self.dbapi.OperationalError):
             return self._extract_error_code(e) in \
-                        (2006, 2013, 2014, 2045, 2055)
+                (2006, 2013, 2014, 2045, 2055)
         elif isinstance(e, self.dbapi.InterfaceError):
             # if underlying connection is closed,
             # this is the error you get

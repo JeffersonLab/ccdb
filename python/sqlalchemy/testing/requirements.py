@@ -1,5 +1,6 @@
 # testing/requirements.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -10,20 +11,17 @@ Provides decorators to mark tests requiring specific feature support from the
 target database.
 
 External dialect test suites should subclass SuiteRequirements
-to provide specific inclusion/exlusions.
+to provide specific inclusion/exclusions.
 
 """
 
-from . import exclusions, config
+from . import exclusions
+from .. import util
 
 
 class Requirements(object):
-    def __init__(self, config):
-        self.config = config
+    pass
 
-    @property
-    def db(self):
-        return config.db
 
 class SuiteRequirements(Requirements):
 
@@ -53,6 +51,12 @@ class SuiteRequirements(Requirements):
         return exclusions.open()
 
     @property
+    def non_updating_cascade(self):
+        """target database must *not* support ON UPDATE..CASCADE behavior in
+        foreign keys."""
+        return exclusions.closed()
+
+    @property
     def deferrable_fks(self):
         return exclusions.closed()
 
@@ -62,9 +66,9 @@ class SuiteRequirements(Requirements):
         # somehow only_if([x, y]) isn't working here, negation/conjunctions
         # getting confused.
         return exclusions.only_if(
-                    lambda: self.on_update_cascade.enabled or self.deferrable_fks.enabled
-                )
-
+            lambda: self.on_update_cascade.enabled or
+            self.deferrable_fks.enabled
+        )
 
     @property
     def self_referential_foreign_keys(self):
@@ -92,7 +96,17 @@ class SuiteRequirements(Requirements):
 
     @property
     def offset(self):
-        """target database can render OFFSET, or an equivalent, in a SELECT."""
+        """target database can render OFFSET, or an equivalent, in a
+        SELECT.
+        """
+
+        return exclusions.open()
+
+    @property
+    def bound_limit_offset(self):
+        """target database can render LIMIT and/or OFFSET using a bound
+        parameter
+        """
 
         return exclusions.open()
 
@@ -151,17 +165,16 @@ class SuiteRequirements(Requirements):
 
         return exclusions.open()
 
-
     @property
     def empty_inserts(self):
         """target platform supports INSERT with no values, i.e.
         INSERT DEFAULT VALUES or equivalent."""
 
         return exclusions.only_if(
-                    lambda: self.config.db.dialect.supports_empty_insert or \
-                        self.config.db.dialect.supports_default_values,
-                    "empty inserts not supported"
-                )
+            lambda config: config.db.dialect.supports_empty_insert or
+            config.db.dialect.supports_default_values,
+            "empty inserts not supported"
+        )
 
     @property
     def insert_from_select(self):
@@ -174,9 +187,16 @@ class SuiteRequirements(Requirements):
         """target platform supports RETURNING."""
 
         return exclusions.only_if(
-                lambda: self.config.db.dialect.implicit_returning,
-                "'returning' not supported by database"
-            )
+            lambda config: config.db.dialect.implicit_returning,
+            "%(database)s %(does_support)s 'returning'"
+        )
+
+    @property
+    def duplicate_names_in_cursor_description(self):
+        """target platform supports a SELECT statement that has
+        the same name repeated more than once in the columns list."""
+
+        return exclusions.open()
 
     @property
     def denormalized_names(self):
@@ -184,9 +204,9 @@ class SuiteRequirements(Requirements):
         UPPERCASE as case insensitive names."""
 
         return exclusions.skip_if(
-                    lambda: not self.db.dialect.requires_name_normalize,
-                    "Backend does not require denormalized names."
-                )
+            lambda config: not config.db.dialect.requires_name_normalize,
+            "Backend does not require denormalized names."
+        )
 
     @property
     def multivalues_inserts(self):
@@ -194,10 +214,9 @@ class SuiteRequirements(Requirements):
         INSERT statement."""
 
         return exclusions.skip_if(
-                    lambda: not self.db.dialect.supports_multivalues_insert,
-                    "Backend does not support multirow inserts."
-                )
-
+            lambda config: not config.db.dialect.supports_multivalues_insert,
+            "Backend does not support multirow inserts."
+        )
 
     @property
     def implements_get_lastrowid(self):
@@ -245,8 +264,8 @@ class SuiteRequirements(Requirements):
         """Target database must support SEQUENCEs."""
 
         return exclusions.only_if([
-                lambda: self.config.db.dialect.supports_sequences
-            ], "no sequence support")
+            lambda config: config.db.dialect.supports_sequences
+        ], "no sequence support")
 
     @property
     def sequences_optional(self):
@@ -254,13 +273,9 @@ class SuiteRequirements(Requirements):
         as a means of generating new PK values."""
 
         return exclusions.only_if([
-                lambda: self.config.db.dialect.supports_sequences and \
-                    self.config.db.dialect.sequences_optional
-            ], "no sequence support, or sequences not optional")
-
-
-
-
+            lambda config: config.db.dialect.supports_sequences and
+            config.db.dialect.sequences_optional
+        ], "no sequence support, or sequences not optional")
 
     @property
     def reflects_pk_names(self):
@@ -271,7 +286,19 @@ class SuiteRequirements(Requirements):
         return exclusions.open()
 
     @property
+    def view_column_reflection(self):
+        """target database must support retrieval of the columns in a view,
+        similarly to how a table is inspected.
+
+        This does not include the full CREATE VIEW definition.
+
+        """
+        return self.views
+
+    @property
     def view_reflection(self):
+        """target database must support inspection of the full CREATE VIEW definition.
+        """
         return self.views
 
     @property
@@ -287,12 +314,39 @@ class SuiteRequirements(Requirements):
         return exclusions.open()
 
     @property
+    def temp_table_reflection(self):
+        return exclusions.open()
+
+    @property
+    def temp_table_names(self):
+        """target dialect supports listing of temporary table names"""
+        return exclusions.closed()
+
+    @property
+    def temporary_tables(self):
+        """target database supports temporary tables"""
+        return exclusions.open()
+
+    @property
+    def temporary_views(self):
+        """target database supports temporary views"""
+        return exclusions.closed()
+
+    @property
     def index_reflection(self):
         return exclusions.open()
 
     @property
     def unique_constraint_reflection(self):
         """target dialect supports reflection of unique constraints"""
+        return exclusions.open()
+
+    @property
+    def duplicate_key_raises_integrity_error(self):
+        """target dialect raises IntegrityError when reporting an INSERT
+        with a primary key violation.  (hint: it should)
+
+        """
         return exclusions.open()
 
     @property
@@ -312,7 +366,9 @@ class SuiteRequirements(Requirements):
 
     @property
     def unicode_ddl(self):
-        """Target driver must support some degree of non-ascii symbol names."""
+        """Target driver must support some degree of non-ascii symbol
+        names.
+        """
         return exclusions.closed()
 
     @property
@@ -349,6 +405,13 @@ class SuiteRequirements(Requirements):
     def date(self):
         """target dialect supports representation of Python
         datetime.date() objects."""
+
+        return exclusions.open()
+
+    @property
+    def date_coerces_from_datetime(self):
+        """target dialect accepts a datetime object as the target
+        of a date column."""
 
         return exclusions.open()
 
@@ -481,6 +544,23 @@ class SuiteRequirements(Requirements):
         return exclusions.open()
 
     @property
+    def selectone(self):
+        """target driver must support the literal statement 'select 1'"""
+        return exclusions.open()
+
+    @property
+    def savepoints(self):
+        """Target database must support savepoints."""
+
+        return exclusions.closed()
+
+    @property
+    def two_phase_transactions(self):
+        """Target database must support two-phase transactions."""
+
+        return exclusions.closed()
+
+    @property
     def update_from(self):
         """Target must support UPDATE..FROM syntax"""
         return exclusions.closed()
@@ -507,8 +587,45 @@ class SuiteRequirements(Requirements):
         return exclusions.closed()
 
     @property
+    def percent_schema_names(self):
+        """target backend supports weird identifiers with percent signs
+        in them, e.g. 'some % column'.
+
+        this is a very weird use case but often has problems because of
+        DBAPIs that use python formatting.  It's not a critical use
+        case either.
+
+        """
+        return exclusions.closed()
+
+    @property
+    def order_by_label_with_expression(self):
+        """target backend supports ORDER BY a column label within an
+        expression.
+
+        Basically this::
+
+            select data as foo from test order by foo || 'bar'
+
+        Lots of databases including Postgresql don't support this,
+        so this is off by default.
+
+        """
+        return exclusions.closed()
+
+    @property
     def unicode_connections(self):
-        """Target driver must support non-ASCII characters being passed at all."""
+        """Target driver must support non-ASCII characters being passed at
+        all.
+        """
+        return exclusions.open()
+
+    @property
+    def graceful_disconnects(self):
+        """Target driver must raise a DBAPI-level exception, such as
+        InterfaceError, when the underlying connection has been closed
+        and the execute() method is called.
+        """
         return exclusions.open()
 
     @property
@@ -516,8 +633,77 @@ class SuiteRequirements(Requirements):
         """Catchall for a large variety of MySQL on Windows failures"""
         return exclusions.open()
 
-    def _has_mysql_on_windows(self):
+    @property
+    def ad_hoc_engines(self):
+        """Test environment must allow ad-hoc engine/connection creation.
+
+        DBs that scale poorly for many connections, even when closed, i.e.
+        Oracle, may use the "--low-connections" option which flags this
+        requirement as not present.
+
+        """
+        return exclusions.skip_if(
+            lambda config: config.options.low_connections)
+
+    @property
+    def timing_intensive(self):
+        return exclusions.requires_tag("timing_intensive")
+
+    @property
+    def memory_intensive(self):
+        return exclusions.requires_tag("memory_intensive")
+
+    @property
+    def threading_with_mock(self):
+        """Mark tests that use threading and mock at the same time - stability
+        issues have been observed with coverage + python 3.3
+
+        """
+        return exclusions.skip_if(
+            lambda config: util.py3k and config.options.has_coverage,
+            "Stability issues with coverage + py3k"
+        )
+
+    @property
+    def no_coverage(self):
+        """Test should be skipped if coverage is enabled.
+
+        This is to block tests that exercise libraries that seem to be
+        sensitive to coverage, such as Postgresql notice logging.
+
+        """
+        return exclusions.skip_if(
+            lambda config: config.options.has_coverage,
+            "Issues observed when coverage is enabled"
+        )
+
+    def _has_mysql_on_windows(self, config):
         return False
 
-    def _has_mysql_fully_case_sensitive(self):
+    def _has_mysql_fully_case_sensitive(self, config):
         return False
+
+    @property
+    def sqlite(self):
+        return exclusions.skip_if(lambda: not self._has_sqlite())
+
+    @property
+    def cextensions(self):
+        return exclusions.skip_if(
+            lambda: not self._has_cextensions(), "C extensions not installed"
+        )
+
+    def _has_sqlite(self):
+        from sqlalchemy import create_engine
+        try:
+            create_engine('sqlite://')
+            return True
+        except ImportError:
+            return False
+
+    def _has_cextensions(self):
+        try:
+            from sqlalchemy import cresultproxy, cprocessors
+            return True
+        except ImportError:
+            return False

@@ -1,5 +1,6 @@
 # event/api.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -24,7 +25,8 @@ def _event_key(target, identifier, fn):
             return _EventKey(target, identifier, fn, tgt)
     else:
         raise exc.InvalidRequestError("No such event '%s' for target '%s'" %
-                                (identifier, target))
+                                      (identifier, target))
+
 
 def listen(target, identifier, fn, *args, **kw):
     """Register a listener function for the given target.
@@ -43,6 +45,44 @@ def listen(target, identifier, fn, *args, **kw):
                 UniqueConstraint,
                 "after_parent_attach",
                 unique_constraint_name)
+
+
+    A given function can also be invoked for only the first invocation
+    of the event using the ``once`` argument::
+
+        def on_config():
+            do_config()
+
+        event.listen(Mapper, "before_configure", on_config, once=True)
+
+    .. versionadded:: 0.9.4 Added ``once=True`` to :func:`.event.listen`
+       and :func:`.event.listens_for`.
+
+    .. note::
+
+        The :func:`.listen` function cannot be called at the same time
+        that the target event is being run.   This has implications
+        for thread safety, and also means an event cannot be added
+        from inside the listener function for itself.  The list of
+        events to be run are present inside of a mutable collection
+        that can't be changed during iteration.
+
+        Event registration and removal is not intended to be a "high
+        velocity" operation; it is a configurational operation.  For
+        systems that need to quickly associate and deassociate with
+        events at high scale, use a mutable structure that is handled
+        from inside of a single listener.
+
+        .. versionchanged:: 1.0.0 - a ``collections.deque()`` object is now
+           used as the container for the list of events, which explicitly
+           disallows collection mutation while the collection is being
+           iterated.
+
+    .. seealso::
+
+        :func:`.listens_for`
+
+        :func:`.remove`
 
     """
 
@@ -63,6 +103,22 @@ def listens_for(target, identifier, *args, **kw):
                 table.name,
                 list(const.columns)[0].name
             )
+
+    A given function can also be invoked for only the first invocation
+    of the event using the ``once`` argument::
+
+        @event.listens_for(Mapper, "before_configure", once=True)
+        def on_config():
+            do_config()
+
+
+    .. versionadded:: 0.9.4 Added ``once=True`` to :func:`.event.listen`
+       and :func:`.event.listens_for`.
+
+    .. seealso::
+
+        :func:`.listen` - general description of event listening
+
     """
     def decorate(fn):
         listen(target, identifier, fn, *args, **kw)
@@ -89,13 +145,38 @@ def remove(target, identifier, fn):
         event.remove(SomeMappedClass, "before_insert", my_listener_function)
 
     Above, the listener function associated with ``SomeMappedClass`` was also
-    propagated to subclasses of ``SomeMappedClass``; the :func:`.remove` function
-    will revert all of these operations.
+    propagated to subclasses of ``SomeMappedClass``; the :func:`.remove`
+    function will revert all of these operations.
 
     .. versionadded:: 0.9.0
 
+    .. note::
+
+        The :func:`.remove` function cannot be called at the same time
+        that the target event is being run.   This has implications
+        for thread safety, and also means an event cannot be removed
+        from inside the listener function for itself.  The list of
+        events to be run are present inside of a mutable collection
+        that can't be changed during iteration.
+
+        Event registration and removal is not intended to be a "high
+        velocity" operation; it is a configurational operation.  For
+        systems that need to quickly associate and deassociate with
+        events at high scale, use a mutable structure that is handled
+        from inside of a single listener.
+
+        .. versionchanged:: 1.0.0 - a ``collections.deque()`` object is now
+           used as the container for the list of events, which explicitly
+           disallows collection mutation while the collection is being
+           iterated.
+
+    .. seealso::
+
+        :func:`.listen`
+
     """
     _event_key(target, identifier, fn).remove()
+
 
 def contains(target, identifier, fn):
     """Return True if the given target/ident/fn is set up to listen.

@@ -1,5 +1,6 @@
 # testing/fixtures.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -13,6 +14,9 @@ from .entities import BasicEntity, ComparableEntity
 import sys
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
+
+# whether or not we use unittest changes things dramatically,
+# as far as how py.test collection works.
 
 
 class TestBase(object):
@@ -36,6 +40,15 @@ class TestBase(object):
 
     def assert_(self, val, msg=None):
         assert val, msg
+
+    # apparently a handful of tests are doing this....OK
+    def setup(self):
+        if hasattr(self, "setUp"):
+            self.setUp()
+
+    def teardown(self):
+        if hasattr(self, "tearDown"):
+            self.tearDown()
 
 
 class TablesTest(TestBase):
@@ -78,20 +91,12 @@ class TablesTest(TestBase):
                 cls.run_create_tables = 'each'
             assert cls.run_inserts in ('each', None)
 
-        if cls.other is None:
-            cls.other = adict()
+        cls.other = adict()
+        cls.tables = adict()
 
-        if cls.tables is None:
-            cls.tables = adict()
-
-        if cls.bind is None:
-            setattr(cls, 'bind', cls.setup_bind())
-
-        if cls.metadata is None:
-            setattr(cls, 'metadata', sa.MetaData())
-
-        if cls.metadata.bind is None:
-            cls.metadata.bind = cls.bind
+        cls.bind = cls.setup_bind()
+        cls.metadata = sa.MetaData()
+        cls.metadata.bind = cls.bind
 
     @classmethod
     def _setup_once_inserts(cls):
@@ -129,13 +134,14 @@ class TablesTest(TestBase):
     def _teardown_each_tables(self):
         # no need to run deletes if tables are recreated on setup
         if self.run_define_tables != 'each' and self.run_deletes == 'each':
-            for table in reversed(self.metadata.sorted_tables):
-                try:
-                    table.delete().execute().close()
-                except sa.exc.DBAPIError as ex:
-                    util.print_(
-                        ("Error emptying table %s: %r" % (table, ex)),
-                        file=sys.stderr)
+            with self.bind.connect() as conn:
+                for table in reversed(self.metadata.sorted_tables):
+                    try:
+                        conn.execute(table.delete())
+                    except sa.exc.DBAPIError as ex:
+                        util.print_(
+                            ("Error emptying table %s: %r" % (table, ex)),
+                            file=sys.stderr)
 
     def setup(self):
         self._setup_each_tables()
@@ -187,9 +193,8 @@ class TablesTest(TestBase):
     def sql_count_(self, count, fn):
         self.assert_sql_count(self.bind, fn, count)
 
-    def sql_eq_(self, callable_, statements, with_sequences=None):
-        self.assert_sql(self.bind,
-                        callable_, statements, with_sequences)
+    def sql_eq_(self, callable_, statements):
+        self.assert_sql(self.bind, callable_, statements)
 
     @classmethod
     def _load_fixtures(cls):
@@ -211,6 +216,8 @@ class TablesTest(TestBase):
                  for column_values in rows[table]])
 
 from sqlalchemy import event
+
+
 class RemovesEvents(object):
     @util.memoized_property
     def _event_fns(self):
@@ -226,7 +233,6 @@ class RemovesEvents(object):
         super_ = super(RemovesEvents, self)
         if hasattr(super_, "teardown"):
             super_.teardown()
-
 
 
 class _ORMTest(object):
@@ -355,14 +361,14 @@ class DeclarativeMappedTest(MappedTest):
             def __init__(cls, classname, bases, dict_):
                 cls_registry[classname] = cls
                 return DeclarativeMeta.__init__(
-                        cls, classname, bases, dict_)
+                    cls, classname, bases, dict_)
 
         class DeclarativeBasic(object):
             __table_cls__ = schema.Table
 
         _DeclBase = declarative_base(metadata=cls.metadata,
-                            metaclass=FindFixtureDeclarative,
-                            cls=DeclarativeBasic)
+                                     metaclass=FindFixtureDeclarative,
+                                     cls=DeclarativeBasic)
         cls.DeclarativeBasic = _DeclBase
         fn()
 

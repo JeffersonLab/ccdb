@@ -8,12 +8,21 @@ from sqlalchemy import Table, Column, Integer, String
 
 
 class TableDDLTest(fixtures.TestBase):
+    __backend__ = True
 
     def _simple_fixture(self):
         return Table('test_table', self.metadata,
-                Column('id', Integer, primary_key=True, autoincrement=False),
-                Column('data', String(50))
-            )
+                     Column('id', Integer, primary_key=True,
+                            autoincrement=False),
+                     Column('data', String(50))
+                     )
+
+    def _underscore_fixture(self):
+        return Table('_test_table', self.metadata,
+                     Column('id', Integer, primary_key=True,
+                            autoincrement=False),
+                     Column('_data', String(50))
+                     )
 
     def _simple_roundtrip(self, table):
         with config.db.begin() as conn:
@@ -44,5 +53,13 @@ class TableDDLTest(fixtures.TestBase):
             config.db, checkfirst=False
         )
 
+    @requirements.create_table
+    @util.provide_metadata
+    def test_underscore_names(self):
+        table = self._underscore_fixture()
+        table.create(
+            config.db, checkfirst=False
+        )
+        self._simple_roundtrip(table)
 
 __all__ = ('TableDDLTest', )

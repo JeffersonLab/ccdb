@@ -1,5 +1,6 @@
 # mssql/pymssql.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -8,20 +9,13 @@
 .. dialect:: mssql+pymssql
     :name: pymssql
     :dbapi: pymssql
-    :connectstring: mssql+pymssql://<username>:<password>@<freetds_name>?charset=utf8
-    :url: http://pymssql.sourceforge.net/
+    :connectstring: mssql+pymssql://<username>:<password>@<freetds_name>?\
+charset=utf8
+    :url: http://pymssql.org/
 
-Limitations
------------
-
-pymssql inherits a lot of limitations from FreeTDS, including:
-
-* no support for multibyte schema identifiers
-* poor support for large decimals
-* poor support for binary fields
-* poor support for VARCHAR/CHAR fields over 255 characters
-
-Please consult the pymssql documentation for further information.
+pymssql is a Python module that provides a Python DBAPI interface around
+`FreeTDS <http://www.freetds.org/>`_.  Compatible builds are available for
+Linux, MacOSX and Windows platforms.
 
 """
 from .base import MSDialect
@@ -52,14 +46,15 @@ class MSDialect_pymssql(MSDialect):
     @classmethod
     def dbapi(cls):
         module = __import__('pymssql')
-        # pymmsql doesn't have a Binary method.  we use string
-        # TODO: monkeypatching here is less than ideal
-        module.Binary = lambda x: x if hasattr(x, 'decode') else str(x)
-
+        # pymmsql < 2.1.1 doesn't have a Binary method.  we use string
         client_ver = tuple(int(x) for x in module.__version__.split("."))
+        if client_ver < (2, 1, 1):
+            # TODO: monkeypatching here is less than ideal
+            module.Binary = lambda x: x if hasattr(x, 'decode') else str(x)
+
         if client_ver < (1, ):
             util.warn("The pymssql dialect expects at least "
-                            "the 1.0 series of the pymssql DBAPI.")
+                      "the 1.0 series of the pymssql DBAPI.")
         return module
 
     def __init__(self, **params):
@@ -69,7 +64,7 @@ class MSDialect_pymssql(MSDialect):
     def _get_server_version_info(self, connection):
         vers = connection.scalar("select @@version")
         m = re.match(
-            r"Microsoft SQL Server.*? - (\d+).(\d+).(\d+).(\d+)", vers)
+            r"Microsoft .*? - (\d+).(\d+).(\d+).(\d+)", vers)
         if m:
             return tuple(int(x) for x in m.group(1, 2, 3, 4))
         else:

@@ -1,5 +1,6 @@
 # sqlalchemy/naming.py
-# Copyright (C) 2005-2014 the SQLAlchemy authors and contributors <see AUTHORS file>
+# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
@@ -10,13 +11,15 @@
 """
 
 from .schema import Constraint, ForeignKeyConstraint, PrimaryKeyConstraint, \
-                UniqueConstraint, CheckConstraint, Index, Table
+    UniqueConstraint, CheckConstraint, Index, Table, Column
 from .. import event, events
 from .. import exc
-from .elements import _truncated_label
+from .elements import _truncated_label, _defer_name, _defer_none_name, conv
 import re
 
+
 class ConventionDict(object):
+
     def __init__(self, const, table, convention):
         self.const = const
         self._is_fk = isinstance(const, ForeignKeyConstraint)
@@ -35,15 +38,14 @@ class ConventionDict(object):
             return list(self.const.columns)[idx]
 
     def _key_constraint_name(self):
-        if not self._const_name:
+        if isinstance(self._const_name, (type(None), _defer_none_name)):
             raise exc.InvalidRequestError(
-                    "Naming convention including "
-                    "%(constraint_name)s token requires that "
-                    "constraint is explicitly named."
-                )
-        # they asked for a name that's derived from the existing
-        # name, so set the existing name to None
-        self.const.name = None
+                "Naming convention including "
+                "%(constraint_name)s token requires that "
+                "constraint is explicitly named."
+            )
+        if not isinstance(self._const_name, conv):
+            self.const.name = None
         return self._const_name
 
     def _key_column_X_name(self, idx):
@@ -54,12 +56,20 @@ class ConventionDict(object):
 
     def _key_referred_table_name(self):
         fk = self.const.elements[0]
-        reftable, refcol = fk.target_fullname.split(".")
+        refs = fk.target_fullname.split(".")
+        if len(refs) == 3:
+            refschema, reftable, refcol = refs
+        else:
+            reftable, refcol = refs
         return reftable
 
     def _key_referred_column_X_name(self, idx):
         fk = self.const.elements[idx]
-        reftable, refcol = fk.target_fullname.split(".")
+        refs = fk.target_fullname.split(".")
+        if len(refs) == 3:
+            refschema, reftable, refcol = refs
+        else:
+            reftable, refcol = refs
         return refcol
 
     def __getitem__(self, key):
@@ -85,6 +95,7 @@ _prefix_dict = {
     ForeignKeyConstraint: "fk"
 }
 
+
 def _get_convention(dict_, key):
 
     for super_ in key.__mro__:
@@ -96,15 +107,40 @@ def _get_convention(dict_, key):
         return None
 
 
+def _constraint_name_for_table(const, table):
+    metadata = table.metadata
+    convention = _get_convention(metadata.naming_convention, type(const))
+
+    if isinstance(const.name, conv):
+        return const.name
+    elif convention is not None and \
+        not isinstance(const.name, conv) and \
+            (
+            const.name is None or
+            "constraint_name" in convention or
+            isinstance(const.name, _defer_name)):
+        return conv(
+            convention % ConventionDict(const, table,
+                                        metadata.naming_convention)
+        )
+    elif isinstance(convention, _defer_none_name):
+        return None
+
+
 @event.listens_for(Constraint, "after_parent_attach")
 @event.listens_for(Index, "after_parent_attach")
 def _constraint_name(const, table):
-    if isinstance(table, Table):
-        metadata = table.metadata
-        convention = _get_convention(metadata.naming_convention, type(const))
-        if convention is not None:
-            newname = _truncated_label(
-                        convention % ConventionDict(const, table, metadata.naming_convention)
-                        )
-            if const.name is None:
-                const.name = newname
+    if isinstance(table, Column):
+        # for column-attached constraint, set another event
+        # to link the column attached to the table as this constraint
+        # associated with the table.
+        event.listen(table, "after_parent_attach",
+                     lambda col, table: _constraint_name(const, table)
+                     )
+    elif isinstance(table, Table):
+        if isinstance(const.name, (conv, _defer_name)):
+            return
+
+        newname = _constraint_name_for_table(const, table)
+        if newname is not None:
+            const.name = newname

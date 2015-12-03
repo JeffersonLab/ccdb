@@ -7,23 +7,25 @@ from ... import Integer, String, Sequence, schema
 
 from ..schema import Table, Column
 
+
 class SequenceTest(fixtures.TablesTest):
     __requires__ = ('sequences',)
+    __backend__ = True
 
     run_create_tables = 'each'
 
     @classmethod
     def define_tables(cls, metadata):
         Table('seq_pk', metadata,
-                Column('id', Integer, Sequence('tab_id_seq'), primary_key=True),
-                Column('data', String(50))
-            )
+              Column('id', Integer, Sequence('tab_id_seq'), primary_key=True),
+              Column('data', String(50))
+              )
 
         Table('seq_opt_pk', metadata,
-                Column('id', Integer, Sequence('tab_id_seq', optional=True),
-                                                primary_key=True),
-                Column('data', String(50))
-            )
+              Column('id', Integer, Sequence('tab_id_seq', optional=True),
+                     primary_key=True),
+              Column('data', String(50))
+              )
 
     def test_insert_roundtrip(self):
         config.db.execute(
@@ -61,7 +63,6 @@ class SequenceTest(fixtures.TablesTest):
             [1]
         )
 
-
     def _assert_round_trip(self, table, conn):
         row = conn.execute(table.select()).first()
         eq_(
@@ -72,13 +73,14 @@ class SequenceTest(fixtures.TablesTest):
 
 class HasSequenceTest(fixtures.TestBase):
     __requires__ = 'sequences',
+    __backend__ = True
 
     def test_has_sequence(self):
         s1 = Sequence('user_id_seq')
         testing.db.execute(schema.CreateSequence(s1))
         try:
             eq_(testing.db.dialect.has_sequence(testing.db,
-                'user_id_seq'), True)
+                                                'user_id_seq'), True)
         finally:
             testing.db.execute(schema.DropSequence(s1))
 
@@ -87,8 +89,8 @@ class HasSequenceTest(fixtures.TestBase):
         s1 = Sequence('user_id_seq', schema="test_schema")
         testing.db.execute(schema.CreateSequence(s1))
         try:
-            eq_(testing.db.dialect.has_sequence(testing.db,
-                'user_id_seq', schema="test_schema"), True)
+            eq_(testing.db.dialect.has_sequence(
+                testing.db, 'user_id_seq', schema="test_schema"), True)
         finally:
             testing.db.execute(schema.DropSequence(s1))
 
@@ -99,7 +101,7 @@ class HasSequenceTest(fixtures.TestBase):
     @testing.requires.schemas
     def test_has_sequence_schemas_neg(self):
         eq_(testing.db.dialect.has_sequence(testing.db, 'user_id_seq',
-                            schema="test_schema"),
+                                            schema="test_schema"),
             False)
 
     @testing.requires.schemas
@@ -108,7 +110,7 @@ class HasSequenceTest(fixtures.TestBase):
         testing.db.execute(schema.CreateSequence(s1))
         try:
             eq_(testing.db.dialect.has_sequence(testing.db, 'user_id_seq',
-                            schema="test_schema"),
+                                                schema="test_schema"),
                 False)
         finally:
             testing.db.execute(schema.DropSequence(s1))
@@ -122,5 +124,3 @@ class HasSequenceTest(fixtures.TestBase):
                 False)
         finally:
             testing.db.execute(schema.DropSequence(s1))
-
-
