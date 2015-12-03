@@ -47,23 +47,22 @@ def init_ccdb_console():
     from .cmd import ConsoleContext
     import cmd.colorama
 
-    #TODO move ccdb to pure logging. NO print command at all
+    # TODO move ccdb to pure logging. NO print command at all
 
     # create logger
     logger = logging.getLogger("ccdb")
 
-    #create and set console handler
+    # create and set console handler
     ch = logging.StreamHandler()
     ch.stream = sys.stdout
-    #formatter = logging.Formatter('%(message)s', style='{')
-    #ch.setFormatter(formatter)
+
     logger.addHandler(ch)
 
-    #create console context
+    # create console context
     context = ConsoleContext()
 
     # CHECK SOME COMMAND LINE KEYS
-    #------------------------------
+    # ------------------------------
     if "-h" in sys.argv or "--help" in sys.argv:
         print("Please call 'ccdb help' for help")
 
@@ -75,10 +74,10 @@ def init_ccdb_console():
     cmd.colorama.init(autoreset=True)
 
     if "--no-color" in sys.argv:
-        #no colors for output
+        # no colors for output
         context.theme = NoColorTheme()
     else:
-        #colors are ON
+        # colors are ON
         context.theme = ColoredTheme()
 
     if "--debug" in sys.argv:
@@ -91,18 +90,18 @@ def init_ccdb_console():
         context.silent_exceptions = False
 
 
-    #CONNECTION STRING
-    #------------------------------
+    # CONNECTION STRING
+    # ------------------------------
 
-    #this is default connection string (for a fallback)
+    # this is default connection string (for a fallback)
     context.connection_string = "mysql://ccdb_user@localhost/ccdb"
 
-    #connection string
+    # connection string
     if "CCDB_CONNECTION" in os.environ.keys():
         context.connection_string = os.environ["CCDB_CONNECTION"]
         logger.debug("Set connection string from $CCDB_CONNECTION :" + context.connection_string)
     else:
-        #fallback to jana calib url
+        # fallback to jana calib url
         if "JANA_CALIB_URL" in os.environ.keys():
             jana_url = os.environ["JANA_CALIB_URL"]
             logger.debug("$CCDB_CONNECTION was not found. Found JANA_CALIB_URL ('"+jana_url+"'). Try use it")
@@ -114,22 +113,22 @@ def init_ccdb_console():
 
 
 
-    #connection string in in command line arguments ( by -c or --connection) is processed by context.process(sys.argv)
+    # connection string in in command line arguments ( by -c or --connection) is processed by context.process(sys.argv)
 
     if "CCDB_USER" in os.environ.keys():
         context.user_name = os.environ["CCDB_USER"]
         logger.debug("Set user name from $CCDB_USER :" + context.user_name)
-    #elif "USER" in os.environ.keys():
+    # elif "USER" in os.environ.keys():
     #    context.user_name = os.environ["USER"]
     #    logger.debug("Set user name from $USER :" + context.user_name)
 
-
     # START PROCESSING
-    #------------------------------
+    # ------------------------------
 
-    #initialize console context
+    # initialize console context
     context.register_utilities()
 
-    #start processor
+    # start processor
     result = context.process(sys.argv)
-    if result: sys.exit(int(result))
+    if result:
+        sys.exit(int(result))

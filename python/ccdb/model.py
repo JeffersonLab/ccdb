@@ -36,9 +36,9 @@ class CcdbSchemaVersion(Base):
         return "<CcdbSchemaVersion {0} version: '{1}'>".format(self.id, self.version)
 
 
-#--------------------------------------------
+# --------------------------------------------
 # class Directory
-#--------------------------------------------
+# --------------------------------------------
 class Directory(Base):
     """
     Represents CCDB directory object.
@@ -68,9 +68,9 @@ class Directory(Base):
         return "<Directory {0} '{1}'>".format(self.id, self.name)
 
 
-#--------------------------------------------
+# --------------------------------------------
 # class TypeTable
-#--------------------------------------------
+# --------------------------------------------
 class TypeTable(Base):
     __tablename__ = 'typeTables'
     id = Column(Integer, primary_key=True)
@@ -109,9 +109,9 @@ class TypeTable(Base):
         return "<TypeTable {0} '{1}'>".format(self.id, self.name)
 
 
-#--------------------------------------------
+# --------------------------------------------
 # class TypeTableColumn
-#--------------------------------------------
+# --------------------------------------------
 class TypeTableColumn(Base):
     __tablename__ = 'columns'
     id = Column(Integer, primary_key=True)
@@ -131,9 +131,9 @@ class TypeTableColumn(Base):
         return "<TypeTableColumn '{0}'>".format(self.name)
 
 
-#--------------------------------------------
+# --------------------------------------------
 # class ConstantSet
-#--------------------------------------------
+# --------------------------------------------
 class ConstantSet(Base):
     __tablename__ = 'constantSets'
     id = Column(Integer, primary_key=True)
@@ -172,9 +172,9 @@ class ConstantSet(Base):
         return "<ConstantSet '{0}'>".format(self.id)
 
 
-#--------------------------------------------
+# --------------------------------------------
 # class Assignment
-#--------------------------------------------
+# --------------------------------------------
 class Assignment(Base):
     __tablename__ = 'assignments'
 
@@ -235,9 +235,9 @@ class Assignment(Base):
         print("      +-->" + repr(self.constant_set.data_table))
 
 
-#--------------------------------------------
+# --------------------------------------------
 # class RunRange
-#--------------------------------------------
+# --------------------------------------------
 class RunRange(Base):
     __tablename__ = 'runRanges'
     id = Column(Integer, primary_key=True)
@@ -255,9 +255,9 @@ class RunRange(Base):
             return "<RunRange {0} '{1}-{2}'>".format(self.id, self.min, self.max)
 
 
-#--------------------------------------------
+# --------------------------------------------
 # class Variation
-#--------------------------------------------
+# --------------------------------------------
 class Variation(Base):
     __tablename__ = 'variations'
     id = Column(Integer, primary_key=True)
@@ -267,6 +267,7 @@ class Variation(Base):
     author_id = Column('authorId', Integer, default=1)
     parent_id = Column('parentId', Integer, ForeignKey('variations.id'), default=1)
     parent = relation('Variation', remote_side=[id])
+    children = relation("Variation")
 
     def __repr__(self):
         return "<Variation {0} '{1}'>".format(self.id, self.name)

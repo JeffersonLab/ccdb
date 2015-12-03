@@ -129,7 +129,7 @@ class ConsoleContextTests(unittest.TestCase):
         out_str = self.output.getvalue()
         self.assertIn("mktbl <name> -r 2 X Y Z #<comments>", out_str)
 
-        #Now lets check more complex example, where we set table name and comment
+        # now lets check more complex example, where we set table name and comment
         self.output.truncate(0)
         self.context.process_command_line("mktbl /test/haha -f " + test_file + " #harasho")
         out_str = str(self.output.getvalue())
@@ -141,13 +141,13 @@ class ConsoleContextTests(unittest.TestCase):
         #TODO check test table internals are right
         self.context.process_command_line("rm --force /test/auto_testing_table")
 
-
     def test_mk_rm_variation(self):
         """mkvar, rm. Create variation and delete it"""
         self.context.process_command_line("mkvar auto_testing_variation -p test #hahaha")
-        #TODO check test table internals are right
+        self.context.process(["mkvar", "auto_testing_variation2", "-p", "test"], 0)    # Regression test for GitHub #3
+        # TODO check test table internals are right
         self.context.process_command_line("rm --force -v auto_testing_variation")
-
+        self.context.process_command_line("rm --force -v auto_testing_variation2")
 
     def test_add_rm_assignment(self):
         """add, rm. Add constants and remove them"""

@@ -7,6 +7,7 @@ from ccdb import AlchemyProvider
 from ccdb.cmd import ConsoleUtilBase
 from ccdb.path_utils import ParseRequestResult, parse_request
 from ccdb import BraceMessage as Lfm  # lfm is aka log format message. See BraceMessage desc about
+from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.utils.cat")
 
@@ -160,17 +161,17 @@ class Cat(ConsoleUtilBase):
 
         log.debug(Lfm(" |- getting assignments for path : '{0}', run: '{1}', var: '{2}', time: '{3}'"
                       "", table_path, request.run, request.variation, time))
-        assignments = provider.get_assignments(table_path, request.run, request.variation, time)
+        try:
+            assignment = provider.get_assignment(table_path, request.run, request.variation, time)
+            log.debug(Lfm(" |- found assignment: {0}", assignment))
+            return assignment
 
-        log.debug(Lfm(" |- found assignments count : {0}", len(assignments)))
-        if assignments and len(assignments) > 0:
-            return assignments[0]
-
-        # if we here there were no assignments selected
-        log.warning("There is no data for table {}, run {}, variation '{}'"
-                    "".format(table_path, request.run, request.variation))
-        if request.time_is_parsed:
-            log.warning("    on ".format(request.time_str))
+        except NoResultFound:
+            # if we here there were no assignments selected
+            log.warning(Lfm("There is no data for table {}, run {}, variation '{}'",
+                            table_path, request.run, request.variation))
+            if request.time_is_parsed:
+                log.warning("    on ".format(request.time_str))
 
         return None
 

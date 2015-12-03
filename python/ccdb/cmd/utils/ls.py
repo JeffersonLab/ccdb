@@ -250,10 +250,14 @@ class List(ConsoleUtilBase):
                 self.print_directory_tree(subDir, printFullPath, level + 1)
 
     def print_variations(self):
-        variations = self.context.provider.get_variations()
-        for var in variations:
-            print var.name
-            #TODO more sophisticated output
+        default_variation = self.context.provider.get_variation("default")
+        print( self._get_variation_tree_str(default_variation) )
+
+    def _get_variation_tree_str(self, variation, level=0):
+        ret = "  "*level + str(variation.name)+"\n"
+        for child in variation.children:
+            ret += self._get_variation_tree_str(child, level+1)
+        return ret
 
     def print_tables(self):
         tables = self.context.provider.search_type_tables("*")
