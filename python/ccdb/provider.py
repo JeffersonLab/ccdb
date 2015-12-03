@@ -1006,7 +1006,7 @@ class AlchemyProvider(object):
     # ------------------------------------------------
     # Get last Assignment that matches parameters
     # ------------------------------------------------
-    def get_assignment(self, run, path_or_table, variation):
+    def get_assignment(self, run, path_or_table, variation, use_variation_tree=True):
         """
         Gets the latest assignment that matches the parameters
 
@@ -1036,7 +1036,22 @@ class AlchemyProvider(object):
             .filter(RunRange.min <= run).filter(RunRange.max >= run) \
             .order_by(desc(Assignment.id))
 
-        return query.limit(1).one()
+        try:
+            return query.limit(1).one()
+        except NoResultFound:
+
+            # Check if should try the same with parent variation
+            if not use_variation_tree or variation_name == "default":
+                raise
+
+            # get parent variation
+            if isinstance(variation, Variation):
+                parent_variation = variation.parent
+            else:
+                parent_variation = self.get_variation(variation_name).parent
+
+            # try do it with parent variation
+            return self.get_assignment(run, path_or_table, parent_variation, use_variation_tree)
 
     # ------------------------------------------------
     # get list of assignments

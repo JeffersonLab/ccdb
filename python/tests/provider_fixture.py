@@ -188,7 +188,7 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEqual(table.columns[2].type, 'int')
         self.assertEqual(table.comment, "This is temporary created table for test reasons")
 
-        #delete
+        # delete
         self.provider.delete_type_table(table)
         self.assertRaises(TypeTableNotFound, self.provider.get_type_table, "/test/test_vars/new_table")
 
@@ -197,17 +197,17 @@ class AlchemyProviderTest(unittest.TestCase):
 
         self.provider.connect(self.connection_str)   # this test requires the connection
 
-        #Get run range by name, test "all" run range
+        # Get run range by name, test "all" run range
         rr = self.provider.get_named_run_range("all")
         self.assertIsNotNone(rr)
 
-        #Get run range by min and max run values
+        # Get run range by min and max run values
         rr = self.provider.get_run_range(0, 2000)
         self.assertIsNotNone(rr)
 
         # NON EXISTENT RUN RANGE
-        #----------------------------------------------------
-        #Get run range that is not defined
+        # ----------------------------------------------------
+        # Get run range that is not defined
         try:
             rr = self.provider.get_run_range(0, 2001)
 
@@ -222,9 +222,9 @@ class AlchemyProviderTest(unittest.TestCase):
             pass      # test passed
 
         # GET OR CREATE RUNRANGE
-        #----------------------------------------------------
+        # ----------------------------------------------------
 
-        #Get or create run-range is the main function to get RunRange without name
+        # Get or create run-range is the main function to get RunRange without name
         # 0-2001 should be absent or deleted so this function will create run-range
         rr = self.provider.get_or_create_run_range(0, 2001)
         self.assertIsNotNone(rr)
@@ -233,7 +233,7 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEquals(rr.max, 2001)
 
         # DELETE RUN-RANGE TEST
-        #----------------------------------------------------
+        # ----------------------------------------------------
         self.provider.delete_run_range(rr)
         self.assertRaises(RunRangeNotFound, self.provider.get_run_range, 0, 2001)
 
@@ -241,24 +241,24 @@ class AlchemyProviderTest(unittest.TestCase):
         """Test variations"""
         self.provider.connect(self.connection_str)   # this test requires the connection
 
-        #Get variation by name, test "all" run range
+        # Get variation by name, test "all" run range
         v = self.provider.get_variation("default")
         self.assertIsNotNone(v)
 
-        #Get variations by type table
+        # Get variations by type table
         table = self.provider.get_type_table("/test/test_vars/test_table")
         vs = self.provider.search_variations(table)
         self.assertIsNotNone(vs)
         self.assertNotEquals(len(vs), 0)
 
-        #Get variations by name
+        # Get variations by name
         vs = self.provider.get_variations("def*")
         var_names = [var.name for var in vs]
         self.assertIn("default", var_names)
 
         # NON EXISTENT VARIATION
-        #----------------------------------------------------
-        #Get run range that is not defined
+        # ----------------------------------------------------
+        # Get run range that is not defined
         try:
             v = self.provider.get_variation("abra_kozyabra")
 
@@ -272,11 +272,10 @@ class AlchemyProviderTest(unittest.TestCase):
         except VariationNotFound:
             pass     # test passed
 
-
         # create variation
-        #----------------------------------------------------
+        # ----------------------------------------------------
 
-        #Get or create run-range is the main function to get RunRange without name
+        # Get or create run-range is the main function to get RunRange without name
         # 0-2001 should be absent or deleted so this function will create run-range
         v = self.provider.create_variation("abra_kozyabra")
         self.assertIsNotNone(v)
@@ -285,17 +284,27 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEquals(v.name, "abra_kozyabra")
 
         # DELETE RUN-RANGE TEST
-        #----------------------------------------------------
+        # ----------------------------------------------------
         self.provider.delete_variation(v)
         self.assertRaises(VariationNotFound, self.provider.get_variation, "abra_kozyabra")
 
-        #Now create with comment and parent
+        # Now create with comment and parent
         v = self.provider.create_variation("abra_kozyabra", "Abra!!!", "test")
         self.assertEquals(v.parent.name, "test")
         self.assertEquals(v.comment, "Abra!!!")
 
-        #cleanup
+        # cleanup
         self.provider.delete_variation(v)
+
+    def test_variation_backup(self):
+        """Test Backup of """
+        self.provider.connect(self.connection_str)   # this test requires the connection
+
+        a = self.provider.get_assignment(100, "/test/test_vars/test_table", "test")
+        self.assertEqual(a.constant_set.data_list[0], "2.2")
+
+        #No such calibration exist in test variation run 100, but constants should fallback to variation default
+
 
 
     def test_assignments(self):
@@ -305,7 +314,7 @@ class AlchemyProviderTest(unittest.TestCase):
         assignment = self.provider.get_assignment(100, "/test/test_vars/test_table", "default")
         self.assertIsNotNone(assignment)
 
-        #Check that everything is loaded
+        # Check that everything is loaded
         tabled_data = assignment.constant_set.data_table
         self.assertEquals(len(tabled_data), 2)
         self.assertEquals(len(tabled_data[0]), 3)
@@ -316,11 +325,11 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEquals(tabled_data[1][1], "2.6")
         self.assertEquals(tabled_data[1][2], "2.7")
 
-        #Ok! Lets get all assignments for current types table
+        # Ok! Lets get all assignments for current types table
         assignments = self.provider.get_assignments("/test/test_vars/test_table")
         self.assertNotEquals(len(assignments), 0)
 
-        #Ok! Lets get all assignments for current types table and variation
+        # Ok! Lets get all assignments for current types table and variation
         assignments = self.provider.get_assignments("/test/test_vars/test_table", variation="default")
         self.assertNotEquals(len(assignments), 0)
 
@@ -356,9 +365,9 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertIsNotNone(user)
         self.assertEqual(user.password, "test")
         self.assertEqual(user.roles, ["runrange_crate", "runrange_delete"])
-        #self.assertEqual(user.)
+        # self.assertEqual(user.)
 
-        #test that with wrong user we can't create anything
+        # test that with wrong user we can't create anything
         self.provider.authentication.current_user_name = "non_exist_user_ever"
         self.assertRaises(UserNotFoundError, self.provider.create_directory, "some_strange_dir", "/")
         self.assertEqual(0, len(self.provider.search_directories("some_strange_dir")))
@@ -394,12 +403,12 @@ class AlchemyProviderTest(unittest.TestCase):
     def test_validate_data(self):
         column = TypeTableColumn()
 
-        #int type
+        # int type
         column.type = 'int'
         self.assertEqual(self.provider.validate_data_value('1', column), 1)
         self.assertRaises(ValueError, self.provider.validate_data_value, 'hren', column)
 
-        #lets check bool type
+        # lets check bool type
         column.type = 'bool'
         self.assertEqual(self.provider.validate_data_value('TrUe', column), True)
         self.assertEqual(self.provider.validate_data_value('FalSe', column), False)
