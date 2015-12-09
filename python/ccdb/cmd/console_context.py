@@ -15,7 +15,7 @@ from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
 from . import themes
 
-import ccdb.cmd.colorama
+from . import colorama
 
 import readline
 
@@ -663,7 +663,7 @@ class ConsoleContext(object):
     def print_interactive_intro(self):
         print("""
 +--------------------------+
-  CCDB shell v.1.05b
+  CCDB shell v.1.06.01
 +--------------------------+
        """)
         print(self.theme.Title + "Interactive mode")

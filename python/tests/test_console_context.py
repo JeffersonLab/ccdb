@@ -71,6 +71,12 @@ class ConsoleContextTests(unittest.TestCase):
         self.context.process_command_line("cat /test/test_vars/test_table")
         self.assertIn("2.3", self.output.getvalue())
 
+    def test_variation_backup(self):
+        """Test Backup of """
+
+        self.context.process_command_line("cat /test/test_vars/test_table:100:test")
+        self.assertIn("2.2", self.output.getvalue())
+
 
     def test_cd(self):
         """cd. General test"""
