@@ -5,21 +5,21 @@ import logging
 log = logging.getLogger("ccdb.cmd.utils.howto")
 
 
-#ccdbcmd module interface
+# ccdbcmd module interface
 def create_util_instance():
     log.debug("      registering HowTo")
     return HowTo()
 
 
-#*********************************************************************
-#   Class HowTo - Prints howtos                                      *
-#                                                                    *
-#*********************************************************************
+# *********************************************************************
+#   Class HowTo - Prints howtos                                       *
+#                                                                     *
+# *********************************************************************
 class HowTo(ConsoleUtilBase):
     """ Prints howtos """
     
     # ccdb utility class descr part 
-    #------------------------------
+    # ------------------------------
     command = "howto"
     name = "HowTo"
     short_descr = "Prints howtos"
@@ -27,18 +27,16 @@ class HowTo(ConsoleUtilBase):
     howtos = []
 
     # ---- end of print_help() ----
-
-
     def process(self, args):
         log.debug("HowTo is gained a control over the process")
         log.debug(Lfm("Arguments: '{0}'  ".join(args)))
 
-        print "No examples yet"
+        print ("No examples yet")
 
     def print_help(self):
-        print """
+        print ("""
         Prints cases for using the ccdb console tools
-        """
+        """)
 
     def print_howto_list(self):
         print ("""

@@ -10,7 +10,7 @@ from ccdb import BraceMessage as LogFmt
 log = logging.getLogger("ccdb.cmd.utils.add")
 
 
-#ccdbcmd module interface
+# ccdbcmd module interface
 def create_util_instance():
     """
     This function is a module interface
@@ -22,10 +22,10 @@ def create_util_instance():
     return AddData()
 
 
-#*********************************************************************
-#   Class AddData - Add data constants                               *
-#                                                                    *
-#*********************************************************************
+# *********************************************************************
+#   Class AddData - Add data constants                                *
+#                                                                     *
+# *********************************************************************
 class AddData(ConsoleUtilBase):
     """ Add data constants according given type table"""
     
@@ -233,13 +233,13 @@ mktbl {0} -c {1} -r {2} #<Description and comments here>
         return msg
 
 
-#----------------------------------------
+# ----------------------------------------
 #   print_help 
-#----------------------------------------
+# ----------------------------------------
     def print_help(self):
         """Prints help of the command"""
           
-        print """Add data constants according given type table
+        print ("""Add data constants according given type table
     add <type table path>  -v <variation>  -r <run_min>-<run_max>  file_to_import
 
 Required parameters:
@@ -262,4 +262,4 @@ Additional flags:
     -n or --no-comments - do not add all "#..." comments that is found in file to ccdb database
           --c-comments  - for files that contains '//' - C style comments. The add replaces simply // to #. 
     
-    """
+    """)

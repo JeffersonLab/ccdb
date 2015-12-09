@@ -15,7 +15,8 @@ from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
 from . import themes
 
-import colorama
+import ccdb.cmd.colorama
+
 import readline
 
 log = logging.getLogger("ccdb.cmd.console_context")

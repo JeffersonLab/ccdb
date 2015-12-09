@@ -30,13 +30,13 @@ class HelpUtil(ConsoleUtilBase):
         print self.help_text
 
         if self.context:
-            print "Available commands:"
-            print "   %-10s %-15s %s:"%("(command)", "(name)", "(description)")
-            print "   " + "\n  ".join(
+            print ("Available commands:")
+            print ("   %-10s %-15s %s:"%("(command)", "(name)", "(description)"))
+            print ("   " + "\n  ".join(
                 ["%-10s %-15s %s" % (command, util.name, util.short_descr) 
                 for command, util 
-                in self.context.utils.items() 
-                if not util.help_util])
+                in self.context.utils.items()
+                if not util.help_util]))
         print self.flags_text
         print self.enveron_text
 
@@ -51,7 +51,7 @@ class HelpUtil(ConsoleUtilBase):
                 if args[0] in commands:
                     self.context.utils[args[0]].print_help()
                 else:
-                    print "Command %s not found. Available commands are: "%args[0]
+                    print ("Command %s not found. Available commands are: "%args[0])
             else:
                 self.print_help()
     

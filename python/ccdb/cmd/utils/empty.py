@@ -106,13 +106,13 @@ class Empty(ConsoleUtilBase):
 
         path = self.context.prepare_path(parsed_args.raw_path)   # add current path to user input
 
-        #try avoid print() and use log to print data
+        # try avoid print() and use log to print data
         log.info(LogFmt("{0}raw_path{1} : {2}", self.theme.Accent, self.theme.Reset, parsed_args.raw_path))
         log.info(LogFmt("{0}path{1}     : {2}", self.theme.Accent, self.theme.Reset, path))
         log.info(LogFmt("{0}variation{1}: {2}", self.theme.Accent, self.theme.Reset, parsed_args.variation))
         log.info(LogFmt("{0}run{1}      : {2}", self.theme.Accent, self.theme.Reset, parsed_args.run))
 
-        #the return is like application ret. 0 means OK
+        # the return is like application ret. 0 means OK
         return 0
 
 #----------------------------------------
@@ -145,6 +145,6 @@ class Empty(ConsoleUtilBase):
     def print_help(self):
         """Prints help for the command"""
         
-        print """This is empty utility. It is a template and a sample for writing new utilities
+        print ("""This is empty utility. It is a template and a sample for writing new utilities
 
-    """
+    """)

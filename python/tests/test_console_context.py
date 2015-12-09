@@ -3,7 +3,12 @@ import os
 import logging
 import sys
 import shlex
-from StringIO import StringIO
+
+# python 3 support
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 import ccdb.cmd.colorama
 from ccdb.errors import DirectoryNotFound, TypeTableNotFound

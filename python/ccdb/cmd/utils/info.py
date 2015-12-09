@@ -98,9 +98,9 @@ class Info(ConsoleUtilBase):
 
         return result.obj_name, obj_type
 
-    #----------------------------------------
+    # ----------------------------------------
     #   print_directory
-    #----------------------------------------
+    # ----------------------------------------
     def print_directory(self, directory):
         assert isinstance(directory, Directory)
         print " Name      :  " + self.theme.Success + directory.name

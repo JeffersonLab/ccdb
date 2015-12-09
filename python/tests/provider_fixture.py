@@ -76,19 +76,19 @@ class AlchemyProviderTest(unittest.TestCase):
         except DirectoryNotFound:
             pass
 
-        #cleanup directories
-        #Ok, lets check if directory for the next text exists...
+        # cleanup directories
+        # Ok, lets check if directory for the next text exists...
         dir_obj = self.provider.create_directory("testdir", "/test")
         self.assertIsNotNone(dir_obj)
 
         self.provider.logging_enabled = True    # enable logging to test log too
 
-        #create subdirectory
+        # create subdirectory
         constants_subdir = self.provider.create_directory("constants", "/test/testdir", "My constants")
         self.assertIsNotNone(constants_subdir)
         self.assertEqual(constants_subdir.comment, "My constants")
 
-        #check log
+        # check log
         log = self.provider.get_log_records(limit=1)[0]
         assert (isinstance(log, LogRecord))
         self.assertEqual(log.action, "create")
@@ -97,25 +97,25 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertIn("Created directory", log.description)
         self.provider.logging_enabled = False
 
-        #cannot recreate subdirectory
+        # cannot recreate subdirectory
         self.assertRaises(ValueError, self.provider.create_directory, "constants", "/test/testdir", "My constants")
 
-        #create another subdirectory
+        # create another subdirectory
         variables_subdir = self.provider.create_directory("variables", "/test/testdir", "My constants")
 
-        #test delete
+        # test delete
         self.provider.delete_directory("/test/testdir/constants")
 
-        #test can't delete dir with sub dirs
+        # test can't delete dir with sub dirs
         self.assertRaises(ValueError, self.provider.delete_directory, "/test/testdir")
 
-        #test delete by object
+        # test delete by object
         self.provider.delete_directory(variables_subdir)
 
-        #now, when dir doesn't have sub dirs and sub tables, it can be deleted
+        # now, when dir doesn't have sub dirs and sub tables, it can be deleted
         self.provider.delete_directory("/test/testdir")
 
-    #noinspection PyBroadException
+    # noinspection PyBroadException
     def test_type_tables(self):
         """
         Test type table operation
@@ -133,31 +133,31 @@ class AlchemyProviderTest(unittest.TestCase):
         assert table.columns[0].name == "x"
 
 
-        #get all tables in directory
+        # get all tables in directory
         tables = self.provider.get_type_tables("/test/test_vars")
         assert len(tables) >= 2       # at least 2 tables are located in "/test/test_vars"
 
-        #count tables in a directory
+        # count tables in a directory
         assert self.provider.count_type_tables("/test/test_vars") >= 2
 
-        #SEARCH TYPE TABLES
+        # SEARCH TYPE TABLES
 
-        #basic search type table functional
+        # basic search type table functional
         tables = self.provider.search_type_tables("t??t_tab*")
         self.assertNotEqual(len(tables), 0)
         self.assertIn("/", tables[0].path)
 
-        #now lets get all tables from the directory.
+        # now lets get all tables from the directory.
         tables = self.provider.search_type_tables("*", "/test/test_vars")
         self.assertNotEqual(len(tables), 0)
         for table in tables:
             self.assertEqual(table.path, "/test/test_vars" + "/" + table.name)
 
-        #now lets get all tables from root directory.
+        # now lets get all tables from root directory.
         tables = self.provider.search_type_tables("t*", "/")
         self.assertEquals(len(tables), 0)
 
-        #CREATE AND DELETE
+        # CREATE AND DELETE
 
         try:
             #if such type table already exists.. probably from last failed test...
@@ -212,8 +212,8 @@ class AlchemyProviderTest(unittest.TestCase):
             rr = self.provider.get_run_range(0, 2001)
 
             #oh... such run range exists? It shouldn't be... Maybe it is left because of the last tests...
-            print "WARNING provider.get_run_range(0, 2001) found run range (should not be there)"
-            print "trying to delete run range and run the test one more time... "
+            print ("WARNING provider.get_run_range(0, 2001) found run range (should not be there)")
+            print ("trying to delete run range and run the test one more time... ")
             self.provider.delete_run_range(rr)      # (!) <-- test of this function is further
             rr = self.provider.get_run_range(0, 2001)
             self.assertIsNotNone(rr)
@@ -263,8 +263,8 @@ class AlchemyProviderTest(unittest.TestCase):
             v = self.provider.get_variation("abra_kozyabra")
 
             #oh... such run range exists? It shouldn't be... Maybe it is left because of the last tests...
-            print "WARNING provider.get_variation('abra_kozyabra') found but should not be there"
-            print "trying to delete variation and run the test one more time... "
+            print ("WARNING provider.get_variation('abra_kozyabra') found but should not be there")
+            print ("trying to delete variation and run the test one more time... ")
             self.provider.delete_variation(v)    # (!) <-- test of this function is further
             v = self.provider.get_variation("abra_kozyabra")
             self.assertIsNotNone(v)
@@ -303,7 +303,7 @@ class AlchemyProviderTest(unittest.TestCase):
         a = self.provider.get_assignment(100, "/test/test_vars/test_table", "test")
         self.assertEqual(a.constant_set.data_list[0], "2.2")
 
-        #No such calibration exist in test variation run 100, but constants should fallback to variation default
+        # No such calibration exist in test variation run 100, but constants should fallback to variation default
 
 
 

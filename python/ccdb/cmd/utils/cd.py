@@ -27,7 +27,7 @@ class ChangeDir(ConsoleUtilBase):
     rawentry = "/"       #object path with possible pattern, like /mole/*
     
     def print_help(ChangeDir):
-        print """ Change current directory """ 
+        print (""" Change current directory """)
     # ---- end of print_help() ----
 
 
@@ -55,7 +55,6 @@ class ChangeDir(ConsoleUtilBase):
         directory = self.context.provider.get_directory(self.rawentry)
         if directory:
             self.context.current_path = self.rawentry
-            #print self.rawentry
         else:
-            print "Can't find the directory"
+            print ("Can't find the directory")
             

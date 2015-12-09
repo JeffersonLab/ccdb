@@ -3,30 +3,31 @@ from ccdb.cmd import ConsoleUtilBase
 
 log = logging.getLogger("ccdb.cmd.utils.horse")
 
-#ccdbcmd module interface
+
+# ccdb module interface
 def create_util_instance():
     log.debug("      registering Horse")
     return Horse()
 
 
-#*********************************************************************
-#   Class Horse - Horse                                              *
-#                                                                    *
-#*********************************************************************
+# *********************************************************************
+#   Class Horse - Horse                                               *
+#                                                                     *
+# *********************************************************************
 class Horse(ConsoleUtilBase):
     """ horse """
     
     # ccdb utility class descr part 
-    #------------------------------
+    # ------------------------------
     command = "horse"
     name = "Horse"
     short_descr = "Horse"
 
-#----------------------------------------
-#   print_help 
-#----------------------------------------
+    # ----------------------------------------
+    #   print_help
+    # ----------------------------------------
     def print_help(self):
-        print """Draws horse for your console
+        print ("""Draws horse for your console
         flags are:
             --full      - full sized horse
             --young     - young horse
@@ -34,12 +35,11 @@ class Horse(ConsoleUtilBase):
             --solid     - solid looking horse
             --portrait - portrait of a horse
             --funny     - funny horse
-            """
-
+            """)
 
     def process(self, args):
 
-        horse =self.horse4
+        horse = self.horse4
         if len(args) > 0:
             if args[0] == "--full":
                 horse = self.full_horse
@@ -53,9 +53,9 @@ class Horse(ConsoleUtilBase):
                 horse = self.head
             elif args[0] == "--funny":
                 horse = self.horse3
-        print horse
+        print (horse)
 
-    full_horse = """
+    full_horse = ("""
                                                  `T",.`-,
                                                      '8, :.
                                               `""`oooob."T,.
@@ -100,7 +100,7 @@ class Horse(ConsoleUtilBase):
                        `o  `,
                         Y8bod.
                         `""'"'
-"""
+""")
     full_horse2 = """
 
                                                           ,   .
@@ -246,7 +246,6 @@ class Horse(ConsoleUtilBase):
 
 
 """
-
 
     toy = """
 

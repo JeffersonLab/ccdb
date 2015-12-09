@@ -5,7 +5,7 @@ from ccdb.cmd import ConsoleUtilBase
 from ccdb import NoColorTheme
 log = logging.getLogger("ccdb.cmd.utils.ls")
 
-#ccdbcmd module interface
+# ccdbcmd module interface
 def create_util_instance():
     log.debug("      registering Dump")
     return Dump()
@@ -19,13 +19,13 @@ class Dump(ConsoleUtilBase):
     """ Dumps datat table to a file """
     
     # ccdb utility class descr part 
-    #------------------------------
+    # ------------------------------
     command = "dump"
     name = "Dump"
     short_descr = "Dumps data table"
     uses_db = True
 
-    #variables for each process
+    # variables for each process
 
     def process(self, args):
         log.debug("{0}Dump is gained a control {0}\\".format(os.linesep))
@@ -47,11 +47,11 @@ class Dump(ConsoleUtilBase):
         """prints a full tree of directories
             This is recursive function"""
 
-        #print this directory
+        # print this directory
         if not printFullPath:
-            print "".join(["   " for i in range(0, level)]) + directory.name
+            print ("".join(["   " for i in range(0, level)]) + directory.name)
         else:
-            print directory.full_path
+            print (directory.full_path)
 
         #print subdirectories recursively
         subDirs = directory.subdirs
@@ -61,7 +61,7 @@ class Dump(ConsoleUtilBase):
 
     def print_help(self):
         "Prints help of the command"
-        print """ Dumps data table to a file
+        print (""" Dumps data table to a file
 Usage:
         dump <request> <file_name>
 
@@ -71,5 +71,5 @@ Example:
     > cat /test/test_vars/test_table:::2012-08 > file.txt    #data latest for august 2012
 
 Dump accepts the same flags as 'cat' command. See 'help cat' for flags
-        """
+        """)
 

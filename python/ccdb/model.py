@@ -192,7 +192,8 @@ class Assignment(Base):
     variation_id = Column('variationId', Integer, ForeignKey('variations.id'))
     variation = relationship("Variation", backref=backref('assignments'))
     _comment = Column('comment', Text)
-    author_id = Column('authorId', Integer, default=1)
+    author_id = Column('authorId', Integer, ForeignKey('users.id'), default=1)
+    author = relationship("User", uselist=False)
 
     @property
     def comment(self):
@@ -410,9 +411,9 @@ def get_roles():
     return _roles
 
 
-#--------------------------------------------
+# --------------------------------------------
 # flattens arrays of arrays to one array
-#--------------------------------------------
+# --------------------------------------------
 def gen_flatten_data(data):
     """
     get generator that flattens 'arrays of arrays' to one array
@@ -427,8 +428,19 @@ def gen_flatten_data(data):
     [1, 2, 3, 4, 5, "abs"]
 
     """
+    #python 3 hack to basestr
+    try:
+        unicode = unicode
+    except NameError:
+        # 'unicode' is undefined, must be Python 3
+        check_type = str
+    else:
+        # 'unicode' exists, must be Python 2
+
+        check_type = basestring
+
     for el in data:
-        if isinstance(el, collections.Iterable) and not isinstance(el, basestring):
+        if isinstance(el, collections.Iterable) and not isinstance(el, check_type):
             for sub in gen_flatten_data(el):
                 yield sub
         else:

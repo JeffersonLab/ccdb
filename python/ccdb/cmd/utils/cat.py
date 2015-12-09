@@ -76,7 +76,7 @@ class Cat(ConsoleUtilBase):
         self.user_request_print_vertical = False
 
         if not len(args):
-            print "Please provide ID for assignment. Use 'help cat' to get more information"
+            print ("Please provide ID for assignment. Use 'help cat' to get more information")
             return 1
 
         if not self.process_arguments(args):
@@ -107,7 +107,7 @@ class Cat(ConsoleUtilBase):
             else:
                 log.warning("Assignment contains no data")
         else:
-            print "Cannot fill data for assignment with this ID"
+            print ("Cannot fill data for assignment with this ID")
             return 1
 
         return 0
@@ -280,7 +280,7 @@ class Cat(ConsoleUtilBase):
 
         # PRINT COMMENTS
         if comments:
-            print "#" + str(assignment.comment).replace(os.linesep, "#" + os.linesep)
+            print ("#" + str(assignment.comment).replace(os.linesep, "#" + os.linesep))
 
         column_names = [column.name for column in table.columns]
         column_types = [column.type for column in table.columns]
@@ -312,7 +312,7 @@ class Cat(ConsoleUtilBase):
 
             # cap?
             if display_borders:
-                print self.theme.AsgmtBorder + cap
+                print (self.theme.AsgmtBorder + cap)
 
             # names line
             for i in range(0, columns_count):
@@ -320,18 +320,18 @@ class Cat(ConsoleUtilBase):
                 col_format = " %%-%is " % column_width[i]
                 sys.stdout.write(self.theme.AsgmtHead + col_format % column_names[i] + self.theme.Reset)
 
-            print self.theme.AsgmtBorder + border + self.theme.Reset  # last border
+            print (self.theme.AsgmtBorder + border + self.theme.Reset)  # last border
 
             # types line
             for i in range(0, columns_count):
                 sys.stdout.write(self.theme.AsgmtBorder + border + self.theme.Reset)
                 col_format = " %%-%is " % column_width[i]
                 sys.stdout.write(self.theme.AsgmtType + col_format % column_types[i] + self.theme.Reset)
-            print self.theme.AsgmtBorder + border + self.theme.Reset  # last border
+            print (self.theme.AsgmtBorder + border + self.theme.Reset)  # last border
 
         # cap?
         if display_borders:
-            print self.theme.AsgmtBorder + cap
+            print (self.theme.AsgmtBorder + cap)
 
         # data line by line
         column_iter = 0
@@ -345,11 +345,11 @@ class Cat(ConsoleUtilBase):
             # new line?
             if column_iter == columns_count:
                 column_iter = 0
-                print self.theme.AsgmtBorder + border + self.theme.Reset
+                print (self.theme.AsgmtBorder + border + self.theme.Reset)
 
         # final cap?
         if display_borders:
-            print self.theme.AsgmtBorder + cap
+            print (self.theme.AsgmtBorder + cap)
 
     # --------------------------------------------------------------------------------
     #   print_assignment_horizontal
@@ -381,7 +381,7 @@ class Cat(ConsoleUtilBase):
 
         # PRINT COMMENTS
         if comments:
-            print "#" + str(assignment.comment).replace(os.linesep, "#" + os.linesep)
+            print ("#" + str(assignment.comment).replace(os.linesep, "#" + os.linesep))
 
         column_names = [column.name for column in table.columns]
         column_types = [column.type for column in table.columns]
@@ -446,7 +446,7 @@ class Cat(ConsoleUtilBase):
 
         # #cap?
         if display_borders:
-            print self.theme.AsgmtBorder + cap + self.theme.Reset
+            print (self.theme.AsgmtBorder + cap + self.theme.Reset)
 
         # #data line by line
         # columnIter = 0
@@ -470,7 +470,7 @@ class Cat(ConsoleUtilBase):
 
         # #final cap?
         if display_borders:
-            print self.theme.AsgmtBorder + cap + self.theme.Reset
+            print (self.theme.AsgmtBorder + cap + self.theme.Reset)
 
     # ----------------------------------------
     #   print_help
@@ -478,7 +478,7 @@ class Cat(ConsoleUtilBase):
     def print_help(self):
         """Prints help of the command"""
 
-        print """Show data values for assignment.
+        print ("""Show data values for assignment.
 
 Usage:
     cat <request or table path>
@@ -510,4 +510,4 @@ Examples:
 
 See also 'dump' command which is 'cat' formatted to save data to files. 'help dump'
 
-    """
+    """)
