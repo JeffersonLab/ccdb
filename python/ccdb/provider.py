@@ -1006,15 +1006,21 @@ class AlchemyProvider(object):
     # ------------------------------------------------
     # Get last Assignment that matches parameters
     # ------------------------------------------------
-    def get_assignment(self, run, path_or_table, variation, use_variation_tree=True):
+    def get_assignment(self, path_or_table, run, variation, date_and_time=None, use_variation_tree=True):
         """
         Gets the latest assignment that matches the parameters
 
-        :param run: run number
-        :param path_or_table: string with name path of table or Table object
-        :param variation: name of the variation or variation object
-        :return: latest assignment that matches the parameters
-        :rtype: Assignment
+        @param run: run number
+        @param path_or_table: string with name path of table or Table object
+        @param variation: name of the variation or variation object
+        @param date_and_time: Constants should be of this or later date
+        @param use_variation_tree:
+
+        @return: latest assignment that matches the parameters
+        @rtype: Assignment
+
+        @attention (!) the function doesn't accept requests like /some/path:23:mc
+
         """
 
         if isinstance(path_or_table, str):
@@ -1032,9 +1038,15 @@ class AlchemyProvider(object):
         query = self.session.query(Assignment) \
             .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation) \
             .filter(Variation.name == variation_name) \
-            .filter(TypeTable.id == table.id) \
-            .filter(RunRange.min <= run).filter(RunRange.max >= run) \
-            .order_by(desc(Assignment.id))
+            .filter(TypeTable.id == table.id)\
+            .filter(RunRange.min <= run).filter(RunRange.max >= run)
+
+        # filter by date and time
+        if date_and_time is not None:
+            assert isinstance(date_and_time, datetime)
+            query = query.filter(Assignment.created <= date_and_time)
+
+        query = query.order_by(desc(Assignment.id))
 
         try:
             return query.limit(1).one()
@@ -1051,7 +1063,7 @@ class AlchemyProvider(object):
                 parent_variation = self.get_variation(variation_name).parent
 
             # try do it with parent variation
-            return self.get_assignment(run, path_or_table, parent_variation, use_variation_tree)
+            return self.get_assignment(path_or_table, run, parent_variation, date_and_time, use_variation_tree)
 
     # ------------------------------------------------
     # get list of assignments
@@ -1115,16 +1127,16 @@ class AlchemyProvider(object):
             assert isinstance(variation, Variation)
             query = query.filter(Variation.name == variation.name)
 
-        #filter by run
+        # filter by run
         if run >= 0:
             query = query.filter(RunRange.min <= run).filter(RunRange.max >= run)
 
-        #filter by date and time
+        # filter by date and time
         if date_and_time is not None:
             assert isinstance(date_and_time, datetime)
             query = query.filter(Assignment.created <= date_and_time)
 
-        #sort query
+        # sort query
         query = query.order_by(desc(Assignment.id))
 
         #limits

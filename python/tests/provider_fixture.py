@@ -300,7 +300,7 @@ class AlchemyProviderTest(unittest.TestCase):
         """Test Backup of """
         self.provider.connect(self.connection_str)   # this test requires the connection
 
-        a = self.provider.get_assignment(100, "/test/test_vars/test_table", "test")
+        a = self.provider.get_assignment("/test/test_vars/test_table", 100, "test")
         self.assertEqual(a.constant_set.data_list[0], "2.2")
 
         # No such calibration exist in test variation run 100, but constants should fallback to variation default
@@ -311,7 +311,7 @@ class AlchemyProviderTest(unittest.TestCase):
         """Test Assignments"""
         self.provider.connect(self.connection_str)   # this test requires the connection
 
-        assignment = self.provider.get_assignment(100, "/test/test_vars/test_table", "default")
+        assignment = self.provider.get_assignment("/test/test_vars/test_table", 100, "default")
         self.assertIsNotNone(assignment)
 
         # Check that everything is loaded

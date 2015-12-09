@@ -3,7 +3,7 @@ import logging
 
 log = logging.getLogger("ccdb.cmd.utils.help")
 
-#ccdbcmd module interface
+# ccdb cmd module interface
 def create_util_instance():
     log.debug("      registering HelpUtil")
     return HelpUtil()
@@ -76,6 +76,8 @@ Flags:
           --no-color     No colored output
     -c <connection string>  or  --connection <connection string>
                          Set connection string to server
+
+    --mysql-pwd          Ask for MySQL password before connecting to database
                          """
     enveron_text = """     
 Environment:
