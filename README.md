@@ -19,8 +19,16 @@ Platforms:
 * Windows (partly)
 
 ## Installation
+The minimum installation to see and manage constants is like this:
+```bash
+git clone git@github.com:JeffersonLab/ccdb.git ccdb
+source ccdb/environment.bash
 
+#That is it! Check it works
+ccdb -i
+```
 
+Instructions how to build CCDB for different programming languages and other info are here:
 [Instructions are here](https://github.com/JeffersonLab/ccdb/wiki/Installation)
 
 
