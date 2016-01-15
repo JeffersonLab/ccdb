@@ -18,6 +18,10 @@ Platforms:
 * MacOS
 * Windows (partly)
 
+## Installation
+
+
+[Instructions are here](https://github.com/JeffersonLab/ccdb/wiki/Installation)
 
 
 
