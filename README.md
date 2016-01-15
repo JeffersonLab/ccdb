@@ -28,8 +28,7 @@ source ccdb/environment.bash
 ccdb -i
 ```
 
-Instructions how to build CCDB for different programming languages and other info are here:
-[Instructions are here](https://github.com/JeffersonLab/ccdb/wiki/Installation)
+Instructions how to build CCDB for different programming languages and other info are [in the wiki](https://github.com/JeffersonLab/ccdb/wiki/Installation)
 
 
 
