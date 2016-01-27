@@ -31,11 +31,11 @@ class ConsoleContextTests(unittest.TestCase):
         self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
 
-        #initialize but disable colorama
+        # initialize but disable colorama
         ccdb.cmd.colorama.init(autoreset=True)
         ccdb.cmd.colorama.deinit()
 
-        #create console context
+        # create console context
         self.context = ConsoleContext()
         self.context.silent_exceptions = False
         self.context.theme = ccdb.cmd.themes.NoColorTheme()
@@ -43,23 +43,24 @@ class ConsoleContextTests(unittest.TestCase):
         self.context.user_name = "python_tests"
         self.context.register_utilities()
 
-        #save stdout
+        # save stdout
         self.output = StringIO()
         self.saved_stdout = sys.stdout
         sys.stdout = self.output
+        self.err_output = StringIO()
+        self.saved_stderr = sys.stderr
+        sys.stderr = self.err_output
 
-        #logger
+        # logger
         ch = logging.StreamHandler()
         ch.stream = self.output
         logger.addHandler(ch)
         logger.setLevel(logging.INFO)
 
-
-
     def tearDown(self):
-        #restore stdout
+        # restore stdout
         sys.stdout = self.saved_stdout
-
+        sys.stderr = self.saved_stderr
 
     def test_context(self):
         """Test utils are loaded"""
@@ -252,4 +253,18 @@ class ConsoleContextTests(unittest.TestCase):
         log. general test
         """
         self.context.process_command_line("log")
+
+    def test_logging_errors_to_stderr(self):
+        """ Tests if errors are redirected to stderr"""
+
+        # create stderr handler
+        stderr_handler = logging.StreamHandler()
+        stderr_handler.stream = sys.stderr
+        stderr_handler.setLevel(logging.ERROR)
+        logger.addHandler(stderr_handler)
+
+        # do something wrong... Muuuuu ha ha ha
+        self.context.silent_exceptions = True
+        self.context.process_command_line("rm -f -t something_that_never_exist")
+        self.assertIn("No type table found by exact path", self.err_output.getvalue())
 
