@@ -5,6 +5,7 @@ import datetime
 def split(path):
     return posixpath.split(path)
 
+
 class PathObject():
 
     def __init__(self):
@@ -12,6 +13,7 @@ class PathObject():
         self.path = ""
         self.CCDBType = "Directory"
         self.tag = None
+
 
 class PathObjectType:
     Directory = "Directory"
@@ -38,7 +40,7 @@ class ParseRequestResult(object):
 
 
 #______________________________________________________________________________
-def extract_dir(path = ""):
+def extract_dir(path=""):
     return posixpath.dirname(path)
 
 
@@ -48,8 +50,20 @@ def extract_name(path=""):
 
 
 #______________________________________________________________________________
-def join(left = "", right = "" ):
-    return posixpath.join(left,right)
+def join(a, *p):
+    """Join two or more pathname components, inserting '/' as needed.
+    If any component is an absolute path, all previous path components
+    will be discarded.  An empty last part will result in a path that
+    ends with a separator."""
+    path = a
+    for b in p:
+        if b.startswith('/'):
+            path = b
+        elif path == '' or path.endswith('/'):
+            path += b
+        else:
+            path += '/' + b
+    return path
 
 
 #______________________________________________________________________________
