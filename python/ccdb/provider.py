@@ -1246,7 +1246,7 @@ class AlchemyProvider(object):
 
         # Log
         self.create_log_record(user=user,
-                               affected_ids=[assignment.__tablename__ + assignment(assignment.id)],
+                               affected_ids=[assignment.__tablename__ + str(assignment.id)],
                                action="update",
                                description="Updated assignment '{0}'".format(assignment.request),
                                comment=assignment.comment)
