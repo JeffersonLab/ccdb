@@ -217,7 +217,7 @@ class Assignment(Base):
         path = self.constant_set.type_table.path
         run = self.run_range.min
         variation = self.variation.name
-        time = self.modified.strftime("%Y-%m-%d_%H-%M-%S")
+        time = self.created.strftime("%Y-%m-%d_%H-%M-%S")
 
         return "{0}:{1}:{2}:{3}".format(path, run, variation, time)
 
