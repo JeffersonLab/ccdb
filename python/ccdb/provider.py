@@ -563,10 +563,9 @@ class AlchemyProvider(object):
         #execute and return
         return query.all()
 
-
-    # ------------------------------------------------
+    # --------------------------------------------------
     # Counts number of type tables for a given directory
-    # ------------------------------------------------
+    # --------------------------------------------------
     def count_type_tables(self, dir_obj_or_path):
         """
         Counts number of type tables for a given directory
@@ -588,34 +587,33 @@ class AlchemyProvider(object):
 
         return self.session.query(TypeTable).filter(TypeTable.parent_dir_id == parent_dir.id).count()
 
-
-    ## @brief Creates constant table in database
-    #
-    # Creates  constants type table in database and returns reference to
-    # created table if operation is succeeded (NULL otherwise)
-    #
-    # The map "columns" should contains [("name", "type")] string pairs where:
-    #  -- "name" is the name of the column.
-    #      Should have the same naming conventions
-    #      as names of directories and type tables  @see ValidateName()
-    #  -- "type" is the type of the column
-    #     might be: int, uint, long, ulong, double, bool, string
-    #     other values will lead to "double" type to be used.
-    #     @see ccdb::ConstantsTypeColumn::StringToType
-    #     Thus <"px", "">, <"py", ""> will create two double typed columns
-    #
-    # @param [in] name          name of the new constants type table
-    # @param [in] parentPath   parent directory path
-    # @param [in] rowsNumber  Number of rows
-    # @param [in] columns     a map fo "name", "type" pairs
-    # @param [in] comments      description for this type table
-    # @return NULL if failed, pointer to created object otherwise
-    #
-    # ------------------------------------------------
-    # ------------------------------------------------
+    # --------------------------------------------------
+    # Creates constant table in database
+    # --------------------------------------------------
     def create_type_table(self, name, dir_obj_or_path, rows_num, columns, comment=""):
-        """Creates constant table in database"""
-        # return self._provider.CreateConstantsTypeTable(name, parentPath, rowsNumber, columns, comments)
+        """@brief Creates constant table in database
+
+             Creates  constants type table in database and returns reference to
+             created table if operation is succeeded (NULL otherwise)
+
+             The map "columns" should contains [("name1", "type"), ("name2", "type"),...] string pairs where:
+              -- "name" is the name of the column.
+                  Should have the same naming conventions
+                  as names of directories and type tables  @see ValidateName()
+              -- "type" is the type of the column
+                 might be: int, uint, long, ulong, double, bool, string
+                 other values will lead to "double" type to be used.
+                 @see ccdb::ConstantsTypeColumn::StringToType
+                 Thus <"px", "">, <"py", ""> will create two double typed columns
+
+             @param [in] name:              name of the new constants type table
+             @param [in] dir_obj_or_path:   parent directory path or ccdb.model.Directory
+             @param [in] rows_num:          Number of rows
+             @param [in] columns:           a map fo "name", "type" pairs [("name1", "type"), ("name2", "type"),...]
+             @param [in] comment:           description for this type table
+             @return: NULL if failed, pointer to created object otherwise
+        """
+
 
         assert len(columns) > 0
         assert rows_num > 0
@@ -635,7 +633,7 @@ class AlchemyProvider(object):
             message = "Can't create a type table. Such table already exists in this directory"
             raise ValueError(message)
 
-        #Get user
+        # get user
         user = self.get_current_user()
 
         table = TypeTable()
@@ -701,7 +699,7 @@ class AlchemyProvider(object):
         """
         assert isinstance(type_table, TypeTable)
 
-        #get user here to fail if no such user
+        # get user here to fail if no such user
         user = self.get_current_user()
 
         data_count = self.session.query(ConstantSet).filter(ConstantSet.type_table_id == type_table.id).count()
@@ -714,7 +712,7 @@ class AlchemyProvider(object):
         self.session.delete(type_table)
         self.session.commit()
 
-        #Log
+        # Log
         self.create_log_record(user=user,
                                affected_ids=[type_table.__tablename__ + str(type_table.id)],
                                action="delete",
@@ -754,7 +752,7 @@ class AlchemyProvider(object):
     # ------------------------------------------------
     # Gets run range from DB Or Creates RunRange in DB
     # ------------------------------------------------
-    #noinspection PyBroadException
+    # noinspection PyBroadException
     def get_or_create_run_range(self, min_run, max_run, name="", comment=""):
         """
         Gets run range from DB Or Creates RunRange in DB
@@ -773,7 +771,7 @@ class AlchemyProvider(object):
         except:
             pass
 
-        #if we here we was unable to find a run range
+        # if we here we was unable to find a run range
         run_range = RunRange()
         run_range.min = min_run
         run_range.max = max_run
@@ -839,10 +837,9 @@ class AlchemyProvider(object):
             message = "No variation found with name: '{0}'".format(name)
             raise VariationNotFound(message)
 
-
-    # ------------------------------------------------
+    # -------------------------------------------------------
     # Searches all variations associated with this type table
-    # ------------------------------------------------
+    # -------------------------------------------------------
     #noinspection PyUnresolvedReferences
     def get_variations(self, pattern=""):
         """
@@ -852,11 +849,11 @@ class AlchemyProvider(object):
         :rtype: [Variation]
         """
 
-        #initial query
+        # initial query
         query = self.session.query(Variation)
 
         if len(pattern):
-            #prepare search pattern for SQL
+            # prepare search pattern for SQL
             pattern = pattern.replace("_", "\\_").replace("*", "%").replace("?", "_")
             query = query.filter(Variation.name.like(pattern, escape="\\"))
 
@@ -865,7 +862,7 @@ class AlchemyProvider(object):
     # ------------------------------------------------
     # Searches all variations associated with this type table
     # ------------------------------------------------
-    #noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences
     def search_variations(self, table_or_path, run=0, name=None, limit=0, offset=0):
         """
         Searches all variations associated with this type table
@@ -916,7 +913,7 @@ class AlchemyProvider(object):
         :return: new created variation
         :rtype: Variation
         """
-        #Get user
+        # Get user
         user = self.get_current_user()
 
         variation = Variation()
@@ -935,7 +932,7 @@ class AlchemyProvider(object):
         self.session.add(variation)
         self.session.commit()
 
-        #add log
+        # add log
         self.create_log_record(user=user,
                                affected_ids=[variation.__tablename__ + str(variation.id)],
                                action="create",
@@ -953,16 +950,16 @@ class AlchemyProvider(object):
     #
     # @param   [in]  variation to update
     # @return true if success
-    #/
+    #
     # ------------------------------------------------
     # ------------------------------------------------
     def update_variation(self, variation):
 
-        #get user here to fail if no such user
+        # get user here to fail if no such user
         user = self.get_current_user()
 
         self.session.commit()
-        #Log
+        # Log
         self.create_log_record(user=user,
                                affected_ids=[variation.__tablename__ + str(variation.id)],
                                action="update",
@@ -975,7 +972,7 @@ class AlchemyProvider(object):
     # if there is no assignments for this variation
     # @param    [in] variation to delete
     # @return   bool
-    #/
+    #
     # ------------------------------------------------
     # ------------------------------------------------
     def delete_variation(self, variation):
@@ -1102,7 +1099,7 @@ class AlchemyProvider(object):
         :return:
         """
 
-        #TODO do for named run
+        # TODO do for named run
         try:
             isstring = isinstance(path_or_table, basestring)
         except NameError:
@@ -1114,12 +1111,12 @@ class AlchemyProvider(object):
             assert isinstance(path_or_table, TypeTable)
             table = path_or_table
 
-        #build query
+        # build query
         query = self.session.query(Assignment) \
             .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation) \
             .filter(TypeTable.id == table.id)
 
-        #filter variation
+        # filter variation
         if isinstance(variation, str):
             if variation != "":
                 query = query.filter(Variation.name == variation)
@@ -1139,7 +1136,7 @@ class AlchemyProvider(object):
         # sort query
         query = query.order_by(desc(Assignment.id))
 
-        #limits
+        # limits
         if limit != 0: query = query.limit(limit)
         if offset != 0: query = query.offset(offset)
 
@@ -1163,14 +1160,14 @@ class AlchemyProvider(object):
         -- If data is inconsistent with columns number and rows number
         -- If no variation with such name found
 
-        :param data: tabled data or TextFileDom
-        :param path: table path
-        :param min_run:
-        :param max_run:
-        :param variation_name:
-        :param comment:
-        :return: created assignment
-        :rtype: Assignment
+        @param data: tabled data or TextFileDom
+        @param path: table path
+        @param min_run:
+        @param max_run:
+        @param variation_name:
+        @param comment:
+        @return: created assignment
+        @rtype: Assignment
         """
 
         # maybe it is a dom?
@@ -1249,7 +1246,7 @@ class AlchemyProvider(object):
 
         # Log
         self.create_log_record(user=user,
-                               affected_ids=[assignment.__tablename__ + assignment(assignment.id)],
+                               affected_ids=[assignment.__tablename__ + str(assignment.id)],
                                action="update",
                                description="Updated assignment '{0}'".format(assignment.request),
                                comment=assignment.comment)
@@ -1270,7 +1267,6 @@ class AlchemyProvider(object):
         action = "delete"
         description = "Deleted assignment '{0}'".format(assignment.request)
         comment = assignment.comment
-
 
         # delete it
         self.session.delete(assignment)
@@ -1353,12 +1349,15 @@ class AlchemyProvider(object):
         :param assignment:
         :return:
         """
-        #TODO decide is it useless or not
+        # TODO decide is it useless or not
         raise NotImplementedError()
 
     # ----------------------------------------------------------------------------------------
     #   U S E R S
     # ----------------------------------------------------------------------------------------
+    # ------------------------------------------------
+    # get user by username
+    # ------------------------------------------------
     def get_user(self, username):
         """
         Find user in the database by user name
@@ -1376,11 +1375,13 @@ class AlchemyProvider(object):
             message = "No user with name '{0}' is found in database".format(username)
             raise UserNotFoundError(message, username)
 
-
+    # ------------------------------------------------
+    # get all users in DB
+    # ------------------------------------------------
     def get_users(self, filter_deleted=True):
         """
-        @param filterDeleted: Return only non-deleted users
-        @type filterDeleted: bool
+        @param filter_deleted: Return only non-deleted users
+        @type filter_deleted: bool
         @return:
         """
         query = self.session.query(User)
@@ -1388,6 +1389,9 @@ class AlchemyProvider(object):
             query = query.filter(User.is_deleted == 0)
         return query.all()
 
+    # ------------------------------------------------
+    # get all users in DB
+    # ------------------------------------------------
     def create_user(self, name, pwd="", roles=[], user_info=""):
         """
             Creates a user with defined user name
@@ -1411,24 +1415,32 @@ class AlchemyProvider(object):
         self.session.commit()
         return user
 
+    # ------------------------------------------------
+    # deletes user by name
+    # ------------------------------------------------
     def delete_user(self, name):
         """
         Deletes user with specified name
         @param name: Name(login) of the user to delete
         @type name: str
         @raise UserNo
+
+        The function doesn't physically delete user record from DB, but flag user as deleted
         """
 
         user = self.get_user(name)
         user.is_deleted = True
         self.session.commit()
 
-
+    # ------------------------------------------------
+    # deletes user by name
+    # ------------------------------------------------
     def get_current_user(self):
         """
+        Gets current user. The current user is the user, whose name appears in log
 
-        :return: User db object
-        :rtype: User
+        @return: User db object
+        @rtype: User
         """
         return self.get_user(self._auth.current_user_name)
 
