@@ -63,7 +63,8 @@ open public class JDBCProvider(public val connectionString: String) {
      *
      * @remark this directory is not stored in database
      */
-    public val rootDir: Directory = Directory(0, 0, "", Date(0), Date(0), "root directory"); {
+    public val rootDir: Directory = Directory(0, 0, "", Date(0), Date(0), "root directory");
+    init {
         rootDir.fullPath = "/"
     }
 
@@ -330,8 +331,8 @@ open public class JDBCProvider(public val connectionString: String) {
         if(cached!=null && cached.name == name && parentDir == cached.directory) return cached
 
         //Read the table
-        val table = getTypeTableUnsafe(name, parentDir)
-        if(table == null) throw SQLException("TypeTable with name='${combinePath(parentDir.fullPath, name)}' is not found in the DB")
+        val table = getTypeTableUnsafe(name, parentDir) ?:
+                throw SQLException("TypeTable with name='${combinePath(parentDir.fullPath, name)}' is not found in the DB")
         cachedTypeTable = table
         return table
     }

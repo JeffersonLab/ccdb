@@ -11,6 +11,7 @@ import com.sun.javafx.scene.shape.PathUtils
 import org.jlab.ccdb.helpers.combinePath
 import java.util.HashMap
 import kotlin.properties.Delegates
+import kotlin.text.toBoolean
 
 val dataSeparator = '|'
 
@@ -87,13 +88,14 @@ public class TypeTable(
 
     private var isDoneColumnsByName=false
 
-    public val columnsByName: HashMap<String, TypeTableColumn> = HashMap<String, TypeTableColumn>()
+    public val _columnsByName: HashMap<String, TypeTableColumn> = HashMap<String, TypeTableColumn>()
+    public val columnsByName: HashMap<String, TypeTableColumn>
         get(){
             if(!isDoneColumnsByName){
-                for(column in columns) $columnsByName[column.name]=column
+                for(column in columns) _columnsByName[column.name]=column
                 isDoneColumnsByName = false
             }
-            return $columnsByName
+            return _columnsByName
         }
 }
 
@@ -129,18 +131,19 @@ class Assignment(
     /**
      * Gets data represented as one vector of string values
      */
-    public val vectorString: Vector<String> = Vector<String>()
+    private  val _vectorString: Vector<String> = Vector<String>()
+    public val vectorString: Vector<String>
     get(){
-        if($vectorString.empty){
-            for (token in blob.split(dataSeparator)) $vectorString.add(token)
+        if(_vectorString.isEmpty()){
+            for (token in blob.split(dataSeparator)) _vectorString.add(token)
         }
-        return $vectorString
+        return _vectorString
     }
 
     /**
      * Gets data represented as one vector of int values
      */
-    public val vectorInt: Vector<Int> by Delegates.lazy {
+    public val vectorInt: Vector<Int> by lazy {
         val result = Vector<Int>()
         for (token in blob.split(dataSeparator)) result.add(token.toInt())
         result
@@ -149,7 +152,7 @@ class Assignment(
     /**
      * Gets data represented as one vector of int values
      */
-    public val vectorLong: Vector<Long> by Delegates.lazy {
+    public val vectorLong: Vector<Long> by lazy {
         val result = Vector<Long>()
         for (token in blob.split(dataSeparator)) result.add(token.toLong())
         result
@@ -158,7 +161,7 @@ class Assignment(
     /**
      * Gets data represented as one vector of int values
      */
-    public val vectorDouble: Vector<Double> by Delegates.lazy {
+    public val vectorDouble: Vector<Double> by lazy {
         val result = Vector<Double>()
         for (token in blob.split(dataSeparator)) result.add(token.toDouble())
         result
@@ -167,7 +170,7 @@ class Assignment(
     /**
      * Gets data represented as one vector of boolean values
      */
-    public val vectorBoolean: Vector<Boolean> by Delegates.lazy {
+    public val vectorBoolean: Vector<Boolean> by lazy {
         val result = Vector<Boolean>()
         for (token in blob.split(dataSeparator)) result.add(token.toBoolean())
         result
@@ -177,9 +180,10 @@ class Assignment(
     /**
      * Gets data represented as row-wise table
      */
-    public val tableString:Vector<Vector<String>> = Vector<Vector<String>>()
+    private val _tableString = Vector<Vector<String>>()
+    public val tableString:Vector<Vector<String>>
         get(){
-            if($tableString.empty){
+            if(_tableString.isEmpty()){
                 val ncols = typeTable.columns.size
                 val nrows = typeTable.rowsCount
 
@@ -188,16 +192,16 @@ class Assignment(
                     for(colIndex in 0..ncols-1){
                         row.add(vectorString[rowIndex*ncols + colIndex])
                     }
-                    $tableString.add(row)
+                    _tableString.add(row)
                 }
             }
-            return $tableString
+            return _tableString
         }
 
     /**
      * Gets data represented as row-wise table of Integers
      */
-    public val tableInt:Vector<Vector<Int>>  by Delegates.lazy {
+    public val tableInt:Vector<Vector<Int>> by lazy {
         val result = Vector<Vector<Int>>()
         for(row in tableString){
             val parsedRow = Vector<Int>()
@@ -212,7 +216,7 @@ class Assignment(
     /**
      * Gets data represented as row-wise table of Longs
      */
-    public val tableLong:Vector<Vector<Long>>  by Delegates.lazy {
+    public val tableLong:Vector<Vector<Long>> by lazy {
         val result = Vector<Vector<Long>>()
         for(row in tableString){
             val parsedRow = Vector<Long>()
@@ -227,7 +231,7 @@ class Assignment(
     /**
      * Gets data represented as row-wise table of Doubles
      */
-    public val tableDouble:Vector<Vector<Double>>  by Delegates.lazy {
+    public val tableDouble:Vector<Vector<Double>> by lazy {
         val result = Vector<Vector<Double>>()
         for(row in tableString){
             val parsedRow = Vector<Double>()
@@ -242,7 +246,7 @@ class Assignment(
     /**
      * Gets data represented as row-wise table of Booleans
      */
-    public val tableBoolean:Vector<Vector<Boolean>>  by Delegates.lazy {
+    public val tableBoolean:Vector<Vector<Boolean>> by lazy {
         val result = Vector<Vector<Boolean>>()
         for(row in tableString){
             val parsedRow = Vector<Boolean>()
@@ -258,16 +262,17 @@ class Assignment(
     /**
      * gets data represented as map of {column name: data}
      */
-    public val mapString: HashMap<String, String> = HashMap<String, String>()
+    private val _mapString = HashMap<String, String>()
+    public val mapString: HashMap<String, String>
         get(){
-            if(mapString.empty) {
+            if(_mapString.isEmpty()) {
                 val ncols = typeTable.columns.size
 
                 for (colIndex in 0..ncols - 1) {
-                    $mapString[typeTable.columns[colIndex].name] = vectorString[colIndex]
+                    _mapString[typeTable.columns[colIndex].name] = vectorString[colIndex]
                 }
             }
-            return $mapString
+            return _mapString
         }
 
     /**
@@ -376,13 +381,13 @@ class Assignment(
  * types from 'int', 'uint', 'long', 'ulong', 'double', 'string', 'bool'
  */
 public enum class CellTypes{
-    BOOL
-    INT
-    UINT
-    LONG
-    ULONG
-    DOUBLE
-    STRING
+    BOOL,
+    INT,
+    UINT,
+    LONG,
+    ULONG,
+    DOUBLE,
+    STRING;
 
     override fun toString():String{
         return when(this){

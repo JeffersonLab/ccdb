@@ -29,7 +29,7 @@ fun extractDirectory(path: String): String {
  */
 fun extractObjectname(path: String): String {
     val index = path.lastIndexOf("/")
-    if (index < 0 || index == path.size - 1) return ""
+    if (index < 0 || index == path.length - 1) return ""
     return path.substring(index + 1)
 }
 
@@ -142,7 +142,7 @@ fun parseTime(timeStr: String): Date {
     var lastIsDigit = false      // last symbol was digit
 
     //scan all symbols
-    for (i in 0..(workStr.size - 1)) {
+    for (i in 0..(workStr.length - 1)) {
         val symbol = workStr[i]
 
 
@@ -156,7 +156,7 @@ fun parseTime(timeStr: String): Date {
                 delimCount++
                 if (delimCount == 1) //it was a year
                 {
-                    if (tmpStr.size != 4) //it is an error with length
+                    if (tmpStr.length != 4) //it is an error with length
                     {
                         throw IllegalArgumentException("Year should be in form YYYY but given is '$tmpStr'. Overall date should be in form 'YYYY/MM/dd hh:mm:ss'")
                     }
@@ -166,7 +166,7 @@ fun parseTime(timeStr: String): Date {
 
                 if (delimCount == 2) //it was a month
                 {
-                    if (tmpStr.size != 2) //it is an error with length
+                    if (tmpStr.length != 2) //it is an error with length
                     {
                         throw IllegalArgumentException("Month should be in form 'MM' but given is '$tmpStr'. Overall date should be in form 'YYYY/MM/dd hh:mm:ss'")
                     }
@@ -191,8 +191,7 @@ fun parseTime(timeStr: String): Date {
 
                 if (delimCount == 3) //it was a day
                 {
-
-                    if (tmpStr.size != 2) //it is an error with length
+                    if (tmpStr.length != 2) //it is an error with length
                     {
                         throw IllegalArgumentException("Day should be in form 'dd' but given is '$tmpStr'. Overall date should be in form 'YYYY/MM/dd hh:mm:ss'")
                     }
@@ -201,7 +200,7 @@ fun parseTime(timeStr: String): Date {
 
                 if (delimCount == 4) //it was a hour
                 {
-                    if (tmpStr.size != 2) //it is an error with length
+                    if (tmpStr.length != 2) //it is an error with length
                     {
                         throw IllegalArgumentException("Hour should be in form 'hh' but given is '$tmpStr'." +
                         "Overall date should be in form 'YYYY/MM/dd hh:mm:ss'")
@@ -212,10 +211,10 @@ fun parseTime(timeStr: String): Date {
 
                 if (delimCount == 5) //it is a minutes
                 {
-                    if (tmpStr.size != 2) //it is an error with length
+                    if (tmpStr.length != 2) //it is an error with length
                     {
-                        throw IllegalArgumentException("Minutes should be in form 'mm' but given is '$tmpStr'." +
-                        "Overall date should be in form 'YYYY/MM/dd hh:mm:ss'")
+                        throw IllegalArgumentException("Minutes should be in form 'mm' but given is '$tmpStr'. " +
+                                "Overall date should be in form 'YYYY/MM/dd hh:mm:ss'")
                     }
 
                     min = Integer.parseInt(tmpStr)
@@ -223,7 +222,7 @@ fun parseTime(timeStr: String): Date {
 
                 if (delimCount == 6) //it is seconds
                 {
-                    if (tmpStr.size != 2) //it is an error with length
+                    if (tmpStr.length != 2) //it is an error with length
                     {
                         throw IllegalArgumentException("Seconds should be in form 'ss' but given is '$tmpStr'." +
                         "Overall date should be in form 'YYYY/MM/dd hh:mm:ss'")
@@ -259,7 +258,7 @@ fun parseRequest( requestStr:String ): RequestParseResult{
     val result = RequestParseResult(requestStr)
     var colonCount = 0
     var runStr = ""
-    for (i in 0..(requestStr.size-1)) {
+    for (i in 0..(requestStr.length - 1)) {
         val symbol = requestStr[i]
         if (symbol != ':') {
             //it is not a colon so we add this symbol somewhere
@@ -312,7 +311,7 @@ fun parseRequest( requestStr:String ): RequestParseResult{
  *
  * If one have 'the/path' this function will change the string as '/the/path'
  * If one gave '/the/path' this function does nothing
- * @parameter [in] string & path
+ * @parameter  string & path
  * @return   void
  */
 fun makeAbsolute(path: String): String {

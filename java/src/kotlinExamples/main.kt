@@ -14,8 +14,6 @@ import org.jlab.ccdb.MySqlProvider
 import org.jlab.ccdb.SQLiteProvider
 
 
-
-
 fun testSQLite(){
 
     val ccdbHome = System.getenv("CCDB_HOME")
@@ -23,7 +21,7 @@ fun testSQLite(){
         println("\$CCDB_HOME is not set")
         return
     }
-    println("------------SQLITE---------------")
+    println("------------ SQLITE ---------------")
     val provider = SQLiteProvider("sqlite:///$ccdbHome/sql/ccdb.sqlite")
     provider.connect()
     val sw = Stopwatch()
