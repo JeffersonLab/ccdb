@@ -52,6 +52,7 @@ public class SQLiteProvider(connectionString:String): JDBCProvider(connectionStr
         prsData = con.prepareStatement(dataQuery + timeConstrain + orderBy)
 
         prsTable = con.prepareStatement("SELECT `id`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM `typeTables` WHERE `name` = ? AND `directoryId` = ?;")
+        prsAllTables = con.prepareStatement("SELECT `id`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM `typeTables`")
         prsColumns = con.prepareStatement("SELECT `id`, `name`, `columnType` FROM `columns` WHERE `typeId` = ? ORDER BY `order`;")
 
         postConnect()

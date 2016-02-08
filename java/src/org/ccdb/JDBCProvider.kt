@@ -32,9 +32,10 @@ open public class JDBCProvider(public val connectionString: String) {
     protected var prsDirectories: PreparedStatement? = null
     protected var prsVariationById: PreparedStatement? = null
     protected var prsVariationByName: PreparedStatement? = null
-    protected var prsData: PreparedStatement?=null
-    protected var prsTable: PreparedStatement?=null
-    protected var prsColumns: PreparedStatement?=null
+    protected var prsData: PreparedStatement? = null
+    protected var prsTable: PreparedStatement? = null
+    protected var prsAllTables: PreparedStatement? = null
+    protected var prsColumns: PreparedStatement? = null
 
     private var stopwatch = Stopwatch()
 
@@ -320,6 +321,40 @@ open public class JDBCProvider(public val connectionString: String) {
         else{
             return null;
         }
+    }
+
+    /**
+     * Gets type table from db or returns null if no such table found in the DB
+     */
+    public fun getAllTypeTables():Vector<TypeTable>{
+        ensureDirsAreLoaded()
+        val prs = prsAllTables!!
+
+        val tables = Vector<TypeTable>()
+
+        val result = prs.executeQuery()
+        //Check we've got a variation
+
+        //loop through results
+        while (result.next()) {
+            val tableId = result.getInt("id")
+            val tableName = result.getString("name")?:"NULL"
+            val columns = loadColumns(tableId)
+            val directoryId = result.getInt("directoryId")?:-1
+            val directory = directoriesById[directoryId]?:
+                 throw SQLException("Table id='$tableId' name='$tableName' has parent directoryId='$directoryId'. No directory with this ID is found in dictionary. DB relationship corruption maybe?")
+
+            val table = TypeTable(
+                    tableId,
+                    directory,
+                    tableName,
+                    columns,
+                    result.getInt("nRows")
+            )
+
+            tables.add(table)
+        }
+        return tables
     }
 
 

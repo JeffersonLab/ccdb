@@ -2,6 +2,7 @@
  * Created by Dmitry on 3/24/2014.
  */
 package kotlinExamples
+
 import java.sql.DriverManager
 import java.util.Vector
 import java.util.Date
@@ -51,7 +52,6 @@ fun main(args: Array<String>) {
     val variation = provider.getVariation("default")
     val table = provider.getTypeTable("/test/test_vars/test_table")
     var asgmt1 = provider.getAssignment(0, table, Date(), variation)
-
 
     sw.stop()
     println("time for request is $sw")
