@@ -30,7 +30,7 @@ class AddData(ConsoleUtilBase):
     """ Add data constants according given type table"""
     
     # ccdb utility class descr part 
-    #------------------------------
+    # ------------------------------
     command = "add"
     name = "AddData"
     short_descr = "Add data constants"
@@ -39,16 +39,16 @@ class AddData(ConsoleUtilBase):
     def __init(self):
         self.reset()
 
-    #----------------------------------------
+    # ----------------------------------------
     #   process
-    #----------------------------------------
+    # ----------------------------------------
     def reset(self):
         """
         Resets for new command
         :return: None
         """
 
-        #set arguments to default
+        # set arguments to default
         self.raw_table_path = ""
         self.table_path = ""
         self.raw_file_path = ""
