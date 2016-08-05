@@ -431,7 +431,7 @@ def gen_flatten_data(data):
     """
     #python 3 hack to basestr
     try:
-        unicode = unicode
+        u = unicode
     except NameError:
         # 'unicode' is undefined, must be Python 3
         check_type = str
