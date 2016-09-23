@@ -1,18 +1,11 @@
-/**
- * Created by Dmitry on 3/24/2014.
- */
 package kotlinExamples
 
-import java.sql.DriverManager
-import java.util.Vector
-import java.util.Date
-import java.text.SimpleDateFormat
-
 import org.jlab.ccdb.JDBCProvider
-import org.jlab.ccdb.Directory
-import org.jlab.ccdb.Stopwatch
 import org.jlab.ccdb.MySqlProvider
 import org.jlab.ccdb.SQLiteProvider
+import org.jlab.ccdb.Stopwatch
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 fun testSQLite(){
@@ -87,5 +80,25 @@ fun main(args: Array<String>) {
     println("Data is '${asgmt2.blob}'")
 
 
-    testSQLite()
+    getAllDirectories(provider)     // Example of how to show directories
+
+    testSQLite()                    // Test of SQLite DB
+}
+
+
+/// Example of how to show directories
+fun getAllDirectories(provider: JDBCProvider){
+    // function loads directories if they hasn't been loaded yet (and in this scenario they hasn't been)
+    provider.ensureDirsAreLoaded()
+
+    // 'root' directory is '/' (it is not stored database)
+    val root = provider.rootDir
+
+    // iterate over directories
+    for (dir in root.subdirectories) {
+        println(dir.fullPath)
+        for (subDir in dir.subdirectories) {
+            println("      " + subDir.fullPath)
+        }
+    }
 }

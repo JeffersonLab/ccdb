@@ -20,6 +20,7 @@ public class GetAllTables {
 
         JDBCProvider provider = CCDB.createProvider("sqlite:///" + ccdbHome + "/sql/ccdb.sqlite");
         provider.connect();
+
         Vector<TypeTable> tables = provider.getAllTypeTables();
 
         for(TypeTable table : tables){
