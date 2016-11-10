@@ -88,14 +88,14 @@ if __name__ == "__main__":
         print(constant_set.data_list)
 
     print("\n\n== Getting assignment ==")
-    assignment = provider.get_assignment(1, "/test/test_vars/test_table2", "test")  # run, table, variation
+    assignment = provider.get_assignment("/test/test_vars/test_table2", 1, "test")  # run, table, variation
     print(assignment)
     print(assignment.constant_set.data_table)
 
     # One can use previously got objects to do the same
     variation = provider.get_variation("default")                                   # That is how you get variation
     table = provider.get_type_table("/test/test_vars/test_table")
-    assignment = provider.get_assignment(1, table, variation)                       # run, table, variation
+    assignment = provider.get_assignment(table, 1, variation)                       # run, table, variation
     print(assignment)
     print(assignment.constant_set.data_table)
 
