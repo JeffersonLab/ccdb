@@ -3,10 +3,7 @@ package org.jlab.ccdb
 import java.sql.DriverManager
 import java.sql.Connection
 
-import org.jlab.ccdb.JDBCProvider
-
-
-public class MySqlProvider(connectionString: String) : JDBCProvider(connectionString) {
+class MySqlProvider(connectionString: String) : JDBCProvider(connectionString) {
 
     override fun connect() {
         // load the MySql-JDBC driver using the current class loader

@@ -3,7 +3,7 @@ package org.jlab.ccdb
 import java.sql.DriverManager
 import java.sql.Connection
 
-public class SQLiteProvider(connectionString:String): JDBCProvider(connectionString) {
+class SQLiteProvider(connectionString:String): JDBCProvider(connectionString) {
 
 
     override fun connect()

@@ -7,10 +7,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
-    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
-    <orderEntry type="library" name="mysql-connector-java-5.1.29-bin" level="project" />
-    <orderEntry type="library" name="sqlite-jdbc-3.7.2" level="project" />
+    <orderEntry type="library" exported="" name="mysql-connector-java-5.1.29-bin" level="project" />
+    <orderEntry type="library" exported="" name="sqlite-jdbc-3.7.2" level="project" />
+    <orderEntry type="library" exported="" name="KotlinJavaRuntime" level="project" />
   </component>
 </module>
-

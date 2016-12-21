@@ -17,9 +17,6 @@ public class GetAllDirectories {
         JDBCProvider provider = CCDB.createProvider("sqlite:///" + ccdbHome + "/sql/ccdb.sqlite");
         provider.connect();
 
-        // function loads directories if they hasn't been loaded yet (and in this scenario they hasn't been)
-        provider.ensureDirsAreLoaded();
-
         // 'root' directory is '/' (it is not stored database)
         Directory root = provider.getRootDir();
 
