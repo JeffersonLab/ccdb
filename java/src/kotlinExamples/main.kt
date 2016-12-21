@@ -1,15 +1,9 @@
-/**
- * Created by Dmitry on 3/24/2014.
- */
 package kotlinExamples
 
-import java.sql.DriverManager
-import java.util.Vector
+
 import java.util.Date
 import java.text.SimpleDateFormat
 
-import org.jlab.ccdb.JDBCProvider
-import org.jlab.ccdb.Directory
 import org.jlab.ccdb.Stopwatch
 import org.jlab.ccdb.MySqlProvider
 import org.jlab.ccdb.SQLiteProvider
@@ -29,7 +23,7 @@ fun testSQLite(){
     sw.start()
     val variation = provider.getVariation("default")
     val table = provider.getTypeTable("/test/test_vars/test_table")
-    var asgmt1 = provider.getAssignment(0, table, Date(), variation)
+    val asgmt1 = provider.getAssignment(0, table, Date(), variation)
 
     sw.stop()
     println("time for request is $sw")
@@ -39,19 +33,17 @@ fun testSQLite(){
     for (column in table.columns){
         println("    name: '${column.name}'   type:'${column.cellType}'")
     }
-
 }
 
 fun main(args: Array<String>) {
     val provider = MySqlProvider("mysql://localhost")
     provider.connect()
-    provider.loadDirectories()
 
     val sw = Stopwatch()
     sw.start()
     val variation = provider.getVariation("default")
     val table = provider.getTypeTable("/test/test_vars/test_table")
-    var asgmt1 = provider.getAssignment(0, table, Date(), variation)
+    val asgmt1 = provider.getAssignment(0, table, Date(), variation)
 
     sw.stop()
     println("time for request is $sw")

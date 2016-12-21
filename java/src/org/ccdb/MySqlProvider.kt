@@ -1,6 +1,3 @@
-/**
- * Created by Dmitry on 4/15/2014.
- */
 package org.jlab.ccdb
 
 import java.sql.DriverManager

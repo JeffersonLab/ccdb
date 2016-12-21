@@ -4,6 +4,7 @@
       <w>ccdb</w>
       <w>ncols</w>
       <w>nrows</w>
+      <w>subdir</w>
       <w>uint</w>
       <w>ulong</w>
     </words>
