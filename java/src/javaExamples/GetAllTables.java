@@ -2,6 +2,7 @@ import org.jlab.ccdb.*;
 import org.jlab.ccdb.JDBCProvider;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -20,10 +21,39 @@ public class GetAllTables {
 
         JDBCProvider provider = CCDB.createProvider("sqlite:///" + ccdbHome + "/sql/ccdb.sqlite");
         provider.connect();
+
         Vector<TypeTable> tables = provider.getAllTypeTables();
 
+
+
         for(TypeTable table : tables){
-            System.out.println("      " + table.getFullPath());
+            //Get columns
+            List<TypeTableColumn> columns = table.getColumns();
+
+            // Get table full path
+            String fullPath = table.getFullPath();
+
+            // print...
+            System.out.println ("      " + fullPath + " columns: " + columnsToString(columns, 3));
         }
+    }
+
+
+    public static String columnsToString( List<TypeTableColumn> columns, int columnsToShow) {
+
+        String result = "[";
+
+        for (int i = 0; i < Math.max(columnsToShow, columns.size()); i++) {
+            TypeTableColumn column = columns.get(i);
+            if(i!=0) result += ", ";
+            result += column.getName() + "(" + column.getCellType() + ")";
+        }
+        if(columnsToShow < columns.size()) {
+            result += (", ...]");
+        }
+        else {
+            result += ("]");
+        }
+        return result;
     }
 }
