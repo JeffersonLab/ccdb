@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ccdb.iml" filepath="$PROJECT_DIR$/ccdb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/javaExamples/javaExamples.iml" filepath="$PROJECT_DIR$/src/javaExamples/javaExamples.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/kotlinExamples/kotlinExamples.iml" filepath="$PROJECT_DIR$/src/kotlinExamples/kotlinExamples.iml" />
+    </modules>
+  </component>
+</project>
+

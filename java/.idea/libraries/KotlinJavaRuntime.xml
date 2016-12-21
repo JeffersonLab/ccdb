@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="KotlinJavaRuntime">
+    <ANNOTATIONS>
+      <root url="file://$PROJECT_DIR$/annotations/KotlinJavaRuntime" />
+    </ANNOTATIONS>
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-runtime.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-runtime-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
