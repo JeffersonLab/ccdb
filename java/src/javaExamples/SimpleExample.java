@@ -6,7 +6,7 @@ import java.util.Vector;
 public class SimpleExample {
 
     public static void main(String [ ] args){
-        JDBCProvider provider = CCDB.createProvider("mysql://localhost")  ;
+        JDBCProvider provider = CCDB.createProvider("mysql://hallddb.jlab.org")  ;
         provider.connect();
 
         //to check the table exists

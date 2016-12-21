@@ -36,7 +36,7 @@ fun testSQLite(){
 }
 
 fun main(args: Array<String>) {
-    val provider = MySqlProvider("mysql://localhost")
+    val provider = MySqlProvider("mysql://hallddb.jlab.org")
     provider.connect()
 
     val sw = Stopwatch()
