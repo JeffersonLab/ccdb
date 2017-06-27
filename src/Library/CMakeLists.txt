@@ -29,8 +29,6 @@ set(SOURCE_FILES
         "Helpers/PathUtils.cc"
         "Helpers/WorkUtils.cc"
         "Helpers/TimeProvider.cc"
-
-        #model and provider
         "Model/ObjectsOwner.cc"
         "Model/StoredObject.cc"
         "Model/Assignment.cc"
@@ -52,6 +50,9 @@ set(SOURCE_FILES
         #model and provider
         "Providers/MySQLConnectionInfo.cc"
         "Providers/MySQLDataProvider.cc"
+
+        #for clion convenience
+        ../../include/CCDB/Helpers/StopWatch.h
         )
 
 

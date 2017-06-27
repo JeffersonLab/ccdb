@@ -7,6 +7,7 @@
 #include <string.h>
 #include <limits.h>
 
+
 #include "CCDB/Globals.h"
 #include "CCDB/Log.h"
 #include "CCDB/Helpers/StringUtils.h"
@@ -70,7 +71,8 @@ bool ccdb::SQLiteDataProvider::Connect( std::string connectionString )
 	Log::Verbose("ccdb::SQLiteDataProvider::Connect", StringUtils::Format("Connecting to database:\n %s", connectionString.c_str()));
 	
 	//Try to open sqlite database
-	int result = sqlite3_open(connectionString.c_str(), &mDatabase);
+	int result = sqlite3_open_v2(connectionString.c_str(), &mDatabase, SQLITE_OPEN_READONLY|SQLITE_OPEN_FULLMUTEX|SQLITE_OPEN_SHAREDCACHE, NULL);
+    //int result = sqlite3_open(connectionString.c_str(), &mDatabase);
 
 	if (result != SQLITE_OK) 
 	{
@@ -80,6 +82,8 @@ bool ccdb::SQLiteDataProvider::Connect( std::string connectionString )
 		mConnectionString = "";
 		return false;
 	}
+
+    sqlite3_exec(mDatabase, "PRAGMA journal_mode = OFF;", NULL, 0, 0);
 	
 	mIsConnected = true;
 	return true;
@@ -197,68 +201,7 @@ bool ccdb::SQLiteDataProvider::LoadDirectories()
 }
 
 bool ccdb::SQLiteDataProvider::SearchDirectories( vector<Directory *>& resultDirectories, const string& searchPattern, const string& parentPath/*=""*/,  int take/*=0*/, int startWith/*=0*/ )
-{	
-	//UpdateDirectoriesIfNeeded(); //do we need to update directories?
-
-	//resultDirectories.clear();
-
-	//// in SQLite compared to wildcards % is * and _ is 
-	//// convert it. 
-	//string likePattern = WilcardsToLike(searchPattern);
-	//
-	////do we need to search only in specific directory?
-	//string parentAddon(""); //this is addon to query indicates this
-	//if(parentPath!="")
-	//{	//we should care about parent path
-	//	
-	//	//If parent directory is "/" this should work too, because it have an id=0
-	//	//and tabeles in db wich doesnt have parents should have parentId=0
-	//	
-	//	Directory *parentDir;
-	//	if(parentDir = GetDirectory(parentPath.c_str()))
-	//	{
-	//		parentAddon = StringUtils::Format(" AND `parentId` = '%i'", parentDir->GetId());
-	//	}
-	//	else
-	//	{
-	//		//request was made for directory that doestn exits
-	//		//TODO place warning or not?
-	//		return false;
-	//	}
-	//}
-
-	//string limitAddon = PrepareLimitInsertion(take, startWith);
-
-	////combine query
-	//string query = StringUtils::Format("SELECT `id` FROM `directories` WHERE name LIKE \"%s\" %s %s;",
-	//	likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
-	//
-	////do query!
-	//if(!QuerySelect(query))
-	//{
-	//	return false;
-	//}
-	//
-	////Ok! We queried our directories! lets catch them! 
-	//while(FetchRow())
-	//{
-	//	dbkey_t id = ReadIndex(0); //read db index key
-
-	//	//search for such index
-	//	map<dbkey_t,Directory *>::iterator dirIter = mDirectoriesById.find(id);
-	//	if(dirIter != mDirectoriesById.end())
-	//	{
-	//		resultDirectories.push_back(dirIter->second);
-	//	}
-	//	else
-	//	{
-	//		//TODO it is some error situation! It cant happend!
-	//	}
-	//}
-
-	//FreeSQLiteResult();
-
-	//return true;
+{
 	return false;
 }
 
@@ -413,50 +356,6 @@ bool ccdb::SQLiteDataProvider::GetConstantsTypeTables( vector<ConstantsTypeTable
 
 bool ccdb::SQLiteDataProvider::GetConstantsTypeTables(  vector<ConstantsTypeTable *>& resultTypeTables, Directory *parentDir, bool loadColumns/*=false*/)
 {
-	//ClearErrors(); //Clear error in function that can produce new ones
-
-	////check the directory is ok
-	//if((parentDir == NULL || parentDir->GetId()<=0) && (parentDir!=mRootDir))
-	//{
-	//	//TODO error
-	//	Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"SQLiteDataProvider::GetConstantsTypeTables", "Parent directory is null or has invald ID");
-	//	return NULL;
-	//}
-	//
-	////Ok, lets cleanup result list
-	//	resultTypeTables.clear(); //we clear the consts. Considering that some one else should handle deletion
-
-	//string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comments` FROM `typeTables` WHERE `directoryId` = '%i';",
-	//	/*`directoryId`*/ parentDir->GetId());
-
-	//if(!QuerySelect(query))
-	//{
-	//	//no report error
-	//	return NULL;
-	//}
-
-	////Ok! We querryed our directories! lets catch them! 
-	//while(FetchRow())
-	//{
-	//	//ok lets read the data...
-	//	ConstantsTypeTable *result = new ConstantsTypeTable(this, this);
-	//	result->SetId(ReadIndex(0));
-	//	result->SetCreatedTime(ReadUnixTime(1));
-	//	result->SetModifiedTime(ReadUnixTime(2));
-	//	result->SetName(ReadString(3));
-	//	result->SetDirectoryId(ReadULong(4));
-	//	result->SetNRows(ReadInt(5));
-	//	result->SetNColumnsFromDB(ReadInt(6));
-	//	result->SetComment(ReadString(7));
-	//	
-	//	if(loadColumns) LoadColumns(result);
-	//	result->SetDirectory(parentDir);
-	//	
-	//	SetObjectLoaded(result); //set object flags that it was just loaded from DB
-	//	resultTypeTables.push_back(result);
-	//}
-
-	//FreeSQLiteResult();
 
 	return false;
 }
@@ -472,11 +371,9 @@ vector<ConstantsTypeTable *> ccdb::SQLiteDataProvider::GetConstantsTypeTables( c
 
 vector<ConstantsTypeTable *> ccdb::SQLiteDataProvider::GetConstantsTypeTables( Directory *parentDir, bool loadColumns/*=false*/ )
 {
-	
-		vector<ConstantsTypeTable *> tables;
-		GetConstantsTypeTables(tables, parentDir, loadColumns);
-		return tables;
-	
+    vector<ConstantsTypeTable *> tables;
+    GetConstantsTypeTables(tables, parentDir, loadColumns);
+    return tables;
 }
 
 
@@ -620,7 +517,7 @@ bool ccdb::SQLiteDataProvider::LoadColumns( ConstantsTypeTable* table )
 
 	// prepare the SQL statement from the command line
 	int result = sqlite3_prepare_v2(mDatabase, "SELECT `id`, strftime('%s', created , 'localtime') as `created`, strftime('%s', modified , 'localtime') as `modified`, `name`, `columnType`, `comment` FROM `columns` WHERE `typeId` = ?1 ORDER BY `order`;", -1, &mStatement, 0);
-	if( result )
+	if( result != 0)
 	{
 		ComposeSQLiteError("ccdb::SQLiteDataProvider::LoadColumns");
 		sqlite3_finalize(mStatement);
@@ -1089,7 +986,8 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
     * @param [in] variation - variation name
     * @return DAssignment object or NULL if no assignment is found or error
     */
-   return GetAssignmentShort(run,path,0,variationName, loadColumns);
+
+    return GetAssignmentShort(run,path,0,variationName, loadColumns);
 }
 
 
@@ -1126,7 +1024,6 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
         Error(CCDB_ERROR_VARIATION_INVALID,"SQLiteDataProvider::GetAssignmentShort", "No variation '"+variationName+"' was found");
         return NULL;
     }
-
 
 	////ok now we must build our mighty query...
 	string query(
@@ -1209,9 +1106,12 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
 		return NULL;
 	}
 
+
+
     assignment->SetTypeTable(table);
     assignment->BeOwner(table);
     table->SetOwner(assignment);
+
 
 	return assignment;
 }
