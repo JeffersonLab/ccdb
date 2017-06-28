@@ -19,19 +19,25 @@
 namespace ccdb{
     class PerfLog{
     public:
-        PerfLog(const std::string& name):
+        explicit PerfLog (const std::string& name):
+                _sw(),
                 _name(name)
         {
         }
+
+        PerfLog(PerfLog&) = default;
+        PerfLog(PerfLog&&) noexcept;
 
 
         ~PerfLog(){
             std::cout<<"CCDB_PERF_LOG: "<<_name<<" us: "<<_sw.ElapsedUs()<<std::endl;
         }
     private:
-        ccdb::StopWatch _sw;
+        ccdb::StopWatch _sw{};
         std::string _name;
 
     };
+
+    inline PerfLog::PerfLog(PerfLog&&) noexcept = default;
 }
 #endif //CCDB_PERFLOG_H

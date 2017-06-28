@@ -23,12 +23,8 @@ namespace ccdb {
         StopWatch(): mStart(clock::now()) {
             static_assert(std::chrono::steady_clock::is_steady,
                           "Serious OS/C++ library issues. Steady clock is not steady");
-            // FYI:  This would fail  static_assert(std::chrono::high_resolution_clock::is_steady(), "High Resolution Clock is NOT steady on CentOS?!");
+            // FYI:  This would fail static_assert(std::chrono::high_resolution_clock::is_steady(), "High Resolution Clock is NOT steady on CentOS?!");
         };
-
-        StopWatch(const StopWatch &other) = default;
-
-        StopWatch &operator=(const StopWatch &rhs) = default;
 
         uint64_t ElapsedUs() const{
             return (uint64_t)std::chrono::duration_cast<microseconds>(clock::now() - mStart).count();
