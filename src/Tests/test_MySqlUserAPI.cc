@@ -1,6 +1,7 @@
 #pragma warning(disable:4800)
 #include "Tests/catch.hpp"
 #include "Tests/tests.h"
+#include <memory>
 
 #include "CCDB/Console.h"
 #include "CCDB/MySQLCalibration.h"

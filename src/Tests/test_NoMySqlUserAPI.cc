@@ -1,6 +1,7 @@
 #pragma warning(disable:4800)
 #include "Tests/catch.hpp"
 #include "Tests/tests.h"
+#include <memory>
 
 #include "CCDB/Console.h"
 #include "CCDB/SQLiteCalibration.h"
@@ -160,7 +161,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 
 	SECTION("Get Assignment test", "Test all elements of getting data through get assignment")
 	{
-		Assignment *a;
+		std::shared_ptr<Assignment> a;
 		REQUIRE_NOTHROW(a = sqliteCalib->GetAssignment("/test/test_vars/test_table2:0:test"));
 		REQUIRE(result);
 		REQUIRE(a->GetValueType(0) == ConstantsTypeColumn::cIntColumn);
