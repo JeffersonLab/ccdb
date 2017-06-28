@@ -11,11 +11,7 @@
 
 #include "StopWatch.h"
 
-#if CCDB_PERFLOG_ON
-#define CCDB_PERFLOG(x) (PerfLog(x))
-#else
-#define CCDB_PERF_LOG(x) 0
-#endif
+
 
 namespace ccdb{
     class PerfLog{
@@ -39,12 +35,13 @@ namespace ccdb{
 
 
         virtual ~PerfLog(){
+#ifdef CCDB_PERFLOG_ON
             std::cout<<"CCDB_PERF_LOG:{\"thread_id\":"<<std::this_thread::get_id()<<","
                      <<"\"descr\":\""<<_name<<"\","
                      <<"\"start_stamp\":"<<GetTimeSinceEpochUs()<<","
                      <<"\"elapsed\":"<<_sw.ElapsedUs()<<","
                      <<"\"t_units\":\"us\"}"<<std::endl;
-
+#endif //ifdef CCDB_PERFLOG_ON
         }
     private:
         ccdb::StopWatch _sw{};

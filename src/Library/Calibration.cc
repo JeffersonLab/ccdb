@@ -27,6 +27,12 @@ Calibration::Calibration()
     mDefaultVariation = "default";
     mIsAutoReconnect = true;
     mLastActivityTime=0;
+
+#ifdef CCDB_CACHE_ON
+    mIsCacheEnabled = true;
+#else
+    mIsCacheEnabled = false;
+#endif
 }
 
 
@@ -580,7 +586,7 @@ string Calibration::GetConnectionString() const
      * @return   DAssignment *
      */
 
-    auto pl = CCDB_PERFLOG("Calibration::GetAssignment=>" + namepath );
+    auto pl = PerfLog("Calibration::GetAssignment=>" + namepath );
     static std::map<std::string, shared_ptr<Assignment>> cache;
 
 	UpdateActivityTime();
@@ -600,8 +606,11 @@ string Calibration::GetConnectionString() const
 
     // Check if we have this value in the cache
     string cache_key = namepath + ":" + to_string(run) + ":" + variation + ":" + to_string(time);
-    if ( cache.find(cache_key) != cache.end() ) {
-        return cache[cache_key];
+    if(mIsCacheEnabled)
+    {
+        if (  cache.find(cache_key) != cache.end() ) {
+            return cache[cache_key];
+        }
     }
 
     shared_ptr<Assignment> assigment;
@@ -615,7 +624,11 @@ string Calibration::GetConnectionString() const
 		assigment = shared_ptr<Assignment>(mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns));
 	}
 
-    cache[cache_key] = assigment;
+    if(mIsCacheEnabled)
+    {
+
+        cache[cache_key] = assigment;
+    }
 
     return assigment;
 }
@@ -716,6 +729,18 @@ void Calibration::UpdateActivityTime()
      */
     mLastActivityTime = TimeProvider::GetUnixTimeStamp(ClockSources::Monotonic);
 }
+
+    /** @brief if true the data will be cached
+     *
+     * @param value true - enable cache, false - disable
+     *
+     * @remarks - cache greatly (2 magnitudes) reduses the time to get the same constants from DB
+     *            but it costs some memory. Shouldn't be a bug source but caches are alwais caches
+     */
+    void Calibration::EnableCache(bool value) { mIsCacheEnabled = value;}
+
+    /** @brief if true the caching is using */
+    bool Calibration::IsCacheEnabled() { return mIsCacheEnabled;}
 
 }
 

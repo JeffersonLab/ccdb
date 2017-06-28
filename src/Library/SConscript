@@ -108,6 +108,12 @@ if ARGUMENTS.get("with-perflog","false")=="true":
 else:
     print("with-perflog=false - NO performance logging ")
 
+if ARGUMENTS.get("with-cacheon", "true")=="true":
+    print("with-cacheon=true  - with data cache on by default ")
+    env.Append(CPPDEFINES='CCDB_CACHE_ON')
+else:
+    print("with-cacheon=false - with data cache off by default ")
+
 #Making library
 lib = env.SharedLibrary(target = lib_target, source = lib_sources)
 env.Install('#lib', lib)

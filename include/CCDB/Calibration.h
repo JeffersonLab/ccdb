@@ -259,6 +259,18 @@ public:
 	*/
 	virtual std::shared_ptr<Assignment> GetAssignment(const string& namepath, bool loadColumns = true);
 
+    /** @brief if true the data will be cached
+     *
+     * @param value true - enable cache, false - disable
+     *
+     * @remarks - cache greatly (2 magnitudes) reduses the time to get the same constants from DB
+     *            but it costs some memory. Shouldn't be a bug source but caches are alwais caches
+     */
+    void EnableCache(bool value);
+
+    /** @brief if true the caching is using */
+    bool IsCacheEnabled();
+
 protected:
 
 
@@ -293,8 +305,7 @@ protected:
     time_t mDefaultTime;             /// Set default time
     time_t mLastActivityTime;        /// Time of the last request
     bool mIsAutoReconnect;           /// Try to auto-reconnect if possible
-
-
+    bool mIsCacheEnabled;            /// If true the data is cached
 
     std::mutex mReadMutex;
 private:
