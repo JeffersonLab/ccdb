@@ -45,11 +45,11 @@ set(SOURCE_FILES
         "Providers/EnvironmentAuthentication.cc"
 
         #user api
-        "MySQLCalibration.cc"
+        #"MySQLCalibration.cc"
 
         #model and provider
-        "Providers/MySQLConnectionInfo.cc"
-        "Providers/MySQLDataProvider.cc"
+        #"Providers/MySQLConnectionInfo.cc"
+        #"Providers/MySQLDataProvider.cc"
 
         #for clion convenience
         ../../include/CCDB/Helpers/StopWatch.h

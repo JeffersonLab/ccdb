@@ -25,7 +25,6 @@ Calibration::Calibration()
     mDefaultRun = 0;
 	mDefaultTime = 0;
     mDefaultVariation = "default";
-    mReadMutex = new PthreadMutex(new PthreadSyncObject());
     mIsAutoReconnect = true;
     mLastActivityTime=0;
 }
@@ -44,7 +43,6 @@ Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/, 
     mProviderIsLocked = false;      // by default we assume that we own the provider
     PthreadSyncObject * x = NULL;
     x = new PthreadSyncObject();
-    mReadMutex = new PthreadMutex(x);
     mIsAutoReconnect = true;
     mLastActivityTime=0;
 }
@@ -54,9 +52,7 @@ Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/, 
 Calibration::~Calibration()
 {
     //Destructor
-
     if(!mProviderIsLocked && mProvider!=NULL) delete mProvider;
-    if(mReadMutex) delete mReadMutex;
 }
 
 
@@ -96,7 +92,7 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
 	 * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
 	 */  
 
-    auto_ptr<Assignment> assignment(GetAssignment(namepath, true));
+    auto assignment = GetAssignment(namepath, true);
         
     if(!assignment.get())
     {       
@@ -208,7 +204,7 @@ bool Calibration::GetCalib( vector< vector<string> > &values, const string & nam
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
     
-    auto_ptr<Assignment> assignment(GetAssignment(namepath, false));
+    auto assignment = GetAssignment(namepath, false);
     
     if(!assignment.get()) 
     {
@@ -304,7 +300,7 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
     
-    auto_ptr<Assignment> assignment(GetAssignment(namepath, true));
+    auto assignment = GetAssignment(namepath, true);
     
     if(assignment.get() == NULL) 
     {
@@ -442,7 +438,7 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
 
 	
     
-	auto_ptr <Assignment> assignment(GetAssignment(namepath, true));
+	auto assignment = GetAssignment(namepath, true);
     
     if(assignment.get() == NULL) return false; //TODO possibly exception throwing?
 
@@ -573,7 +569,7 @@ string Calibration::GetConnectionString() const
 
 
 //______________________________________________________________________________
-Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns /*=true*/)
+    shared_ptr<Assignment> Calibration::GetAssignment(const string& namepath, bool loadColumns /*=true*/)
 {
     /** @brief Gets the assignment from provider using namepath
      * namepath is the common ccdb request; @see GetCalib
@@ -585,7 +581,7 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
      */
 
     auto pl = CCDB_PERFLOG("Calibration::GetAssignment=>" + namepath );
-    static std::map<std::string, Assignment*> cache;
+    static std::map<std::string, shared_ptr<Assignment>> cache;
 
 	UpdateActivityTime();
 
@@ -593,14 +589,14 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
 
-    Assignment* assigment = NULL;
+
 
     auto time = result.WasParsedTime ? result.Time: mDefaultTime;
 
     CheckConnection();  // Check if is connected and reconnect if needed (and allowed)
 	
     //Lock();Unlock();
-    mReadMutex->Lock();
+    std::lock_guard<std::mutex> lock(mReadMutex);
 
     // Check if we have this value in the cache
     string cache_key = namepath + ":" + to_string(run) + ":" + variation + ":" + to_string(time);
@@ -608,18 +604,19 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
         return cache[cache_key];
     }
 
+    shared_ptr<Assignment> assigment;
+
     if(time > 0)
     {
-		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation,loadColumns);
+		assigment = shared_ptr<Assignment>(mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation,loadColumns));
 	}
     else
 	{
-		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns);
+		assigment = shared_ptr<Assignment>(mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns));
 	}
 
     cache[cache_key] = assigment;
-	
-    mReadMutex->Release();
+
     return assigment;
 }
 
@@ -652,21 +649,20 @@ void Calibration::GetListOfNamepaths( vector<string> &namepaths )
     UpdateActivityTime();
 
     vector<ConstantsTypeTable*> tables;
-    mReadMutex->Lock();
+    std::lock_guard<std::mutex> lock(mReadMutex);
 	 bool ok = mProvider->SearchConstantsTypeTables(tables, "*");
-    mReadMutex->Release();
+
     if(!ok)
     {
         throw logic_error("Error selecting all type tables");
     }
 
-    for (int i=0; i< tables.size(); i++)
-    {
+    for (auto &table : tables) {
         // we use substr(1) because JANA users await list
         // without '/' in the beginning of each string,
         // while GetFullPath() returns strings that start with '/'
-        namepaths.push_back(tables[i]->GetFullPath().substr(1));
-        delete tables[i];
+        namepaths.push_back(table->GetFullPath().substr(1));
+        delete table;
     }
 }
 

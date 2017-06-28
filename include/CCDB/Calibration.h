@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 #include <time.h>
+#include <memory>
+#include <mutex>
 
 #include "CCDB/Globals.h"
 #include "CCDB/Providers/DataProvider.h"
@@ -255,7 +257,7 @@ public:
 	* @parameter [in] namepath -  full namepath is /path/to/data:run:variation:time but usually it is only /path/to/data
 	* @return   DAssignment *
 	*/
-	virtual Assignment * GetAssignment(const string& namepath, bool loadColumns = true);
+	virtual std::shared_ptr<Assignment> GetAssignment(const string& namepath, bool loadColumns = true);
 
 protected:
 
@@ -291,10 +293,10 @@ protected:
     time_t mDefaultTime;             /// Set default time
     time_t mLastActivityTime;        /// Time of the last request
     bool mIsAutoReconnect;           /// Try to auto-reconnect if possible
-    
-    
 
-    PthreadMutex * mReadMutex;
+
+
+    std::mutex mReadMutex;
 private:
     Calibration(const Calibration& rhs);
     Calibration& operator=(const Calibration& rhs);
