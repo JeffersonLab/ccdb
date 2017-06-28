@@ -64,6 +64,7 @@ target_link_libraries(${PROJECT_NAME} ${MYSQL_LIB}  CCDB_sqlite)
 set_target_properties(${PROJECT_NAME}
         PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
+
 SET(GCC_COVERAGE_COMPILE_FLAGS "-I/usr/include/mysql -DBIG_JOINS=1  -fno-strict-aliasing    -g -DNDEBUG")
 SET(GCC_COVERAGE_LINK_FLAGS    "-L/usr/lib/x86_64-linux-gnu -lmysqlclient -lpthread -lz -lm -ldl")
 SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )

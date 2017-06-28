@@ -102,6 +102,12 @@ else:
 	print "CCDB is being build WITHOUT MySQL support. Use 'with-mysql=true' flag to explicitly enable MySQL support"
 	
 
+if ARGUMENTS.get("with-perflog","false")=="true":
+    print("with-perflog=true  - compile with performance logging ")
+    env.Append(CPPDEFINES='CCDB_PERFLOG_ON')
+else:
+    print("with-perflog=false - NO performance logging ")
+
 #Making library
 lib = env.SharedLibrary(target = lib_target, source = lib_sources)
 env.Install('#lib', lib)

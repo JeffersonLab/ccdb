@@ -7,7 +7,9 @@
  */
 
 
-#pragma once
+#ifndef STOPWATCH_HEADER_H
+#define STOPWATCH_HEADER_H
+
 #include <chrono>
 
 namespace ccdb {
@@ -18,62 +20,36 @@ namespace ccdb {
         typedef std::chrono::milliseconds milliseconds;
         typedef std::chrono::seconds seconds;
 
-        StopWatch();
+        StopWatch(): mStart(clock::now()) {
+            static_assert(std::chrono::steady_clock::is_steady,
+                          "Serious OS/C++ library issues. Steady clock is not steady");
+            // FYI:  This would fail  static_assert(std::chrono::high_resolution_clock::is_steady(), "High Resolution Clock is NOT steady on CentOS?!");
+        };
 
-        StopWatch(const StopWatch &);
+        StopWatch(const StopWatch &other) = default;
 
-        StopWatch &operator=(const StopWatch &rhs);
+        StopWatch &operator=(const StopWatch &rhs) = default;
 
-        uint64_t ElapsedUs() const;
+        uint64_t ElapsedUs() const{
+            return (uint64_t)std::chrono::duration_cast<microseconds>(clock::now() - mStart).count();
+        }
 
-        uint64_t ElapsedMs() const;
+        uint64_t ElapsedMs() const{
+            return (uint64_t)std::chrono::duration_cast<milliseconds>(clock::now() - mStart).count();
+        }
 
-        uint64_t ElapsedSec() const;
+        uint64_t ElapsedSec() const{
+            return (uint64_t)std::chrono::duration_cast<seconds>(clock::now() - mStart).count();
+        }
 
-        std::chrono::steady_clock::time_point Restart();
+        std::chrono::steady_clock::time_point Restart() {
+            mStart = clock::now();
+            return mStart;
+        }
 
     private:
         clock::time_point mStart;
     };
-
-    StopWatch::StopWatch() : mStart(clock::now()) {
-        static_assert(std::chrono::steady_clock::is_steady,
-                      "Serious OS/C++ library issues. Steady clock is not steady");
-        // FYI:  This would fail  static_assert(std::chrono::high_resolution_clock::is_steady(), "High Resolution Clock is NOT steady on CentOS?!");
-    }
-
-    StopWatch::StopWatch(const StopWatch &other) : mStart(other.mStart) {
-    }
-
-    /// @return StopWatch::StopWatch&  - assignment operator.
-    StopWatch &StopWatch::operator=(const StopWatch &rhs) {
-        mStart = rhs.mStart;
-        return *this;
-    }
-
-    /// @return the elapsed microseconds since start
-    uint64_t StopWatch::ElapsedUs() const {
-        return std::chrono::duration_cast<microseconds>(clock::now() - mStart).count();
-    }
-
-    /// @return the elapsed milliseconds since start
-    uint64_t StopWatch::ElapsedMs() const {
-        return std::chrono::duration_cast<milliseconds>(clock::now() - mStart).count();
-    }
-
-    /// @return the elapsed seconds since start
-    uint64_t StopWatch::ElapsedSec() const {
-        return std::chrono::duration_cast<seconds>(clock::now() - mStart).count();
-    }
-
-    /**
-     * Resets the start point
-     * @return the updated start point
-     */
-    std::chrono::steady_clock::time_point StopWatch::Restart() {
-        mStart = clock::now();
-        return mStart;
-    }
-
-
 }
+
+#endif //#define STOPWATCH_HEADER_H

@@ -10,6 +10,12 @@
 
 #include "StopWatch.h"
 
+#if CCDB_PERFLOG_ON
+#define CCDB_PERFLOG(x) (PerfLog(x))
+#else
+#define CCDB_PERF_LOG(x)
+#endif
+
 namespace ccdb{
     class PerfLog{
     public:
@@ -17,7 +23,6 @@ namespace ccdb{
                 _name(name)
         {
         }
-
 
 
         ~PerfLog(){

@@ -8,6 +8,7 @@
 #include "CCDB/Providers/DataProvider.h"
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Helpers/TimeProvider.h"
+#include "CCDB/Helpers/PerfLog.h"
 
 using namespace std;
 
@@ -583,6 +584,8 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
      * @return   DAssignment *
      */
 
+    CCDB_PERFLOG("Calibration::GetAssignment total");
+
 	UpdateActivityTime();
 
     RequestParseResult result = PathUtils::ParseRequest(namepath);
@@ -594,16 +597,21 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
 	
     //Lock();Unlock();
     mReadMutex->Lock();
+
+
     if(result.WasParsedTime)
     {
+        CCDB_PERFLOG("Calibration::GetAssignment(1)=>" + namepath );
         assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation,loadColumns);
     }
 	else if (mDefaultTime>0)
 	{
+        CCDB_PERFLOG("Calibration::GetAssignment(2)=>" + namepath );
 		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), mDefaultTime, variation,loadColumns);
 	}
 	else
 	{
+        CCDB_PERFLOG("Calibration::GetAssignment(3)=>" + namepath );
 		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns);
 	}
 	
