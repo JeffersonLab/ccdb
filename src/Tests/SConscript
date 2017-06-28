@@ -9,7 +9,7 @@ env = default_env.Clone()
 
 #debugcflags = ['-W1', '-GX', '-EHsc', '-D_DEBUG', '/MDd']   #extra compile flags for debug
 #releasecflags = ['-O2', '-EHsc', '-DNDEBUG', '/MD']         #extra compile flags for release
-#env.Append(CCFLAGS='-g')
+env.Append(CCFLAGS='-g  -std=c++11')
 
 
 #Configure environment to create tests
