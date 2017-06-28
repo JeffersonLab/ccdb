@@ -584,36 +584,40 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
      * @return   DAssignment *
      */
 
-    auto tpl = CCDB_PERFLOG("Calibration::GetAssignment total");
+    auto pl = CCDB_PERFLOG("Calibration::GetAssignment=>" + namepath );
+    static std::map<std::string, Assignment*> cache;
 
 	UpdateActivityTime();
 
     RequestParseResult result = PathUtils::ParseRequest(namepath);
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
+
     Assignment* assigment = NULL;
-    
+
+    auto time = result.WasParsedTime ? result.Time: mDefaultTime;
+
     CheckConnection();  // Check if is connected and reconnect if needed (and allowed)
 	
     //Lock();Unlock();
     mReadMutex->Lock();
 
-
-    if(result.WasParsedTime)
-    {
-        auto pl = CCDB_PERFLOG("Calibration::GetAssignment(1)=>" + namepath );
-        assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation,loadColumns);
+    // Check if we have this value in the cache
+    string cache_key = namepath + ":" + to_string(run) + ":" + variation + ":" + to_string(time);
+    if ( cache.find(cache_key) != cache.end() ) {
+        return cache[cache_key];
     }
-	else if (mDefaultTime>0)
-	{
-        auto pl = CCDB_PERFLOG("Calibration::GetAssignment(2)=>" + namepath );
-		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), mDefaultTime, variation,loadColumns);
+
+    if(time > 0)
+    {
+		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation,loadColumns);
 	}
-	else
+    else
 	{
-        auto pl = CCDB_PERFLOG("Calibration::GetAssignment(3)=>" + namepath );
 		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns);
 	}
+
+    cache[cache_key] = assigment;
 	
     mReadMutex->Release();
     return assigment;
