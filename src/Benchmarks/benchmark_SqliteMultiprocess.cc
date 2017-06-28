@@ -13,9 +13,9 @@
 
 std::string con_str = "sqlite:///D:\\ccdb.sqlite";
 //std::string con_str = "mysql://ccdb_user@hallddb.jlab.org/ccdb";
-uint64_t run_min = 30200;
-uint64_t run_max = 30900;
-std::string tableName[] = {"TOF/timing_offsets", "CDC/timing_offsets"};
+uint64_t run_min = 31495;
+uint64_t run_max = 31495;
+std::string tableName[] = {"FCAL/fcal_parms"}; //,"TOF/timing_offsets", "CDC/timing_offsets"};
 
 
 int main()
@@ -60,12 +60,9 @@ int main()
 
 
     for(int i=0; i<1000; i++) {
-        ccdb::PerfLog plog("GetCalib");
         result.clear();
-
         con->GetCalib(result, tableName[tableRandom(rd)]);
         sum+=result[0][0];
-
     }
 
 

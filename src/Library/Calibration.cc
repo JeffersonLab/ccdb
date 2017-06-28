@@ -51,6 +51,12 @@ Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/, 
     x = new PthreadSyncObject();
     mIsAutoReconnect = true;
     mLastActivityTime=0;
+
+#ifdef CCDB_CACHE_ON
+    mIsCacheEnabled = true;
+#else
+    mIsCacheEnabled = false;
+#endif
 }
 
 
