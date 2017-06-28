@@ -15,14 +15,14 @@
 namespace ccdb {
     class StopWatch {
     public:
-        typedef std::chrono::steady_clock clock;
+        typedef std::chrono::high_resolution_clock clock;
         typedef std::chrono::microseconds microseconds;
         typedef std::chrono::milliseconds milliseconds;
         typedef std::chrono::seconds seconds;
 
         StopWatch(): mStart(clock::now()) {
-            static_assert(std::chrono::steady_clock::is_steady,
-                          "Serious OS/C++ library issues. Steady clock is not steady");
+            //static_assert(std::chrono::steady_clock::is_steady,
+            //              "Serious OS/C++ library issues. Steady clock is not steady");
             // FYI:  This would fail static_assert(std::chrono::high_resolution_clock::is_steady(), "High Resolution Clock is NOT steady on CentOS?!");
         };
 
@@ -38,7 +38,7 @@ namespace ccdb {
             return (uint64_t)std::chrono::duration_cast<seconds>(clock::now() - mStart).count();
         }
 
-        std::chrono::steady_clock::time_point Restart() {
+        std::chrono::high_resolution_clock::time_point Restart() {
             mStart = clock::now();
             return mStart;
         }

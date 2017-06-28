@@ -11,7 +11,8 @@
 #include <CCDB/Helpers/PerfLog.h>
 #include "CCDB/Helpers/StopWatch.h"
 
-std::string con_str = "sqlite:////home/romanov/gluex/ccdb/ccdb.sqlite";
+//std::string con_str = "sqlite:////home/romanov/gluex/ccdb/ccdb.sqlite";
+std::string con_str = "mysql://ccdb_user@hallddb.jlab.org/ccdb";
 uint64_t run_min = 30200;
 uint64_t run_max = 30900;
 std::string tableName[] = {"TOF/timing_offsets", "CDC/timing_offsets"};

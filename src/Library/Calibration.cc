@@ -584,7 +584,7 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
      * @return   DAssignment *
      */
 
-    CCDB_PERFLOG("Calibration::GetAssignment total");
+    auto tpl = CCDB_PERFLOG("Calibration::GetAssignment total");
 
 	UpdateActivityTime();
 
@@ -601,17 +601,17 @@ Assignment * Calibration::GetAssignment(const string& namepath, bool loadColumns
 
     if(result.WasParsedTime)
     {
-        CCDB_PERFLOG("Calibration::GetAssignment(1)=>" + namepath );
+        auto pl = CCDB_PERFLOG("Calibration::GetAssignment(1)=>" + namepath );
         assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), result.Time, variation,loadColumns);
     }
 	else if (mDefaultTime>0)
 	{
-        CCDB_PERFLOG("Calibration::GetAssignment(2)=>" + namepath );
+        auto pl = CCDB_PERFLOG("Calibration::GetAssignment(2)=>" + namepath );
 		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), mDefaultTime, variation,loadColumns);
 	}
 	else
 	{
-        CCDB_PERFLOG("Calibration::GetAssignment(3)=>" + namepath );
+        auto pl = CCDB_PERFLOG("Calibration::GetAssignment(3)=>" + namepath );
 		assigment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns);
 	}
 	
