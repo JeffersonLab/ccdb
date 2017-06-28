@@ -62,7 +62,7 @@ env.Append(LIBS = ccdb_sqlite_lib)
 if env['PLATFORM'] != 'darwin':
 	env.Append(LIBS = ['rt'])
 
-env.Append(CCFLAGS='-Wno-unknown-pragmas -g -O2') #Disable unknown pragmas warnings. CCDB files have '#pragma region' records to structurize files. 
+env.Append(CCFLAGS='-Wno-unknown-pragmas -g -O2 -std=c++11') #Disable unknown pragmas warnings. CCDB files have '#pragma region' records to structurize files.
 
 if ARGUMENTS.get("with-m32","false")=="true":
     print("compile with -m32 flag")
