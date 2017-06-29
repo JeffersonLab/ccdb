@@ -31,11 +31,11 @@ class ConsoleContextTests(unittest.TestCase):
         self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
 
-        #initialize but disable colorama
+        # initialize but disable colorama
         ccdb.cmd.colorama.init(autoreset=True)
         ccdb.cmd.colorama.deinit()
 
-        #create console context
+        # create console context
         self.context = ConsoleContext()
         self.context.silent_exceptions = False
         self.context.theme = ccdb.cmd.themes.NoColorTheme()
@@ -43,28 +43,24 @@ class ConsoleContextTests(unittest.TestCase):
         self.context.user_name = "python_tests"
         self.context.register_utilities()
 
-        #save stdout
+        # save stdout
         self.output = StringIO()
         self.saved_stdout = sys.stdout
         sys.stdout = self.output
 
-        #logger
+        # logger
         ch = logging.StreamHandler()
         ch.stream = self.output
         logger.addHandler(ch)
         logger.setLevel(logging.INFO)
 
-
-
     def tearDown(self):
-        #restore stdout
+        # restore stdout
         sys.stdout = self.saved_stdout
-
 
     def test_context(self):
         """Test utils are loaded"""
         self.assertTrue(len(self.context.utils)>0)
-
 
     def test_cat(self):
         """cat. General help"""

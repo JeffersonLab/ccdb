@@ -5,7 +5,6 @@ import os
 
 class SQLiteAlchemyProviderTest(AlchemyProviderTest):
 
-
     def setUp(self):
         AlchemyProviderTest.setUp(self)
         self.connection_str = "sqlite:///" + os.path.join(self.ccdb_path, "sql", "ccdb.sqlite")
@@ -16,7 +15,6 @@ class SQLiteAlchemyProviderTest(AlchemyProviderTest):
 
 
 class MySQLAlchemyProviderTest(AlchemyProviderTest):
-
 
     def setUp(self):
         AlchemyProviderTest.setUp(self)

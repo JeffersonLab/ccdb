@@ -1,10 +1,9 @@
 import unittest
 import os
 from ccdb import get_ccdb_home_path
-
 from ccdb.authentication import EnvironmentAuthentication
-
 from ccdb import AlchemyProvider
+
 
 class AuthenticationTest(unittest.TestCase):
 
@@ -15,12 +14,13 @@ class AuthenticationTest(unittest.TestCase):
         self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
         self.provider = AlchemyProvider()
 
-
     def test_environment_auth(self):
         self.provider.connect(self.sqlite_connection_str)
 
-        if "CCDB_USER" in os.environ: del os.environ["CCDB_USER"]
-        if "USER"      in os.environ: del os.environ["USER"]
+        if "CCDB_USER" in os.environ:
+            del os.environ["CCDB_USER"]
+        if "USER" in os.environ:
+            del os.environ["USER"]
 
         os.environ["CCDB_USER"] = "test_user"
 
