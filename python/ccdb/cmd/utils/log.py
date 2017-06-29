@@ -4,7 +4,7 @@ import logging
 import ccdb
 from ccdb import TextFileDOM
 from ccdb import AlchemyProvider
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
 from ccdb.model import LogRecord
 from ccdb import BraceMessage as LogFmt
 
@@ -74,7 +74,15 @@ class ShowLog(ConsoleUtilBase):
                   " %-18s"%log_record.created.strftime("%Y-%m-%d %H-%M-%S   ") + " " +\
                   log_record.description
 
-
+    def process_arguments(args):
+        # utility argument parser is argparse which raises errors instead of exiting app
+        parser = UtilityArgumentParser()
+        parser.add_argument("raw_path", nargs='?', default="")
+        parser.add_argument("-x", "--dtree", action="store_true")
+        parser.add_argument("-d", "--directories", action="store_true")
+        parser.add_argument("-t", "--tables", action="store_true")
+        parser.add_argument("-v", "--variations", action="store_true")
+        parser.add_argument("-l", "--extended", action="store_true")
 
 
 

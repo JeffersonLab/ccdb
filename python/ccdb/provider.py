@@ -1499,6 +1499,7 @@ class AlchemyProvider(object):
 
 
     def get_log_records(self, limit=20, offset=0):
+
         """
         Get log records sorted from now to the past
 
@@ -1515,16 +1516,16 @@ class AlchemyProvider(object):
         if limit < 0:
             limit = 0
 
-        #initial query
+        # initial query
         query = self.session.query(LogRecord).order_by(desc(LogRecord.id))
 
-        #add limits to query
+        # add limits to query
         if limit != 0:
             query = query.limit(limit)
         if offset != 0:
             query = query.offset(offset)
 
-        #execute and return
+        # execute and return
         return query.all()
 
 
