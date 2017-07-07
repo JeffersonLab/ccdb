@@ -18,12 +18,13 @@ endif ()
 
 
 
-#INCLUDE(${CMAKE_SOURCE_DIR}/FindMySQL.cmake)
+INCLUDE(${CMAKE_SOURCE_DIR}/FindMySQL.cmake)
 
-#add_definitions(-DCCDB_MYSQL)
-add_definitions(-DCCDB_PERFLOG_ON=1)
+add_definitions(-DCCDB_MYSQL)
+#add_definitions(-DCCDB_PERFLOG_ON=1)
+
 
 add_subdirectory(SQLite)
 add_subdirectory(Library)
-#add_subdirectory(Tests)
+add_subdirectory(Tests)
 add_subdirectory(Benchmarks)

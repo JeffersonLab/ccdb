@@ -311,7 +311,8 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
      * @parameter [in]  namepath - data path
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
-    
+
+
     auto assignment = GetAssignment(namepath, true);
     
     if(assignment.get() == NULL) 

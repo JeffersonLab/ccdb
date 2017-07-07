@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 project(CCDB_tests)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories("../../include")
 include_directories("../../include/SQLite")
@@ -15,6 +15,7 @@ set(SOURCE_FILES
         "test_PathUtils.cc"
         "test_ModelObjects.cc"
         "test_NoMySqlUserAPI.cc"
+        "test_MySqlUserAPI.cc"
         "test_Authentication.cc"
         "test_SQLiteProvider_Assignments.cc"
         "test_SQLiteProvider_Connection.cc"

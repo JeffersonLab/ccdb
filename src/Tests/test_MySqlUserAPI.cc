@@ -12,7 +12,7 @@
 #include "CCDB/Model/Variation.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/WorkUtils.h"
-#include "CCDB/Helpers/Stopwatch.h"
+
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Log.h"
 #include "CCDB/CalibrationGenerator.h"
@@ -73,7 +73,7 @@ TEST_CASE("CCDB/UserAPI/MySQL","tests")
     //test of getting data as map
     //----------------------------------------------------
     map<string, string> mappedValues;
-    REQUIRE_NOTHROW(result = calib->GetCalib(mappedValues, "test/test_vars/test_table"));
+    REQUIRE_NOTHROW(result = calib->GetCalib(mappedValues, "test/test_vars/test_table2::test"));
     REQUIRE(result);
     REQUIRE(mappedValues.size()>0);
 
@@ -217,7 +217,7 @@ TEST_CASE("CCDB/UserAPI/CalibrationGenerator/Timeout","Disconnect database with 
     REQUIRE(sqliteCalib->IsConnected());
 
     //and more... Now the database should be disconnected
-    TimeProvider::SetUnitTestTime(151);
+    TimeProvider::SetUnitTestTime(251);
     REQUIRE_NOTHROW(gen->UpdateInactivity());
     REQUIRE_FALSE(sqliteCalib->IsConnected());
     

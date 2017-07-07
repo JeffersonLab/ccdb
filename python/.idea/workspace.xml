@@ -7,17 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0f5c7c31-48f8-4d2c-9643-faa923a075d8" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/channel_mc_efficiency.list" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tests/test_dump_comments.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/add.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/add.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/cat.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/cat.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/cmd/utils/dump.py" afterPath="$PROJECT_DIR$/ccdb/cmd/utils/dump.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccdb/table_file.py" afterPath="$PROJECT_DIR$/ccdb/table_file.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/helper.py" afterPath="$PROJECT_DIR$/tests/helper.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/provider_fixture.py" afterPath="$PROJECT_DIR$/tests/provider_fixture.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tests/test_console_context.py" afterPath="$PROJECT_DIR$/tests/test_console_context.py" />
     </list>
     <ignored path="python.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -95,18 +85,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="test_dump_comments.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_dump_comments.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="688">
-              <caret line="85" column="0" lean-forward="false" selection-start-line="85" selection-start-column="0" selection-end-line="85" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#15#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="test_provider.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_provider.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -147,13 +125,41 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="example_llapi_change_value.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="example_llapi_change_value.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/example_llapi_change_value.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="305">
               <caret line="24" column="24" lean-forward="false" selection-start-line="24" selection-start-column="24" selection-end-line="24" selection-end-column="24" />
               <folding>
                 <element signature="e#112#123#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="workspace.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <marker date="1499467667419" expanded="true" signature="72553:72595" ph="..." />
+                <marker date="1499467667419" expanded="true" signature="72553:72612" ph="..." />
+                <marker date="1499467667419" expanded="true" signature="72553:72630" ph="..." />
+                <marker date="1499467667419" expanded="true" signature="72553:72643" ph="..." />
+                <marker date="1499467667419" expanded="true" signature="72553:72658" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="helper.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/tests/helper.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -250,6 +256,7 @@
         <option value="$PROJECT_DIR$/tests/test_dump_comments.py" />
         <option value="$PROJECT_DIR$/tests/test_console_context.py" />
         <option value="$PROJECT_DIR$/example_llapi_change_value.py" />
+        <option value="$PROJECT_DIR$/.idea/workspace.xml" />
       </list>
     </option>
   </component>
@@ -764,7 +771,14 @@
       <option name="project" value="LOCAL" />
       <updated>1499465329084</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Fixed issue with multiline assignment comments">
+      <created>1499466038866</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1499466038866</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -801,12 +815,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1053" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32832617" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2585837" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2585837" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32939914" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32939914" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16613248" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -862,7 +877,8 @@
     <MESSAGE value="Cleanup and preparation for log command development" />
     <MESSAGE value="Made clean test database interface for unit tests" />
     <MESSAGE value="Added an example of how to change the value in python" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added an example of how to change the value in python" />
+    <MESSAGE value="Fixed issue with multiline assignment comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed issue with multiline assignment comments" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -878,13 +894,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/example_llapi_variations.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="68" lean-forward="false" selection-start-line="2" selection-start-column="68" selection-end-line="2" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_argparse.py" />
     <entry file="file://$PROJECT_DIR$/ccdb/authentication.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -1144,22 +1153,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/helper.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ccdb/cmd/console_context.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="169">
           <caret line="382" column="0" lean-forward="false" selection-start-line="382" selection-start-column="0" selection-end-line="382" selection-end-column="0" />
           <folding>
-            <element signature="e#0#37#0" expanded="true" />
+            <element signature="e#0#37#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1169,7 +1168,7 @@
         <state relative-caret-position="751">
           <caret line="58" column="13" lean-forward="false" selection-start-line="58" selection-start-column="13" selection-end-line="58" selection-end-column="13" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1298,6 +1297,30 @@
           <caret line="24" column="24" lean-forward="false" selection-start-line="24" selection-start-column="24" selection-end-line="24" selection-end-column="24" />
           <folding>
             <element signature="e#112#123#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1499467667419" expanded="true" signature="72553:72595" ph="..." />
+            <marker date="1499467667419" expanded="true" signature="72553:72612" ph="..." />
+            <marker date="1499467667419" expanded="true" signature="72553:72630" ph="..." />
+            <marker date="1499467667419" expanded="true" signature="72553:72643" ph="..." />
+            <marker date="1499467667419" expanded="true" signature="72553:72658" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/helper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="15" column="0" lean-forward="true" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>

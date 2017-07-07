@@ -80,6 +80,8 @@ CalibrationGenerator::CalibrationGenerator()
 {
     mMaxInactiveTime = 0; //Disable inactive check
     mInactivityCheckInterval = 100;
+    time_t now = ccdb::TimeProvider::GetUnixTimeStamp(ccdb::ClockSources::Monotonic);
+    mLastInactivityCheckTime = now;
 }
 
 
@@ -177,6 +179,7 @@ string CalibrationGenerator::GetCalibrationHash( const std::string & connectionS
      //will not be created once again but already created DCalibration is returned;
 
     //right now our hash will be just a summ of strings
+
     ostringstream strstrm;
     strstrm<<connectionString<<run<<variation<<time;
     return strstrm.str();
@@ -205,12 +208,10 @@ void CalibrationGenerator::UpdateInactivity()
     }
 
     //Lets iterate all of them then
-    for (size_t i=0; i<=mCalibrations.size(); i++)
+    for (size_t i=0; i<mCalibrations.size(); i++)
     {
-        Calibration* cal = mCalibrations[i];
-
-        if(!cal->IsConnected()) continue;
-        if(now - cal->GetLastActivityTime() > mMaxInactiveTime) cal->Disconnect();
+        if(!mCalibrations[i]->IsConnected()) continue;
+        if(now - mCalibrations[i]->GetLastActivityTime() > mMaxInactiveTime) mCalibrations[i]->Disconnect();
     }
 }
 

@@ -48,7 +48,7 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	REQUIRE(tabeled_values[1][1] == "2.6");
 	REQUIRE(tabeled_values[1][2] == "2.7");
 	
-	//Ok! Lets get all assigments for current types table
+	//Ok! Lets get all assignments for current table types
 	vector<Assignment *> assignments;
 	result = prov->GetAssignments(assignments, "/test/test_vars/test_table", 100);
 	
