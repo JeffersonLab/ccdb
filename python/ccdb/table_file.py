@@ -11,10 +11,10 @@ META_RUN_RANGE = 'run range'
 META_AUTHOR = 'author'
 
 
-#*********************************************************************
+# *********************************************************************
 #   Class TextFileDOM - store information of text data files         *
 #                                                                    *
-#*********************************************************************
+# *********************************************************************
 class TextFileDOM(object):
     """store information of text data files"""
 
@@ -43,9 +43,8 @@ class TextFileDOM(object):
             self.inconsistent_reason = "Column names number is: '{0}'. It is not equal to data columns number: '{1}'". \
                 format(len(self.column_names), self.columns_length)
             return True
-        #if we are here, everything is good
+        # if we are here, everything is good
         return True
-
 
     @property
     def columns_length(self):
@@ -55,9 +54,8 @@ class TextFileDOM(object):
         if not len(self.rows):
             return 0
 
-        #now we know there is at least 1 row
+        # now we know there is at least 1 row
         return len(self.rows[0])
-
 
     @property
     def has_data(self):
@@ -72,9 +70,9 @@ class TextFileDOM(object):
         return False
 
 
-#----------------------------------------
+# ----------------------------------------
 #   read_ccdb_text_file
-#----------------------------------------
+# ----------------------------------------
 def read_ccdb_text_file(file_name):
     dom = TextFileDOM()
     try:
@@ -82,12 +80,12 @@ def read_ccdb_text_file(file_name):
             for line in f:
                 assert isinstance(line, str)
 
-                #prepare line and skip empty one
+                # prepare line and skip empty one
                 line = line.strip()
                 if not len(line):
                     continue
 
-                #what is this line?
+                # what is this line?
                 if line.startswith('#meta'):  # comment with meta
                     line = line[5:].strip()
                     if (":" in line) and (line.index(":") != len(line) - 1):
@@ -117,20 +115,21 @@ def read_ccdb_text_file(file_name):
                     dom.rows.append(values)
 
     except IOError as error:
-        #error open or read file...
+        # error open or read file...
         raise error
 
-    #everything is fine?
+    # everything is fine?
     return dom
 
 
-#----------------------------------------
+# ----------------------------------------
 #   read_namevalue_text_file
-#----------------------------------------
+# ----------------------------------------
 def read_namevalue_text_file(file_name, replace_c_comments=False):
     """
     :param replace_c_comments: - if file contains // - 'C' style comments, replace them by # first
     :type replace_c_comments: bool
+    :param file_name: Name of file to read
     """
     dom = TextFileDOM()
     try:
@@ -139,34 +138,34 @@ def read_namevalue_text_file(file_name, replace_c_comments=False):
             for line in f:
                 assert isinstance(line, str)
 
-                #prepare line and skip empty one
+                # prepare line and skip empty one
                 line = line.strip()
                 if replace_c_comments:
                     line = line.replace("//", "#")
                 if not line:
                     continue
 
-                #what is this line?
-                if line.startswith("#"):    # comment
+                # what is this line?
+                if line.startswith("#"):  # comment
                     line = line[1:]
                     dom.comment_lines.append(line)
 
-                else:   # string with data?
+                else:  # string with data?
                     tokens = shlex.split(line)
 
-                    #check we have name and value
+                    # check we have name and value
                     if len(tokens) < 2:
                         print("ERROR. The name-value file have less than 2 columns. So where are names and values?")
                         raise IOError()
                     values.append(tokens[1])
                     dom.column_names.append(tokens[0])
 
-            #add line
+            # add line
             dom.rows.append(values)
 
     except IOError as error:
-        #error open or read file...
+        # error open or read file...
         raise error
 
-    #everything is fine?
+    # everything is fine?
     return dom

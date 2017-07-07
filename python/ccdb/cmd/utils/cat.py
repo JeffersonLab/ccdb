@@ -267,8 +267,11 @@ class Cat(ConsoleUtilBase):
         :param print_header: print header with column information or not
         :type print_header: bool
 
+        :param comments: print comments
+
         :param display_borders: print '|' borders or not
         :type display_borders: bool
+
         """
         log.debug(Lfm(" |- print asgmnt horizontally: header {0}, borders {1}, comments {2}"
                       "", print_header, display_borders, comments))
@@ -281,7 +284,7 @@ class Cat(ConsoleUtilBase):
 
         # PRINT COMMENTS
         if comments:
-            print ("#" + str(assignment.comment).replace(os.linesep, "#" + os.linesep))
+            print ("#" + str(assignment.comment).replace(os.linesep, os.linesep + "#"))
 
         column_names = [column.name for column in table.columns]
         column_types = [column.type for column in table.columns]
@@ -367,6 +370,8 @@ class Cat(ConsoleUtilBase):
 
         :param display_borders: print '|' borders or not
         :type display_borders: bool
+
+        :param comments: print comments
         """
         log.debug(Lfm(" |- print asgmnt vertically: header {0}, borders {1}, comments {2}",
                       print_header, display_borders, comments))
@@ -445,7 +450,7 @@ class Cat(ConsoleUtilBase):
         #        sys.stdout.write(self.theme.AsgmtType + frmt%columnTypes[i] + self.theme.Reset)
         #    print self.theme.AsgmtBorder + border + self.theme.Reset #last border
 
-        # #cap?
+        # cap?
         if display_borders:
             print (self.theme.AsgmtBorder + cap + self.theme.Reset)
 

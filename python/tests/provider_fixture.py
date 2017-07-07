@@ -7,11 +7,12 @@ from ccdb.errors import DatabaseStructureError, TypeTableNotFound, DirectoryNotF
     UserNotFoundError, VariationNotFound, RunRangeNotFound
 
 from ccdb import AlchemyProvider
+from tests import helper
 
 
 class AlchemyProviderTest(unittest.TestCase):
     ccdb_path = get_ccdb_home_path()
-    _connection_str = ""
+    _connection_str = helper.sqlite_test_connection_str
     _provider = AlchemyProvider()
 
     @property
@@ -27,7 +28,9 @@ class AlchemyProviderTest(unittest.TestCase):
         self._connection_str = connection_str
 
     def setUp(self):
+        self._provider = AlchemyProvider()
         self.provider.logging_enabled = False
+        self.provider.authentication.current_user_name = "test_user"
 
     def test_connection(self):
         """ Tests that provider connects successfully"""

@@ -1,19 +1,21 @@
-import unittest
 import os
+import sys
 import ccdb
-from ccdb import get_ccdb_home_path
-from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table, TypeTableColumn
-from ccdb.model import LogRecord, User
-from ccdb.errors import DatabaseStructureError, TypeTableNotFound, DirectoryNotFound, \
-    UserNotFoundError, VariationNotFound, RunRangeNotFound
 import subprocess
-from ccdb import AlchemyProvider
+from contextlib import contextmanager
+
+# python 3 support
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 
 # path to CCDB_HOME
 ccdb_path = ccdb.get_ccdb_home_path()
 
 # path of the tests folder
-ccdb_test_path = os.path.join(ccdb_path, 'tests')
+ccdb_test_path = os.path.join(ccdb_path, 'python', 'tests')
 
 # Name of environment variable that holds MySql connection string
 ENV_TEST_MYSQL = "CCDB_TEST_MYSQL_CONNECTION"
@@ -25,7 +27,7 @@ ENV_TEST_SQLITE = "CCDB_TEST_SQLITE_CONNECTION"
 # MySql connection string for tests
 mysql_test_connection_str = os.environ[ENV_TEST_MYSQL] \
     if ENV_TEST_MYSQL in os.environ \
-    else "mysql://ccdb_user@127.0.0.1:3306/test_ccdb"
+    else "mysql://ccdb_user@127.0.0.1:3306/ccdb_test"
 
 # SQLite connection string for tests
 sqlite_test_connection_str = os.environ[ENV_TEST_SQLITE] \
@@ -51,6 +53,17 @@ def recreate_mysql_db(username="ccdb_user", password=""):
     ret_code = p.wait()
 
     print("MySQL reacreation ended with retcode:", ret_code)
+
+
+@contextmanager
+def captured_output():
+    new_out, new_err = StringIO(), StringIO()
+    old_out, old_err = sys.stdout, sys.stderr
+    try:
+        sys.stdout, sys.stderr = new_out, new_err
+        yield sys.stdout, sys.stderr
+    finally:
+        sys.stdout, sys.stderr = old_out, old_err
 
 
 if __name__ == '__main__':

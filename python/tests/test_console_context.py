@@ -34,9 +34,9 @@ class ConsoleContextTests(unittest.TestCase):
         # We need only sqlite tests. We test that we work with all databases in the provider fixture
         self.sqlite_connection_str = helper.sqlite_test_connection_str
 
-        # initialize but disable colorama
-        ccdb.cmd.colorama.init(autoreset=True)
-        ccdb.cmd.colorama.deinit()
+        # DON'T USE COLORAMA IN TESTS. PyCharm test runner FAILS BECAUSE OF IT
+        # DON'T - ccdb.cmd.colorama.init(autoreset=True)
+        # DON'T - ccdb.cmd.colorama.deinit()
 
         # create console context
         self.context = ConsoleContext()
