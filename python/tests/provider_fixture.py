@@ -11,9 +11,7 @@ from ccdb import AlchemyProvider
 
 class AlchemyProviderTest(unittest.TestCase):
     ccdb_path = get_ccdb_home_path()
-    sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
-    mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
-    _connection_str = sqlite_connection_str
+    _connection_str = ""
     _provider = AlchemyProvider()
 
     @property
@@ -28,10 +26,7 @@ class AlchemyProviderTest(unittest.TestCase):
     def connection_str(self, connection_str):
         self._connection_str = connection_str
 
-
     def setUp(self):
-        self._connection_str = self.sqlite_connection_str
-        self._provider = AlchemyProvider()
         self.provider.logging_enabled = False
 
     def test_connection(self):
@@ -48,13 +43,13 @@ class AlchemyProviderTest(unittest.TestCase):
         """ Test of directories"""
         self.provider.connect(self.connection_str)   # this test requires the connection
 
-        #simple get directory
+        # simple get directory
         dir_obj = self.provider.get_directory("/test")
         self.assertIsNotNone(dir_obj)
         self.assertMultiLineEqual(dir_obj.path, "/test")
         self.assertMultiLineEqual(dir_obj.name, "test")
 
-        #search directories
+        # search directories
         dirs = self.provider.search_directories("t??t_va*", "/test")
         assert (len(dirs) != 0)
 
@@ -64,8 +59,8 @@ class AlchemyProviderTest(unittest.TestCase):
         dirs = self.provider.search_directories("*", "")
         assert (len(dirs) >= 2)
 
-        #cleanup directories
-        #Ok, lets check if directory for the next text exists...
+        # cleanup directories
+        # Ok, lets check if directory for the next text exists...
         try:
             self.provider.delete_directory("/test/testdir/constants")
         except DirectoryNotFound:
@@ -132,7 +127,6 @@ class AlchemyProviderTest(unittest.TestCase):
         assert table.parent_dir.name == "test_vars"
         assert table.columns[0].name == "x"
 
-
         # get all tables in directory
         tables = self.provider.get_type_tables("/test/test_vars")
         assert len(tables) >= 2       # at least 2 tables are located in "/test/test_vars"
@@ -160,8 +154,8 @@ class AlchemyProviderTest(unittest.TestCase):
         # CREATE AND DELETE
 
         try:
-            #if such type table already exists.. probably from last failed test...
-            #we haven't test it yet, but we should try to delete it
+            # if such type table already exists.. probably from last failed test...
+            # we haven't test it yet, but we should try to delete it
             table = self.provider.get_type_table("/test/test_vars/new_table")
             self.provider.delete_type_table(table)
         except:
@@ -211,7 +205,7 @@ class AlchemyProviderTest(unittest.TestCase):
         try:
             rr = self.provider.get_run_range(0, 2001)
 
-            #oh... such run range exists? It shouldn't be... Maybe it is left because of the last tests...
+            # oh... such run range exists? It shouldn't be... Maybe it is left because of the last tests...
             print ("WARNING provider.get_run_range(0, 2001) found run range (should not be there)")
             print ("trying to delete run range and run the test one more time... ")
             self.provider.delete_run_range(rr)      # (!) <-- test of this function is further
@@ -262,7 +256,7 @@ class AlchemyProviderTest(unittest.TestCase):
         try:
             v = self.provider.get_variation("abra_kozyabra")
 
-            #oh... such run range exists? It shouldn't be... Maybe it is left because of the last tests...
+            # oh... such run range exists? It shouldn't be... Maybe it is left because of the last tests...
             print ("WARNING provider.get_variation('abra_kozyabra') found but should not be there")
             print ("trying to delete variation and run the test one more time... ")
             self.provider.delete_variation(v)    # (!) <-- test of this function is further
@@ -304,8 +298,6 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEqual(a.constant_set.data_list[0], "2.2")
 
         # No such calibration exist in test variation run 100, but constants should fallback to variation default
-
-
 
     def test_assignments(self):
         """Test Assignments"""
@@ -375,7 +367,8 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertRaises(UserNotFoundError, self.provider.delete_directory, self.provider.get_directory("/test"))
         self.assertIsNotNone(self.provider.get_directory("/test"))
 
-    def test_gen_flatten_data(self):
+    @staticmethod
+    def test_gen_flatten_data():
         source = [[1, 2], [3, "444"]]
         result = list(gen_flatten_data(source))
         assert result[0] == 1
@@ -416,7 +409,7 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEqual(self.provider.validate_data_value('0', column), False)
         self.assertRaises(ValueError, self.provider.validate_data_value, 'hren', column)
 
-        #uint!
+        # uint!
         column.type = 'uint'
         self.assertEqual(self.provider.validate_data_value('1', column), 1)
         self.assertRaises(ValueError, self.provider.validate_data_value, '-1', column)

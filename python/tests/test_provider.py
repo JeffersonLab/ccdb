@@ -1,13 +1,13 @@
 from ccdb.errors import DatabaseStructureError
 from provider_fixture import AlchemyProviderTest
 import os
-
+import helper
 
 class SQLiteAlchemyProviderTest(AlchemyProviderTest):
 
     def setUp(self):
         AlchemyProviderTest.setUp(self)
-        self.connection_str = "sqlite:///" + os.path.join(self.ccdb_path, "sql", "ccdb.sqlite")
+        self.connection_str = helper.sqlite_test_connection_str
 
     def test_sqlite_wrong_file(self):
         """ Test connection to wrong sqlite file """
@@ -18,5 +18,5 @@ class MySQLAlchemyProviderTest(AlchemyProviderTest):
 
     def setUp(self):
         AlchemyProviderTest.setUp(self)
-        self.connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
+        self.connection_str = helper.mysql_test_connection_str
 

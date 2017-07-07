@@ -649,7 +649,7 @@ class ConsoleContext(object):
     def print_interactive_intro(self):
         print("""
 +--------------------------+
-  CCDB shell v.1.06.01
+  CCDB shell v.1.07.00
 +--------------------------+
        """)
         print(self.theme.Title + "Interactive mode")

@@ -13,5 +13,3 @@ class UtilityArgumentParserTest(unittest.TestCase):
             parser.parse_args([])
         except Exception as ex:
             self.assertIn("too few", str(ex))
-
-

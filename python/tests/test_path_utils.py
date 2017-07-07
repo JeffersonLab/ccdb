@@ -51,5 +51,3 @@ class AuthenticationTest(unittest.TestCase):
         self.assertTrue(ccdb.path_utils.validate_name("this_is_variation2"))
         self.assertFalse(ccdb.path_utils.validate_name("this-is_variation2"))
         self.assertFalse(ccdb.path_utils.validate_name("this:isvariation2"))
-
-

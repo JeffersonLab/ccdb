@@ -14,10 +14,15 @@ import ccdb.cmd.colorama
 from ccdb.errors import DirectoryNotFound, TypeTableNotFound
 import ccdb.path_utils
 import ccdb.cmd.themes
-from ccdb import get_ccdb_home_path
 from ccdb.cmd.console_context import ConsoleContext
+import helper
 
 logger = logging.getLogger("ccdb")
+
+
+def test_rm():
+    """rm. General test... But rm is tested in other tests"""
+    pass
 
 
 class ConsoleContextTests(unittest.TestCase):
@@ -26,10 +31,8 @@ class ConsoleContextTests(unittest.TestCase):
     """
 
     def setUp(self):
-        ccdb_path = get_ccdb_home_path()
-
-        self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
-        self.mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
+        # We need only sqlite tests. We test that we work with all databases in the provider fixture
+        self.sqlite_connection_str = helper.sqlite_test_connection_str
 
         # initialize but disable colorama
         ccdb.cmd.colorama.init(autoreset=True)
@@ -60,7 +63,7 @@ class ConsoleContextTests(unittest.TestCase):
 
     def test_context(self):
         """Test utils are loaded"""
-        self.assertTrue(len(self.context.utils)>0)
+        self.assertTrue(len(self.context.utils) > 0)
 
     def test_cat(self):
         """cat. General help"""
@@ -73,34 +76,29 @@ class ConsoleContextTests(unittest.TestCase):
         self.context.process_command_line("cat /test/test_vars/test_table:100:test")
         self.assertIn("2.2", self.output.getvalue())
 
-
     def test_cd(self):
         """cd. General test"""
         self.context.process_command_line("cd test")
-
 
     def test_help(self):
         """help. Help command test"""
         self.context.process_command_line("help")
         self.assertIn("ls", self.output.getvalue())
 
-
     def test_howto(self):
         """howto. General test"""
         self.context.process_command_line("howto")
-
 
     def test_dump(self):
         """dump. General and output tests"""
         self.context.theme = ccdb.cmd.themes.ColoredTheme()
         self.context.process_command_line("dump /test/test_vars/test_table")
         text = self.output.getvalue()
-        self.assertNotIn("[",text,"Check that dump disabled color output")
+        self.assertNotIn("[", text, "Check that dump disabled color output")
 
-        #cleanup
+        # cleanup
         self.context.theme = ccdb.cmd.themes.NoColorTheme()
         self.output.truncate(0)
-
 
     def test_info(self):
         """info. General test"""
@@ -109,7 +107,6 @@ class ConsoleContextTests(unittest.TestCase):
         self.assertIn("test_table", out_str)
         self.assertIn("Test type", out_str)
         self.assertIn("z", out_str)
-
 
     def test_ls(self):
         """ls. General test"""
@@ -120,7 +117,6 @@ class ConsoleContextTests(unittest.TestCase):
         """ls. General test"""
         self.context.process_command_line("ls /test/test_vars/test_table")
         self.assertIn("test", self.output.getvalue())
-
 
     def test_mk_rm_dir(self):
         """mkdir, rm. Create directory and delete it"""
@@ -145,13 +141,13 @@ class ConsoleContextTests(unittest.TestCase):
     def test_mk_rm_table(self):
         """mktbl, rm. Create table and delete it"""
         self.context.process_command_line("mktbl /test/auto_testing_table -r 2 x y z #This is comment for my table")
-        #TODO check test table internals are right
+        # TODO check test table internals are right
         self.context.process_command_line("rm --force /test/auto_testing_table")
 
     def test_mk_rm_variation(self):
         """mkvar, rm. Create variation and delete it"""
         self.context.process_command_line("mkvar auto_testing_variation -p test #hahaha")
-        self.context.process(["mkvar", "auto_testing_variation2", "-p", "test"], 0)    # Regression test for GitHub #3
+        self.context.process(["mkvar", "auto_testing_variation2", "-p", "test"], 0)  # Regression test for GitHub #3
         # TODO check test table internals are right
         self.context.process_command_line("rm --force -v auto_testing_variation")
         self.context.process_command_line("rm --force -v auto_testing_variation2")
@@ -166,26 +162,18 @@ class ConsoleContextTests(unittest.TestCase):
         self.context.process_command_line("vers /test/test_vars/test_table")
         text = str(self.output.getvalue())
         line = text.split("\n")[1]
-        id = int(shlex.split(line)[0])
-        self.context.process_command_line("rm -f -a {0}".format(id))
-
+        assignment_id = int(shlex.split(line)[0])
+        self.context.process_command_line("rm -f -a {0}".format(assignment_id))
 
     def test_pwd(self):
         """pwd. General test"""
         self.context.process_command_line("pwd")
         self.assertIn("/", self.output.getvalue())
 
-
-    def test_rm(self):
-        """rm. General test... But rm is tested in other tests"""
-        pass
-
-
     def test_run(self):
         """run. Test if 0 is default run"""
         self.context.process_command_line("run")
         self.assertIn("0", self.output.getvalue())
-
 
     def test_run_change(self):
         """run. Test run is changed"""
@@ -194,13 +182,11 @@ class ConsoleContextTests(unittest.TestCase):
         self.context.process_command_line("run")
         self.assertIn("1", self.output.getvalue())
 
-
     def test_var(self):
         """var. Test if 'default' variation is default"""
-        #default run is 0
+        # default run is 0
         self.context.process_command_line("var")
         self.assertIn("default", self.output.getvalue())
-
 
     def test_var_change(self):
         """var. Test variation change"""
@@ -208,7 +194,6 @@ class ConsoleContextTests(unittest.TestCase):
         self.output.truncate(0)
         self.context.process_command_line("var")
         self.assertIn("test_var", self.output.getvalue())
-
 
     def test_vers(self):
         """vers. General usage test"""
@@ -218,20 +203,18 @@ class ConsoleContextTests(unittest.TestCase):
         # REGRESSION test: for v. 1.02, doesn't show data if context default run is not in run-range
         self.assertIn("500-3000", result, "Because test_table has data for 500-3000 run-range")
 
-
     def test_vers_variation_run(self):
         """vers. Test if vers limits variation and run range if -v and -r flags are given"""
         self.context.process_command_line("vers /test/test_vars/test_table -v default -r 0")
         result = self.output.getvalue()
 
         self.assertNotIn("subtest", result)
-        self.assertNotIn("500-3000", result)    # There is test data for 500-3000 run-range
-
+        self.assertNotIn("500-3000", result)  # There is test data for 500-3000 run-range
 
     def test_vers_bad_params(self):
         """vers. Test vers bad parameters"""
 
-        #wrong directory
+        # wrong directory
         self.assertRaises(DirectoryNotFound, self.context.process_command_line, "vers /some/wrong/dir/table")
         self.assertRaises(TypeTableNotFound, self.context.process_command_line, "vers /test/test_vars/wrong_table")
 
@@ -240,7 +223,7 @@ class ConsoleContextTests(unittest.TestCase):
         check that for sqlite connection user name is skipped
         """
 
-        self.context.process_command_line("ls") # run command that requires connection make it to connect
+        self.context.process_command_line("ls")  # run command that requires connection make it to connect
         self.assertEqual('anonymous', self.context.user_name)
 
     def test_log(self):
@@ -248,4 +231,3 @@ class ConsoleContextTests(unittest.TestCase):
         log. general test
         """
         self.context.process_command_line("log")
-
