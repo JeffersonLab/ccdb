@@ -106,7 +106,7 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
 
     auto assignment = GetAssignment(namepath, true);
         
-    if(!assignment.get())
+    if(!assignment)
     {       
         return false; //TODO possibly exception throwing?
     }
@@ -218,7 +218,7 @@ bool Calibration::GetCalib( vector< vector<string> > &values, const string & nam
     
     auto assignment = GetAssignment(namepath, false);
     
-    if(!assignment.get()) 
+    if(!assignment)
     {
         return false;
     }
@@ -315,7 +315,7 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
 
     auto assignment = GetAssignment(namepath, true);
     
-    if(assignment.get() == NULL) 
+    if(assignment == NULL)
     {
         //TODO possibly exception throwing?
         return false;
@@ -453,7 +453,7 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
     
 	auto assignment = GetAssignment(namepath, true);
     
-    if(assignment.get() == NULL) return false; //TODO possibly exception throwing?
+    if(assignment == NULL) return false; //TODO possibly exception throwing?
 
     //Get data
     values.clear();
@@ -582,7 +582,7 @@ string Calibration::GetConnectionString() const
 
 
 //______________________________________________________________________________
-    shared_ptr<Assignment> Calibration::GetAssignment(const string& namepath, bool loadColumns /*=true*/)
+    Assignment* Calibration::GetAssignment(const string& namepath, bool loadColumns /*=true*/)
 {
     /** @brief Gets the assignment from provider using namepath
      * namepath is the common ccdb request; @see GetCalib
@@ -594,7 +594,7 @@ string Calibration::GetConnectionString() const
      */
 
     auto pl = PerfLog("Calibration::GetAssignment=>" + namepath );
-    static std::map<std::string, shared_ptr<Assignment>> cache;
+    static std::map<std::string, Assignment*> cache;
 
 	UpdateActivityTime();
 
@@ -620,15 +620,15 @@ string Calibration::GetConnectionString() const
         }
     }
 
-    shared_ptr<Assignment> assigment;
+    Assignment* assigment;
 
     if(time > 0)
     {
-		assigment = shared_ptr<Assignment>(mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation,loadColumns));
+		assigment = (mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation,loadColumns));
 	}
     else
 	{
-		assigment = shared_ptr<Assignment>(mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns));
+		assigment = (mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns));
 	}
 
     if(mIsCacheEnabled)

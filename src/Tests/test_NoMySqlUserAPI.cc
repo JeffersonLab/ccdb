@@ -161,7 +161,8 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 
 	SECTION("Get Assignment test", "Test all elements of getting data through get assignment")
 	{
-		std::shared_ptr<Assignment> a;
+		//std::shared_ptr<Assignment> a;
+        Assignment* a;
 		REQUIRE_NOTHROW(a = sqliteCalib->GetAssignment("/test/test_vars/test_table2:0:test"));
 		REQUIRE(result);
 		REQUIRE(a->GetValueType(0) == ConstantsTypeColumn::cIntColumn);
@@ -175,5 +176,20 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		REQUIRE(a->GetValueInt("c1") == 10);
 		REQUIRE(a->GetValueInt(0, "c3") == 30);
 		REQUIRE(a->GetValueDouble(2) > 29);
+	}
+
+	//=== Default time ===
+	SECTION("Several Calibrations tear down SQLite", "Test that crash in destructor #45")
+	{
+        {
+            unique_ptr<CalibrationGenerator> gen2(new CalibrationGenerator());
+
+            ContextParseResult res = PathUtils::ParseContext("variation=default calibtime=2012-08");
+            unique_ptr<Calibration> sqliteCalib1(gen2->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime));
+            //unique_ptr<Calibration> sqliteCalib2(gen2->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime));
+            unique_ptr<Calibration> sqliteCalib3(gen2->MakeCalibration(TESTS_SQLITE_STRING, 101, res.Variation, res.ConstantsTime));
+            sqliteCalib1->GetAssignment("/test/test_vars/test_table2:0:test");
+            //Now lets check the teardown...
+        }
 	}
 }
