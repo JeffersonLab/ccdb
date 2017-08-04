@@ -257,7 +257,7 @@ public:
 	* @parameter [in] namepath -  full namepath is /path/to/data:run:variation:time but usually it is only /path/to/data
 	* @return   DAssignment *
 	*/
-	virtual std::shared_ptr<Assignment> GetAssignment(const string& namepath, bool loadColumns = true);
+	virtual Assignment* GetAssignment(const string& namepath, bool loadColumns = true);
 
     /** @brief if true the data will be cached
      *
