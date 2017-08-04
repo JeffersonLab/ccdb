@@ -95,3 +95,4 @@ if __name__ == '__main__':
         print("")
         print("# SQLite connection string for tests")
         print("sqlite_test_connection_str = '{}'".format(sqlite_test_connection_str))
+        parser.print_help()
