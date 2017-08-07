@@ -423,7 +423,7 @@ class ConsoleContext(object):
         if (not self.log_sqlite) and (self.provider.connection_string.startswith("sqlite://")):
             log.debug(" |  |- log_sqlite == False, set user to anonymous and disable logging'")
             self.provider.logging_enabled = False
-            self.user_name = self.anonymous_user_name
+            # self.user_name = self.anonymous_user_name
 
         # connected
         if log.isEnabledFor(logging.DEBUG):
