@@ -43,7 +43,6 @@ class DatabaseStructureError(Exception):
 
     pass
 
-
 class UserNotFoundError(Exception):
     """ Exception raised if user not found in the database"""
 
@@ -55,3 +54,8 @@ class UserExistsError(Exception):
     def __init__(self, message="", username=""):
         self.message = message,
         self.username = username
+
+class AnonymousUserForbiddenError(Exception):
+    """ Exception raised when an Anonymous user is trying to perform actions that they are forbidden from doing."""
+    def __init__(self, message="This action is forbidden for an Anonymous user."):
+        self.message = message
