@@ -1547,5 +1547,3 @@ class AlchemyProvider(object):
 
         # execute and return
         return query.all()
-
-

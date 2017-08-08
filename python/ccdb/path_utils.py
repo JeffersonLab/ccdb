@@ -67,7 +67,7 @@ def join(a, *p):
 
 
 #______________________________________________________________________________
-def parse_time(timeStr="-1"):
+def parse_time(timeStr="-1", max_time_by_default=True):
     """ @brief ParseTime
     parses time as any part of
     YYYY:MM:DD-hh:mm:ss
@@ -88,12 +88,20 @@ def parse_time(timeStr="-1"):
     #the function is ported from C++ dont be surprise by struct_time
     
     #default result
-    year=2037
-    month = 12
-    day = 31
-    hour = 23
-    minute = 59
-    second = 59
+    if max_time_by_default:
+        year=2037
+        month = 12
+        day = 31
+        hour = 23
+        minute = 59
+        second = 59
+    else:
+        year = 2000
+        month = 1
+        day = 1
+        hour = 0
+        minute = 0
+        second = 0
 
     #some tmp values
     tmpStr =""     #tmp string to buffer chars
