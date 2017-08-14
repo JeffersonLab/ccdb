@@ -58,6 +58,13 @@ class ConsoleContextTests(unittest.TestCase):
         logger.addHandler(ch)
         logger.setLevel(logging.INFO)
 
+        self.context.provider.connect(self.context.connection_string)
+        user = self.context.provider.get_current_user()
+        # create some test logs w/ current user
+        self.context.provider.create_log_record(user, ["1"], "create",
+                                                "Created assignment '/testing_filter/start_parms:0:testing_filter:2013-01-17_19-02-27'",
+                                                "Test Log" )
+
     def tearDown(self):
         # restore stdout
         sys.stdout = self.saved_stdout
@@ -254,3 +261,30 @@ class ConsoleContextTests(unittest.TestCase):
     def test_list_current_user(self):
         self.context.process_command_line("user")
         self.assertIn('test_user', self.output.getvalue())
+
+    def test_filter_logs_by_username(self):
+
+        self.context.process_command_line("log -u test_user")
+        # we should see this in the logs
+        self.assertIn("test_user", self.output.getvalue())
+
+    def test_filter_logs_by_table(self):
+
+        self.context.process_command_line("log -t test")
+        # we should see this in the logs
+        self.assertIn("test", self.output.getvalue())
+
+    def test_filter_logs_by_variation(self):
+
+        self.context.process_command_line("log -v default")
+        # we should see this in the logs
+        self.assertIn("default", self.output.getvalue())
+
+    def test_filter_logs_by_all(self):
+
+        self.context.process_command_line("log -u test_user -v default -t test")
+
+        # we should see these in the logs
+        self.assertIn("default", self.output.getvalue())
+        self.assertIn("test_user", self.output.getvalue())
+        self.assertIn("test", self.output.getvalue())
