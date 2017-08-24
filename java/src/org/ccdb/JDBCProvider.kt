@@ -63,9 +63,7 @@ open public class JDBCProvider(public val connectionString: String) {
      *
      * @remark this directory is not stored in database
      */
-    public val rootDir: Directory = Directory(0, 0, "", Date(0), Date(0), "root directory"); {
-        rootDir.fullPath = "/"
-    }
+    public val rootDir: Directory = Directory(0, 0, "", Date(0), Date(0), "root directory")
 
     /**
      * Collect statistics of getData function
@@ -85,6 +83,10 @@ open public class JDBCProvider(public val connectionString: String) {
         get(){
             return !(connection?.isClosed() ?: true)
         }
+
+    init {
+        this.rootDir.fullPath = "/"
+    }
 
 
     /**

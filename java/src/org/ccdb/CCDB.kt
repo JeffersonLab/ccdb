@@ -1,3 +1,5 @@
+@file:JvmName("CcdbPackage")
+
 package org.jlab.ccdb
 
 import org.jlab.ccdb.JDBCProvider

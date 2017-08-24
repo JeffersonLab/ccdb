@@ -7,10 +7,10 @@ package org.jlab.ccdb
 
 import java.util.Date
 import java.util.Vector
-import com.sun.javafx.scene.shape.PathUtils
-import org.jlab.ccdb.helpers.combinePath
 import java.util.HashMap
+import org.jlab.ccdb.helpers.combinePath
 import kotlin.properties.Delegates
+
 
 val dataSeparator = '|'
 
@@ -73,27 +73,28 @@ class Variation(
     }
 }
 
-public class TypeTable(
-        public val id:Int,
-        public val directory:Directory,
-        public val name:String,
-        public val columns: Vector<TypeTableColumn>,
-        public val rowsCount:Int)
+class TypeTable(
+        val id:Int,
+        val directory:Directory,
+        val name:String,
+        val columns: Vector<TypeTableColumn>,
+        val rowsCount:Int)
 {
-    public val fullPath: String
+    val fullPath: String
         get(){
                 return combinePath(directory.fullPath, name)
         }
 
     private var isDoneColumnsByName=false
 
-    public val columnsByName: HashMap<String, TypeTableColumn> = HashMap<String, TypeTableColumn>()
+
+    val columnsByName:HashMap<String, TypeTableColumn> = HashMap<String, TypeTableColumn>()
         get(){
             if(!isDoneColumnsByName){
-                for(column in columns) $columnsByName[column.name]=column
-                isDoneColumnsByName = false
+                for(column in columns) field[column.name]=column
+                isDoneColumnsByName = true
             }
-            return $columnsByName
+            return field
         }
 }
 
@@ -118,47 +119,47 @@ class Assignment(
     /**
      * Gets number of rows
      */
-    public val rowCount:Int get(){ return typeTable.rowsCount}
+    val rowCount:Int get(){ return typeTable.rowsCount}
 
 
     /**
      * Gets number of columns
      */
-    public val columnCount:Int get(){return typeTable.columns.size}
+    val columnCount:Int get(){return typeTable.columns.size}
 
     /**
      * Gets data represented as one vector of string values
      */
-    public val vectorString: Vector<String> = Vector<String>()
+    val vectorString: Vector<String> = Vector<String>()
     get(){
-        if($vectorString.empty){
-            for (token in blob.split(dataSeparator)) $vectorString.add(token)
+        if(field.isEmpty()){
+            for (token in blob.split(dataSeparator)) field.add(token)
         }
-        return $vectorString
+        return field
     }
 
     /**
      * Gets data represented as one vector of int values
      */
-    public val vectorInt: Vector<Int> by Delegates.lazy {
+    val vectorInt: Vector<Int> by lazy {
         val result = Vector<Int>()
-        for (token in blob.split(dataSeparator)) result.add(token.toInt())
+        blob.split(dataSeparator).mapTo(result) { it.toInt() }
         result
     }
 
     /**
      * Gets data represented as one vector of int values
      */
-    public val vectorLong: Vector<Long> by Delegates.lazy {
+    val vectorLong: Vector<Long> by lazy {
         val result = Vector<Long>()
-        for (token in blob.split(dataSeparator)) result.add(token.toLong())
+        blob.split(dataSeparator).mapTo(result) { it.toLong() }
         result
     }
 
     /**
      * Gets data represented as one vector of int values
      */
-    public val vectorDouble: Vector<Double> by Delegates.lazy {
+    val vectorDouble: Vector<Double> by lazy {
         val result = Vector<Double>()
         for (token in blob.split(dataSeparator)) result.add(token.toDouble())
         result
@@ -167,9 +168,9 @@ class Assignment(
     /**
      * Gets data represented as one vector of boolean values
      */
-    public val vectorBoolean: Vector<Boolean> by Delegates.lazy {
+    val vectorBoolean: Vector<Boolean> by lazy {
         val result = Vector<Boolean>()
-        for (token in blob.split(dataSeparator)) result.add(token.toBoolean())
+        blob.split(dataSeparator).mapTo(result) { it.toBoolean() }
         result
     }
 
@@ -177,27 +178,25 @@ class Assignment(
     /**
      * Gets data represented as row-wise table
      */
-    public val tableString:Vector<Vector<String>> = Vector<Vector<String>>()
+    val tableString:Vector<Vector<String>> = Vector<Vector<String>>()
         get(){
-            if($tableString.empty){
+            if(field.isEmpty()){
                 val ncols = typeTable.columns.size
                 val nrows = typeTable.rowsCount
 
-                for(rowIndex in 0..nrows-1){
+                for(rowIndex in 0 until nrows){
                     val row = Vector<String>()
-                    for(colIndex in 0..ncols-1){
-                        row.add(vectorString[rowIndex*ncols + colIndex])
-                    }
-                    $tableString.add(row)
+                    (0 until ncols).mapTo(row) { vectorString[rowIndex*ncols + it] }
+                    field.add(row)
                 }
             }
-            return $tableString
+            return field
         }
 
     /**
      * Gets data represented as row-wise table of Integers
      */
-    public val tableInt:Vector<Vector<Int>>  by Delegates.lazy {
+    val tableInt:Vector<Vector<Int>>  by lazy {
         val result = Vector<Vector<Int>>()
         for(row in tableString){
             val parsedRow = Vector<Int>()
@@ -212,7 +211,7 @@ class Assignment(
     /**
      * Gets data represented as row-wise table of Longs
      */
-    public val tableLong:Vector<Vector<Long>>  by Delegates.lazy {
+    val tableLong:Vector<Vector<Long>>  by lazy {
         val result = Vector<Vector<Long>>()
         for(row in tableString){
             val parsedRow = Vector<Long>()
@@ -227,7 +226,7 @@ class Assignment(
     /**
      * Gets data represented as row-wise table of Doubles
      */
-    public val tableDouble:Vector<Vector<Double>>  by Delegates.lazy {
+    val tableDouble:Vector<Vector<Double>>  by lazy {
         val result = Vector<Vector<Double>>()
         for(row in tableString){
             val parsedRow = Vector<Double>()
@@ -242,7 +241,7 @@ class Assignment(
     /**
      * Gets data represented as row-wise table of Booleans
      */
-    public val tableBoolean:Vector<Vector<Boolean>>  by Delegates.lazy {
+    val tableBoolean:Vector<Vector<Boolean>>  by lazy {
         val result = Vector<Vector<Boolean>>()
         for(row in tableString){
             val parsedRow = Vector<Boolean>()
@@ -258,22 +257,22 @@ class Assignment(
     /**
      * gets data represented as map of {column name: data}
      */
-    public val mapString: HashMap<String, String> = HashMap<String, String>()
+    val mapString: HashMap<String, String> = HashMap<String, String>()
         get(){
-            if(mapString.empty) {
+            if(field.isEmpty()) {
                 val ncols = typeTable.columns.size
 
-                for (colIndex in 0..ncols - 1) {
-                    $mapString[typeTable.columns[colIndex].name] = vectorString[colIndex]
+                for (colIndex in 0 until ncols) {
+                    field[typeTable.columns[colIndex].name] = vectorString[colIndex]
                 }
             }
-            return $mapString
+            return field
         }
 
     /**
      * Gets all values in one column by column name
      */
-    public fun getColumnValuesString(columnName:String): Vector<String>{
+    fun getColumnValuesString(columnName:String): Vector<String>{
         val column = typeTable.columnsByName[columnName]!!;
         return getColumnValuesString(column.index)
     }
@@ -281,7 +280,7 @@ class Assignment(
     /**
      * Gets all values in one column by column name
      */
-    public fun getColumnValuesInt(columnName:String): Vector<Int>{
+    fun getColumnValuesInt(columnName:String): Vector<Int>{
         val column = typeTable.columnsByName[columnName]!!;
         return getColumnValuesInt(column.index)
     }
@@ -289,7 +288,7 @@ class Assignment(
     /**
      * Gets all values in one column by column name
      */
-    public fun getColumnValuesLong(columnName:String): Vector<Long>{
+    fun getColumnValuesLong(columnName:String): Vector<Long>{
         val column = typeTable.columnsByName[columnName]!!;
         return getColumnValuesLong(column.index)
     }
@@ -297,7 +296,7 @@ class Assignment(
     /**
      * Gets all values in one column by column name
      */
-    public fun getColumnValuesDouble(columnName:String): Vector<Double>{
+    fun getColumnValuesDouble(columnName:String): Vector<Double>{
         val column = typeTable.columnsByName[columnName]!!;
         return getColumnValuesDouble(column.index)
     }
@@ -305,7 +304,7 @@ class Assignment(
     /**
      * Gets all values in one column by column name
      */
-    public fun getColumnValuesBoolean(columnName:String): Vector<Boolean>{
+    fun getColumnValuesBoolean(columnName:String): Vector<Boolean>{
         val column = typeTable.columnsByName[columnName]!!;
         return getColumnValuesBoolean(column.index)
     }
@@ -313,42 +312,36 @@ class Assignment(
     /**
      * Gets all values in one column by column index
      */
-    public fun getColumnValuesString(columnIndex:Int): Vector<String>{
+    private fun getColumnValuesString(columnIndex:Int): Vector<String>{
         val result = Vector<String>()
-        for(rowIndex in 0 .. rowCount - 1){
-            result.add(vectorString[rowIndex*columnCount + columnIndex])
-        }
+        (0 until rowCount).mapTo(result) { vectorString[it *columnCount + columnIndex] }
         return result;
     }
 
     /**
      * Gets all values as Int in one column by column index
      */
-    public fun getColumnValuesInt(columnIndex:Int): Vector<Int>{
+    private fun getColumnValuesInt(columnIndex:Int): Vector<Int>{
         val result = Vector<Int>()
         val values = getColumnValuesString(columnIndex)
-        for(value in values){
-            result.add(value.toInt())
-        }
+        values.mapTo(result) { it.toInt() }
         return result;
     }
 
     /**
      * Gets all values as Double in one column by column index
      */
-    public fun getColumnValuesDouble(columnIndex:Int): Vector<Double>{
+    fun getColumnValuesDouble(columnIndex:Int): Vector<Double>{
         val result = Vector<Double>()
         val values = getColumnValuesString(columnIndex)
-        for(value in values){
-            result.add(value.toDouble())
-        }
+        values.mapTo(result) { it.toDouble() }
         return result;
     }
 
     /**
      * Gets all values as Long in one column by column index
      */
-    public fun getColumnValuesLong(columnIndex:Int): Vector<Long>{
+    private fun getColumnValuesLong(columnIndex:Int): Vector<Long>{
         val result = Vector<Long>()
         val values = getColumnValuesString(columnIndex)
         for(value in values){
@@ -360,7 +353,7 @@ class Assignment(
     /**
      * Gets all values as Boolean in one column by column index
      */
-    public fun getColumnValuesBoolean(columnIndex:Int): Vector<Boolean>{
+    private fun getColumnValuesBoolean(columnIndex:Int): Vector<Boolean>{
         val result = Vector<Boolean>()
         val values = getColumnValuesString(columnIndex)
         for(value in values){
@@ -375,14 +368,14 @@ class Assignment(
  *
  * types from 'int', 'uint', 'long', 'ulong', 'double', 'string', 'bool'
  */
-public enum class CellTypes{
-    BOOL
-    INT
-    UINT
-    LONG
-    ULONG
-    DOUBLE
-    STRING
+enum class CellTypes{
+    BOOL,
+    INT,
+    UINT,
+    LONG,
+    ULONG,
+    DOUBLE,
+    STRING;
 
     override fun toString():String{
         return when(this){
