@@ -34,6 +34,7 @@ class AddThenDumpFileTests(unittest.TestCase):
         self.context.connection_string = self.sqlite_connection_str
         self.context.user_name = "python_tests"
         self.context.register_utilities()
+        self.context.provider.authentication.current_user_name = "test_user"
 
         # logger
         ch = logging.StreamHandler()

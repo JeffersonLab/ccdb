@@ -43,8 +43,9 @@ class ConsoleContextTests(unittest.TestCase):
         self.context.silent_exceptions = False
         self.context.theme = ccdb.cmd.themes.NoColorTheme()
         self.context.connection_string = self.sqlite_connection_str
-        self.context.user_name = "python_tests"
+        self.context.user_name = "python_user"
         self.context.register_utilities()
+        self.context.provider.authentication.current_user_name = "test_user"
 
         # save stdout
         self.output = StringIO()
@@ -56,6 +57,13 @@ class ConsoleContextTests(unittest.TestCase):
         ch.stream = self.output
         logger.addHandler(ch)
         logger.setLevel(logging.INFO)
+
+        self.context.provider.connect(self.context.connection_string)
+        user = self.context.provider.get_current_user()
+        # create some test logs w/ current user
+        self.context.provider.create_log_record(user, ["1"], "create",
+                                                "Created assignment '/testing_filter/start_parms:0:testing_filter:2013-01-17_19-02-27'",
+                                                "Test Log" )
 
     def tearDown(self):
         # restore stdout
@@ -157,6 +165,9 @@ class ConsoleContextTests(unittest.TestCase):
         tests_dir = os.path.dirname(os.path.realpath(__file__))
         test_file = os.path.join(tests_dir, "test_table.txt")
         print(test_file)
+
+        # self.context.process_command_line("ls")
+        # print(self.context.provider.get_current_user().name)
         self.context.process_command_line("add /test/test_vars/test_table " + test_file)
         self.output.truncate(0)
         self.context.process_command_line("vers /test/test_vars/test_table")
@@ -224,10 +235,56 @@ class ConsoleContextTests(unittest.TestCase):
         """
 
         self.context.process_command_line("ls")  # run command that requires connection make it to connect
-        self.assertEqual('anonymous', self.context.user_name)
+        self.assertEqual('test_user', self.context.user_name)
 
     def test_log(self):
         """
         log. general test
         """
         self.context.process_command_line("log")
+
+    def test_user_create(self):
+        username = "new_user"
+        self.context.process_command_line("user --create {0}".format(username))
+        self.assertIn(username, self.output.getvalue())
+        self.context.provider.delete_user(username)
+
+    def test_user_list(self):
+        self.context.process_command_line("user --list")
+        # there are only two users in the test database
+        self.assertIn('anonymous', self.output.getvalue())
+        self.assertIn('test_user', self.output.getvalue())
+
+    def test_user_create_bad_name(self):
+        self.assertRaises(ValueError, self.context.process_command_line, "user --create h***")
+
+    def test_list_current_user(self):
+        self.context.process_command_line("user")
+        self.assertIn('test_user', self.output.getvalue())
+
+    def test_filter_logs_by_username(self):
+
+        self.context.process_command_line("log -u test_user")
+        # we should see this in the logs
+        self.assertIn("test_user", self.output.getvalue())
+
+    def test_filter_logs_by_table(self):
+
+        self.context.process_command_line("log -t test")
+        # we should see this in the logs
+        self.assertIn("test", self.output.getvalue())
+
+    def test_filter_logs_by_variation(self):
+
+        self.context.process_command_line("log -v default")
+        # we should see this in the logs
+        self.assertIn("default", self.output.getvalue())
+
+    def test_filter_logs_by_all(self):
+
+        self.context.process_command_line("log -u test_user -v default -t test")
+
+        # we should see these in the logs
+        self.assertIn("default", self.output.getvalue())
+        self.assertIn("test_user", self.output.getvalue())
+        self.assertIn("test", self.output.getvalue())

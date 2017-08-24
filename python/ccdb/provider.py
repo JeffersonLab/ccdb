@@ -17,7 +17,7 @@ import sqlalchemy.orm
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
-from .errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, DatabaseStructureError, \
+from .errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, AnonymousUserForbiddenError, DatabaseStructureError, \
     UserNotFoundError, UserExistsError, \
     VariationNotFound
 
@@ -269,33 +269,38 @@ class AlchemyProvider(object):
         #Get user
         user = self.get_current_user()
 
-        #create the directory
-        directory = Directory()
-        directory.name = new_dir_name
-        if comment != "":
-            directory.comment = comment
+        if user.name == 'anonymous': # anonymous user can't create directories
+
+            raise AnonymousUserForbiddenError
         else:
-            directory.comment = None
-        directory.parent_dir = parent_dir
-        directory.parent_id = parent_dir.id
-        parent_dir.sub_dirs.append(directory)
-        directory.author_id = user.id
 
-        #add to database
-        self.session.add(directory)
-        self.session.commit()
+            #create the directory
+            directory = Directory()
+            directory.name = new_dir_name
+            if comment != "":
+                directory.comment = comment
+            else:
+                directory.comment = None
+            directory.parent_dir = parent_dir
+            directory.parent_id = parent_dir.id
+            parent_dir.sub_dirs.append(directory)
+            directory.author_id = user.id
 
-        #add log
-        self.create_log_record(user=user,
-                               affected_ids=[directory.__tablename__ + str(directory.id)],
-                               action="create",
-                               description="Created directory '{0}'".format(new_full_path),
-                               comment=directory.comment)
+            #add to database
+            self.session.add(directory)
+            self.session.commit()
 
-        #refresh directory structure
-        self._load_dirs()
+            #add log
+            self.create_log_record(user=user,
+                                   affected_ids=[directory.__tablename__ + str(directory.id)],
+                                   action="create",
+                                   description="Created directory '{0}'".format(new_full_path),
+                                   comment=directory.comment)
 
-        return directory
+            #refresh directory structure
+            self._load_dirs()
+
+            return directory
 
     ## @brief Updates directory
     #
@@ -636,35 +641,39 @@ class AlchemyProvider(object):
         # get user
         user = self.get_current_user()
 
-        table = TypeTable()
-        table.name = name
-        table.comment = comment
-        table.rows_count = rows_num
-        table.parent_dir = parent_dir
-        table.parent_dir_id = parent_dir.id
-        table.author_id = user.id
+        if user.name == 'anonymous': # anonymous user can't create table types
 
-        for i, (name, col_type) in enumerate(columns):
-            column = TypeTableColumn()
-            column.name = name
-            column.order = i
-            col_type = col_type or 'double'
-            column.type = col_type
-            table.columns.append(column)
+            raise AnonymousUserForbiddenError
+        else:
+            table = TypeTable()
+            table.name = name
+            table.comment = comment
+            table.rows_count = rows_num
+            table.parent_dir = parent_dir
+            table.parent_dir_id = parent_dir.id
+            table.author_id = user.id
 
-        table._columns_count = len(columns)
+            for i, (name, col_type) in enumerate(columns):
+                column = TypeTableColumn()
+                column.name = name
+                column.order = i
+                col_type = col_type or 'double'
+                column.type = col_type
+                table.columns.append(column)
 
-        self.session.add(table)
-        self.session.commit()
+            table._columns_count = len(columns)
 
-        #add log
-        self.create_log_record(user=user,
-                               affected_ids=[table.__tablename__ + str(table.id)],
-                               action="create",
-                               description="Created table with path '{0}'".format(table.path),
-                               comment=table.comment)
+            self.session.add(table)
+            self.session.commit()
 
-        return table
+            #add log
+            self.create_log_record(user=user,
+                                   affected_ids=[table.__tablename__ + str(table.id)],
+                                   action="create",
+                                   description="Created table with path '{0}'".format(table.path),
+                                   comment=table.comment)
+
+            return table
 
     # ------------------------------------------------
     # Updates constant table in database
@@ -916,31 +925,36 @@ class AlchemyProvider(object):
         # Get user
         user = self.get_current_user()
 
-        variation = Variation()
+        if user.name == 'anonymous': # anonymous user can't create variations
 
-        if self.session.query(Variation).filter(Variation.name == name).count() > 0:
-            raise ValueError("Cannot create a new variation with name {0}. "
-                             "Variation with that name already exists".format(name))
+            raise AnonymousUserForbiddenError
+        else:
 
-        if parent_name:
-            parent = self.get_variation(parent_name)
-            variation.parent = parent
+            variation = Variation()
 
-        variation.comment = comment
-        variation.name = name
-        variation.author_id = user.id
-        self.session.add(variation)
-        self.session.commit()
+            if self.session.query(Variation).filter(Variation.name == name).count() > 0:
+                raise ValueError("Cannot create a new variation with name {0}. "
+                                 "Variation with that name already exists".format(name))
 
-        # add log
-        self.create_log_record(user=user,
-                               affected_ids=[variation.__tablename__ + str(variation.id)],
-                               action="create",
-                               description="Created variation '{0}' parent is '{1}'".format(variation.name,
-                                                                                            variation.parent.name),
-                               comment=variation.comment)
+            if parent_name:
+                parent = self.get_variation(parent_name)
+                variation.parent = parent
 
-        return variation
+            variation.comment = comment
+            variation.name = name
+            variation.author_id = user.id
+            self.session.add(variation)
+            self.session.commit()
+
+            # add log
+            self.create_log_record(user=user,
+                                   affected_ids=[variation.__tablename__ + str(variation.id)],
+                                   action="create",
+                                   description="Created variation '{0}' parent is '{1}'".format(variation.name,
+                                                                                                variation.parent.name),
+                                   comment=variation.comment)
+
+            return variation
 
     ## @brief Update variation
     #
@@ -1211,28 +1225,32 @@ class AlchemyProvider(object):
         # Get user
         user = self.get_current_user()
 
-        # construct assignment
-        assignment = Assignment()
-        assignment.constant_set = ConstantSet()
-        assignment.constant_set.type_table_id = table.id
-        assignment.constant_set.type_table = table
-        assignment.run_range = run_range
-        assignment.run_range_id = run_range.id
-        assignment.variation = variation
-        assignment.variation_id = variation.id
-        assignment.constant_set.data_table = rows
-        assignment.comment = comment
-        assignment.author_id = user.id
-        self.session.add(assignment)
-        self.session.commit()
+        if user.name == 'anonymous': # anonymous user can't create assignments
 
-        # add log
-        self.create_log_record(user=user,
-                               affected_ids=[assignment.__tablename__ + str(assignment.id)],
-                               action="create",
-                               description="Created assignment '{0}'".format(assignment.request),
-                               comment=assignment.comment)
-        return assignment
+            raise AnonymousUserForbiddenError
+        else:
+             # construct assignment
+            assignment = Assignment()
+            assignment.constant_set = ConstantSet()
+            assignment.constant_set.type_table_id = table.id
+            assignment.constant_set.type_table = table
+            assignment.run_range = run_range
+            assignment.run_range_id = run_range.id
+            assignment.variation = variation
+            assignment.variation_id = variation.id
+            assignment.constant_set.data_table = rows
+            assignment.comment = comment
+            assignment.author_id = user.id
+            self.session.add(assignment)
+            self.session.commit()
+
+            # add log
+            self.create_log_record(user=user,
+                                       affected_ids=[assignment.__tablename__ + str(assignment.id)],
+                                       action="create",
+                                       description="Created assignment '{0}'".format(assignment.request),
+                                       comment=assignment.comment)
+            return assignment
 
     # ------------------------------------------------
     # updates assignment comments
@@ -1372,7 +1390,9 @@ class AlchemyProvider(object):
         try:
             return query.one()
         except sqlalchemy.orm.exc.NoResultFound as ex:
-            message = "No user with name '{0}' is found in database".format(username)
+            message = "No user with name '{0}' is found in database. " \
+                      "Set the user name by CCDB_USER environment variable. " \
+                      "See 'ccdb user' command to create a user.".format(username)
             raise UserNotFoundError(message, username)
 
     # ------------------------------------------------
@@ -1527,5 +1547,3 @@ class AlchemyProvider(object):
 
         # execute and return
         return query.all()
-
-
