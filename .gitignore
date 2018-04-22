@@ -114,3 +114,4 @@ hs_err_pid*
 
 #CLion project files
 projects/CLion/.idea/
+/.project
