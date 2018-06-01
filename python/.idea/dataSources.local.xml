@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="ccdb@hallddb.jlab.org" uuid="d019c009-0d28-43fc-9e88-bca50ca19292">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
+    </data-source>
+    <data-source name="ccdb.sqlite" uuid="2c304641-7d5c-403d-b879-cdf1a8d657ad">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
+    </data-source>
+    <data-source name="ccdb_test@localhost" uuid="75dcf6dc-f608-4d26-98cd-132ed6794897">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
+    </data-source>
+  </component>
+</project>
