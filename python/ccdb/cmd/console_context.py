@@ -14,7 +14,6 @@ from ccdb import AlchemyProvider
 from . import themes
 
 from . import colorama
-import readline
 
 log = logging.getLogger("ccdb.cmd.console_context")
 
@@ -440,6 +439,8 @@ class ConsoleContext(object):
     # ----------------------------------------------------
     # noinspection PyBroadException
     def interactive_loop(self):
+        import readline
+
         self.print_interactive_intro()
         # initialise autocomplete
         self.words = self._utils.keys()
