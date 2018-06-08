@@ -306,7 +306,9 @@ class ConsoleContext(object):
             return  # everything is done
 
         # split command to arguments
-        tokens = shlex.split(command_line)
+        is_posix = os.name == 'posix'
+        tokens = shlex.split(command_line, posix=is_posix)
+
 
         # validate
         if len(tokens) == 0:

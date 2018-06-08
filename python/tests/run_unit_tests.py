@@ -12,7 +12,7 @@ if dir_backup != script_dir:
     dir_changed = True
 
 try:
-    test_file_strings = glob.glob('test_*.py')
+    test_file_strings = glob.glob('unit_test_*.py')
     module_strings = [module_string[0:len(module_string)-3] for module_string in test_file_strings]
 
     suites = [unittest.defaultTestLoader.loadTestsFromName(module_string) for module_string in module_strings]

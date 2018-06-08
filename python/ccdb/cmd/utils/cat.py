@@ -284,7 +284,14 @@ class Cat(ConsoleUtilBase):
 
         # PRINT COMMENTS
         if comments:
-            print ("#" + str(assignment.comment).replace(os.linesep, os.linesep + "#"))
+            # this lsep hack is for Windows. Where os.linesep is \r\n, but file might have \n only line seps
+            comment_str = assignment.comment
+            if os.name == 'nt':
+                # we make sure that it is always os.linesep on windows
+                comment_str = comment_str.replace('\r\n', '\n').replace('\n', os.linesep)
+
+            sharped_lines = "#" + str(comment_str).replace(os.linesep, os.linesep + "#")
+            print (sharped_lines)
 
         column_names = [column.name for column in table.columns]
         column_types = [column.type for column in table.columns]

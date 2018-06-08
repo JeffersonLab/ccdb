@@ -5,8 +5,10 @@
       <w>ccdb</w>
       <w>colorama</w>
       <w>descr</w>
+      <w>enveron</w>
       <w>fname</w>
       <w>iter</w>
+      <w>lsep</w>
       <w>namevalue</w>
       <w>redir</w>
       <w>sqlite</w>

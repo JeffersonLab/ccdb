@@ -5,7 +5,9 @@
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
     </data-source>
     <data-source name="ccdb.sqlite" uuid="2c304641-7d5c-403d-b879-cdf1a8d657ad">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
+      <database-info product="SQLite" version="3.16.1" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native" />
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
+      <introspection-schemas>*:*</introspection-schemas>
     </data-source>
     <data-source name="ccdb_test@localhost" uuid="75dcf6dc-f608-4d26-98cd-132ed6794897">
       <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />

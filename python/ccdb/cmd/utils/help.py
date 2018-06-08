@@ -17,17 +17,17 @@ class HelpUtil(ConsoleUtilBase):
     """ Prints help for each util """
     
     # ccdb utility class descr part 
-    #------------------------------
+    # ------------------------------
     command = "help"
     name = "Help"
     short_descr = "Prints help for each util"
     help_util = True
 
-    #----------------------------------------
+    # ----------------------------------------
     #   print_help
-    #----------------------------------------
+    # ----------------------------------------
     def print_help(self):
-        print self.help_text
+        print (self.help_text)
 
         if self.context:
             print ("Available commands:")
@@ -37,13 +37,12 @@ class HelpUtil(ConsoleUtilBase):
                 for command, util 
                 in self.context.utils.items()
                 if not util.help_util]))
-        print self.flags_text
-        print self.enveron_text
+        print (self.flags_text)
+        print (self.enveron_text)
 
-
-    #----------------------------------------
+    # ----------------------------------------
     #   process
-    #----------------------------------------
+    # ----------------------------------------
     def process(self, args):
         if self.context:
             commands = self.context.utils.keys()

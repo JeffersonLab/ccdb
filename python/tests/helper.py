@@ -52,7 +52,7 @@ def recreate_mysql_db(username="ccdb_user", password=""):
     p.communicate(mysql_query)
     ret_code = p.wait()
 
-    print("MySQL reacreation ended with retcode:", ret_code)
+    print("MySQL recreation ended with the return code:", ret_code)
 
 
 @contextmanager

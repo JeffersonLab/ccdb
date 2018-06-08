@@ -23,10 +23,6 @@ class AddThenDumpFileTests(unittest.TestCase):
         # We need only sqlite tests. We test that we work with all databases in the provider fixture
         self.sqlite_connection_str = helper.sqlite_test_connection_str
 
-        # initialize but disable colorama
-        #ccdb.cmd.colorama.init(autoreset=True)
-        #ccdb.cmd.colorama.deinit()
-
         # create console context
         self.context = ConsoleContext()
         self.context.silent_exceptions = False
@@ -41,7 +37,6 @@ class AddThenDumpFileTests(unittest.TestCase):
         ch.stream = sys.stdout
         logger.addHandler(ch)
         logger.setLevel(logging.INFO)
-
 
         # create table
         try:
@@ -62,11 +57,9 @@ class AddThenDumpFileTests(unittest.TestCase):
         self.context.process_command_line("rm -f -t /test/channel_mc_efficiency")
 
     def test_same_content(self):
-        pass
-
         """When adding, then dumping a file its content should match"""
-        self.test_data_path = os.path.join(helper.ccdb_test_path, 'channel_mc_efficiency.list')
 
+        self.test_data_path = os.path.join(helper.ccdb_test_path, 'channel_mc_efficiency.list')
 
         self.context.process_command_line("add /test/channel_mc_efficiency " + self.test_data_path)
 
@@ -81,8 +74,6 @@ class AddThenDumpFileTests(unittest.TestCase):
         # read the original file
         with open(self.test_data_path, 'r') as content_file:
             original_lines = [line.strip() for line in content_file]
-            #original_str = content_file.read()
-
 
         self.assertEqual(dumped_lines, original_lines)
 
