@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 from .console_context import ConsoleContext
 from .themes import NoColorTheme
@@ -27,15 +27,15 @@ class ConsoleUtilBase(object):
     def print_help(self):
         """Prints help of the command"""
 
-        print("Help is not defined for command " + self.command)
+        print(("Help is not defined for command " + self.command))
 
     def print_usage(self):
         """Prints usage of the command"""
-        print("@brief Usage is not defined for command " + self.command)
+        print(("@brief Usage is not defined for command " + self.command))
 
     def print_examples(self):
         """Prints examples of the command usage"""
-        print("Examples are not defined for command " + self.command)
+        print(("Examples are not defined for command " + self.command))
 
     def __init__(self):
         self._context = None
@@ -43,10 +43,10 @@ class ConsoleUtilBase(object):
 
     def read_multiline(self):
         user_input = []
-        entry = raw_input("Enter comment text, put 'EOF' on its own line to quit: \n")
+        entry = eval(input("Enter comment text, put 'EOF' on its own line to quit: \n"))
 
         while entry != "EOF":
             user_input.append(entry)
-            entry = raw_input("")
+            entry = eval(input(""))
         return user_input
 

@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     data = read_ccdb_perf_log(args.filename)
 
-    print("Total CCDB requests: ", len(data))
+    print(("Total CCDB requests: ", len(data)))
     df = pd.DataFrame(data)
 
     # we don't need these columns for now
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     df.drop('start_stamp', axis=1, inplace=True)
     df.sort_values('elapsed', ascending=False, inplace=True)
 
-    print("Total time reading from CCDB [s]: ", df.elapsed.sum() / 1000000.0)
+    print(("Total time reading from CCDB [s]: ", df.elapsed.sum() / 1000000.0))
 
     print("Top of the longest queires:")
     print_full(df.head(15))

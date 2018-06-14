@@ -29,15 +29,15 @@ if __name__ == "__main__":
     # create child variation. We specify its name, comment and parent variation
     child_var = provider.create_variation("test_pyllapi", "Test how to work from py llapi", "test_pyllapi_parent")
     print("Created variations: ")
-    print("{} , parent {}".format(child_var, child_var.parent))     # 'test_pyllapi' has parent 'test_pyllapi_parent'
-    print("{} , parent {}".format(parent_var, parent_var.parent))   # 'test_pyllapi_parent' has 'parent default'
+    print(("{} , parent {}".format(child_var, child_var.parent)))     # 'test_pyllapi' has parent 'test_pyllapi_parent'
+    print(("{} , parent {}".format(parent_var, parent_var.parent)))   # 'test_pyllapi_parent' has 'parent default'
 
     # Modify variation comment
     parent_var.comment = "We changed comment"
     provider.update_variation(parent_var)
     parent_var = provider.get_variation("test_pyllapi_parent")     # reread variation from DB to check comment
-    print("test_var_parent comment changed to: '{}'".format(parent_var.comment))
-    print
+    print(("test_var_parent comment changed to: '{}'".format(parent_var.comment)))
+    print()
 
     # Modify variation parent
     new_parent_var = provider.create_variation("test_pyllapi_new_parent", "Test new parent")
@@ -46,9 +46,9 @@ if __name__ == "__main__":
 
     # Just to be sure the magic works, we reread variation (one doesn't have to reread variations after update actually)
     print("Changed variation parent: ")
-    print("{} , parent {}".format(child_var, child_var.parent))        # 'test_pyllapi' has parent 'test_pyllapi_parent'
-    print("{} , parent {}".format(new_parent_var, parent_var.parent))  # 'test_pyllapi_parent' has 'parent default'
-    print
+    print(("{} , parent {}".format(child_var, child_var.parent)))        # 'test_pyllapi' has parent 'test_pyllapi_parent'
+    print(("{} , parent {}".format(new_parent_var, parent_var.parent)))  # 'test_pyllapi_parent' has 'parent default'
+    print()
 
     # Delete variations
     provider.delete_variation(parent_var)

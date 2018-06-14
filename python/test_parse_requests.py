@@ -6,7 +6,7 @@ import time
 class TestParseRequest(unittest.TestCase):
 
     def setUp(self):
-        self.seq = range(10)
+        self.seq = list(range(10))
         
     def test_parse_partial_time(self):
         result = time.localtime(PathUtils.parse_time("2029"))

@@ -40,7 +40,7 @@ if __name__ == "__main__":
     # lets read the assignment once again. We will get the latest assignment ==> the assignment we just added
     assignment = provider.get_assignment("/test/test_vars/test_table2", 1, "test")  # table, run, variation
     print("Updated data")
-    print(assignment.constant_set.data_table)
+    print((assignment.constant_set.data_table))
 
     # that is it.
     # check it with

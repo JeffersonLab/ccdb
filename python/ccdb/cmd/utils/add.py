@@ -127,7 +127,7 @@ class AddData(ConsoleUtilBase):
         except Exception as ex:
             if 'No table found by exact path' in ex.message:  # TODO replace with good exception type
                 # it is safe to use len(dom.rows[0]) because dom.data_is_consistant checked that
-                print(self._get_notable_instruction(self.table_path, len(dom.rows[0]), len(dom.rows)))
+                print((self._get_notable_instruction(self.table_path, len(dom.rows[0]), len(dom.rows))))
 
         # try to create
         assignment = provider.create_assignment(dom,

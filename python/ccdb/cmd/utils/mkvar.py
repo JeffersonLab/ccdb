@@ -69,7 +69,7 @@ class MakeVariation(ConsoleUtilBase):
     def print_help(self):
         """prints help to user"""
 
-        print """
+        print("""
 MakeVariation or mkvar - create variation with specified name
 
 usage:
@@ -80,4 +80,4 @@ usage:
     name           - is a variation name. [a-z A-Z 0-9 _] are allowed symbols
     comments       - are comments... don't forget space before #
     -p or --parent - name of parent variation. If no name provided, "default" variation is the parent
-            """
+            """)

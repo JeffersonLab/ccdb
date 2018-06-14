@@ -29,7 +29,7 @@ class User(ConsoleUtilBase):
 
         if not len(args):
             # print current user
-            print (self.context.provider.authentication.current_user_name)
+            print((self.context.provider.authentication.current_user_name))
             return
 
 
@@ -42,14 +42,14 @@ class User(ConsoleUtilBase):
         if result.list:
             users = self.context.provider.get_users()
             for user in users:
-                print(user.name)
+                print((user.name))
             return
 
         if result.create:
             if not validate_name(result.create):
                 raise ValueError("Invalid user name. Only [a-z A-Z 0-9 _] symbols are allowed for user name")
             self.context.provider.create_user(result.create)
-            print("{0} was created.".format(result.create))
+            print(("{0} was created.".format(result.create)))
             return
 
     #----------------------------------------------
@@ -58,7 +58,7 @@ class User(ConsoleUtilBase):
     def print_help(self):
         """prints help to user"""
 
-        print """
+        print("""
 User or user - manages users
 
 usage:
@@ -68,4 +68,4 @@ usage:
     user                  - prints the current user of the database.
 
     name           - is the username of the new user. [a-z A-Z 0-9 _] are allowed symbols
-            """
+            """)

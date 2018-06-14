@@ -166,7 +166,7 @@ class AlchemyProvider(object):
         self._ensure_dirs_loaded()
 
         #we don't have this directory
-        if not path in self.dirs_by_path.keys():
+        if not path in list(self.dirs_by_path.keys()):
             raise DirectoryNotFound("Can't find the directory with path '{0}'".format(path))
 
         return self.dirs_by_path[path]
@@ -263,7 +263,7 @@ class AlchemyProvider(object):
 
         #check if no such directory exists
         new_full_path = posixpath.join(parent_dir.path, new_dir_name)
-        if new_full_path in self.dirs_by_path.keys():
+        if new_full_path in list(self.dirs_by_path.keys()):
             raise ValueError("The directory with path '{0}' already exist".format(new_full_path))
 
         #Get user
@@ -405,7 +405,7 @@ class AlchemyProvider(object):
         dirs_by_full_path = {self.root_dir.path: self.root_dir}
 
         #clear subdirectories to append them from the beginning in the next step
-        for directory in directories.values():
+        for directory in list(directories.values()):
             directory.sub_dirs = []
 
         # root dir is artificial (not from database).
@@ -413,7 +413,7 @@ class AlchemyProvider(object):
         self.root_dir.sub_dirs = []
 
         #begin loop through the directories
-        for directory in directories.values():
+        for directory in list(directories.values()):
             assert (isinstance(directory, Directory))
 
             parent_dir = self.root_dir
@@ -1115,7 +1115,7 @@ class AlchemyProvider(object):
 
         # TODO do for named run
         try:
-            isstring = isinstance(path_or_table, basestring)
+            isstring = isinstance(path_or_table, str)
         except NameError:
             isstring = isinstance(path_or_table, str)
 
@@ -1316,13 +1316,13 @@ class AlchemyProvider(object):
 
         elif col_type == 'long':
             try:
-                value = long(value)
+                value = int(value)
             except ValueError:
                 failure = True
 
         elif col_type == 'ulong':
             try:
-                value = long(value)
+                value = int(value)
                 if value < 0:
                     raise ValueError()
             except ValueError:
