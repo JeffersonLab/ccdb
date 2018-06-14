@@ -117,3 +117,4 @@ projects/CLion/.idea/
 python/.idea/workspace.xml
 python/.idea/misc.xml
 python/.idea/usage.statistics.xml
+python/.idea/dataSources.local.xml
