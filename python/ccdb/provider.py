@@ -254,27 +254,27 @@ class AlchemyProvider(object):
         """
         self._ensure_dirs_loaded()
 
-        #get parent directory
+        # get parent directory
         if isinstance(parent_dir_or_path, str):
             parent_dir = self.dirs_by_path[parent_dir_or_path]
         else:
             assert (isinstance(parent_dir_or_path, Directory))
             parent_dir = parent_dir_or_path
 
-        #check if no such directory exists
+        # check if no such directory exists
         new_full_path = posixpath.join(parent_dir.path, new_dir_name)
         if new_full_path in list(self.dirs_by_path.keys()):
             raise ValueError("The directory with path '{0}' already exist".format(new_full_path))
 
-        #Get user
+        # Get user
         user = self.get_current_user()
 
-        if user.name == 'anonymous': # anonymous user can't create directories
+        if user.name == 'anonymous':    # anonymous user can't create directories
 
             raise AnonymousUserForbiddenError
         else:
 
-            #create the directory
+            # create the directory
             directory = Directory()
             directory.name = new_dir_name
             if comment != "":
@@ -286,23 +286,23 @@ class AlchemyProvider(object):
             parent_dir.sub_dirs.append(directory)
             directory.author_id = user.id
 
-            #add to database
+            # add to database
             self.session.add(directory)
             self.session.commit()
 
-            #add log
+            # add log
             self.create_log_record(user=user,
                                    affected_ids=[directory.__tablename__ + str(directory.id)],
                                    action="create",
                                    description="Created directory '{0}'".format(new_full_path),
                                    comment=directory.comment)
 
-            #refresh directory structure
+            # refresh directory structure
             self._load_dirs()
 
             return directory
 
-    ## @brief Updates directory
+    # @brief Updates directory
     #
     # @warning in current realization, if operation succeeded
     # the directories structure will be rebuilt. This mean that
@@ -311,24 +311,24 @@ class AlchemyProvider(object):
     #
     # @param [in] ccdb.Directory object - Directory to update
     # @return bool True if success
-    #/
+    #
     def update_directory(self, directory):
         """Updates directory"""
         self._ensure_dirs_loaded()
 
-        #get user or get user error if there is no user
+        # get user or get user error if there is no user
         user = self.get_current_user()
 
         self.session.commit()
 
-        #Log
+        # Log
         self.create_log_record(user,
                                affected_ids=[directory.__tablename__ + directory(directory.id)],
                                action="update",
                                description="Updated directory '{0}'".format(directory.path),
                                comment=directory.comment)
 
-        #refresh directory structure
+        # refresh directory structure
         self._load_dirs()
 
     # ------------------------------------------------
@@ -345,10 +345,10 @@ class AlchemyProvider(object):
 
         self._ensure_dirs_loaded()
 
-        #get user here to fail if no such user
+        # get user here to fail if no such user
         user = self.get_current_user()
 
-        #check the type
+        # check the type
         if isinstance(dir_or_path, str):
             directory = self.get_directory(dir_or_path)
         else:
@@ -367,7 +367,7 @@ class AlchemyProvider(object):
         # refresh directory structure
         self._load_dirs()
 
-        #Log
+        # Log
         self.create_log_record(user,
                                affected_ids=[directory.__tablename__ + str(directory.id)],
                                action="delete",
@@ -401,10 +401,10 @@ class AlchemyProvider(object):
         """
         assert (isinstance(directories, type({})))
 
-        #clear the full path dictionary
+        # clear the full path dictionary
         dirs_by_full_path = {self.root_dir.path: self.root_dir}
 
-        #clear subdirectories to append them from the beginning in the next step
+        # clear subdirectories to append them from the beginning in the next step
         for directory in list(directories.values()):
             directory.sub_dirs = []
 
@@ -412,7 +412,7 @@ class AlchemyProvider(object):
         # have to clear it
         self.root_dir.sub_dirs = []
 
-        #begin loop through the directories
+        # begin loop through the directories
         for directory in list(directories.values()):
             assert (isinstance(directory, Directory))
 
@@ -420,7 +420,7 @@ class AlchemyProvider(object):
 
             # and check if it have parent directory
             if directory.parent_id > 0:
-                #this directory must have a parent! so now search it
+                # this directory must have a parent! so now search it
                 parent_dir = directories[directory.parent_id]
 
             parent_dir.sub_dirs.append(directory)
@@ -429,8 +429,6 @@ class AlchemyProvider(object):
             dirs_by_full_path[directory.path] = directory
 
         return dirs_by_full_path
-
-    #end of structure_dirs()
 
     # ------------------------------------------------
     # create dictionary by directory id
@@ -956,7 +954,7 @@ class AlchemyProvider(object):
 
             return variation
 
-    ## @brief Update variation
+    # @brief Update variation
     #
     # Function updates:
     # variation comments
@@ -964,9 +962,6 @@ class AlchemyProvider(object):
     #
     # @param   [in]  variation to update
     # @return true if success
-    #
-    # ------------------------------------------------
-    # ------------------------------------------------
     def update_variation(self, variation):
 
         # get user here to fail if no such user
@@ -1113,11 +1108,7 @@ class AlchemyProvider(object):
         :return:
         """
 
-        # TODO do for named run
-        try:
-            isstring = isinstance(path_or_table, str)
-        except NameError:
-            isstring = isinstance(path_or_table, str)
+        isstring = isinstance(path_or_table, ("".__class__, u"".__class__))
 
         if isstring:
             table = self.get_type_table(path_or_table)
@@ -1229,7 +1220,7 @@ class AlchemyProvider(object):
 
             raise AnonymousUserForbiddenError
         else:
-             # construct assignment
+            # construct assignment
             assignment = Assignment()
             assignment.constant_set = ConstantSet()
             assignment.constant_set.type_table_id = table.id
@@ -1246,10 +1237,10 @@ class AlchemyProvider(object):
 
             # add log
             self.create_log_record(user=user,
-                                       affected_ids=[assignment.__tablename__ + str(assignment.id)],
-                                       action="create",
-                                       description="Created assignment '{0}'".format(assignment.request),
-                                       comment=assignment.comment)
+                                   affected_ids=[assignment.__tablename__ + str(assignment.id)],
+                                   action="create",
+                                   description="Created assignment '{0}'".format(assignment.request),
+                                   comment=assignment.comment)
             return assignment
 
     # ------------------------------------------------

@@ -55,7 +55,7 @@ class Horse(ConsoleUtilBase):
                 horse = self.horse3
         print (horse)
 
-    full_horse = ("""
+    full_horse = (r"""
                                                  `T",.`-,
                                                      '8, :.
                                               `""`oooob."T,.
@@ -101,7 +101,7 @@ class Horse(ConsoleUtilBase):
                         Y8bod.
                         `""'"'
 """)
-    full_horse2 = """
+    full_horse2 = r"""
 
                                                           ,   .
                                                       ___/J-._
@@ -180,7 +180,7 @@ class Horse(ConsoleUtilBase):
 
 """
 
-    horse3 = """
+    horse3 = r"""
            .  ,
            |\/|
            bd "n.
@@ -194,7 +194,7 @@ class Horse(ConsoleUtilBase):
 
 -Row
 """
-    horse4 = """
+    horse4 = r"""
                    ,%%%,
                  ,%%%` %
                 ,%%`( '|
@@ -208,7 +208,7 @@ class Horse(ConsoleUtilBase):
          )\\      )\\
  ^^^jgs^^"'"^^^^^^""^^^^^^^^^^^
  """
-    young = """
+    young = r"""
                                _(\_/)
                              ,((((^`\\
                             ((((  (O \\
@@ -230,7 +230,7 @@ class Horse(ConsoleUtilBase):
        `'"                  \_\\
                             `'"
 """
-    head = """
+    head = r"""
 
                       ~~%%%%%%%%_,_,
                    ~~%%%%%%%%%-"/./
@@ -247,7 +247,7 @@ class Horse(ConsoleUtilBase):
 
 """
 
-    toy = """
+    toy = r"""
 
               /\,%,^
               \%%%/,\\
@@ -267,7 +267,7 @@ class Horse(ConsoleUtilBase):
    jgs   \___,'                       \.-"`/
                                        `--'
 """
-    solid = """
+    solid = r"""
 
    Yb,     ________
     Y8baad8888888888ba,_
@@ -302,7 +302,7 @@ class Horse(ConsoleUtilBase):
                                                             ""'""'""
 """
 
-    more = """
+    more = r"""
 
 
    Yb,     ________

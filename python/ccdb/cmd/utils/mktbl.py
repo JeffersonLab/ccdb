@@ -323,7 +323,7 @@ class MakeTable(ConsoleUtilBase):
     def print_help(self):
         """prints help for MakeTable"""
 
-        print("""
+        print(r"""
 MakeTable or mktbl - create type table with the specified namepath and parameters
 
 usage: 

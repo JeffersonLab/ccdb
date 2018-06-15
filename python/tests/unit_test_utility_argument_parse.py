@@ -8,8 +8,3 @@ class UtilityArgumentParserTest(unittest.TestCase):
         parser = UtilityArgumentParser()
         parser.add_argument("x")
         self.assertRaises(ArgumentParseError, parser.parse_args, [])
-
-        try:
-            parser.parse_args([])
-        except Exception as ex:
-            self.assertIn("too few", str(ex))
