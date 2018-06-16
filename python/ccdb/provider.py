@@ -52,14 +52,11 @@ class AlchemyProvider(object):
         self._auth = Authentication(self)
         self._auth.current_user_name = "anonymous"
         self.logging_enabled = True
+        self.engine = None      # is set after connect function
+        self.session = None     # is set after connect function
         self._no_structure_message = "No database structure found. Possibly you are trying to connect " + \
                                      "to wrong SQLite file or to MySQL database without schema. " + \
                                      "Original SqlAlchemy error is: " + os.linesep + os.linesep + "{0}"
-
-
-    # ----------------------------------------------------------------------------------------
-    #   C O N N E C T I O N
-    # ----------------------------------------------------------------------------------------
 
     # ------------------------------------------------
     #  Connects to database using connection string
@@ -78,9 +75,11 @@ class AlchemyProvider(object):
         try:
             self.engine = sqlalchemy.create_engine(connection_string)
         except ImportError as err:
-            #sql alchemy uses MySQLdb by default. But it might not be installed in the system
-            #in such case we fallback to mysqlconnector which is included in CCDB
-            if connection_string.startswith("mysql://") and "No module named MySQLdb" in repr(err):
+            # sql alchemy uses MySQLdb by default. But it might not be installed in the system
+            # in such case we fallback to mysqlconnector which is included in CCDB
+            if connection_string.startswith("mysql://") \
+                    and "No module named" in repr(err)\
+                    and "MySQLdb" in repr(err):
                 connection_string = connection_string.replace("mysql://", "mysql+mysqlconnector://")
                 self.engine = sqlalchemy.create_engine(connection_string)
             else:
@@ -92,7 +91,7 @@ class AlchemyProvider(object):
         self._is_connected = True
         self._connection_string = connection_string
 
-        #since it is a new connection we need to rebuild directories
+        # since it is a new connection we need to rebuild directories
         self._are_dirs_loaded = False
 
         #check data schema version
