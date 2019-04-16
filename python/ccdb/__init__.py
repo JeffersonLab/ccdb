@@ -29,10 +29,11 @@ from .brace_log_message import BraceMessage
 from .cmd import themes
 from . import path_utils
 
-#the default ccdb logger
+# the default ccdb logger
 logger = logging.getLogger("ccdb")
 
 INFINITE_RUN = 2147483647
+
 
 def get_ccdb_home_path():
     if "CCDB_HOME" in os.environ:
@@ -43,20 +44,24 @@ def get_ccdb_home_path():
     this_dir = os.path.normpath(this_dir)
     return this_dir
 
+
 def init_ccdb_console():
     from .cmd import ConsoleContext
     import cmd.colorama
 
-    # TODO move ccdb to pure logging. NO print command at all
-
-    # create logger
-    logger = logging.getLogger("ccdb")
+    # SETUP LOGGER
+    # ------------------------------
 
     # create and set console handler
-    ch = logging.StreamHandler()
-    ch.stream = sys.stdout
+    stdout_handler = logging.StreamHandler()
+    stdout_handler.stream = sys.stdout
+    logger.addHandler(stdout_handler)
 
-    logger.addHandler(ch)
+    # create stderr handler
+    stderr_handler = logging.StreamHandler()
+    stderr_handler.stream = sys.stderr
+    stderr_handler.setLevel(logging.ERROR)
+    logger.addHandler(stderr_handler)
 
     # create console context
     context = ConsoleContext()
@@ -89,7 +94,6 @@ def init_ccdb_console():
                      " instead of humble notifications and non 0 return result")
         context.silent_exceptions = False
 
-
     # CONNECTION STRING
     # ------------------------------
 
@@ -111,16 +115,11 @@ def init_ccdb_console():
             else:
                 logger.debug("JANA_CALIB_URL does not starts with mysql:// or sqlite://. Skipped")
 
-
-
     # connection string in in command line arguments ( by -c or --connection) is processed by context.process(sys.argv)
 
     if "CCDB_USER" in os.environ.keys():
         context.user_name = os.environ["CCDB_USER"]
         logger.debug("Set user name from $CCDB_USER :" + context.user_name)
-    # elif "USER" in os.environ.keys():
-    #    context.user_name = os.environ["USER"]
-    #    logger.debug("Set user name from $USER :" + context.user_name)
 
     # START PROCESSING
     # ------------------------------

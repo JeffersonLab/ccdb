@@ -10,6 +10,7 @@ import java.util.Vector
 import java.util.HashMap
 import org.jlab.ccdb.helpers.combinePath
 import kotlin.properties.Delegates
+import kotlin.text.toBoolean
 
 
 val dataSeparator = '|'
@@ -87,14 +88,14 @@ class TypeTable(
 
     private var isDoneColumnsByName=false
 
-
-    val columnsByName:HashMap<String, TypeTableColumn> = HashMap<String, TypeTableColumn>()
+    public val _columnsByName: HashMap<String, TypeTableColumn> = HashMap<String, TypeTableColumn>()
+    public val columnsByName: HashMap<String, TypeTableColumn>
         get(){
             if(!isDoneColumnsByName){
-                for(column in columns) field[column.name]=column
-                isDoneColumnsByName = true
+                for(column in columns) _columnsByName[column.name]=column
+                isDoneColumnsByName = false
             }
-            return field
+            return _columnsByName
         }
 }
 
@@ -130,18 +131,19 @@ class Assignment(
     /**
      * Gets data represented as one vector of string values
      */
-    val vectorString: Vector<String> = Vector<String>()
+    private  val _vectorString: Vector<String> = Vector<String>()
+    public val vectorString: Vector<String>
     get(){
-        if(field.isEmpty()){
-            for (token in blob.split(dataSeparator)) field.add(token)
+        if(_vectorString.isEmpty()){
+            for (token in blob.split(dataSeparator)) _vectorString.add(token)
         }
-        return field
+        return _vectorString
     }
 
     /**
      * Gets data represented as one vector of int values
      */
-    val vectorInt: Vector<Int> by lazy {
+    public val vectorInt: Vector<Int> by lazy {
         val result = Vector<Int>()
         blob.split(dataSeparator).mapTo(result) { it.toInt() }
         result
@@ -150,7 +152,7 @@ class Assignment(
     /**
      * Gets data represented as one vector of int values
      */
-    val vectorLong: Vector<Long> by lazy {
+    public val vectorLong: Vector<Long> by lazy {
         val result = Vector<Long>()
         blob.split(dataSeparator).mapTo(result) { it.toLong() }
         result
@@ -159,7 +161,7 @@ class Assignment(
     /**
      * Gets data represented as one vector of int values
      */
-    val vectorDouble: Vector<Double> by lazy {
+    public val vectorDouble: Vector<Double> by lazy {
         val result = Vector<Double>()
         for (token in blob.split(dataSeparator)) result.add(token.toDouble())
         result
@@ -168,7 +170,7 @@ class Assignment(
     /**
      * Gets data represented as one vector of boolean values
      */
-    val vectorBoolean: Vector<Boolean> by lazy {
+    public val vectorBoolean: Vector<Boolean> by lazy {
         val result = Vector<Boolean>()
         blob.split(dataSeparator).mapTo(result) { it.toBoolean() }
         result
@@ -178,25 +180,28 @@ class Assignment(
     /**
      * Gets data represented as row-wise table
      */
-    val tableString:Vector<Vector<String>> = Vector<Vector<String>>()
+    private val _tableString = Vector<Vector<String>>()
+    public val tableString:Vector<Vector<String>>
         get(){
-            if(field.isEmpty()){
+            if(_tableString.isEmpty()){
                 val ncols = typeTable.columns.size
                 val nrows = typeTable.rowsCount
 
                 for(rowIndex in 0 until nrows){
                     val row = Vector<String>()
-                    (0 until ncols).mapTo(row) { vectorString[rowIndex*ncols + it] }
-                    field.add(row)
+                    for(colIndex in 0..ncols-1){
+                        row.add(vectorString[rowIndex*ncols + colIndex])
+                    }
+                    _tableString.add(row)
                 }
             }
-            return field
+            return _tableString
         }
 
     /**
      * Gets data represented as row-wise table of Integers
      */
-    val tableInt:Vector<Vector<Int>>  by lazy {
+    public val tableInt:Vector<Vector<Int>> by lazy {
         val result = Vector<Vector<Int>>()
         for(row in tableString){
             val parsedRow = Vector<Int>()
@@ -211,7 +216,7 @@ class Assignment(
     /**
      * Gets data represented as row-wise table of Longs
      */
-    val tableLong:Vector<Vector<Long>>  by lazy {
+    public val tableLong:Vector<Vector<Long>> by lazy {
         val result = Vector<Vector<Long>>()
         for(row in tableString){
             val parsedRow = Vector<Long>()
@@ -226,7 +231,7 @@ class Assignment(
     /**
      * Gets data represented as row-wise table of Doubles
      */
-    val tableDouble:Vector<Vector<Double>>  by lazy {
+    public val tableDouble:Vector<Vector<Double>> by lazy {
         val result = Vector<Vector<Double>>()
         for(row in tableString){
             val parsedRow = Vector<Double>()
@@ -241,7 +246,7 @@ class Assignment(
     /**
      * Gets data represented as row-wise table of Booleans
      */
-    val tableBoolean:Vector<Vector<Boolean>>  by lazy {
+    public val tableBoolean:Vector<Vector<Boolean>> by lazy {
         val result = Vector<Vector<Boolean>>()
         for(row in tableString){
             val parsedRow = Vector<Boolean>()
@@ -257,16 +262,17 @@ class Assignment(
     /**
      * gets data represented as map of {column name: data}
      */
-    val mapString: HashMap<String, String> = HashMap<String, String>()
+    private val _mapString = HashMap<String, String>()
+    public val mapString: HashMap<String, String>
         get(){
-            if(field.isEmpty()) {
+            if(_mapString.isEmpty()) {
                 val ncols = typeTable.columns.size
 
-                for (colIndex in 0 until ncols) {
-                    field[typeTable.columns[colIndex].name] = vectorString[colIndex]
+                for (colIndex in 0..ncols - 1) {
+                    _mapString[typeTable.columns[colIndex].name] = vectorString[colIndex]
                 }
             }
-            return field
+            return _mapString
         }
 
     /**
@@ -368,7 +374,7 @@ class Assignment(
  *
  * types from 'int', 'uint', 'long', 'ulong', 'double', 'string', 'bool'
  */
-enum class CellTypes{
+public enum class CellTypes{
     BOOL,
     INT,
     UINT,

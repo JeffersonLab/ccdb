@@ -16,7 +16,7 @@ public class GetStatistics {
         }
 
 
-        JDBCProvider provider = CcdbPackage.createProvider("sqlite:///" + ccdbHome + "/sql/ccdb.sqlite");
+        JDBCProvider provider = CCDB.createProvider("sqlite:///" + ccdbHome + "/sql/ccdb.sqlite");
         provider.connect();
         provider.setDefaultVariation("subtest");
 

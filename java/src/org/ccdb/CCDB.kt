@@ -1,6 +1,6 @@
-@file:JvmName("CcdbPackage")
-
+@file:JvmName("CCDB")
 package org.jlab.ccdb
+
 
 import org.jlab.ccdb.JDBCProvider
 import org.jlab.ccdb.SQLiteProvider

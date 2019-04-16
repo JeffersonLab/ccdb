@@ -3,18 +3,14 @@ package org.jlab.ccdb
 import java.sql.DriverManager
 import java.sql.Connection
 
-import org.jlab.ccdb.JDBCProvider
-
-
-public class MySqlProvider(connectionString: String) : JDBCProvider(connectionString) {
+class MySqlProvider(connectionString: String) : JDBCProvider(connectionString) {
 
     override fun connect() {
-        // load the sqlite-JDBC driver using the current class loader
+        // load the MySql-JDBC driver using the current class loader
         Class.forName("com.mysql.jdbc.Driver");
 
         //first check for uri type
-        val typePos = connectionString.indexOf("mysql://")
-        if (typePos != 0) {
+        if (connectionString.indexOf("mysql://") != 0) {
             throw IllegalArgumentException("Connection string doesn't start with mysql:// but is given to MySqlProvider")
         }
 
@@ -93,6 +89,7 @@ public class MySqlProvider(connectionString: String) : JDBCProvider(connectionSt
         prsData = con.prepareStatement(dataQuery + timeConstrain + orderBy)
 
         prsTable = con.prepareStatement("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM `typeTables` WHERE `name` = ? AND `directoryId` = ?;")
+        prsAllTables = con.prepareStatement("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM `typeTables`")
         prsColumns = con.prepareStatement("SELECT `id`, `name`, `columnType` FROM `columns` WHERE `typeId` = ? ORDER BY `order`;")
 
         postConnect()

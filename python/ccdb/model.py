@@ -3,6 +3,7 @@ from __future__ import print_function
 import collections
 import datetime
 import posixpath
+from sqlalchemy import text
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column, ForeignKey
@@ -30,11 +31,10 @@ class CcdbSchemaVersion(Base):
     """
     __tablename__ = 'schemaVersions'
     id = Column(Integer, primary_key=True)
-    version = Column("schemaVersion", Integer)
+    version = Column("schemaVersion", Integer, nullable=False, server_default=text("'1'"))
 
     def __repr__(self):
         return "<CcdbSchemaVersion {0} version: '{1}'>".format(self.id, self.version)
-
 
 # --------------------------------------------
 # class Directory
@@ -46,12 +46,12 @@ class Directory(Base):
     """
     __tablename__ = 'directories'
     id = Column(Integer, primary_key=True)
-    name = Column(String(255))
+    name = Column(String(255), nullable=False, server_default=text("''"))
     comment = Column(Text)
-    created = Column(DateTime, default=datetime.datetime.now)
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
-    parent_id = Column('parentId', Integer)
-    author_id = Column('authorId', Integer, default=1)
+    created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    parent_id = Column('parentId', Integer, nullable=False, index=True, server_default=text("'0'"))
+    author_id = Column('authorId', Integer, default=1, nullable=False, server_default=text("'1'"))
 
     def __init__(self):
         self.path = ""
@@ -73,21 +73,22 @@ class Directory(Base):
 # --------------------------------------------
 class TypeTable(Base):
     __tablename__ = 'typeTables'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(255))
+    id = Column(Integer, primary_key=True, unique=True)
+    name = Column(String(255), nullable=False)
     comment = Column(Text)
-    created = Column(DateTime, default=datetime.datetime.now)
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
-    parent_dir_id = Column('directoryId', Integer, ForeignKey('directories.id'))
+    created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    parent_dir_id = Column('directoryId', Integer, ForeignKey('directories.id'), nullable=False, index=True)
     parent_dir = relationship("Directory", backref=backref('type_tables', order_by=id))
     constant_sets = relationship("ConstantSet", backref=backref('type_table'))
     columns = relationship("TypeTableColumn",
                            order_by="TypeTableColumn.order",
                            cascade="all, delete, delete-orphan",
                            backref=backref("type_table"))
-    rows_count = Column('nRows', Integer)
-    _columns_count = Column('nColumns', Integer)
-    author_id = Column('authorId', Integer, default=1)
+    rows_count = Column('nRows', Integer, nullable=False, server_default=text("'1'"))
+    _columns_count = Column('nColumns', Integer, nullable=False)
+    author_id = Column('authorId', Integer, default=1, nullable=False)
+
 
     @property
     def columns_count(self):
@@ -114,14 +115,14 @@ class TypeTable(Base):
 # --------------------------------------------
 class TypeTableColumn(Base):
     __tablename__ = 'columns'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(255))
+    id = Column(Integer, primary_key=True, unique=True)
+    name = Column(String(45), nullable=False)
     comment = Column(Text)
-    created = Column(DateTime, default=datetime.datetime.now)
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
-    order = Column(Integer)
+    created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    order = Column(Integer, nullable=False)
     type = Column('columnType', Enum('int', 'uint', 'long', 'ulong', 'double', 'string', 'bool'))
-    type_table_id = Column('typeId', Integer, ForeignKey('typeTables.id'))
+    type_table_id = Column('typeId', Integer, ForeignKey('typeTables.id'), nullable=False, index=True)
 
     @property
     def path(self):
@@ -136,12 +137,12 @@ class TypeTableColumn(Base):
 # --------------------------------------------
 class ConstantSet(Base):
     __tablename__ = 'constantSets'
-    id = Column(Integer, primary_key=True)
-    _vault = Column('vault', Text)
-    created = Column(DateTime, default=datetime.datetime.now)
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+    id = Column(Integer, primary_key=True, unique=True)
+    _vault = Column('vault', Text, nullable=False)
+    created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
     assignment = relationship("Assignment", uselist=False, back_populates="constant_set")
-    type_table_id = Column('constantTypeId', Integer, ForeignKey('typeTables.id'))
+    type_table_id = Column('constantTypeId', Integer, ForeignKey('typeTables.id'), nullable=False, index=True)
 
     @property
     def vault(self):
@@ -178,22 +179,24 @@ class ConstantSet(Base):
 class Assignment(Base):
     __tablename__ = 'assignments'
 
-    id = Column(Integer, primary_key=True)
-    created = Column(DateTime, default=datetime.datetime.now)
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
-    constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'))
+    id = Column(Integer, primary_key=True, unique=True)
+    created = Column(DateTime, default=datetime.datetime.now, nullable=False, index=True, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'), nullable=False)
     constant_set = relationship("ConstantSet",
                                 uselist=False,
                                 back_populates="assignment",
                                 cascade="all, delete, delete-orphan",
                                 single_parent=True)
-    run_range_id = Column('runRangeId', Integer, ForeignKey('runRanges.id'))
+    run_range_id = Column('runRangeId', Integer, ForeignKey('runRanges.id'), index=True)
     run_range = relationship("RunRange", backref=backref('assignments'))
-    variation_id = Column('variationId', Integer, ForeignKey('variations.id'))
+    variation_id = Column('variationId', Integer, ForeignKey('variations.id'), nullable=False, index=True)
     variation = relationship("Variation", backref=backref('assignments'))
     _comment = Column('comment', Text)
-    author_id = Column('authorId', Integer, ForeignKey('users.id'), default=1)
+    author_id = Column('authorId', Integer, ForeignKey('users.id'), default=1, nullable=False)
     author = relationship("User", uselist=False)
+
+    _event_range_id = Column('eventRangeId', Integer, index=True)
 
     @property
     def comment(self):
@@ -237,17 +240,32 @@ class Assignment(Base):
 
 
 # --------------------------------------------
+# class EventRange
+# --------------------------------------------
+class EventRange(Base):
+    __tablename__ = 'eventRanges'
+
+    id = Column(Integer, primary_key=True, unique=True)
+    created = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(DateTime, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    runNumber = Column(Integer, nullable=False)
+    eventMin = Column(Integer, nullable=False)
+    eventMax = Column(Integer, nullable=False)
+    comment = Column(Text)
+
+
+# --------------------------------------------
 # class RunRange
 # --------------------------------------------
 class RunRange(Base):
     __tablename__ = 'runRanges'
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    created = Column(DateTime, default=datetime.datetime.now)
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
+    id = Column(Integer, primary_key=True, unique=True)
+    name = Column(String(45))
+    created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     comment = Column(Text)
-    min = Column('runMin', Integer)
-    max = Column('runMax', Integer)
+    min = Column('runMin', Integer, nullable=False)
+    max = Column('runMax', Integer, nullable=False)
 
     def __repr__(self):
         if self.name != "":
@@ -261,14 +279,17 @@ class RunRange(Base):
 # --------------------------------------------
 class Variation(Base):
     __tablename__ = 'variations'
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    created = Column(DateTime, default=datetime.datetime.now)
+    id = Column(Integer, primary_key=True, unique=True)
+    name = Column(String(100), nullable=False, index=True, server_default=text("'default'"))
+    created = Column(DateTime, nullable=False, server_default=text("'2007-01-01 00:00:00'"), default=datetime.datetime.now)
+    modified = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), default=datetime.datetime.now)
     comment = Column(Text)
-    author_id = Column('authorId', Integer, default=1)
-    parent_id = Column('parentId', Integer, ForeignKey('variations.id'), default=1)
+    author_id = Column('authorId', Integer, nullable=False, server_default=text("'1'"), default=1)
+    parent_id = Column('parentId', Integer, ForeignKey('variations.id'), nullable=False, index=True, server_default=text("'1'"), default=1)
     parent = relation('Variation', remote_side=[id])
     children = relation("Variation")
+
+    _description = Column("description", String(255))   # (!) Deprecated! Is here for C++ compatibility with 1.06.1
 
     def __repr__(self):
         return "<Variation {0} '{1}'>".format(self.id, self.name)
@@ -282,14 +303,14 @@ class User(Base):
     Represent user of the ccdb. Used for logging and authentication
     """
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    created = Column('created', DateTime, default=datetime.datetime.now)
-    last_action_time = Column('lastActionTime', DateTime)
+    id = Column(Integer, primary_key=True, unique=True)
+    created = Column('created', DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    last_action_time = Column('lastActionTime', DateTime, nullable=False,)
     name = Column(String(100), nullable=False)
-    password = Column(String(100), nullable=True)
+    password = Column(String(100))
     _roles_str = Column('roles', String, nullable=False)
     info = Column(String(125), nullable=False)
-    is_deleted = Column('isDeleted', Boolean, default=False)
+    is_deleted = Column('isDeleted', Boolean, nullable=False, default=False)
 
     @property
     def roles(self):
@@ -315,16 +336,14 @@ class LogRecord(Base):
     One record to the log
     """
     __tablename__ = 'logs'
-    id = Column(Integer, primary_key=True, nullable=False)
-    created = Column('created', DateTime, default=datetime.datetime.now)
-    affected_ids = Column('affectedIds', String)
+    id = Column(Integer, primary_key=True, unique=True)
+    created = Column('created', DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    affected_ids = Column('affectedIds', String, nullable=False)
     action = Column(String(7), nullable=False)
     description = Column(String(255), nullable=False)
     comment = Column(String, nullable=True)
-    author_id = Column('authorId', Integer, ForeignKey('users.id'))
+    author_id = Column('authorId', Integer, ForeignKey('users.id'), nullable=False, index=True)
     author = relationship("User")
-
-
 
 
 #--------------------------------------------
@@ -429,7 +448,7 @@ def gen_flatten_data(data):
     [1, 2, 3, 4, 5, "abs"]
 
     """
-    #python 3 hack to basestr
+    # python 3 hack to basestr
     try:
         u = unicode
     except NameError:
