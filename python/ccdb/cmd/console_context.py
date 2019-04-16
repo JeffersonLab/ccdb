@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import os
 import re
 import imp
@@ -136,7 +136,7 @@ class ConsoleContext(object):
         :type value: themes.NoColorTheme
         """
         assert (isinstance(value, themes.NoColorTheme))
-        for key in self._utils.keys():
+        for key in list(self._utils.keys()):
             self._utils[key].theme = value
         log.debug(lfm(" |- theme(value) {0} | \\{0} |  |- theme switched to : '{1}'", os.linesep, value))
         self._theme = value
@@ -178,7 +178,7 @@ class ConsoleContext(object):
             log.debug("{0:<10} {1:<15} {2}:".format("(command)", "(name)", "(description)"))
             log.debug("\n".join(["{0:<10} {1:<15} {2}:".format(command, util.name, util.short_descr)
                                  for command, util
-                                 in self._utils.items()]))
+                                 in list(self._utils.items())]))
 
     # --------------------------------
     # search_utils
@@ -197,7 +197,7 @@ class ConsoleContext(object):
         # get list of files and module names
         files = os.listdir(path)
         test = re.compile(".py$", re.IGNORECASE)
-        files = filter(test.search, files)
+        files = list(filter(test.search, files))
         filenameToModuleName = lambda f: os.path.splitext(f)[0]
         moduleNames = sorted(map(filenameToModuleName, files))
         log.debug(lfm(" |- found '{0}' modules.{1} |- proceed loading each module:{1}", len(moduleNames), os.linesep))
@@ -446,7 +446,7 @@ class ConsoleContext(object):
 
         self.print_interactive_intro()
         # initialise autocomplete
-        self.words = self._utils.keys()
+        self.words = list(self._utils.keys())
         # completer = Completer(words)
         colorama.deinit()  # make colorama to release stderr and stdout
         readline.parse_and_bind("tab: complete")
@@ -470,7 +470,7 @@ class ConsoleContext(object):
 
             # read command from user
             try:
-                user_input = raw_input(self.current_path + "> ")
+                user_input = eval(input(self.current_path + "> "))
             except EOFError:
                 log.debug("EOF sequence received. Ending interactive loop")
                 break
@@ -656,10 +656,10 @@ class ConsoleContext(object):
   CCDB shell v.1.07.00
 +--------------------------+
        """)
-        print(self.theme.Title + "Interactive mode")
-        print("print " + self.theme.Accent + "help" + self.theme.Reset + " to get help")
-        print(
-            "print " + self.theme.Accent + "quit" + self.theme.Reset + " or " + self.theme.Accent + "q" + self.theme.Reset + " to exit")
+        print((self.theme.Title + "Interactive mode"))
+        print(("print " + self.theme.Accent + "help" + self.theme.Reset + " to get help"))
+        print((
+            "print " + self.theme.Accent + "quit" + self.theme.Reset + " or " + self.theme.Accent + "q" + self.theme.Reset + " to exit"))
         print("print !<command> to execute shell command")
         print()
         self.print_info()

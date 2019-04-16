@@ -24,7 +24,7 @@ class Usage(ConsoleUtilBase):
     help_util = True
     
     def print_help(self):
-        print """ Prints the usage of the command """ 
+        print(""" Prints the usage of the command """) 
     # ---- end of print_help() ----
 
 

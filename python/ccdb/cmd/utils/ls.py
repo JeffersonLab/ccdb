@@ -239,9 +239,9 @@ class List(ConsoleUtilBase):
 
         #print this directory
         if not printFullPath:
-            print "".join(["   " for i in range(0, level)]) + directory.name
+            print(("".join(["   " for i in range(0, level)]) + directory.name))
         else:
-            print directory.path
+            print((directory.path))
 
         #print subdirectories recursively
         sub_dirs = directory.sub_dirs
@@ -251,7 +251,7 @@ class List(ConsoleUtilBase):
 
     def print_variations(self):
         default_variation = self.context.provider.get_variation("default")
-        print( self._get_variation_tree_str(default_variation) )
+        print(( self._get_variation_tree_str(default_variation) ))
 
     def _get_variation_tree_str(self, variation, level=0):
         ret = "  "*level + str(variation.name)+"\n"
@@ -263,7 +263,7 @@ class List(ConsoleUtilBase):
         tables = self.context.provider.search_type_tables("*")
         for table in tables:
             assert (isinstance(table, TypeTable))
-            print(table.path)
+            print((table.path))
 
     def table_info(self, table, is_extended):
         log.info(table.path)
@@ -274,7 +274,7 @@ class List(ConsoleUtilBase):
     def print_help(self):
         """Prints help of the command"""
 
-        print """
+        print("""
 Lists directories and tables for current directory
 
 - Accepts wildcards symbols '*', and '?'
@@ -289,7 +289,7 @@ keys:
     -x or --dtree        - draws directory tree
 
     -l or --extended     - shows extended info when is used on table
-"""
+""")
 
 
 class ListTasks(object):

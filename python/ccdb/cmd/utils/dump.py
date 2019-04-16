@@ -51,9 +51,9 @@ class Dump(ConsoleUtilBase):
         # print this directory
         if not print_full_path:
             # noinspection PyUnusedLocal
-            print ("".join(["   " for i in range(0, level)]) + directory.name)
+            print(("".join(["   " for i in range(0, level)]) + directory.name))
         else:
-            print (directory.full_path)
+            print((directory.full_path))
 
         # print subdirectories recursively
         sub_dirs = directory.subdirs

@@ -86,7 +86,7 @@ class Authentication(object):
     @current_user_name.setter
     def current_user_name(self, username):
         try:
-            assert isinstance(username, basestring)
+            assert isinstance(username, str)
         except NameError:
             assert isinstance(username, str)
         self._username = username

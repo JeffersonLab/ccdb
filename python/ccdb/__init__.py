@@ -47,7 +47,7 @@ def get_ccdb_home_path():
 
 def init_ccdb_console():
     from .cmd import ConsoleContext
-    import cmd.colorama
+    import ccdb.cmd.colorama
 
     # SETUP LOGGER
     # ------------------------------
@@ -101,12 +101,12 @@ def init_ccdb_console():
     context.connection_string = "mysql://ccdb_user@localhost/ccdb"
 
     # connection string
-    if "CCDB_CONNECTION" in os.environ.keys():
+    if "CCDB_CONNECTION" in list(os.environ.keys()):
         context.connection_string = os.environ["CCDB_CONNECTION"]
         logger.debug("Set connection string from $CCDB_CONNECTION :" + context.connection_string)
     else:
         # fallback to jana calib url
-        if "JANA_CALIB_URL" in os.environ.keys():
+        if "JANA_CALIB_URL" in list(os.environ.keys()):
             jana_url = os.environ["JANA_CALIB_URL"]
             logger.debug("$CCDB_CONNECTION was not found. Found JANA_CALIB_URL ('"+jana_url+"'). Try use it")
 
@@ -117,7 +117,7 @@ def init_ccdb_console():
 
     # connection string in in command line arguments ( by -c or --connection) is processed by context.process(sys.argv)
 
-    if "CCDB_USER" in os.environ.keys():
+    if "CCDB_USER" in list(os.environ.keys()):
         context.user_name = os.environ["CCDB_USER"]
         logger.debug("Set user name from $CCDB_USER :" + context.user_name)
 

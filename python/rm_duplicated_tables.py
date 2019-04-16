@@ -24,8 +24,8 @@ if __name__ == "__main__":
         provider.connect(connection_string)
         print("Connected to database")
     except Exception as ex:
-        print("ERROR> CCDB provider unable to connect to {0}. Aborting. Exception details: {1}"
-              "".format(connection_string, ex))
+        print(("ERROR> CCDB provider unable to connect to {0}. Aborting. Exception details: {1}"
+              "".format(connection_string, ex)))
         exit()
 
     # it is bug of search_type_tables in 0.7 version.
@@ -40,20 +40,20 @@ if __name__ == "__main__":
     all_paths = [table.path for table in all_tables]
 
     #find duplicates
-    duplicated_paths = [path for path, count in collections.Counter(all_paths).items() if count > 1]
+    duplicated_paths = [path for path, count in list(collections.Counter(all_paths).items()) if count > 1]
 
     if not duplicated_paths:
         print("No duplicated tables found. Nothing to do")
         exit()
 
     for path in duplicated_paths:
-        print("Found: {}".format(path))
+        print(("Found: {}".format(path)))
 
     for path in duplicated_paths:
         table = next(table for table in all_tables if table.path == path)
 
         try:
             provider.delete_type_table(table)
-            print("Table is deleted: '{}'".format(path))
+            print(("Table is deleted: '{}'".format(path)))
         except Exception as ex:
-            print("Unable to delete table: '{}'. Error is: {}".format(path, ex))
+            print(("Unable to delete table: '{}'. Error is: {}".format(path, ex)))

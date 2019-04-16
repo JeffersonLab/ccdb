@@ -3,7 +3,7 @@ import unittest
 import ccdb.path_utils
 
 
-class AuthenticationTest(unittest.TestCase):
+class PathUtilsTest(unittest.TestCase):
 
     def test_parse_time(self):
         # test of simple parse

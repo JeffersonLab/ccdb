@@ -49,7 +49,7 @@ if __name__ == "__main__":
     # iterate over tables
     for source_table in source_tables:
         assert isinstance(source_table, TypeTable)
-        print("copy table '{}' to '{}'".format(source_table.path, dest_dir))
+        print(("copy table '{}' to '{}'".format(source_table.path, dest_dir)))
 
         # create a new table the same as old
         # select column names and column types of the original table
@@ -79,8 +79,8 @@ if __name__ == "__main__":
             new_assignment.created = assignment.created
             provider.update_assignment(new_assignment)
 
-            print("   copy assignment id={} to new (id={} created={})"
-                  .format(assignment.id, new_assignment.id, new_assignment.created))
+            print(("   copy assignment id={} to new (id={} created={})"
+                  .format(assignment.id, new_assignment.id, new_assignment.created)))
 
 
 
