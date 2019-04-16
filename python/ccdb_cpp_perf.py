@@ -45,7 +45,7 @@ def read_ccdb_perf_log(filename):
 
             line = line[len("CCDB_PERF_LOG:"):]
             row = json.loads(line)
-            row["path"]=row['descr'].split('=>')[1]
+            row["path"] = row['descr'].split('=>')[1]
             result.append(row)
 
     return result
@@ -87,4 +87,3 @@ if __name__ == "__main__":
     # Show histogram
     (df.elapsed / 1000).plot.hist(alpha=0.5, bins=30)
     plt.show()
-
