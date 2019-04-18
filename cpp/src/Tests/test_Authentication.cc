@@ -13,7 +13,6 @@ using namespace ccdb;
 
 TEST_CASE("CCDB/Providers/Authentication","Authentications tests")
 {
-
     IAuthentication * auth = NULL;
     REQUIRE_NOTHROW(auth = new EnvironmentAuthentication());
     REQUIRE(auth->GetLogin() != "");

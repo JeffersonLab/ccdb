@@ -49,9 +49,6 @@ set(SOURCE_FILES
         #model and provider
         "Providers/MySQLConnectionInfo.cc"
         "Providers/MySQLDataProvider.cc"
-
-        #for clion convenience
-        ../../include/CCDB/Helpers/StopWatch.h
         )
 
 

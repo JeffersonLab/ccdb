@@ -108,90 +108,7 @@ std::string ccdb::StringUtils::Format(const char *va_(fmt), ...)
    string str(vFormat(va_(fmt), ap));
    va_end(ap);
    return str;
-}   
-
-//std::string ccdb::StringUtils::vFormat( const char *fmt, va_list ap)
-//{
-//  // The function is quite similar to asprintf
-//  // but it uses its implementation that assumes, that the message is short
-//  // since it is our case...
-//
-//  //lets assume we have less than 150 chars buffer
-//  int size = 150;
-//  int nchars;
-//  va_list ap2;
-//
-//  char *buffer = (char*)malloc(size);
-//  if (buffer == NULL)
-//  {
-//      //Aha! It is an error!
-//      fprintf(stderr, "Error allocating memory in ccdb::Console::vFormat( const char *fmt, va_list ap) ");
-//      return string();
-//  }
-//
-//  //Try to print in the allocated space.
-//  //va_start(ap, fmt);
-//  va_copy(ap2, ap);
-//  //nchars = vsnprintf(buffer, size, fmt, ap2);
-//  nchars = vsnprintf(buffer, size, fmt, ap2);
-//  //va_end(ap);
-//
-//  //Ok! It is some more C++ crap
-//  // in linux vsnprintf will return actual number of characters if size of buffer is smaller than needed,
-//  // moreover, the buffer could be NULL, and than the actual number of characters will be returned
-//  // in windows it return -1, so if it is -1 we have to use one more function to obtain needed chars num
-//  if(nchars<0)
-//  {
-//#ifdef WIN32
-//      va_end(ap2);
-//      va_copy(ap2, ap);
-//      nchars = _vscprintf(fmt, ap2);
-//#endif
-//  }
-//
-//  if (nchars >= size)
-//  {
-//      char *tmpbuff;
-//
-//      // Reallocate buffer now that we know how much space is needed.
-//      size = nchars+1;
-//      tmpbuff = (char*)realloc(buffer, size);
-//
-//      if (tmpbuff == NULL)
-//      {
-//          // we need to free it
-//          free(buffer);
-//          fprintf(stderr, "Error allocating memory ccdb::Console::vFormat( const char *fmt, va_list ap)");
-//          return string();
-//      }
-//
-//      //ok! lets try again.
-//      va_end(ap2);
-//      //va_end(ap);
-//
-//      va_copy(ap2, ap);
-//      buffer=tmpbuff;
-//      nchars = vsnprintf(buffer, size, fmt, ap2);
-//      //nchars = vsnprintf(buffer, size, fmt, ap);
-//      va_end(ap);
-//  }
-//
-//  va_end(ap2);
-//  if (nchars < 0) return string();
-//
-//  //looks like alll is okk
-//  return string(buffer);
-//}
-
-//std::string ccdb::StringUtils::Format( const char *fmt, ... )
-//{
-//  //format
-//  va_list ap;
-//  va_start(ap, fmt);
-//  string str = vFormat(fmt, ap);
-//  va_end(ap);
-//  return str;
-//}
+}
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -394,53 +311,12 @@ time_t ccdb::StringUtils::ParseUnixTime( const string& source, bool *result/*=NU
 }
 
 
-//______________________________________________________________________________
-std::vector<string> ccdb::StringUtils::LexicalSplit( const std::string& source )
-{
-    //
 
-    /** Splits string to lexical values.
-    *
-    * LexicalSplit treats:
-    * 1) "quoted values" as one value,
-    * 2) '#' not in the beginning of the file are treated as comments to the end of the line
-    * 3) skips all white space characters. All specification is in doc/ccdb_file_format.pdf
-    */
-    std::vector<string> tokens;
-    LexicalSplit(tokens, source);
-    return tokens;
-}
 //____________________________________________________________________________________________
 void ccdb::StringUtils::LexicalSplit( std::vector<string>& tokens, const std::string& source )
 {
-    //
+    std::vector<string> tokens;
 
-    /** Splits string to lexical values.
-    *
-    * LexicalSplit treats:
-    * 1) "quoted values" as one value,
-    * 2) '#' not in the beginning of the file are treated as comments to the end of the line
-    * 3) skips all white space characters. All specification is in doc/ccdb_file_format.pdf
-    * 
-    * @remark
-    * Handling inconsistencies and errors while readout parse time:
-    *  ?  No ending quote . If no ending “ is found, string value will be taken
-    *     until the end of line.
-    *  ?  Comment inside a string. Comment symbol inside the line is ignored. 
-    *     So if you have a record in the file “info #4” it will be read just
-    *     as “info #4” string
-    *  ?  Sticked string. In case of there is no spaces between symbols and
-    *     an quotes, all will be merged as one string. I.e.:
-    *     John" Smith" will be parsed as one value: "John Smith"
-    *     John" "Smith will be parsed as one value: "John Smith"
-    *     but be careful(!) not to forget to do a spaces between columns
-    *     5.14”Smith” will be parsed as one value “5.14Smith” that probably would
-    *     lead to errors if these were two different columns
-    *  ?  If data contains string fields they are taken into “...” characters. All “
-    *     inside string should be saved by \” symbol. All words and symbols
-    *     inside “...” will be interpreted as string entity.
-    *
-    */
     //clear output
     tokens.clear();
     bool stringIsStarted = false; //Indicates that we meet '"' and looking for second one
