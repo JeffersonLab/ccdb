@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.3)
-project(CCDB)
 
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
-set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
+project(ccdb)
 
-if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-    message(SEND_ERROR "In-source builds are not allowed.")
-endif ()
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_COLOR_MAKEFILE   ON)
@@ -16,15 +12,11 @@ if (WIN32)
     set(CMAKE_SHARED_LIBRARY_PREFIX "")
 endif ()
 
-
-
-INCLUDE(${CMAKE_SOURCE_DIR}/FindMySQL.cmake)
+FIND_PACKAGE(MySQL)
 
 add_definitions(-DCCDB_MYSQL)
 #add_definitions(-DCCDB_PERFLOG_ON=1)
 
-
-add_subdirectory(SQLite)
-add_subdirectory(Library)
-add_subdirectory(Tests)
-add_subdirectory(Benchmarks)
+add_subdirectory(src/CCDB)
+add_subdirectory(src/Tests)
+add_subdirectory(src/Benchmarks)
