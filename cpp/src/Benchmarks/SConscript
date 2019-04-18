@@ -1,0 +1,25 @@
+##
+ # Benchmarks SConstcipt files
+ #
+ ##
+
+Import('env')
+
+#TODO move to normal debug\release modes
+
+#debugcflags = ['-W1', '-GX', '-EHsc', '-D_DEBUG', '/MDd']   #extra compile flags for debug
+#releasecflags = ['-O2', '-EHsc', '-DNDEBUG', '/MD']         #extra compile flags for release
+#env.Append(CCFLAGS='-g')
+
+
+#Configure environment to create tests
+benchmarks_sources = [
+    "benchmarks.cc",
+	#"benchmark_PreparedStatements.cc",
+	#"benchmark_Providers.cc",
+	"benchmark_UserAPI.cc",
+	]
+
+#Making tests
+ccdb_benchmarkss_program = env.Program('benchmarks_ccdb', source = benchmarks_sources, LIBS=["ccdb", "pthread"], LIBPATH='#lib')
+ccdb_benchmarkss_install = env.Install('#bin', ccdb_benchmarkss_program)
