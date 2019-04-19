@@ -17,9 +17,8 @@ import sqlalchemy.orm
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
-from .errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, AnonymousUserForbiddenError, DatabaseStructureError, \
-    UserNotFoundError, UserExistsError, \
-    VariationNotFound
+from .errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, AnonymousUserForbiddenError, \
+    DatabaseStructureError, UserNotFoundError, UserExistsError, VariationNotFound
 
 from .table_file import TextFileDOM
 from .authentication import Authentication
@@ -94,7 +93,7 @@ class AlchemyProvider(object):
         # since it is a new connection we need to rebuild directories
         self._are_dirs_loaded = False
 
-        #check data schema version
+        # check data schema version
         try:
             vers_rec = self.session.query(CcdbSchemaVersion).first()
             if vers_rec.version < 4:
@@ -106,7 +105,6 @@ class AlchemyProvider(object):
                 raise DatabaseStructureError(self._no_structure_message.format(err))
             else:
                 raise
-
 
     # ------------------------------------------------
     # Closes connection to data
@@ -144,11 +142,9 @@ class AlchemyProvider(object):
         """
         return self._connection_string
 
-
     # ----------------------------------------------------------------------------------------
     #   D I R E C T O R Y   M A N G E M E N T
     # ----------------------------------------------------------------------------------------
-
 
     # ------------------------------------------------
     # Gets directory by its full path
@@ -185,7 +181,6 @@ class AlchemyProvider(object):
         """
         self._ensure_dirs_loaded()
         return self.root_dir
-
 
     # ------------------------------------------------
     # Searches directories that matches the pattern
@@ -233,7 +228,6 @@ class AlchemyProvider(object):
         result = query.all()
 
         return result
-
 
     # ------------------------------------------------
     # Creates directory using parent path
@@ -333,6 +327,7 @@ class AlchemyProvider(object):
     # ------------------------------------------------
     # Deletes directory using path or Directory obj
     # ------------------------------------------------
+    # noinspection PyUnresolvedReferences
     def delete_directory(self, dir_or_path):
         """
         Deletes directory using parent path or Directory object
@@ -448,11 +443,9 @@ class AlchemyProvider(object):
         if not self._are_dirs_loaded:
             self._load_dirs()
 
-
     # ----------------------------------------------------------------------------------------
     #   C O N S T A N T   T Y P E   T A B L E
     # ----------------------------------------------------------------------------------------
-
 
     # ------------------------------------------------
     # Gets TypeTable from the DB by absolute path
@@ -476,12 +469,11 @@ class AlchemyProvider(object):
 
         try:
             table = query.one()
-        except sqlalchemy.orm.exc.NoResultFound as ex:
+        except sqlalchemy.orm.exc.NoResultFound:
             message = "No type table found by exact path: '{0}'".format(exact_path)
             raise TypeTableNotFound(message)
 
         return table
-
 
     # ------------------------------------------------
     # Get all tables in the directory
@@ -504,7 +496,6 @@ class AlchemyProvider(object):
             parent_dir = dir_obj_or_path
 
         return self.session.query(TypeTable).filter(TypeTable.parent_dir_id == parent_dir.id).all()
-
 
     # ------------------------------------------------
     # Searches for type tables that matches the patten
@@ -537,13 +528,13 @@ class AlchemyProvider(object):
 
         self._ensure_dirs_loaded()
 
-        #prepare search pattern for SQL
+        # prepare search pattern for SQL
         pattern = pattern.replace("_", "\\_").replace("*", "%").replace("?", "_")
 
-        #initial query
+        # initial query
         query = self.session.query(TypeTable).filter(TypeTable.name.like(pattern, escape="\\"))
 
-        #does parent directory specified?
+        # does parent directory specified?
         parent_dir = None
         if dir_obj_or_path is not None:
             self._ensure_dirs_loaded()
@@ -554,15 +545,15 @@ class AlchemyProvider(object):
                 assert isinstance(dir_obj_or_path, Directory)
                 parent_dir = dir_obj_or_path
 
-        #add parent directory to query
+        # add parent directory to query
         if parent_dir is not None:
             query = query.filter(TypeTable.parent_dir_id == parent_dir.id)
 
-        #add limits to query
+        # add limits to query
         if limit != 0: query = query.limit(limit)
         if offset != 0: query = query.offset(offset)
 
-        #execute and return
+        # execute and return
         return query.all()
 
     # --------------------------------------------------
@@ -1141,8 +1132,10 @@ class AlchemyProvider(object):
         query = query.order_by(desc(Assignment.id))
 
         # limits
-        if limit != 0: query = query.limit(limit)
-        if offset != 0: query = query.offset(offset)
+        if limit != 0:
+            query = query.limit(limit)
+        if offset != 0:
+            query = query.offset(offset)
 
         return query.all()
 
@@ -1200,10 +1193,10 @@ class AlchemyProvider(object):
         data_rows_count = len(rows)
         data_cols_count = len(rows[0])
 
-        if data_rows_count != table.rows_count or data_cols_count != table._columns_count:
+        if data_rows_count != table.rows_count or data_cols_count != table.columns_count:
             message = "Data rows or columns count is inconsistent with table declared rows or columns count. " \
                       "Data rows='{0}', columns='{1}'. Table declared rows='{2}', columns='{3}'" \
-                      "".format(data_rows_count, data_cols_count, table.rows_count, table._columns_count)
+                      "".format(data_rows_count, data_cols_count, table.rows_count, table.columns_count)
             raise ValueError(message)
 
         # check for type
@@ -1405,7 +1398,6 @@ class AlchemyProvider(object):
     def create_user(self, name, pwd="", roles=[], user_info=""):
         """
             Creates a user with defined user name
-
         """
         try:
             user = self.get_user(name)
@@ -1454,7 +1446,6 @@ class AlchemyProvider(object):
         """
         return self.get_user(self._auth.current_user_name)
 
-
     @property
     def authentication(self):
         """
@@ -1475,13 +1466,9 @@ class AlchemyProvider(object):
     # ----------------------------------------------------------------------------------------
     #   O T H E R   F U N C T I O N S
     # ----------------------------------------------------------------------------------------
-
-    ## @brief Validates name for constant type table or directory or column
-    #
-    # @param     string name
-    # @return   bool
-    #/
-    def validate_name(self, name):
+    @staticmethod
+    def validate_name(name):
+        """Validates name for constant type table or directory or column"""
         return path_utils.validate_name(name)
 
     # ----------------------------------------------------------------------------------------

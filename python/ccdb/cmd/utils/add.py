@@ -36,19 +36,7 @@ class AddData(ConsoleUtilBase):
     short_descr = "Add data constants"
     uses_db = True
 
-    def __init(self):
-        self.reset()
-
-    # ----------------------------------------
-    #   process
-    # ----------------------------------------
-    def reset(self):
-        """
-        Resets for new command
-        :return: None
-        """
-
-        # set arguments to default
+    def __init__(self):
         self.raw_table_path = ""
         self.table_path = ""
         self.raw_file_path = ""
@@ -65,6 +53,13 @@ class AddData(ConsoleUtilBase):
         self.c_comments = False  # file has '//'-style comments
         self.raw_entry = "/"  # object path with possible pattern, like /mole/*
         self.path = "/"  # parent path
+
+    # ----------------------------------------
+    #   reset
+    # ----------------------------------------
+    def reset(self):
+        """Resets state for a new command"""
+        self.__init__()
 
     # ----------------------------------------
     #   process
@@ -112,7 +107,7 @@ class AddData(ConsoleUtilBase):
         if not dom.data_is_consistent:
             message = "Inconsistency error. " + dom.inconsistent_reason
             log.warning(message)
-            raise ValueError(message=message)
+            raise ValueError(message)
 
         if len(dom.comment_lines):
             self.comment += "\n".join(dom.comment_lines)
