@@ -1,5 +1,4 @@
 """
-
 In this example we want to copy all tables with all data from
 /test/test_vars
 

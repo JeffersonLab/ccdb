@@ -1,7 +1,8 @@
 import random
 import unittest
-import ccdb.PathUtils as PathUtils
+import ccdb.path_utils as path_utils
 import time
+
 
 class TestParseRequest(unittest.TestCase):
 
@@ -9,17 +10,14 @@ class TestParseRequest(unittest.TestCase):
         self.seq = list(range(10))
         
     def test_parse_partial_time(self):
-        result = time.localtime(PathUtils.parse_time("2029"))
+        result = time.localtime(path_utils.parse_time("2029"))
 
         self.assertIsNotNone(result)        
         self.assertIsInstance(result, time.struct_time)
         self.assertEqual(result.tm_year, 2029)
         
-        
-        
-
     def test_parse_simple_request(self):
-        result= PathUtils.parse_request("/my/value");
+        result = path_utils.parse_request("/my/value")
 
         self.assertTrue(result.Path == "/my/value")
         self.assertTrue(result.WasParsedPath)
@@ -30,9 +28,8 @@ class TestParseRequest(unittest.TestCase):
     def test_parse_full_request(self):
         """ parse full request """
 
-        result= PathUtils.parse_request("/my/value:100:mc:2029");
-
-        #now check
+        result = path_utils.parse_request("/my/value:100:mc:2029")
+        # now check
         self.assertTrue(result.Path == "/my/value")
         self.assertTrue(result.WasParsedPath)
         self.assertTrue(result.RunNumber == 100)
@@ -46,7 +43,7 @@ class TestParseRequest(unittest.TestCase):
     def test_parse_partial_request(self):
         """ * * * parse partial request  * * * """
             
-        result= PathUtils.parse_request("/my/value::mc")
+        result = path_utils.parse_request("/my/value::mc")
 
         self.assertTrue(result.Path == "/my/value")
         self.assertTrue(result.WasParsedPath)
@@ -54,6 +51,7 @@ class TestParseRequest(unittest.TestCase):
         self.assertTrue(result.Variation == "mc")
         self.assertTrue(result.WasParsedVariation)
         self.assertFalse(result.WasParsedTime)
-   
+
+
 if __name__ == '__main__':
     unittest.main()

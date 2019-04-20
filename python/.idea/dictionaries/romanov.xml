@@ -16,6 +16,7 @@
       <w>nondefault</w>
       <w>runrange</w>
       <w>stdin</w>
+      <w>tablename</w>
       <w>testdir</w>
       <w>typetable</w>
       <w>uint</w>

@@ -1,5 +1,3 @@
-
-
 import collections
 import datetime
 import posixpath
@@ -13,7 +11,7 @@ from sqlalchemy.orm import relationship, backref
 
 Base = declarative_base()
 
-#This thing separates cells in data blob
+# This thing separates cells in data blob
 blob_delimiter = "|"
 
 # if cell of data table is a string and the string already contains blob_delimiter
@@ -21,20 +19,23 @@ blob_delimiter = "|"
 blob_delimiter_replacement = "&delimiter;"
 
 
-#--------------------------------------------
+# noinspection PyClassHasNoInit
+# --------------------------------------------
 # class CcdbSchemaVersion
-#--------------------------------------------
+# --------------------------------------------
 class CcdbSchemaVersion(Base):
     """
     Represents CCDB directory object.
     Directories may contain other directories or TypeTable objects
     """
+
     __tablename__ = 'schemaVersions'
     id = Column(Integer, primary_key=True)
     version = Column("schemaVersion", Integer, nullable=False, server_default=text("'1'"))
 
     def __repr__(self):
         return "<CcdbSchemaVersion {0} version: '{1}'>".format(self.id, self.version)
+
 
 # --------------------------------------------
 # class Directory
@@ -49,7 +50,10 @@ class Directory(Base):
     name = Column(String(255), nullable=False, server_default=text("''"))
     comment = Column(Text)
     created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    modified = Column(DateTime, nullable=False,
+                      default=datetime.datetime.now,
+                      onupdate=datetime.datetime.now,
+                      server_default=text("'2007-01-01 00:00:00'"))
     parent_id = Column('parentId', Integer, nullable=False, index=True, server_default=text("'0'"))
     author_id = Column('authorId', Integer, default=1, nullable=False, server_default=text("'1'"))
 
@@ -71,6 +75,7 @@ class Directory(Base):
 # --------------------------------------------
 # class TypeTable
 # --------------------------------------------
+# noinspection PyClassHasNoInit
 class TypeTable(Base):
     __tablename__ = 'typeTables'
     id = Column(Integer, primary_key=True, unique=True)
@@ -88,7 +93,6 @@ class TypeTable(Base):
     rows_count = Column('nRows', Integer, nullable=False, server_default=text("'1'"))
     _columns_count = Column('nColumns', Integer, nullable=False)
     author_id = Column('authorId', Integer, default=1, nullable=False)
-
 
     @property
     def columns_count(self):
@@ -113,20 +117,25 @@ class TypeTable(Base):
 # --------------------------------------------
 # class TypeTableColumn
 # --------------------------------------------
+# noinspection PyClassHasNoInit
 class TypeTableColumn(Base):
     __tablename__ = 'columns'
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(45), nullable=False)
     comment = Column(Text)
     created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    modified = Column(DateTime, nullable=False,
+                      default=datetime.datetime.now,
+                      onupdate=datetime.datetime.now,
+                      server_default=text("'2007-01-01 00:00:00'"))
     order = Column(Integer, nullable=False)
     type = Column('columnType', Enum('int', 'uint', 'long', 'ulong', 'double', 'string', 'bool'))
     type_table_id = Column('typeId', Integer, ForeignKey('typeTables.id'), nullable=False, index=True)
 
-    @property
-    def path(self):
-        return posixpath.join(self.parent_dir.path, self.name)
+    # TODO remove this comments!
+    # @property
+    # def path(self):
+    #     return posixpath.join(self.parent_dir.path, self.name)
 
     def __repr__(self):
         return "<TypeTableColumn '{0}'>".format(self.name)
@@ -135,6 +144,7 @@ class TypeTableColumn(Base):
 # --------------------------------------------
 # class ConstantSet
 # --------------------------------------------
+# noinspection PyClassHasNoInit,PyUnresolvedReferences
 class ConstantSet(Base):
     __tablename__ = 'constantSets'
     id = Column(Integer, primary_key=True, unique=True)
@@ -176,12 +186,18 @@ class ConstantSet(Base):
 # --------------------------------------------
 # class Assignment
 # --------------------------------------------
+# noinspection PyClassHasNoInit,PyUnresolvedReferences
 class Assignment(Base):
     __tablename__ = 'assignments'
 
     id = Column(Integer, primary_key=True, unique=True)
-    created = Column(DateTime, default=datetime.datetime.now, nullable=False, index=True, server_default=text("CURRENT_TIMESTAMP"))
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    created = Column(DateTime, nullable=False, index=True,
+                     default=datetime.datetime.now,
+                     server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(DateTime, nullable=False,
+                      default=datetime.datetime.now,
+                      onupdate=datetime.datetime.now,
+                      server_default=text("'2007-01-01 00:00:00'"))
     constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'), nullable=False)
     constant_set = relationship("ConstantSet",
                                 uselist=False,
@@ -228,20 +244,21 @@ class Assignment(Base):
         return "<Assignment '{0}'>".format(self.id)
 
     def print_info(self):
-        print((" ASSIGNMENT: " + repr(self) \
-              + " TABLE: " + repr(self.constant_set.type_table)\
-              + " RUN RANGE: " + repr(self.run_range)\
-              + " VARIATION: " + repr(self.variation)\
+        print((" ASSIGNMENT: " + repr(self)
+              + " TABLE: " + repr(self.constant_set.type_table)
+              + " RUN RANGE: " + repr(self.run_range)
+              + " VARIATION: " + repr(self.variation)
               + " SET: " + repr(self.constant_set)))
-        print("      |"                                        )
-        print(("      +-->" + repr(self.constant_set.vault)     ))
-        print(("      +-->" + repr(self.constant_set.data_list) ))
-        print(("      +-->" + repr(self.constant_set.data_table)))
+        print("      |")
+        print("      +-->" + repr(self.constant_set.vault))
+        print("      +-->" + repr(self.constant_set.data_list))
+        print("      +-->" + repr(self.constant_set.data_table))
 
 
 # --------------------------------------------
 # class EventRange
 # --------------------------------------------
+# noinspection PyClassHasNoInit
 class EventRange(Base):
     __tablename__ = 'eventRanges'
 
@@ -257,6 +274,7 @@ class EventRange(Base):
 # --------------------------------------------
 # class RunRange
 # --------------------------------------------
+# noinspection PyClassHasNoInit
 class RunRange(Base):
     __tablename__ = 'runRanges'
     id = Column(Integer, primary_key=True, unique=True)
@@ -277,15 +295,18 @@ class RunRange(Base):
 # --------------------------------------------
 # class Variation
 # --------------------------------------------
+# noinspection PyClassHasNoInit
 class Variation(Base):
     __tablename__ = 'variations'
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(100), nullable=False, index=True, server_default=text("'default'"))
-    created = Column(DateTime, nullable=False, server_default=text("'2007-01-01 00:00:00'"), default=datetime.datetime.now)
+    created = Column(DateTime, nullable=False,
+                     server_default=text("'2007-01-01 00:00:00'"), default=datetime.datetime.now)
     modified = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), default=datetime.datetime.now)
     comment = Column(Text)
     author_id = Column('authorId', Integer, nullable=False, server_default=text("'1'"), default=1)
-    parent_id = Column('parentId', Integer, ForeignKey('variations.id'), nullable=False, index=True, server_default=text("'1'"), default=1)
+    parent_id = Column('parentId', Integer, ForeignKey('variations.id'), nullable=False, index=True,
+                       server_default=text("'1'"), default=1)
     parent = relation('Variation', remote_side=[id])
     children = relation("Variation")
 
@@ -298,6 +319,7 @@ class Variation(Base):
 #--------------------------------------------
 # class User
 #--------------------------------------------
+# noinspection PyClassHasNoInit
 class User(Base):
     """
     Represent user of the ccdb. Used for logging and authentication
@@ -331,6 +353,7 @@ class User(Base):
 #--------------------------------------------
 # class LogRecord - record logs
 #--------------------------------------------
+# noinspection PyClassHasNoInit
 class LogRecord(Base):
     """
     One record to the log
@@ -346,49 +369,47 @@ class LogRecord(Base):
     author = relationship("User")
 
 
-#--------------------------------------------
-#
-#              F  I  E  L  D  S
-#
-#--------------------------------------------
+# --------------------------------------------
+#         R I G H T S  &  R O L E S
+# --------------------------------------------
 _roles_descr = {
-    "user_create"               :"Can create new user",
-    "user_modify"               :"Can modify users and set user roles",
+    "user_create":              "Can create new user",
+    "user_modify":              "Can modify users and set user roles",
 
-    "assignment_add_own"        :"Can add assignment to own variation",
-    "assignment_add_nondefault" :"Can add assignment to any variation except the default",
-    "assignment_add_default"    :"Can add assignment to the default variation",
-    "assignment_modify"         :"Can modify or even delete assignments. Exceptional role",
+    "assignment_add_own":        "Can add assignment to own variation",
+    "assignment_add_nondefault": "Can add assignment to any variation except the default",
+    "assignment_add_default":    "Can add assignment to the default variation",
+    "assignment_modify":         "Can modify or even delete assignments. Exceptional role",
 
-    "variation_create"          :"Can create new variation",
-    "variation_modify_own"      :"Can modify self created variation",
-    "variation_modify_any"      :"Can modify any variation",
-    "variation_delete_own"      :"Can delete self created variation",
-    "variation_delete_any"      :"Can delete any variation",
+    "variation_create":          "Can create new variation",
+    "variation_modify_own":      "Can modify self created variation",
+    "variation_modify_any":      "Can modify any variation",
+    "variation_delete_own":      "Can delete self created variation",
+    "variation_delete_any":      "Can delete any variation",
 
-    "runrange_create"           :"Can create new runrange",
-    "runrange_modify_own"       :"Can modify self created runrange",
-    "runrange_modify_any"       :"Can modify any runrange",
-    "runrange_delete_own"       :"Can delete self created runrange",
-    "runrange_delete_any"       :"Can delete any runrange",
+    "runrange_create":           "Can create new runrange",
+    "runrange_modify_own":       "Can modify self created runrange",
+    "runrange_modify_any":       "Can modify any runrange",
+    "runrange_delete_own":       "Can delete self created runrange",
+    "runrange_delete_any":       "Can delete any runrange",
 
-    "eventrange_create"         :"Can create new eventrange",
-    "eventrange_modify_own"     :"Can modify self created eventrange",
-    "eventrange_modify_any"     :"Can modify any eventrange",
-    "eventrange_delete_own"     :"Can delete self created eventrange",
-    "eventrange_delete_any"     :"Can delete any eventrange",
+    "eventrange_create":         "Can create new eventrange",
+    "eventrange_modify_own":     "Can modify self created eventrange",
+    "eventrange_modify_any":     "Can modify any eventrange",
+    "eventrange_delete_own":     "Can delete self created eventrange",
+    "eventrange_delete_any":     "Can delete any eventrange",
 
-    "table_create"              :"Can create new table",
-    "table_modify_own"          :"Can modify self created table",
-    "table_modify_any"          :"Can modify any table",
-    "table_delete_own"          :"Can delete self created table",
-    "table_delete_any"          :"Can delete any table",
+    "table_create":              "Can create new table",
+    "table_modify_own":          "Can modify self created table",
+    "table_modify_any":          "Can modify any table",
+    "table_delete_own":          "Can delete self created table",
+    "table_delete_any":          "Can delete any table",
 
-    "directory_create"          :"Can create new directory",
-    "directory_modify_own"      :"Can modify self created directory",
-    "directory_modify_any"      :"Can modify any directory",
-    "directory_delete_own"      :"Can delete self created directory",
-    "directory_delete_any"      :"Can delete any directory",
+    "directory_create":          "Can create new directory",
+    "directory_modify_own":      "Can modify self created directory",
+    "directory_modify_any":      "Can modify any directory",
+    "directory_delete_own":      "Can delete self created directory",
+    "directory_delete_any":      "Can delete any directory",
 }
 
 
@@ -419,9 +440,9 @@ _default_roles = [
 ]
 
 
-#--------------------------------------------
+# --------------------------------------------
 # flattens arrays of arrays to one array
-#--------------------------------------------
+# --------------------------------------------
 def get_roles():
     """
     Returns list of all known roles
@@ -467,9 +488,9 @@ def gen_flatten_data(data):
             yield el
 
 
-#--------------------------------------------
+# --------------------------------------------
 # flattens arrays of arrays to one array
-#--------------------------------------------
+# --------------------------------------------
 def flatten_data(data):
     """
      flattens arrays of arrays to one array
@@ -487,9 +508,9 @@ def flatten_data(data):
     return list(gen_flatten_data(data))
 
 
-#--------------------------------------------
-# Get tabled data, convert it to string blob for db insertion
-#--------------------------------------------
+# --------------------------------------------
+#   Get tabled data, convert it to string blob for db insertion
+# --------------------------------------------
 def list_to_blob(data):
     """
     Get tabled data, convert it to string blob for db insertion
@@ -519,7 +540,7 @@ def list_to_blob(data):
     if len(data) == 1:
         return prepare_item(data[0])
 
-    #this for data[:-1] makes result like a1|a2|a3
+    # this for data[:-1] makes result like a1|a2|a3
     blob = ""
     for item in data[:-1]:
         blob += prepare_item(item) + blob_delimiter
@@ -528,9 +549,9 @@ def list_to_blob(data):
     return blob
 
 
-#--------------------------------------------
+# --------------------------------------------
 # Get blob data and convert it to list decoding blob_delimiter
-#--------------------------------------------
+# --------------------------------------------
 def blob_to_list(blob):
     """
     Get blob data and convert it to list decoding blob_delimiter
@@ -552,9 +573,9 @@ def blob_to_list(blob):
     return items
 
 
-#--------------------------------------------
+# --------------------------------------------
 # Converts flat array to tabled array
-#--------------------------------------------
+# --------------------------------------------
 def list_to_table(data, col_count):
     """
     Converts flat array to tabled array
@@ -577,7 +598,7 @@ def list_to_table(data, col_count):
         raise ValueError(message)
 
     row_count = len(data) // col_count
-    #cpp way
+    # cpp way
     tabled_data = []
     for row_i in range(row_count):
         row = []

@@ -33,8 +33,8 @@ class PreventAnonymousUserTest(unittest.TestCase):
     def setUp(self):
         # create CCDB api class
         self.provider = ccdb.AlchemyProvider()  # this class has all CCDB manipulation functions
-        self.provider.connect("mysql://ccdb_user@localhost/ccdb_test")  # use usual connection string to connect to database
-        self.provider.authentication.current_user_name = "anonymous"  # to have a name in logs
+        self.provider.connect("mysql://ccdb_user@localhost/ccdb_test")  # use usual connection string to database
+        self.provider.authentication.current_user_name = "anonymous"    # to have a name in logs
 
     def test_preventAssignmentCreation(self):
 
