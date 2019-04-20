@@ -8,13 +8,10 @@
 #include <vector>
 #include <map>
 
-#include "CCDB/Model/StoredObject.h"
-#include "CCDB/Model/ObjectsOwner.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
 #include "CCDB/Model/ConstantsTypeColumn.h"
 #include "CCDB/Helpers/StringUtils.h"
 
-using namespace std;
 
 namespace ccdb {
 
@@ -22,9 +19,9 @@ class EventRange;
 class Variation;
 class RunRange;
 
-class Assignment: public ObjectsOwner, public StoredObject {
+class Assignment {
 public:
-	Assignment(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);
+	Assignment();
 	virtual ~Assignment();
 
 	/** @brief creates mapped data by columns
@@ -33,7 +30,7 @@ public:
 	 * @param  columns
 	 * @return const vector<map<string,string> >
 	 */
-	static bool MapData(vector<map<string,string> > & mappedData, const vector<string>& data, const vector<string>& columns);
+	static bool MapData(std::vector<std::map<std::string,std::string> > & mappedData, const std::vector<std::string>& data, const std::vector<std::string>& columns);
 	
 	/** @brief creates mapped data by columns
 	 * 
@@ -42,14 +39,14 @@ public:
 	 * @param  columnsNum	- 
 	 * @return bool
 	 */
-	static bool MapData( vector<vector<string> > & mappedData, const vector<string>& data, int columnsNum );
+	static bool MapData(std::vector<std::vector<std::string> > & mappedData, const std::vector<std::string>& data, int columnsNum );
 
 	/**
 	 * @brief makes a string blob from tokens
 	 * @param     const vector<string> & values
 	 * @return   std::string
 	 */
-	static string VectorToBlob(const vector<string>& values);
+	static std::string VectorToBlob(const std::vector<std::string>& values);
 
 	/** @brief Encodes blob separator
 	 *
@@ -57,7 +54,7 @@ public:
 	 * @param     string str
 	 * @return   std::string
 	 */
-	static string EncodeBlobSeparator(string str);
+	static std::string EncodeBlobSeparator(std::string str);
 
 	/** @brief Decodes blob separator
 	 *
@@ -121,48 +118,48 @@ public:
 	void GetData(vector<vector<string> > &data) const;
 	
 	std::string GetComment() const { return mComment;} ///Comment of assignment
-	void SetComment(std::string val) {mComment = val;} ///Comment of assignment
+	void SetComment(const std::string& val) { mComment = val;} ///Comment of assignment
 	
 	void SetTypeTable(ConstantsTypeTable* typeTable) { this->mTypeTable = typeTable;}
 	ConstantsTypeTable* GetTypeTable() const { return mTypeTable; }
 
-	string GetValue(size_t columnIndex);
-	string GetValue(size_t rowIndex, size_t columnIndex);
-	string GetValue(string columnName);
-	string GetValue(size_t rowIndex, string columnName);
+	std::string GetValue(size_t columnIndex);
+	std::string GetValue(size_t rowIndex, size_t columnIndex);
+	std::string GetValue(const std::string& columnName);
+	std::string GetValue(size_t rowIndex, const std::string& columnName);
 
 	int GetValueInt(size_t columnIndex) { return StringUtils::ParseInt(GetValue(columnIndex)); }
 	int GetValueInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseInt(GetValue(rowIndex, columnIndex)); }
-	int GetValueInt(string columnName) { return StringUtils::ParseInt(GetValue(columnName)); }
-	int GetValueInt(size_t rowIndex, string columnName) { return StringUtils::ParseInt(GetValue(rowIndex, columnName)); }
+	int GetValueInt(const std::string& columnName) { return StringUtils::ParseInt(GetValue(columnName)); }
+	int GetValueInt(size_t rowIndex, const std::string& columnName) { return StringUtils::ParseInt(GetValue(rowIndex, columnName)); }
 	
 	unsigned int GetValueUInt(size_t columnIndex)                  { return StringUtils::ParseUInt(GetValue(columnIndex)); }
 	unsigned int GetValueUInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseUInt(GetValue(rowIndex, columnIndex)); }
-	unsigned int GetValueUInt(string columnName)                   { return StringUtils::ParseUInt(GetValue(columnName)); }
-	unsigned int GetValueUInt(size_t rowIndex, string columnName)  { return StringUtils::ParseUInt(GetValue(rowIndex, columnName)); }
+	unsigned int GetValueUInt(const std::string& columnName)                   { return StringUtils::ParseUInt(GetValue(columnName)); }
+	unsigned int GetValueUInt(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseUInt(GetValue(rowIndex, columnName)); }
 			   
 	double GetValueDouble(size_t columnIndex) { return StringUtils::ParseDouble(GetValue(columnIndex)); }
 	double GetValueDouble(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseDouble(GetValue(rowIndex, columnIndex)); }
-	double GetValueDouble(string columnName) { return StringUtils::ParseDouble(GetValue(columnName)); }
-	double GetValueDouble(size_t rowIndex, string columnName) { return StringUtils::ParseDouble(GetValue(rowIndex, columnName)); }
+	double GetValueDouble(const string& columnName) { return StringUtils::ParseDouble(GetValue(columnName)); }
+	double GetValueDouble(size_t rowIndex, const std::string& columnName) { return StringUtils::ParseDouble(GetValue(rowIndex, columnName)); }
 			   
 	long GetValueLong(size_t columnIndex)                  { return StringUtils::ParseLong(GetValue(columnIndex)); }
 	long GetValueLong(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseLong(GetValue(rowIndex, columnIndex)); }
-	long GetValueLong(string columnName)                   { return StringUtils::ParseLong(GetValue(columnName)); }
-	long GetValueLong(size_t rowIndex, string columnName)  { return StringUtils::ParseLong(GetValue(rowIndex, columnName)); }
+	long GetValueLong(const std::string& columnName)                   { return StringUtils::ParseLong(GetValue(columnName)); }
+	long GetValueLong(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseLong(GetValue(rowIndex, columnName)); }
 			   
 	unsigned long GetValueULong(size_t columnIndex)                  { return StringUtils::ParseULong(GetValue(columnIndex)); }
 	unsigned long GetValueULong(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseULong(GetValue(rowIndex, columnIndex)); }
-	unsigned long GetValueULong(string columnName)                   { return StringUtils::ParseULong(GetValue(columnName)); }
-	unsigned long GetValueULong(size_t rowIndex, string columnName)  { return StringUtils::ParseULong(GetValue(rowIndex, columnName)); }
+	unsigned long GetValueULong(const std::string& columnName)                   { return StringUtils::ParseULong(GetValue(columnName)); }
+	unsigned long GetValueULong(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseULong(GetValue(rowIndex, columnName)); }
 			   
 	bool GetValueBool(size_t columnIndex)                  { return StringUtils::ParseBool(GetValue(columnIndex)); }
 	bool GetValueBool(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseBool(GetValue(rowIndex, columnIndex)); }
-	bool GetValueBool(string columnName)                   { return StringUtils::ParseBool(GetValue(columnName)); }
-	bool GetValueBool(size_t rowIndex, string columnName)  { return StringUtils::ParseBool(GetValue(rowIndex, columnName)); }
+	bool GetValueBool(const std::string& columnName)                   { return StringUtils::ParseBool(GetValue(columnName)); }
+	bool GetValueBool(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseBool(GetValue(rowIndex, columnName)); }
 
 	ConstantsTypeColumn::ColumnTypes GetValueType(size_t columnIndex) { return mTypeTable->GetColumns()[columnIndex]->GetType(); }
-	ConstantsTypeColumn::ColumnTypes GetValueType(const string& columnName);
+	ConstantsTypeColumn::ColumnTypes GetValueType(const std::string& columnName);
 
 	/** Gets number or rows */
 	size_t GetRowsCount() const { return mTypeTable->GetRowsCount(); }

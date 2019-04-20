@@ -12,24 +12,19 @@ set(SOURCE_FILES
         "Console.cc"
         "Log.cc"
         "CCDBError.cc"
-        "GlobalMutex.cc"
-        "IMutex.cc"
-        "ISyncObject.cc"
-        "PthreadMutex.cc"
-        "PthreadSyncObject.cc"
 
         #user api
         "Calibration.cc"
         "CalibrationGenerator.cc"
         "SQLiteCalibration.cc"
+        "MySQLCalibration.cc"
 
         #helper classes
         "Helpers/StringUtils.cc"
         "Helpers/PathUtils.cc"
         "Helpers/WorkUtils.cc"
         "Helpers/TimeProvider.cc"
-        "Model/ObjectsOwner.cc"
-        "Model/StoredObject.cc"
+
         "Model/Assignment.cc"
         "Model/ConstantsTypeColumn.cc"
         "Model/ConstantsTypeTable.cc"
@@ -37,14 +32,13 @@ set(SOURCE_FILES
         "Model/EventRange.cc"
         "Model/RunRange.cc"
         "Model/Variation.cc"
+
         "Providers/DataProvider.cc"
         "Providers/FileDataProvider.cc"
         "Providers/SQLiteDataProvider.cc"
         "Providers/IAuthentication.cc"
         "Providers/EnvironmentAuthentication.cc"
 
-        #user api
-        "MySQLCalibration.cc"
 
         #model and provider
         "Providers/MySQLConnectionInfo.cc"
@@ -53,7 +47,11 @@ set(SOURCE_FILES
 
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${MYSQL_LIB}  CCDB_sqlite)
+
+get_filename_component(CCDB_LIB_PARENT_DIR ${PROJECT_SOURCE_DIR} DIRECTORY)
+message(${CCDB_LIB_PARENT_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CCDB_LIB_PARENT_DIR})
+
 
 
 # Required on Unix OS family to be able to be linked into shared libraries.

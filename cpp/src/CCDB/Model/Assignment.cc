@@ -17,8 +17,7 @@ using namespace std;
 
 
 //______________________________________________________________________________
-ccdb::Assignment::Assignment( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ )
-:StoredObject(owner, provider)
+ccdb::Assignment::Assignment()
 {
 	mRawData = string(); 	// data blob
 	mId=0;					// id in database
@@ -299,7 +298,7 @@ void ccdb::Assignment::GetVectorData(vector<string>& vectorData) const
 {
 	//split data
 	vectorData.clear();
-	vector<string>::const_iterator iter = mVectorData.begin();
+	auto iter = mVectorData.begin();
 	while (iter<mVectorData.end())
 	{	
 		vectorData.push_back(DecodeBlobSeparator(*iter));
@@ -321,9 +320,9 @@ void ccdb::Assignment::SetRawData(std::string val)
 	}
 }
 
-std::string ccdb::Assignment::GetValue(string columnName)
+std::string ccdb::Assignment::GetValue(const string& columnName)
 {
-	if (mRows.size() == 0)
+	if (mRows.empty())
 	{
 		//fill data
 		MapData(mRows, GetVectorData(), mTypeTable->GetColumnNames());
@@ -331,7 +330,7 @@ std::string ccdb::Assignment::GetValue(string columnName)
 	return mRows[0][columnName];
 }
 
-std::string ccdb::Assignment::GetValue(size_t rowIndex, string columnName)
+std::string ccdb::Assignment::GetValue(size_t rowIndex, const std::string& columnName)
 {
 	if (mRows.size() == 0)
 	{

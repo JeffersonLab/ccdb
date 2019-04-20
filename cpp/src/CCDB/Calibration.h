@@ -8,10 +8,8 @@
 #include <memory>
 #include <mutex>
 
-#include "CCDB/Globals.h"
-#include "CCDB/Providers/DataProvider.h"
-#include "CCDB/PthreadMutex.h"
-#include "CCDB/PthreadSyncObject.h"
+#include "Globals.h"
+#include "Providers/DataProvider.h"
 
 #define ERRMSG_INVALID_CONNECT_USAGE "Invalid DMySQLCalibration usage. Using DMySQLCalibration::Connect method with provider == NULL and ProviderIsLocked==true." 
 #define ERRMSG_CONNECTED_TO_ANOTHER "The connection is open to another source. DCalibration is already connected using another connection string" 
