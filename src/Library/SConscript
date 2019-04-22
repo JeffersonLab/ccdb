@@ -97,7 +97,8 @@ if ARGUMENTS.get("mysql","no")=="yes" or ARGUMENTS.get("with-mysql","true")=="tr
 	
 	lib_sources.extend(mysql_sources)	
 	env.Append(CPPDEFINES='CCDB_MYSQL')
-	env.ParseConfig('mysql_config --libs --cflags')
+	env.Append(LIBS='mysqlclient')
+	env.ParseConfig('mysql_config --cflags')
 else:
 	print "CCDB is being build WITHOUT MySQL support. Use 'with-mysql=true' flag to explicitly enable MySQL support"
 	
