@@ -291,7 +291,7 @@ bool ccdb::MySQLDataProvider::SearchDirectories( vector<Directory *>& resultDire
 		dbkey_t id = ReadIndex(0); //read db index key
 
 		//search for such index
-		map<dbkey_t,Directory *>::iterator dirIter = mDirectoriesById.find(id);
+		auto dirIter = mDirectoriesById.find(id);
 		if(dirIter != mDirectoriesById.end())
 		{
 			resultDirectories.push_back(dirIter->second);
@@ -312,7 +312,7 @@ bool ccdb::MySQLDataProvider::LoadDirectories()
 	//
 	if(IsConnected())
 	{
-		if(!QuerySelect("SELECT `id`, `name`, `parentId`, UNIX_TIMESTAMP(`directories`.`modified`) as `updateTime`, `comment` FROM `directories`"))
+		if(!QuerySelect("SELECT `id`, `parentId`, `name`, `comment` FROM `directories`"))
 		{
 			//TODO: report error
 			return false;
@@ -323,17 +323,15 @@ bool ccdb::MySQLDataProvider::LoadDirectories()
 		mDirectoriesById.clear();
 
 		//clear root directory (delete all directory structure objects)
-		mRootDir->DisposeSubdirectories(); 
-		mRootDir->SetFullPath("/");
+		mRootDir->DisposeSubdirectories();
 
 		//Ok! We querryed our directories! lets catch them! 
 		while(FetchRow())
 		{
-			Directory *dir = new Directory(this, this);
-			dir->SetId(ReadIndex(0));					// `id`, 
-			dir->SetName(ReadString(1));			// `name`, 
-			dir->SetParentId(ReadInt(2));			// `parentId`, 
-			dir->SetModifiedTime(ReadUnixTime(3));	// UNIX_TIMESTAMP(`directories`.`updateTime`) as `updateTime`, 
+			Directory *dir = new Directory();
+			dir->SetId(ReadIndex(0));				// `id`,
+            dir->SetParentId(ReadInt(1));			// `parentId`,
+			dir->SetName(ReadString(2));			// `name`,
 			dir->SetComment(ReadString(4));			// `comment`
 
 			mDirectories.push_back(dir);

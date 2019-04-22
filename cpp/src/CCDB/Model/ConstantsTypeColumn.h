@@ -11,15 +11,13 @@
 #include <time.h>
 #include <string>
 #include "CCDB/Globals.h"
-#include "CCDB/Model/StoredObject.h"
-//#include "Model/ConstantsTypeTable.h"
 
 using namespace std;
 
 namespace ccdb {
 class ConstantsTypeTable;
 
-class ConstantsTypeColumn: public StoredObject {
+class ConstantsTypeColumn {
 	friend class ConstantsTypeTable;
 public:
 	enum ColumnTypes
@@ -61,8 +59,8 @@ public:
 	 */
 	static string  TypeToString(ColumnTypes val);
 
-	ConstantsTypeColumn(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);	///Constructor
-	virtual ~ConstantsTypeColumn();					///Destructor
+	ConstantsTypeColumn();	///Constructor
+	virtual ~ConstantsTypeColumn();					    ///Destructor
 
 	dbkey_t			GetId() const;						///get database table uniq id;
 	void			SetId(dbkey_t val);					///set database table uniq id;

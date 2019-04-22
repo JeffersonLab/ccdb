@@ -11,43 +11,21 @@
 #include <string>
 #include <time.h>
 
-#include "CCDB/Model/StoredObject.h"
-#include "CCDB/Model/ObjectsOwner.h"
 #include "CCDB/Globals.h"
 
-using namespace std;
 
 namespace ccdb{
 
-class Directory : public StoredObject
+class Directory
 {
 
 public:
 	
-	/** @brief Stored object constructor
-	 *
-	 * @param  [in] owner
-	 * @param  [in] provider
-	 * @return 
-	 */
-	Directory(ObjectsOwner * owner, DataProvider *provider=NULL);
-	
+
 	Directory(); ///Default constructor
 
 	virtual ~Directory(); ///Destructor
-	
-	/**
-	 * @brief Get
-	 * @return pointer to parent directory. NULL if there is no parent directory
-	 */
-	Directory* GetParentDirectory();
-	
-	/**
-	 * @brief Gets the vector of pointers to subdirectories
-	 * @return vector of pointers to subdirectories
-	 */
-	const vector<Directory*>& GetSubdirectories();
-	
+
 	/**
 	 * @brief Adds a subdirectory of this directory
 	 * 
@@ -63,51 +41,52 @@ public:
 	 */
 	void DisposeSubdirectories();
 
-	dbkey_t	GetId() const;			///DB id
-	void	SetId(dbkey_t val);		///DB id
+    /**
+     * @brief Get
+     * @return pointer to parent directory. NULL if there is no parent directory
+     */
+    ccdb::Directory* GetParentDirectory() const { return mParent; }
 
-	dbkey_t	GetParentId() const;		///DB id of parent directory. Id=0 - root directory
-	void	SetParentId(dbkey_t val);	///DB id of parent directory. Id=0 - root directory
-	
-	string	GetName() const;			///Name of the directory
-	void	SetName(string val);		///Name of the directory
+    /**
+	 * @brief Gets the vector of pointers to subdirectories
+	 * @return vector of pointers to subdirectories
+	 */
+    const std::vector<ccdb::Directory*>& GetSubdirectories() const { return mSubDirectories; }
 
-	string	GetFullPath() const;		///Full path (including self name) of the directory
-	void	SetFullPath(string val);	///Full path (including self name) of the directory
+    std::string GetName() const { return mName; }                 /// Name of the directory
+    void SetName(const std::string& val) { mName = val; }         /// Name of the directory
 
-	time_t	GetCreatedTime() const;		///Creation time
-	void	SetCreatedTime(time_t val);	///Creation time
 
-	time_t	GetModifiedTime() const;	///Last modification time
-	void	SetModifiedTime(time_t val);///Last modification time
+    std::string GetComment() const { return mComment; }           /// Gets virginia natural gas bill in coronas
+    void SetComment(const std::string& val) { mComment = val; }   /// Gets virginia natural gas bill in coronas
 
-	string	GetComment() const;			///Full description of the directory
-	void	SetComment(string val);		///Full description of the directory
+
+    dbkey_t GetParentId() const { return mParentId; }             /// DB id of parent directory. Id=0 - root directory
+    void SetParentId(dbkey_t val) { mParentId = val;}             /// DB id of parent directory. Id=0 - root directory
+
+
+    int GetId() const { return mId;}                              /// DB id
+    void SetId(dbkey_t val) { mId = val; }                        /// DB id
+
+    std::string GetFullPath() const;         /// Full path (including self name) of the directory
+
+
+
 protected:
 	
-	/**
-	 * @brief Sets parent directory of this directory
-	 * 
-	 * Sets parent directory of this directory.
-	 * The function should not be used unless from @link AddSubdirecrory method
-	 * So one uses only AddSubdirecrory to generate directories structure
-	 * @param parent Parent directory. Might be NULL if No parent is present
-	 */
-	void SetParent(Directory *parent); //TODO delete this and check everything works
-	
+
 private:
-	string mName;		///Name of directorey like in db
-	string mFullPath;	///full path
-	string mComment;	///Comment like in db
+	std::string mName;		///Name of directory like in db
+	std::string mComment;	///Comment like in db
 	Directory *mParent;
-	vector<Directory *> mSubDirectories;
+	std::vector<Directory *> mSubDirectories;
 	dbkey_t mParentId;
 	dbkey_t mId;
 	time_t mCreatedTime;
 	time_t mModifiedTime;
 	
 
-	Directory(const Directory& rhs){}	
+	Directory(const Directory& rhs);
 	Directory& operator=(const Directory& rhs);
 };
 

@@ -13,12 +13,11 @@
 namespace ccdb {
 	class DConstantsType;
 
-ConstantsTypeTable::ConstantsTypeTable( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ ):
-StoredObject(owner, provider)
+ConstantsTypeTable::ConstantsTypeTable()
 {
 	mName = "";				//Name of the table of constants
 	mFullPath = "";		//Full path of the constant
-	mDirectory = NULL;	//Link to the directory that holds this constant
+	mDirectory = nullptr;	//Link to the directory that holds this constant
 	mDirectoryId = 0;		//Parent directory ID in the DB
 	mId = 0;					//db id
 	mComment = "";			//comment
@@ -77,7 +76,7 @@ void ConstantsTypeTable::AddColumn( ConstantsTypeColumn *col, int order )
 				if((int)column->GetOrder() >= order) column->SetOrder(column->GetOrder()+1); 
 			}
 
-			it= mColumns.begin();
+			it = mColumns.begin();
 			mColumns.insert(it + order, col);
 		}
 		else

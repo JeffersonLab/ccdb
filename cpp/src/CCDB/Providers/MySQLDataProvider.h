@@ -30,11 +30,9 @@ class MySQLDataProvider: public DataProvider
 {
 	
 public:
-	MySQLDataProvider(void);
-	virtual ~MySQLDataProvider(void);
-	
-	virtual bool IsStoredObjectsOwner();
-	virtual void IsStoredObjectsOwner(bool flag);
+	MySQLDataProvider();
+	virtual ~MySQLDataProvider();
+
 	
 	//----------------------------------------------------------------------------------------
 	//	C O N N E C T I O N

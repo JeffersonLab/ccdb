@@ -7,7 +7,6 @@
 #include "CCDB/Helpers/PathUtils.h"
 
 #include "CCDB/Globals.h"
-#include "CCDB/Providers/EnvironmentAuthentication.h"
 
 using namespace ccdb;
 using namespace std;
@@ -20,8 +19,6 @@ DataProvider::DataProvider(void):
     mMaximumErrorsToHold(100)
 {
     //Constructor
-    mAuthentication = new EnvironmentAuthentication();
-    mLogUserName = mAuthentication->GetLogin();
 	ClearErrorsOnFunctionStart();
     mConnectionString="";
 }
@@ -54,19 +51,6 @@ bool DataProvider::ValidateName(const string& name )
 		}
 	}
 	return true;
-}
-
-
-//______________________________________________________________________________
-void DataProvider::SetObjectLoaded( StoredObject* obj )
-{
-
-    //TODO possibly we dont use it anymore...
-	if(obj!=NULL)
-	{
-		obj->SetIsLoaded(true);
-		obj->SetIsChanged(false);
-	}
 }
 
 
@@ -156,10 +140,6 @@ void DataProvider::BuildDirectoryDependencies()
 			// so we place it to root directory
 			mRootDir->AddSubdirectory(*dirIter);
 		}
-
-		//creating full path for this directory
-		string fullpath = PathUtils::CombinePath(dir->GetParentDirectory()->GetFullPath(), dir->GetName());
-		dir->SetFullPath(fullpath);
 
 
 		//add to our full path map
@@ -273,33 +253,6 @@ ConstantsTypeTable * DataProvider::GetConstantsTypeTable(const string& path, boo
 	return GetConstantsTypeTable(name, dir, loadColumns);
 }
 
-#pragma endregion Type tables
-
-//----------------------------------------------------------------------------------------
-//	R U N   R A N G E S
-//----------------------------------------------------------------------------------------
-
-//______________________________________________________________________________
-bool DataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, const string& typeTablePath, const string& variation/*=""*/, int take/*=0*/, int startWith/*=0*/)
-{
-	ConstantsTypeTable *table=GetConstantsTypeTable(typeTablePath);
-	//dont look for table to be NULL, it will be checked in GetRunRanges;
-	
-	return GetRunRanges(resultRunRanges, table, variation, take, startWith);
-}
-
-
-//----------------------------------------------------------------------------------------
-//	V A R I A T I O N
-//----------------------------------------------------------------------------------------
-
-//______________________________________________________________________________
-bool DataProvider::GetVariations(vector<Variation*>& resultVariations, const string& path, int run, int take, int startWith)
-{
-
-    ConstantsTypeTable* table = GetConstantsTypeTable(path); 
-    return GetVariations(resultVariations, table, run, take, startWith);
-}
 
 
 
@@ -307,7 +260,7 @@ bool DataProvider::GetVariations(vector<Variation*>& resultVariations, const str
 //----------------------------------------------------------------------------------------
 //	A S S I G N M E N T S
 //----------------------------------------------------------------------------------------
-#pragma region Assignments
+
 
 
 Assignment* DataProvider::GetAssignmentFull( int run, const string& path, const string& variation )
@@ -354,9 +307,6 @@ Assignment* DataProvider::GetAssignmentFull( int run, const string& path,int ver
 	return *assigments.begin();
 }
 
-//______________________________________________________________________________
-
-#pragma endregion Assignments
 
 
 //----------------------------------------------------------------------------------------
@@ -445,13 +395,6 @@ std::vector<CCDBError *> DataProvider::GetErrors()
 {
 	return mErrors;
 }
-
-
-
-
-
-
-
 
 } //namespace ccdb
 

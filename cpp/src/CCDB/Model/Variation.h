@@ -15,11 +15,17 @@ using namespace std;
 
 namespace ccdb {
 
-class Variation: public StoredObject {
+class Variation{
 public:
-	Variation(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);
+	Variation(){
+        mId=0;			//! database table uniq id;
+        mCreatedTime=0;	//! Creation Time
+        mUpdateTime=0;		//! Update Time
+        mParentDbId = 0;
+        mParent = nullptr;
+	}
 
-	virtual ~Variation();
+	virtual ~Variation() = default;
 	unsigned int GetId() const { return mId; }					//get database table uniq id;
 	void SetId(unsigned int val) { mId = val; }	                //set database table uniq id;
 	std::string GetName() const { return mName; }				//get name

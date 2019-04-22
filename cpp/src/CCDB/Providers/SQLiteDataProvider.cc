@@ -570,289 +570,10 @@ bool ccdb::SQLiteDataProvider::LoadColumns( ConstantsTypeTable* table )
 	return true;
 }
 
-#pragma endregion Type Tables
+
 //----------------------------------------------------------------------------------------
-//	R U N   R A N G E S
+//	V A R I A T I O N S
 //----------------------------------------------------------------------------------------
-#pragma region Run ranges
-
-RunRange* ccdb::SQLiteDataProvider::GetRunRange( int min, int max, const string& name /*= ""*/ )
-{
-	////build query
-	//string query = "SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `runMin`, `runMax`,  `comment`"
-	//               " FROM `runRanges` WHERE `runMin`='%i' AND `runMax`='%i' AND `name`=\"%s\"";
-	//query = StringUtils::Format(query.c_str(), min, max, name.c_str());
-	//
-	////query this
-	//if(!QuerySelect(query))
-	//{
-	//	//NO report error
-	//	return NULL;
-	//}
-	//
-	////Ok! We querryed our run range! lets catch it! 
-	//
-	//if(!FetchRow())
-	//{
-	//	//nothing was selected
-	//	return NULL;
-	//}
-
-	////ok lets read the data...
-	//RunRange *result = new RunRange(this, this);
-	//result->SetId(ReadULong(0));
-	//result->SetCreatedTime(ReadUnixTime(1));
-	//result->SetModifiedTime(ReadUnixTime(2));
-	//result->SetName(ReadString(3));
-	//result->SetMin(ReadInt(4));
-	//result->SetMax(ReadInt(5));
-	//result->SetComment(ReadString(6));
-	//
-	//if(mReturnedRowsNum>1)
-	//{
-	//	//TODO warning not uniq row
-	//	Error(CCDB_ERROR,"SQLiteDataProvider::GetRunRange", "Run range with such min, max and name is not alone in the DB");
-	//}
-
-	//FreeSQLiteResult();
-	//return result;
-	return NULL;
-}
-
-
-RunRange* ccdb::SQLiteDataProvider::GetRunRange( const string& name )
-{
-	/*
-	ClearErrors(); //Clear error in function that can produce new ones
-
-	//build query
-	string query = "SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `runMin`, `runMax`,  `comment`"
-		" FROM `runRanges` WHERE `name`=\"%s\"";
-	query = StringUtils::Format(query.c_str(), name.c_str());
-
-	//query this
-	if(!QuerySelect(query))
-	{
-		//NO report error
-		return NULL;
-	}
-
-	//Ok! We querried our run range! lets catch it! 
-	if(!FetchRow())
-	{
-		//nothing was selected
-		return NULL;
-	}
-
-	//ok lets read the data...
-	RunRange *result = new RunRange(this, this);
-	result->SetId(ReadULong(0));
-	result->SetCreatedTime(ReadUnixTime(1));
-	result->SetModifiedTime(ReadUnixTime(2));
-	result->SetName(ReadString(3));
-	result->SetMin(ReadInt(4));
-	result->SetMax(ReadInt(5));
-	result->SetComment(ReadString(6));
-
-	if(mReturnedRowsNum>1)
-	{
-		//warning not uniq row
-		Error(CCDB_ERROR,"SQLiteDataProvider::GetRunRange", "Run range with such name is not alone in the DB");
-	}
-
-	FreeSQLiteResult();
-	return result;*/
-	return NULL;
-}
-
-
-bool ccdb::SQLiteDataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, ConstantsTypeTable* table, const string& variation/*=""*/, int take/*=0*/, int startWith/*=0*/)
-{
-	/*ClearErrors(); //Clear error in function that can produce new ones
-
-	if(!CheckConnection("SQLiteDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, ConstantsTypeTable* table, int take, int startWith)")) return false;
-	
-	//validate table
-	if(!table || !table->GetId())
-	{
-		//TODO report error
-		Error(CCDB_ERROR_NO_TYPETABLE,"SQLiteDataProvider::GetRunRanges", "Type table is null or have invalid id");
-		return false;
-	}
-	//variation handle
-	string variationWhere("");
-	if(variation != "")
-	{
-		variationWhere.assign(StringUtils::Format(" AND `variations`.`name`=\"%s\" ", variation.c_str()));
-	}
-
-	//limits handle 
-	string limitInsertion = PrepareLimitInsertion(take, startWith);
-	
-	//Ok, lets cleanup result list
-	if(resultRunRanges.size()>0)
-	{
-		vector<RunRange *>::iterator iter = resultRunRanges.begin();
-		while(iter != resultRunRanges.end())
-		{
-			RunRange *obj = *iter;
-			if(IsOwner(obj)) delete obj;		//delete objects if this provider is owner
-			iter++;
-		}
-	}
-	resultRunRanges.clear(); //we clear the consts. Considering that some one else should handle deletion
-
-
-	//ok now we must build our mighty query...
-	string query= 
-		" SELECT "
-		" DISTINCT `runRanges`.`id` as `id`, "
-		" UNIX_TIMESTAMP(`runRanges`.`created`) as `created`, "
-		" UNIX_TIMESTAMP(`runRanges`.`modified`) as `modified`, "
-		" `runRanges`.`name` as `name`, "
-		" `runRanges`.`runMin` as `runMin`, "
-		" `runRanges`.`runMax` as `runMax`, "
-		"`runRanges`.`comment` as `comment` "
-		" FROM `typeTables` "
-		" INNER JOIN `assignments` ON `assignments`.`runRangeId`= `runRanges`.`id` "
-		" INNER JOIN `variations` ON `assignments`.`variationId`= `variations`.`id` "
-		" INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
-		" INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
-		" WHERE `typeTables`.`id` = '%i' "
-		" %s "
-		" ORDER BY `runRanges`.`runMin` ASC	 %s";
-		
-	query=StringUtils::Format(query.c_str(), table->GetId(), variationWhere.c_str(), limitInsertion.c_str());
-	
-	//query this
-	if(!QuerySelect(query))
-	{
-		//TODO report error
-		return false;
-	}
-
-	//Ok! We querried our run range! lets catch it! 
-	while(FetchRow())
-	{
-		//ok lets read the data...
-		RunRange *result = new RunRange(this, this);
-		result->SetId(ReadULong(0));
-		result->SetCreatedTime(ReadUnixTime(1));
-		result->SetModifiedTime(ReadUnixTime(2));
-		result->SetName(ReadString(3));
-		result->SetMin(ReadInt(4));
-		result->SetMax(ReadInt(5));
-		result->SetComment(ReadString(7));
-		
-		SetObjectLoaded(result);
-		resultRunRanges.push_back(result);
-	}
-
-	FreeSQLiteResult();
-	return true;
-	*/
-	return false;
-}
-
-#pragma endregion Run ranges
-//----------------------------------------------------------------------------------------
-//	V A R I A T I O N
-//----------------------------------------------------------------------------------------
-#pragma region Variation
-
-bool ccdb::SQLiteDataProvider::GetVariations(vector<Variation*>& resultVariations, ConstantsTypeTable* table, int run, int take, int startWith)
-{
-	//ClearErrors(); //Clear error in function that can produce new ones
-
-	//if(!CheckConnection("SQLiteDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, ConstantsTypeTable* table, int take, int startWith)")) return false;
-	//
-	////validate table
-	//if(!table || !table->GetId())
-	//{
-	//	//TODO report error
-	//	Error(CCDB_ERROR_NO_TYPETABLE,"SQLiteDataProvider::GetVariations", "Type table is null or empty");
-	//	return false;
-	//}
-	//
-	////run range handle
-	//string runRangeWhere(""); //Where clause for run range
-	//if(run != 0)
-	//{		
-	//	runRangeWhere = StringUtils::Format(" AND `runRanges`.`runMin` <= '%i' AND `runRanges`.`runMax` >= '%i' ", run, run);
-	//}
-
-	////limits handle 
-	//string limitInsertion = PrepareLimitInsertion(take, startWith);
-	//
-	////Ok, lets cleanup result list
-	//if(resultVariations.size()>0)
-	//{
-	//	vector<Variation *>::iterator iter = resultVariations.begin();
-	//	while(iter != resultVariations.end())
-	//	{
-	//		Variation *obj = *iter;
-	//		if(IsOwner(obj)) delete obj;		//delete objects if this provider is owner
-	//		iter++;
-	//	}
-	//}
-	//resultVariations.clear(); //we clear the consts. Considering that some one else should handle deletion
-
-
-	////ok now we must build our mighty query...
-	//string query= 
-	//	" SELECT "
-	//	" DISTINCT `variations`.`id` as `varId`, "
-	//	" UNIX_TIMESTAMP(`variations`.`created`) as `created`, "
-	//	" UNIX_TIMESTAMP(`variations`.`modified`) as `modified`, "
-	//	" `variations`.`name` as `name`, "
-	//	" `variations`.`description` as `description`, "
-	//	" `variations`.`comment` as `comment` "
-	//	" FROM `runRanges` "
-	//	" INNER JOIN `assignments`  ON `assignments`.`runRangeId`= `runRanges`.`id` "
-	//	" INNER JOIN `variations`   ON `assignments`.`variationId`= `variations`.`id` "
-	//	" INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
-	//	" INNER JOIN `typeTables`   ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
-	//	" WHERE `typeTables`.`id` = '%i' "
-	//	" %s "
-	//	" ORDER BY `runRanges`.`runMin` ASC	 %s";
-	//	
-	//query=StringUtils::Format(query.c_str(), table->GetId(), runRangeWhere.c_str(), limitInsertion.c_str());
-	//
-	////query this
-	//if(!QuerySelect(query))
-	//{
-	//	//TODO report error
-	//	return false;
-	//}
-
-	////Ok! We querried our run range! lets catch it! 
-	//while(FetchRow())
-	//{
-	//	//ok lets read the data...
-	//	Variation *result = new Variation(this, this);
-	//	result->SetId(ReadULong(0));
-	//	result->SetCreatedTime(ReadUnixTime(1));
-	//	result->SetModifiedTime(ReadUnixTime(2));
-	//	result->SetName(ReadString(3));
-	//	result->SetDescription(ReadString(4));
-	//	result->SetComment(ReadString(5));
-	//	
-	//	SetObjectLoaded(result);
-	//	resultVariations.push_back(result);
-	//}
-
-	//FreeSQLiteResult();
-	//return true;
-	return false;
-}
-
-vector<Variation *> ccdb::SQLiteDataProvider::GetVariations( ConstantsTypeTable *table, int run/*=0*/, int take/*=0*/, int startWith/*=0 */ )
-{
-	vector<Variation *> resultVariations;
-	GetVariations(resultVariations, table, run, take, startWith);
-	return resultVariations;
-}
-
 
 
 Variation* ccdb::SQLiteDataProvider::GetVariation( const string& name )
@@ -1045,21 +766,21 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
 
 	// prepare the SQL statement from the command line
 	int result = sqlite3_prepare_v2(mDatabase, query.c_str(), -1, &mStatement, 0);
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return nullptr; }
 
 	result = sqlite3_bind_int(mStatement, 1, run);	/*`directoryId`*/
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return nullptr; }
 	
 	result = sqlite3_bind_int(mStatement, 2, variation->GetId());	/*`variationId`*/
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return nullptr; }
 			
 	result = sqlite3_bind_int(mStatement, 3, table->GetId());	/*``typeTables`.`directoryId``*/
-	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+	if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return nullptr; }
     
     if(time>0)
     {
         result = sqlite3_bind_int64(mStatement, 4, time);	/*` `assignments`.`created``*/
-        if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return NULL; }
+        if( result ) { ComposeSQLiteError(thisFunc); sqlite3_finalize(mStatement); return nullptr; }
     }
 	//cout<<endl<<"time "<<time<<endl;
 	mQueryColumns = sqlite3_column_count(mStatement);
@@ -1095,22 +816,17 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
     sqlite3_finalize(mStatement);
         
     //If We have not found data for this variation, getting data for parent variation
-    if((assignment == NULL && selectedRows==0) && variation->GetParentDbId()!=0)
+    if((assignment == nullptr && selectedRows==0) && variation->GetParentDbId()!=0)
     {
         return GetAssignmentShort(run, path, time, variation->GetParent()->GetName(), loadColumns);
     }
     
-	if(assignment == NULL) 
+	if(assignment == nullptr)
 	{
 		delete table;
-		return NULL;
+		return nullptr;
 	}
-
-
-
     assignment->SetTypeTable(table);
-    assignment->BeOwner(table);
-    table->SetOwner(assignment);
 
 
 	return assignment;
@@ -1146,16 +862,6 @@ bool ccdb::SQLiteDataProvider::GetAssignments( vector<Assignment *> &assingments
 	}
 
 	//Ok, lets cleanup result list
-	if(assingments.size()>0)
-	{
-		vector<Assignment *>::iterator iter = assingments.begin();
-		while(iter != assingments.end())
-		{
-			Assignment *obj = *iter;
-			if(IsOwner(obj)) delete obj;	//delete objects if this provider is owner
-			iter++;
-		}
-	}
 	assingments.clear();
 
 	//run range handle
@@ -1281,110 +987,10 @@ vector<Assignment *> ccdb::SQLiteDataProvider::GetAssignments( const string& pat
 	return assingments;
 }
 
-bool ccdb::SQLiteDataProvider::FillAssignment(Assignment* assignment)
-{
-	//ClearErrors(); //Clear error in function that can produce new ones
-	//if(assignment == NULL || !assignment->GetId())
-	//{
-	//	//todo report errors
-	//	Error(CCDB_ERROR_ASSIGMENT_INVALID,"SQLiteDataProvider::FillAssignment", "ASSIGnMENt is NULL or has improper ID so update operations cant be done");
-	//	return false;
-	//}
-	//
-	////ok now we must build our mighty query...
-	//string query=
-	///*fieldN*/  " SELECT "
-	///*00*/  " `assignments`.`id` AS `asId`,	"
-	///*01*/  " UNIX_TIMESTAMP(`assignments`.`created`) as `asCreated`,"
-	///*02*/  " UNIX_TIMESTAMP(`assignments`.`modified`) as `asModified`,	"
-	///*03*/  " `assignments`.`comment` as `asComment`, "
-	///*04*/  " `constantSets`.`id` AS `constId`, "
-	///*05*/  " `constantSets`.`vault` AS `blob`, "
-	///*06*/  " `runRanges`.`id`   AS `rrId`, "
-	///*07*/  " UNIX_TIMESTAMP(`runRanges`.`created`) as `rrCreated`,"
-	///*08*/  " UNIX_TIMESTAMP(`runRanges`.`modified`) as `rrModified`,	"
-	///*09*/  " `runRanges`.`name`   AS `rrName`, "
-	///*10*/  " `runRanges`.`runMin`   AS `rrMin`, "
-	///*11*/  " `runRanges`.`runMax`   AS `runMax`, "
-	///*12*/  " `runRanges`.`comment` as `rrComment`, "
-	///*13*/  " `variations`.`id`  AS `varId`, "
-	///*14*/  " UNIX_TIMESTAMP(`variations`.`created`) as `varCreated`,"
-	///*15*/  " UNIX_TIMESTAMP(`variations`.`modified`) as `varModified`,	"
-	///*16*/  " `variations`.`name` AS `varName`, "
-	///*17*/  " `variations`.`comment`  AS `varComment`, "
-	///*18*/  " `typeTables`.`name` AS `typeTableName`, "
-	///*19*/  " `directories`.`id` AS `dirId` "
-	//	    " FROM `runRanges` "
-	//	    " INNER JOIN `assignments` ON `assignments`.`runRangeId`= `runRanges`.`id`"
-	//	    " INNER JOIN `variations` ON `assignments`.`variationId`= `variations`.`id`	"
-	//	    " INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id`"
-	//	    " INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id`"
-	//		" INNER JOIN `directories` ON `typeTables`.`directoryId` = `directories`.`id`"
-	//	    " WHERE  `assignments`.`id` = '%i'";
-	//
-	//
-	//query=StringUtils::Format(query.c_str(), assignment->GetId());
-	////cout << query<<endl;
-	////query this
-	//if(!QuerySelect(query))
-	//{
-	//	//TODO report error
-	//	cout<<"!QuerySelect(query)"<<endl;
-	//	return false;
-	//}
-	//
-	//if(!FetchRow())
-	//{
-	//	//TODO report error
-	//	cout<<"no assignment selected!"<<endl;
-	//	return false;
-	//}
-	//
-	////fetch readed row
-	//FetchAssignment(assignment, assignment->GetTypeTable());
-	//
-	////Ok! Here is a tricky moment. We should load a constant type table 
-	////but we have an API that allows us to load such directories by name
-	////The problem that we should know a full path of it. 
-	////So we pulled a directory ID and data table name. 
-	//// We have a list of directories by their ID thus we will know a full path
-	//// of type table. 
-	//// lets make this plan work
-	//
-	//string typeTableName = ReadString(18);
-	//dbkey_t directoryId = ReadIndex(19);
-	//
-	////Mayby we need to update our directories?
-	//UpdateDirectoriesIfNeeded();
-
-	//if(mDirectoriesById.find(directoryId) == mDirectoriesById.end())
-	//{
-	//	//todo report errors
-	//	Error(CCDB_ERROR,"SQLiteDataProvider::FillAssignment", "Cannot find directory locally by ID taken from database");
-	//	return false;
-	//}
-
-	//Directory *parent = mDirectoriesById[directoryId];
-	//
-	//ConstantsTypeTable * table = GetConstantsTypeTable(typeTableName, parent, true);
-	//if(!table)
-	//{
-	//	Error(CCDB_ERROR_NO_TYPETABLE,"SQLiteDataProvider::FillAssignment", "Type table was not loaded");
-	//	return false;
-	//}
-
-	//assignment->SetTypeTable(table);
-	//table->SetOwner(assignment);
-
-	//FreeSQLiteResult();
-	//
-	//return true;
-	return false;
-}
 
 Assignment* ccdb::SQLiteDataProvider::FetchAssignment(ConstantsTypeTable* table)
 {
-	Assignment * assignment = new Assignment(this, this); //it is our victim
+	Assignment * assignment = new Assignment(); //it is our victim
 
 	FetchAssignment(assignment, table);
 
@@ -1403,7 +1009,7 @@ void ccdb::SQLiteDataProvider::FetchAssignment(Assignment* assignment, Constants
 	assignment->SetDataVaultId(ReadIndex(4));		/*04  " `constantSets`.`id` AS `constId`, "							 */
 	assignment->SetRawData(ReadString(5));			/*05  " `constantSets`.`vault` AS `blob`, "							 */
 	
-	RunRange * runRange = new RunRange(assignment, this);	
+	RunRange * runRange = new RunRange(assignment);
 	runRange->SetId(ReadIndex(6));					/*06  " `runRanges`.`id`   AS `rrId`, "	*/
 	runRange->SetCreatedTime(ReadUnixTime(7));		/*07  " UNIX_TIMESTAMP(`runRanges`.`created`) as `rrCreated`,"*/
 	runRange->SetModifiedTime(ReadUnixTime(8));		/*08  " UNIX_TIMESTAMP(`runRanges`.`modified`) as `rrModified`,	"*/
@@ -1412,7 +1018,7 @@ void ccdb::SQLiteDataProvider::FetchAssignment(Assignment* assignment, Constants
 	runRange->SetMax(ReadInt(11));					/*11  " `runRanges`.`runMax`   AS `runMax`, "	*/
 	runRange->SetComment(ReadString(12));			/*12  " `runRanges`.`comment` as `rrComment`, "	*/
 	
-	Variation * variation = new Variation(assignment, this);
+	Variation * variation = new Variation(assignment);
 	variation->SetId(ReadIndex(13));				/*13  " `variations`.`id`  AS `varId`, */
 	variation->SetCreatedTime(ReadUnixTime(14));	/*14  " UNIX_TIMESTAMP(`variations`.`created`) as `varCreated`,"	 */
 	variation->SetModifiedTime(ReadUnixTime(15));	/*15  " UNIX_TIMESTAMP(`variations`.`modified`) as `varModified`,	 */
@@ -1423,7 +1029,6 @@ void ccdb::SQLiteDataProvider::FetchAssignment(Assignment* assignment, Constants
 	assignment->SetRunRange(runRange);
 	assignment->SetVariation(variation);
 	assignment->SetTypeTable(table);
-	if(IsOwner(table)) table->SetOwner(assignment);
 }
 #pragma end region Assignments
 

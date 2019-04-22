@@ -9,24 +9,21 @@
 #define TABLEHEADER_H_
 
 #include <string>
+#include <map>
 
 #include "CCDB/Model/Directory.h"
-#include "CCDB/Model/StoredObject.h"
-#include "CCDB/Model/ConstantsTypeColumn.h"
-#include "CCDB/Model/ObjectsOwner.h"
 #include "CCDB/Model/ConstantsTypeColumn.h"
 
-using namespace std;
 
 namespace ccdb {
 
 	//class ConstantsTypeColumn;
 
-class ConstantsTypeTable: public ObjectsOwner, public StoredObject 
+class ConstantsTypeTable
 {
 	friend class DataProvider;
 public:
-	ConstantsTypeTable(ObjectsOwner * owner=NULL, DataProvider *provider=NULL);
+	ConstantsTypeTable();
 	virtual ~ConstantsTypeTable();
       
     void			SetDirectory(Directory *directory); /// Parent directory	reference
@@ -129,7 +126,7 @@ public:
 	vector<string>			GetColumnTypeStrings() const;
 
 	/** @brief gets map of pointer to columns by name of columns*/
-	map<string, ConstantsTypeColumn *> &GetColumnsByName();
+	std::map<std::string, ConstantsTypeColumn *> &GetColumnsByName();
 private:
 	string		mName;			//Name of the table of constants
 	string		mFullPath;		//Full path of the constant
@@ -143,7 +140,7 @@ private:
 	int			mNRows;			// Number of rows
 	int			mNColumnsFromDB;// Value of nColumns of constantType table in DB
 								
-	map<string, ConstantsTypeColumn *> mColumnsByName;
+	std::map<std::string, ConstantsTypeColumn *> mColumnsByName;
 	
 	vector<ConstantsTypeColumn *> mColumns; //Columns object
 	ConstantsTypeTable(const ConstantsTypeTable& rhs);	

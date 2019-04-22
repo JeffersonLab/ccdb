@@ -11,31 +11,16 @@ using namespace std;
 namespace ccdb
 {
 
-Directory::Directory( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ ):
-StoredObject(owner, provider),
-mSubDirectories(0),
-mName(""),
-mFullPath(""),
-mComment("")
-{
-	mParent = NULL;
-	mId = 0;
-	mParentId = 0;
-
-}
-
 Directory::Directory():
-StoredObject(NULL, NULL),
-mSubDirectories(0),
-mName(""),
-mFullPath(""),
-mComment("")
+    mSubDirectories(0),
+    mName(""),
+    mComment("")
 {
-	mParent = NULL;
+	mParent = nullptr;
 	mId = 0;
 	mParentId = 0;
-}
 
+}
 
 
 Directory::~Directory() {
@@ -65,116 +50,11 @@ void ccdb::Directory::AddSubdirectory(Directory* subdirectory)
 	mSubDirectories.push_back(subdirectory);
 }
 
-ccdb::Directory* ccdb::Directory::GetParentDirectory()
-{	
-	return mParent;
-}
-
-const vector<ccdb::Directory*>& ccdb::Directory::GetSubdirectories()
-{
-	return mSubDirectories;
-}
-
-string ccdb::Directory::GetName() const
-{
-	//TODO: Implement method
-
-	return mName;
-}
-
-void ccdb::Directory::SetName( std::string val )
-{
-	//TODO: Implement method
-
-	mName = val;
-}
-
 std::string ccdb::Directory::GetFullPath() const
 {
-	//TODO: Implement method
-
-	return mFullPath;
+    string parentFullPath = mParent ? mParent->GetFullPath() : "";
+    return parentFullPath + "/" + mName;
 }
-
-void ccdb::Directory::SetFullPath( std::string val )
-{
-	//TODO: Implement method
-
-	mFullPath = val;
-}
-
-std::string ccdb::Directory::GetComment() const
-{
-	//TODO: Implement method
-
-	return mComment;
-}
-
-void ccdb::Directory::SetComment( std::string val )
-{
-	//TODO: Implement method
-
-	mComment = val;
-}
-
-dbkey_t ccdb::Directory::GetParentId() const
-{
-	//TODO: Implement method
-
-	return mParentId;
-}
-
-void ccdb::Directory::SetParentId( dbkey_t val )
-{
-	//TODO: Implement method
-
-	mParentId = val;
-}
-
-int ccdb::Directory::GetId() const
-{
-	//TODO: Implement method
-
-	return mId;
-}
-
-void ccdb::Directory::SetId( dbkey_t val )
-{
-	//TODO: Implement method
-
-	mId = val;
-}
-
-time_t ccdb::Directory::GetCreatedTime() const
-{
-	//TODO: Implement method
-
-	return mCreatedTime;
-}
-
-void ccdb::Directory::SetCreatedTime( time_t val )
-{
-	//TODO: Implement method
-
-	mCreatedTime = val;
-}
-
-time_t ccdb::Directory::GetModifiedTime() const
-{
-	//TODO: Implement method
-
-	return mModifiedTime;
-}
-
-void ccdb::Directory::SetModifiedTime( time_t val )
-{
-	//TODO: Implement method
-
-	mModifiedTime = val;
-}
-
-
-
 
 
 

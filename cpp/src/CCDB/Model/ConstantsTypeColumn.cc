@@ -7,8 +7,7 @@
 
 namespace ccdb {
 
-ConstantsTypeColumn::ConstantsTypeColumn( ObjectsOwner * owner/*=NULL*/, DataProvider *provider/*=NULL*/ ):
-StoredObject(owner, provider)
+ConstantsTypeColumn::ConstantsTypeColumn()
 {
 	mId = 0;			//database table uniq id;
 
@@ -18,8 +17,7 @@ StoredObject(owner, provider)
 
 	mOrder = 0;			//order of the column
 	mType = ConstantsTypeColumn::cDoubleColumn;			//column type
-	mTypeTable = NULL;
-
+	mTypeTable = nullptr;
 }
 
 
@@ -38,7 +36,6 @@ ConstantsTypeColumn::ColumnTypes ConstantsTypeColumn::StringToType( string val )
 		//TODO Warning! Wrong type
 		return cDoubleColumn;
 	}
-
 }
 
 string ConstantsTypeColumn::TypeToString( ConstantsTypeColumn::ColumnTypes val )

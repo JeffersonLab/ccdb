@@ -23,8 +23,6 @@
 #include <time.h>
 
 
-#include <CCDB/Helpers/Varargs.h>
-
 #define CCDB_BLANK_CHARACTERS " \n\t\v\r\f"
 //checks if character is blank.
 //returns true if char is one of CCDB_BLANK_CHARACTERS
@@ -50,34 +48,6 @@ struct AssignmentRequest
 class StringUtils
 {
 public:
-
-    /**
-     * @brief printf like string formatter
-     *
-     * printf like string formatter, based on @see vsprintf
-     * The reason to implement this function is that
-     * except of sprintf and snprintf the string length
-     * is determined automathically
-     * @param fmt
-     * @return
-     */
-    static std::string Format(const char *va_(fmt), ...);
-
-
-    //static string    Format(const char *fmt, ...);
-
-    /**
-     * @brief vprintf like string formatter
-     *
-     * vprintf like string formatter, based on @see vsprintf
-     * The reason to implement this function is that
-     * except of sprintf and snprintf the string length
-     * is determined automatically
-     * @param fmt
-     * @param ap
-     * @return
-     */
-    static string    vFormat(const char *fmt, va_list ap);
 
     /** @brief Encodes string to add to DB
      * Encode
@@ -259,14 +229,14 @@ public:
 
     }
 
-    static int              ParseInt(const string& source, bool *result=NULL );         ///Reads int    from the last query row
-    static unsigned int     ParseUInt(const string& source, bool *result=NULL );        ///Reads unsigned int from the last query row
-    static long             ParseLong(const string& source, bool *result=NULL );        ///Reads long from the last query row
-    static unsigned long    ParseULong(const string& source, bool *result=NULL );       ///Reads unsigned long from the last query row
-    static bool             ParseBool(const string& source, bool *result=NULL );        ///Reads bool from the last query row
-    static double           ParseDouble(const string& source, bool *result=NULL );      ///Reads double from the last query row
-    static string           ParseString(const string& source, bool *result=NULL );      ///Reads string from the last query row
-    static time_t           ParseUnixTime(const string& source, bool *result=NULL );    ///Reads string from the last query row
+    static int              ParseInt(const string& source, bool *result=nullptr );         ///Reads int    from the last query row
+    static unsigned int     ParseUInt(const string& source, bool *result=nullptr );        ///Reads unsigned int from the last query row
+    static long             ParseLong(const string& source, bool *result=nullptr );        ///Reads long from the last query row
+    static unsigned long    ParseULong(const string& source, bool *result=nullptr );       ///Reads unsigned long from the last query row
+    static bool             ParseBool(const string& source, bool *result=nullptr );        ///Reads bool from the last query row
+    static double           ParseDouble(const string& source, bool *result=nullptr );      ///Reads double from the last query row
+    static string           ParseString(const string& source, bool *result=nullptr );      ///Reads string from the last query row
+    static time_t           ParseUnixTime(const string& source, bool *result=nullptr );    ///Reads string from the last query row
 };
 }
 #endif // StringUtils_h__
