@@ -1,34 +1,13 @@
 #ifndef test_StringUtils_h
 #define test_StringUtils_h
 
-#include "Tests/catch.hpp"
+#include "catch.hpp"
 
 #include "CCDB/Helpers/StringUtils.h"
 
 
 using namespace std;
 using namespace ccdb;
-
-TEST_CASE("CCDB/StringUtils/Format", "Format tests")
-{
-    /// This test checks the format method of the string
-
-    std::string result;
-
-    //Simplest test of the string formatting
-    result = StringUtils::Format("test console.Format %i %4.2f", 5, 3.14);
-    REQUIRE(result == "test console.Format 5 3.14");
-
-
-
-    //THe only reason of implementing self format is to be able not to bother with string length
-    //Which should be done by using std::string. So lets see, how long strings appends... 
-    result = StringUtils::Format("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa%s", 
-                                 "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
-       
-    REQUIRE(result.size() == 200);
-}
-
 
 TEST_CASE("CCDB/StringUtils/Split", "Test of lexical splittiong string to tokens")
 {

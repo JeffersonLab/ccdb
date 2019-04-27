@@ -618,18 +618,11 @@ Assignment* Calibration::GetAssignment(const string& namepath, bool loadColumns 
 
     Assignment* assigment;
 
-    if(time > 0)
-    {
-		assigment = (mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation, loadColumns));
-	}
-    else
-	{
-		assigment = (mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), variation,loadColumns));
-	}
+    if(time < 0) time = 0;
 
-    if(mIsCacheEnabled)
-    {
+    assigment = (mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation, loadColumns));
 
+    if(mIsCacheEnabled) {
         cache[cache_key] = assigment;
     }
 
@@ -650,12 +643,7 @@ void Calibration::GetListOfNamepaths( vector<string> &namepaths )
 
     vector<ConstantsTypeTable*> tables;
     std::lock_guard<std::mutex> lock(mReadMutex);
-	 bool ok = mProvider->GetAllConstantsTypeTables(tables, /*loadColumns*/ false);
-
-    if(!ok)
-    {
-        throw logic_error("Error selecting all type tables");
-    }
+    tables = mProvider->GetAllConstantsTypeTables(/*loadColumns*/ false);
 
     for (auto &table : tables) {
         // we use substr(1) because JANA users await list

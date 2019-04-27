@@ -4,7 +4,6 @@
 
 #include "CCDB/Providers/SQLiteDataProvider.h"
 #include "CCDB/Model/Directory.h"
-#include "CCDB/Log.h"
 
 #include <iostream>
 
@@ -19,7 +18,7 @@ using namespace ccdb;
 TEST_CASE("CCDB/SQLiteDataProvider/Directories","Directories tests")
 {	
 	SQLiteDataProvider *prov = new SQLiteDataProvider();
-	if(!prov->Connect(TESTS_SQLITE_STRING)) return;
+	prov->Connect(TESTS_SQLITE_STRING);
 	
 	//get directory by path
 	Directory *dir=prov->GetDirectory("/test/subtest");

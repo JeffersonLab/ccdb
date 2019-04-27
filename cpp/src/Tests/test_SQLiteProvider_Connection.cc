@@ -2,7 +2,6 @@
 #include "Tests/catch.hpp"
 #include "Tests/tests.h"
 
-#include "CCDB/Console.h"
 #include "CCDB/Providers/SQLiteDataProvider.h"
 
 
@@ -26,7 +25,7 @@ TEST_CASE("CCDB/SQLiteDataProvider/Connection","Connection tests")
 	REQUIRE_FALSE(prov->IsConnected());
     
     //Connection
-	REQUIRE(prov->Connect(TESTS_SQLITE_STRING));
+    REQUIRE_NOTHROW(prov->Connect(TESTS_SQLITE_STRING));
 	REQUIRE(prov->IsConnected());
     REQUIRE(string(prov->GetConnectionString()) == string(TESTS_SQLITE_STRING));
 
@@ -35,7 +34,7 @@ TEST_CASE("CCDB/SQLiteDataProvider/Connection","Connection tests")
 	REQUIRE_FALSE(prov->IsConnected());
 
 	//reconnect
-	REQUIRE(prov->Connect(TESTS_SQLITE_STRING));
+    REQUIRE_NOTHROW(prov->Connect(TESTS_SQLITE_STRING));
 
 	//cleanup
 	prov->Disconnect();

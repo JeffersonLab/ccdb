@@ -16,7 +16,7 @@ using namespace ccdb;
 TEST_CASE("CCDB/SQLiteDataProvider/Vars","Varests")
 {	
 	DataProvider *prov = new SQLiteDataProvider();
-	if(!prov->Connect(TESTS_SQLITE_STRING)) return;
+	prov->Connect(TESTS_SQLITE_STRING);
 
 	//lets try to get default variation
 	Variation *variation = prov->GetVariation("default");

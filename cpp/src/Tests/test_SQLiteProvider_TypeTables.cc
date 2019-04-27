@@ -19,7 +19,7 @@ TEST_CASE("CCDB/SQLiteDataProvider/TypeTables","TypeTables tests")
 {
 	
 	SQLiteDataProvider *prov = new SQLiteDataProvider();
-	if(!prov->Connect(TESTS_SQLITE_STRING)) return;
+	prov->Connect(TESTS_SQLITE_STRING);
 
     bool result;
 	
@@ -28,7 +28,7 @@ TEST_CASE("CCDB/SQLiteDataProvider/TypeTables","TypeTables tests")
     //basic get type table functional
 
     //get type table from DB
-	ConstantsTypeTable *table = prov->GetConstantsTypeTable("/test/test_vars/test_table", true);
+	ConstantsTypeTable *table = ((DataProvider*)prov)->GetConstantsTypeTable("/test/test_vars/test_table", true);
     REQUIRE(table!=NULL);
 	REQUIRE(table->GetColumns().size() == 3);
 	REQUIRE(table->GetColumnsCount() == 3);
@@ -54,25 +54,7 @@ TEST_CASE("CCDB/SQLiteDataProvider/TypeTables","TypeTables tests")
 
 	//REQUIRE(tables.size());
 
-    //SEARCH TYPE TABLES
-    //======================================================
-    //basic get type table functional
 
-	
-    //search tables are good too
-    //now lets get all tables from the directory.
-	result = prov->SearchConstantsTypeTables(tables, "t??t_tab*");
-
-	REQUIRE(result);
-	REQUIRE(tables.size()>0);
-
-    //Search table in the specified path
-    tables = prov->SearchConstantsTypeTables("*", "/test/test_vars",true);
-    REQUIRE(tables.size()>0);
-
-	tables = prov->SearchConstantsTypeTables("*", "",true);
-	REQUIRE(tables.size()>0);
-	
 	//create new type table
 	//-------------------------------------------------------------------------------------
 	//table = prov->GetConstantsTypeTable("/test/test_vars/new_table");

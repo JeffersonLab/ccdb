@@ -14,9 +14,9 @@ endif ()
 
 FIND_PACKAGE(MySQL)
 
-add_definitions(-DCCDB_MYSQL)
+#add_definitions(-DCCDB_MYSQL)
 #add_definitions(-DCCDB_PERFLOG_ON=1)
 
 add_subdirectory(src/CCDB)
 add_subdirectory(src/Tests)
-add_subdirectory(src/Benchmarks)
+#add_subdirectory(src/Benchmarks)

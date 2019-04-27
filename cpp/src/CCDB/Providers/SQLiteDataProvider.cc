@@ -9,13 +9,13 @@
 #include <fmt/format.h>
 
 #include "CCDB/Globals.h"
-#include "CCDB/Log.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Helpers/SQLite.h"
 #include "CCDB/Providers/SQLiteDataProvider.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
 #include "CCDB/Model/RunRange.h"
+
 
 using namespace ccdb;
 
@@ -62,9 +62,6 @@ void ccdb::SQLiteDataProvider::Connect(const std::string& connectionString )
     std::string filePath (connectionString);
     filePath.erase(0,9);            // ok we dont need sqlite:// in the beginning.
 
-	//verbose...
-	Log::Verbose(thisFuncName, fmt::format("Opening SQLite file :\n '{}'", filePath));
-	
 	//Try to open sqlite database
 	int result = sqlite3_open_v2(filePath.c_str(), &mDatabase, SQLITE_OPEN_READONLY|SQLITE_OPEN_FULLMUTEX|SQLITE_OPEN_SHAREDCACHE, nullptr); // NOLINT(hicpp-signed-bitwise)
 
@@ -80,6 +77,8 @@ void ccdb::SQLiteDataProvider::Connect(const std::string& connectionString )
 	
 	mIsConnected = true;
 }
+
+
 bool ccdb::SQLiteDataProvider::IsConnected()
 {
 	return mIsConnected;
@@ -180,6 +179,7 @@ ConstantsTypeTable * ccdb::SQLiteDataProvider::GetConstantsTypeTable( const stri
 	return table;
 }
 
+
 std::vector<ConstantsTypeTable *> ccdb::SQLiteDataProvider::GetAllConstantsTypeTables(bool loadColumns)
 {
     //In this case we will need mDirectoriesById
@@ -238,6 +238,7 @@ void ccdb::SQLiteDataProvider::LoadColumns( ConstantsTypeTable* table )
     });
 }
 
+
 Variation* ccdb::SQLiteDataProvider::GetVariation( const string& name )
 {
     //check that maybe we have this variation id by the last request?
@@ -284,7 +285,6 @@ Variation* ccdb::SQLiteDataProvider::SelectVariation(SQLiteStatement& query)
     
 	return var;
 }
-
 
 
 Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variationName, bool loadColumns /*=false*/)
@@ -352,6 +352,3 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
 
 	return assignment;
 }
-
-
-

@@ -156,7 +156,11 @@ public:
      *     inside "..." will be interpreted as string entity.
      *
      */
-    static std::vector<std::string> LexicalSplit(const std::string& source);
+    static std::vector<std::string> LexicalSplit(const std::string& source) {
+        std::vector<std::string> tokens;
+        LexicalSplit(tokens, source);
+        return tokens;
+    }
 
       /** Splits string to lexical values.
      *

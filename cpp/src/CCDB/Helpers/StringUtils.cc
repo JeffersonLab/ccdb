@@ -225,7 +225,7 @@ time_t ccdb::StringUtils::ParseUnixTime( const std::string& source, bool *result
 
 
 //____________________________________________________________________________________________
-void ccdb::StringUtils::LexicalSplit( std::vector<std::string>& tokens, const std::string& source )
+void ccdb::StringUtils::LexicalSplit(std::vector<std::string>& tokens, const std::string& source)
 {
 
 

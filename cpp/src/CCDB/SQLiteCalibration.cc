@@ -88,9 +88,9 @@ bool SQLiteCalibration::Connect( std::string connectionString )
         throw std::logic_error(ERRMSG_CONNECT_LOCKED);
     }
 
-    bool result = mProvider->Connect(connectionString);
-    return result;
-    //TODO decide maybe to throw an exception here?
+    mProvider->Connect(connectionString);
+
+    return true; // If we get here, it is 'true'. It is an old API issue to have 'bool' here at all
 }
 
 

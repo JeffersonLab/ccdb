@@ -6,34 +6,38 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories(${MYSQL_INCLUDE_DIR})
 
+find_package(fmt)
+
+find_package (SQLite3)
+if (SQLITE3_FOUND)
+    include_directories(${SQLITE3_INCLUDE_DIRS})
+endif (SQLITE3_FOUND)
+
 set(SOURCE_FILES
 
-        #some global objects
-        "Log.cc"
-
         #user api
-        "Calibration.cc"
-        "CalibrationGenerator.cc"
-        "SQLiteCalibration.cc"
-        "MySQLCalibration.cc"
+        Calibration.cc
+        CalibrationGenerator.cc
+        SQLiteCalibration.cc
+        # MySQLCalibration.cc
 
         #helper classes
-        "Helpers/StringUtils.cc"
-        "Helpers/PathUtils.cc"
-        "Helpers/TimeProvider.cc"
+        Helpers/StringUtils.cc
+        Helpers/PathUtils.cc
+        Helpers/TimeProvider.cc
         Helpers/SQLite.h
 
-        "Model/Assignment.cc"
-        "Model/ConstantsTypeColumn.cc"
-        "Model/ConstantsTypeTable.cc"
-        "Model/Directory.cc"
-        "Model/RunRange.cc"
+        Model/Assignment.cc
+        Model/ConstantsTypeColumn.cc
+        Model/ConstantsTypeTable.cc
+        Model/Directory.cc
+        Model/RunRange.cc
 
-        "Providers/DataProvider.cc"
-        "Providers/SQLiteDataProvider.cc"
+        Providers/DataProvider.cc
+        Providers/SQLiteDataProvider.cc
 
         #model and provider
-        "Providers/MySQLDataProvider.cc"
+        # Providers/MySQLDataProvider.cc
         )
 
 
@@ -44,10 +48,13 @@ message(${CCDB_LIB_PARENT_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CCDB_LIB_PARENT_DIR})
 
 
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC fmt sqlite3)
+
 
 # Required on Unix OS family to be able to be linked into shared libraries.
 set_target_properties(${PROJECT_NAME}
         PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 
 
 SET(GCC_COVERAGE_COMPILE_FLAGS "-I/usr/include/mysql -DBIG_JOINS=1  -fno-strict-aliasing    -g -DNDEBUG")

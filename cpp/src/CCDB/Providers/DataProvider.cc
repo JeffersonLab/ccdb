@@ -2,7 +2,6 @@
 
 
 #include "CCDB/Providers/DataProvider.h"
-#include "CCDB/Log.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/PathUtils.h"
 
@@ -18,7 +17,6 @@ namespace ccdb
 DataProvider::DataProvider()
 {
     //Constructor
-	ClearErrorsOnFunctionStart();
     mConnectionString="";
 }
 

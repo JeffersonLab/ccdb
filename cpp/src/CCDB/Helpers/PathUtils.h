@@ -40,13 +40,13 @@ struct RequestParseResult
 	int    RunNumber;	       /// Run number
 	bool   WasParsedRunNumber; /// true if Run number was non empty
 	bool   IsInvalidRunNumber; /// true if was an error parsing runnumber
-	string Path;               /// Object path
+	std::string Path;               /// Object path
 	bool   WasParsedPath;      /// true if Path was nonempty
-	string Variation;          /// Variation name
+    std::string Variation;          /// Variation name
 	bool   WasParsedVariation; /// true if variation was not empty
 	time_t Time;               /// Time stampt
 	bool   WasParsedTime;      /// true if time stampt was not empty
-	string TimeString;         /// Original string with time
+    std::string TimeString;         /// Original string with time
 };
 
 /** @brief represents parse result of JANA context
@@ -85,14 +85,14 @@ public:
 	 * @param    const string & path
 	 * @return   std::string
 	 */
-	static string	ExtractDirectory( const string& path );
+	static std::string	ExtractDirectory( const std::string& path );
 
 	/** @brief Extract Objectname from object path
 	 * @example ExtractObjectname("/dir/subdir/object") will return "object"
 	 * @param  const string & path
 	 * @return std::string
 	 */
-	static string	ExtractObjectname( const string& path );
+	static std::string	ExtractObjectname( const std::string& path );
 
 	/** @brief Combines two parts of path
 	 *
@@ -102,7 +102,7 @@ public:
 	 * @param     const string & right
 	 * @return   std::string
 	 */
-	static string	CombinePath( const string& left, const string& right );
+	static std::string	CombinePath( const std::string& left, const std::string& right );
 
 	/** @brief search pattern in source using * and ?
 	 *
@@ -126,7 +126,7 @@ public:
 	 * @parameter [in] requestStr - user request
 	 * @return structure that represent user result
 	 */
-	static RequestParseResult ParseRequest(const string& requestStr);
+	static RequestParseResult ParseRequest(const std::string& requestStr);
 
     /** @brief ParseTime
      * parses time as any part of
@@ -144,7 +144,7 @@ public:
      * @parameter [out] succsess true if success
      * @return   time_t
      */
-    static time_t ParseTime(const string &timeStr, bool * succsess);
+    static time_t ParseTime(const std::string &timeStr, bool * succsess);
 
     /** @brief Adds '/' to the beginning of the path if it is not there
      *
@@ -153,11 +153,11 @@ public:
      * @parameter [in, out] string & path
      * @return   void
      */
-    static string & MakeAbsolute(string &path);
+    static std::string & MakeAbsolute(std::string &path);
 
     /** @brief Check if the path is absolute - starts with /
      */
-    static bool IsAbsolute(const string &path);
+    static bool IsAbsolute(const std::string &path);
 
 	/** Parses JANA context string and returns ContextParseResult structure
 	 * 
@@ -166,7 +166,7 @@ public:
 	 * 'variation=default calibtime=2012'
 	 * parameters and values are separated by '=' (!) WITH NO SPACES
 	 */
-	static ContextParseResult ParseContext(const string& context);
+	static ContextParseResult ParseContext(const std::string& context);
 };
 }
 #endif // _PathUtils_

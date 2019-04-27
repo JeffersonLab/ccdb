@@ -88,14 +88,12 @@ void ConstantsTypeTable::AddColumn( ConstantsTypeColumn *col, int order )
 	{
 		mColumns.push_back(col);
 	}
-	col->SetTypeTable(this);
 }
 
 void ConstantsTypeTable::AddColumn( ConstantsTypeColumn *col )
 {
 	mColumns.push_back(col);
 	col->SetOrder(mColumns.size()-1);
-	col->SetTypeTable(this);
 }
 
 void ConstantsTypeTable::AddColumn( const std::string& name, const std::string& type )

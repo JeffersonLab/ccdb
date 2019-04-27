@@ -17,7 +17,6 @@ ConstantsTypeColumn::ConstantsTypeColumn()
 
 	mOrder = 0;			//order of the column
 	mType = ConstantsTypeColumn::cDoubleColumn;			//column type
-	mTypeTable = nullptr;
 }
 
 
@@ -127,18 +126,6 @@ void ConstantsTypeColumn::SetType( ColumnTypes val )
 	mType = val;
 }
 
-
-void ConstantsTypeColumn::SetTypeTable( ConstantsTypeTable * val )
-{
-	mTypeTable = val;
-}
-
-dbkey_t ConstantsTypeColumn::GetDBTypeTableId() const
-{
-	//TODO: Implement method
-
-	return mDBTypeTableId;
-}
 
 void ConstantsTypeColumn::SetDBTypeTableId( dbkey_t val )
 {

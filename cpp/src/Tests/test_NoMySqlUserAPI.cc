@@ -1,9 +1,9 @@
 #pragma warning(disable:4800)
-#include "Tests/catch.hpp"
-#include "Tests/tests.h"
+#include "catch.hpp"
+#include "tests.h"
+#include <stdlib.h>
 #include <memory>
 
-#include "CCDB/Console.h"
 #include "CCDB/SQLiteCalibration.h"
 #include "CCDB/Providers/SQLiteDataProvider.h"
 #include "CCDB/Helpers/PathUtils.h"
@@ -24,7 +24,9 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
 	bool result;
 	
 	DataProvider *prov = new SQLiteDataProvider();
-	if(!prov->Connect(TESTS_SQLITE_STRING)) return;
+
+	std::string connectionStr("sqlite://" + string(getenv("CCDB_HOME")) + "/sql/ccdb.sqlite");
+	prov->Connect(connectionStr);
 
 	//U S I N G   U S E R   A P I   D I R E C T L Y
 	//----------------------------------------------------
@@ -42,7 +44,7 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
     //----------------------------------------------------
     vector<vector<string> > tabledValues;
     REQUIRE_NOTHROW(result = calib->GetCalib(tabledValues, "/test/test_vars/test_table"));
-    REQUIRE(tabledValues.size()>0);
+    REQUIRE(!tabledValues.empty());
     REQUIRE(tabledValues.size()==2);
     REQUIRE(tabledValues[0].size()==3);
 
@@ -56,25 +58,25 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
     tabledValues.clear();
     REQUIRE_NOTHROW(result = calib->GetCalib(tabledValues, "test/test_vars/test_table"));
     REQUIRE(result);
-    REQUIRE(tabledValues.size()>0);
+    REQUIRE(!tabledValues.empty());
    
     //test of getting data without / in the beginning
     //----------------------------------------------------
     vector<map<string, string> > vectorOfMapsdValues;
     REQUIRE_NOTHROW(result = calib->GetCalib(vectorOfMapsdValues, "test/test_vars/test_table"));
     REQUIRE(result);
-    REQUIRE(vectorOfMapsdValues.size()>0);
+    REQUIRE(!vectorOfMapsdValues.empty());
 
     vectorOfMapsdValues.clear();
     REQUIRE_NOTHROW(result = calib->GetCalib(vectorOfMapsdValues, "test/test_vars/test_table"));
     REQUIRE(result);
-    REQUIRE(vectorOfMapsdValues.size()>0);
+    REQUIRE(!vectorOfMapsdValues.empty());
 
     //test of get all namepaths
     //----------------------------------------------------
     vector<string> paths;
     REQUIRE_NOTHROW(calib->GetListOfNamepaths(paths));
-    REQUIRE(paths.size()>0);
+    REQUIRE(!paths.empty());
 }
 
 
