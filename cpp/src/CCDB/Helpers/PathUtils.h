@@ -30,7 +30,6 @@
  */
 #define CCDB_PARSES_CONTEXT_RUN 1
 
-using namespace std;
 
 namespace ccdb
 {

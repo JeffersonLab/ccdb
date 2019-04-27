@@ -77,28 +77,7 @@ public:
 	time_t			GetModifiedTime() const;			///get mModifiedTime time
 	void			SetModifiedTime(time_t val);		///set mModifiedTime time
 
-	/** @brief Gets id of constant type record this column is related to
-	 *
-	 * The function check the related ConstantsTypeTable referense and returns its Id
-	 * if the ref is NULL, it will use mDBTypeTableId
-	 * Use this function instead of @see GetDBTypeTableId() for most of the cases
-	 * @return   DB Id of the database table
-	 */
-	dbkey_t			GetTypeTableId() const;
 
-	/** @brief Get DB TypeTableId
-	 *
-	 * This is constantTypeTable id stored in the database
-	 * @warning (!) Use @see GetTypeTableId() instead of this function (!)
-	 * No one should use this function accept one who really knows what to do
-	 * 
-	 * The function is not set as private only for user to have a possibility 
-	 * to explicitly check the value of mDBTypeTableId
-	 *
-	 * The reason this 
-	 * @return   dbkey_t
-	 */
-	dbkey_t			GetDBTypeTableId() const;
 
 	/** @brief Set DB key Id of TypeTable
 	 *
@@ -135,7 +114,6 @@ private:
 	unsigned int	mOrder;			//order of the column
 	ColumnTypes	mType;			//column type
 
-	ConstantsTypeTable *mTypeTable; //ref to type table; 
 	
 	ConstantsTypeColumn(const ConstantsTypeColumn& rhs);
 	ConstantsTypeColumn& operator=(const ConstantsTypeColumn& rhs);

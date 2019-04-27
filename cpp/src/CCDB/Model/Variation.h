@@ -8,60 +8,46 @@
 
 #ifndef VARIATION_H_
 #define VARIATION_H_
-#include "CCDB/Model/StoredObject.h"
+
 #include <string>
 #include <time.h>
-using namespace std;
 
-namespace ccdb {
+namespace ccdb
+{
+    class Variation
+    {
+    public:
+        Variation(){
+            mId=0;			//! database table uniq id;
+            mParentDbId = 0;
+            mParent = nullptr;
+        }
 
-class Variation{
-public:
-	Variation(){
-        mId=0;			//! database table uniq id;
-        mCreatedTime=0;	//! Creation Time
-        mUpdateTime=0;		//! Update Time
-        mParentDbId = 0;
-        mParent = nullptr;
-	}
+        Variation(const Variation& rhs) = delete;
+        Variation& operator=(const Variation& rhs) = delete;
 
-	virtual ~Variation() = default;
-	unsigned int GetId() const { return mId; }					//get database table uniq id;
-	void SetId(unsigned int val) { mId = val; }	                //set database table uniq id;
-	std::string GetName() const { return mName; }				//get name
-	void SetName(std::string val) { mName = val; }				//set name
-	std::string GetComment() const { return mComment; }			//get comment
-	void SetComment(std::string val) { mComment = val; }		//set comment
-	time_t GetCreatedTime() const { return mCreatedTime; }		//get mCreatedTime time
-	void SetCreatedTime(time_t val) { mCreatedTime = val;}		//set mCreatedTime time
-	time_t GetModifiedTime() const { return mUpdateTime; }		    //get mUpdateTime time
-	void SetModifiedTime(time_t val) { mUpdateTime = val; }		    //set mUpdateTime time
-	std::string GetDescription() const { return mDescription; }	    //get description
-	void SetDescription(std::string val) { mDescription = val; }	//get description
-    
-    Variation * GetParent() const { return mParent; }
-    void SetParent(Variation * val) { mParent = val; }
+        virtual ~Variation() = default;
+        unsigned int GetId() const { return mId; }					//get database table uniq id;
+        void SetId(unsigned int val) { mId = val; }	                //set database table uniq id;
+        std::string GetName() const { return mName; }				//get name
+        void SetName(std::string val) { mName = val; }				//set name
+        std::string GetComment() const { return mComment; }			//get comment
+        void SetComment(std::string val) { mComment = val; }		//set comment
 
-    unsigned int GetParentDbId() const { return mParentDbId; }
-    void SetParentDbId(unsigned int val) { mParentDbId = val; }
-protected:
-	
-private:
-	unsigned int		mId;			//! database table uniq id;
-    unsigned int        mParentDbId;      /// Database id of parent variation
-    
-    Variation *         mParent;      /// Get parent variation
+        Variation * GetParent() const { return mParent; }
+        void SetParent(Variation * val) { mParent = val; }
 
-	string			    mName;		//! name
-	string			    mComment;		//! comment
-	time_t			    mCreatedTime;	//! Creation Time
-	time_t			    mUpdateTime;	//! Update Time
-	string			    mDescription;	//! description
+        unsigned int GetParentDbId() const { return mParentDbId; }
+        void SetParentDbId(unsigned int val) { mParentDbId = val; }
+    protected:
 
-	Variation(const Variation& rhs);	
-	Variation& operator=(const Variation& rhs);
-};
-
+    private:
+        unsigned int		mId;			//! database table uniq id;
+        unsigned int        mParentDbId;      /// Database id of parent variation
+        Variation *         mParent;      /// Get parent variation
+        string			    mName;		//! name
+        string			    mComment;		//! comment
+    };
 }
 
 #endif /* VARIATION_H_ */

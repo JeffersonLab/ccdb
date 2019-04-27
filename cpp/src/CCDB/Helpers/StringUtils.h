@@ -27,8 +27,6 @@
 //checks if character is blank.
 //returns true if char is one of CCDB_BLANK_CHARACTERS
 #define CCDB_CHECK_CHAR_IS_BLANK(character) ((character)==' ' || (character)=='\n' || (character)=='\t' || (character)=='\v' || (character)=='\r' || (character)=='\f')
-using namespace std;
-
 
 
 namespace ccdb
@@ -55,14 +53,14 @@ public:
      * @param     const string & source
      * @return   std::string
      */
-    static string    Encode(const string& source);
+    static std::string    Encode(const std::string& source);
 
     /** @brief Decode string from encoded string
      *
      * @param     const string & source
      * @return   std::string
      */
-    static string    Decode(const string& source);
+    static std::string    Decode(const std::string& source);
 
     /** @brief string Replace
      *
@@ -72,7 +70,7 @@ public:
      * @param     string & out
      * @return   int
      */
-    static int        Replace(const string& pattern, const string& replace, const string& source, string &out);
+    static int        Replace(const std::string& pattern, const std::string& replace, const std::string& source, std::string &out);
 
     /** @brief String Replace
      *
@@ -81,7 +79,7 @@ public:
      * @param     const string & source
      * @return   std::string
      */
-    static string    Replace(const string& pattern, const string& replace, const string& source);
+    static std::string    Replace(const std::string& pattern, const std::string& replace, const std::string& source);
 
     /** @brief search pattern in source using * and ?
      *
@@ -100,7 +98,7 @@ public:
      * @param     const string & delimiters
      * @return   std::vector<std::string> &
      */
-    static vector<string> &Split(const string& str, vector<string>& tokens, const string& delimiters = " ");
+    static std::vector<std::string> &Split(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters = " ");
 
 
     /** @brief
@@ -110,7 +108,7 @@ public:
      * @param     char delimiters
      * @return   std::vector<std::string>
      */
-    static std::vector<std::string> Split(const std::string &s, const string& delimiters = " ");
+    static std::vector<std::string> Split(const std::string &s, const std::string& delimiters = " ");
 
 
 
@@ -124,7 +122,7 @@ public:
      *
      * @param [in,out] s - string that will be trimmed
      */
-    static  void Trim( string& s )
+    static  void Trim( std::string& s )
     {
         // Remove leading and trailing whitespace
         static const char whitespace[] = CCDB_BLANK_CHARACTERS;
@@ -186,7 +184,7 @@ public:
      *     inside "..." will be interpreted as string entity.
      *
      */
-    static void LexicalSplit(std::vector<string>& tokens, const std::string& source);
+    static void LexicalSplit(std::vector<std::string>& tokens, const std::string& source);
 
 
     /** itoa implementation for string
@@ -195,7 +193,7 @@ public:
      * @remark:
      * It is proved by benchmarking that writing int to C buffer and making it a string at the end is the fastest way of getting string from int
      */
-    static string IntToString(int value, int base = 10)
+    static std::string IntToString(int value, int base = 10)
     {
         /**
          * C++ version 0.4 char* style "itoa":
@@ -225,18 +223,18 @@ public:
             *ptr--= *ptr1;
             *ptr1++ = tmp_char;
         }
-        return string(result);
+        return std::string(result);
 
     }
 
-    static int              ParseInt(const string& source, bool *result=nullptr );         ///Reads int    from the last query row
-    static unsigned int     ParseUInt(const string& source, bool *result=nullptr );        ///Reads unsigned int from the last query row
-    static long             ParseLong(const string& source, bool *result=nullptr );        ///Reads long from the last query row
-    static unsigned long    ParseULong(const string& source, bool *result=nullptr );       ///Reads unsigned long from the last query row
-    static bool             ParseBool(const string& source, bool *result=nullptr );        ///Reads bool from the last query row
-    static double           ParseDouble(const string& source, bool *result=nullptr );      ///Reads double from the last query row
-    static string           ParseString(const string& source, bool *result=nullptr );      ///Reads string from the last query row
-    static time_t           ParseUnixTime(const string& source, bool *result=nullptr );    ///Reads string from the last query row
+    static int              ParseInt(const std::string& source, bool *result=nullptr );         ///Reads int    from the last query row
+    static unsigned int     ParseUInt(const std::string& source, bool *result=nullptr );        ///Reads unsigned int from the last query row
+    static long             ParseLong(const std::string& source, bool *result=nullptr );        ///Reads long from the last query row
+    static unsigned long    ParseULong(const std::string& source, bool *result=nullptr );       ///Reads unsigned long from the last query row
+    static bool             ParseBool(const std::string& source, bool *result=nullptr );        ///Reads bool from the last query row
+    static double           ParseDouble(const std::string& source, bool *result=nullptr );      ///Reads double from the last query row
+    static std::string      ParseString(const std::string& source, bool *result=nullptr );      ///Reads string from the last query row
+    static time_t           ParseUnixTime(const std::string& source, bool *result=nullptr );    ///Reads string from the last query row
 };
 }
 #endif // StringUtils_h__

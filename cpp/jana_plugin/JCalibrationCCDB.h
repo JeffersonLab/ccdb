@@ -12,7 +12,7 @@
 #include <JANA/JStreamLog.h>
 #include <CCDB/Calibration.h>
 
-using namespace std;
+
 using namespace jana;
 
 // Place everything in JANA namespace

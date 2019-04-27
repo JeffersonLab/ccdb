@@ -49,7 +49,7 @@ const vector<ConstantsTypeColumn *>& ConstantsTypeTable::GetColumns() const
 int ConstantsTypeTable::GetColumnsCount() const
 {
 	//Here is a trick. Maybe we loaded it from db with no columns objects
-	if(mColumns.size() ==0 && IsLoaded()) return mNColumnsFromDB;
+	if(mColumns.empty()) return mNColumnsFromDB;
 
 	//but otherwise number of objects must indicate...
 	return mColumns.size();
@@ -63,13 +63,13 @@ void ConstantsTypeTable::AddColumn( ConstantsTypeColumn *col, int order )
 		return;
 	}
 
-	if(mColumns.size()>0)
+	if(!mColumns.empty())
 	{
 		std::sort(mColumns.begin(), mColumns.end()); //sort vector by order;
 		if(order <= (mColumns.size() - 1))
 		{
 			/*mColumns.insert()*/ //C++ are surprisingly dump language...
-			vector<ConstantsTypeColumn *>::iterator it= mColumns.begin();
+			auto it= mColumns.begin();
 			for(;it<mColumns.end();++it)
 			{
 				ConstantsTypeColumn *column = *it;
@@ -100,7 +100,7 @@ void ConstantsTypeTable::AddColumn( ConstantsTypeColumn *col )
 
 void ConstantsTypeTable::AddColumn( const std::string& name, const std::string& type )
 {
-	ConstantsTypeColumn *column = new ConstantsTypeColumn(this);
+	ConstantsTypeColumn *column = new ConstantsTypeColumn();
 	column->SetName(name);
 	column->SetType(type);
 	AddColumn(column);
@@ -109,7 +109,7 @@ void ConstantsTypeTable::AddColumn( const std::string& name, const std::string& 
 
 void ccdb::ConstantsTypeTable::AddColumn(const string& name, ConstantsTypeColumn::ColumnTypes type)
 {
-	ConstantsTypeColumn *column = new ConstantsTypeColumn(this);
+	ConstantsTypeColumn *column = new ConstantsTypeColumn();
 	column->SetName(name);
 	column->SetType(type);
 	AddColumn(column);
@@ -117,10 +117,10 @@ void ccdb::ConstantsTypeTable::AddColumn(const string& name, ConstantsTypeColumn
 
 ConstantsTypeColumn * ConstantsTypeTable::RemoveColumn( int order )
 {
-	if(order > mColumns.size() && mColumns.size()>0)
+	if(order > mColumns.size() && !mColumns.empty())
 	{
 		//TODO print error;
-		return NULL;
+		return nullptr;
 	}
 
 	std::sort(mColumns.begin(), mColumns.end()); //sort vector by order;

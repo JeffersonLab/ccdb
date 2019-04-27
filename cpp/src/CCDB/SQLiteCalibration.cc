@@ -48,7 +48,7 @@ bool SQLiteCalibration::Connect( std::string connectionString )
 	 * @param connectionString the Connection String
 	 * @return true if connected
 	 */
-    Lock();
+    std::lock_guard<std::mutex> lock(mReadMutex);
 
     UpdateActivityTime();
 
@@ -61,7 +61,6 @@ bool SQLiteCalibration::Connect( std::string connectionString )
         }
         else
         {
-            Unlock();
             //Invalid DSQLiteCalibration usage 
             throw std::logic_error((const char*)ERRMSG_INVALID_CONNECT_USAGE);
         }
@@ -70,8 +69,6 @@ bool SQLiteCalibration::Connect( std::string connectionString )
     //Maybe we are connected?
     if(mProvider->IsConnected())
     {
-        Unlock();
-
         //But where we connected to?
         if(mProvider->GetConnectionString() == connectionString)
         {   
@@ -88,12 +85,10 @@ bool SQLiteCalibration::Connect( std::string connectionString )
     //but can we connect or not?
     if(mProviderIsLocked)
     {
-        Unlock();
         throw std::logic_error(ERRMSG_CONNECT_LOCKED);
     }
 
     bool result = mProvider->Connect(connectionString);
-    Unlock();
     return result;
     //TODO decide maybe to throw an exception here?
 }

@@ -10,7 +10,7 @@
 #include "CCDB/Model/Directory.h"
 #include "CCDB/Model/RunRange.h"
 #include "CCDB/Model/Variation.h"
-#include "CCDB/CCDBError.h"
+
 
 
 
@@ -51,547 +51,164 @@
 namespace ccdb
 {
 
-class DataProvider
-{
-public:
+    class DataProvider
+    {
+    public:
 
-    DataProvider();
-    virtual ~DataProvider();
-    
-    //----------------------------------------------------------------------------------------
-    //  C O N N E C T I O N
-    //----------------------------------------------------------------------------------------
+        DataProvider();
+        virtual ~DataProvider();
 
-    /**
-     * @brief Connects to database using connection string
-     * 
-     * Connects to database using connection string
-     * connection string might be in form: 
-     * mysql://<username>:<password>@<mysql.address>:<port> <database>
-     * 
-     * @param connectionString "mysql://<username>:<password>@<mysql.address>:<port> <database>"
-     * @return true if connected
-     */
-    virtual bool Connect(std::string connectionString) = 0;
+        //----------------------------------------------------------------------------------------
+        //  A B S T R A C T   I N T E R F A C E
+        //----------------------------------------------------------------------------------------
 
-    /**
-     * @brief closes connection to data
-     */
-    virtual void Disconnect()= 0;
+        /**
+         * @brief Connects to database using connection string
+         *
+         * Connects to database using connection string
+         * connection string might be in form:
+         * mysql://<username>:<password>@<mysql.address>:<port> <database>
+         *
+         * @param connectionString "mysql://<username>:<password>@<mysql.address>:<port> <database>"
+         * @return true if connected
+         */
+        virtual void Connect(const std::string &connectionString) = 0;
 
-    /**
-     * @brief indicates ether the connection is open or not
-     * 
-     * @return true if  connection is open
-     */
-    virtual bool IsConnected()=0;
-    
-    /** @brief Connection string that was used on last successful connect.
-     *
-     * Connection string that was used on last successful connect.
-     * If no any successfull connects were done string::empty will be returned
-     *
-     * @return  Last connection string or string::empty() if no successfull connection was done
-     */
-    virtual std::string GetConnectionString();
+        /**
+         * @brief closes connection to data
+         */
+        virtual void Disconnect() = 0;
 
-    //----------------------------------------------------------------------------------------
-    //  D I R E C T O R Y   M A N G E M E N T
-    //----------------------------------------------------------------------------------------
-    /** @brief Gets directory by its full path
-    *
-    * @param   Full path of the directory
-    * @return DDirectory object if directory exists, NULL otherwise
-    */
-    virtual Directory* GetDirectory(const string& path)=0;
+        /**
+         * @brief indicates ether the connection is open or not
+         *
+         * @return true if  connection is open
+         */
+        virtual bool IsConnected() = 0;
 
-    /** @brief return reference to root directory
-     * 
-     * Root directory contains all other directories. It is not stored in any database
-     *
-     * @warning User should not delete this object 
-     *
-     * @return   DDirectory object pointer
-     */
-    virtual Directory * const GetRootDirectory();
+        /** @brief Reads all directories from DB
+         *
+         * Explicitly forces to load directories from DB and build directory structure
+         * (!) At this implementation all existing directories references will be deleted,
+         * thus  references to them will become broken
+         * @return   bool
+         */
+        virtual void LoadDirectories() = 0;
 
-    /** @brief Searches for directory 
-     *
-     * Searches directories that matches the pattern 
-     * inside parent directory with path @see parentPath 
-     * or globally through all type tables if parentPath is empty
-     * The pattern might contain
-     * '*' - any character sequence 
-     * '?' - any single character
-     *
-     * paging could be done with @see startWith  @see take
-     * startWith=0 and take=0 means select all records;
-     *
-     * objects that are contained in vector<DDirectory *>& resultDirectories will be
-     * 1) if this provider owned - deleted (@see ReleaseOwnership)
-     * 2) if not owned - just leaved on user control
-     *
-     * @param  [out] resultDirectories  search result
-     * @param  [in]  searchPattern      Pattern to search
-     * @param  [in]  parentPath         Parent path. If NULL search through all directories
-     * @param  [in]  startRecord        record number to start with
-     * @param  [in]  selectRecords      number of records to select. 0 means select all records
-     * @return bool true if there were error (even if 0 directories found) 
-     */
-    virtual bool SearchDirectories(vector<Directory *>& resultDirectories, const string& searchPattern, const string& parentPath, int take, int startWith)=0;
-    
-    
-    /** @brief SearchDirectories
-     *
-     * Searches directories that matches the pattern 
-     * inside parent directory with path @see parentPath 
-     * or globally through all type tables if parentPath is empty
-     * The pattern might contain
-     * '*' - any character sequence 
-     * '?' - any single character
-     *
-     * paging could be done with @see startWith  @see take
-     * startWith=0 and take=0 means select all records;
-     *
-     * objects that are contained in vector<DDirectory *>& resultDirectories will be
-     * 1) if this provider owned - deleted (@see ReleaseOwnership)
-     * 2) if not owned - just leaved on user control
-     * @param  [in]  searchPattern      Pattern to search
-     * @param  [in]  parentPath         Parent path. If NULL search through all directories
-     * @param  [in]  startRecord        record number to start with
-     * @param  [in]  selectRecords      number of records to select. 0 means select all records
-     * @return list of 
-     */
-    virtual vector<Directory *> SearchDirectories(const string& searchPattern, const string& parentPath, int take, int startWith);
+        /** @brief Gets ConstantsType information from the DB
+         *
+         * @param  [in] name name of ConstantsTypeTable
+         * @param  [in] parentDir directory that contains type table
+         * @return new object of ConstantsTypeTable
+         */
+        virtual ConstantsTypeTable * GetConstantsTypeTable(const string& name, Directory *parentDir, bool loadColumns)=0;
+
+
+        /** @brief gets all type tables from DB
+         * @return bool
+         */
+        virtual std::vector<ConstantsTypeTable *> GetAllConstantsTypeTables(bool loadColumns)=0;
+
+
+
+        /** @brief Get variation by name*/
+        virtual Variation* GetVariation(const string& name)=0;
+
+        /** @brief Get specified by creation time version of Assignment with data blob only.
+        *
+        * This function is optimized for fast data retrieving and is assumed to be performance critical;
+        * This function doesn't return any specified information like variation object or run-range object
+        * The Time is a timestamp, data that is equal or earlier in time than that timestamp is returned
+        *
+        * @remarks this function is named so
+        * @param [in] run - run number
+        * @param [in] path - object path
+        * @param [in] time - timestamp, data that is equal or earlier in time than that timestamp is returned
+        * @param [in] variation - variation name
+        * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
+        * @return DAssignment object or NULL if no assignment is found or error
+        */
+        virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation, bool loadColumns)=0;
+
+
+
+
+        //----------------------------------------------------------------------------------------
+        //  E N D   O F   I N T E R F A C E
+        //----------------------------------------------------------------------------------------
+
+        /** @brief Connection string that was used on last successful connect.
+         *
+         * Connection string that was used on last successful connect.
+         * If no any successfull connects were done string::empty will be returned
+         *
+         * @return  Last connection string or string::empty() if no successfull connection was done
+         */
+        virtual std::string GetConnectionString();
+
+
+        /** @brief Gets directory by its full path
+        *
+        * @param   Full path of the directory
+        * @return DDirectory object if directory exists, NULL otherwise
+        */
+        Directory* GetDirectory(const string& path);
+
+        /** @brief return reference to root directory
+         *
+         * Root directory contains all other directories. It is not stored in any database
+         *
+         * @warning User should not delete this object
+         *
+         * @return   DDirectory object pointer
+         */
+        virtual Directory * const GetRootDirectory();
+
+
+        void BuildDirectoryDependencies();  /// Builds directory relational structure.
+        void UpdateDirectoriesIfNeeded();   /// Update directories structure if this is required
+
+
+        //----------------------------------------------------------------------------------------
+        //  C O N S T A N T   T Y P E   T A B L E
+        //----------------------------------------------------------------------------------------
+
+
+        /** @brief Gets ConstantsType information from the DB
+         *
+         * @param  [in] path absolute path of the type table
+         * @return new object of ConstantsTypeTable
+         */
+        ConstantsTypeTable * GetConstantsTypeTable(const string& path, bool loadColumns);
+
+
+
+        //----------------------------------------------------------------------------------------
+        //  O T H E R   F U N C T I O N S
+        //----------------------------------------------------------------------------------------
+
+        /** @brief Validates name for constant type table or directory or column
+         *
+         * @param     string name
+         * @return   bool
+         */
+        bool ValidateName(const string& name);
+
 
     protected:
-    
-    /** @brief Reads all directories from DB
-     * 
-	 * Explicitly forces to load directories from DB and build directory structure
-	 * (!) At this implementation all existing directories references will be deleted, 
-	 * thus  references to them will become broken
-	 * @return   bool
-	 */
-	virtual bool LoadDirectories() = 0;
 
-    virtual void BuildDirectoryDependencies();  /// Builds directory relational structure. Used right at the end of RetriveDirectories().
-    virtual bool CheckDirectoryListActual();    /// Checks if directory list is actual i.e. nobody changed directories in database
-    virtual bool UpdateDirectoriesIfNeeded();   /// Update directories structure if this is required
-
-#ifndef __GNUC__
-    #pragma endregion Directory managemend
-#endif
-    //----------------------------------------------------------------------------------------
-    //  C O N S T A N T   T Y P E   T A B L E
-    //----------------------------------------------------------------------------------------
-#ifndef __GNUC__
-	#pragma region Type tables
-#endif
-
-    public:
-    /** @brief Gets ConstantsType information from the DB
-     *
-     * @param  [in] path absolute path of the type table
-     * @return new object of ConstantsTypeTable
-     */
-    virtual ConstantsTypeTable * GetConstantsTypeTable(const string& path, bool loadColumns);
-
-    /** @brief Gets ConstantsType information from the DB
-     *
-     * @param  [in] name name of ConstantsTypeTable
-     * @param  [in] parentDir directory that contains type table
-     * @return new object of ConstantsTypeTable
-     */
-    virtual ConstantsTypeTable * GetConstantsTypeTable(const string& name, Directory *parentDir, bool loadColumns)=0;
-
-    /** @brief Gets ConstantsType information from the DB
-     *
-     * @param  [in] name name of ConstantsTypeTable
-     * @param  [in] parentDir directory that contains type table
-     * @return new object of ConstantsTypeTable
-     */
-    virtual bool GetConstantsTypeTables(vector<ConstantsTypeTable *>& typeTables,const string& parentDirPath, bool loadColumns)=0;
-
-    /** @brief Get all "constants" from current directory
-     *
-     * @param parentDir
-     * @return vector of constants
-     */
-    virtual vector<ConstantsTypeTable *> GetConstantsTypeTables (Directory *parentDir, bool loadColumns)=0;
-
-    /** @brief Get all "constants" from current directory
-     *
-     * @param parentDir
-     * @return vector of constants
-     */
-    virtual bool GetConstantsTypeTables(vector<ConstantsTypeTable *>& typeTables, Directory *parentDir, bool loadColumns) =0;
-    
-    /** @brief Searches for type tables that matches the patten
-     *
-     * Searches type table that matches the pattern 
-     * inside parent directory with path @see parentPath 
-     * or globally through all type tables if parentPath is empty
-     * The pattern might contain
-     * '*' - any character sequence 
-     * '?' - any single character
-     *
-     * paging could be done with  @see take ans @see startWith 
-     * take=0, startWith=0 means select all records;
-     *
-     * objects that are contained in vector<DDirectory *>& resultDirectories will be
-     * 1) if this provider owned - deleted (@see ReleaseOwnership)
-     * 2) if not owned - just leaved on user control
-     * @param  pattern
-     * @param  parentPath
-     * @return bool
-     */
-    virtual bool SearchConstantsTypeTables(vector<ConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath, bool loadColumns, int take, int startWith)=0;
-
-    /** @brief Searches for type tables that matches the patten
-     *
-     * Searches type table that matches the pattern 
-     * inside parent directory with path @see parentPath 
-     * or globally through all type tables if parentPath is empty
-     * The pattern might contain
-     * '*' - any character sequence 
-     * '?' - any single character
-     *
-     * paging could be done with @see startWith  @see take
-     * startRecord=0 and selectRecords=0 means select all records;
-     *
-     * objects that are contained in vector<DDirectory *>& resultDirectories will be
-     * 1) if this provider owned - deleted (@see ReleaseOwnership)
-     * 2) if not owned - just leaved on user control
-     * @param  pattern
-     * @param  parentPath
-     * @return vector<ConstantsTypeTable *>
-     */
-    virtual vector<ConstantsTypeTable *> SearchConstantsTypeTables(const string& pattern, const string& parentPath, bool loadColumns, int take, int startWith)=0;
-    
-    /**
-     * @brief This function counts number of type tables for a given directory 
-     * @param [in] directory to look tables in
-     * @return number of tables to return
-     */
-    virtual int CountConstantsTypeTables(Directory *dir)=0;
-    
-    /** @brief Loads columns for this table
-     *
-     * @param parentDir
-     * @return vector of constants
-     */
-    virtual bool LoadColumns(ConstantsTypeTable* table) =0;
+        std::vector<Directory *>  mDirectories;
+        std::map<dbkey_t,Directory *> mDirectoriesById;
+        std::map<string,Directory *>  mDirectoriesByFullPath;
+        bool mDirsAreLoaded;                 //Directories are loaded from database
+        Directory *mRootDir;                ///root directory. This directory contains all other directories. It is not stored in databases
 
 
-    //----------------------------------------------------------------------------------------
-    //  V A R I A T I O N
-    //----------------------------------------------------------------------------------------
-    /** @brief Get variation by name
-     *
-     * @param     const char * name
-     * @return   DVariation*
-     */
-    virtual Variation* GetVariation(const string& name)=0;
+        std::string mConnectionString;      ///Connection string that was used on last successfully connect.
 
-
-    //----------------------------------------------------------------------------------------
-    //  A S S I G N M E N T S
-    //----------------------------------------------------------------------------------------
-#ifndef __GNUC__
-	#pragma region Assignments
-#endif
-
-    /** @brief Get Assignment with data blob only
-     *
-     * This function is optimized for fast data retrieving and is assumed to be performance critical;
-     * This function doesn't return any specified information like variation object or run-range object
-     * @see GetAssignmentFull
-     * @param [in] run - run number
-     * @param [in] path - object path
-     * @param [in] variation - variation name
-     * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
-     * @return DAssignment object or NULL if no assignment is found or error
-     */
-    virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation, bool loadColumns)=0;
-    
-    
-    /** @brief Get specified by creation time version of Assignment with data blob only.
-     *
-     * This function is optimized for fast data retrieving and is assumed to be performance critical;
-     * This function doesn't return any specified information like variation object or run-range object
-     * The Time is a timestamp, data that is equal or earlier in time than that timestamp is returned
-     *
-     * @remarks this function is named so
-     * @param [in] run - run number
-     * @param [in] path - object path
-     * @param [in] time - timestamp, data that is equal or earlier in time than that timestamp is returned
-     * @param [in] variation - variation name
-     * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
-     * @return DAssignment object or NULL if no assignment is found or error
-     */
-    virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation, bool loadColumns)=0;
-       
-
-    /** @brief Get last Assignment with all related objects
-     *
-     * @param     int run
-     * @param     path to constant path
-     * @return NULL if no assignment is found or error
-     */
-    virtual Assignment* GetAssignmentFull(int run, const string& path, const string& variation)=0;
-    
-    
-    /** @brief  Get specified version of Assignment with all related objects
-     *
-     * @param     int run
-     * @param     const char * path
-     * @param     const char * variation
-     * @param     int version
-     * @return   DAssignment*
-     */
-    virtual Assignment* GetAssignmentFull(int run, const string& path, int version, const string& variation)=0;
-    
-    /**
-     * @brief Complex and universal function to retrieve assignments
-     * 
-     * @warning this function is too complex for users. 
-     *          Use overloaded GetAssignments instead of it.
-     *          And only use this function if others are inapropriate
-     * 
-     * This function is universal assignments getter. 
-     * Provided fields allows to select assignments (arrays and single assignments) 
-     * for most cases. Other GetAssignments(...) and GetAssignmentFull(...) 
-     * functions relie on this function.  
-     *
-     * 
-     * runMin, runMax:
-     *       applied if one !=0. Thus runMin=runMax=0 will select all run ranges
-     *       If one needs particular run, runMin=runMax=<NEEDED RUN NUMBER> should be used
-     * 
-     * runRangeName:
-     *       will be ignored if equals to ""
-     * 
-     * variation:
-     *       if "", all variations will be get
-     * 
-     * date: 
-     *       unix timestamp that indicates the latest time to select assignments from
-     *       if 0 - time will be ignored
-     * sortby:
-     *       0 - `assignments`.`created` DESC
-     *       1 - `assignments`.`created` ASC
-     * 
-     * take, startWith
-     *       paging parameters
-     * 
-     * @param [out] assingments result assignment list
-     * @param [in] path       path of type table
-     * @param [in] run        specified range. If not set all ranges
-     * @param [in] variation  variation, if not set, all variations
-     * @param [in] date       nearest date
-     * @param [in] sortBy     sortby order
-     * @param [in] startWith  record to start with
-     * @param [in] take       records to select
-     * @return true if no errors (even if no assignments was selected)
-     */
-    virtual bool GetAssignments(vector<Assignment *> &assingments,const string& path, int runMin, int runMax, const string& runRangeName, const string& variation, time_t beginTime, time_t endTime, int sortBy, int take, int startWith)=0;
-    
-    
-    /**
-     * @brief Get assigments for particular run
-     * 
-     * returns vector of assignments
-     * Variation: if variation is not empty string the assignments for specified variation will be returned
-     *            otherwise all variations will be accepted
-     * 
-     * Date: if date is not 0, assignments which are earlier than this date will be returned
-     *       otherwise returned assignments will be not filtered by date
-     * 
-     * Paging: paging could be done with  @see take ans @see startWith 
-     *         take=0, startWith=0 means select all records;
-     * 
-     * 
-     * @param [out] assingments
-     * @param [in]  path
-     * @param [in]  run
-     * @param [in]  variation
-     * @param [in]  date
-     * @param [in]  take
-     * @param [in]  startWith
-     * @return 
-     */
-    virtual bool GetAssignments(vector<Assignment *> &assingments,const string& path, int run, const string& variation, time_t date, int take, int startWith)=0;
-
-    /**
-     * @brief Get assigments for particular run
-     * 
-     * returns vector of assignments
-     * Variation: if variation is not empty string the assignments for specified variation will be returned
-     *            otherwise all variations will be accepted
-     * 
-     * Date: if date is not 0, assignments which are earlier than this date will be returned
-     *       otherwise returned assignments will be not filtered by date
-     * 
-     * Paging: paging could be done with  @see take ans @see startWith 
-     *         take=0, startWith=0 means select all records;
-     * 
-     *
-     * @param [in]  path
-     * @param [in]  run
-     * @param [in]  variation
-     * @param [in]  date
-     * @param [in]  take
-     * @param [in]  startWith
-     * @return assingments
-     */
-    virtual vector<Assignment *> GetAssignments(const string& path, int run, const string& variation, time_t date, int take, int startWith)=0;
-
-    /**
-     * @brief Get assigments for particular run
-     * 
-     * returns vector of assignments
-     * Variation: if variation is not emty string the assignments for specified variation will be returned
-     *            otherwise all variations will be accepted
-     * 
-     * Date: if date is not 0, assignments wich are earlier than this date will be returned
-     *       otherwise returned assignments will be not filtred by date
-     * 
-     * Paging: paging could be done with  @see take ans @see startWith 
-     *         take=0, startWith=0 means select all records;
-     * 
-     * 
-     * @param [out] assingments
-     * @param [in]  path
-     * @param [in]  run
-     * @param [in]  variation
-     * @param [in]  date
-     * @param [in]  take
-     * @param [in]  startWith
-     * @return 
-     */
-    virtual bool GetAssignments(vector<Assignment *> &assingments,const string& path, const string& runName, const string& variation, time_t date, int take, int startWith)=0;
-
-    /**
-     * @brief Get assigments for particular run
-     * 
-     * returns vector of assignments
-     * Variation: if variation is not empty string the assignments for specified variation will be returned
-     *            otherwise all variations will be accepted
-     * 
-     * Date: if date is not 0, assignments wich are earlier than this date will be returned
-     *       otherwise returned assignments will be not filtred by date
-     * 
-     * Paging: paging could be done with  @see take ans @see startWith 
-     *         take=0, startWith=0 means select all records;
-     * 
-     * 
-     * @param [out] assignments
-     * @param [in]  path
-     * @param [in]  run
-     * @param [in]  variation
-     * @param [in]  date
-     * @param [in]  take
-     * @param [in]  startWith
-     * @return 
-     */
-    virtual vector<Assignment *> GetAssignments(const string& path, const string& runName, const string& variation, time_t date, int take, int startWith)=0;
-    
-    
-
-    //----------------------------------------------------------------------------------------
-    //  E R R O R   H A N D L I N G 
-    //----------------------------------------------------------------------------------------
-    /**
-     * @brief Get number of errors 
-     * @return 
-     */
-    virtual int GetNErrors();
-    
-    /**
-     * @brief Get vector of last errors 
-     */
-    virtual const std::vector<int>& GetErrorCodes();
-    
-    /** @brief return vector of errors.
-     * @warning the error objects are deleted on next function that clears errors. 
-     * (!) Copy this error objects before next provider function call. 
-     * @return   std::vector<DCcdbError *>
-     */
-    virtual std::vector<CCDBError *> GetErrors();
-    
-    /**
-     * @brief Gets last of the last error
-     * @return error code
-     */
-    virtual int GetLastError();
-    
-    /** @brief Logs error 
-    *
-    * @param errorCode Error codes see DCCDBGlobals.h
-    * @param module Caller should specify method name here
-    * @param message    Message of the error
-    * @return   void
-    */
-    virtual void Error(int errorCode, const std::string& module, const std::string& message);
-
-    /** @brief Logs error 
-    *
-    * @param errorCode Error codes see DCCDBGlobals.h
-    * @param module Caller should specify method name here
-    * @param message    Message of the error
-    * @return   void
-    */
-    virtual void Warning(int errorCode, const std::string& module, const std::string& message);
-
-    /** @brief Clears Errors
-     * function is called on start of each function that produce errors
-     * @return   void
-     */
-    virtual void ClearErrors();
-    
-    //----------------------------------------------------------------------------------------
-    //  O T H E R   F U N C T I O N S
-    //----------------------------------------------------------------------------------------
-    
-    /** @brief Validates name for constant type table or directory or column
-     *
-     * @param     string name
-     * @return   bool
-     */
-    bool ValidateName(const string& name);
-
-    
-protected:
-
-    /******* D I R E C T O R I E S   W O R K *******/ 
-    vector<Directory *>  mDirectories;
-    map<dbkey_t,Directory *> mDirectoriesById;
-    map<string,Directory *>  mDirectoriesByFullPath;
-    bool mDirsAreLoaded;                 //Directories are loaded from database
-    bool mNeedCheckDirectoriesUpdate;    //Do we need to check each time iff directories are updated or not
-    Directory *mRootDir;                ///root directory. This directory contains all other directories. It is not stored in databases
-
-    
-    /** 
-        @brief Clear error state on start of each function that emits error
-     */
-    virtual void ClearErrorsOnFunctionStart();
-    
-    vector<int> mErrorCodes;            ///vector of last errors
-
-    vector<CCDBError *> mErrors;        ///errors 
-    
-    int mLastError;                     ///last error
-    
-    const int mMaximumErrorsToHold;     ///=100 Maximum errors to hold in @see mLastErrors
-    
-    std::string mLogUserName;           ///User name
-
-    std::string mConnectionString;      ///Connection string that was used on last successfully connect.
-
-    map<dbkey_t, Variation *> mVariationsById;
-};
+        std::map<dbkey_t, Variation *> mVariationsById;
+        std::map<std::string, Variation *> mVariationsByName;
+    };
 }
 #endif // _DDataProvider_
 

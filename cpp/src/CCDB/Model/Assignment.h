@@ -19,179 +19,179 @@ class EventRange;
 class Variation;
 class RunRange;
 
-class Assignment {
-public:
-	Assignment();
-	virtual ~Assignment();
+    class Assignment {
+    public:
+        Assignment();
+        virtual ~Assignment();
 
-	/** @brief creates mapped data by columns
-	 *
-	 * @param  mappedData
-	 * @param  columns
-	 * @return const vector<map<string,string> >
-	 */
-	static bool MapData(std::vector<std::map<std::string,std::string> > & mappedData, const std::vector<std::string>& data, const std::vector<std::string>& columns);
-	
-	/** @brief creates mapped data by columns
-	 * 
-	 * @param  mappedData   - result
-	 * @param  data			- data to be mapped
-	 * @param  columnsNum	- 
-	 * @return bool
-	 */
-	static bool MapData(std::vector<std::vector<std::string> > & mappedData, const std::vector<std::string>& data, int columnsNum );
+        /** @brief creates mapped data by columns
+         *
+         * @param  mappedData
+         * @param  columns
+         * @return const vector<map<string,string> >
+         */
+        static bool MapData(std::vector<std::map<std::string,std::string> > & mappedData, const std::vector<std::string>& data, const std::vector<std::string>& columns);
 
-	/**
-	 * @brief makes a string blob from tokens
-	 * @param     const vector<string> & values
-	 * @return   std::string
-	 */
-	static std::string VectorToBlob(const std::vector<std::string>& values);
+        /** @brief creates mapped data by columns
+         *
+         * @param  mappedData   - result
+         * @param  data			- data to be mapped
+         * @param  columnsNum	-
+         * @return bool
+         */
+        static bool MapData(std::vector<std::vector<std::string> > & mappedData, const std::vector<std::string>& data, int columnsNum );
 
-	/** @brief Encodes blob separator
-	 *
-	 * if str contains '|' it will be replaced by '&pipe;'
-	 * @param     string str
-	 * @return   std::string
-	 */
-	static std::string EncodeBlobSeparator(std::string str);
+        /**
+         * @brief makes a string blob from tokens
+         * @param     const vector<string> & values
+         * @return   std::string
+         */
+        static std::string VectorToBlob(const std::vector<std::string>& values);
 
-	/** @brief Decodes blob separator
-	 *
-	 * if str contains '&pipe;'  it will be replaced by '|'
-	 *
-	 * @param     string str
-	 * @return   std::string
-	 */
-	static string DecodeBlobSeparator(string str);
+        /** @brief Encodes blob separator
+         *
+         * if str contains '|' it will be replaced by '&pipe;'
+         * @param     string str
+         * @return   std::string
+         */
+        static std::string EncodeBlobSeparator(std::string str);
 
-	unsigned int    GetVariationId() const;				/// database ID of variation
-	void            SetVariationId(unsigned int val);	/// database ID of variation
+        /** @brief Decodes blob separator
+         *
+         * if str contains '&pipe;'  it will be replaced by '|'
+         *
+         * @param     string str
+         * @return   std::string
+         */
+        static string DecodeBlobSeparator(string str);
 
-	unsigned int    GetRunRangeId() const;				/// database ID of run range
-	void            SetRunRangeId(unsigned int val);	/// database ID of run range
+        unsigned int    GetVariationId() const;				/// database ID of variation
+        void            SetVariationId(unsigned int val);	/// database ID of variation
 
-	unsigned int    GetDataVaultId() const;				/// database ID of data blob
-	void            SetDataVaultId(unsigned int val);	/// database ID of data blob
+        unsigned int    GetRunRangeId() const;				/// database ID of run range
+        void            SetRunRangeId(unsigned int val);	/// database ID of run range
 
-	unsigned int    GetEventRangeId() const;			/// event range ID
-	void            SetEventRangeId(unsigned int val);	/// event range ID
+        unsigned int    GetDataVaultId() const;				/// database ID of data blob
+        void            SetDataVaultId(unsigned int val);	/// database ID of data blob
 
-	int			    GetRequestedRun() const;			/// Run than was requested for user
-	void			SetRequestedRun(int val);			/// Run than was requested for user
+        unsigned int    GetEventRangeId() const;			/// event range ID
+        void            SetEventRangeId(unsigned int val);	/// event range ID
 
-	RunRange *	    GetRunRange() const;		        /// Run range object, is NULL if not set
-	void            SetRunRange(RunRange * val);		/// Run range object, is NULL if not set
+        int			    GetRequestedRun() const;			/// Run than was requested for user
+        void			SetRequestedRun(int val);			/// Run than was requested for user
 
-	EventRange *	GetEventRange() const;			    /// Event range object, is NULL if not set
-	void			SetEventRange(EventRange * val);    /// Event range object, is NULL if not set
+        RunRange *	    GetRunRange() const;		        /// Run range object, is NULL if not set
+        void            SetRunRange(RunRange * val);		/// Run range object, is NULL if not set
 
-	Variation *	    GetVariation() const;               /// Variation object, is NULL if not set
-	void			SetVariation(Variation * val);		/// Variation object, is NULL if not set
+        EventRange *	GetEventRange() const;			    /// Event range object, is NULL if not set
+        void			SetEventRange(EventRange * val);    /// Event range object, is NULL if not set
 
-	int		GetId() const { return mId;	} /// id in database
-	void	SetId(int val) { mId = val; } /// id in database
+        Variation *	    GetVariation() const;               /// Variation object, is NULL if not set
+        void			SetVariation(Variation * val);		/// Variation object, is NULL if not set
 
-	time_t	GetCreatedTime() const { return mCreatedTime; }    ///Time of creation
-	void	SetCreatedTime(time_t val) { mCreatedTime = val;}  ///Time of creation
+        int		GetId() const { return mId;	} /// id in database
+        void	SetId(int val) { mId = val; } /// id in database
 
-	time_t	GetModifiedTime() const { return mModifiedTime;}   ///Time of last modification
-    void	SetModifiedTime(time_t val) {mModifiedTime = val;} ///Time of last modification
+        time_t	GetCreatedTime() const { return mCreatedTime; }    ///Time of creation
+        void	SetCreatedTime(time_t val) { mCreatedTime = val;}  ///Time of creation
 
-	string	GetRawData() const { return mRawData; }            ///Raw data blob
-	void	SetRawData(std::string val);					   ///Raw data blob
+        time_t	GetModifiedTime() const { return mModifiedTime;}   ///Time of last modification
+        void	SetModifiedTime(time_t val) {mModifiedTime = val;} ///Time of last modification
 
-	
-	/** @brief GetMappedData returns rows vector of maps of column_name => data_value
-	 * @return   vector<map<string,string> >
-	 */
-	vector<map<string,string> > GetMappedData() const;					
-	void GetMappedData(vector<map<string,string> > & mappedData) const;	///Mapped data
+        string	GetRawData() const { return mRawData; }            ///Raw data blob
+        void	SetRawData(std::string val);					   ///Raw data blob
 
-	vector<string> GetVectorData() const;				    ///Vector data
-	void GetVectorData(vector<string> & vectorData) const;	///Mapped data
 
-	/** @brief return data as vector of rows that contain vectors of cells
-	 * @return   std::vector<std::vector<std::string> >
-	 */
-	vector<vector<string> > GetData() const;
-	void GetData(vector<vector<string> > &data) const;
-	
-	std::string GetComment() const { return mComment;} ///Comment of assignment
-	void SetComment(const std::string& val) { mComment = val;} ///Comment of assignment
-	
-	void SetTypeTable(ConstantsTypeTable* typeTable) { this->mTypeTable = typeTable;}
-	ConstantsTypeTable* GetTypeTable() const { return mTypeTable; }
+        /** @brief GetMappedData returns rows vector of maps of column_name => data_value
+         * @return   vector<map<string,string> >
+         */
+        vector<map<string,string> > GetMappedData() const;
+        void GetMappedData(vector<map<string,string> > & mappedData) const;	///Mapped data
 
-	std::string GetValue(size_t columnIndex);
-	std::string GetValue(size_t rowIndex, size_t columnIndex);
-	std::string GetValue(const std::string& columnName);
-	std::string GetValue(size_t rowIndex, const std::string& columnName);
+        vector<string> GetVectorData() const;				    ///Vector data
+        void GetVectorData(vector<string> & vectorData) const;	///Mapped data
 
-	int GetValueInt(size_t columnIndex) { return StringUtils::ParseInt(GetValue(columnIndex)); }
-	int GetValueInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseInt(GetValue(rowIndex, columnIndex)); }
-	int GetValueInt(const std::string& columnName) { return StringUtils::ParseInt(GetValue(columnName)); }
-	int GetValueInt(size_t rowIndex, const std::string& columnName) { return StringUtils::ParseInt(GetValue(rowIndex, columnName)); }
-	
-	unsigned int GetValueUInt(size_t columnIndex)                  { return StringUtils::ParseUInt(GetValue(columnIndex)); }
-	unsigned int GetValueUInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseUInt(GetValue(rowIndex, columnIndex)); }
-	unsigned int GetValueUInt(const std::string& columnName)                   { return StringUtils::ParseUInt(GetValue(columnName)); }
-	unsigned int GetValueUInt(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseUInt(GetValue(rowIndex, columnName)); }
-			   
-	double GetValueDouble(size_t columnIndex) { return StringUtils::ParseDouble(GetValue(columnIndex)); }
-	double GetValueDouble(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseDouble(GetValue(rowIndex, columnIndex)); }
-	double GetValueDouble(const string& columnName) { return StringUtils::ParseDouble(GetValue(columnName)); }
-	double GetValueDouble(size_t rowIndex, const std::string& columnName) { return StringUtils::ParseDouble(GetValue(rowIndex, columnName)); }
-			   
-	long GetValueLong(size_t columnIndex)                  { return StringUtils::ParseLong(GetValue(columnIndex)); }
-	long GetValueLong(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseLong(GetValue(rowIndex, columnIndex)); }
-	long GetValueLong(const std::string& columnName)                   { return StringUtils::ParseLong(GetValue(columnName)); }
-	long GetValueLong(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseLong(GetValue(rowIndex, columnName)); }
-			   
-	unsigned long GetValueULong(size_t columnIndex)                  { return StringUtils::ParseULong(GetValue(columnIndex)); }
-	unsigned long GetValueULong(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseULong(GetValue(rowIndex, columnIndex)); }
-	unsigned long GetValueULong(const std::string& columnName)                   { return StringUtils::ParseULong(GetValue(columnName)); }
-	unsigned long GetValueULong(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseULong(GetValue(rowIndex, columnName)); }
-			   
-	bool GetValueBool(size_t columnIndex)                  { return StringUtils::ParseBool(GetValue(columnIndex)); }
-	bool GetValueBool(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseBool(GetValue(rowIndex, columnIndex)); }
-	bool GetValueBool(const std::string& columnName)                   { return StringUtils::ParseBool(GetValue(columnName)); }
-	bool GetValueBool(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseBool(GetValue(rowIndex, columnName)); }
+        /** @brief return data as vector of rows that contain vectors of cells
+         * @return   std::vector<std::vector<std::string> >
+         */
+        vector<vector<string> > GetData() const;
+        void GetData(vector<vector<string> > &data) const;
 
-	ConstantsTypeColumn::ColumnTypes GetValueType(size_t columnIndex) { return mTypeTable->GetColumns()[columnIndex]->GetType(); }
-	ConstantsTypeColumn::ColumnTypes GetValueType(const std::string& columnName);
+        std::string GetComment() const { return mComment;} ///Comment of assignment
+        void SetComment(const std::string& val) { mComment = val;} ///Comment of assignment
 
-	/** Gets number or rows */
-	size_t GetRowsCount() const { return mTypeTable->GetRowsCount(); }
+        void SetTypeTable(ConstantsTypeTable* typeTable) { this->mTypeTable = typeTable;}
+        ConstantsTypeTable* GetTypeTable() const { return mTypeTable; }
 
-	/** Gets number of columns */
-	size_t GetColumnsCount() const { return mTypeTable->GetColumnsCount(); }
-private:
+        std::string GetValue(size_t columnIndex);
+        std::string GetValue(size_t rowIndex, size_t columnIndex);
+        std::string GetValue(const std::string& columnName);
+        std::string GetValue(size_t rowIndex, const std::string& columnName);
 
-	vector<map<string,string> > mRows;	// cache for blob data by rows
-	string mRawData;					// data blob
-	int mId;							// id in database
-	int mDataBlobId;					// blob id in database
-	unsigned int mVariationId;			// database ID of variation
-	unsigned int mRunRangeId;			// database ID of run range
-	unsigned int mDataVaultId;			// database ID of data blob
-	unsigned int mEventRangeId;			// event range ID
-    unsigned int mColumnCount;          // number of columns
-	int	mRequestedRun;					// Run than was requested for user
-	RunRange *mRunRange;				// Run range object, is NULL if not set
-	EventRange *mEventRange;			// Event range object, is NULL if not set
-	Variation *mVariation;				// Variation object, is NULL if not set
-	ConstantsTypeTable * mTypeTable;	// Constants table
-	
-	time_t mCreatedTime;				// time of creation
-	time_t mModifiedTime;				// time of last modification
-	string mComment;					// Comment of assignment
+        int GetValueInt(size_t columnIndex) { return StringUtils::ParseInt(GetValue(columnIndex)); }
+        int GetValueInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseInt(GetValue(rowIndex, columnIndex)); }
+        int GetValueInt(const std::string& columnName) { return StringUtils::ParseInt(GetValue(columnName)); }
+        int GetValueInt(size_t rowIndex, const std::string& columnName) { return StringUtils::ParseInt(GetValue(rowIndex, columnName)); }
 
-	vector<string> mVectorData;         // Vectorized blob
+        unsigned int GetValueUInt(size_t columnIndex)                  { return StringUtils::ParseUInt(GetValue(columnIndex)); }
+        unsigned int GetValueUInt(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseUInt(GetValue(rowIndex, columnIndex)); }
+        unsigned int GetValueUInt(const std::string& columnName)                   { return StringUtils::ParseUInt(GetValue(columnName)); }
+        unsigned int GetValueUInt(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseUInt(GetValue(rowIndex, columnName)); }
 
-	Assignment(const Assignment& rhs);	
-	Assignment& operator=(const Assignment& rhs);
-};
+        double GetValueDouble(size_t columnIndex) { return StringUtils::ParseDouble(GetValue(columnIndex)); }
+        double GetValueDouble(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseDouble(GetValue(rowIndex, columnIndex)); }
+        double GetValueDouble(const string& columnName) { return StringUtils::ParseDouble(GetValue(columnName)); }
+        double GetValueDouble(size_t rowIndex, const std::string& columnName) { return StringUtils::ParseDouble(GetValue(rowIndex, columnName)); }
+
+        long GetValueLong(size_t columnIndex)                  { return StringUtils::ParseLong(GetValue(columnIndex)); }
+        long GetValueLong(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseLong(GetValue(rowIndex, columnIndex)); }
+        long GetValueLong(const std::string& columnName)                   { return StringUtils::ParseLong(GetValue(columnName)); }
+        long GetValueLong(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseLong(GetValue(rowIndex, columnName)); }
+
+        unsigned long GetValueULong(size_t columnIndex)                  { return StringUtils::ParseULong(GetValue(columnIndex)); }
+        unsigned long GetValueULong(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseULong(GetValue(rowIndex, columnIndex)); }
+        unsigned long GetValueULong(const std::string& columnName)                   { return StringUtils::ParseULong(GetValue(columnName)); }
+        unsigned long GetValueULong(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseULong(GetValue(rowIndex, columnName)); }
+
+        bool GetValueBool(size_t columnIndex)                  { return StringUtils::ParseBool(GetValue(columnIndex)); }
+        bool GetValueBool(size_t rowIndex, size_t columnIndex) { return StringUtils::ParseBool(GetValue(rowIndex, columnIndex)); }
+        bool GetValueBool(const std::string& columnName)                   { return StringUtils::ParseBool(GetValue(columnName)); }
+        bool GetValueBool(size_t rowIndex, const std::string& columnName)  { return StringUtils::ParseBool(GetValue(rowIndex, columnName)); }
+
+        ConstantsTypeColumn::ColumnTypes GetValueType(size_t columnIndex) { return mTypeTable->GetColumns()[columnIndex]->GetType(); }
+        ConstantsTypeColumn::ColumnTypes GetValueType(const std::string& columnName);
+
+        /** Gets number or rows */
+        size_t GetRowsCount() const { return mTypeTable->GetRowsCount(); }
+
+        /** Gets number of columns */
+        size_t GetColumnsCount() const { return mTypeTable->GetColumnsCount(); }
+    private:
+
+        vector<map<string,string> > mRows;	// cache for blob data by rows
+        string mRawData;					// data blob
+        int mId;							// id in database
+        int mDataBlobId;					// blob id in database
+        unsigned int mVariationId;			// database ID of variation
+        unsigned int mRunRangeId;			// database ID of run range
+        unsigned int mDataVaultId;			// database ID of data blob
+        unsigned int mEventRangeId;			// event range ID
+        unsigned int mColumnCount;          // number of columns
+        int	mRequestedRun;					// Run than was requested for user
+        RunRange *mRunRange;				// Run range object, is NULL if not set
+        EventRange *mEventRange;			// Event range object, is NULL if not set
+        Variation *mVariation;				// Variation object, is NULL if not set
+        ConstantsTypeTable * mTypeTable;	// Constants table
+
+        time_t mCreatedTime;				// time of creation
+        time_t mModifiedTime;				// time of last modification
+        string mComment;					// Comment of assignment
+
+        vector<string> mVectorData;         // Vectorized blob
+
+        Assignment(const Assignment& rhs);
+        Assignment& operator=(const Assignment& rhs);
+    };
 
 }
 

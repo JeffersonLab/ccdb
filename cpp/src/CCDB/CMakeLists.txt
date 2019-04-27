@@ -9,9 +9,7 @@ include_directories(${MYSQL_INCLUDE_DIR})
 set(SOURCE_FILES
 
         #some global objects
-        "Console.cc"
         "Log.cc"
-        "CCDBError.cc"
 
         #user api
         "Calibration.cc"
@@ -22,26 +20,19 @@ set(SOURCE_FILES
         #helper classes
         "Helpers/StringUtils.cc"
         "Helpers/PathUtils.cc"
-        "Helpers/WorkUtils.cc"
         "Helpers/TimeProvider.cc"
+        Helpers/SQLite.h
 
         "Model/Assignment.cc"
         "Model/ConstantsTypeColumn.cc"
         "Model/ConstantsTypeTable.cc"
         "Model/Directory.cc"
-        "Model/EventRange.cc"
         "Model/RunRange.cc"
-        "Model/Variation.cc"
 
         "Providers/DataProvider.cc"
-        "Providers/FileDataProvider.cc"
         "Providers/SQLiteDataProvider.cc"
-        "Providers/IAuthentication.cc"
-        "Providers/EnvironmentAuthentication.cc"
-
 
         #model and provider
-        "Providers/MySQLConnectionInfo.cc"
         "Providers/MySQLDataProvider.cc"
         )
 

@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "CCDB/Calibration.h"
-#include "CCDB/GlobalMutex.h"
 #include "CCDB/Providers/DataProvider.h"
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Helpers/TimeProvider.h"
@@ -20,7 +19,7 @@ Calibration::Calibration()
 {
     //Constructor 
 
-    mProvider = NULL;
+    mProvider = nullptr;
     mProviderIsLocked = false; //by default we assume that we own the provider
     mDefaultRun = 0;
 	mDefaultTime = 0;
@@ -45,10 +44,8 @@ Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/, 
 	mDefaultVariation = defaultVariation;
 	mDefaultTime = defaultTime;
 
-    mProvider = NULL;
+    mProvider = nullptr;
     mProviderIsLocked = false;      // by default we assume that we own the provider
-    PthreadSyncObject * x = NULL;
-    x = new PthreadSyncObject();
     mIsAutoReconnect = true;
     mLastActivityTime=0;
 
@@ -64,7 +61,7 @@ Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/, 
 Calibration::~Calibration()
 {
     //Destructor
-    if(!mProviderIsLocked && mProvider!=NULL) delete mProvider;
+    if(!mProviderIsLocked && mProvider!=nullptr) delete mProvider;
 }
 
 
@@ -74,10 +71,9 @@ void Calibration::UseProvider( DataProvider * provider, bool lockProvider/*=true
     // set provider to use. 
     //if lockProvider==true, than @see Connect, @see Disconnect and @see SetConnectionString 
     //will not affect connection of provider. The provider will not be deleted in destruction. 
-    Lock();
+    std::lock_guard<std::mutex> lock(mReadMutex);
 	mProvider = provider;	
 	mProviderIsLocked = lockProvider;
-    Unlock();
 }
 
 
@@ -453,7 +449,7 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
     
 	auto assignment = GetAssignment(namepath, true);
     
-    if(assignment == NULL) return false; //TODO possibly exception throwing?
+    if(assignment == nullptr) return false; //TODO possibly exception throwing?
 
     //Get data
     values.clear();
@@ -575,14 +571,14 @@ bool Calibration::GetCalib(int &value, const string & namepath)
 string Calibration::GetConnectionString() const
 {
     //
-    if (mProvider!=NULL) return mProvider->GetConnectionString();
+    if (mProvider!=nullptr) return mProvider->GetConnectionString();
     
     return string();
 }
 
 
 //______________________________________________________________________________
-    Assignment* Calibration::GetAssignment(const string& namepath, bool loadColumns /*=true*/)
+Assignment* Calibration::GetAssignment(const string& namepath, bool loadColumns /*=true*/)
 {
     /** @brief Gets the assignment from provider using namepath
      * namepath is the common ccdb request; @see GetCalib
@@ -624,7 +620,7 @@ string Calibration::GetConnectionString() const
 
     if(time > 0)
     {
-		assigment = (mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation,loadColumns));
+		assigment = (mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation, loadColumns));
 	}
     else
 	{
@@ -642,22 +638,6 @@ string Calibration::GetConnectionString() const
 
 
 //______________________________________________________________________________
-void Calibration::Lock()
-{
-    //Thread mutex lock for multithreaded operations
-    CCDBGlobalMutex::Instance()->ReadConstantsLock();
-}
-
-
-//______________________________________________________________________________
-void Calibration::Unlock()
-{
-    //Thread mutex Unlock lock for multithreaded operations
-    CCDBGlobalMutex::Instance()->ReadConstantsRelease();
-}
-
-
-//______________________________________________________________________________
 void Calibration::GetListOfNamepaths( vector<string> &namepaths )
 {
    /** @brief Get list of all type tables with full path
@@ -670,7 +650,7 @@ void Calibration::GetListOfNamepaths( vector<string> &namepaths )
 
     vector<ConstantsTypeTable*> tables;
     std::lock_guard<std::mutex> lock(mReadMutex);
-	 bool ok = mProvider->SearchConstantsTypeTables(tables, "*");
+	 bool ok = mProvider->GetAllConstantsTypeTables(tables, /*loadColumns*/ false);
 
     if(!ok)
     {

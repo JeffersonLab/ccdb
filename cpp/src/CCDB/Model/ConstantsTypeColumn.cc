@@ -107,12 +107,6 @@ void ConstantsTypeColumn::SetModifiedTime( time_t val )
 	mModifiedTime = val;
 }
 
-dbkey_t ConstantsTypeColumn::GetTypeTableId() const
-{
-	if(mTypeTable == NULL) return mDBTypeTableId;
-	return mTypeTable->GetId();
-}
-
 
 ConstantsTypeColumn::ColumnTypes ConstantsTypeColumn::GetType() const
 {
@@ -132,10 +126,7 @@ void ConstantsTypeColumn::SetType( ColumnTypes val )
 {	
 	mType = val;
 }
-ConstantsTypeTable * ConstantsTypeColumn::GetTypeTable() const
-{
-	return mTypeTable;
-}
+
 
 void ConstantsTypeColumn::SetTypeTable( ConstantsTypeTable * val )
 {

@@ -58,95 +58,7 @@ std::string ccdb::StringUtils::Encode( const string& source )
 
     return rs;
 }
-std::string ccdb::StringUtils::vFormat( const char *fmt, va_list ap)
-{
-    // Formats a string using a printf style format descriptor.
-    // Existing string contents will be overwritten.
 
-    size_t buflen = 20 + 20 * strlen(fmt);    // pick a number, any strictly positive number
-    char *buffer = (char*)malloc(buflen);
-    if (buffer == NULL)
-    {
-        //Aha! It is an error!
-        fprintf(stderr, "Error allocating memory in ccdb::Console::vFormat( const char *fmt, va_list ap) ");
-        return string();
-    }
-
-    va_list sap;
-    D__VA_COPY(sap, ap);
-
-   int n, vc = 0;
-again:
-   n = vsnprintf(buffer, buflen, fmt, ap);
-   // old vsnprintf's return -1 if string is truncated new ones return
-   // total number of characters that would have been written
-   if (n == -1 || n >= buflen) {
-      if (n == -1)
-         buflen *= 2;
-      else
-         buflen = n+1;
-      buffer = (char*)realloc(buffer, buflen);
-      va_end(ap);
-      D__VA_COPY(ap, sap);
-      vc = 1;
-      goto again;
-   }
-   va_end(sap);
-   if (vc)
-      va_end(ap);
-   return string(buffer);
-}
-
-std::string ccdb::StringUtils::Format(const char *va_(fmt), ...)
-{
-   // Static method which formats a string using a printf style format
-   // descriptor and return a TString. Same as TString::Form() but it is
-   // not needed to first create a TString.
-
-   va_list ap;
-   va_start(ap, va_(fmt));
-   string str(vFormat(va_(fmt), ap));
-   va_end(ap);
-   return str;
-}
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-
-//______________________________________________________________________________
-char * make_message(const char *fmt, ...) 
-{
-        /* Guess we need no more than 100 bytes. */
-        int n, size = 100;
-        char *p, *np;
-        va_list ap;
-
-        if ((p = (char *) malloc (size)) == NULL)
-            return NULL;
-
-        while (1) {
-            /* Try to print in the allocated space. */
-            va_start(ap, fmt);
-            n = vsnprintf (p, size, fmt, ap);
-            va_end(ap);
-            /* If that worked, return the string. */
-            if (n > -1 && n < size)
-                return p;
-            /* Else try again with more space. */
-            if (n > -1)    /* glibc 2.1 */
-                size = n+1; /* precisely what is needed */
-            else           /* glibc 2.0 */
-                size *= 2;  /* twice the old size */
-            if ((np = (char *)realloc (p, size)) == NULL) {
-                free(p);
-                return NULL;
-            } else {
-                p = np;
-            }
-        }
-}
 
 
 //_____________________________________________________________________________________________________________
@@ -305,7 +217,7 @@ std::string ccdb::StringUtils::ParseString( const string& source, bool *result/*
 
 
 //_______________________________________________________________________________________
-time_t ccdb::StringUtils::ParseUnixTime( const string& source, bool *result/*=NULL*/  )
+time_t ccdb::StringUtils::ParseUnixTime( const std::string& source, bool *result/*=NULL*/  )
 {   
     return static_cast<time_t>(ParseULong(source, result));
 }
@@ -313,9 +225,9 @@ time_t ccdb::StringUtils::ParseUnixTime( const string& source, bool *result/*=NU
 
 
 //____________________________________________________________________________________________
-void ccdb::StringUtils::LexicalSplit( std::vector<string>& tokens, const std::string& source )
+void ccdb::StringUtils::LexicalSplit( std::vector<std::string>& tokens, const std::string& source )
 {
-    std::vector<string> tokens;
+
 
     //clear output
     tokens.clear();

@@ -3,7 +3,7 @@
 
 #include "CCDB/Log.h"
 #include "CCDB/Globals.h"
-#include "CCDB/GlobalMutex.h"
+
 
 using namespace std;
 namespace ccdb

@@ -12,45 +12,45 @@
 
 namespace ccdb {
 
-class RunRange
-{
-public:
-	RunRange();
+    class RunRange
+    {
+    public:
+        RunRange();
 
-	virtual ~RunRange();
-	
-	int			GetId() const;		//! Database id
-	int			GetMax() const;		///
-	int			GetMin() const;
-	std::string GetName() const;
-	std::string GetComment() const;
+        virtual ~RunRange();
 
-	void		SetId(int val);
-	void		SetMax(int val);
-	void		SetMin(int val);
-	void		SetName(std::string val);
-	void		SetComment(std::string val);
-	void		SetRange(int min, int max);
+        int			GetId() const;		//! Database id
+        int			GetMax() const;		///
+        int			GetMin() const;
+        std::string GetName() const;
+        std::string GetComment() const;
 
-	time_t GetCreatedTime() const { return mCreatedTime; }
-	void SetCreatedTime(time_t val) { mCreatedTime = val; }
-	time_t GetModifiedTime() const { return mModifiedTime; }
-	void SetModifiedTime(time_t val) { mModifiedTime = val; }
-protected:
+        void		SetId(int val);
+        void		SetMax(int val);
+        void		SetMin(int val);
+        void		SetName(std::string val);
+        void		SetComment(std::string val);
+        void		SetRange(int min, int max);
 
-private:
-	int mMin;
-	int mMax;
-	std::string mName;
-	std::string mComment;
-	time_t mCreatedTime;
-	time_t mModifiedTime;
-	
-	int mId;	//Database ID of the object
-	
-	RunRange(const RunRange& rhs);	
-	RunRange& operator=(const RunRange& rhs);
-};
+        time_t GetCreatedTime() const { return mCreatedTime; }
+        void SetCreatedTime(time_t val) { mCreatedTime = val; }
+        time_t GetModifiedTime() const { return mModifiedTime; }
+        void SetModifiedTime(time_t val) { mModifiedTime = val; }
+    protected:
+
+    private:
+        int mMin;
+        int mMax;
+        std::string mName;
+        std::string mComment;
+        time_t mCreatedTime;
+        time_t mModifiedTime;
+
+        int mId;	//Database ID of the object
+
+        RunRange(const RunRange& rhs);
+        RunRange& operator=(const RunRange& rhs);
+    };
 
 }
 

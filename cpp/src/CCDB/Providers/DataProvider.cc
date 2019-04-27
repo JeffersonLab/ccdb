@@ -15,8 +15,7 @@ namespace ccdb
 {
 
 //______________________________________________________________________________
-DataProvider::DataProvider(void):
-    mMaximumErrorsToHold(100)
+DataProvider::DataProvider()
 {
     //Constructor
 	ClearErrorsOnFunctionStart();
@@ -25,7 +24,7 @@ DataProvider::DataProvider(void):
 
 
 //______________________________________________________________________________
-DataProvider::~DataProvider(void)
+DataProvider::~DataProvider()
 {
 	//Guess what is it?
 }
@@ -54,9 +53,6 @@ bool DataProvider::ValidateName(const string& name )
 }
 
 
-//----------------------------------------------------------------------------------------
-//	C O N N E C T I O N
-//----------------------------------------------------------------------------------------
 
 
 //______________________________________________________________________________
@@ -73,10 +69,7 @@ std::string DataProvider::GetConnectionString()
     return mConnectionString;
 }
 
-//----------------------------------------------------------------------------------------
-//	D I R E C T O R Y   M A N G E M E N T
-//----------------------------------------------------------------------------------------
-#pragma region Directory management
+
 //______________________________________________________________________________
 Directory* DataProvider::GetDirectory( const string& path )
 {
@@ -110,7 +103,7 @@ void DataProvider::BuildDirectoryDependencies()
 	mDirectoriesByFullPath[mRootDir->GetFullPath()] = mRootDir;
 
 	//begin loop through the directories
-	vector<Directory *>::iterator dirIter = mDirectories.begin();
+	auto dirIter = mDirectories.begin();
 	for(;dirIter < mDirectories.end(); dirIter++)
 	{
 		// retrieve parent id 
@@ -120,7 +113,7 @@ void DataProvider::BuildDirectoryDependencies()
 		if(dir->GetParentId() >0)
 		{
 			//this directory must have a parent! so now search it
-			map<int,Directory *>::iterator parentDirIter = mDirectoriesById.find(dir->GetParentId()) ;
+			auto parentDirIter = mDirectoriesById.find(dir->GetParentId()) ;
 			if(parentDirIter!=mDirectoriesById.end())
 			{
 				//We found parent
@@ -128,9 +121,7 @@ void DataProvider::BuildDirectoryDependencies()
 			}
 			else
 			{
-				//TODO : ADD error, parent Id not found
-				Error(CCDB_ERROR_NO_PARENT_DIRECTORY,"MySQLDataProvider::BuildDirectoryDependences", "Parent directory with wrong id");
-				continue; //we have to stop operate this directory...
+				throw runtime_error("ccdb::DataProvider::BuildDirectoryDependencies=>Parent directory with wrong id");
 			}
 		}
 		else
@@ -140,7 +131,6 @@ void DataProvider::BuildDirectoryDependencies()
 			// so we place it to root directory
 			mRootDir->AddSubdirectory(*dirIter);
 		}
-
 
 		//add to our full path map
 		mDirectoriesByFullPath[dir->GetFullPath()] = dir;
@@ -165,70 +155,18 @@ Directory*const DataProvider::GetRootDirectory()
 }
 
 
-//______________________________________________________________________________
-bool DataProvider::CheckDirectoryListActual()
-{
-    //Checks if directory list is actual i.e. nobody changed directories in database
-	//TODO: method should check the database if the directories was updated in DB. Now it only checks if directories were loaded
-
-	if(!mDirsAreLoaded) return false; //directories are not loaded
-
-	return !mNeedCheckDirectoriesUpdate; 
-}
-
 
 //______________________________________________________________________________
-bool DataProvider::UpdateDirectoriesIfNeeded()
+void DataProvider::UpdateDirectoriesIfNeeded()
 {	
     //Update directories structure if this is required
 
 	//Logic to check directories...
-	if(!this->mDirsAreLoaded) return LoadDirectories();
-	return true;
+	if(!this->mDirsAreLoaded) LoadDirectories();
 }
 
 
 
-//______________________________________________________________________________
-vector<Directory *> DataProvider::SearchDirectories( const string& searchPattern, const string& parentPath/*=""*/, int startWith/*=0*/, int select/*=0*/ )
-{
-    /** @brief Searches for directory 
-     *
-     * Searches directories that matches the pattern 
-     * inside parent directory with path @see parentPath 
-     * or globally through all type tables if parentPath is empty
-     * The pattern might contain
-     * '*' - any character sequence 
-     * '?' - any single character
-     *
-     * paging could be done with @see startWith  @see take
-     * startWith=0 and take=0 means select all records;
-     *
-     * objects that are contained in vector<DDirectory *>& resultDirectories will be
-     * 1) if this provider owned - deleted (@see ReleaseOwnership)
-     * 2) if not owned - just leaved on user control
-     *
-     * @param  [in]  searchPattern		Pattern to search
-     * @param  [in]  parentPath			Parent path. If NULL search through all directories
-     * @param  [in]  startRecord		record number to start with
-     * @param  [in]  selectRecords		number of records to select. 0 means select all records
-     * @return bool true if there were error (even if 0 directories found) 
-     */
-
-	vector<Directory *> result;
-	SearchDirectories(result, searchPattern, parentPath, startWith, select);
-	return result;
-}
-
-#pragma endregion Directory management
-
-//----------------------------------------------------------------------------------------
-//	C O N S T A N T   T Y P E   T A B L E
-//----------------------------------------------------------------------------------------
-
-#pragma region Type tables
-
-//______________________________________________________________________________
 ConstantsTypeTable * DataProvider::GetConstantsTypeTable(const string& path, bool loadColumns/*=false*/ )
 {
 	/** @brief Gets ConstantsType information from the DB
@@ -242,7 +180,7 @@ ConstantsTypeTable * DataProvider::GetConstantsTypeTable(const string& path, boo
 	string dirPath = PathUtils::ExtractDirectory(path);
 
 	//and directory
-	Directory *dir = GetDirectory(dirPath.c_str());
+	Directory *dir = GetDirectory(dirPath);
 	//probably one may wish to check dir to be !=NULL,
 	//but such check is in GetConstantsTypeTable(const char* name, DDirectory *parentDir);
 
@@ -253,148 +191,6 @@ ConstantsTypeTable * DataProvider::GetConstantsTypeTable(const string& path, boo
 	return GetConstantsTypeTable(name, dir, loadColumns);
 }
 
-
-
-
-
-//----------------------------------------------------------------------------------------
-//	A S S I G N M E N T S
-//----------------------------------------------------------------------------------------
-
-
-
-Assignment* DataProvider::GetAssignmentFull( int run, const string& path, const string& variation )
-{
-	/** @brief Get last Assignment with all related objects
-     *
-     * @param     int run
-     * @param     path to constant path
-     * @return NULL if no assignment is found or error
-     */
-	
-	vector<Assignment *> assigments;
-	if(!GetAssignments(assigments, path, run,run, "", variation, 0, 0, 0, 1, 0))
-	{
-		return NULL;
-	}
-
-	if(assigments.size()<=0) return NULL;
-
-	return *assigments.begin();
-
-}
-
-Assignment* DataProvider::GetAssignmentFull( int run, const string& path,int version, const string& variation/*= "default"*/)
-{
-	/** @brief  Get specified version of Assignment with all related objects
-     *
-     * @param     int run
-     * @param     const char * path
-     * @param     const char * variation
-     * @param     int version
-     * @return   DAssignment*
-     */
-
-	//get table! 
-	vector<Assignment *> assigments;
-	if(!GetAssignments(assigments, path, run,run, "", variation, 0, 0, 1, 1, version))
-	{
-		return NULL;
-	}
-
-	if(assigments.size()<=0) return NULL;
-
-	return *assigments.begin();
-}
-
-
-
-//----------------------------------------------------------------------------------------
-//	E R R O R   H A N D L I N G 
-//----------------------------------------------------------------------------------------
-
-//______________________________________________________________________________
-int DataProvider::GetNErrors()
-{
-	//Get number of errors 
-	return mErrorCodes.size();
-}
-
-
-//______________________________________________________________________________
-const vector<int>& DataProvider::GetErrorCodes()
-{
-	//Get vector of last errors 
-	return mErrorCodes;
-}
-
-
-//______________________________________________________________________________
-int DataProvider::GetLastError()
-{
-	//Gets last of the last error
-	return mLastError;
-}
-
-
-//______________________________________________________________________________
-void DataProvider::Error(int errorCode, const string& module, const string& message)
-{
-	//Logs error 
-	CCDBError * error  = new CCDBError();
-	error->SetId(errorCode);
-	error->SetSource(module);
-	error->SetMessage(message);
-	error->SetLevel(1);
-	//add error 
-	mErrorCodes.push_back(errorCode);
-	mLastError = errorCode;
-	
-	//cut array if needed
-	while(mErrorCodes.size()> mMaximumErrorsToHold) mErrorCodes.erase(mErrorCodes.begin());
-	
-	//do log error
-	Log::Error(errorCode, module, message);
-}
-
-
-//______________________________________________________________________________
-void DataProvider::ClearErrorsOnFunctionStart()
-{
-	//Clear error state on start of each function that emmits error
-	mErrorCodes.clear();
-	mLastError = CCDB_NO_ERRORS;
-}
-
-
-//______________________________________________________________________________
-void DataProvider::Warning( int errorCode, const string& module, const string& message )
-{
-	//add error 
-	mErrorCodes.push_back(errorCode);
-	mLastError = errorCode;
-
-	//cut array if needed
-	while(mErrorCodes.size()> mMaximumErrorsToHold) mErrorCodes.erase(mErrorCodes.begin());
-
-	//do log error
-	Log::Warning(errorCode, module, message);
-}
-
-
-//______________________________________________________________________________
-void DataProvider::ClearErrors()
-{
-	mErrorCodes.clear();
-	mLastError = CCDB_NO_ERRORS;
-}
-
-
-//______________________________________________________________________________
-std::vector<CCDBError *> DataProvider::GetErrors()
-{
-	return mErrors;
-}
 
 } //namespace ccdb
 
