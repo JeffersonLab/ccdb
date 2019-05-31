@@ -151,8 +151,9 @@ class ConstantSet(Base):
     _vault = Column('vault', Text, nullable=False)
     created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
-    assignment = relationship("Assignment", uselist=False, back_populates="constant_set")
     type_table_id = Column('constantTypeId', Integer, ForeignKey('typeTables.id'), nullable=False, index=True)
+    assignments = relationship("Assignment", uselist=True, back_populates="constant_set")
+   
 
     @property
     def vault(self):
@@ -204,6 +205,7 @@ class Assignment(Base):
                                 back_populates="assignment",
                                 cascade="all, delete, delete-orphan",
                                 single_parent=True)
+    
     run_range_id = Column('runRangeId', Integer, ForeignKey('runRanges.id'), index=True)
     run_range = relationship("RunRange", backref=backref('assignments'))
     variation_id = Column('variationId', Integer, ForeignKey('variations.id'), nullable=False, index=True)
@@ -309,6 +311,9 @@ class Variation(Base):
                        server_default=text("'1'"), default=1)
     parent = relation('Variation', remote_side=[id])
     children = relation("Variation")
+
+    is_locked = Column('isLocked', Boolean, nullable=False, default=True)
+    lock_time = Column(DateTime, default=datetime.datetime.now, nullable=False)
 
     _description = Column("description", String(255))   # (!) Deprecated! Is here for C++ compatibility with 1.06.1
 

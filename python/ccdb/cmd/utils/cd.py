@@ -26,7 +26,7 @@ class ChangeDir(ConsoleUtilBase):
     #variables for each process
     rawentry = "/"       #object path with possible pattern, like /mole/*
     
-    def print_help(ChangeDir):
+    def print_help(self, ChangeDir):
         print (""" Change current directory """)
     # ---- end of print_help() ----
 

@@ -21,8 +21,7 @@ CREATE TABLE IF NOT EXISTS `ccdb`.`runRanges` (
   `comment` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
-  INDEX `run search` (`runMin` ASC, `runMax` ASC))
-ENGINE = MyISAM;
+  INDEX `run search` (`runMin` ASC, `runMax` ASC));
 
 
 -- -----------------------------------------------------
@@ -40,10 +39,8 @@ CREATE TABLE IF NOT EXISTS `ccdb`.`variations` (
   `comment` TEXT NULL DEFAULT NULL,
   `parentId` INT NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `name_search` USING HASH (`name` ASC),
-  INDEX `fk_variations_variations1_idx` (`parentId` ASC))
-ENGINE = MyISAM;
+  INDEX `fk_variations_variations1_idx` (`parentId` ASC));
 
 
 -- -----------------------------------------------------
@@ -61,8 +58,7 @@ CREATE TABLE IF NOT EXISTS `ccdb`.`directories` (
   `comment` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_directories_directories1_idx` (`parentId` ASC),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
-ENGINE = MyISAM;
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC));
 
 
 -- -----------------------------------------------------
@@ -83,8 +79,7 @@ CREATE TABLE IF NOT EXISTS `ccdb`.`typeTables` (
   `comment` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
-  INDEX `fk_constantTypes_directories1_idx` (`directoryId` ASC))
-ENGINE = MyISAM;
+  INDEX `fk_constantTypes_directories1_idx` (`directoryId` ASC));
 
 
 -- -----------------------------------------------------
@@ -100,8 +95,7 @@ CREATE TABLE IF NOT EXISTS `ccdb`.`constantSets` (
   `constantTypeId` INT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
-  INDEX `fk_constantSets_constantTypes1_idx` (`constantTypeId` ASC))
-ENGINE = MyISAM;
+  INDEX `fk_constantSets_constantTypes1_idx` (`constantTypeId` ASC));
 
 
 -- -----------------------------------------------------
