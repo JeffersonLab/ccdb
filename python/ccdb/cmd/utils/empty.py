@@ -90,15 +90,15 @@ class Empty(ConsoleUtilBase):
             log.debug(LogFmt("{0}Empty is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
 
-        #prepare variables for the new command
+        # prepare variables for the new command
         self.__cleanup()
 
-        #get provider class which has functions for all CCDB database operation
+        # get provider class which has functions for all CCDB database operation
         assert self.context
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
 
-        #process arguments
+        # process arguments
         parsed_args = self.process_arguments(args)
 
         if not self.validate(parsed_args):
@@ -115,9 +115,9 @@ class Empty(ConsoleUtilBase):
         # the return is like application ret. 0 means OK
         return 0
 
-#----------------------------------------
+# ----------------------------------------
 #   process_arguments 
-#----------------------------------------  
+# ----------------------------------------
     def process_arguments(self, args):
         #solo arguments
 
@@ -129,9 +129,9 @@ class Empty(ConsoleUtilBase):
 
         return parser.parse_args(args)
 
-#----------------------------------------
+# ----------------------------------------
 #   validate 
-#----------------------------------------  
+# ----------------------------------------
     def validate(self, parsed_args):
         if not ccdb.path_utils.validate_name(parsed_args.raw_path):
             log.error("The wrong path is given")
@@ -139,9 +139,9 @@ class Empty(ConsoleUtilBase):
 
         return True
 
-#----------------------------------------
+# ----------------------------------------
 #   print_help 
-#----------------------------------------
+# ----------------------------------------
     def print_help(self):
         """Prints help for the command"""
         

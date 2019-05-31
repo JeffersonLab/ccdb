@@ -45,7 +45,7 @@ def get_ccdb_home_path():
 
 def init_ccdb_console():
     from .cmd import ConsoleContext
-    import cmd.colorama
+    import ccdb.cmd.colorama
 
     # TODO move ccdb to pure logging. NO print command at all
 

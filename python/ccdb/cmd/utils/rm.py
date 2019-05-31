@@ -149,7 +149,7 @@ class Remove(ConsoleUtilBase):
     def print_warning(self):
         """print warning"""
         
-        print """ 
+        print (""" 
                     (!) WARNING (!) 
           CCDB is no-delete storage by design!
 
@@ -159,7 +159,7 @@ which using this names.
 
 Deleting a table and recreating with different signature could 
 lead to even more severe hard-to-diagnose errors.
-"""
+""")
         
 
 
@@ -169,7 +169,7 @@ lead to even more severe hard-to-diagnose errors.
     def print_help(self):
         """Prints help of the command"""
           
-        print """Removes type table, directory or variation
+        print ("""Removes type table, directory or variation
     rm <type table path>   - removes type table with given path
     rm -d <directory path> - removes directory with given path
     rm -v <variation name> - removes variation with given name
@@ -179,4 +179,4 @@ lead to even more severe hard-to-diagnose errors.
 
    -f or --force - removes object without question
     
-    """
+    """)

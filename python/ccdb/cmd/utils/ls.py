@@ -239,9 +239,9 @@ class List(ConsoleUtilBase):
 
         #print this directory
         if not printFullPath:
-            print "".join(["   " for i in range(0, level)]) + directory.name
+            print ("".join(["   " for i in range(0, level)]) + directory.name)
         else:
-            print directory.path
+            print (directory.path)
 
         #print subdirectories recursively
         sub_dirs = directory.sub_dirs
@@ -274,7 +274,7 @@ class List(ConsoleUtilBase):
     def print_help(self):
         """Prints help of the command"""
 
-        print """
+        print ("""
 Lists directories and tables for current directory
 
 - Accepts wildcards symbols '*', and '?'
@@ -289,7 +289,7 @@ keys:
     -x or --dtree        - draws directory tree
 
     -l or --extended     - shows extended info when is used on table
-"""
+""")
 
 
 class ListTasks(object):

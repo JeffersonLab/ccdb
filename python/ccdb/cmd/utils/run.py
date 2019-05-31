@@ -24,7 +24,7 @@ class CurrentRun(ConsoleUtilBase):
     short_descr = "gets or sets current working run"
     
     def print_help(self):
-        print """ gets or sets current working run
+        print (""" gets or sets current working run
         run (with no arguments) will display current working run
         run <run_number> will set current working run to this number
 
@@ -40,7 +40,7 @@ Example:
    > ccdb -r 1000 cat /test/some_constants
 
 If no run specified at ccdb start, current working run is 0
-        """ 
+        """)
     # ---- end of print_help() ----
 
 
@@ -60,7 +60,7 @@ If no run specified at ccdb start, current working run is 0
                 return 1
         else:
             #get working run
-            print self.context.current_run
+            print (self.context.current_run)
         
         # all is fine
         return 0

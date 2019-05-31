@@ -29,7 +29,7 @@ class CurrentVariation(ConsoleUtilBase):
     short_descr = "gets or sets current working variation"
     
     def print_help(self):
-        print """Gets or sets current working variation
+        print ("""Gets or sets current working variation
         var (no arguments)     displays current variation
         var <variation_name>   sets current variation
 
@@ -44,7 +44,7 @@ Current working variation can be set on ccdb start by '-v' flag.
    \\> ccdb -v smith cat /test/some_constants   #set variation at ccdb start
 
 If no variation specified at ccdb start, current working variation is 'default'
-        """
+        """)
     # ---- end of print_help() ----
 
 
@@ -62,7 +62,7 @@ If no variation specified at ccdb start, current working variation is 'default'
             log.info(Lfm("Working variation is set to '{}'", self.context.current_variation))
         else:
             #get working run
-            print self.context.current_variation
+            print (self.context.current_variation)
         
         # all is fine
         return 0
