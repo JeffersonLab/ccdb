@@ -1,5 +1,5 @@
 # orm/state.py
-# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -13,15 +13,26 @@ defines a large part of the ORM's interactivity.
 """
 
 import weakref
-from .. import util
-from . import exc as orm_exc, interfaces
-from .path_registry import PathRegistry
-from .base import PASSIVE_NO_RESULT, SQL_OK, NEVER_SET, ATTR_WAS_SET, \
-    NO_VALUE, PASSIVE_NO_INITIALIZE, INIT_OK, PASSIVE_OFF
+
 from . import base
+from . import exc as orm_exc
+from . import interfaces
+from .base import ATTR_WAS_SET
+from .base import INIT_OK
+from .base import NEVER_SET
+from .base import NO_VALUE
+from .base import PASSIVE_NO_INITIALIZE
+from .base import PASSIVE_NO_RESULT
+from .base import PASSIVE_OFF
+from .base import SQL_OK
+from .path_registry import PathRegistry
+from .. import exc as sa_exc
+from .. import inspection
+from .. import util
 
 
-class InstanceState(interfaces.InspectionAttr):
+@inspection._self_inspects
+class InstanceState(interfaces.InspectionAttrInfo):
     """tracks state information at the instance level.
 
     The :class:`.InstanceState` is a key object used by the
@@ -56,9 +67,12 @@ class InstanceState(interfaces.InspectionAttr):
     _strong_obj = None
     modified = False
     expired = False
-    deleted = False
+    _deleted = False
     _load_pending = False
+    _orphaned_outside_of_session = False
     is_instance = True
+    identity_token = None
+    _last_known_values = ()
 
     callables = ()
     """A namespace where a per-state loader callable can be associated.
@@ -87,7 +101,6 @@ class InstanceState(interfaces.InspectionAttr):
        see also the ``unmodified`` collection which is intersected
        against this set when a refresh operation occurs."""
 
-
     @util.memoized_property
     def attrs(self):
         """Return a namespace representing each attribute on
@@ -101,10 +114,7 @@ class InstanceState(interfaces.InspectionAttr):
 
         """
         return util.ImmutableProperties(
-            dict(
-                (key, AttributeState(self, key))
-                for key in self.manager
-            )
+            dict((key, AttributeState(self, key)) for key in self.manager)
         )
 
     @property
@@ -116,8 +126,7 @@ class InstanceState(interfaces.InspectionAttr):
             :ref:`session_object_states`
 
         """
-        return self.key is None and \
-            not self._attached
+        return self.key is None and not self._attached
 
     @property
     def pending(self):
@@ -129,20 +138,82 @@ class InstanceState(interfaces.InspectionAttr):
             :ref:`session_object_states`
 
         """
-        return self.key is None and \
-            self._attached
+        return self.key is None and self._attached
+
+    @property
+    def deleted(self):
+        """Return true if the object is :term:`deleted`.
+
+        An object that is in the deleted state is guaranteed to
+        not be within the :attr:`.Session.identity_map` of its parent
+        :class:`.Session`; however if the session's transaction is rolled
+        back, the object will be restored to the persistent state and
+        the identity map.
+
+        .. note::
+
+            The :attr:`.InstanceState.deleted` attribute refers to a specific
+            state of the object that occurs between the "persistent" and
+            "detached" states; once the object is :term:`detached`, the
+            :attr:`.InstanceState.deleted` attribute **no longer returns
+            True**; in order to detect that a state was deleted, regardless
+            of whether or not the object is associated with a
+            :class:`.Session`, use the :attr:`.InstanceState.was_deleted`
+            accessor.
+
+        .. versionadded: 1.1
+
+        .. seealso::
+
+            :ref:`session_object_states`
+
+        """
+        return self.key is not None and self._attached and self._deleted
+
+    @property
+    def was_deleted(self):
+        """Return True if this object is or was previously in the
+        "deleted" state and has not been reverted to persistent.
+
+        This flag returns True once the object was deleted in flush.
+        When the object is expunged from the session either explicitly
+        or via transaction commit and enters the "detached" state,
+        this flag will continue to report True.
+
+        .. versionadded:: 1.1 - added a local method form of
+           :func:`.orm.util.was_deleted`.
+
+        .. seealso::
+
+            :attr:`.InstanceState.deleted` - refers to the "deleted" state
+
+            :func:`.orm.util.was_deleted` - standalone function
+
+            :ref:`session_object_states`
+
+        """
+        return self._deleted
 
     @property
     def persistent(self):
         """Return true if the object is :term:`persistent`.
+
+        An object that is in the persistent state is guaranteed to
+        be within the :attr:`.Session.identity_map` of its parent
+        :class:`.Session`.
+
+        .. versionchanged:: 1.1 The :attr:`.InstanceState.persistent`
+           accessor no longer returns True for an object that was
+           "deleted" within a flush; use the :attr:`.InstanceState.deleted`
+           accessor to detect this state.   This allows the "persistent"
+           state to guarantee membership in the identity map.
 
         .. seealso::
 
             :ref:`session_object_states`
 
             """
-        return self.key is not None and \
-            self._attached
+        return self.key is not None and self._attached and not self._deleted
 
     @property
     def detached(self):
@@ -153,14 +224,27 @@ class InstanceState(interfaces.InspectionAttr):
             :ref:`session_object_states`
 
         """
-        return self.key is not None and \
-            not self._attached
+        return self.key is not None and not self._attached
 
     @property
     @util.dependencies("sqlalchemy.orm.session")
     def _attached(self, sessionlib):
-        return self.session_id is not None and \
-            self.session_id in sessionlib._sessions
+        return (
+            self.session_id is not None
+            and self.session_id in sessionlib._sessions
+        )
+
+    def _track_last_known_value(self, key):
+        """Track the last known value of a particular key after expiration
+        operations.
+
+        .. versionadded:: 1.3
+
+        """
+
+        if key not in self._last_known_values:
+            self._last_known_values = dict(self._last_known_values)
+            self._last_known_values[key] = NO_VALUE
 
     @property
     @util.dependencies("sqlalchemy.orm.session")
@@ -194,7 +278,7 @@ class InstanceState(interfaces.InspectionAttr):
         Returns ``None`` if the object has no primary key identity.
 
         .. note::
-            An object which is transient or pending
+            An object which is :term:`transient` or :term:`pending`
             does **not** have a mapped identity until it is flushed,
             even if its attributes include primary key values.
 
@@ -228,7 +312,7 @@ class InstanceState(interfaces.InspectionAttr):
 
     @util.memoized_property
     def mapper(self):
-        """Return the :class:`.Mapper` used for this mapepd object."""
+        """Return the :class:`.Mapper` used for this mapped object."""
         return self.manager.mapper
 
     @property
@@ -241,8 +325,52 @@ class InstanceState(interfaces.InspectionAttr):
         """
         return bool(self.key)
 
-    def _detach(self):
-        self.session_id = self._strong_obj = None
+    @classmethod
+    def _detach_states(self, states, session, to_transient=False):
+        persistent_to_detached = (
+            session.dispatch.persistent_to_detached or None
+        )
+        deleted_to_detached = session.dispatch.deleted_to_detached or None
+        pending_to_transient = session.dispatch.pending_to_transient or None
+        persistent_to_transient = (
+            session.dispatch.persistent_to_transient or None
+        )
+
+        for state in states:
+            deleted = state._deleted
+            pending = state.key is None
+            persistent = not pending and not deleted
+
+            state.session_id = None
+
+            if to_transient and state.key:
+                del state.key
+            if persistent:
+                if to_transient:
+                    if persistent_to_transient is not None:
+                        obj = state.obj()
+                        if obj is not None:
+                            persistent_to_transient(session, obj)
+                elif persistent_to_detached is not None:
+                    obj = state.obj()
+                    if obj is not None:
+                        persistent_to_detached(session, obj)
+            elif deleted and deleted_to_detached is not None:
+                obj = state.obj()
+                if obj is not None:
+                    deleted_to_detached(session, obj)
+            elif pending and pending_to_transient is not None:
+                obj = state.obj()
+                if obj is not None:
+                    pending_to_transient(session, obj)
+
+            state._strong_obj = None
+
+    def _detach(self, session=None):
+        if session:
+            InstanceState._detach_states([self], session)
+        else:
+            self.session_id = self._strong_obj = None
 
     def _dispose(self):
         self._detach()
@@ -258,6 +386,13 @@ class InstanceState(interfaces.InspectionAttr):
         Will not work otherwise!
 
         """
+
+        # Python builtins become undefined during interpreter shutdown.
+        # Guard against exceptions during this phase, as the method cannot
+        # proceed in any case if builtins have been undefined.
+        if dict is None:
+            return
+
         instance_dict = self._instance_dict()
         if instance_dict is not None:
             instance_dict._fast_discard(self)
@@ -317,23 +452,33 @@ class InstanceState(interfaces.InspectionAttr):
         return self._pending_mutations[key]
 
     def __getstate__(self):
-        state_dict = {'instance': self.obj()}
+        state_dict = {"instance": self.obj()}
         state_dict.update(
-            (k, self.__dict__[k]) for k in (
-                'committed_state', '_pending_mutations', 'modified',
-                'expired', 'callables', 'key', 'parents', 'load_options',
-                'class_', 'expired_attributes'
-            ) if k in self.__dict__
+            (k, self.__dict__[k])
+            for k in (
+                "committed_state",
+                "_pending_mutations",
+                "modified",
+                "expired",
+                "callables",
+                "key",
+                "parents",
+                "load_options",
+                "class_",
+                "expired_attributes",
+                "info",
+            )
+            if k in self.__dict__
         )
         if self.load_path:
-            state_dict['load_path'] = self.load_path.serialize()
+            state_dict["load_path"] = self.load_path.serialize()
 
-        state_dict['manager'] = self.manager._serialize(self, state_dict)
+        state_dict["manager"] = self.manager._serialize(self, state_dict)
 
         return state_dict
 
     def __setstate__(self, state_dict):
-        inst = state_dict['instance']
+        inst = state_dict["instance"]
         if inst is not None:
             self.obj = weakref.ref(inst, self._cleanup)
             self.class_ = inst.__class__
@@ -342,37 +487,53 @@ class InstanceState(interfaces.InspectionAttr):
             # due to storage of state in "parents".  "class_"
             # also new.
             self.obj = None
-            self.class_ = state_dict['class_']
+            self.class_ = state_dict["class_"]
 
-        self.committed_state = state_dict.get('committed_state', {})
-        self._pending_mutations = state_dict.get('_pending_mutations', {})
-        self.parents = state_dict.get('parents', {})
-        self.modified = state_dict.get('modified', False)
-        self.expired = state_dict.get('expired', False)
-        if 'callables' in state_dict:
-            self.callables = state_dict['callables']
+        self.committed_state = state_dict.get("committed_state", {})
+        self._pending_mutations = state_dict.get("_pending_mutations", {})
+        self.parents = state_dict.get("parents", {})
+        self.modified = state_dict.get("modified", False)
+        self.expired = state_dict.get("expired", False)
+        if "info" in state_dict:
+            self.info.update(state_dict["info"])
+        if "callables" in state_dict:
+            self.callables = state_dict["callables"]
 
-        try:
-            self.expired_attributes = state_dict['expired_attributes']
-        except KeyError:
-            self.expired_attributes = set()
-            # 0.9 and earlier compat
-            for k in list(self.callables):
-                if self.callables[k] is self:
-                    self.expired_attributes.add(k)
-                    del self.callables[k]
+            try:
+                self.expired_attributes = state_dict["expired_attributes"]
+            except KeyError:
+                self.expired_attributes = set()
+                # 0.9 and earlier compat
+                for k in list(self.callables):
+                    if self.callables[k] is self:
+                        self.expired_attributes.add(k)
+                        del self.callables[k]
+        else:
+            if "expired_attributes" in state_dict:
+                self.expired_attributes = state_dict["expired_attributes"]
+            else:
+                self.expired_attributes = set()
 
-        self.__dict__.update([
-            (k, state_dict[k]) for k in (
-                'key', 'load_options',
-            ) if k in state_dict
-        ])
+        self.__dict__.update(
+            [
+                (k, state_dict[k])
+                for k in ("key", "load_options")
+                if k in state_dict
+            ]
+        )
+        if self.key:
+            try:
+                self.identity_token = self.key[2]
+            except IndexError:
+                # 1.1 and earlier compat before identity_token
+                assert len(self.key) == 2
+                self.key = self.key + (None,)
+                self.identity_token = None
 
-        if 'load_path' in state_dict:
-            self.load_path = PathRegistry.\
-                deserialize(state_dict['load_path'])
+        if "load_path" in state_dict:
+            self.load_path = PathRegistry.deserialize(state_dict["load_path"])
 
-        state_dict['manager'](self, inst, state_dict)
+        state_dict["manager"](self, inst, state_dict)
 
     def _reset(self, dict_, key):
         """Remove the given attribute and any
@@ -385,22 +546,30 @@ class InstanceState(interfaces.InspectionAttr):
         if self.callables:
             self.callables.pop(key, None)
 
+    def _copy_callables(self, from_):
+        if "callables" in from_.__dict__:
+            self.callables = dict(from_.callables)
+
     @classmethod
     def _instance_level_callable_processor(cls, manager, fn, key):
         impl = manager[key].impl
         if impl.collection:
+
             def _set_callable(state, dict_, row):
-                if 'callables' not in state.__dict__:
+                if "callables" not in state.__dict__:
                     state.callables = {}
                 old = dict_.pop(key, None)
                 if old is not None:
                     impl._invalidate_collection(old)
                 state.callables[key] = fn
+
         else:
+
             def _set_callable(state, dict_, row):
-                if 'callables' not in state.__dict__:
+                if "callables" not in state.__dict__:
                     state.callables = {}
                 state.callables[key] = fn
+
         return _set_callable
 
     def _expire(self, dict_, modified_set):
@@ -413,15 +582,18 @@ class InstanceState(interfaces.InspectionAttr):
 
         self._strong_obj = None
 
-        if '_pending_mutations' in self.__dict__:
-            del self.__dict__['_pending_mutations']
+        if "_pending_mutations" in self.__dict__:
+            del self.__dict__["_pending_mutations"]
 
-        if 'parents' in self.__dict__:
-            del self.__dict__['parents']
+        if "parents" in self.__dict__:
+            del self.__dict__["parents"]
 
         self.expired_attributes.update(
-            [impl.key for impl in self.manager._scalar_loader_impls
-             if impl.expire_missing or impl.key in dict_]
+            [
+                impl.key
+                for impl in self.manager._scalar_loader_impls
+                if impl.expire_missing or impl.key in dict_
+            ]
         )
 
         if self.callables:
@@ -432,25 +604,40 @@ class InstanceState(interfaces.InspectionAttr):
             collection = dict_.pop(k)
             collection._sa_adapter.invalidated = True
 
+        if self._last_known_values:
+            self._last_known_values.update(
+                (k, dict_[k]) for k in self._last_known_values if k in dict_
+            )
+
         for key in self.manager._all_key_set.intersection(dict_):
             del dict_[key]
 
         self.manager.dispatch.expire(self, None)
 
-    def _expire_attributes(self, dict_, attribute_names):
-        pending = self.__dict__.get('_pending_mutations', None)
+    def _expire_attributes(self, dict_, attribute_names, no_loader=False):
+        pending = self.__dict__.get("_pending_mutations", None)
 
         callables = self.callables
 
         for key in attribute_names:
             impl = self.manager[key].impl
             if impl.accepts_scalar_loader:
+                if no_loader and (impl.callable_ or key in callables):
+                    continue
+
                 self.expired_attributes.add(key)
                 if callables and key in callables:
                     del callables[key]
-            old = dict_.pop(key, None)
-            if impl.collection and old is not None:
+            old = dict_.pop(key, NO_VALUE)
+            if impl.collection and old is not NO_VALUE:
                 impl._invalidate_collection(old)
+
+            if (
+                self._last_known_values
+                and key in self._last_known_values
+                and old is not NO_VALUE
+            ):
+                self._last_known_values[key] = old
 
             self.committed_state.pop(key, None)
             if pending:
@@ -468,8 +655,7 @@ class InstanceState(interfaces.InspectionAttr):
         if not passive & SQL_OK:
             return PASSIVE_NO_RESULT
 
-        toload = self.expired_attributes.\
-            intersection(self.unmodified)
+        toload = self.expired_attributes.intersection(self.unmodified)
 
         self.manager.deferred_scalar_loader(self, toload)
 
@@ -490,8 +676,11 @@ class InstanceState(interfaces.InspectionAttr):
     def unmodified_intersection(self, keys):
         """Return self.unmodified.intersection(keys)."""
 
-        return set(keys).intersection(self.manager).\
-            difference(self.committed_state)
+        return (
+            set(keys)
+            .intersection(self.manager)
+            .difference(self.committed_state)
+        )
 
     @property
     def unloaded(self):
@@ -501,14 +690,31 @@ class InstanceState(interfaces.InspectionAttr):
         was never populated or modified.
 
         """
-        return set(self.manager).\
-            difference(self.committed_state).\
-            difference(self.dict)
+        return (
+            set(self.manager)
+            .difference(self.committed_state)
+            .difference(self.dict)
+        )
+
+    @property
+    def unloaded_expirable(self):
+        """Return the set of keys which do not have a loaded value.
+
+        This includes expired attributes and any other attribute that
+        was never populated or modified.
+
+        """
+        return self.unloaded.intersection(
+            attr
+            for attr in self.manager
+            if self.manager[attr].impl.expire_missing
+        )
 
     @property
     def _unloaded_non_object(self):
         return self.unloaded.intersection(
-            attr for attr in self.manager
+            attr
+            for attr in self.manager
             if self.manager[attr].impl.accepts_scalar_loader
         )
 
@@ -516,24 +722,32 @@ class InstanceState(interfaces.InspectionAttr):
         return None
 
     def _modified_event(
-            self, dict_, attr, previous, collection=False, force=False):
-        if not attr.send_modified_events:
-            return
-        if attr.key not in self.committed_state or force:
-            if collection:
-                if previous is NEVER_SET:
-                    if attr.key in dict_:
-                        previous = dict_[attr.key]
+        self, dict_, attr, previous, collection=False, is_userland=False
+    ):
+        if attr:
+            if not attr.send_modified_events:
+                return
+            if is_userland and attr.key not in dict_:
+                raise sa_exc.InvalidRequestError(
+                    "Can't flag attribute '%s' modified; it's not present in "
+                    "the object state" % attr.key
+                )
+            if attr.key not in self.committed_state or is_userland:
+                if collection:
+                    if previous is NEVER_SET:
+                        if attr.key in dict_:
+                            previous = dict_[attr.key]
 
-                if previous not in (None, NO_VALUE, NEVER_SET):
-                    previous = attr.copy(previous)
+                    if previous not in (None, NO_VALUE, NEVER_SET):
+                        previous = attr.copy(previous)
+                self.committed_state[attr.key] = previous
 
-            self.committed_state[attr.key] = previous
+            if attr.key in self._last_known_values:
+                self._last_known_values[attr.key] = NO_VALUE
 
         # assert self._strong_obj is None or self.modified
 
-        if (self.session_id and self._strong_obj is None) \
-                or not self.modified:
+        if (self.session_id and self._strong_obj is None) or not self.modified:
             self.modified = True
             instance_dict = self._instance_dict()
             if instance_dict:
@@ -546,15 +760,13 @@ class InstanceState(interfaces.InspectionAttr):
             if self.session_id:
                 self._strong_obj = inst
 
-            if inst is None:
+            if inst is None and attr:
                 raise orm_exc.ObjectDereferencedError(
                     "Can't emit change event for attribute '%s' - "
                     "parent object of type %s has been garbage "
                     "collected."
-                    % (
-                        self.manager[attr.key],
-                        base.state_class_str(self)
-                    ))
+                    % (self.manager[attr.key], base.state_class_str(self))
+                )
 
     def _commit(self, dict_, keys):
         """Commit attributes.
@@ -572,17 +784,18 @@ class InstanceState(interfaces.InspectionAttr):
         self.expired = False
 
         self.expired_attributes.difference_update(
-            set(keys).intersection(dict_))
+            set(keys).intersection(dict_)
+        )
 
         # the per-keys commit removes object-level callables,
         # while that of commit_all does not.  it's not clear
         # if this behavior has a clear rationale, however tests do
         # ensure this is what it does.
         if self.callables:
-            for key in set(self.callables).\
-                intersection(keys).\
-                    intersection(dict_):
-                    del self.callables[key]
+            for key in (
+                set(self.callables).intersection(keys).intersection(dict_)
+            ):
+                del self.callables[key]
 
     def _commit_all(self, dict_, instance_dict=None):
         """commit all attributes unconditionally.
@@ -603,16 +816,16 @@ class InstanceState(interfaces.InspectionAttr):
         self._commit_all_states([(self, dict_)], instance_dict)
 
     @classmethod
-    def _commit_all_states(self, iter, instance_dict=None):
+    def _commit_all_states(self, iter_, instance_dict=None):
         """Mass / highly inlined version of commit_all()."""
 
-        for state, dict_ in iter:
+        for state, dict_ in iter_:
             state_dict = state.__dict__
 
             state.committed_state.clear()
 
-            if '_pending_mutations' in state_dict:
-                del state_dict['_pending_mutations']
+            if "_pending_mutations" in state_dict:
+                del state_dict["_pending_mutations"]
 
             state.expired_attributes.difference_update(dict_)
 
@@ -662,15 +875,25 @@ class AttributeState(object):
 
         """
         return self.state.manager[self.key].__get__(
-            self.state.obj(), self.state.class_)
+            self.state.obj(), self.state.class_
+        )
 
     @property
     def history(self):
-        """Return the current pre-flush change history for
+        """Return the current **pre-flush** change history for
         this attribute, via the :class:`.History` interface.
 
         This method will **not** emit loader callables if the value of the
         attribute is unloaded.
+
+        .. note::
+
+            The attribute history system tracks changes on a **per flush
+            basis**. Each time the :class:`.Session` is flushed, the history
+            of each attribute is reset to empty.   The :class:`.Session` by
+            default autoflushes each time a :class:`.Query` is invoked.  For
+            options on how to control this, see :ref:`session_flushing`.
+
 
         .. seealso::
 
@@ -680,15 +903,22 @@ class AttributeState(object):
             :func:`.attributes.get_history` - underlying function
 
         """
-        return self.state.get_history(self.key,
-                                      PASSIVE_NO_INITIALIZE)
+        return self.state.get_history(self.key, PASSIVE_NO_INITIALIZE)
 
     def load_history(self):
-        """Return the current pre-flush change history for
+        """Return the current **pre-flush** change history for
         this attribute, via the :class:`.History` interface.
 
         This method **will** emit loader callables if the value of the
         attribute is unloaded.
+
+        .. note::
+
+            The attribute history system tracks changes on a **per flush
+            basis**. Each time the :class:`.Session` is flushed, the history
+            of each attribute is reset to empty.   The :class:`.Session` by
+            default autoflushes each time a :class:`.Query` is invoked.  For
+            options on how to control this, see :ref:`session_flushing`.
 
         .. seealso::
 
@@ -699,8 +929,7 @@ class AttributeState(object):
         .. versionadded:: 0.9.0
 
         """
-        return self.state.get_history(self.key,
-                                      PASSIVE_OFF ^ INIT_OK)
+        return self.state.get_history(self.key, PASSIVE_OFF ^ INIT_OK)
 
 
 class PendingCollection(object):

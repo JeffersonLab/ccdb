@@ -1,5 +1,5 @@
 # sqlite/pysqlcipher.py
-# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -15,16 +15,25 @@
     ``pysqlcipher`` is a fork of the standard ``pysqlite`` driver to make
     use of the `SQLCipher <https://www.zetetic.net/sqlcipher>`_ backend.
 
-    .. versionadded:: 0.9.9
+    ``pysqlcipher3`` is a fork of ``pysqlcipher`` for Python 3. This dialect
+    will attempt to import it if ``pysqlcipher`` is non-present.
+
+    .. versionadded:: 1.1.4 - added fallback import for pysqlcipher3
+
+    .. versionadded:: 0.9.9 - added pysqlcipher dialect
 
 Driver
 ------
 
-The driver here is the `pysqlcipher <https://pypi.python.org/pypi/pysqlcipher>`_
+The driver here is the
+`pysqlcipher <https://pypi.python.org/pypi/pysqlcipher>`_
 driver, which makes use of the SQLCipher engine.  This system essentially
 introduces new PRAGMA commands to SQLite which allows the setting of a
 passphrase and other encryption parameters, allowing the database
 file to be encrypted.
+
+`pysqlcipher3` is a fork of `pysqlcipher` with support for Python 3,
+the driver is the same.
 
 Connect Strings
 ---------------
@@ -66,21 +75,29 @@ to prevent unencrypted connections from being held open for long periods of
 time, at the expense of slower startup time for new connections.
 
 
-"""
+"""  # noqa
+
 from __future__ import absolute_import
+
 from .pysqlite import SQLiteDialect_pysqlite
-from ...engine import url as _url
 from ... import pool
+from ...engine import url as _url
 
 
 class SQLiteDialect_pysqlcipher(SQLiteDialect_pysqlite):
-    driver = 'pysqlcipher'
+    driver = "pysqlcipher"
 
-    pragmas = ('kdf_iter', 'cipher', 'cipher_page_size', 'cipher_use_hmac')
+    pragmas = ("kdf_iter", "cipher", "cipher_page_size", "cipher_use_hmac")
 
     @classmethod
     def dbapi(cls):
-        from pysqlcipher import dbapi2 as sqlcipher
+        try:
+            from pysqlcipher import dbapi2 as sqlcipher
+        except ImportError as e:
+            try:
+                from pysqlcipher3 import dbapi2 as sqlcipher
+            except ImportError:
+                raise e
         return sqlcipher
 
     @classmethod
@@ -88,29 +105,33 @@ class SQLiteDialect_pysqlcipher(SQLiteDialect_pysqlite):
         return pool.SingletonThreadPool
 
     def connect(self, *cargs, **cparams):
-        passphrase = cparams.pop('passphrase', '')
+        passphrase = cparams.pop("passphrase", "")
 
-        pragmas = dict(
-            (key, cparams.pop(key, None)) for key in
-            self.pragmas
+        pragmas = dict((key, cparams.pop(key, None)) for key in self.pragmas)
+
+        conn = super(SQLiteDialect_pysqlcipher, self).connect(
+            *cargs, **cparams
         )
-
-        conn = super(SQLiteDialect_pysqlcipher, self).\
-            connect(*cargs, **cparams)
         conn.execute('pragma key="%s"' % passphrase)
         for prag, value in pragmas.items():
             if value is not None:
-                conn.execute('pragma %s=%s' % (prag, value))
+                conn.execute('pragma %s="%s"' % (prag, value))
 
         return conn
 
     def create_connect_args(self, url):
         super_url = _url.URL(
-            url.drivername, username=url.username,
-            host=url.host, database=url.database, query=url.query)
-        c_args, opts = super(SQLiteDialect_pysqlcipher, self).\
-            create_connect_args(super_url)
-        opts['passphrase'] = url.password
+            url.drivername,
+            username=url.username,
+            host=url.host,
+            database=url.database,
+            query=url.query,
+        )
+        c_args, opts = super(
+            SQLiteDialect_pysqlcipher, self
+        ).create_connect_args(super_url)
+        opts["passphrase"] = url.password
         return c_args, opts
+
 
 dialect = SQLiteDialect_pysqlcipher

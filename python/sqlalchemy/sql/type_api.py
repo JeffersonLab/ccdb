@@ -1,5 +1,5 @@
 # sql/types_api.py
-# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -10,9 +10,13 @@
 """
 
 
-from .. import exc, util
 from . import operators
-from .visitors import Visitable, VisitableType
+from .base import SchemaEventTarget
+from .visitors import Visitable
+from .visitors import VisitableType
+from .. import exc
+from .. import util
+
 
 # these are back-assigned by sqltypes.
 BOOLEANTYPE = None
@@ -20,6 +24,8 @@ INTEGERTYPE = None
 NULLTYPE = None
 STRINGTYPE = None
 MATCHTYPE = None
+INDEXABLE = None
+_resolve_value_to_type = None
 
 
 class TypeEngine(Visitable):
@@ -46,7 +52,8 @@ class TypeEngine(Visitable):
 
 
         """
-        __slots__ = 'expr', 'type'
+
+        __slots__ = "expr", "type"
 
         default_comparator = None
 
@@ -54,16 +61,15 @@ class TypeEngine(Visitable):
             self.expr = expr
             self.type = expr.type
 
-        @util.dependencies('sqlalchemy.sql.default_comparator')
+        @util.dependencies("sqlalchemy.sql.default_comparator")
         def operate(self, default_comparator, op, *other, **kwargs):
             o = default_comparator.operator_lookup[op.__name__]
             return o[0](self.expr, op, *(other + o[1:]), **kwargs)
 
-        @util.dependencies('sqlalchemy.sql.default_comparator')
+        @util.dependencies("sqlalchemy.sql.default_comparator")
         def reverse_operate(self, default_comparator, op, other, **kwargs):
             o = default_comparator.operator_lookup[op.__name__]
-            return o[0](self.expr, op, other,
-                        reverse=True, *o[1:], **kwargs)
+            return o[0](self.expr, op, other, reverse=True, *o[1:], **kwargs)
 
         def _adapt_expression(self, op, other_comparator):
             """evaluate the return type of <self> <op> <othertype>,
@@ -77,7 +83,7 @@ class TypeEngine(Visitable):
             However, using the addition operator with an :class:`.Integer`
             and a :class:`.Date` object will produce a :class:`.Date`, assuming
             "days delta" behavior by the database (in reality, most databases
-            other than Postgresql don't accept this particular operation).
+            other than PostgreSQL don't accept this particular operation).
 
             The method returns a tuple of the form <operator>, <type>.
             The resulting operator and type will be those applied to the
@@ -90,10 +96,11 @@ class TypeEngine(Visitable):
             boolean comparison or special SQL keywords like MATCH or BETWEEN.
 
             """
-            return op, other_comparator.type
+
+            return op, self.type
 
         def __reduce__(self):
-            return _reconstitute_comparator, (self.expr, )
+            return _reconstitute_comparator, (self.expr,)
 
     hashable = True
     """Flag, if False, means values from this type aren't hashable.
@@ -123,10 +130,84 @@ class TypeEngine(Visitable):
     of existing types, or alternatively by using :class:`.TypeDecorator`.
     See the documentation section :ref:`types_operators` for examples.
 
-    .. versionadded:: 0.8  The expression system was enhanced to support
-      customization of operators on a per-type level.
+    """
+
+    should_evaluate_none = False
+    """If True, the Python constant ``None`` is considered to be handled
+    explicitly by this type.
+
+    The ORM uses this flag to indicate that a positive value of ``None``
+    is passed to the column in an INSERT statement, rather than omitting
+    the column from the INSERT statement which has the effect of firing
+    off column-level defaults.   It also allows types which have special
+    behavior for Python None, such as a JSON type, to indicate that
+    they'd like to handle the None value explicitly.
+
+    To set this flag on an existing type, use the
+    :meth:`.TypeEngine.evaluates_none` method.
+
+    .. seealso::
+
+        :meth:`.TypeEngine.evaluates_none`
+
+    .. versionadded:: 1.1
+
 
     """
+
+    def evaluates_none(self):
+        """Return a copy of this type which has the :attr:`.should_evaluate_none`
+        flag set to True.
+
+        E.g.::
+
+                Table(
+                    'some_table', metadata,
+                    Column(
+                        String(50).evaluates_none(),
+                        nullable=True,
+                        server_default='no value')
+                )
+
+        The ORM uses this flag to indicate that a positive value of ``None``
+        is passed to the column in an INSERT statement, rather than omitting
+        the column from the INSERT statement which has the effect of firing
+        off column-level defaults.   It also allows for types which have
+        special behavior associated with the Python None value to indicate
+        that the value doesn't necessarily translate into SQL NULL; a
+        prime example of this is a JSON type which may wish to persist the
+        JSON value ``'null'``.
+
+        In all cases, the actual NULL SQL value can be always be
+        persisted in any column by using
+        the :obj:`~.expression.null` SQL construct in an INSERT statement
+        or associated with an ORM-mapped attribute.
+
+        .. note::
+
+            The "evaluates none" flag does **not** apply to a value
+            of ``None`` passed to :paramref:`.Column.default` or
+            :paramref:`.Column.server_default`; in these cases, ``None``
+            still means "no default".
+
+        .. versionadded:: 1.1
+
+        .. seealso::
+
+            :ref:`session_forcing_null` - in the ORM documentation
+
+            :paramref:`.postgresql.JSON.none_as_null` - PostgreSQL JSON
+            interaction with this flag.
+
+            :attr:`.TypeEngine.should_evaluate_none` - class-level flag
+
+        """
+        typ = self.copy()
+        typ.should_evaluate_none = True
+        return typ
+
+    def copy(self, **kw):
+        return self.adapt(self.__class__)
 
     def compare_against_backend(self, dialect, conn_type):
         """Compare this type against the given backend type.
@@ -137,7 +218,7 @@ class TypeEngine(Visitable):
         where it can be consumed by schema comparison tools such as
         Alembic autogenerate.
 
-        A future release of SQLAlchemy will potentially impement this method
+        A future release of SQLAlchemy will potentially implement this method
         for builtin types as well.
 
         The function should return True if this type is equivalent to the
@@ -215,9 +296,9 @@ class TypeEngine(Visitable):
         The method is evaluated at statement compile time, as opposed
         to statement construction time.
 
-        See also:
+        .. seealso::
 
-        :ref:`types_sql_value_processing`
+            :ref:`types_sql_value_processing`
 
         """
 
@@ -232,8 +313,10 @@ class TypeEngine(Visitable):
 
         """
 
-        return self.__class__.column_expression.__code__ \
+        return (
+            self.__class__.column_expression.__code__
             is not TypeEngine.column_expression.__code__
+        )
 
     def bind_expression(self, bindvalue):
         """"Given a bind value (i.e. a :class:`.BindParameter` instance),
@@ -254,9 +337,9 @@ class TypeEngine(Visitable):
         may be used in an executemany() call against an arbitrary number
         of bound parameter sets.
 
-        See also:
+        .. seealso::
 
-        :ref:`types_sql_value_processing`
+            :ref:`types_sql_value_processing`
 
         """
         return None
@@ -270,8 +353,14 @@ class TypeEngine(Visitable):
 
         """
 
-        return self.__class__.bind_expression.__code__ \
+        return (
+            self.__class__.bind_expression.__code__
             is not TypeEngine.bind_expression.__code__
+        )
+
+    @staticmethod
+    def _to_instance(cls_or_self):
+        return to_instance(cls_or_self)
 
     def compare_values(self, x, y):
         """Compare two values for equality."""
@@ -307,7 +396,7 @@ class TypeEngine(Visitable):
         raise NotImplementedError()
 
     def with_variant(self, type_, dialect_name):
-        """Produce a new type object that will utilize the given
+        r"""Produce a new type object that will utilize the given
         type when applied to the dialect of the given name.
 
         e.g.::
@@ -325,13 +414,11 @@ class TypeEngine(Visitable):
         itself provides a :meth:`.Variant.with_variant`
         that can be called repeatedly.
 
-        :param type_: a :class:`.TypeEngine` that will be selected
+        :param type\_: a :class:`.TypeEngine` that will be selected
          as a variant from the originating type, when a dialect
          of the given name is in use.
         :param dialect_name: base name of the dialect which uses
          this type. (i.e. ``'postgresql'``, ``'mysql'``, etc.)
-
-        .. versionadded:: 0.7.2
 
         """
         return Variant(self, {dialect_name: to_instance(type_)})
@@ -356,27 +443,41 @@ class TypeEngine(Visitable):
 
         """
         try:
-            return dialect._type_memos[self]['impl']
+            return dialect._type_memos[self]["impl"]
         except KeyError:
-            return self._dialect_info(dialect)['impl']
+            return self._dialect_info(dialect)["impl"]
+
+    def _unwrapped_dialect_impl(self, dialect):
+        """Return the 'unwrapped' dialect impl for this type.
+
+        For a type that applies wrapping logic (e.g. TypeDecorator), give
+        us the real, actual dialect-level type that is used.
+
+        This is used by TypeDecorator itself as well at least one case where
+        dialects need to check that a particular specific dialect-level
+        type is in use, within the :meth:`.DefaultDialect.set_input_sizes`
+        method.
+
+        """
+        return self.dialect_impl(dialect)
 
     def _cached_literal_processor(self, dialect):
         """Return a dialect-specific literal processor for this type."""
         try:
-            return dialect._type_memos[self]['literal']
+            return dialect._type_memos[self]["literal"]
         except KeyError:
             d = self._dialect_info(dialect)
-            d['literal'] = lp = d['impl'].literal_processor(dialect)
+            d["literal"] = lp = d["impl"].literal_processor(dialect)
             return lp
 
     def _cached_bind_processor(self, dialect):
         """Return a dialect-specific bind processor for this type."""
 
         try:
-            return dialect._type_memos[self]['bind']
+            return dialect._type_memos[self]["bind"]
         except KeyError:
             d = self._dialect_info(dialect)
-            d['bind'] = bp = d['impl'].bind_processor(dialect)
+            d["bind"] = bp = d["impl"].bind_processor(dialect)
             return bp
 
     def _cached_result_processor(self, dialect, coltype):
@@ -389,8 +490,17 @@ class TypeEngine(Visitable):
             # key assumption: DBAPI type codes are
             # constants.  Else this dictionary would
             # grow unbounded.
-            d[coltype] = rp = d['impl'].result_processor(dialect, coltype)
+            d[coltype] = rp = d["impl"].result_processor(dialect, coltype)
             return rp
+
+    def _cached_custom_processor(self, dialect, key, fn):
+        try:
+            return dialect._type_memos[self][key]
+        except KeyError:
+            d = self._dialect_info(dialect)
+            impl = d["impl"]
+            d[key] = result = fn(impl)
+            return result
 
     def _dialect_info(self, dialect):
         """Return a dialect-specific registry which
@@ -405,7 +515,7 @@ class TypeEngine(Visitable):
                 impl = self.adapt(type(self))
             # this can't be self, else we create a cycle
             assert impl is not self
-            dialect._type_memos[self] = d = {'impl': impl}
+            dialect._type_memos[self] = d = {"impl": impl}
             return d
 
     def _gen_dialect_impl(self, dialect):
@@ -440,9 +550,11 @@ class TypeEngine(Visitable):
         end-user customization of this behavior.
 
         """
-        _coerced_type = _type_map.get(type(value), NULLTYPE)
-        if _coerced_type is NULLTYPE or _coerced_type._type_affinity \
-                is self._type_affinity:
+        _coerced_type = _resolve_value_to_type(value)
+        if (
+            _coerced_type is NULLTYPE
+            or _coerced_type._type_affinity is self._type_affinity
+        ):
             return self
         else:
             return _coerced_type
@@ -478,8 +590,9 @@ class TypeEngine(Visitable):
 
     def __str__(self):
         if util.py2k:
-            return unicode(self.compile()).\
-                encode('ascii', 'backslashreplace')
+            return unicode(self.compile()).encode(  # noqa
+                "ascii", "backslashreplace"
+            )  # noqa
         else:
             return str(self.compile())
 
@@ -537,15 +650,16 @@ class UserDefinedType(util.with_metaclass(VisitableCheckKWArg, TypeEngine)):
        ``type_expression``, if it receives ``**kw`` in its signature.
 
     """
+
     __visit_name__ = "user_defined"
 
-    ensure_kwarg = 'get_col_spec'
+    ensure_kwarg = "get_col_spec"
 
     class Comparator(TypeEngine.Comparator):
         __slots__ = ()
 
         def _adapt_expression(self, op, other_comparator):
-            if hasattr(self.type, 'adapt_operator'):
+            if hasattr(self.type, "adapt_operator"):
                 util.warn_deprecated(
                     "UserDefinedType.adapt_operator is deprecated.  Create "
                     "a UserDefinedType.Comparator subclass instead which "
@@ -554,7 +668,9 @@ class UserDefinedType(util.with_metaclass(VisitableCheckKWArg, TypeEngine)):
                 )
                 return self.type.adapt_operator(op), self.type
             else:
-                return op, self.type
+                return super(
+                    UserDefinedType.Comparator, self
+                )._adapt_expression(op, other_comparator)
 
     comparator_factory = Comparator
 
@@ -567,17 +683,79 @@ class UserDefinedType(util.with_metaclass(VisitableCheckKWArg, TypeEngine)):
         the same type as this one.  See
         :meth:`.TypeDecorator.coerce_compared_value` for more detail.
 
-        .. versionchanged:: 0.8 :meth:`.UserDefinedType.coerce_compared_value`
-           now returns ``self`` by default, rather than falling onto the
-           more fundamental behavior of
-           :meth:`.TypeEngine.coerce_compared_value`.
-
         """
 
         return self
 
 
-class TypeDecorator(TypeEngine):
+class Emulated(object):
+    """Mixin for base types that emulate the behavior of a DB-native type.
+
+    An :class:`.Emulated` type will use an available database type
+    in conjunction with Python-side routines and/or database constraints
+    in order to approximate the behavior of a database type that is provided
+    natively by some backends.  When a native-providing backend is in
+    use, the native version of the type is used.  This native version
+    should include the :class:`.NativeForEmulated` mixin to allow it to be
+    distinguished from :class:`.Emulated`.
+
+    Current examples of :class:`.Emulated` are:  :class:`.Interval`,
+    :class:`.Enum`, :class:`.Boolean`.
+
+    .. versionadded:: 1.2.0b3
+
+    """
+
+    def adapt_to_emulated(self, impltype, **kw):
+        """Given an impl class, adapt this type to the impl assuming "emulated".
+
+        The impl should also be an "emulated" version of this type,
+        most likely the same class as this type itself.
+
+        e.g.: sqltypes.Enum adapts to the Enum class.
+
+        """
+        return super(Emulated, self).adapt(impltype, **kw)
+
+    def adapt(self, impltype, **kw):
+        if hasattr(impltype, "adapt_emulated_to_native"):
+
+            if self.native:
+                # native support requested, dialect gave us a native
+                # implementor, pass control over to it
+                return impltype.adapt_emulated_to_native(self, **kw)
+            else:
+                # impltype adapts to native, and we are not native,
+                # so reject the impltype in favor of "us"
+                impltype = self.__class__
+
+        if issubclass(impltype, self.__class__):
+            return self.adapt_to_emulated(impltype, **kw)
+        else:
+            return super(Emulated, self).adapt(impltype, **kw)
+
+
+class NativeForEmulated(object):
+    """Indicates DB-native types supported by an :class:`.Emulated` type.
+
+    .. versionadded:: 1.2.0b3
+
+    """
+
+    @classmethod
+    def adapt_emulated_to_native(cls, impl, **kw):
+        """Given an impl, adapt this type's class to the impl assuming "native".
+
+        The impl will be an :class:`.Emulated` class but not a
+        :class:`.NativeForEmulated`.
+
+        e.g.: postgresql.ENUM produces a type given an Enum instance.
+
+        """
+        return cls(**kw)
+
+
+class TypeDecorator(SchemaEventTarget, TypeEngine):
     """Allows the creation of types which add additional functionality
     to an existing type.
 
@@ -602,7 +780,7 @@ class TypeDecorator(TypeEngine):
           def process_result_value(self, value, dialect):
               return value[7:]
 
-          def copy(self):
+          def copy(self, **kw):
               return MyType(self.impl.length)
 
     The class-level "impl" attribute is required, and can reference any
@@ -656,6 +834,26 @@ class TypeDecorator(TypeEngine):
             else:
                 return self
 
+    .. warning::
+
+       Note that the **behavior of coerce_compared_value is not inherited
+       by default from that of the base type**.
+       If the :class:`.TypeDecorator` is augmenting a
+       type that requires special logic for certain types of operators,
+       this method **must** be overridden.  A key example is when decorating
+       the :class:`.postgresql.JSON` and :class:`.postgresql.JSONB` types;
+       the default rules of :meth:`.TypeEngine.coerce_compared_value` should
+       be used in order to deal with operators like index operations::
+
+            class MyJsonType(TypeDecorator):
+                impl = postgresql.JSON
+
+                def coerce_compared_value(self, op, value):
+                    return self.impl.coerce_compared_value(op, value)
+
+       Without the above step, index operations such as ``mycol['foo']``
+       will cause the index value ``'foo'`` to be JSON encoded.
+
     """
 
     __visit_name__ = "type_decorator"
@@ -678,14 +876,16 @@ class TypeDecorator(TypeEngine):
 
         """
 
-        if not hasattr(self.__class__, 'impl'):
-            raise AssertionError("TypeDecorator implementations "
-                                 "require a class-level variable "
-                                 "'impl' which refers to the class of "
-                                 "type being decorated")
+        if not hasattr(self.__class__, "impl"):
+            raise AssertionError(
+                "TypeDecorator implementations "
+                "require a class-level variable "
+                "'impl' which refers to the class of "
+                "type being decorated"
+            )
         self.impl = to_instance(self.__class__.impl, *args, **kwargs)
 
-    coerce_to_is_types = (util.NoneType, )
+    coerce_to_is_types = (util.NoneType,)
     """Specify those Python types which should be coerced at the expression
     level to "IS <constant>" when compared using ``==`` (and same for
     ``IS NOT`` in conjunction with ``!=``.
@@ -700,34 +900,33 @@ class TypeDecorator(TypeEngine):
     return an empty tuple, in which case no values will be coerced to
     constants.
 
-    ..versionadded:: 0.8.2
-        Added :attr:`.TypeDecorator.coerce_to_is_types` to allow for easier
-        control of ``__eq__()`` ``__ne__()`` operations.
-
     """
 
     class Comparator(TypeEngine.Comparator):
         __slots__ = ()
 
         def operate(self, op, *other, **kwargs):
-            kwargs['_python_is_types'] = self.expr.type.coerce_to_is_types
+            kwargs["_python_is_types"] = self.expr.type.coerce_to_is_types
             return super(TypeDecorator.Comparator, self).operate(
-                op, *other, **kwargs)
+                op, *other, **kwargs
+            )
 
         def reverse_operate(self, op, other, **kwargs):
-            kwargs['_python_is_types'] = self.expr.type.coerce_to_is_types
+            kwargs["_python_is_types"] = self.expr.type.coerce_to_is_types
             return super(TypeDecorator.Comparator, self).reverse_operate(
-                op, other, **kwargs)
+                op, other, **kwargs
+            )
 
     @property
     def comparator_factory(self):
         if TypeDecorator.Comparator in self.impl.comparator_factory.__mro__:
             return self.impl.comparator_factory
         else:
-            return type("TDComparator",
-                        (TypeDecorator.Comparator,
-                         self.impl.comparator_factory),
-                        {})
+            return type(
+                "TDComparator",
+                (TypeDecorator.Comparator, self.impl.comparator_factory),
+                {},
+            )
 
     def _gen_dialect_impl(self, dialect):
         """
@@ -740,13 +939,14 @@ class TypeDecorator(TypeEngine):
         # otherwise adapt the impl type, link
         # to a copy of this TypeDecorator and return
         # that.
-        typedesc = self.load_dialect_impl(dialect).dialect_impl(dialect)
+        typedesc = self._unwrapped_dialect_impl(dialect)
         tt = self.copy()
         if not isinstance(tt, self.__class__):
-            raise AssertionError('Type object %s does not properly '
-                                 'implement the copy() method, it must '
-                                 'return an object of type %s' %
-                                 (self, self.__class__))
+            raise AssertionError(
+                "Type object %s does not properly "
+                "implement the copy() method, it must "
+                "return an object of type %s" % (self, self.__class__)
+            )
         tt.impl = typedesc
         return tt
 
@@ -756,6 +956,22 @@ class TypeDecorator(TypeEngine):
         #todo
         """
         return self.impl._type_affinity
+
+    def _set_parent(self, column):
+        """Support SchemaEventTarget"""
+
+        super(TypeDecorator, self)._set_parent(column)
+
+        if isinstance(self.impl, SchemaEventTarget):
+            self.impl._set_parent(column)
+
+    def _set_parent_with_dispatch(self, parent):
+        """Support SchemaEventTarget"""
+
+        super(TypeDecorator, self)._set_parent_with_dispatch(parent)
+
+        if isinstance(self.impl, SchemaEventTarget):
+            self.impl._set_parent_with_dispatch(parent)
 
     def type_engine(self, dialect):
         """Return a dialect-specific :class:`.TypeEngine` instance
@@ -790,6 +1006,20 @@ class TypeDecorator(TypeEngine):
 
         """
         return self.impl
+
+    def _unwrapped_dialect_impl(self, dialect):
+        """Return the 'unwrapped' dialect impl for this type.
+
+        For a type that applies wrapping logic (e.g. TypeDecorator), give
+        us the real, actual dialect-level type that is used.
+
+        This is used by TypeDecorator itself as well at least one case where
+        dialects need to check that a particular specific dialect-level
+        type is in use, within the :meth:`.DefaultDialect.set_input_sizes`
+        method.
+
+        """
+        return self.load_dialect_impl(dialect).dialect_impl(dialect)
 
     def __getattr__(self, key):
         """Proxy all other undefined accessors to the underlying
@@ -873,8 +1103,10 @@ class TypeDecorator(TypeEngine):
 
         """
 
-        return self.__class__.process_bind_param.__code__ \
+        return (
+            self.__class__.process_bind_param.__code__
             is not TypeDecorator.process_bind_param.__code__
+        )
 
     @util.memoized_property
     def _has_literal_processor(self):
@@ -883,8 +1115,10 @@ class TypeDecorator(TypeEngine):
 
         """
 
-        return self.__class__.process_literal_param.__code__ \
+        return (
+            self.__class__.process_literal_param.__code__
             is not TypeDecorator.process_literal_param.__code__
+        )
 
     def literal_processor(self, dialect):
         """Provide a literal processing function for the given
@@ -921,9 +1155,12 @@ class TypeDecorator(TypeEngine):
         if process_param:
             impl_processor = self.impl.literal_processor(dialect)
             if impl_processor:
+
                 def process(value):
                     return impl_processor(process_param(value, dialect))
+
             else:
+
                 def process(value):
                     return process_param(value, dialect)
 
@@ -954,10 +1191,12 @@ class TypeDecorator(TypeEngine):
             process_param = self.process_bind_param
             impl_processor = self.impl.bind_processor(dialect)
             if impl_processor:
+
                 def process(value):
                     return impl_processor(process_param(value, dialect))
 
             else:
+
                 def process(value):
                     return process_param(value, dialect)
 
@@ -974,8 +1213,10 @@ class TypeDecorator(TypeEngine):
         exception throw.
 
         """
-        return self.__class__.process_result_value.__code__ \
+        return (
+            self.__class__.process_result_value.__code__
             is not TypeDecorator.process_result_value.__code__
+        )
 
     def result_processor(self, dialect, coltype):
         """Provide a result value processing function for the given
@@ -991,7 +1232,7 @@ class TypeDecorator(TypeEngine):
         the processing provided by ``self.impl`` is maintained.
 
         :param dialect: Dialect instance in use.
-        :param coltype: An SQLAlchemy data type
+        :param coltype: A SQLAlchemy data type
 
         This method is the reverse counterpart to the
         :meth:`bind_processor` method of this class.
@@ -999,19 +1240,47 @@ class TypeDecorator(TypeEngine):
         """
         if self._has_result_processor:
             process_value = self.process_result_value
-            impl_processor = self.impl.result_processor(dialect,
-                                                        coltype)
+            impl_processor = self.impl.result_processor(dialect, coltype)
             if impl_processor:
+
                 def process(value):
                     return process_value(impl_processor(value), dialect)
 
             else:
+
                 def process(value):
                     return process_value(value, dialect)
 
             return process
         else:
             return self.impl.result_processor(dialect, coltype)
+
+    @util.memoized_property
+    def _has_bind_expression(self):
+        return (
+            self.__class__.bind_expression.__code__
+            is not TypeDecorator.bind_expression.__code__
+        ) or self.impl._has_bind_expression
+
+    def bind_expression(self, bindparam):
+        return self.impl.bind_expression(bindparam)
+
+    @util.memoized_property
+    def _has_column_expression(self):
+        """memoized boolean, check if column_expression is implemented.
+
+        Allows the method to be skipped for the vast majority of expression
+        types that don't use this feature.
+
+        """
+
+        return (
+            self.__class__.column_expression.__code__
+            is not TypeDecorator.column_expression.__code__
+        ) or self.impl._has_column_expression
+
+    def column_expression(self, column):
+        return self.impl.column_expression(column)
 
     def coerce_compared_value(self, op, value):
         """Suggest a type for a 'coerced' Python value in an expression.
@@ -1031,7 +1300,7 @@ class TypeDecorator(TypeEngine):
         """
         return self
 
-    def copy(self):
+    def copy(self, **kw):
         """Produce a copy of this :class:`.TypeDecorator` instance.
 
         This is a shallow copy and is provided to fulfill part of
@@ -1080,8 +1349,6 @@ class Variant(TypeDecorator):
     The :class:`.Variant` type is typically constructed
     using the :meth:`.TypeEngine.with_variant` method.
 
-    .. versionadded:: 0.7.2
-
     .. seealso:: :meth:`.TypeEngine.with_variant` for an example of use.
 
     """
@@ -1097,18 +1364,43 @@ class Variant(TypeDecorator):
         self.impl = base
         self.mapping = mapping
 
+    def coerce_compared_value(self, operator, value):
+        result = self.impl.coerce_compared_value(operator, value)
+        if result is self.impl:
+            return self
+        else:
+            return result
+
     def load_dialect_impl(self, dialect):
         if dialect.name in self.mapping:
             return self.mapping[dialect.name]
         else:
             return self.impl
 
+    def _set_parent(self, column):
+        """Support SchemaEventTarget"""
+
+        if isinstance(self.impl, SchemaEventTarget):
+            self.impl._set_parent(column)
+        for impl in self.mapping.values():
+            if isinstance(impl, SchemaEventTarget):
+                impl._set_parent(column)
+
+    def _set_parent_with_dispatch(self, parent):
+        """Support SchemaEventTarget"""
+
+        if isinstance(self.impl, SchemaEventTarget):
+            self.impl._set_parent_with_dispatch(parent)
+        for impl in self.mapping.values():
+            if isinstance(impl, SchemaEventTarget):
+                impl._set_parent_with_dispatch(parent)
+
     def with_variant(self, type_, dialect_name):
-        """Return a new :class:`.Variant` which adds the given
+        r"""Return a new :class:`.Variant` which adds the given
         type + dialect name to the mapping, in addition to the
         mapping present in this :class:`.Variant`.
 
-        :param type_: a :class:`.TypeEngine` that will be selected
+        :param type\_: a :class:`.TypeEngine` that will be selected
          as a variant from the originating type, when a dialect
          of the given name is in use.
         :param dialect_name: base name of the dialect which uses
@@ -1119,7 +1411,8 @@ class Variant(TypeDecorator):
         if dialect_name in self.mapping:
             raise exc.ArgumentError(
                 "Dialect '%s' is already present in "
-                "the mapping for this Variant" % dialect_name)
+                "the mapping for this Variant" % dialect_name
+            )
         mapping = self.mapping.copy()
         mapping[dialect_name] = type_
         return Variant(self.impl, mapping)
@@ -1161,6 +1454,6 @@ def adapt_type(typeobj, colspecs):
     # but it turns out the originally given "generic" type
     # is actually a subclass of our resulting type, then we were already
     # given a more specific type than that required; so use that.
-    if (issubclass(typeobj.__class__, impltype)):
+    if issubclass(typeobj.__class__, impltype):
         return typeobj
     return typeobj.adapt(impltype)

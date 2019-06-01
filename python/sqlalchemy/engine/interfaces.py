@@ -1,5 +1,5 @@
 # engine/interfaces.py
-# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -7,10 +7,9 @@
 
 """Define core interfaces used by the engine system."""
 
-from .. import util, event
-
-# backwards compat
-from ..sql.compiler import Compiled, TypeCompiler
+from .. import util
+from ..sql.compiler import Compiled  # noqa
+from ..sql.compiler import TypeCompiler  # noqa
 
 
 class Dialect(object):
@@ -100,7 +99,7 @@ class Dialect(object):
     preexecute_autoincrement_sequences
       True if 'implicit' primary key functions must be executed separately
       in order to get their value.   This is currently oriented towards
-      Postgresql.
+      PostgreSQL.
 
     implicit_returning
       use RETURNING or equivalent during INSERT execution in order to load
@@ -109,16 +108,6 @@ class Dialect(object):
       If an insert statement has returning() specified explicitly,
       the "implicit" functionality is not used and inserted_primary_key
       will not be available.
-
-    dbapi_type_map
-      A mapping of DB-API type objects present in this Dialect's
-      DB-API implementation mapped to TypeEngine implementations used
-      by the dialect.
-
-      This is used to apply types to result sets based on the DB-API
-      types present in cursor.description; it only takes effect for
-      result sets against textual statements where no explicit
-      typemap was present.
 
     colspecs
       A dictionary of TypeEngine classes from sqlalchemy.types mapped
@@ -136,7 +125,7 @@ class Dialect(object):
     sequences_optional
       If True, indicates if the "optional" flag on the Sequence() construct
       should signal to not generate a CREATE SEQUENCE. Applies only to
-      dialects that support sequences. Currently used only to allow Postgresql
+      dialects that support sequences. Currently used only to allow PostgreSQL
       SERIAL to be used on a column that specifies Sequence() for usage on
       other backends.
 
@@ -208,7 +197,8 @@ class Dialect(object):
         pass
 
     def reflecttable(
-            self, connection, table, include_columns, exclude_columns):
+        self, connection, table, include_columns, exclude_columns, resolve_fks
+    ):
         """Load table description from the database.
 
         Given a :class:`.Connection` and a
@@ -254,21 +244,21 @@ class Dialect(object):
           a dictionary of the form
               {'name' : str, 'start' :int, 'increment': int, 'minvalue': int,
                'maxvalue': int, 'nominvalue': bool, 'nomaxvalue': bool,
-               'cycle': bool}
+               'cycle': bool, 'cache': int, 'order': bool}
 
         Additional column attributes may be present.
         """
 
         raise NotImplementedError()
 
+    @util.deprecated(
+        "0.8",
+        "The :meth:`.Dialect.get_primary_keys` method is deprecated and "
+        "will be removed in a future release.   Please refer to the "
+        ":meth:`.Dialect.get_pk_constraint` method. ",
+    )
     def get_primary_keys(self, connection, table_name, schema=None, **kw):
         """Return information about primary keys in `table_name`.
-
-
-        Deprecated.  This method is only called by the default
-        implementation of :meth:`.Dialect.get_pk_constraint`.  Dialects should
-        instead implement the :meth:`.Dialect.get_pk_constraint` method
-        directly.
 
         """
 
@@ -377,8 +367,9 @@ class Dialect(object):
         raise NotImplementedError()
 
     def get_unique_constraints(
-            self, connection, table_name, schema=None, **kw):
-        """Return information about unique constraints in `table_name`.
+        self, connection, table_name, schema=None, **kw
+    ):
+        r"""Return information about unique constraints in `table_name`.
 
         Given a string `table_name` and an optional string `schema`, return
         unique constraint information as a list of dicts with these keys:
@@ -394,6 +385,46 @@ class Dialect(object):
           method.
 
         .. versionadded:: 0.9.0
+
+        """
+
+        raise NotImplementedError()
+
+    def get_check_constraints(self, connection, table_name, schema=None, **kw):
+        r"""Return information about check constraints in `table_name`.
+
+        Given a string `table_name` and an optional string `schema`, return
+        check constraint information as a list of dicts with these keys:
+
+        name
+          the check constraint's name
+
+        sqltext
+          the check constraint's SQL expression
+
+        \**kw
+          other options passed to the dialect's get_check_constraints()
+          method.
+
+        .. versionadded:: 1.1.0
+
+        """
+
+        raise NotImplementedError()
+
+    def get_table_comment(self, connection, table_name, schema=None, **kw):
+        r"""Return the "comment" for the table identified by `table_name`.
+
+        Given a string `table_name` and an optional string `schema`, return
+        table comment information as a dictionary with this key:
+
+        text
+           text of the comment
+
+        Raises ``NotImplementedError`` for dialects that don't support
+        comments.
+
+        .. versionadded:: 1.2
 
         """
 
@@ -516,8 +547,6 @@ class Dialect(object):
         detached from the pool, or is being returned beyond the normal
         capacity of the pool.
 
-        .. versionadded:: 0.8
-
         """
 
         raise NotImplementedError()
@@ -581,8 +610,9 @@ class Dialect(object):
 
         raise NotImplementedError()
 
-    def do_rollback_twophase(self, connection, xid, is_prepared=True,
-                             recover=False):
+    def do_rollback_twophase(
+        self, connection, xid, is_prepared=True, recover=False
+    ):
         """Rollback a two phase transaction on the given connection.
 
         :param connection: a :class:`.Connection`.
@@ -595,8 +625,9 @@ class Dialect(object):
 
         raise NotImplementedError()
 
-    def do_commit_twophase(self, connection, xid, is_prepared=True,
-                           recover=False):
+    def do_commit_twophase(
+        self, connection, xid, is_prepared=True, recover=False
+    ):
         """Commit a two phase transaction on the given connection.
 
 
@@ -611,7 +642,7 @@ class Dialect(object):
         raise NotImplementedError()
 
     def do_recover_twophase(self, connection):
-        """Recover list of uncommited prepared two phase transaction
+        """Recover list of uncommitted prepared two phase transaction
         identifiers on the given connection.
 
         :param connection: a :class:`.Connection`.
@@ -632,8 +663,9 @@ class Dialect(object):
 
         raise NotImplementedError()
 
-    def do_execute_no_params(self, cursor, statement, parameters,
-                             context=None):
+    def do_execute_no_params(
+        self, cursor, statement, parameters, context=None
+    ):
         """Provide an implementation of ``cursor.execute(statement)``.
 
         The parameter collection should not be sent.
@@ -779,6 +811,128 @@ class Dialect(object):
 
         """
         pass
+
+
+class CreateEnginePlugin(object):
+    """A set of hooks intended to augment the construction of an
+    :class:`.Engine` object based on entrypoint names in a URL.
+
+    The purpose of :class:`.CreateEnginePlugin` is to allow third-party
+    systems to apply engine, pool and dialect level event listeners without
+    the need for the target application to be modified; instead, the plugin
+    names can be added to the database URL.  Target applications for
+    :class:`.CreateEnginePlugin` include:
+
+    * connection and SQL performance tools, e.g. which use events to track
+      number of checkouts and/or time spent with statements
+
+    * connectivity plugins such as proxies
+
+    Plugins are registered using entry points in a similar way as that
+    of dialects::
+
+        entry_points={
+            'sqlalchemy.plugins': [
+                'myplugin = myapp.plugins:MyPlugin'
+            ]
+
+    A plugin that uses the above names would be invoked from a database
+    URL as in::
+
+        from sqlalchemy import create_engine
+
+        engine = create_engine(
+          "mysql+pymysql://scott:tiger@localhost/test?plugin=myplugin")
+
+    Alternatively, the :paramref:`.create_engine.plugins" argument may be
+    passed as a list to :func:`.create_engine`::
+
+        engine = create_engine(
+          "mysql+pymysql://scott:tiger@localhost/test",
+          plugins=["myplugin"])
+
+    .. versionadded:: 1.2.3  plugin names can also be specified
+       to :func:`.create_engine` as a list
+
+    The ``plugin`` argument supports multiple instances, so that a URL
+    may specify multiple plugins; they are loaded in the order stated
+    in the URL::
+
+        engine = create_engine(
+          "mysql+pymysql://scott:tiger@localhost/"
+          "test?plugin=plugin_one&plugin=plugin_twp&plugin=plugin_three")
+
+    A plugin can receive additional arguments from the URL string as
+    well as from the keyword arguments passed to :func:`.create_engine`.
+    The :class:`.URL` object and the keyword dictionary are passed to the
+    constructor so that these arguments can be extracted from the url's
+    :attr:`.URL.query` collection as well as from the dictionary::
+
+        class MyPlugin(CreateEnginePlugin):
+            def __init__(self, url, kwargs):
+                self.my_argument_one = url.query.pop('my_argument_one')
+                self.my_argument_two = url.query.pop('my_argument_two')
+                self.my_argument_three = kwargs.pop('my_argument_three', None)
+
+    Arguments like those illustrated above would be consumed from the
+    following::
+
+        from sqlalchemy import create_engine
+
+        engine = create_engine(
+          "mysql+pymysql://scott:tiger@localhost/"
+          "test?plugin=myplugin&my_argument_one=foo&my_argument_two=bar",
+          my_argument_three='bat')
+
+    The URL and dictionary are used for subsequent setup of the engine
+    as they are, so the plugin can modify their arguments in-place.
+    Arguments that are only understood by the plugin should be popped
+    or otherwise removed so that they aren't interpreted as erroneous
+    arguments afterwards.
+
+    When the engine creation process completes and produces the
+    :class:`.Engine` object, it is again passed to the plugin via the
+    :meth:`.CreateEnginePlugin.engine_created` hook.  In this hook, additional
+    changes can be made to the engine, most typically involving setup of
+    events (e.g. those defined in :ref:`core_event_toplevel`).
+
+    .. versionadded:: 1.1
+
+    """
+
+    def __init__(self, url, kwargs):
+        """Construct a new :class:`.CreateEnginePlugin`.
+
+        The plugin object is instantiated individually for each call
+        to :func:`.create_engine`.  A single :class:`.Engine` will be
+        passed to the :meth:`.CreateEnginePlugin.engine_created` method
+        corresponding to this URL.
+
+        :param url: the :class:`.URL` object.  The plugin should inspect
+         what it needs here as well as remove its custom arguments from the
+         :attr:`.URL.query` collection.  The URL can be modified in-place
+         in any other way as well.
+        :param kwargs: The keyword arguments passed to :func`.create_engine`.
+         The plugin can read and modify this dictionary in-place, to affect
+         the ultimate arguments used to create the engine.  It should
+         remove its custom arguments from the dictionary as well.
+
+        """
+        self.url = url
+
+    def handle_dialect_kwargs(self, dialect_cls, dialect_args):
+        """parse and modify dialect kwargs"""
+
+    def handle_pool_kwargs(self, pool_cls, pool_args):
+        """parse and modify pool kwargs"""
+
+    def engine_created(self, engine):
+        """Receive the :class:`.Engine` object when it is fully constructed.
+
+        The plugin may make additional changes to the engine, such as
+        registering engine or connection pool events.
+
+        """
 
 
 class ExecutionContext(object):
@@ -963,7 +1117,15 @@ class Connectable(object):
 
         """
 
-    def contextual_connect(self):
+    @util.deprecated(
+        "1.3",
+        "The :meth:`.Engine.contextual_connect` and "
+        ":meth:`.Connection.contextual_connect` methods are deprecated.  This "
+        "method is an artifact of the threadlocal engine strategy which is "
+        "also to be deprecated.   For explicit connections from an "
+        ":class:`.Engine`, use the :meth:`.Engine.connect` method.",
+    )
+    def contextual_connect(self, *arg, **kw):
         """Return a :class:`.Connection` object which may be part of an ongoing
         context.
 
@@ -974,41 +1136,51 @@ class Connectable(object):
 
         """
 
+        return self._contextual_connect(*arg, **kw)
+
+    def _contextual_connect(self):
         raise NotImplementedError()
 
-    @util.deprecated("0.7",
-                     "Use the create() method on the given schema "
-                     "object directly, i.e. :meth:`.Table.create`, "
-                     ":meth:`.Index.create`, :meth:`.MetaData.create_all`")
+    @util.deprecated(
+        "0.7",
+        "The :meth:`.Connectable.create` method is deprecated and will be "
+        "removed in a future release.  Please use the ``.create()`` method "
+        "on specific schema objects to emit DDL sequences, including "
+        ":meth:`.Table.create`, :meth:`.Index.create`, and "
+        ":meth:`.MetaData.create_all`.",
+    )
     def create(self, entity, **kwargs):
         """Emit CREATE statements for the given schema entity.
         """
 
         raise NotImplementedError()
 
-    @util.deprecated("0.7",
-                     "Use the drop() method on the given schema "
-                     "object directly, i.e. :meth:`.Table.drop`, "
-                     ":meth:`.Index.drop`, :meth:`.MetaData.drop_all`")
+    @util.deprecated(
+        "0.7",
+        "The :meth:`.Connectable.drop` method is deprecated and will be "
+        "removed in a future release.  Please use the ``.drop()`` method "
+        "on specific schema objects to emit DDL sequences, including "
+        ":meth:`.Table.drop`, :meth:`.Index.drop`, and "
+        ":meth:`.MetaData.drop_all`.",
+    )
     def drop(self, entity, **kwargs):
         """Emit DROP statements for the given schema entity.
         """
 
         raise NotImplementedError()
 
-    def execute(self, object, *multiparams, **params):
+    def execute(self, object_, *multiparams, **params):
         """Executes the given construct and returns a :class:`.ResultProxy`."""
         raise NotImplementedError()
 
-    def scalar(self, object, *multiparams, **params):
+    def scalar(self, object_, *multiparams, **params):
         """Executes and returns the first column of the first row.
 
         The underlying cursor is closed after execution.
         """
         raise NotImplementedError()
 
-    def _run_visitor(self, visitorcallable, element,
-                     **kwargs):
+    def _run_visitor(self, visitorcallable, element, **kwargs):
         raise NotImplementedError()
 
     def _execute_clauseelement(self, elem, multiparams=None, params=None):

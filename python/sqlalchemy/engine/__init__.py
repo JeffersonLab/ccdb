@@ -1,5 +1,5 @@
 # engine/__init__.py
-# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -51,47 +51,35 @@ url.py
     within a URL.
 """
 
-from .interfaces import (
-    Connectable,
-    Dialect,
-    ExecutionContext,
-    ExceptionContext,
+from . import strategies
+from . import util  # noqa
+from .base import Connection  # noqa
+from .base import Engine  # noqa
+from .base import NestedTransaction  # noqa
+from .base import RootTransaction  # noqa
+from .base import Transaction  # noqa
+from .base import TwoPhaseTransaction  # noqa
+from .interfaces import Compiled  # noqa
+from .interfaces import Connectable  # noqa
+from .interfaces import CreateEnginePlugin  # noqa
+from .interfaces import Dialect  # noqa
+from .interfaces import ExceptionContext  # noqa
+from .interfaces import ExecutionContext  # noqa
+from .interfaces import TypeCompiler  # noqa
+from .result import BaseRowProxy  # noqa
+from .result import BufferedColumnResultProxy  # noqa
+from .result import BufferedColumnRow  # noqa
+from .result import BufferedRowResultProxy  # noqa
+from .result import FullyBufferedResultProxy  # noqa
+from .result import ResultProxy  # noqa
+from .result import RowProxy  # noqa
+from .util import connection_memoize  # noqa
+from ..sql import ddl  # noqa
 
-    # backwards compat
-    Compiled,
-    TypeCompiler
-)
-
-from .base import (
-    Connection,
-    Engine,
-    NestedTransaction,
-    RootTransaction,
-    Transaction,
-    TwoPhaseTransaction,
-)
-
-from .result import (
-    BaseRowProxy,
-    BufferedColumnResultProxy,
-    BufferedColumnRow,
-    BufferedRowResultProxy,
-    FullyBufferedResultProxy,
-    ResultProxy,
-    RowProxy,
-)
-
-from .util import (
-    connection_memoize
-)
-
-
-from . import util, strategies
 
 # backwards compat
-from ..sql import ddl
 
-default_strategy = 'plain'
+default_strategy = "plain"
 
 
 def create_engine(*args, **kwargs):
@@ -146,29 +134,25 @@ def create_engine(*args, **kwargs):
        will match in a case-insensitive fashion, that is,
        ``row['SomeColumn']``.
 
-       .. versionchanged:: 0.8
-           By default, result row names match case-sensitively.
-           In version 0.7 and prior, all matches were case-insensitive.
-
     :param connect_args: a dictionary of options which will be
         passed directly to the DBAPI's ``connect()`` method as
         additional keyword arguments.  See the example
         at :ref:`custom_dbapi_args`.
 
-    :param convert_unicode=False: if set to True, sets
-        the default behavior of ``convert_unicode`` on the
-        :class:`.String` type to ``True``, regardless
-        of a setting of ``False`` on an individual
-        :class:`.String` type, thus causing all :class:`.String`
-        -based columns
-        to accommodate Python ``unicode`` objects.  This flag
-        is useful as an engine-wide setting when using a
-        DBAPI that does not natively support Python
-        ``unicode`` objects and raises an error when
-        one is received (such as pyodbc with FreeTDS).
+    :param convert_unicode=False: if set to True, causes
+        all :class:`.String` datatypes to act as though the
+        :paramref:`.String.convert_unicode` flag has been set to ``True``,
+        regardless of a setting of ``False`` on an individual :class:`.String`
+        type.  This has the effect of causing all :class:`.String` -based
+        columns to accommodate Python Unicode objects directly as though the
+        datatype were the :class:`.Unicode` type.
 
-        See :class:`.String` for further details on
-        what this flag indicates.
+        .. deprecated:: 1.3
+
+            The :paramref:`.create_engine.convert_unicode` parameter
+            is deprecated and will be removed in a future release.
+            All modern DBAPIs now support Python Unicode directly and this
+            parameter is unnecessary.
 
     :param creator: a callable which returns a DBAPI connection.
         This creation function will be passed to the underlying
@@ -177,19 +161,49 @@ def create_engine(*args, **kwargs):
         parameters specified in the URL argument to be bypassed.
 
     :param echo=False: if True, the Engine will log all statements
-        as well as a repr() of their parameter lists to the engines
-        logger, which defaults to sys.stdout. The ``echo`` attribute of
-        ``Engine`` can be modified at any time to turn logging on and
-        off. If set to the string ``"debug"``, result rows will be
-        printed to the standard output as well. This flag ultimately
-        controls a Python logger; see :ref:`dbengine_logging` for
-        information on how to configure logging directly.
+        as well as a ``repr()`` of their parameter lists to the default log
+        handler, which defaults to ``sys.stdout`` for output.   If set to the
+        string ``"debug"``, result rows will be printed to the standard output
+        as well. The ``echo`` attribute of ``Engine`` can be modified at any
+        time to turn logging on and off; direct control of logging is also
+        available using the standard Python ``logging`` module.
+
+        .. seealso::
+
+            :ref:`dbengine_logging` - further detail on how to configure
+            logging.
 
     :param echo_pool=False: if True, the connection pool will log
-        all checkouts/checkins to the logging stream, which defaults to
-        sys.stdout. This flag ultimately controls a Python logger; see
-        :ref:`dbengine_logging` for information on how to configure logging
-        directly.
+        informational output such as when connections are invalidated
+        as well as when connections are recycled to the default log handler,
+        which defaults to ``sys.stdout`` for output.   If set to the string
+        ``"debug"``, the logging will include pool checkouts and checkins.
+        Direct control of logging is also available using the standard Python
+        ``logging`` module.
+
+        .. seealso::
+
+            :ref:`dbengine_logging` - further detail on how to configure
+            logging.
+
+
+    :param empty_in_strategy:  The SQL compilation strategy to use when
+        rendering an IN or NOT IN expression for :meth:`.ColumnOperators.in_`
+        where the right-hand side
+        is an empty set.   This is a string value that may be one of
+        ``static``, ``dynamic``, or ``dynamic_warn``.   The ``static``
+        strategy is the default, and an IN comparison to an empty set
+        will generate a simple false expression "1 != 1".   The ``dynamic``
+        strategy behaves like that of SQLAlchemy 1.1 and earlier, emitting
+        a false expression of the form "expr != expr", which has the effect
+        of evaluting to NULL in the case of a null expression.
+        ``dynamic_warn`` is the same as ``dynamic``, however also emits a
+        warning when an empty set is encountered; this because the "dynamic"
+        comparison is typically poorly performing on most databases.
+
+        .. versionadded:: 1.2  Added the ``empty_in_strategy`` setting and
+           additionally defaulted the behavior for empty-set IN comparisons
+           to a static boolean expression.
 
     :param encoding: Defaults to ``utf-8``.  This is the string
         encoding used by SQLAlchemy for string encode/decode
@@ -245,7 +259,7 @@ def create_engine(*args, **kwargs):
         fetch newly generated primary key values when a single row
         INSERT statement is emitted with no existing returning()
         clause.  This applies to those backends which support RETURNING
-        or a compatible construct, including Postgresql, Firebird, Oracle,
+        or a compatible construct, including PostgreSQL, Firebird, Oracle,
         Microsoft SQL Server.   Set this to ``False`` to disable
         the automatic usage of RETURNING.
 
@@ -257,8 +271,8 @@ def create_engine(*args, **kwargs):
         Behavior here varies per backend, and
         individual dialects should be consulted directly.
 
-        Note that the isolation level can also be set on a per-:class:`.Connection`
-        basis as well, using the
+        Note that the isolation level can also be set on a
+        per-:class:`.Connection` basis as well, using the
         :paramref:`.Connection.execution_options.isolation_level`
         feature.
 
@@ -271,7 +285,7 @@ def create_engine(*args, **kwargs):
 
             :ref:`SQLite Transaction Isolation <sqlite_isolation_level>`
 
-            :ref:`Postgresql Transaction Isolation <postgresql_isolation_level>`
+            :ref:`PostgreSQL Transaction Isolation <postgresql_isolation_level>`
 
             :ref:`MySQL Transaction Isolation <mysql_isolation_level>`
 
@@ -336,6 +350,16 @@ def create_engine(*args, **kwargs):
        "sqlalchemy.pool" logger. Defaults to a hexstring of the object's
        id.
 
+    :param pool_pre_ping: boolean, if True will enable the connection pool
+        "pre-ping" feature that tests connections for liveness upon
+        each checkout.
+
+        .. versionadded:: 1.2
+
+        .. seealso::
+
+            :ref:`pool_disconnects_pessimistic`
+
     :param pool_size=5: the number of connections to keep open
         inside the connection pool. This used with
         :class:`~sqlalchemy.pool.QueuePool` as
@@ -353,17 +377,42 @@ def create_engine(*args, **kwargs):
         this is configurable with the MySQLDB connection itself and the
         server configuration as well).
 
-    :param pool_reset_on_return='rollback': set the "reset on return"
-        behavior of the pool, which is whether ``rollback()``,
-        ``commit()``, or nothing is called upon connections
-        being returned to the pool.  See the docstring for
-        ``reset_on_return`` at :class:`.Pool`.
+        .. seealso::
 
-        .. versionadded:: 0.7.6
+            :ref:`pool_setting_recycle`
+
+    :param pool_reset_on_return='rollback': set the
+        :paramref:`.Pool.reset_on_return` parameter of the underlying
+        :class:`.Pool` object, which can be set to the values
+        ``"rollback"``, ``"commit"``, or ``None``.
+
+        .. seealso::
+
+            :paramref:`.Pool.reset_on_return`
 
     :param pool_timeout=30: number of seconds to wait before giving
         up on getting a connection from the pool. This is only used
         with :class:`~sqlalchemy.pool.QueuePool`.
+
+    :param pool_use_lifo=False: use LIFO (last-in-first-out) when retrieving
+        connections from :class:`.QueuePool` instead of FIFO
+        (first-in-first-out). Using LIFO, a server-side timeout scheme can
+        reduce the number of connections used during non- peak   periods of
+        use.   When planning for server-side timeouts, ensure that a recycle or
+        pre-ping strategy is in use to gracefully   handle stale connections.
+
+          .. versionadded:: 1.3
+
+          .. seealso::
+
+            :ref:`pool_use_lifo`
+
+            :ref:`pool_disconnects`
+
+    :param plugins: string list of plugin names to load.  See
+        :class:`.CreateEnginePlugin` for background.
+
+        .. versionadded:: 1.2.3
 
     :param strategy='plain': selects alternate engine implementations.
         Currently available are:
@@ -373,24 +422,24 @@ def create_engine(*args, **kwargs):
         * the ``mock`` strategy, which dispatches all statement
           execution to a function passed as the argument ``executor``.
           See `example in the FAQ
-          <http://www.sqlalchemy.org/trac/wiki/FAQ#HowcanIgettheCREATETABLEDROPTABLEoutputasastring>`_.
+          <http://docs.sqlalchemy.org/en/latest/faq/metadata_schema.html#how-can-i-get-the-create-table-drop-table-output-as-a-string>`_.
 
     :param executor=None: a function taking arguments
         ``(sql, *multiparams, **params)``, to which the ``mock`` strategy will
         dispatch all statement execution. Used only by ``strategy='mock'``.
 
-    """
+    """  # noqa
 
-    strategy = kwargs.pop('strategy', default_strategy)
+    strategy = kwargs.pop("strategy", default_strategy)
     strategy = strategies.strategies[strategy]
     return strategy.create(*args, **kwargs)
 
 
-def engine_from_config(configuration, prefix='sqlalchemy.', **kwargs):
+def engine_from_config(configuration, prefix="sqlalchemy.", **kwargs):
     """Create a new Engine instance using a configuration dictionary.
 
     The dictionary is typically produced from a config file.
-    
+
     The keys of interest to ``engine_from_config()`` should be prefixed, e.g.
     ``sqlalchemy.url``, ``sqlalchemy.echo``, etc.  The 'prefix' argument
     indicates the prefix to be searched for.  Each matching key (after the
@@ -418,16 +467,15 @@ def engine_from_config(configuration, prefix='sqlalchemy.', **kwargs):
 
     """
 
-    options = dict((key[len(prefix):], configuration[key])
-                   for key in configuration
-                   if key.startswith(prefix))
-    options['_coerce_config'] = True
+    options = dict(
+        (key[len(prefix) :], configuration[key])
+        for key in configuration
+        if key.startswith(prefix)
+    )
+    options["_coerce_config"] = True
     options.update(kwargs)
-    url = options.pop('url')
+    url = options.pop("url")
     return create_engine(url, **options)
 
 
-__all__ = (
-    'create_engine',
-    'engine_from_config',
-)
+__all__ = ("create_engine", "engine_from_config")

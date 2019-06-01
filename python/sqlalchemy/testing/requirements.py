@@ -1,5 +1,5 @@
 # testing/requirements.py
-# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -15,6 +15,8 @@ to provide specific inclusion/exclusions.
 
 """
 
+import sys
+
 from . import exclusions
 from .. import util
 
@@ -24,7 +26,6 @@ class Requirements(object):
 
 
 class SuiteRequirements(Requirements):
-
     @property
     def create_table(self):
         """target platform can emit basic CreateTable DDL."""
@@ -66,8 +67,8 @@ class SuiteRequirements(Requirements):
         # somehow only_if([x, y]) isn't working here, negation/conjunctions
         # getting confused.
         return exclusions.only_if(
-            lambda: self.on_update_cascade.enabled or
-            self.deferrable_fks.enabled
+            lambda: self.on_update_cascade.enabled
+            or self.deferrable_fks.enabled
         )
 
     @property
@@ -111,6 +112,32 @@ class SuiteRequirements(Requirements):
         return exclusions.open()
 
     @property
+    def parens_in_union_contained_select_w_limit_offset(self):
+        """Target database must support parenthesized SELECT in UNION
+        when LIMIT/OFFSET is specifically present.
+
+        E.g. (SELECT ...) UNION (SELECT ..)
+
+        This is known to fail on SQLite.
+
+        """
+        return exclusions.open()
+
+    @property
+    def parens_in_union_contained_select_wo_limit_offset(self):
+        """Target database must support parenthesized SELECT in UNION
+        when OFFSET/LIMIT is specifically not present.
+
+        E.g. (SELECT ... LIMIT ..) UNION (SELECT .. OFFSET ..)
+
+        This is known to fail on SQLite.  It also fails on Oracle
+        because without LIMIT/OFFSET, there is currently no step that
+        creates an additional subquery.
+
+        """
+        return exclusions.open()
+
+    @property
     def boolean_col_expressions(self):
         """Target database must support boolean expressions as columns"""
 
@@ -146,6 +173,28 @@ class SuiteRequirements(Requirements):
         return exclusions.closed()
 
     @property
+    def ctes(self):
+        """Target database supports CTEs"""
+
+        return exclusions.closed()
+
+    @property
+    def ctes_with_update_delete(self):
+        """target database supports CTES that ride on top of a normal UPDATE
+        or DELETE statement which refers to the CTE in a correlated subquery.
+
+        """
+
+        return exclusions.closed()
+
+    @property
+    def ctes_on_dml(self):
+        """target database supports CTES which consist of INSERT, UPDATE
+        or DELETE *within* the CTE, e.g. WITH x AS (UPDATE....)"""
+
+        return exclusions.closed()
+
+    @property
     def autoincrement_insert(self):
         """target platform generates new surrogate integer primary key values
         when insert() is executed, excluding the pk column."""
@@ -166,14 +215,49 @@ class SuiteRequirements(Requirements):
         return exclusions.open()
 
     @property
+    def group_by_complex_expression(self):
+        """target platform supports SQL expressions in GROUP BY
+
+        e.g.
+
+        SELECT x + y AS somelabel FROM table GROUP BY x + y
+
+        """
+
+        return exclusions.open()
+
+    @property
+    def sane_rowcount(self):
+        return exclusions.skip_if(
+            lambda config: not config.db.dialect.supports_sane_rowcount,
+            "driver doesn't support 'sane' rowcount",
+        )
+
+    @property
+    def sane_multi_rowcount(self):
+        return exclusions.fails_if(
+            lambda config: not config.db.dialect.supports_sane_multi_rowcount,
+            "driver %(driver)s %(doesnt_support)s 'sane' multi row count",
+        )
+
+    @property
+    def sane_rowcount_w_returning(self):
+        return exclusions.fails_if(
+            lambda config: not (
+                config.db.dialect.supports_sane_rowcount_returning
+            ),
+            "driver doesn't support 'sane' rowcount when returning is on",
+        )
+
+    @property
     def empty_inserts(self):
         """target platform supports INSERT with no values, i.e.
         INSERT DEFAULT VALUES or equivalent."""
 
         return exclusions.only_if(
-            lambda config: config.db.dialect.supports_empty_insert or
-            config.db.dialect.supports_default_values,
-            "empty inserts not supported"
+            lambda config: config.db.dialect.supports_empty_insert
+            or config.db.dialect.supports_default_values,
+            "empty inserts not supported",
         )
 
     @property
@@ -188,8 +272,16 @@ class SuiteRequirements(Requirements):
 
         return exclusions.only_if(
             lambda config: config.db.dialect.implicit_returning,
-            "%(database)s %(does_support)s 'returning'"
+            "%(database)s %(does_support)s 'returning'",
         )
+
+    @property
+    def tuple_in(self):
+        """Target platform supports the syntax
+        "(x, y) IN ((x1, y1), (x2, y2), ...)"
+        """
+
+        return exclusions.closed()
 
     @property
     def duplicate_names_in_cursor_description(self):
@@ -205,7 +297,7 @@ class SuiteRequirements(Requirements):
 
         return exclusions.skip_if(
             lambda config: not config.db.dialect.requires_name_normalize,
-            "Backend does not require denormalized names."
+            "Backend does not require denormalized names.",
         )
 
     @property
@@ -215,7 +307,7 @@ class SuiteRequirements(Requirements):
 
         return exclusions.skip_if(
             lambda config: not config.db.dialect.supports_multivalues_insert,
-            "Backend does not support multirow inserts."
+            "Backend does not support multirow inserts.",
         )
 
     @property
@@ -260,22 +352,35 @@ class SuiteRequirements(Requirements):
         return exclusions.closed()
 
     @property
+    def server_side_cursors(self):
+        """Target dialect must support server side cursors."""
+
+        return exclusions.only_if(
+            [lambda config: config.db.dialect.supports_server_side_cursors],
+            "no server side cursors support",
+        )
+
+    @property
     def sequences(self):
         """Target database must support SEQUENCEs."""
 
-        return exclusions.only_if([
-            lambda config: config.db.dialect.supports_sequences
-        ], "no sequence support")
+        return exclusions.only_if(
+            [lambda config: config.db.dialect.supports_sequences],
+            "no sequence support",
+        )
 
     @property
     def sequences_optional(self):
         """Target database supports sequences, but also optionally
         as a means of generating new PK values."""
 
-        return exclusions.only_if([
-            lambda config: config.db.dialect.supports_sequences and
-            config.db.dialect.sequences_optional
-        ], "no sequence support, or sequences not optional")
+        return exclusions.only_if(
+            [
+                lambda config: config.db.dialect.supports_sequences
+                and config.db.dialect.sequences_optional
+            ],
+            "no sequence support, or sequences not optional",
+        )
 
     @property
     def reflects_pk_names(self):
@@ -284,6 +389,10 @@ class SuiteRequirements(Requirements):
     @property
     def table_reflection(self):
         return exclusions.open()
+
+    @property
+    def comment_reflection(self):
+        return exclusions.closed()
 
     @property
     def view_column_reflection(self):
@@ -314,6 +423,14 @@ class SuiteRequirements(Requirements):
         return exclusions.open()
 
     @property
+    def foreign_key_constraint_option_reflection_ondelete(self):
+        return exclusions.closed()
+
+    @property
+    def foreign_key_constraint_option_reflection_onupdate(self):
+        return exclusions.closed()
+
+    @property
     def temp_table_reflection(self):
         return exclusions.open()
 
@@ -337,9 +454,19 @@ class SuiteRequirements(Requirements):
         return exclusions.open()
 
     @property
+    def indexes_with_expressions(self):
+        """target database supports CREATE INDEX against SQL expressions."""
+        return exclusions.closed()
+
+    @property
     def unique_constraint_reflection(self):
         """target dialect supports reflection of unique constraints"""
         return exclusions.open()
+
+    @property
+    def check_constraint_reflection(self):
+        """target dialect supports reflection of check constraints"""
+        return exclusions.closed()
 
     @property
     def duplicate_key_raises_integrity_error(self):
@@ -393,6 +520,13 @@ class SuiteRequirements(Requirements):
         datetime.datetime() with microsecond objects."""
 
         return exclusions.open()
+
+    @property
+    def timestamp_microseconds(self):
+        """target dialect supports representation of Python
+        datetime.datetime() with microsecond objects but only
+        if TIMESTAMP is used."""
+        return exclusions.closed()
 
     @property
     def datetime_historic(self):
@@ -461,6 +595,24 @@ class SuiteRequirements(Requirements):
         return exclusions.open()
 
     @property
+    def autocommit(self):
+        """target dialect supports 'AUTOCOMMIT' as an isolation_level"""
+        return exclusions.closed()
+
+    @property
+    def json_type(self):
+        """target platform implements a native JSON type."""
+
+        return exclusions.closed()
+
+    @property
+    def json_array_indexes(self):
+        """"target platform supports numeric array indexes
+        within a JSON structure"""
+
+        return self.json_type
+
+    @property
     def precision_numerics_general(self):
         """target backend has general support for moderately high-precision
         numerics."""
@@ -485,6 +637,43 @@ class SuiteRequirements(Requirements):
 
         """
         return exclusions.closed()
+
+    @property
+    def implicit_decimal_binds(self):
+        """target backend will return a selected Decimal as a Decimal, not
+        a string.
+
+        e.g.::
+
+            expr = decimal.Decimal("15.7563")
+
+            value = e.scalar(
+                select([literal(expr)])
+            )
+
+            assert value == expr
+
+        See :ticket:`4036`
+
+        """
+
+        return exclusions.open()
+
+    @property
+    def nested_aggregates(self):
+        """target database can select an aggregate from a subquery that's
+        also using an aggregate
+
+        """
+        return exclusions.open()
+
+    @property
+    def recursive_fk_cascade(self):
+        """target database must support ON DELETE CASCADE on a self-referential
+        foreign key
+
+        """
+        return exclusions.open()
 
     @property
     def precision_numerics_retains_significant_digits(self):
@@ -544,6 +733,13 @@ class SuiteRequirements(Requirements):
         return exclusions.open()
 
     @property
+    def expressions_against_unbounded_text(self):
+        """target database supports use of an unbounded textual field in a
+        WHERE clause."""
+
+        return exclusions.open()
+
+    @property
     def selectone(self):
         """target driver must support the literal statement 'select 1'"""
         return exclusions.open()
@@ -566,17 +762,23 @@ class SuiteRequirements(Requirements):
         return exclusions.closed()
 
     @property
+    def delete_from(self):
+        """Target must support DELETE FROM..FROM or DELETE..USING syntax"""
+        return exclusions.closed()
+
+    @property
     def update_where_target_in_subquery(self):
-        """Target must support UPDATE where the same table is present in a
-        subquery in the WHERE clause.
+        """Target must support UPDATE (or DELETE) where the same table is
+        present in a subquery in the WHERE clause.
 
         This is an ANSI-standard syntax that apparently MySQL can't handle,
-        such as:
+        such as::
 
-        UPDATE documents SET flag=1 WHERE documents.title IN
-            (SELECT max(documents.title) AS title
-                FROM documents GROUP BY documents.user_id
-            )
+            UPDATE documents SET flag=1 WHERE documents.title IN
+                (SELECT max(documents.title) AS title
+                    FROM documents GROUP BY documents.user_id
+                )
+
         """
         return exclusions.open()
 
@@ -607,11 +809,25 @@ class SuiteRequirements(Requirements):
 
             select data as foo from test order by foo || 'bar'
 
-        Lots of databases including Postgresql don't support this,
+        Lots of databases including PostgreSQL don't support this,
         so this is off by default.
 
         """
         return exclusions.closed()
+
+    @property
+    def order_by_collation(self):
+        def check(config):
+            try:
+                self.get_order_by_collation(config)
+                return False
+            except NotImplementedError:
+                return True
+
+        return exclusions.skip_if(check)
+
+    def get_order_by_collation(self, config):
+        raise NotImplementedError()
 
     @property
     def unicode_connections(self):
@@ -643,7 +859,8 @@ class SuiteRequirements(Requirements):
 
         """
         return exclusions.skip_if(
-            lambda config: config.options.low_connections)
+            lambda config: config.options.low_connections
+        )
 
     @property
     def timing_intensive(self):
@@ -661,20 +878,58 @@ class SuiteRequirements(Requirements):
         """
         return exclusions.skip_if(
             lambda config: util.py3k and config.options.has_coverage,
-            "Stability issues with coverage + py3k"
+            "Stability issues with coverage + py3k",
         )
+
+    @property
+    def python2(self):
+        return exclusions.skip_if(
+            lambda: sys.version_info >= (3,),
+            "Python version 2.xx is required.",
+        )
+
+    @property
+    def python3(self):
+        return exclusions.skip_if(
+            lambda: sys.version_info < (3,), "Python version 3.xx is required."
+        )
+
+    @property
+    def cpython(self):
+        return exclusions.only_if(
+            lambda: util.cpython, "cPython interpreter needed"
+        )
+
+    @property
+    def non_broken_pickle(self):
+        from sqlalchemy.util import pickle
+
+        return exclusions.only_if(
+            lambda: not util.pypy
+            and pickle.__name__ == "cPickle"
+            or sys.version_info >= (3, 2),
+            "Needs cPickle+cPython or newer Python 3 pickle",
+        )
+
+    @property
+    def predictable_gc(self):
+        """target platform must remove all cycles unconditionally when
+        gc.collect() is called, as well as clean out unreferenced subclasses.
+
+        """
+        return self.cpython
 
     @property
     def no_coverage(self):
         """Test should be skipped if coverage is enabled.
 
         This is to block tests that exercise libraries that seem to be
-        sensitive to coverage, such as Postgresql notice logging.
+        sensitive to coverage, such as PostgreSQL notice logging.
 
         """
         return exclusions.skip_if(
             lambda config: config.options.has_coverage,
-            "Issues observed when coverage is enabled"
+            "Issues observed when coverage is enabled",
         )
 
     def _has_mysql_on_windows(self, config):
@@ -695,15 +950,17 @@ class SuiteRequirements(Requirements):
 
     def _has_sqlite(self):
         from sqlalchemy import create_engine
+
         try:
-            create_engine('sqlite://')
+            create_engine("sqlite://")
             return True
         except ImportError:
             return False
 
     def _has_cextensions(self):
         try:
-            from sqlalchemy import cresultproxy, cprocessors
+            from sqlalchemy import cresultproxy, cprocessors  # noqa
+
             return True
         except ImportError:
             return False

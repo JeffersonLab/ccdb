@@ -1,11 +1,11 @@
 # sqlite/pysqlite.py
-# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
-"""
+r"""
 .. dialect:: sqlite+pysqlite
     :name: pysqlite
     :dbapi: sqlite3
@@ -58,7 +58,7 @@ To use a Windows path, regular drive specifications and backslashes can be
 used. Double backslashes are probably needed::
 
     # absolute path on Windows
-    e = create_engine('sqlite:///C:\\\\path\\\\to\\\\database.db')
+    e = create_engine('sqlite:///C:\\path\\to\\database.db')
 
 The sqlite ``:memory:`` identifier is the default if no filepath is
 present.  Specify ``sqlite://`` and nothing else::
@@ -134,12 +134,6 @@ SQLAlchemy sets up pooling to work with Pysqlite's default behavior:
   file-based connections have extremely low overhead, so pooling is not
   necessary. The scheme also prevents a connection from being used again in
   a different thread and works best with SQLite's coarse-grained file locking.
-
-  .. versionchanged:: 0.7
-      Default selection of :class:`.NullPool` for SQLite file-based databases.
-      Previous versions select :class:`.SingletonThreadPool` by
-      default for all SQLite databases.
-
 
 Using a Memory Database in Multiple Threads
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -246,7 +240,8 @@ integration.   Then, at the point at which SQLAlchemy knows that transaction
 scope is to begin, we emit ``"BEGIN"`` ourselves.
 
 When we take control of ``"BEGIN"``, we can also control directly SQLite's
-locking modes, introduced at `BEGIN TRANSACTION <http://sqlite.org/lang_transaction.html>`_,
+locking modes, introduced at
+`BEGIN TRANSACTION <http://sqlite.org/lang_transaction.html>`_,
 by adding the desired locking mode to our ``"BEGIN"``::
 
     @event.listens_for(engine, "begin")
@@ -255,21 +250,27 @@ by adding the desired locking mode to our ``"BEGIN"``::
 
 .. seealso::
 
-    `BEGIN TRANSACTION <http://sqlite.org/lang_transaction.html>`_ - on the SQLite site
+    `BEGIN TRANSACTION <http://sqlite.org/lang_transaction.html>`_ -
+    on the SQLite site
 
-    `sqlite3 SELECT does not BEGIN a transaction <http://bugs.python.org/issue9924>`_ - on the Python bug tracker
+    `sqlite3 SELECT does not BEGIN a transaction <http://bugs.python.org/issue9924>`_ -
+    on the Python bug tracker
 
-    `sqlite3 module breaks transactions and potentially corrupts data <http://bugs.python.org/issue10740>`_ - on the Python bug tracker
+    `sqlite3 module breaks transactions and potentially corrupts data <http://bugs.python.org/issue10740>`_ -
+    on the Python bug tracker
 
 
-"""
-
-from sqlalchemy.dialects.sqlite.base import SQLiteDialect, DATETIME, DATE
-from sqlalchemy import exc, pool
-from sqlalchemy import types as sqltypes
-from sqlalchemy import util
+"""  # noqa
 
 import os
+
+from .base import DATE
+from .base import DATETIME
+from .base import SQLiteDialect
+from ... import exc
+from ... import pool
+from ... import types as sqltypes
+from ... import util
 
 
 class _SQLite_pysqliteTimeStamp(DATETIME):
@@ -301,20 +302,20 @@ class _SQLite_pysqliteDate(DATE):
 
 
 class SQLiteDialect_pysqlite(SQLiteDialect):
-    default_paramstyle = 'qmark'
+    default_paramstyle = "qmark"
 
     colspecs = util.update_copy(
         SQLiteDialect.colspecs,
         {
             sqltypes.Date: _SQLite_pysqliteDate,
             sqltypes.TIMESTAMP: _SQLite_pysqliteTimeStamp,
-        }
+        },
     )
 
     if not util.py2k:
         description_encoding = None
 
-    driver = 'pysqlite'
+    driver = "pysqlite"
 
     def __init__(self, **kwargs):
         SQLiteDialect.__init__(self, **kwargs)
@@ -323,25 +324,28 @@ class SQLiteDialect_pysqlite(SQLiteDialect):
             sqlite_ver = self.dbapi.version_info
             if sqlite_ver < (2, 1, 3):
                 util.warn(
-                    ("The installed version of pysqlite2 (%s) is out-dated "
-                     "and will cause errors in some cases.  Version 2.1.3 "
-                     "or greater is recommended.") %
-                    '.'.join([str(subver) for subver in sqlite_ver]))
+                    (
+                        "The installed version of pysqlite2 (%s) is out-dated "
+                        "and will cause errors in some cases.  Version 2.1.3 "
+                        "or greater is recommended."
+                    )
+                    % ".".join([str(subver) for subver in sqlite_ver])
+                )
 
     @classmethod
     def dbapi(cls):
         try:
             from pysqlite2 import dbapi2 as sqlite
-        except ImportError as e:
+        except ImportError:
             try:
                 from sqlite3 import dbapi2 as sqlite  # try 2.5+ stdlib name.
-            except ImportError:
+            except ImportError as e:
                 raise e
         return sqlite
 
     @classmethod
     def get_pool_class(cls, url):
-        if url.database and url.database != ':memory:':
+        if url.database and url.database != ":memory:":
             return pool.NullPool
         else:
             return pool.SingletonThreadPool
@@ -356,22 +360,25 @@ class SQLiteDialect_pysqlite(SQLiteDialect):
                 "Valid SQLite URL forms are:\n"
                 " sqlite:///:memory: (or, sqlite://)\n"
                 " sqlite:///relative/path/to/file.db\n"
-                " sqlite:////absolute/path/to/file.db" % (url,))
-        filename = url.database or ':memory:'
-        if filename != ':memory:':
+                " sqlite:////absolute/path/to/file.db" % (url,)
+            )
+        filename = url.database or ":memory:"
+        if filename != ":memory:":
             filename = os.path.abspath(filename)
 
         opts = url.query.copy()
-        util.coerce_kw_type(opts, 'timeout', float)
-        util.coerce_kw_type(opts, 'isolation_level', str)
-        util.coerce_kw_type(opts, 'detect_types', int)
-        util.coerce_kw_type(opts, 'check_same_thread', bool)
-        util.coerce_kw_type(opts, 'cached_statements', int)
+        util.coerce_kw_type(opts, "timeout", float)
+        util.coerce_kw_type(opts, "isolation_level", str)
+        util.coerce_kw_type(opts, "detect_types", int)
+        util.coerce_kw_type(opts, "check_same_thread", bool)
+        util.coerce_kw_type(opts, "cached_statements", int)
 
         return ([filename], opts)
 
     def is_disconnect(self, e, connection, cursor):
-        return isinstance(e, self.dbapi.ProgrammingError) and \
-            "Cannot operate on a closed database." in str(e)
+        return isinstance(
+            e, self.dbapi.ProgrammingError
+        ) and "Cannot operate on a closed database." in str(e)
+
 
 dialect = SQLiteDialect_pysqlite

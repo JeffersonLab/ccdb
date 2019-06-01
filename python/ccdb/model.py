@@ -202,7 +202,7 @@ class Assignment(Base):
     constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'), nullable=False)
     constant_set = relationship("ConstantSet",
                                 uselist=False,
-                                back_populates="assignment",
+                                back_populates="assignments",
                                 cascade="all, delete, delete-orphan",
                                 single_parent=True)
     

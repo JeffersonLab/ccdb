@@ -1,11 +1,12 @@
 # testing/config.py
-# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
 # the MIT License: http://www.opensource.org/licenses/mit-license.php
 
 import collections
+from unittest import SkipTest as _skip_test_exception
 
 requirements = None
 db = None
@@ -15,11 +16,11 @@ file_config = None
 test_schema = None
 test_schema_2 = None
 _current = None
-_skip_test_exception = None
 
 
 class Config(object):
     def __init__(self, db, db_opts, options, file_config):
+        self._set_name(db)
         self.db = db
         self.db_opts = db_opts
         self.options = options
@@ -28,7 +29,14 @@ class Config(object):
         self.test_schema_2 = "test_schema_2"
 
     _stack = collections.deque()
-    _configs = {}
+    _configs = set()
+
+    def _set_name(self, db):
+        if db.dialect.server_version_info:
+            svi = ".".join(str(tok) for tok in db.dialect.server_version_info)
+            self.name = "%s+%s_[%s]" % (db.name, db.driver, svi)
+        else:
+            self.name = "%s+%s" % (db.name, db.driver)
 
     @classmethod
     def register(cls, db, db_opts, options, file_config):
@@ -38,10 +46,7 @@ class Config(object):
         gets set as the "_current".
         """
         cfg = Config(db, db_opts, options, file_config)
-
-        cls._configs[cfg.db.name] = cfg
-        cls._configs[(cfg.db.name, cfg.db.dialect)] = cfg
-        cls._configs[cfg.db] = cfg
+        cls._configs.add(cfg)
         return cfg
 
     @classmethod
@@ -59,8 +64,9 @@ class Config(object):
         assert _current, "Can't push without a default Config set up"
         cls.push(
             Config(
-                db, _current.db_opts, _current.options, _current.file_config),
-            namespace
+                db, _current.db_opts, _current.options, _current.file_config
+            ),
+            namespace,
         )
 
     @classmethod
@@ -76,8 +82,7 @@ class Config(object):
 
     @classmethod
     def all_configs(cls):
-        for cfg in set(cls._configs.values()):
-            yield cfg
+        return cls._configs
 
     @classmethod
     def all_dbs(cls):

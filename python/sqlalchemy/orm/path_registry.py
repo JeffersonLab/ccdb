@@ -1,5 +1,5 @@
 # orm/path_registry.py
-# Copyright (C) 2005-2015 the SQLAlchemy authors and contributors
+# Copyright (C) 2005-2019 the SQLAlchemy authors and contributors
 # <see AUTHORS file>
 #
 # This module is part of SQLAlchemy and is released under
@@ -8,12 +8,14 @@
 
 """
 
+from itertools import chain
+import logging
+
+from .base import class_mapper
+from .. import exc
 from .. import inspection
 from .. import util
-from .. import exc
-from itertools import chain
-from .base import class_mapper
-import logging
+
 
 log = logging.getLogger(__name__)
 
@@ -56,19 +58,18 @@ class PathRegistry(object):
     is_root = False
 
     def __eq__(self, other):
-        return other is not None and \
-            self.path == other.path
+        return other is not None and self.path == other.path
 
     def set(self, attributes, key, value):
         log.debug("set '%s' on path '%s' to '%s'", key, self, value)
-        attributes[(key, self.path)] = value
+        attributes[(key, self.natural_path)] = value
 
     def setdefault(self, attributes, key, value):
         log.debug("setdefault '%s' on path '%s' to '%s'", key, self, value)
-        attributes.setdefault((key, self.path), value)
+        attributes.setdefault((key, self.natural_path), value)
 
     def get(self, attributes, key, value=None):
-        key = (key, self.path)
+        key = (key, self.natural_path)
         if key in attributes:
             return attributes[key]
         else:
@@ -87,11 +88,8 @@ class PathRegistry(object):
             yield path[i], path[i + 1]
 
     def contains_mapper(self, mapper):
-        for path_mapper in [
-            self.path[i] for i in range(0, len(self.path), 2)
-        ]:
-            if path_mapper.is_mapper and \
-                    path_mapper.isa(mapper):
+        for path_mapper in [self.path[i] for i in range(0, len(self.path), 2)]:
+            if path_mapper.is_mapper and path_mapper.isa(mapper):
                 return True
         else:
             return False
@@ -100,40 +98,49 @@ class PathRegistry(object):
         return (key, self.path) in attributes
 
     def __reduce__(self):
-        return _unreduce_path, (self.serialize(), )
+        return _unreduce_path, (self.serialize(),)
 
     def serialize(self):
         path = self.path
-        return list(zip(
-            [m.class_ for m in [path[i] for i in range(0, len(path), 2)]],
-            [path[i].key for i in range(1, len(path), 2)] + [None]
-        ))
+        return list(
+            zip(
+                [m.class_ for m in [path[i] for i in range(0, len(path), 2)]],
+                [path[i].key for i in range(1, len(path), 2)] + [None],
+            )
+        )
 
     @classmethod
     def deserialize(cls, path):
         if path is None:
             return None
 
-        p = tuple(chain(*[(class_mapper(mcls),
-                           class_mapper(mcls).attrs[key]
-                           if key is not None else None)
-                          for mcls, key in path]))
+        p = tuple(
+            chain(
+                *[
+                    (
+                        class_mapper(mcls),
+                        class_mapper(mcls).attrs[key]
+                        if key is not None
+                        else None,
+                    )
+                    for mcls, key in path
+                ]
+            )
+        )
         if p and p[-1] is None:
             p = p[0:-1]
         return cls.coerce(p)
 
     @classmethod
     def per_mapper(cls, mapper):
-        return EntityRegistry(
-            cls.root, mapper
-        )
+        return EntityRegistry(cls.root, mapper)
 
     @classmethod
     def coerce(cls, raw):
         return util.reduce(lambda prev, next: prev[next], raw, cls.root)
 
     def token(self, token):
-        if token.endswith(':' + _WILDCARD_TOKEN):
+        if token.endswith(":" + _WILDCARD_TOKEN):
             return TokenRegistry(self, token)
         elif token.endswith(":" + _DEFAULT_TOKEN):
             return TokenRegistry(self.root, token)
@@ -141,12 +148,10 @@ class PathRegistry(object):
             raise exc.ArgumentError("invalid token: %s" % token)
 
     def __add__(self, other):
-        return util.reduce(
-            lambda prev, next: prev[next],
-            other.path, self)
+        return util.reduce(lambda prev, next: prev[next], other.path, self)
 
     def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.path, )
+        return "%s(%r)" % (self.__class__.__name__, self.path)
 
 
 class RootRegistry(PathRegistry):
@@ -154,13 +159,15 @@ class RootRegistry(PathRegistry):
     paths are maintained per-root-mapper.
 
     """
-    path = ()
+
+    path = natural_path = ()
     has_entity = False
     is_aliased_class = False
     is_root = True
 
     def __getitem__(self, entity):
         return entity._path_registry
+
 
 PathRegistry.root = RootRegistry()
 
@@ -170,6 +177,7 @@ class TokenRegistry(PathRegistry):
         self.token = token
         self.parent = parent
         self.path = parent.path + (token,)
+        self.natural_path = parent.natural_path + (token,)
 
     has_entity = False
 
@@ -178,6 +186,13 @@ class TokenRegistry(PathRegistry):
     def generate_for_superclasses(self):
         if not self.parent.is_aliased_class and not self.parent.is_root:
             for ent in self.parent.mapper.iterate_to_root():
+                yield TokenRegistry(self.parent.parent[ent], self.token)
+        elif (
+            self.parent.is_aliased_class
+            and self.parent.entity._is_with_polymorphic
+        ):
+            yield self
+            for ent in self.parent.entity._with_polymorphic_entities:
                 yield TokenRegistry(self.parent.parent[ent], self.token)
         else:
             yield self
@@ -194,19 +209,27 @@ class PropRegistry(PathRegistry):
         if not insp.is_aliased_class or insp._use_mapper_path:
             parent = parent.parent[prop.parent]
         elif insp.is_aliased_class and insp.with_polymorphic_mappers:
-            if prop.parent is not insp.mapper and \
-                    prop.parent in insp.with_polymorphic_mappers:
+            if (
+                prop.parent is not insp.mapper
+                and prop.parent in insp.with_polymorphic_mappers
+            ):
                 subclass_entity = parent[-1]._entity_for_mapper(prop.parent)
                 parent = parent.parent[subclass_entity]
 
         self.prop = prop
         self.parent = parent
         self.path = parent.path + (prop,)
+        self.natural_path = parent.natural_path + (prop,)
+
+        self._wildcard_path_loader_key = (
+            "loader",
+            self.parent.path + self.prop._wildcard_token,
+        )
+        self._default_path_loader_key = self.prop._default_path_loader_key
+        self._loader_key = ("loader", self.path)
 
     def __str__(self):
-        return " -> ".join(
-            str(elem) for elem in self.path
-        )
+        return " -> ".join(str(elem) for elem in self.path)
 
     @util.memoized_property
     def has_entity(self):
@@ -215,33 +238,6 @@ class PropRegistry(PathRegistry):
     @util.memoized_property
     def entity(self):
         return self.prop.mapper
-
-    @util.memoized_property
-    def _wildcard_path_loader_key(self):
-        """Given a path (mapper A, prop X), replace the prop with the wildcard,
-        e.g. (mapper A, 'relationship:.*') or (mapper A, 'column:.*'), then
-        return within the ("loader", path) structure.
-
-        """
-        return ("loader",
-                self.parent.token(
-                    "%s:%s" % (
-                        self.prop.strategy_wildcard_key, _WILDCARD_TOKEN)
-                ).path
-                )
-
-    @util.memoized_property
-    def _default_path_loader_key(self):
-        return ("loader",
-                self.parent.token(
-                    "%s:%s" % (self.prop.strategy_wildcard_key,
-                               _DEFAULT_TOKEN)
-                ).path
-                )
-
-    @util.memoized_property
-    def _loader_key(self):
-        return ("loader", self.path)
 
     @property
     def mapper(self):
@@ -255,9 +251,7 @@ class PropRegistry(PathRegistry):
         if isinstance(entity, (int, slice)):
             return self.path[entity]
         else:
-            return EntityRegistry(
-                self, entity
-            )
+            return EntityRegistry(self, entity)
 
 
 class EntityRegistry(PathRegistry, dict):
@@ -270,6 +264,24 @@ class EntityRegistry(PathRegistry, dict):
         self.is_aliased_class = entity.is_aliased_class
         self.entity = entity
         self.path = parent.path + (entity,)
+
+        # the "natural path" is the path that we get when Query is traversing
+        # from the lead entities into the various relationships; it corresponds
+        # to the structure of mappers and relationships. when we are given a
+        # path that comes from loader options, as of 1.3 it can have ac-hoc
+        # with_polymorphic() and other AliasedInsp objects inside of it, which
+        # are usually not present in mappings.  So here we track both the
+        # "enhanced" path in self.path and the "natural" path that doesn't
+        # include those objects so these two traversals can be matched up.
+        if parent.path and self.is_aliased_class:
+            if entity.mapper.isa(parent.natural_path[-1].entity):
+                self.natural_path = parent.natural_path + (entity.mapper,)
+            else:
+                self.natural_path = parent.natural_path + (
+                    parent.natural_path[-1].entity,
+                )
+        else:
+            self.natural_path = self.path
         self.entity_path = self
 
     @property
@@ -278,6 +290,7 @@ class EntityRegistry(PathRegistry, dict):
 
     def __bool__(self):
         return True
+
     __nonzero__ = __bool__
 
     def __getitem__(self, entity):

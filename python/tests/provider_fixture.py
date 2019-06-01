@@ -311,22 +311,22 @@ class AlchemyProviderTest(unittest.TestCase):
 
         # Check that everything is loaded
         tabled_data = assignment.constant_set.data_table
-        self.assertEquals(len(tabled_data), 2)
-        self.assertEquals(len(tabled_data[0]), 3)
-        self.assertEquals(tabled_data[0][0], "2.2")
-        self.assertEquals(tabled_data[0][1], "2.3")
-        self.assertEquals(tabled_data[0][2], "2.4")
-        self.assertEquals(tabled_data[1][0], "2.5")
-        self.assertEquals(tabled_data[1][1], "2.6")
-        self.assertEquals(tabled_data[1][2], "2.7")
+        self.assertEqual(len(tabled_data), 2)
+        self.assertEqual(len(tabled_data[0]), 3)
+        self.assertEqual(tabled_data[0][0], "2.2")
+        self.assertEqual(tabled_data[0][1], "2.3")
+        self.assertEqual(tabled_data[0][2], "2.4")
+        self.assertEqual(tabled_data[1][0], "2.5")
+        self.assertEqual(tabled_data[1][1], "2.6")
+        self.assertEqual(tabled_data[1][2], "2.7")
 
         # Ok! Lets get all assignments for current types table
         assignments = self.provider.get_assignments("/test/test_vars/test_table")
-        self.assertNotEquals(len(assignments), 0)
+        self.assertNotEqual(len(assignments), 0)
 
         # Ok! Lets get all assignments for current types table and variation
         assignments = self.provider.get_assignments("/test/test_vars/test_table", variation="default")
-        self.assertNotEquals(len(assignments), 0)
+        self.assertNotEqual(len(assignments), 0)
 
         assignment = self.provider.create_assignment([[0, 1, 2], [3, 4, 5]], "/test/test_vars/test_table", 0, 1000,
                                                      "default", "Test assignment")
@@ -336,14 +336,14 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEqual(assignment.run_range.max, 1000)
         self.assertEqual(assignment.comment, "Test assignment")
         tabled_data = assignment.constant_set.data_table
-        self.assertEquals(len(tabled_data), 2)
-        self.assertEquals(len(tabled_data[0]), 3)
-        self.assertEquals(tabled_data[0][0], "0")
-        self.assertEquals(tabled_data[0][1], "1")
-        self.assertEquals(tabled_data[0][2], "2")
-        self.assertEquals(tabled_data[1][0], "3")
-        self.assertEquals(tabled_data[1][1], "4")
-        self.assertEquals(tabled_data[1][2], "5")
+        self.assertEqual(len(tabled_data), 2)
+        self.assertEqual(len(tabled_data[0]), 3)
+        self.assertEqual(tabled_data[0][0], "0")
+        self.assertEqual(tabled_data[0][1], "1")
+        self.assertEqual(tabled_data[0][2], "2")
+        self.assertEqual(tabled_data[1][0], "3")
+        self.assertEqual(tabled_data[1][1], "4")
+        self.assertEqual(tabled_data[1][2], "5")
 
         self.provider.delete_assignment(assignment)
 
@@ -384,12 +384,12 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertMultiLineEqual("strings|with&delimiter;surprise", list_to_blob(["strings", "with|surprise"]))
 
     def test_blob_to_list(self):
-        self.assertItemsEqual(["1", "2", "str"], blob_to_list("1|2|str"))
-        self.assertItemsEqual(["strings", "with|surprise"], blob_to_list("strings|with&delimiter;surprise"))
+        self.assertEqual(["1", "2", "str"], blob_to_list("1|2|str"))
+        self.assertEqual(["strings", "with|surprise"], blob_to_list("strings|with&delimiter;surprise"))
 
     def test_list_to_table(self):
         self.assertRaises(ValueError, list_to_table, [1, 2, 3], 2)
-        self.assertItemsEqual([[1, 2, 3], [4, 5, 6]], list_to_table([1, 2, 3, 4, 5, 6], 3))
+        self.assertEqual([[1, 2, 3], [4, 5, 6]], list_to_table([1, 2, 3, 4, 5, 6], 3))
 
     def test_get_users(self):
         self.provider.connect(self.connection_str)   # this test requires the connection

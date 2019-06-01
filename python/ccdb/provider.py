@@ -79,7 +79,7 @@ class AlchemyProvider(object):
             if connection_string.startswith("mysql://") \
                     and "No module named" in repr(err)\
                     and "MySQLdb" in repr(err):
-                connection_string = connection_string.replace("mysql://", "mysql+mysqlconnector://")
+                connection_string = connection_string.replace("mysql://", "mysql+pymysql://")
                 self.engine = sqlalchemy.create_engine(connection_string)
             else:
                 raise

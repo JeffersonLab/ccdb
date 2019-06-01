@@ -1,8 +1,7 @@
 from ccdb.errors import DatabaseStructureError
 from ccdb.errors import AnonymousUserForbiddenError
-from provider_fixture import AlchemyProviderTest
-import os
-import helper
+from .provider_fixture import AlchemyProviderTest
+from tests import helper
 import unittest
 import ccdb
 import io
