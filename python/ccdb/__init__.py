@@ -34,15 +34,68 @@ logger = logging.getLogger("ccdb")
 
 INFINITE_RUN = 2147483647
 
+if sys.version_info < (2, 7, 0):
+    sys.stderr.write("You need python 2.7 or later to run CCDB\n")
+    exit(1)
+
 
 def get_ccdb_home_path():
     if "CCDB_HOME" in os.environ:
         return os.environ["CCDB_HOME"]
 
     this_dir = os.path.dirname(inspect.getfile(path_utils))
-    this_dir = os.path.join(this_dir, "..","..")
+    this_dir = os.path.join(this_dir, "..", "..")
     this_dir = os.path.normpath(this_dir)
     return this_dir
+
+
+def _check_dependent_libraries():
+    """Checks if there are dependent libraries like SqlAlchemy"""
+
+    def insert_ext_lib_in_python_path():
+        """
+        CCDB ships some external libraries in external_libs folder
+        if CCDB is cloned from GitHub we can load them
+        if CCDB is installed from pip, dependendencies should be installed too
+        """
+        ext_lib_dir = os.path.join(get_ccdb_home_path(), 'python', 'external_libs')
+        if os.path.isdir(ext_lib_dir):
+            logger.debug("Found 'ext_lib_dir' = '{}'. Adding to PYTHONPATH...".format(ext_lib_dir))
+            sys.path.append(ext_lib_dir)
+        else:
+            logger.debug("No 'ext_lib_dir' = '{}' is found (or has the right permission)".format(ext_lib_dir))
+            print("Not all ccdb core dependencies have been found")
+            print("Please make sure, that SqlALchemy, pymysql and six are installed")
+            print("run 'ccdb --debug' for info on what exact dependency is missing")
+            exit(1)
+
+    def log_lib_not_found(libname):
+        logger.debug(libname + " is not found. Trying to load embedded one (will not work if CCDB installed by PIP")
+
+    try:
+        import sqlalchemy
+    except:
+        log_lib_not_found('sqlalchemy')
+        insert_ext_lib_in_python_path()
+
+    try:
+        import six
+    except:
+        log_lib_not_found('six')
+        insert_ext_lib_in_python_path()
+
+    try:
+        import pymysql
+    except:
+        log_lib_not_found('pymysql')
+        insert_ext_lib_in_python_path()
+
+
+
+
+
+
+
 
 
 def init_ccdb_console():
@@ -63,6 +116,17 @@ def init_ccdb_console():
     stderr_handler.setLevel(logging.ERROR)
     logger.addHandler(stderr_handler)
 
+
+    # Logger level from arguments
+    if "-s" in sys.argv or "--silent" in sys.argv:
+        logger.setLevel(logging.CRITICAL)
+    else:
+        logger.setLevel(logging.INFO)
+
+    # Should we load external libraries?
+    print()
+
+
     # create console context
     context = ConsoleContext()
 
@@ -70,11 +134,6 @@ def init_ccdb_console():
     # ------------------------------
     if "-h" in sys.argv or "--help" in sys.argv:
         print("Please call 'ccdb help' for help")
-
-    if "-s" in sys.argv or "--silent" in sys.argv:
-        logger.setLevel(logging.CRITICAL)
-    else:
-        logger.setLevel(logging.INFO)
 
     cmd.colorama.init(autoreset=True)
 

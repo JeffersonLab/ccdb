@@ -1,16 +1,16 @@
 from ccdb.errors import DatabaseStructureError
 from ccdb.errors import AnonymousUserForbiddenError
-from .provider_fixture import AlchemyProviderTest
+import tests.provider_fixture
 from tests import helper
 import unittest
 import ccdb
 import io
 
 
-class SQLiteAlchemyProviderTest(AlchemyProviderTest):
+class SQLiteAlchemyProviderTest(tests.provider_fixture.AlchemyProviderTest):
 
     def setUp(self):
-        AlchemyProviderTest.setUp(self)
+        super(SQLiteAlchemyProviderTest, self).setUp()
         self.connection_str = helper.sqlite_test_connection_str
 
     def test_sqlite_wrong_file(self):
@@ -18,10 +18,14 @@ class SQLiteAlchemyProviderTest(AlchemyProviderTest):
         self.assertRaises(DatabaseStructureError, self.provider.connect, "sqlite:///some.crap.file")
 
 
-class MySQLAlchemyProviderTest(AlchemyProviderTest):
+class MySQLAlchemyProviderTest(tests.provider_fixture.AlchemyProviderTest):
+
+    def __init__(self, *args, **kwargs):
+        super(MySQLAlchemyProviderTest, self).__init__(*args, **kwargs)
+        helper.recreate_mysql_db()
 
     def setUp(self):
-        AlchemyProviderTest.setUp(self)
+        super(MySQLAlchemyProviderTest, self).setUp()
         self.connection_str = helper.mysql_test_connection_str
 
 

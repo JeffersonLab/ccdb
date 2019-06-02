@@ -147,14 +147,14 @@ CREATE TABLE IF NOT EXISTS `assignments` (
   `eventRangeId` INT NULL,
   `authorId` INT NOT NULL DEFAULT 1,
   `comment` TEXT NULL,
-  `constantSetsId` INT NOT NULL,
+  `constantSetId` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_assignments_variations1_idx` (`variationId` ASC) VISIBLE,
   INDEX `fk_assignments_runRanges1_idx` (`runRangeId` ASC) VISIBLE,
   INDEX `fk_assignments_eventRanges1_idx` (`eventRangeId` ASC) VISIBLE,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   INDEX `date_sort_index` USING BTREE (`created`) VISIBLE,
-  INDEX `fk_assignments_constantSets1_idx` (`constantSetsId` ASC) VISIBLE)
+  INDEX `fk_assignments_constantSets1_idx` (`constantSetId` ASC) VISIBLE)
 ENGINE = MyISAM;
 
 
@@ -397,11 +397,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetsId`) VALUES (1, '2012-07-30 23:48:42', '2012-07-30 23:48:42', 1, 1, NULL, 2, 'Test assignment for software tests', 1);
-INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetsId`) VALUES (2, '2012-08-30 23:48:42', '2012-08-30 23:48:42', 3, 2, NULL, 2, 'Test assignment for software tests 2', 2);
-INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetsId`) VALUES (3, '2012-09-30 23:48:42', '2012-09-30 23:48:42', 3, 1, NULL, 2, 'Test assignment for software tests 3', 3);
-INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetsId`) VALUES (4, '2012-10-30 23:48:42', '2012-10-30 23:48:42', 1, 1, NULL, 2, 'Test assignment for software tests 4', 4);
-INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetsId`) VALUES (5, '2012-10-30 23:48:43', '2012-10-30 23:48:43', 4, 1, NULL, 2, 'Test assignment for software tests 5', 5);
+INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (1, '2012-07-30 23:48:42', '2012-07-30 23:48:42', 1, 1, NULL, 2, 'Test assignment for software tests', 1);
+INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (2, '2012-08-30 23:48:42', '2012-08-30 23:48:42', 3, 2, NULL, 2, 'Test assignment for software tests 2', 2);
+INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (3, '2012-09-30 23:48:42', '2012-09-30 23:48:42', 3, 1, NULL, 2, 'Test assignment for software tests 3', 3);
+INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (4, '2012-10-30 23:48:42', '2012-10-30 23:48:42', 1, 1, NULL, 2, 'Test assignment for software tests 4', 4);
+INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (5, '2012-10-30 23:48:43', '2012-10-30 23:48:43', 4, 1, NULL, 2, 'Test assignment for software tests 5', 5);
 
 COMMIT;
 

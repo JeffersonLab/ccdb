@@ -5,10 +5,11 @@ import subprocess
 from contextlib import contextmanager
 
 # python 3 support
+
 try:
-    from StringIO import StringIO
+    from io import StringIO         # python 3
 except ImportError:
-    from io import StringIO
+    from StringIO import StringIO   # python 2
 
 
 # path to CCDB_HOME
@@ -48,7 +49,7 @@ def recreate_mysql_db(username="ccdb_user", password=""):
 
     mysql_query = mysql_query.replace("`ccdb`", "`ccdb_test`")
 
-    p = subprocess.Popen(cmdline, stdin=subprocess.PIPE)
+    p = subprocess.Popen(cmdline, stdin=subprocess.PIPE, encoding='utf8')
     p.communicate(mysql_query)
     ret_code = p.wait()
 
