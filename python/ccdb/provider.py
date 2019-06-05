@@ -1182,8 +1182,8 @@ class AlchemyProvider(object):
         run_range = self.get_or_create_run_range(min_run, max_run)
 
         # validate data.. a little =)
-        if len(rows) == 0: raise ValueError(
-            "Try to create variation with data length = 0. Fill data prior inserting into database")
+        if len(rows) == 0:
+            raise ValueError("Try to create variation with data length = 0. Fill data prior inserting into database")
         if not isinstance(rows[0], list):
             # the data is plain list, like [1,2,3,4,5,6]
             # rows_count = len(data) / table._columns_count
@@ -1208,8 +1208,8 @@ class AlchemyProvider(object):
         # Get user
         user = self.get_current_user()
 
-        if user.name == 'anonymous': # anonymous user can't create assignments
-
+        if user.name == 'anonymous':
+            # anonymous user can't create assignments
             raise AnonymousUserForbiddenError
         else:
             # construct assignment

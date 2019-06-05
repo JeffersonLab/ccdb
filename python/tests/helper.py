@@ -3,13 +3,7 @@ import sys
 import ccdb
 import subprocess
 from contextlib import contextmanager
-
-# python 3 support
-
-try:
-    from io import StringIO         # python 3
-except ImportError:
-    from StringIO import StringIO   # python 2
+from six import StringIO
 
 
 # path to CCDB_HOME

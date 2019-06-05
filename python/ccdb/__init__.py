@@ -91,13 +91,6 @@ def _check_dependent_libraries():
         insert_ext_lib_in_python_path()
 
 
-
-
-
-
-
-
-
 def init_ccdb_console():
     from .cmd import ConsoleContext
     import ccdb.cmd.colorama
@@ -116,7 +109,6 @@ def init_ccdb_console():
     stderr_handler.setLevel(logging.ERROR)
     logger.addHandler(stderr_handler)
 
-
     # Logger level from arguments
     if "-s" in sys.argv or "--silent" in sys.argv:
         logger.setLevel(logging.CRITICAL)
@@ -124,8 +116,7 @@ def init_ccdb_console():
         logger.setLevel(logging.INFO)
 
     # Should we load external libraries?
-    print()
-
+    _check_dependent_libraries()
 
     # create console context
     context = ConsoleContext()

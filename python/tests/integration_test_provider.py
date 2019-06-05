@@ -20,9 +20,14 @@ class SQLiteAlchemyProviderTest(tests.provider_fixture.AlchemyProviderTest):
 
 class MySQLAlchemyProviderTest(tests.provider_fixture.AlchemyProviderTest):
 
+    mysql_is_recreated = False
+
     def __init__(self, *args, **kwargs):
         super(MySQLAlchemyProviderTest, self).__init__(*args, **kwargs)
-        helper.recreate_mysql_db()
+
+        if not MySQLAlchemyProviderTest.mysql_is_recreated:
+            MySQLAlchemyProviderTest.mysql_is_recreated = True
+            helper.recreate_mysql_db()
 
     def setUp(self):
         super(MySQLAlchemyProviderTest, self).setUp()

@@ -313,7 +313,7 @@ class Variation(Base):
     children = relation("Variation")
 
     is_locked = Column('isLocked', Boolean, nullable=False, default=True)
-    lock_time = Column(DateTime, default=datetime.datetime.now, nullable=False)
+    lock_time = Column('lockTime', DateTime, default=datetime.datetime.now, nullable=False)
 
     _description = Column("description", String(255))   # (!) Deprecated! Is here for C++ compatibility with 1.06.1
 
