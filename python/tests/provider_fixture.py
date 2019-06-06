@@ -152,7 +152,7 @@ class AlchemyProviderTest(unittest.TestCase):
 
         # now lets get all tables from root directory.
         tables = self.provider.search_type_tables("t*", "/")
-        self.assertEquals(len(tables), 0)
+        self.assertEqual(len(tables), 0)
 
         # CREATE AND DELETE
 
@@ -225,9 +225,9 @@ class AlchemyProviderTest(unittest.TestCase):
         # 0-2001 should be absent or deleted so this function will create run-range
         rr = self.provider.get_or_create_run_range(0, 2001)
         self.assertIsNotNone(rr)
-        self.assertNotEquals(rr.id, 0)
-        self.assertEquals(rr.min, 0)
-        self.assertEquals(rr.max, 2001)
+        self.assertNotEqual(rr.id, 0)
+        self.assertEqual(rr.min, 0)
+        self.assertEqual(rr.max, 2001)
 
         # DELETE RUN-RANGE TEST
         # ----------------------------------------------------
@@ -246,7 +246,7 @@ class AlchemyProviderTest(unittest.TestCase):
         table = self.provider.get_type_table("/test/test_vars/test_table")
         vs = self.provider.search_variations(table)
         self.assertIsNotNone(vs)
-        self.assertNotEquals(len(vs), 0)
+        self.assertNotEqual(len(vs), 0)
 
         # Get variations by name
         vs = self.provider.get_variations("def*")
@@ -276,9 +276,9 @@ class AlchemyProviderTest(unittest.TestCase):
         # 0-2001 should be absent or deleted so this function will create run-range
         v = self.provider.create_variation("abra_kozyabra")
         self.assertIsNotNone(v)
-        self.assertNotEquals(v.id, 0)
-        self.assertEquals(v.parent_id, 1)
-        self.assertEquals(v.name, "abra_kozyabra")
+        self.assertNotEqual(v.id, 0)
+        self.assertEqual(v.parent_id, 1)
+        self.assertEqual(v.name, "abra_kozyabra")
 
         # DELETE RUN-RANGE TEST
         # ----------------------------------------------------
@@ -287,8 +287,8 @@ class AlchemyProviderTest(unittest.TestCase):
 
         # Now create with comment and parent
         v = self.provider.create_variation("abra_kozyabra", "Abra!!!", "test")
-        self.assertEquals(v.parent.name, "test")
-        self.assertEquals(v.comment, "Abra!!!")
+        self.assertEqual(v.parent.name, "test")
+        self.assertEqual(v.comment, "Abra!!!")
 
         # cleanup
         self.provider.delete_variation(v)
