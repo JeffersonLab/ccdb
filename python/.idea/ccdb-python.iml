@@ -12,9 +12,10 @@
     <option name="requirementsPath" value="" />
   </component>
   <component name="TemplatesService">
+    <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/wheezy/template/tests/templates" />
+        <option value="$MODULE_DIR$/ccdb/webgui/templates" />
       </list>
     </option>
   </component>
