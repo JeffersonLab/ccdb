@@ -136,44 +136,7 @@ class Cat(ConsoleUtilBase):
     # ----------------------------------------
     #   gets assignment by parsed request
     # ----------------------------------------
-    def _get_assignment_by_request(self, request):
 
-        provider = self.context.provider
-        assert isinstance(provider, AlchemyProvider)
-        assert isinstance(request, ParseRequestResult)
-
-        if not request.variation_is_parsed:
-            request.variation = self.context.current_variation
-
-        if not request.run_is_parsed:
-            request.run = self.context.current_run
-
-        # correct path
-        table_path = self.context.prepare_path(request.path)
-        time = request.time if request.time_is_parsed else None
-
-        # check such table really exists (otherwise exception will be thrown)
-        # noinspection PyBroadException
-        try:
-            provider.get_type_table(table_path)
-        except:
-            log.error("Cant load: " + table_path)
-
-        log.debug(Lfm(" |- getting assignments for path : '{0}', run: '{1}', var: '{2}', time: '{3}'"
-                      "", table_path, request.run, request.variation, time))
-        try:
-            assignment = provider.get_assignment(table_path, request.run, request.variation, time)
-            log.debug(Lfm(" |- found assignment: {0}", assignment))
-            return assignment
-
-        except NoResultFound:
-            # if we here there were no assignments selected
-            log.warning(Lfm("There is no data for table {}, run {}, variation '{}'",
-                            table_path, request.run, request.variation))
-            if request.time_is_parsed:
-                log.warning("    on ".format(request.time_str))
-
-        return None
 
     # ----------------------------------------
     #   process_arguments

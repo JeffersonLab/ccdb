@@ -1,5 +1,7 @@
 import unittest
 import os
+from datetime import datetime
+
 from ccdb import get_ccdb_home_path
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table, TypeTableColumn
 from ccdb.model import LogRecord, User
@@ -7,6 +9,7 @@ from ccdb.errors import DatabaseStructureError, TypeTableNotFound, DirectoryNotF
     UserNotFoundError, VariationNotFound, RunRangeNotFound
 
 from ccdb import AlchemyProvider
+from ccdb.path_utils import ParseRequestResult
 from tests import helper
 
 
@@ -327,6 +330,21 @@ class AlchemyProviderTest(unittest.TestCase):
         # Ok! Lets get all assignments for current types table and variation
         assignments = self.provider.get_assignments("/test/test_vars/test_table", variation="default")
         self.assertNotEqual(len(assignments), 0)
+
+        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table:100:default")
+        self.assertIsNotNone(assignment)
+
+        request = ParseRequestResult()
+        request.path = '/test/test_vars/test_table'
+        request.path_is_parsed = True
+        assignment = self.provider.get_assignment_by_request(request)
+        self.assertIsNotNone(assignment)
+
+        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table::",
+                                                             default_variation="default",
+                                                             default_run=0,
+                                                             default_time=datetime.now())
+        self.assertIsNotNone(assignment)
 
         assignment = self.provider.create_assignment([[0, 1, 2], [3, 4, 5]], "/test/test_vars/test_table", 0, 1000,
                                                      "default", "Test assignment")

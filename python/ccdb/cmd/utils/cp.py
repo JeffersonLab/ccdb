@@ -1,28 +1,4 @@
-"""
-      I S   E M P T Y   U T I L I T Y   E X A M P L E
 
-Utilities provide commands for ccdb command like interface,
-so if one runs:
-
-  ccdb ls
-  ccdb mkdir my_dir
-
-'ls' and 'mk' are ccdb.cmd utilities.
-
-Each utility represents one command and stored in one file.
-The convention is that file name is the same as utility command.
-So 'ls' is placed in 'ls.py'
-
-All utilities are in:
-$CCDB_HOME/python/ccdb/cmd/utils
-
-CCDB discovers them automatically on start
-
-Tip: When you develop your own utilities it is good idea to run ccdb
-with flags:
- '--debug' (shows debug level messages)
- '--raise' (don't silents utility and ccdb exceptions)
-"""
 import logging
 import os
 
@@ -33,37 +9,27 @@ from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
 
 
-#######################################################################
-#                                                                     #
-#             E M P T Y   U T I L I T Y (E X A M P L E)               #
-#                                                                     #
-#######################################################################
-
 #logger must be set to ccdb.cmd.utils.<utility command>
-log = logging.getLogger("ccdb.cmd.utils.empty")   
+from ccdb.path_utils import ParseRequestResult, parse_request
+from sqlalchemy.orm.exc import NoResultFound
+from wheezy.template.ext.determined import parse_args
+
+log = logging.getLogger("ccdb.cmd.utils.cp")
 
 
 #ccdbcmd module interface
 def create_util_instance():
-    """
-    This function is a module interface
-
-    :return: new AddData util
-    :rtype: AddData
-    """
-    log.debug("      registering Empty")
+    log.debug("      registering Copy")
     return Copy()
 
 
 #*********************************************************************
-#   Class Empty - empty utility example with description             *
+#   Class Copy - Copies an assignment to a new dataset               *
 #                                                                    *
 #*********************************************************************
 class Copy(ConsoleUtilBase):
-    """Empty utility example"""
+    """Copies an assignment to a new set of data"""
     
-    # ccdb utility class descr part 
-    #------------------------------
     command = "cp"
     name = "Copy"
     short_descr = "Copy assignment"
@@ -73,16 +39,10 @@ class Copy(ConsoleUtilBase):
         super(Copy, self).__init__()
         self.raw_entry = "/"         # object path with possible pattern, like /mole/*
 
-    #----------------------------------------
-    #   cleanup
-    #----------------------------------------
     def __cleanup(self):
         """Call this function in the beginning of command processing to prepare variables for new command"""
         self.raw_entry = "/"
 
-    #
-    #   process
-    #----------------------------------------
     def process(self, args):
         """This is an entry point for each time the command is called"""
 
@@ -98,53 +58,96 @@ class Copy(ConsoleUtilBase):
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
 
+       # log.debug(self.get_assignment_by_request(self.process_arguments(args)))
+
         #process arguments
         parsed_args = self.process_arguments(args)
+
+        if parsed_args.assignment:
+            assignment = self.get_assignment_by_request(parsed_args.assignment)
+        log.debug(assignment)
+        log.debug(assignment.request)
+        log.debug(assignment.comment)
 
         if not self.validate(parsed_args):
             return 1   # the return is like application ret. 1 means problems
 
-        path = self.context.prepare_path(parsed_args.raw_path)   # add current path to user input
 
         # try avoid print() and use log to print data
-        log.info(LogFmt("{0}raw_path{1} : {2}", self.theme.Accent, self.theme.Reset, parsed_args.raw_path))
-        log.info(LogFmt("{0}path{1}     : {2}", self.theme.Accent, self.theme.Reset, path))
-        log.info(LogFmt("{0}variation{1}: {2}", self.theme.Accent, self.theme.Reset, parsed_args.variation))
-        log.info(LogFmt("{0}run{1}      : {2}", self.theme.Accent, self.theme.Reset, parsed_args.run))
-
+        log.debug(self.context.current_variation + self.context.current_run)
+        log.debug(parsed_args.variation + parsed_args.run)
+        log.debug(self.context.current_path)
         # the return is like application ret. 0 means OK
         return 0
 
-#----------------------------------------
-#   process_arguments 
-#----------------------------------------  
     def process_arguments(self, args):
         #solo arguments
-
         #utility argument parser is argparse which raises errors instead of exiting app
         parser = UtilityArgumentParser()
-        parser.add_argument("raw_path")
         parser.add_argument("-v", "--variation", default=self.context.current_variation)
-        parser.add_argument("-r", "--run", default=self.context.current_run, type=int)
+        parser.add_argument("-r", "--run",  type=str, default=self.context.current_run)
+        parser.add_argument("-c", "--comment", default="")
+        parser.add_argument("-a", "--assignment", default="")# not sure if there should be id and assignment
+        parser.add_argument("--id", type=int, default=0)
+        result = parser.parse_args(args)
 
-        return parser.parse_args(args)
+        return result
 
-#----------------------------------------
-#   validate 
-#----------------------------------------  
-    def validate(self, parsed_args):
-        if not ccdb.path_utils.validate_name(parsed_args.raw_path):
-            log.error("The wrong path is given")
+    def get_assignment_by_request(self, request):
+        if isinstance(request, str):# request is a string parse it and make a request
+            request = parse_request(request)
+
+        provider = self.context.provider
+        assert isinstance(request, ParseRequestResult)
+        if not request.variation_is_parsed:
+            request.variation = self.context.current_variation
+
+        if not request.run_is_parsed:
+            request.run = self.context.current_run
+
+        # correct path
+        table_path = self.context.prepare_path(request.path)
+        time = request.time if request.time_is_parsed else None
+
+        # check such table really exists (otherwise exception will be thrown)
+        # noinspection PyBroadException
+        try:
+            provider.get_type_table(table_path)
+        except:
+            log.error("Cant load: " + table_path)
+
+        log.debug(LogFmt(" |- getting assignments for path : '{0}', run: '{1}', var: '{2}', time: '{3}'"
+                      "", table_path, request.run, request.variation, time))
+        try:
+            assignment = provider.get_assignment(table_path, request.run, request.variation, time)
+            log.debug(LogFmt(" |- found assignment: {0}", assignment))
+            return assignment
+
+        except NoResultFound:
+            # if we here there were no assignments selected
+            log.warning(LogFmt("There is no data for table {}, run {}, variation '{}'",
+                            table_path, request.run, request.variation))
+            if request.time_is_parsed:
+                log.warning("    on ".format(request.time_str))
+
+        return None
+    def validate(self):
+        if not self.raw_file_path or not self.raw_table_path:
             return False
-
         return True
 
-#----------------------------------------
-#   print_help 
-#----------------------------------------
     def print_help(self):
         """Prints help for the command"""
         
-        print ("""This is empty utility. It is a template and a sample for writing new utilities
+        print ("""Copies assignment to a new data
+        
+        Flags:
+        -v or --variation  Variation of new assignment
+        -r or --run Run range of new assignment 
+        -c or --comment Comment of the new assignment
+        --id ID of data
+        -a or --assignment The assignment to be copied to the data
+        
+         cp -v <variation>  -r <run_min>-<run_max> -c <comment> --id <DB ID>
 
     """)
