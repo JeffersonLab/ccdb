@@ -346,6 +346,21 @@ class AlchemyProviderTest(unittest.TestCase):
                                                              default_time=datetime.now())
         self.assertIsNotNone(assignment)
 
+        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table:100:default")
+        self.assertIsNotNone(assignment)
+
+        request = ParseRequestResult()
+        request.path = '/test/test_vars/test_table'
+        request.path_is_parsed = True
+        assignment = self.provider.get_assignment_by_request(request)
+        self.assertIsNotNone(assignment)
+
+        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table::",
+                                                             default_variation="default",
+                                                             default_run=0,
+                                                             default_time=datetime.now())
+        self.assertIsNotNone(assignment)
+
         assignment = self.provider.create_assignment([[0, 1, 2], [3, 4, 5]], "/test/test_vars/test_table", 0, 1000,
                                                      "default", "Test assignment")
         self.assertEqual(assignment.constant_set.type_table.path, "/test/test_vars/test_table")
