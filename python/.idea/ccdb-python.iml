@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/external_libs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.7 (pyjano)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="py37" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">

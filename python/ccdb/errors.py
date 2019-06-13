@@ -63,3 +63,15 @@ class AnonymousUserForbiddenError(Exception):
     """ Exception raised when an Anonymous user is trying to perform actions that they are forbidden from doing."""
     def __init__(self, message="This action is forbidden for an Anonymous user."):
         self.message = message
+
+class AllowDefaultsError(Exception):
+    """Exception when allow_defaults is not set to true but other fields are"""
+    pass
+
+class MissingArguement(Exception):
+    """Exception raised if allow_defaults is true and an arguement is missing"""
+    pass
+
+class MissingVariation(Exception):
+    """Exception raised Variation is not specified"""
+    pass

@@ -15,8 +15,6 @@ from sqlalchemy.orm.exc import NoResultFound
 from wheezy.template.ext.determined import parse_args
 
 log = logging.getLogger("ccdb.cmd.utils.cp")
-
-
 #ccdbcmd module interface
 def create_util_instance():
     log.debug("      registering Copy")
@@ -65,13 +63,11 @@ class Copy(ConsoleUtilBase):
 
         if parsed_args.assignment:
             assignment = self.get_assignment_by_request(parsed_args.assignment)
-        log.debug(assignment)
-        log.debug(assignment.request)
-        log.debug(assignment.comment)
 
         if not self.validate(parsed_args):
             return 1   # the return is like application ret. 1 means problems
 
+        provider.create_assignment(assignment)#not sure if this is what is needed
 
         # try avoid print() and use log to print data
         log.debug(self.context.current_variation + self.context.current_run)
@@ -87,50 +83,13 @@ class Copy(ConsoleUtilBase):
         parser.add_argument("-v", "--variation", default=self.context.current_variation)
         parser.add_argument("-r", "--run",  type=str, default=self.context.current_run)
         parser.add_argument("-c", "--comment", default="")
-        parser.add_argument("-a", "--assignment", default="")# not sure if there should be id and assignment
+        parser.add_argument("-a", "--assignment", default="")
         parser.add_argument("--id", type=int, default=0)
         result = parser.parse_args(args)
 
         return result
 
-    def get_assignment_by_request(self, request):
-        if isinstance(request, str):# request is a string parse it and make a request
-            request = parse_request(request)
 
-        provider = self.context.provider
-        assert isinstance(request, ParseRequestResult)
-        if not request.variation_is_parsed:
-            request.variation = self.context.current_variation
-
-        if not request.run_is_parsed:
-            request.run = self.context.current_run
-
-        # correct path
-        table_path = self.context.prepare_path(request.path)
-        time = request.time if request.time_is_parsed else None
-
-        # check such table really exists (otherwise exception will be thrown)
-        # noinspection PyBroadException
-        try:
-            provider.get_type_table(table_path)
-        except:
-            log.error("Cant load: " + table_path)
-
-        log.debug(LogFmt(" |- getting assignments for path : '{0}', run: '{1}', var: '{2}', time: '{3}'"
-                      "", table_path, request.run, request.variation, time))
-        try:
-            assignment = provider.get_assignment(table_path, request.run, request.variation, time)
-            log.debug(LogFmt(" |- found assignment: {0}", assignment))
-            return assignment
-
-        except NoResultFound:
-            # if we here there were no assignments selected
-            log.warning(LogFmt("There is no data for table {}, run {}, variation '{}'",
-                            table_path, request.run, request.variation))
-            if request.time_is_parsed:
-                log.warning("    on ".format(request.time_str))
-
-        return None
     def validate(self):
         if not self.raw_file_path or not self.raw_table_path:
             return False

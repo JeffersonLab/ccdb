@@ -117,6 +117,16 @@ class AlchemyProviderTest(unittest.TestCase):
         self.provider.delete_directory("/test/testdir")
 
     # noinspection PyBroadException
+    def test_assignment_date_string(self):
+        """
+        Tests date_time works properly in 
+        :return: None
+        """
+        self.provider.connect(self.connection_str)  # this test requires the connection
+
+        assignments = self.provider.get_assignments("/test/test_vars/test_table", variation="default",date_and_time="2018a05d15a22a32a11")
+        self.assertIsNotNone(assignments)
+
     def test_type_tables(self):
         """
         Test type table operation
@@ -331,36 +341,6 @@ class AlchemyProviderTest(unittest.TestCase):
         assignments = self.provider.get_assignments("/test/test_vars/test_table", variation="default")
         self.assertNotEqual(len(assignments), 0)
 
-        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table:100:default")
-        self.assertIsNotNone(assignment)
-
-        request = ParseRequestResult()
-        request.path = '/test/test_vars/test_table'
-        request.path_is_parsed = True
-        assignment = self.provider.get_assignment_by_request(request)
-        self.assertIsNotNone(assignment)
-
-        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table::",
-                                                             default_variation="default",
-                                                             default_run=0,
-                                                             default_time=datetime.now())
-        self.assertIsNotNone(assignment)
-
-        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table:100:default")
-        self.assertIsNotNone(assignment)
-
-        request = ParseRequestResult()
-        request.path = '/test/test_vars/test_table'
-        request.path_is_parsed = True
-        assignment = self.provider.get_assignment_by_request(request)
-        self.assertIsNotNone(assignment)
-
-        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table::",
-                                                             default_variation="default",
-                                                             default_run=0,
-                                                             default_time=datetime.now())
-        self.assertIsNotNone(assignment)
-
         assignment = self.provider.create_assignment([[0, 1, 2], [3, 4, 5]], "/test/test_vars/test_table", 0, 1000,
                                                      "default", "Test assignment")
         self.assertEqual(assignment.constant_set.type_table.path, "/test/test_vars/test_table")
@@ -379,6 +359,44 @@ class AlchemyProviderTest(unittest.TestCase):
         self.assertEqual(tabled_data[1][2], "5")
 
         self.provider.delete_assignment(assignment)
+
+    def test_get_assignment_by_request(self):
+        """Tests AlchemyProvider get assignment by request"""
+
+        self.provider.connect(self.connection_str)  # this test requires the connection
+
+        # Use string version of request
+        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table:100:default")
+        self.assertIsNotNone(assignment)
+
+        # Use ParseRequestResult as an input parameters
+        request = ParseRequestResult()
+        request.path = '/test/test_vars/test_table'
+        request.path_is_parsed = True
+        request.variation_is_parsed = True
+        request.variation = "default"
+        request.run = 100
+        request.run_is_parsed = True
+        assignment = self.provider.get_assignment_by_request(request)
+        self.assertIsNotNone(assignment)
+
+        # Use default values for absent fractions
+        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table::",
+                                                             allow_defaults=True,
+                                                             default_variation="default",
+                                                             default_run=0,
+                                                             default_time=datetime.now())
+        self.assertIsNotNone(assignment)
+
+        # Check nothing works if defaults
+        self.assertRaises(Exception, self.provider.get_assignment_by_request, "/test/test_vars/test_table::",
+                                                             default_variation="default",
+                                                             default_run=0,
+                                                             default_time=datetime.now())
+        self.assertRaises(Exception, self.provider.get_assignment_by_request, "/test/test_vars/test_table::",
+                          allow_defaults=True,
+                          default_run=0,
+                          default_time=datetime.now())
 
     def test_users(self):
         """Test users"""

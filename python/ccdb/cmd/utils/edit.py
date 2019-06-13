@@ -89,7 +89,9 @@ class Edit(ConsoleUtilBase):
         # utility argument parser is argparse which raises errors instead of exiting app
         parser = UtilityArgumentParser()
         parser.add_argument("raw_path")
-
+        parser.add_argument("-c", "--column", default="")
+        parser.add_argument("-r", "--row", default="")
+        parser.add_argument("-v", "--value")
         return parser.parse_args(args)
 
     # ----------------------------------------
@@ -108,6 +110,9 @@ class Edit(ConsoleUtilBase):
     def print_help(self):
         """Prints help for the command"""
 
-        print("""This is empty utility. It is a template and a sample for writing new utilities
+        print("""
+        -c or --column Columns of the wrong data
+        -r or --row Row of the wrong data
+        -v or --value Correct value to replace wrong data
 
     """)

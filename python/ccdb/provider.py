@@ -7,6 +7,8 @@ More details.
 import re
 import os
 import logging
+
+from ccdb.path_utils import parse_request, ParseRequestResult
 from .model import CcdbSchemaVersion
 from . import path_utils
 from datetime import datetime
@@ -18,7 +20,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
 from .errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, AnonymousUserForbiddenError, \
-    DatabaseStructureError, UserNotFoundError, UserExistsError, VariationNotFound
+    DatabaseStructureError, UserNotFoundError, UserExistsError, VariationNotFound, MissingArguement, AllowDefaultsError, \
+    MissingVariation
 
 from .table_file import TextFileDOM
 from .authentication import Authentication
@@ -51,8 +54,8 @@ class AlchemyProvider(object):
         self._auth = Authentication(self)
         self._auth.current_user_name = "anonymous"
         self.logging_enabled = True
-        self.engine = None      # is set after connect function
-        self.session = None     # is set after connect function
+        self.engine = None  # is set after connect function
+        self.session = None  # is set after connect function
         self._no_structure_message = "No database structure found. Possibly you are trying to connect " + \
                                      "to wrong SQLite file or to MySQL database without schema. " + \
                                      "Original SqlAlchemy error is: " + os.linesep + os.linesep + "{0}"
@@ -77,7 +80,7 @@ class AlchemyProvider(object):
             # sql alchemy uses MySQLdb by default. But it might not be installed in the system
             # in such case we fallback to mysqlconnector which is included in CCDB
             if connection_string.startswith("mysql://") \
-                    and "No module named" in repr(err)\
+                    and "No module named" in repr(err) \
                     and "MySQLdb" in repr(err):
                 connection_string = connection_string.replace("mysql://", "mysql+pymysql://")
                 self.engine = sqlalchemy.create_engine(connection_string)
@@ -111,10 +114,9 @@ class AlchemyProvider(object):
     # ------------------------------------------------
     def disconnect(self):
         """Closes connection to database"""
-        #TODO close pool logic???
+        # TODO close pool logic???
         self._is_connected = False
         self.session.close()
-
 
     # -------------------------------------------------
     # indicates ether the connection is open or not
@@ -160,12 +162,11 @@ class AlchemyProvider(object):
         """
         self._ensure_dirs_loaded()
 
-        #we don't have this directory
+        # we don't have this directory
         if not path in list(self.dirs_by_path.keys()):
             raise DirectoryNotFound("Can't find the directory with path '{0}'".format(path))
 
         return self.dirs_by_path[path]
-
 
     # ------------------------------------------------
     # return reference to root directory
@@ -262,7 +263,7 @@ class AlchemyProvider(object):
         # Get user
         user = self.get_current_user()
 
-        if user.name == 'anonymous':    # anonymous user can't create directories
+        if user.name == 'anonymous':  # anonymous user can't create directories
 
             raise AnonymousUserForbiddenError
         else:
@@ -367,7 +368,6 @@ class AlchemyProvider(object):
                                action="delete",
                                description="Deleted directory '{0}'".format(directory.path),
                                comment=directory.comment)
-
 
     # ------------------------------------------------
     # Load all directories
@@ -607,7 +607,6 @@ class AlchemyProvider(object):
              @return: NULL if failed, pointer to created object otherwise
         """
 
-
         assert len(columns) > 0
         assert rows_num > 0
 
@@ -629,7 +628,7 @@ class AlchemyProvider(object):
         # get user
         user = self.get_current_user()
 
-        if user.name == 'anonymous': # anonymous user can't create table types
+        if user.name == 'anonymous':  # anonymous user can't create table types
 
             raise AnonymousUserForbiddenError
         else:
@@ -654,7 +653,7 @@ class AlchemyProvider(object):
             self.session.add(table)
             self.session.commit()
 
-            #add log
+            # add log
             self.create_log_record(user=user,
                                    affected_ids=[table.__tablename__ + str(table.id)],
                                    action="create",
@@ -673,7 +672,7 @@ class AlchemyProvider(object):
 
         self.session.commit()
 
-        #Log
+        # Log
         self.create_log_record(user=user,
                                affected_ids=[type_table.__tablename__ + str(type_table.id)],
                                action="update",
@@ -837,7 +836,7 @@ class AlchemyProvider(object):
     # -------------------------------------------------------
     # Searches all variations associated with this type table
     # -------------------------------------------------------
-    #noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences
     def get_variations(self, pattern=""):
         """
         Returns all variations associated with this type table
@@ -913,7 +912,7 @@ class AlchemyProvider(object):
         # Get user
         user = self.get_current_user()
 
-        if user.name == 'anonymous': # anonymous user can't create variations
+        if user.name == 'anonymous':  # anonymous user can't create variations
 
             raise AnonymousUserForbiddenError
         else:
@@ -989,7 +988,7 @@ class AlchemyProvider(object):
 
         self.session.delete(variation)
         self.session.commit()
-        #Log
+        # Log
         self.create_log_record(user=user,
                                affected_ids=[variation.__tablename__ + str(variation.id)],
                                action="delete",
@@ -1034,11 +1033,14 @@ class AlchemyProvider(object):
         query = self.session.query(Assignment) \
             .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation) \
             .filter(Variation.name == variation_name) \
-            .filter(TypeTable.id == table.id)\
+            .filter(TypeTable.id == table.id) \
             .filter(RunRange.min <= run).filter(RunRange.max >= run)
 
         # filter by date and time
-        if date_and_time is not None:
+        if date_and_time:
+            if isinstance(date_and_time, str):
+                date_and_time = path_utils.parse_time(date_and_time)
+
             assert isinstance(date_and_time, datetime)
             query = query.filter(Assignment.created <= date_and_time)
 
@@ -1122,7 +1124,9 @@ class AlchemyProvider(object):
         # filter by run
         if run >= 0:
             query = query.filter(RunRange.min <= run).filter(RunRange.max >= run)
-
+        log.debug(date_and_time)
+        if isinstance(date_and_time, str):
+            date_and_time = path_utils.parse_time(date_and_time)
         # filter by date and time
         if date_and_time is not None:
             assert isinstance(date_and_time, datetime)
@@ -1138,6 +1142,56 @@ class AlchemyProvider(object):
             query = query.offset(offset)
 
         return query.all()
+
+    def get_assignment_by_request(self, request,
+                                  allow_defaults=False,
+                                  default_variation='',
+                                  default_run=0,
+                                  default_time=None):
+        if isinstance(request, str):  # request is a string parse it and make a request
+            request = parse_request(request)
+        assert isinstance(request, ParseRequestResult)
+
+        if not allow_defaults and (default_variation or default_run or default_time):
+            raise AllowDefaultsError
+        if allow_defaults and not (default_time or default_run or default_variation):
+            raise MissingArguement
+        if default_variation == '' and request.variation == '':
+            raise MissingVariation
+
+        if not request.variation_is_parsed:
+            if allow_defaults and default_variation:
+                request.variation = default_variation
+        if not request.run_is_parsed:
+            if allow_defaults and default_run:
+                request.run = default_run
+        if not request.time_is_parsed:
+            if allow_defaults and default_time:
+                request.time = default_time
+            else:
+                request.time = None
+
+        if allow_defaults:
+            request.variation = default_variation
+            request.time = default_time
+            request.run = default_run
+
+        try:
+            type_table = self.get_type_table(request.path)
+        except:
+            log.error("Cant load: " + request.path)
+
+        try:
+            assignment = self.get_assignment(type_table, request.run, request.variation, request.time)
+            return assignment
+
+        except NoResultFound:
+            # if we here there were no assignments selected
+            log.warning(("There is no data for table {}, run {}, variation '{}'",
+                         request.path, request.run, request.variation))
+            if request.time_is_parsed:
+                log.warning("    on ".format(request.time_str))
+        return None
 
     # ------------------------------------------------
     # Creates Assignment using related object
@@ -1493,7 +1547,6 @@ class AlchemyProvider(object):
         self.session.add(record)
         self.session.commit()
         return record
-
 
     def get_log_records(self, limit=20, offset=0):
 

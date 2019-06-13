@@ -92,7 +92,7 @@ def parse_time(time_str="-1", max_time_by_default=True):
 
     # default result
     if max_time_by_default:
-        year = 2037
+        year = 2137
         month = 12
         day = 31
         hour = 23
