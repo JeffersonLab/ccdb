@@ -388,6 +388,17 @@ class AlchemyProviderTest(unittest.TestCase):
                                                              default_time=datetime.now())
         self.assertIsNotNone(assignment)
 
+
+        # Check that default values are overwritten by the request values
+        assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table::test",
+                                                             allow_defaults=True,
+                                                             default_variation="default",
+                                                             default_run=1000,
+                                                             default_time=datetime.now())
+        self.assertIsNotNone(assignment)
+        tabled_data = assignment.constant_set.data_table
+        self.assertEqual(tabled_data[0][0], '1.0')
+
         # Check nothing works if defaults
         self.assertRaises(Exception, self.provider.get_assignment_by_request, "/test/test_vars/test_table::",
                                                              default_variation="default",

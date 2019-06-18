@@ -1171,11 +1171,6 @@ class AlchemyProvider(object):
             else:
                 request.time = None
 
-        if allow_defaults:
-            request.variation = default_variation
-            request.time = default_time
-            request.run = default_run
-
         try:
             type_table = self.get_type_table(request.path)
         except:
@@ -1199,10 +1194,96 @@ class AlchemyProvider(object):
     def copy_assignment(self, assignment):
         raise NotImplementedError("copy_assignment is not implemented")
 
-    # ------------------------------------------------
-    # Creates Assignment
-    # ------------------------------------------------
     def create_assignment(self, data, path, min_run, max_run, variation_name, comment):
+            """
+            Validation:
+            If no such run range found, the new will be created (with no name)
+            No assignment will be created (and NULL will be returned):
+            -- If no type table with such path exists
+            -- If data is inconsistent with columns number and rows number
+            -- If no variation with such name found
+
+            @param data: tabled data or TextFileDom
+            @param path: table path
+            @param min_run:
+            @param max_run:
+            @param variation_name:
+            @param comment:
+            @return: created assignment
+            @rtype: Assignment
+            """
+
+            # maybe it is a dom?
+            if isinstance(data, TextFileDOM):
+                rows = data.rows
+            else:
+                # it should be list than...
+                assert isinstance(data, list)
+                rows = data
+
+            # get objects
+            table = self.get_type_table(path)  # TODO create path_or_table variable
+
+            variation = self.get_variation(
+                variation_name)  # TODO create variation_name_or_obj instead of variation_name
+            run_range = self.get_or_create_run_range(min_run, max_run)
+
+            # validate data.. a little =)
+            if len(rows) == 0:
+                raise ValueError(
+                    "Try to create variation with data length = 0. Fill data prior inserting into database")
+            if not isinstance(rows[0], list):
+                # the data is plain list, like [1,2,3,4,5,6]
+                # rows_count = len(data) / table._columns_count
+                raise NotImplementedError()  # TODO check and implement this branch
+
+            # validate that the data rows and cols correspond to table rows and cols
+            data_rows_count = len(rows)
+            data_cols_count = len(rows[0])
+
+            if data_rows_count != table.rows_count or data_cols_count != table.columns_count:
+                message = "Data rows or columns count is inconsistent with table declared rows or columns count. " \
+                          "Data rows='{0}', columns='{1}'. Table declared rows='{2}', columns='{3}'" \
+                          "".format(data_rows_count, data_cols_count, table.rows_count, table.columns_count)
+                raise ValueError(message)
+
+            # check for type
+            for row_index, row in enumerate(rows):
+                for column_index, cell in enumerate(row):
+                    column = table.columns[column_index]
+                    self.validate_data_value(cell, column, column_index, row_index)
+
+            # Get user
+            user = self.get_current_user()
+
+            if user.name == 'anonymous':
+                # anonymous user can't create assignments
+                raise AnonymousUserForbiddenError
+            else:
+                # construct assignment
+                assignment = Assignment()
+                assignment.constant_set = ConstantSet()
+                assignment.constant_set.type_table_id = table.id
+                assignment.constant_set.type_table = table
+                assignment.run_range = run_range
+                assignment.run_range_id = run_range.id
+                assignment.variation = variation
+                assignment.variation_id = variation.id
+                assignment.constant_set.data_table = rows
+                assignment.comment = comment
+                assignment.author_id = user.id
+                self.session.add(assignment)
+                self.session.commit()
+
+                # add log
+                self.create_log_record(user=user,
+                                       affected_ids=[assignment.__tablename__ + str(assignment.id)],
+                                       action="create",
+                                       description="Created assignment '{0}'".format(assignment.request),
+                                       comment=assignment.comment)
+                return assignment
+
+    def make_assignment(self, run_range, variation, comment, assignment):
         """
         Validation:
         If no such run range found, the new will be created (with no name)
@@ -1210,56 +1291,16 @@ class AlchemyProvider(object):
         -- If no type table with such path exists
         -- If data is inconsistent with columns number and rows number
         -- If no variation with such name found
+        --If no assignment is given
 
-        @param data: tabled data or TextFileDom
-        @param path: table path
-        @param min_run:
-        @param max_run:
-        @param variation_name:
-        @param comment:
+        @param run_range: run_range of assignment
+        @param variation: variation of assignment
+        @param comment: comment of assignment
+        @param assignment: where the new assignment is being copied
         @return: created assignment
         @rtype: Assignment
         """
-
-        # maybe it is a dom?
-        if isinstance(data, TextFileDOM):
-            rows = data.rows
-        else:
-            # it should be list than...
-            assert isinstance(data, list)
-            rows = data
-
-        # get objects
-        table = self.get_type_table(path)  # TODO create path_or_table variable
-
-        variation = self.get_variation(variation_name)  # TODO create variation_name_or_obj instead of variation_name
-        run_range = self.get_or_create_run_range(min_run, max_run)
-
-        # validate data.. a little =)
-        if len(rows) == 0:
-            raise ValueError("Try to create variation with data length = 0. Fill data prior inserting into database")
-        if not isinstance(rows[0], list):
-            # the data is plain list, like [1,2,3,4,5,6]
-            # rows_count = len(data) / table._columns_count
-            raise NotImplementedError()  # TODO check and implement this branch
-
-        # validate that the data rows and cols correspond to table rows and cols
-        data_rows_count = len(rows)
-        data_cols_count = len(rows[0])
-
-        if data_rows_count != table.rows_count or data_cols_count != table.columns_count:
-            message = "Data rows or columns count is inconsistent with table declared rows or columns count. " \
-                      "Data rows='{0}', columns='{1}'. Table declared rows='{2}', columns='{3}'" \
-                      "".format(data_rows_count, data_cols_count, table.rows_count, table.columns_count)
-            raise ValueError(message)
-
-        # check for type
-        for row_index, row in enumerate(rows):
-            for column_index, cell in enumerate(row):
-                column = table.columns[column_index]
-                self.validate_data_value(cell, column, column_index, row_index)
-
-        # Get user
+        table = self.get_type_table(assignment)
         user = self.get_current_user()
 
         if user.name == 'anonymous':
@@ -1275,12 +1316,11 @@ class AlchemyProvider(object):
             assignment.run_range_id = run_range.id
             assignment.variation = variation
             assignment.variation_id = variation.id
-            assignment.constant_set.data_table = rows
+            assignment.constant_set.data_table = table.rows
             assignment.comment = comment
             assignment.author_id = user.id
             self.session.add(assignment)
             self.session.commit()
-
             # add log
             self.create_log_record(user=user,
                                    affected_ids=[assignment.__tablename__ + str(assignment.id)],
