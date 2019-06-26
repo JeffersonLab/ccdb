@@ -383,8 +383,8 @@ class AlchemyProviderTest(unittest.TestCase):
         # Use default values for absent fractions
         assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table::",
                                                              allow_defaults=True,
-                                                             default_variation="default",
                                                              default_run=0,
+                                                             default_variation="default",
                                                              default_time=datetime.now())
         self.assertIsNotNone(assignment)
 
@@ -392,8 +392,8 @@ class AlchemyProviderTest(unittest.TestCase):
         # Check that default values are overwritten by the request values
         assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table::test",
                                                              allow_defaults=True,
-                                                             default_variation="default",
                                                              default_run=1000,
+                                                             default_variation="default",
                                                              default_time=datetime.now())
         self.assertIsNotNone(assignment)
         tabled_data = assignment.constant_set.data_table
@@ -401,12 +401,8 @@ class AlchemyProviderTest(unittest.TestCase):
 
         # Check nothing works if defaults
         self.assertRaises(Exception, self.provider.get_assignment_by_request, "/test/test_vars/test_table::",
-                                                             default_variation="default",
-                                                             default_run=0,
-                                                             default_time=datetime.now())
-        self.assertRaises(Exception, self.provider.get_assignment_by_request, "/test/test_vars/test_table::",
-                          allow_defaults=True,
                           default_run=0,
+                          default_variation="default",
                           default_time=datetime.now())
 
     def test_users(self):
@@ -478,3 +474,23 @@ class AlchemyProviderTest(unittest.TestCase):
         column.type = 'uint'
         self.assertEqual(self.provider.validate_data_value('1', column), 1)
         self.assertRaises(ValueError, self.provider.validate_data_value, '-1', column)
+
+    def test_copy_assignment(self):
+        self.provider.connect(self.connection_str)
+        source_assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table")
+        run_range = self.provider.get_or_create_run_range(0, 330)
+        #assert(source_assignment is Assignment)how to assert it is assignment
+        assignment = self.provider.copy_assignment(source_assignment,
+                                                   new_run_range=run_range,
+                                                   new_variation="test",
+                                                   comment="testing")
+        self.assertIsNotNone(assignment)
+        assignment = self.provider.copy_assignment(source_assignment,
+                                                   new_run_range=run_range,
+                                                   new_variation="default",
+                                                   comment="")
+        self.assertIsNotNone(assignment)
+        self.assertRaises(VariationNotFound, self.provider.copy_assignment(source_assignment,
+                                                   new_run_range=None,
+                                                   new_variation="",
+                                                   comment=""))

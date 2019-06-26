@@ -131,7 +131,7 @@ class Cat(ConsoleUtilBase):
         @param request: Parsed request
         @type request: ParseRequestResult
         """
-        return self._get_assignment_by_request(request)
+        return self.context.provider.get_assignment_by_request(request)
 
     # ----------------------------------------
     #   gets assignment by parsed request

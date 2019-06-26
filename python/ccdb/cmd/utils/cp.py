@@ -44,35 +44,33 @@ class Copy(ConsoleUtilBase):
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}Copy is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
-
         #prepare variables for the new command
         self.__cleanup()
         #get provider class which has functions for all CCDB database operation
-        assert self.context
+        assert self.context is not None
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
         parsed_args = self.process_arguments(args)
-
-        if parsed_args.assignment.isdigit():
-            assignment = provider.get_assignment_by_id(parsed_args.assignment)
-        # if given the source assignment
-        elif parsed_args.assignment:
-            assignment = provider.get_assignment_by_request(parsed_args.assignment)
-        else:# no ID or assignment given
-            return 0
         if not parsed_args.variation:
-            variation = assignment.variation
+            variation = None
         else:
             variation = parsed_args.variation
         if parsed_args.run:
-            run_range = parsed_args.run
+            run_range_str = parsed_args.run
+            run_min, run_max, run_set, run_max_set = self.context.parse_run_range(run_range_str)
+            run_range = provider.get_or_create_run_range(run_min, run_max)
         else:
-            run_range = assignment.run_range
+            run_range = None
         if parsed_args.comment:
             comment = parsed_args.comment
         else:
-            comment = assignment.comment
-        provider.make_assignment(run_range, variation, comment, assignment)
+            comment = ""
+        if parsed_args.assignment.isdigit():
+            assignment = provider.get_assignment_by_id(parsed_args.assignment)
+            # if given the source assignment
+        else:
+            assignment = provider.get_assignment_by_request(parsed_args.assignment)
+        provider.copy_assignment(assignment, run_range, variation, comment)
         return 0
 
     def process_arguments(self, args):
@@ -80,7 +78,7 @@ class Copy(ConsoleUtilBase):
         parser.add_argument("-v", "--variation", default=self.context.current_variation)
         parser.add_argument("-r", "--run",  type=str, default=self.context.current_run)
         parser.add_argument("-c", "--comment", default="")
-        parser.add_argument("-a", "--assignment", default="")
+        parser.add_argument("assignment")
         result = parser.parse_args(args)
         return result
 
@@ -98,8 +96,14 @@ class Copy(ConsoleUtilBase):
         -v or --variation  Variation of new assignment
         -r or --run Run range of new assignment 
         -c or --comment Comment of the new assignment
-        -a or --assignment Where the data is being copied can be assignment or ID
+        -a or --assignment Where the data is being copied can be assignment or database ID
         
          cp -a <assignment> -v <variation>  -r <run_min>-<run_max> -c <comment> 
 
     """)
+
+
+if __name__ == "__main__":
+    cp = Copy()
+    cp.process(['-a', '2', '-r', '2000-8000'])
+    print('done')

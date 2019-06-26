@@ -724,7 +724,6 @@ class AlchemyProvider(object):
     def get_run_range(self, min_run, max_run, name=""):
         if name:
             return self.get_named_run_range(name)
-
         try:
             return self.session.query(RunRange).filter(RunRange.min == min_run).filter(RunRange.max == max_run).one()
         except sqlalchemy.orm.exc.NoResultFound:
@@ -833,7 +832,7 @@ class AlchemyProvider(object):
             message = "No variation found with name: '{0}'".format(name)
             raise VariationNotFound(message)
 
-    # -------------------------------------------------------
+    # ----------------------------------------- --------------
     # Searches all variations associated with this type table
     # -------------------------------------------------------
     # noinspection PyUnresolvedReferences
@@ -1145,19 +1144,18 @@ class AlchemyProvider(object):
 
     def get_assignment_by_request(self, request,
                                   allow_defaults=False,
-                                  default_variation='',
                                   default_run=0,
+                                  default_variation='',
                                   default_time=None):
         if isinstance(request, str):  # request is a string parse it and make a request
             request = parse_request(request)
         assert isinstance(request, ParseRequestResult)
-
         if not allow_defaults and (default_variation or default_run or default_time):
             raise AllowDefaultsError
         if allow_defaults and not (default_time or default_run or default_variation):
             raise MissingArguement
         if default_variation == '' and request.variation == '':
-            raise MissingVariation
+            request.variation = "default"
 
         if not request.variation_is_parsed:
             if allow_defaults and default_variation:
@@ -1175,11 +1173,9 @@ class AlchemyProvider(object):
             type_table = self.get_type_table(request.path)
         except:
             log.error("Cant load: " + request.path)
-
         try:
             assignment = self.get_assignment(type_table, request.run, request.variation, request.time)
             return assignment
-
         except NoResultFound:
             # if we here there were no assignments selected
             log.warning(("There is no data for table {}, run {}, variation '{}'",
@@ -1191,8 +1187,6 @@ class AlchemyProvider(object):
     # ------------------------------------------------
     # Creates Assignment using related object
     # ------------------------------------------------
-    def copy_assignment(self, assignment):
-        raise NotImplementedError("copy_assignment is not implemented")
 
     def create_assignment(self, data, path, min_run, max_run, variation_name, comment):
             """
@@ -1283,7 +1277,7 @@ class AlchemyProvider(object):
                                        comment=assignment.comment)
                 return assignment
 
-    def make_assignment(self, run_range, variation, comment, assignment):
+    def copy_assignment(self, source_assignment, new_run_range=None, new_variation=None, comment=''):
         """
         Validation:
         If no such run range found, the new will be created (with no name)
@@ -1293,41 +1287,39 @@ class AlchemyProvider(object):
         -- If no variation with such name found
         --If no assignment is given
 
-        @param run_range: run_range of assignment
-        @param variation: variation of assignment
+        @param new_run_range: run_range of assignment
+        @param new_variation: variation of assignment
         @param comment: comment of assignment
-        @param assignment: where the new assignment is being copied
+        @param source_assignment: where the new assignment is being copied
         @return: created assignment
         @rtype: Assignment
         """
-        table = self.get_type_table(assignment)
+
         user = self.get_current_user()
 
-        if user.name == 'anonymous':
-            # anonymous user can't create assignments
-            raise AnonymousUserForbiddenError
-        else:
-            # construct assignment
-            assignment = Assignment()
-            assignment.constant_set = ConstantSet()
-            assignment.constant_set.type_table_id = table.id
-            assignment.constant_set.type_table = table
-            assignment.run_range = run_range
-            assignment.run_range_id = run_range.id
-            assignment.variation = variation
-            assignment.variation_id = variation.id
-            assignment.constant_set.data_table = table.rows
-            assignment.comment = comment
-            assignment.author_id = user.id
-            self.session.add(assignment)
-            self.session.commit()
-            # add log
-            self.create_log_record(user=user,
-                                   affected_ids=[assignment.__tablename__ + str(assignment.id)],
-                                   action="create",
-                                   description="Created assignment '{0}'".format(assignment.request),
-                                   comment=assignment.comment)
-            return assignment
+        # you get some variation
+        if new_variation is None:
+            new_variation = source_assignment.variation
+        elif isinstance(new_variation, str):
+            new_variation = self.get_variation(new_variation)
+        assert isinstance(new_variation, Variation)
+        if new_run_range is None:
+            new_run_range = source_assignment.run_range
+        # construct assignment
+        dest_assignment = Assignment()
+        dest_assignment.constant_set = source_assignment.constant_set
+        dest_assignment.run_range = new_run_range
+        dest_assignment.variation = new_variation
+        dest_assignment.comment = comment
+        dest_assignment.author_id = user.id
+        self.session.add(dest_assignment)
+        self.session.commit()
+        self.create_log_record(user=user,
+                               affected_ids=[dest_assignment.__tablename__ + str(dest_assignment.id)],
+                               action="create",
+                               description="Created assignment '{0}'".format(dest_assignment.request),
+                               comment=comment)
+        return dest_assignment
 
     # ------------------------------------------------
     # updates assignment comments
