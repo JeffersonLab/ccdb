@@ -490,7 +490,7 @@ class AlchemyProviderTest(unittest.TestCase):
                                                    new_variation="default",
                                                    comment="")
         self.assertIsNotNone(assignment)
-        self.assertRaises(VariationNotFound, self.provider.copy_assignment(source_assignment,
-                                                   new_run_range=None,
+        self.assertRaises(VariationNotFound, self.provider.copy_assignment, source_assignment,
+                                                   new_run_range=run_range,
                                                    new_variation="",
-                                                   comment=""))
+                                                   comment="")
