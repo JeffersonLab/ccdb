@@ -8,7 +8,7 @@ import ccdb.cmd.colorama
 from ccdb.errors import DirectoryNotFound, TypeTableNotFound
 import ccdb.path_utils
 import ccdb.cmd.themes
-from ccdb.cmd.console_context import ConsoleContext
+from ccdb.cmd.cli_manager import ConsoleContext
 from tests import helper
 
 logger = logging.getLogger("ccdb")

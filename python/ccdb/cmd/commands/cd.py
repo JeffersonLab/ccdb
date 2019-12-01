@@ -1,8 +1,8 @@
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 import logging
 import posixpath
 
-log = logging.getLogger("ccdb.cmd.utils.cd")
+log = logging.getLogger("ccdb.cmd.commands.cd")
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -13,7 +13,7 @@ def create_util_instance():
 #   Class ChangeDir - Change current directory                       *
 #                                                                    *
 #*********************************************************************
-class ChangeDir(ConsoleUtilBase):
+class ChangeDir(CliCommandBase):
     """ Change current directory """
     
     # ccdb utility class descr part 
@@ -31,7 +31,7 @@ class ChangeDir(ConsoleUtilBase):
     # ---- end of print_help() ----
 
 
-    def process(self, args):
+    def execute(self, args):
         log.debug("  ChangeDir is gained a control over the process.")
         log.debug("    ".join(args))
         

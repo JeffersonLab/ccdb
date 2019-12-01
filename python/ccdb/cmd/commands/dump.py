@@ -1,10 +1,10 @@
 import os
 import logging
 
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 from ccdb import NoColorTheme
 
-log = logging.getLogger("ccdb.cmd.utils.ls")
+log = logging.getLogger("ccdb.cmd.commands.ls")
 
 
 # ccdbcmd module interface
@@ -17,7 +17,7 @@ def create_util_instance():
 #   Class List - Dumps datat table to a file                         *
 #                                                                    *
 # *********************************************************************
-class Dump(ConsoleUtilBase):
+class Dump(CliCommandBase):
     """ Dumps datat table to a file """
 
     # ccdb utility class descr part 
@@ -29,7 +29,7 @@ class Dump(ConsoleUtilBase):
 
     # variables for each process
 
-    def process(self, args):
+    def execute(self, args):
         log.debug("{0}Dump is gained a control {0}\\".format(os.linesep))
         log.debug(" |- arguments: " + " ".join(args))
 

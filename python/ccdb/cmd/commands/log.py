@@ -5,11 +5,11 @@ from sqlalchemy import desc
 import ccdb
 from ccdb import TextFileDOM
 from ccdb import AlchemyProvider
-from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
+from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb.model import LogRecord
 from ccdb import BraceMessage as LogFmt
 
-log = logging.getLogger("ccdb.cmd.utils.log")
+log = logging.getLogger("ccdb.cmd.commands.log")
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -27,7 +27,7 @@ def create_util_instance():
 #   Class ShowLog - Add data constants                               *
 #                                                                    *
 #*********************************************************************
-class ShowLog(ConsoleUtilBase):
+class ShowLog(CliCommandBase):
     """ Show log record"""
     
     # ccdb utility class descr part 
@@ -43,7 +43,7 @@ class ShowLog(ConsoleUtilBase):
     #----------------------------------------
     #   process
     #----------------------------------------
-    def process(self, args):
+    def execute(self, args):
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}ShowLog is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))

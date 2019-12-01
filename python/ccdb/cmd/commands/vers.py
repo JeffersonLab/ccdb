@@ -4,11 +4,11 @@ import os
 
 from ccdb import AlchemyProvider
 import ccdb
-from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
+from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb.brace_log_message import BraceMessage as LogFmt
 
 
-log = logging.getLogger("ccdb.cmd.utils.vers")
+log = logging.getLogger("ccdb.cmd.commands.vers")
 
 
 # ccdbcmd module interface
@@ -21,7 +21,7 @@ def create_util_instance():
 #   Class Versions - Show versions of data for specified type table  *
 #                                                                    *
 #*********************************************************************
-class Versions(ConsoleUtilBase):
+class Versions(CliCommandBase):
     """" Show versions of data. Assignments in terms of CCDB """
     
     # ccdb utility class descr part 
@@ -32,7 +32,7 @@ class Versions(ConsoleUtilBase):
     uses_db = True
 
     # - - - - - - - - - - - - - - - - - - - - -
-    def process(self, args):
+    def execute(self, args):
         """Main function that do the job"""
 
         if log.isEnabledFor(logging.DEBUG):

@@ -4,13 +4,13 @@ import os
 
 import ccdb
 import ccdb.path_utils
-from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
+from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
 
 
 # logger must be set to ccdb.cmd.utils.<utility command>
-log = logging.getLogger("ccdb.cmd.utils.edit")
+log = logging.getLogger("ccdb.cmd.commands.edit")
 
 
 # ccdbcmd module interface
@@ -24,7 +24,7 @@ def create_util_instance():
 #   Class Edit- Change a value in a table            *
 #                                                                    *
 # *********************************************************************
-class Edit(ConsoleUtilBase):
+class Edit(CliCommandBase):
     """Edit a value in a table"""
 
     # ccdb utility class descr part
@@ -48,7 +48,7 @@ class Edit(ConsoleUtilBase):
     #
     #   process
     # ----------------------------------------
-    def process(self, args):
+    def execute(self, args):
         """This is an entry point for each time the command is called"""
 
         if log.isEnabledFor(logging.DEBUG):

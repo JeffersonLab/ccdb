@@ -4,11 +4,11 @@ import re
 import logging
 import os
 
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 from ccdb import BraceMessage as LogFmt
 from ccdb.table_file import read_ccdb_text_file, TextFileDOM, META_VARIATION
 
-log = logging.getLogger("ccdb.cmd.utils.mktbl")
+log = logging.getLogger("ccdb.cmd.commands.mktbl")
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -21,7 +21,7 @@ def create_util_instance():
 #   Class MakeTable - Create constants type table                    *
 #                                                                    *
 #*********************************************************************
-class MakeTable(ConsoleUtilBase):
+class MakeTable(CliCommandBase):
     """ Create constants type table """
 
     # ccdb utility class descr part 
@@ -35,7 +35,7 @@ class MakeTable(ConsoleUtilBase):
     #   __init__
     #----------------------------------------
     def __init__(self):
-        ConsoleUtilBase.__init__(self)
+        CliCommandBase.__init__(self)
         self.columns = {}
         self.unparsed_columns = []
         self.rows = 1
@@ -77,7 +77,7 @@ class MakeTable(ConsoleUtilBase):
     #----------------------------------------
     #   process - processes commands
     #----------------------------------------
-    def process(self, args):
+    def execute(self, args):
 
         #>oO debug
         log.debug(LogFmt("{0}MakeTable is in charge{0}\\".format(os.linesep)))

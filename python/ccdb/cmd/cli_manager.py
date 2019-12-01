@@ -13,7 +13,7 @@ import ccdb.cmd.commands
 import ccdb.path_utils
 from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
-from .console_util import ConsoleUtilBase
+from .cli_command import CliCommandBase
 from . import themes
 from . import colorama
 
@@ -57,7 +57,7 @@ class ConsoleContext(object):
         self._current_run = 0
         self._current_path = "/"
         self._current_variation = "default"
-        self._utils = {}
+        self._commands = {}
         self._verbose = False
         self._ls = None
         self._connection_string = ""
@@ -79,7 +79,7 @@ class ConsoleContext(object):
     @property
     def utils(self):
         """:rtype: {}"""
-        return self._utils
+        return self._commands
 
     @property
     def connection_string(self):
@@ -154,8 +154,8 @@ class ConsoleContext(object):
         :type value: themes.NoColorTheme
         """
         assert (isinstance(value, themes.NoColorTheme))
-        for key in list(self._utils.keys()):
-            self._utils[key].theme = value
+        for key in list(self._commands.keys()):
+            self._commands[key].theme = value
         log.debug(lfm(" |- theme(value) {0} | \\{0} |  |- theme switched to : '{1}'", os.linesep, value))
         self._theme = value
 
@@ -178,10 +178,10 @@ class ConsoleContext(object):
         import_all_submodules(modules_dir, package_name)
 
         # Create all subclasses of PacketInstallationInstruction and add here
-        for cls in ConsoleUtilBase.__subclasses__():
+        for cls in CliCommandBase.__subclasses__():
             util = cls()
 
-            self._utils[util.command] = util
+            self._commands[util.command] = util
             util.context = self
             util.theme = self.theme
             if util.command == "ls":
@@ -191,21 +191,24 @@ class ConsoleContext(object):
                 log.debug("{0:<10} {1:<15} {2}:".format("(command)", "(name)", "(description)"))
                 log.debug("\n".join(["{0:<10} {1:<15} {2}:".format(command, util.name, util.short_descr)
                                      for command, util
-                                     in list(self._utils.items())]))
+                                     in list(self._commands.items())]))
+
 
 
     # --------------------------------
     #   processes the arguments
     # --------------------------------
-    def process(self, args, startIndex=1):
+    def process(self, args, start_index=1):
 
         # check if there is enough arguments...
-        if len(args) < (startIndex + 1):
+        if len(args) < (start_index + 1):
             self.print_general_usage()
             return
 
+
+
         # get working arguments list
-        workargs = args[startIndex:]
+        workargs = args[start_index:]
 
         # parse loop
         i = 0
@@ -217,15 +220,16 @@ class ConsoleContext(object):
             if token.startswith('-'):
                 # it is some command, lets parse what is the command
 
+                # connection string
                 if (token == "-c" or token == "--connection") and (i < len(workargs)):
-                    # connection string
                     self.connection_string = workargs[i]
                     i += 1
 
+                # it is an interactive mode
                 elif token == "-I" or token == "-i" or token == "--interactive":
-                    # it is an interactive mode
                     self._is_interactive = True
 
+                # working run
                 elif token == "-r" or token == "--run":
                     # working run
                     try:
@@ -234,33 +238,34 @@ class ConsoleContext(object):
                     except ValueError:
                         log.warning("(!) Warning. Cannot read run from %s command" % token)
                     i += 1
+
+                # working variation
                 elif token == "-v" or token == "--variation":
-                    # working variation
                     if not ccdb.path_utils.validate_name(workargs[i]):
                         log.warning("(!) Warning. Cannot read variation from --variation flag. "
                                     "Variation name should consist of A-Z, a-z, 0-9, _")
                     else:
                         self._current_variation = workargs[i]
                     i += 1
+
+                # we have to ask mysql password
+                if "--mysql-pwd" in args[start_index:] and self.connection_string.startswith("mysql"):
+                    print("Enter MySql password: ")
+                    password = getpass.getpass()
+                    self.connection_string = self.connection_string.replace("@", ":" + password + "@")
+                    i += 1
             else:
                 # looks like is is a command
                 command = token
-                commandArgs = workargs[i:]
+                command_args = workargs[i:]
                 try:
-                    self.process_command(command, commandArgs)
-                    break
+                    return self.process_command(command, command_args)
                 except Exception as ex:
                     log.error(ex)
-                    if not self.silent_exceptions:
-                        raise
+                    if self.silent_exceptions:
+                        return None
                     else:
-                        return 1
-
-        # we have to ask mysql password
-        if "--mysql-pwd" in args[startIndex:] and self.connection_string.startswith("mysql"):
-            print("Enter MySql password: ")
-            password = getpass.getpass()
-            self.connection_string = self.connection_string.replace("@", ":" + password + "@")
+                        raise
 
         if self._is_interactive:
             self.interactive_loop()
@@ -287,10 +292,9 @@ class ConsoleContext(object):
         is_posix = os.name == 'posix'
         tokens = shlex.split(command_line, posix=is_posix)
 
-
         # validate
         if len(tokens) == 0:
-            return
+            return None
 
         # get our command
         command = tokens[0]
@@ -308,30 +312,30 @@ class ConsoleContext(object):
     # --------------------------------
     #
     # --------------------------------
-    def process_command(self, command, args):
+    def process_command(self, cmd_name, args):
         # >oO debug
         if log.isEnabledFor(logging.DEBUG):
-            log.debug(lfm("{0}Processing command: '{1}'{0}\\", os.linesep, command))
+            log.debug(lfm("{0}Processing command: '{1}'{0}\\", os.linesep, cmd_name))
             log.debug(lfm(" |- arguments : '{0}'", "' '".join(args)))
 
         # try to find function...
         try:
-            util = self._utils[command]
+            command = self._commands[cmd_name]
         except KeyError:
-            log.error("Command " + command + " is unknown! Please, use help to see available commands")
-            if not self.silent_exceptions:
-                raise
+            log.error("Command " + cmd_name + " is unknown! Please, use help to see available commands")
+            if self.silent_exceptions:
+                return None
             else:
-                return 1
+                raise
 
         # check connection and connect if needed
-        if util.uses_db and (not self.provider.is_connected):
-            if not self.check_connection(util):
-                return False
+        if command.uses_db and (not self.provider.is_connected):
+            if not self.check_connection(command):
+                return None
 
         # is there file redirect?
-        redir_to_file = False  # should we redirect to file?
-        redir_file = None  # file to redirect
+        redir_to_file = False   # should we redirect to file?
+        redir_file = None       # file to redirect
         redir_stream_backup = sys.stdout
         redir_theme_backup = self.theme
 
@@ -344,13 +348,13 @@ class ConsoleContext(object):
 
             # open file
             try:
-                redir_file = file(redir_fname, 'w')
+                redir_file = open(redir_fname, 'w')
             except Exception as ex:
                 log.error("Cannot open file '{0}' {1} ".format(redir_fname, ex))
-                if not self.silent_exceptions:
-                    raise
+                if self.silent_exceptions:
+                    return None
                 else:
-                    return 1
+                    raise
 
         # execute command
         try:
@@ -359,14 +363,14 @@ class ConsoleContext(object):
                 sys.stdout = redir_file
                 self.theme = themes.NoColorTheme()
 
-            result = util.process(args)
+            result = command.execute(args)
 
         except Exception as ex:
-            log.error(ex)
-            if not self.silent_exceptions:
-                raise
+            log.info(ex)
+            if self.silent_exceptions:
+                return None
             else:
-                return 1
+                raise
         finally:
             if redir_to_file:
                 sys.stdout = redir_stream_backup
@@ -382,7 +386,7 @@ class ConsoleContext(object):
 
         # maybe there is nothing to do?
         if self._prov.is_connected or (not util.uses_db):
-            return
+            return True
 
         if log.isEnabledFor(logging.DEBUG):
             log.debug(" |- check_connection(util){0} | \\".format(os.linesep))
@@ -423,7 +427,7 @@ class ConsoleContext(object):
 
         self.print_interactive_intro()
         # initialise autocomplete
-        self.words = list(self._utils.keys())
+        self.words = list(self._commands.keys())
         # completer = Completer(words)
         colorama.deinit()  # make colorama to release stderr and stdout
         readline.parse_and_bind("tab: complete")

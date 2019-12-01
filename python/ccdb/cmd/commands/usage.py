@@ -1,7 +1,7 @@
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 import logging
 
-log = logging.getLogger("ccdb.cmd.utils.usage")
+log = logging.getLogger("ccdb.cmd.commands.usage")
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -13,7 +13,7 @@ def create_util_instance():
 #   Class Usage - Prints usage for each util                         *
 #                                                                    *
 #*********************************************************************
-class Usage(ConsoleUtilBase):
+class Usage(CliCommandBase):
     """ Prints usage for each util """
     
     # ccdb utility class descr part 
@@ -28,6 +28,6 @@ class Usage(ConsoleUtilBase):
     # ---- end of print_help() ----
 
 
-    def process(self, args):
+    def execute(self, args):
         log.debug("  Usage is gained a control over the process")
         log.debug(" ".join(args))

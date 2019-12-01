@@ -1,7 +1,7 @@
 import logging
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 
-log = logging.getLogger("ccdb.cmd.utils.horse")
+log = logging.getLogger("ccdb.cmd.commands.horse")
 
 
 # ccdb module interface
@@ -14,7 +14,7 @@ def create_util_instance():
 #   Class Horse - Horse                                               *
 #                                                                     *
 # *********************************************************************
-class Horse(ConsoleUtilBase):
+class Horse(CliCommandBase):
     """ horse """
     
     # ccdb utility class descr part 
@@ -37,7 +37,7 @@ class Horse(ConsoleUtilBase):
             --funny     - funny horse
             """)
 
-    def process(self, args):
+    def execute(self, args):
 
         horse = self.horse4
         if len(args) > 0:

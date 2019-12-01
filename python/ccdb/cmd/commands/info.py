@@ -2,12 +2,12 @@ import logging
 import os
 
 from ccdb import Directory, TypeTable, Variation, read_ccdb_text_file, TextFileDOM
-from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
+from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
 
 
-log = logging.getLogger("ccdb.cmd.utils.info")
+log = logging.getLogger("ccdb.cmd.commands.info")
 
 
 #ccdbcmd module interface
@@ -20,7 +20,7 @@ def create_util_instance():
 #   Class Info - Prints extended information of object by the path   *
 #                                                                    *
 #*********************************************************************
-class Info(ConsoleUtilBase):
+class Info(CliCommandBase):
     """ Prints extended information of object by the path """
 
     # ccdb utility class descr part 
@@ -33,7 +33,7 @@ class Info(ConsoleUtilBase):
     #----------------------------------------
     #   process
     #----------------------------------------
-    def process(self, args):
+    def execute(self, args):
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}Info is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args) + "'"))

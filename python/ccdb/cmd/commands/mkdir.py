@@ -1,10 +1,10 @@
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 import posixpath
 import logging
 import os
 from ccdb import BraceMessage as LogFmt
 
-log = logging.getLogger("ccdb.cmd.utils.mkdir")
+log = logging.getLogger("ccdb.cmd.commands.mkdir")
 
 
 #ccdbcmd module interface
@@ -23,7 +23,7 @@ def create_util_instance():
 #   Class MakeDirectory - Create directory                           *
 #                                                                    *
 #*********************************************************************
-class MakeDirectory(ConsoleUtilBase):
+class MakeDirectory(CliCommandBase):
     """ Create directory """
     
     # ccdb utility class descr part 
@@ -33,7 +33,7 @@ class MakeDirectory(ConsoleUtilBase):
     short_descr = "Create directory"
     uses_db = True
 
-    def process(self, args):
+    def execute(self, args):
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}MakeDirectory is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))

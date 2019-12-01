@@ -1,12 +1,12 @@
 import logging
 import os
 
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 from ccdb.path_utils import validate_name
 from ccdb.brace_log_message import BraceMessage as Lfm
 
 
-log = logging.getLogger("ccdb.cmd.utils.var")
+log = logging.getLogger("ccdb.cmd.commands.var")
 
 
 #ccdbcmd module interface
@@ -19,7 +19,7 @@ def create_util_instance():
 #   Class CurrentVariation - gets or sets current working variation  *
 #                                                                    *
 #*********************************************************************
-class CurrentVariation(ConsoleUtilBase):
+class CurrentVariation(CliCommandBase):
     """ gets or sets current working run """
     
     # ccdb utility class descr part 
@@ -48,7 +48,7 @@ If no variation specified at ccdb start, current working variation is 'default'
     # ---- end of print_help() ----
 
 
-    def process(self, args):
+    def execute(self, args):
         if log.isEnabledFor(logging.DEBUG):
             log.debug(Lfm("{0}CurrentVariation is in charge{0}\\".format(os.linesep)))
             log.debug(Lfm(" |- arguments : '" + "' '".join(args)+"'"))

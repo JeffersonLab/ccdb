@@ -28,7 +28,7 @@ import os
 
 import ccdb
 import ccdb.path_utils
-from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
+from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
 
@@ -39,27 +39,15 @@ from ccdb import BraceMessage as LogFmt
 #                                                                     #
 #######################################################################
 
-#logger must be set to ccdb.cmd.utils.<utility command>
-log = logging.getLogger("ccdb.cmd.utils.empty")   
-
-
-#ccdbcmd module interface
-def create_util_instance():
-    """
-    This function is a module interface
-
-    :return: new AddData util
-    :rtype: AddData
-    """
-    log.debug("      registering Empty")
-    return Empty()
+# logger must be set to ccdb.cmd.commands.<command name>
+log = logging.getLogger("ccdb.cmd.commands.empty")
 
 
 #*********************************************************************
 #   Class Empty - empty utility example with description             *
 #                                                                    *
 #*********************************************************************
-class Empty(ConsoleUtilBase):
+class Empty(CliCommandBase):
     """Empty utility example"""
     
     # ccdb utility class descr part 
@@ -83,22 +71,22 @@ class Empty(ConsoleUtilBase):
     #
     #   process
     #----------------------------------------
-    def process(self, args):
+    def execute(self, args):
         """This is an entry point for each time the command is called"""
 
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}Empty is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
 
-        #prepare variables for the new command
+        # prepare variables for the new command
         self.__cleanup()
 
-        #get provider class which has functions for all CCDB database operation
+        # get provider class which has functions for all CCDB database operation
         assert self.context
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
 
-        #process arguments
+        # process arguments
         parsed_args = self.process_arguments(args)
 
         if not self.validate(parsed_args):
@@ -107,13 +95,25 @@ class Empty(ConsoleUtilBase):
         path = self.context.prepare_path(parsed_args.raw_path)   # add current path to user input
 
         # try avoid print() and use log to print data
-        log.info(LogFmt("{0}raw_path{1} : {2}", self.theme.Accent, self.theme.Reset, parsed_args.raw_path))
-        log.info(LogFmt("{0}path{1}     : {2}", self.theme.Accent, self.theme.Reset, path))
-        log.info(LogFmt("{0}variation{1}: {2}", self.theme.Accent, self.theme.Reset, parsed_args.variation))
-        log.info(LogFmt("{0}run{1}      : {2}", self.theme.Accent, self.theme.Reset, parsed_args.run))
+        log.info(LogFmt("{0}raw_path{1}  : {2}", self.theme.Accent, self.theme.Reset, parsed_args.raw_path))
+        log.info(LogFmt("{0}path{1}      : {2}", self.theme.Accent, self.theme.Reset, path))
+        log.info(LogFmt("{0}variation{1} : {2}", self.theme.Accent, self.theme.Reset, parsed_args.variation))
+        log.info(LogFmt("{0}run{1}       : {2}", self.theme.Accent, self.theme.Reset, parsed_args.run))
+        log.info(LogFmt("{0}borders{1}   : {2}", self.theme.Accent, self.theme.Reset, parsed_args.show_borders))
 
-        # the return is like application ret. 0 means OK
-        return 0
+        # Do something
+        text = ""
+        if parsed_args.show_borders:
+            text = "+-------------------+\n" + \
+                   "|   Empty command   |\n" + \
+                   "+-------------------+\n"
+        else:
+            text = "Empty command"
+
+        print(text)
+
+        # return some data if we have it
+        return text
 
 #----------------------------------------
 #   process_arguments 
@@ -126,6 +126,11 @@ class Empty(ConsoleUtilBase):
         parser.add_argument("raw_path")
         parser.add_argument("-v", "--variation", default=self.context.current_variation)
         parser.add_argument("-r", "--run", default=self.context.current_run, type=int)
+
+        # example of mutually exclusive group
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument("-b", "--borders", action="store_true", dest='show_borders', default=True)
+        group.add_argument("-nb", "--no-borders", action="store_false", dest='show_borders')
 
         return parser.parse_args(args)
 

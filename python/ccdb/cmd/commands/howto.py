@@ -1,8 +1,8 @@
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 from ccdb.brace_log_message import BraceMessage as Lfm
 import logging
 
-log = logging.getLogger("ccdb.cmd.utils.howto")
+log = logging.getLogger("ccdb.cmd.commands.howto")
 
 
 # ccdbcmd module interface
@@ -15,7 +15,7 @@ def create_util_instance():
 #   Class HowTo - Prints howtos                                       *
 #                                                                     *
 # *********************************************************************
-class HowTo(ConsoleUtilBase):
+class HowTo(CliCommandBase):
     """ Prints howtos """
     
     # ccdb utility class descr part 
@@ -27,7 +27,7 @@ class HowTo(ConsoleUtilBase):
     howtos = []
 
     # ---- end of print_help() ----
-    def process(self, args):
+    def execute(self, args):
         log.debug("HowTo is gained a control over the process")
         log.debug(Lfm("Arguments: '{0}'  ".join(args)))
 

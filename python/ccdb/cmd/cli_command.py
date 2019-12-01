@@ -1,8 +1,10 @@
+from abc import abstractmethod
+
 from .themes import NoColorTheme
 
 
-class ConsoleUtilBase(object):
-    """base class for console utility"""
+class CliCommandBase(object):
+    """base class for a single CCDB CLI command"""
 
     #context = ConsoleContext()
     uses_db = False
@@ -21,6 +23,14 @@ class ConsoleUtilBase(object):
     @context.setter
     def context(self, value):
         self._context = value
+
+    @abstractmethod
+    def execute(self, args):
+        """Processes the command
+        :parameter args: [] - a List of arguments
+        """
+        pass
+
 
     def print_help(self):
         """Prints help of the command"""

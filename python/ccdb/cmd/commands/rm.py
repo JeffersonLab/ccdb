@@ -1,10 +1,10 @@
 import logging
 import os
 from ccdb import AlchemyProvider
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 from sqlalchemy.orm.exc import NoResultFound
 
-log = logging.getLogger("ccdb.cmd.utils.rm")
+log = logging.getLogger("ccdb.cmd.commands.rm")
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -16,7 +16,7 @@ def create_util_instance():
 #   Class Info - Prints extended information of object by the path   *
 #                                                                    *
 #*********************************************************************
-class Remove(ConsoleUtilBase):
+class Remove(CliCommandBase):
     """ Removes directory or type table """
     
     # ccdb utility class descr part 
@@ -34,7 +34,7 @@ class Remove(ConsoleUtilBase):
 #----------------------------------------
 #   process 
 #----------------------------------------  
-    def process(self, args):
+    def execute(self, args):
         log.debug("{0}Remove is gained a control{0}\\".format(os.linesep))
         log.debug(" |- arguments: " + " ".join(["'"+arg+"'" for arg in args]))
 

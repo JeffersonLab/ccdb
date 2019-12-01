@@ -20,7 +20,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
 from .errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, AnonymousUserForbiddenError, \
-    DatabaseStructureError, UserNotFoundError, UserExistsError, VariationNotFound, MissingArguement, AllowDefaultsError, \
+    DatabaseStructureError, UserNotFoundError, UserExistsError, VariationNotFound, MissingArgumentError, AllowDefaultsError, \
     MissingVariation
 
 from .table_file import TextFileDOM
@@ -1155,7 +1155,7 @@ class AlchemyProvider(object):
         if not allow_defaults and (default_variation or default_run or default_time):
             raise AllowDefaultsError
         if allow_defaults and not (default_time or default_run or default_variation):
-            raise MissingArguement
+            raise MissingArgumentError
         if default_variation == '' and request.variation == '':
             request.variation = "default"
 

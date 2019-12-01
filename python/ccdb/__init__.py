@@ -179,5 +179,5 @@ def init_ccdb_console():
 
     # start processor
     result = context.process(sys.argv)
-    if result:
-        sys.exit(int(result))
+    if result is None:                      # The result must be something! (even true)
+        sys.exit(1)

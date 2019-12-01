@@ -1,7 +1,7 @@
 import logging
 import os
 
-from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
+from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
 
@@ -9,7 +9,7 @@ from ccdb import BraceMessage as LogFmt
 from ccdb.path_utils import ParseRequestResult, parse_request
 from sqlalchemy.orm.exc import NoResultFound
 
-log = logging.getLogger("ccdb.cmd.utils.cp")
+log = logging.getLogger("ccdb.cmd.commands.cp")
 #ccdbcmd module interface
 def create_util_instance():
     log.debug("      registering Copy")
@@ -20,7 +20,7 @@ def create_util_instance():
 #      Class Copy - Copies an assignment to a new dataset             *
 #                                                                     *
 # *********************************************************************
-class Copy(ConsoleUtilBase):
+class Copy(CliCommandBase):
     """Copies an assignment to a new set of data"""
     
     command = "cp"
@@ -36,7 +36,7 @@ class Copy(ConsoleUtilBase):
         """Call this function in the beginning of command processing to prepare variables for new command"""
         self.raw_entry = "/"
 
-    def process(self, args):
+    def execute(self, args):
         """This is an entry point for each time the command is called"""
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}Copy is in charge{0}\\".format(os.linesep)))
@@ -104,5 +104,5 @@ class Copy(ConsoleUtilBase):
 
 if __name__ == "__main__":
     cp = Copy()
-    cp.process(['-a', '2', '-r', '2000-8000'])
+    cp.execute(['-a', '2', '-r', '2000-8000'])
     print('done')

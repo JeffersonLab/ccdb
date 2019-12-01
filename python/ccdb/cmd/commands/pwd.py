@@ -1,7 +1,7 @@
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 
 import logging
-log = logging.getLogger("ccdb.cmd.utils.pwd")
+log = logging.getLogger("ccdb.cmd.commands.pwd")
 
 
 #ccdbcmd module interface
@@ -14,7 +14,7 @@ def create_util_instance():
 #   Class PrintWorkDir - Prints working directory                    *
 #                                                                    *
 #*********************************************************************
-class PrintWorkDir(ConsoleUtilBase):
+class PrintWorkDir(CliCommandBase):
     """ Prints working directory """
     
     # ccdb utility class descr part 
@@ -27,7 +27,7 @@ class PrintWorkDir(ConsoleUtilBase):
         print(""" Prints working directory """) 
 
 
-    def process(self, args):
+    def execute(self, args):
         log.debug("  PrintWorkDir is gained a control over the process.")
         log.debug("    ".join(args))
         assert self.context is not None

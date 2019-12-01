@@ -1,8 +1,8 @@
-from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
+from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb.path_utils import validate_name
 import logging
 
-log = logging.getLogger("ccdb.cmd.utils.mkvar")
+log = logging.getLogger("ccdb.cmd.commands.mkvar")
 
 
 #ccdbcmd module interface
@@ -15,7 +15,7 @@ def create_util_instance():
 #   Class MakeVariation - Create variation                           *
 #                                                                    *
 #*********************************************************************
-class MakeVariation(ConsoleUtilBase):
+class MakeVariation(CliCommandBase):
     """ Create variation """
 
     # ccdb utility class descr part 
@@ -26,7 +26,7 @@ class MakeVariation(ConsoleUtilBase):
     uses_db = True
 
 
-    def process(self, args):
+    def execute(self, args):
         log.debug("MakeVariation module gained control")
         log.debug("Arguments: \n " + "     ".join(args))
 

@@ -5,22 +5,16 @@ import os
 from ccdb.errors import DirectoryNotFound
 from ccdb.model import Directory, TypeTable
 from ccdb.provider import AlchemyProvider
-from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
+from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import BraceMessage as LogFmt
 
-log = logging.getLogger("ccdb.cmd.utils.ls")
-
-#ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering ListUtil")
-    return List()
-
+log = logging.getLogger("ccdb.cmd.commands.ls")
 
 #*********************************************************************
 #   Class List - List objects in a given directory                   *
 #                                                                    *
 #*********************************************************************
-class List(ConsoleUtilBase):
+class List(CliCommandBase):
     """ List objects in a given directory """
 
     # ccdb utility class descr part 
@@ -31,7 +25,7 @@ class List(ConsoleUtilBase):
     uses_db = True
 
     def __init__(self):
-        ConsoleUtilBase.__init__(self)
+        CliCommandBase.__init__(self)
         self.raw_entry = "/"  # object path with possible pattern, like /mole/*
         self.parent_path = "/"  # parent path
         self.parent_dir = None  # @type parent_dir DDirectory
@@ -47,7 +41,7 @@ class List(ConsoleUtilBase):
         self.is_extended = False
 
 
-    def process(self, args):
+    def execute(self, args):
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}List is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args) + "'"))
@@ -224,7 +218,7 @@ class List(ConsoleUtilBase):
         if path.endswith("/"):
             path = path[:-1]
 
-        #local or absolute path?
+        # local or absolute path?
         if not path.startswith("/"):
             path = posixpath.join(self.context.current_path, path)
 

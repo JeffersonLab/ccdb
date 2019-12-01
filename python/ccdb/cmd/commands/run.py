@@ -1,8 +1,8 @@
 import logging
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 from ccdb.brace_log_message import BraceMessage as Lfm
 
-log = logging.getLogger("ccdb.cmd.utils.run")
+log = logging.getLogger("ccdb.cmd.commands.run")
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -14,7 +14,7 @@ def create_util_instance():
 #   Class CurrentRun - gets or sets current working run              *
 #                                                                    *
 #*********************************************************************
-class CurrentRun(ConsoleUtilBase):
+class CurrentRun(CliCommandBase):
     """ gets or sets current working run """
     
     # ccdb utility class descr part 
@@ -44,7 +44,7 @@ If no run specified at ccdb start, current working run is 0
     # ---- end of print_help() ----
 
 
-    def process(self, args):
+    def execute(self, args):
         log.debug("CurrentRun is gained a control over the process.")
         log.debug("  " + " ".join(args))
         

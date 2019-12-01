@@ -4,24 +4,18 @@ import os
 
 from ccdb import TypeTable, Assignment
 from ccdb import AlchemyProvider
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase, UtilityArgumentParser
+from ccdb.errors import MissingArgumentError
 from ccdb.path_utils import ParseRequestResult, parse_request
 from ccdb import BraceMessage as Lfm  # lfm is aka log format message. See BraceMessage desc about
 from sqlalchemy.orm.exc import NoResultFound
 
-log = logging.getLogger("ccdb.cmd.utils.cat")
-
-
-# ccdb cmd module interface
-def create_util_instance():
-    log.debug(Lfm("      registering Cat"))
-    return Cat()
-
+log = logging.getLogger("ccdb.cmd.commands.cat")
 
 # *********************************************************************
 #   Class Cat - Show assignment data by ID                           *
 # *********************************************************************
-class Cat(ConsoleUtilBase):
+class Cat(CliCommandBase):
     """Show assignment data by ID"""
 
     # ccdb utility class descr part
@@ -38,21 +32,20 @@ class Cat(ConsoleUtilBase):
     show_date = False
 
     def __init__(self):
-        ConsoleUtilBase.__init__(self)
+        CliCommandBase.__init__(self)
         self.raw_entry = "/"  # object path with possible pattern, like /mole/*
         self.path = "/"       # parent path
         self.raw_table_path = ""
         self.use_ass_id = False
         self.ass_id = 0
         self.print_horizontal = True
-        self.user_request_print_horizontal = False
-        self.user_request_print_vertical = False
+
         self.request = ParseRequestResult()
 
     # ----------------------------------------
     #   process
     # ----------------------------------------
-    def process(self, args):
+    def execute(self, args):
         """
         Process this command
         :param args:
@@ -67,21 +60,13 @@ class Cat(ConsoleUtilBase):
 
         # reset arguments on each process
         self.raw_table_path = ""
-        self.show_borders = True
-        self.show_header = True
-        self.show_comments = False
-        self.show_date = False
+
+
         self.request = ParseRequestResult()
         self.ass_id = 0
-        self.user_request_print_horizontal = False
-        self.user_request_print_vertical = False
 
-        if not len(args):
-            print ("Please provide ID for assignment. Use 'help cat' to get more information")
-            return 1
 
-        if not self.process_arguments(args):
-            return 1
+        self.process_arguments(args)
 
         if self.use_ass_id:
             assignment = self.get_assignment_by_id(self.ass_id)
@@ -108,7 +93,7 @@ class Cat(ConsoleUtilBase):
             else:
                 log.warning("Assignment contains no data")
         else:
-            print ("Cannot fill data for assignment with this ID")
+            print("Cannot fill data for assignment with this ID")
             return 1
 
         return 0
@@ -142,28 +127,36 @@ class Cat(ConsoleUtilBase):
     #   process_arguments
     # ----------------------------------------
     def process_arguments(self, args):
-        # solo arguments
-        if ("-b" in args) or ("--borders" in args):
-            self.show_borders = True
-        if ("-nb" in args) or ("--no-borders" in args):
-            self.show_borders = False
-        if ("-h" in args) or "--header":
-            self.show_header = True
-        if ("-nh" in args) or ("--no-header" in args):
-            self.show_header = False
-        if ("-c" in args) or ("--comments" in args):
-            self.show_comments = True
-        if ("-nc" in args) or ("--no-comments" in args):
-            self.show_comments = False
-        if ("-t" in args) or ("--time" in args):
-            self.show_date = True
-        if ("-nt" in args) or ("--no-time" in args):
-            self.show_date = False
-        if ("-ph" in args) or ("--horizontal" in args):
-            self.user_request_print_horizontal = True
-        if ("-pa" in args) or ("--vertical" in args):
-            self.user_request_print_vertical = True
+        parser = UtilityArgumentParser()
+        parser.add_argument("obj_name", default="")
 
+        # border
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument("-b", "--borders", action="store_true", dest='show_borders', default=True)
+        group.add_argument("-nb", "--no-borders", action="store_false")
+
+        # header
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument("-h", "--header", action="store_true", dest='show_header', default=True)
+        group.add_argument("-nh", "--no-header", action="store_false", dest='show_header')
+
+        # comments
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument("-c", "--comments", action="store_true", dest='show_comments', default=False)
+        group.add_argument("-nc", "--no-comments", action="store_false", dest='show_comments')
+
+        # time
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument("-t", "--time", action="store_true", dest='show_date', default=False)
+        group.add_argument("-nt", "--no-time", action="store_true", dest='show_date')
+
+
+        group.add_argument("-d", "--directory")
+        group.add_argument("-f", "--file")
+        group.add_argument("-ph", "--horizontal", action="store_true", dest='user_request_print_horizontal')
+        group.add_argument("-pv", "--vertical", action="store_true", dest='user_request_print_vertical')
+
+        result = parser.parse_args(args)
         # parse loop
         i = 0
         while i < len(args):
@@ -186,7 +179,7 @@ class Cat(ConsoleUtilBase):
                         self.request.run_is_parsed = True
                         i += 1
                     except ValueError:
-                        log.warning("Cannot read run from '{}' command", token)
+                        log.warning("Cannot parse run from '{}' command", token)
                         return False
 
                 # get assignment by id

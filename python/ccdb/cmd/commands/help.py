@@ -1,7 +1,7 @@
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 import logging
 
-log = logging.getLogger("ccdb.cmd.utils.help")
+log = logging.getLogger("ccdb.cmd.commands.help")
 
 # ccdb cmd module interface
 def create_util_instance():
@@ -13,7 +13,7 @@ def create_util_instance():
 #   Class HelpUtil - Prints help for each util                       *
 #                                                                    *
 #*********************************************************************
-class HelpUtil(ConsoleUtilBase):
+class HelpUtil(CliCommandBase):
     """ Prints help for each util """
     
     # ccdb utility class descr part 
@@ -43,7 +43,7 @@ class HelpUtil(ConsoleUtilBase):
     # ----------------------------------------
     #   process
     # ----------------------------------------
-    def process(self, args):
+    def execute(self, args):
         if self.context:
             commands = list(self.context.utils.keys())
             if len(args)>0:

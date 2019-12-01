@@ -1,8 +1,8 @@
 import logging
 from ccdb.path_utils import validate_name
-from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
+from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 
-log = logging.getLogger("ccdb.cmd.utils.user")
+log = logging.getLogger("ccdb.cmd.commands.user")
 
 #ccdbcmd module interface
 def create_util_instance():
@@ -13,7 +13,7 @@ def create_util_instance():
 #   Class User - Create user                                         *
 #                                                                    *
 #*********************************************************************
-class User(ConsoleUtilBase):
+class User(CliCommandBase):
     """ Create variation """
 
     # ccdb utility class descr part
@@ -23,7 +23,7 @@ class User(ConsoleUtilBase):
     short_descr = "Manage users"
     uses_db = True
 
-    def process(self, args):
+    def execute(self, args):
         log.debug("User module gained control")
         log.debug("Arguments: \n " + "     ".join(args))
 

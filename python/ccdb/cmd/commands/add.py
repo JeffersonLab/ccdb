@@ -4,29 +4,17 @@ import logging
 import ccdb
 from ccdb import TextFileDOM
 from ccdb import AlchemyProvider
-from ccdb.cmd import ConsoleUtilBase
+from ccdb.cmd import CliCommandBase
 from ccdb import BraceMessage as LogFmt
 
-log = logging.getLogger("ccdb.cmd.utils.add")
-
-
-# ccdbcmd module interface
-def create_util_instance():
-    """
-    This function is a module interface
-
-    :return: new AddData util
-    :rtype: AddData
-    """
-    log.debug("      registering AddData")
-    return AddData()
+log = logging.getLogger("ccdb.cmd.commands.add")
 
 
 # *********************************************************************
 #   Class AddData - Add data constants                                *
 #                                                                     *
 # *********************************************************************
-class AddData(ConsoleUtilBase):
+class AddData(CliCommandBase):
     """ Add data constants according given type table"""
 
     # ccdb utility class descr part 
@@ -64,7 +52,7 @@ class AddData(ConsoleUtilBase):
     # ----------------------------------------
     #   process
     # ----------------------------------------
-    def process(self, args):
+    def execute(self, args):
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}AddData is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args) + "'"))
@@ -132,7 +120,7 @@ class AddData(ConsoleUtilBase):
                                                 self.variation,
                                                 self.comment)
         log.info(assignment.request)
-        return 0
+        return assignment
 
     # ----------------------------------------
 
