@@ -9,7 +9,7 @@ from ccdb.errors import DirectoryNotFound, TypeTableNotFound
 import ccdb.path_utils
 import ccdb.cmd.themes
 from ccdb.cmd.cli_manager import ConsoleContext
-from tests import helper
+from . import helper
 
 logger = logging.getLogger("ccdb")
 

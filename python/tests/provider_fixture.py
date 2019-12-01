@@ -10,7 +10,7 @@ from ccdb.errors import DatabaseStructureError, TypeTableNotFound, DirectoryNotF
 
 from ccdb import AlchemyProvider
 from ccdb.path_utils import ParseRequestResult
-from tests import helper
+from . import helper
 
 
 class AlchemyProviderTest(unittest.TestCase):

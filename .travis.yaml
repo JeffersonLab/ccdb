@@ -1,8 +1,0 @@
-language: python
-
-# command to install dependencies
-install:
-  - pip install -r python/requirements.txt
-# command to run tests
-script:
-  - python/tests/integ_test_provider_sqlite.py

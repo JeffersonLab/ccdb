@@ -1,7 +1,7 @@
 from ccdb.errors import DatabaseStructureError
 from ccdb.errors import AnonymousUserForbiddenError
 import tests.provider_fixture
-from tests import helper
+from . import helper
 import unittest
 import ccdb
 
