@@ -76,27 +76,21 @@
     </column>
     <index id="30" parent="6" name="assignments_id_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="31" parent="6" name="assignments_date_sort_index">
       <ColNames>created</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="32" parent="6" name="assignments_fk_assignments_variations1_idx">
       <ColNames>variationId</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="33" parent="6" name="assignments_fk_assignments_runRanges1_idx">
       <ColNames>runRangeId</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="34" parent="6" name="assignments_fk_assignments_eventRanges1_idx">
       <ColNames>eventRangeId</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="35" parent="6" name="assignments_fk_assignments_constantSets1_idx">
       <ColNames>constantSetId</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="36" parent="6">
       <ColNames>id</ColNames>
@@ -151,7 +145,6 @@
     <index id="46" parent="7" name="sqlite_autoindex_assignmentsMaterializedView_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <key id="47" parent="7">
@@ -202,11 +195,9 @@
     </column>
     <index id="56" parent="8" name="columns_id_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="57" parent="8" name="columns_fk_columns_constantTypes1_idx">
       <ColNames>typeId</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="58" parent="8">
       <ColNames>id</ColNames>
@@ -242,11 +233,9 @@
     </column>
     <index id="64" parent="9" name="constantSets_id_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="65" parent="9" name="constantSets_fk_constantSets_constantTypes1_idx">
       <ColNames>constantTypeId</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="66" parent="9">
       <ColNames>id</ColNames>
@@ -306,11 +295,9 @@
     </column>
     <index id="76" parent="10" name="directories_id_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="77" parent="10" name="directories_fk_directories_directories1_idx">
       <ColNames>parentId</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="78" parent="10">
       <ColNames>id</ColNames>
@@ -355,7 +342,6 @@
     </column>
     <index id="86" parent="11" name="eventRanges_ideventRanges_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="87" parent="11">
       <ColNames>id</ColNames>
@@ -399,11 +385,9 @@
     </column>
     <index id="95" parent="12" name="logs_id_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="96" parent="12" name="logs_fk_logs_users1_idx">
       <ColNames>authorId</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="97" parent="12">
       <ColNames>id</ColNames>
@@ -448,12 +432,10 @@
     </column>
     <index id="105" parent="13" name="runRanges_id_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="106" parent="13" name="runRanges_run search">
       <ColNames>runMin
 runMax</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="107" parent="13">
       <ColNames>id</ColNames>
@@ -507,7 +489,6 @@ runMax</ColNames>
     </column>
     <index id="118" parent="16" name="tags_id_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="119" parent="16">
       <ColNames>id</ColNames>
@@ -598,11 +579,9 @@ runMax</ColNames>
     </column>
     <index id="135" parent="17" name="typeTables_id_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="136" parent="17" name="typeTables_fk_constantTypes_directories1_idx">
       <ColNames>directoryId</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="137" parent="17">
       <ColNames>id</ColNames>
@@ -654,7 +633,6 @@ runMax</ColNames>
     </column>
     <index id="146" parent="18" name="users_id_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="147" parent="18">
       <ColNames>id</ColNames>
@@ -734,15 +712,12 @@ runMax</ColNames>
     </column>
     <index id="161" parent="19" name="variations_id_UNIQUE">
       <ColNames>id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="162" parent="19" name="variations_name_search">
       <ColNames>name</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <index id="163" parent="19" name="variations_fk_variations_variations1_idx">
       <ColNames>parentId</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="164" parent="19">
       <ColNames>id</ColNames>
@@ -763,12 +738,10 @@ runMax</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ColNames>variations_id
 tags_id</ColNames>
-      <ColumnCollations></ColumnCollations>
       <Unique>1</Unique>
     </index>
     <index id="168" parent="20" name="variations_has_tags_fk_variations_has_tags_tags1_idx">
       <ColNames>tags_id</ColNames>
-      <ColumnCollations></ColumnCollations>
     </index>
     <key id="169" parent="20">
       <ColNames>variations_id

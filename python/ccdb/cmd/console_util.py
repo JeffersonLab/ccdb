@@ -1,7 +1,5 @@
-
-
-from .console_context import ConsoleContext
 from .themes import NoColorTheme
+
 
 class ConsoleUtilBase(object):
     """base class for console utility"""
@@ -11,6 +9,7 @@ class ConsoleUtilBase(object):
     changes_db = False
     help_util = False
     command = ""
+    _context = None
 
     @property
     def context(self):
@@ -21,7 +20,6 @@ class ConsoleUtilBase(object):
 
     @context.setter
     def context(self, value):
-        assert isinstance(value, ConsoleContext)
         self._context = value
 
     def print_help(self):

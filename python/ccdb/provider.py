@@ -101,9 +101,9 @@ class AlchemyProvider(object):
         if check_version:
             try:
                 vers_rec = self.session.query(CcdbSchemaVersion).first()
-                if vers_rec.version < 4:
+                if vers_rec.version != 5:
                     message = "Version mismatch. The database schema version is '{0}'. " \
-                              "This CCDB version works with schema version 4 (or maybe 4+)".format(vers_rec.version)
+                              "This CCDB version works with schema version 5".format(vers_rec.version)
                     raise DatabaseStructureError(message)
             except OperationalError as err:
                 if "no such table" in str(err):
@@ -378,7 +378,7 @@ class AlchemyProvider(object):
         try:
             self.dirs_by_id = self._get_dirs_by_id_dic(self.session.query(Directory).all())
         except OperationalError as err:
-            if 'no such table' in err.message:
+            if 'no such table' in str(err):
                 import os
 
                 raise DatabaseStructureError(self._no_structure_message.format(err))

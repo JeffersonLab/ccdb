@@ -1,3 +1,6 @@
+import os
+
+from ccdb import get_ccdb_home_path
 from ccdb.errors import DatabaseStructureError
 import tests.provider_fixture
 from tests import helper
@@ -17,4 +20,10 @@ class SQLiteAlchemyProviderTest(tests.provider_fixture.AlchemyProviderTest):
     def test_sqlite_wrong_file(self):
         """ Test connection to wrong sqlite file """
         self.assertRaises(DatabaseStructureError, self.provider.connect, "sqlite:///some.crap.file")
+
+    def test_connect_dbv4(self):
+        """Tests that one can't connect to schemva V4"""
+        ccdb_path = get_ccdb_home_path()
+        old_schema_cs = "sqlite:///" + os.path.join(ccdb_path, "python", "tests", "old_schema.dbV4.sqlite")
+        self.assertRaises(DatabaseStructureError, self.provider.connect, old_schema_cs)
 

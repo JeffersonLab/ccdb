@@ -1,23 +1,41 @@
+import importlib
+import pkgutil
 
+import six
 import os
-import re
-import imp
 import sys
 import logging
 import shlex
 import posixpath
 import getpass
 import ccdb.cmd
+import ccdb.cmd.commands
 import ccdb.path_utils
 from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
+from .console_util import ConsoleUtilBase
 from . import themes
-
 from . import colorama
 
 
 log = logging.getLogger("ccdb.cmd.console_context")
 
+
+def import_all_submodules(modules_dir, package_name):
+    """
+
+
+    :param package_name:
+    :return:
+    """
+    # >oO debug   for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
+    # >oO debug       print("module_loader {}, name {}, ispkg {}".format(module_loader, name, ispkg))
+
+    # parent_module =  imp.find_module('packets', path)
+    for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
+        importlib.import_module('.' + name, package_name)
+        # module = importlib.import_module('.' + name, package_name)
+        # >oO debug   print(module)
 
 class ConsoleContext(object):
     """
@@ -145,77 +163,36 @@ class ConsoleContext(object):
     # ------------------ P L U G I N   M A N A G E M E N T  -------------------------------
     # =====================================================================================
 
+
+
     # --------------------------------
     #  register_utilities
     # --------------------------------
     def register_utilities(self, path=""):
         """ Function to auto find and register utilities"""
-        path = path or os.path.join(ccdb.cmd.__path__[0], "utils")
 
-        # search modules
-        modules = self.search_utils(path)
-        self._utils = {}
+        modules_dir = ccdb.cmd.commands.__path__[0]
+        package_name = ccdb.cmd.commands.__name__
 
-        # register each module
-        for module in modules:
-            try:
-                registerFunc = getattr(module, "create_util_instance")
-                util = registerFunc()
-                if util:
-                    self._utils[util.command] = util
-                    util.context = self
-                    util.theme = self.theme
-                    if util.command == "ls":
-                        self._ls = util
+        # We need to import submodules at least once to get __submodules__() function work later
+        import_all_submodules(modules_dir, package_name)
 
-            except AttributeError as ex:
-                log.debug("Error registering module : " + repr(ex))
-            except Exception as ex:
-                log.debug("Error registering module : " + repr(ex))
+        # Create all subclasses of PacketInstallationInstruction and add here
+        for cls in ConsoleUtilBase.__subclasses__():
+            util = cls()
 
-        if log.isEnabledFor(logging.DEBUG):
-            log.debug(lfm("{0}Utils found and registered in directory '{1}' are:", os.linesep, path))
-            log.debug("{0:<10} {1:<15} {2}:".format("(command)", "(name)", "(description)"))
-            log.debug("\n".join(["{0:<10} {1:<15} {2}:".format(command, util.name, util.short_descr)
-                                 for command, util
-                                 in list(self._utils.items())]))
+            self._utils[util.command] = util
+            util.context = self
+            util.theme = self.theme
+            if util.command == "ls":
+                self._ls = util
 
-    # --------------------------------
-    # search_utils
-    # --------------------------------
-    def search_utils(self, path):
-        """Load plugins from directory and return list of modules
+            if log.isEnabledFor(logging.DEBUG):
+                log.debug("{0:<10} {1:<15} {2}:".format("(command)", "(name)", "(description)"))
+                log.debug("\n".join(["{0:<10} {1:<15} {2}:".format(command, util.name, util.short_descr)
+                                     for command, util
+                                     in list(self._utils.items())]))
 
-        :rtype: []
-        """
-
-        # >oO debug output
-        log.debug(lfm("{0}search_utils{0}\\", os.linesep))
-        log.debug(lfm(" |- searching modules in directory:{0} |  '{1}{2}{3}'", os.linesep, self.theme.Directories, path,
-                      self.theme.Reset))
-
-        # get list of files and module names
-        files = os.listdir(path)
-        test = re.compile(".py$", re.IGNORECASE)
-        files = list(filter(test.search, files))
-        filenameToModuleName = lambda f: os.path.splitext(f)[0]
-        moduleNames = sorted(map(filenameToModuleName, files))
-        log.debug(lfm(" |- found '{0}' modules.{1} |- proceed loading each module:{1}", len(moduleNames), os.linesep))
-
-        modules = []
-        for m in moduleNames:
-            # skip any files starting with '__', such as __init__.py
-            if m.startswith('__'):
-                continue
-            try:
-                f, filename, desc = imp.find_module(m, [path])
-                modules.append(imp.load_module(m, f, filename, desc))
-            except ImportError as ex:
-                log.debug(lfm(" |- error importing module: {0}", m))
-                log.debug(lfm(" |\\{0} ||-{1}", os.linesep, repr(ex)))
-                continue
-
-        return modules
 
     # --------------------------------
     #   processes the arguments
@@ -539,7 +516,7 @@ class ConsoleContext(object):
             self.matching_words.extend(table_list)
 
         except Exception as ex:
-            log.debug("error getting competition paths: " + ex.message)
+            log.debug("error getting competition paths: " + str(ex))
 
     # --------------------------------
     #       complete

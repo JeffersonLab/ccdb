@@ -9,7 +9,7 @@ from ccdb.errors import DirectoryNotFound, TypeTableNotFound
 import ccdb.path_utils
 import ccdb.cmd.themes
 from ccdb.cmd.console_context import ConsoleContext
-import helper
+from tests import helper
 
 logger = logging.getLogger("ccdb")
 
@@ -20,6 +20,10 @@ class AddThenDumpFileTests(unittest.TestCase):
     """
 
     def setUp(self):
+
+        # Copy sqlite DB
+        helper.copy_test_sqlite_db()
+
         # We need only sqlite tests. We test that we work with all databases in the provider fixture
         self.sqlite_connection_str = helper.sqlite_test_connection_str
 
@@ -32,6 +36,8 @@ class AddThenDumpFileTests(unittest.TestCase):
         self.context.register_utilities()
         self.context.provider.authentication.current_user_name = "test_user"
 
+
+
         # logger
         ch = logging.StreamHandler()
         ch.stream = sys.stdout
@@ -42,10 +48,11 @@ class AddThenDumpFileTests(unittest.TestCase):
         try:
             self.context.process_command_line("mktbl /test/channel_mc_efficiency -r 5 -c 1")
         except Exception as e:
-            if "Such table already exists" in e.message:
+            if "Such table already exists" in str(e):
                 sys.stderr.write("mktbl /test/channel_mc_efficiency already exists")
             else:
                 raise
+
 
     def tearDown(self):
         with helper.captured_output() as (out, err):
@@ -55,6 +62,7 @@ class AddThenDumpFileTests(unittest.TestCase):
         assignment_id = int(shlex.split(line)[0])
         self.context.process_command_line("rm -f -a {0}".format(assignment_id))
         self.context.process_command_line("rm -f -t /test/channel_mc_efficiency")
+        helper.clean_test_sqlite_db()
 
     def test_same_content(self):
         """When adding, then dumping a file its content should match"""
