@@ -63,7 +63,7 @@ class AlchemyProvider(object):
     # ------------------------------------------------
     #  Connects to database using connection string
     # ------------------------------------------------
-    def connect(self, connection_string=""):
+    def connect(self, connection_string="", check_version=True):
         """
         Connects to database using connection string
 
@@ -72,6 +72,7 @@ class AlchemyProvider(object):
         sqlite:///path/to/file.sqlite
 
         :param connection_string: connection string
+        :param check_version: Instantly check the schema version
         :type connection_string: str
         """
         try:
@@ -97,17 +98,18 @@ class AlchemyProvider(object):
         self._are_dirs_loaded = False
 
         # check data schema version
-        try:
-            vers_rec = self.session.query(CcdbSchemaVersion).first()
-            if vers_rec.version < 4:
-                message = "Version mismatch. The database schema version is '{0}'. " \
-                          "This CCDB version works with schema version 4 (or maybe 4+)".format(vers_rec.version)
-                raise DatabaseStructureError(message)
-        except OperationalError as err:
-            if "no such table" in err.message:
-                raise DatabaseStructureError(self._no_structure_message.format(err))
-            else:
-                raise
+        if check_version:
+            try:
+                vers_rec = self.session.query(CcdbSchemaVersion).first()
+                if vers_rec.version < 4:
+                    message = "Version mismatch. The database schema version is '{0}'. " \
+                              "This CCDB version works with schema version 4 (or maybe 4+)".format(vers_rec.version)
+                    raise DatabaseStructureError(message)
+            except OperationalError as err:
+                if "no such table" in str(err):
+                    raise DatabaseStructureError(self._no_structure_message.format(err))
+                else:
+                    raise
 
     # ------------------------------------------------
     # Closes connection to data
@@ -1285,7 +1287,7 @@ class AlchemyProvider(object):
         -- If no type table with such path exists
         -- If data is inconsistent with columns number and rows number
         -- If no variation with such name found
-        --If no assignment is given
+        -- If no assignment is given
 
         @param new_run_range: run_range of assignment
         @param new_variation: variation of assignment
@@ -1305,6 +1307,7 @@ class AlchemyProvider(object):
         assert isinstance(new_variation, Variation)
         if new_run_range is None:
             new_run_range = source_assignment.run_range
+
         # construct assignment
         dest_assignment = Assignment()
         dest_assignment.constant_set = source_assignment.constant_set

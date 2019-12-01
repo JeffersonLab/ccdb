@@ -4,18 +4,6 @@ import tests.provider_fixture
 from tests import helper
 import unittest
 import ccdb
-import io
-
-
-class SQLiteAlchemyProviderTest(tests.provider_fixture.AlchemyProviderTest):
-
-    def setUp(self):
-        super(SQLiteAlchemyProviderTest, self).setUp()
-        self.connection_str = helper.sqlite_test_connection_str
-
-    def test_sqlite_wrong_file(self):
-        """ Test connection to wrong sqlite file """
-        self.assertRaises(DatabaseStructureError, self.provider.connect, "sqlite:///some.crap.file")
 
 
 class MySQLAlchemyProviderTest(tests.provider_fixture.AlchemyProviderTest):

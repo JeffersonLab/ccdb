@@ -1,14 +1,11 @@
-
 import logging
 import os
 
-import ccdb
-import ccdb.path_utils
 from ccdb.cmd import ConsoleUtilBase, UtilityArgumentParser
 from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
 
-#logger must be set to ccdb.cmd.utils.<utility command>
+# logger must be set to ccdb.cmd.utils.<utility command>
 from ccdb.path_utils import ParseRequestResult, parse_request
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -19,10 +16,10 @@ def create_util_instance():
     return Copy()
 
 
-#*********************************************************************
-#   Class Copy - Copies an assignment to a new dataset               *
-#                                                                    *
-#*********************************************************************
+# *********************************************************************
+#      Class Copy - Copies an assignment to a new dataset             *
+#                                                                     *
+# *********************************************************************
 class Copy(ConsoleUtilBase):
     """Copies an assignment to a new set of data"""
     
@@ -44,9 +41,11 @@ class Copy(ConsoleUtilBase):
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}Copy is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
-        #prepare variables for the new command
+
+        # prepare variables for the new command
         self.__cleanup()
-        #get provider class which has functions for all CCDB database operation
+
+        # get provider class which has functions for all CCDB database operation
         assert self.context is not None
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
@@ -90,7 +89,7 @@ class Copy(ConsoleUtilBase):
     def print_help(self):
         """Prints help for the command"""
         
-        print ("""Copies assignment to a new data
+        print("""Copies assignment to a new data
         
         Flags:
         -v or --variation  Variation of new assignment

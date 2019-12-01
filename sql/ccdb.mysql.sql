@@ -2,7 +2,7 @@
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
 -- Schema ccdb
@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS `runRanges` (
   `runMax` INT NOT NULL,
   `comment` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `run search` (`runMin` ASC, `runMax` ASC) VISIBLE)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `run search` (`runMin` ASC, `runMax` ASC))
 ENGINE = MyISAM;
 
 
@@ -48,12 +48,15 @@ CREATE TABLE IF NOT EXISTS `variations` (
   `authorId` INT NOT NULL DEFAULT 1,
   `comment` TEXT NULL DEFAULT NULL,
   `parentId` INT NOT NULL DEFAULT 1,
-  `isLocked` INT NOT NULL DEFAULT 0,
+  `isLocked` TINYINT(1) NOT NULL DEFAULT 0,
   `lockTime` TIMESTAMP NULL DEFAULT NULL,
+  `lockAuthorId` VARCHAR(45) NULL DEFAULT NULL,
+  `goBackBehavior` INT NOT NULL DEFAULT 0,
+  `goBackTime` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `name_search` USING HASH (`name`) VISIBLE,
-  INDEX `fk_variations_variations1_idx` (`parentId` ASC) VISIBLE)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `name_search` USING HASH (`name` ASC),
+  INDEX `fk_variations_variations1_idx` (`parentId` ASC))
 ENGINE = MyISAM;
 
 
@@ -71,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `eventRanges` (
   `eventMax` INT NOT NULL,
   `comment` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `ideventRanges_UNIQUE` (`id` ASC) VISIBLE)
+  UNIQUE INDEX `ideventRanges_UNIQUE` (`id` ASC))
 ENGINE = MyISAM;
 
 
@@ -88,9 +91,11 @@ CREATE TABLE IF NOT EXISTS `directories` (
   `parentId` INT NOT NULL DEFAULT 0,
   `authorId` INT NOT NULL DEFAULT 1,
   `comment` TEXT NULL DEFAULT NULL,
+  `isDeprecated` TINYINT(1) NOT NULL DEFAULT 0,
+  `deprecatedById` INT NOT NULL DEFAULT -1,
   PRIMARY KEY (`id`),
-  INDEX `fk_directories_directories1_idx` (`parentId` ASC) VISIBLE,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
+  INDEX `fk_directories_directories1_idx` (`parentId` ASC),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = MyISAM;
 
 
@@ -110,9 +115,14 @@ CREATE TABLE IF NOT EXISTS `typeTables` (
   `nAssignments` INT NOT NULL DEFAULT 0,
   `authorId` INT NOT NULL DEFAULT 1,
   `comment` TEXT NULL DEFAULT NULL,
+  `isDeprecated` TINYINT(1) NOT NULL DEFAULT 0,
+  `deprecatedById` INT NOT NULL DEFAULT -1,
+  `isLocked` TINYINT(1) NOT NULL DEFAULT 0,
+  `lockAuthorId` INT NULL DEFAULT NULL,
+  `lockTime` TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `fk_constantTypes_directories1_idx` (`directoryId` ASC) VISIBLE)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_constantTypes_directories1_idx` (`directoryId` ASC))
 ENGINE = MyISAM;
 
 
@@ -128,8 +138,8 @@ CREATE TABLE IF NOT EXISTS `constantSets` (
   `vault` LONGTEXT NOT NULL,
   `constantTypeId` INT NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `fk_constantSets_constantTypes1_idx` (`constantTypeId` ASC) VISIBLE)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_constantSets_constantTypes1_idx` (`constantTypeId` ASC))
 ENGINE = MyISAM;
 
 
@@ -149,12 +159,12 @@ CREATE TABLE IF NOT EXISTS `assignments` (
   `comment` TEXT NULL,
   `constantSetId` INT NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_assignments_variations1_idx` (`variationId` ASC) VISIBLE,
-  INDEX `fk_assignments_runRanges1_idx` (`runRangeId` ASC) VISIBLE,
-  INDEX `fk_assignments_eventRanges1_idx` (`eventRangeId` ASC) VISIBLE,
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `date_sort_index` USING BTREE (`created`) VISIBLE,
-  INDEX `fk_assignments_constantSets1_idx` (`constantSetId` ASC) VISIBLE)
+  INDEX `fk_assignments_variations1_idx` (`variationId` ASC),
+  INDEX `fk_assignments_runRanges1_idx` (`runRangeId` ASC),
+  INDEX `fk_assignments_eventRanges1_idx` (`eventRangeId` ASC),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `date_sort_index` USING BTREE (`created` DESC),
+  INDEX `fk_assignments_constantSets1_idx` (`constantSetId` ASC))
 ENGINE = MyISAM;
 
 
@@ -173,8 +183,8 @@ CREATE TABLE IF NOT EXISTS `columns` (
   `order` INT NOT NULL,
   `comment` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `fk_columns_constantTypes1_idx` (`typeId` ASC) VISIBLE)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_columns_constantTypes1_idx` (`typeId` ASC))
 ENGINE = MyISAM;
 
 
@@ -187,7 +197,7 @@ CREATE TABLE IF NOT EXISTS `tags` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = MyISAM;
 
 
@@ -200,7 +210,7 @@ CREATE TABLE IF NOT EXISTS `variations_has_tags` (
   `variations_id` INT NOT NULL,
   `tags_id` INT NOT NULL,
   PRIMARY KEY (`variations_id`, `tags_id`),
-  INDEX `fk_variations_has_tags_tags1_idx` (`tags_id` ASC) VISIBLE)
+  INDEX `fk_variations_has_tags_tags1_idx` (`tags_id` ASC))
 ENGINE = MyISAM;
 
 
@@ -219,7 +229,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `info` VARCHAR(125) NOT NULL,
   `isDeleted` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC))
 ENGINE = MyISAM;
 
 
@@ -237,8 +247,8 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `comment` TEXT NULL,
   `authorId` INT NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `fk_logs_users1_idx` (`authorId` ASC) VISIBLE)
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_logs_users1_idx` (`authorId` ASC))
 ENGINE = MyISAM;
 
 
@@ -281,13 +291,13 @@ CREATE TABLE IF NOT EXISTS `assignmentsMaterializedView` (
   `runMin` INT NOT NULL,
   `runMax` INT NOT NULL,
   `assignmentTime` TIMESTAMP NOT NULL,
-  INDEX `fk_assignmentsMaterializedView_assignments1_idx` (`assignmentsId` ASC) VISIBLE,
-  INDEX `fk_assignmentsMaterializedView_variations1_idx` (`variationsId` ASC) VISIBLE,
-  INDEX `fk_assignmentsMaterializedView_constantSets1_idx` (`constantSetsId` ASC) VISIBLE,
-  INDEX `fk_assignmentsMaterializedView_typeTables1_idx` (`typeTablesId` ASC) VISIBLE,
+  INDEX `fk_assignmentsMaterializedView_assignments1_idx` (`assignmentsId` ASC),
+  INDEX `fk_assignmentsMaterializedView_variations1_idx` (`variationsId` ASC),
+  INDEX `fk_assignmentsMaterializedView_constantSets1_idx` (`constantSetsId` ASC),
+  INDEX `fk_assignmentsMaterializedView_typeTables1_idx` (`typeTablesId` ASC),
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `fk_assignmentsMaterializedView_runRanges1_idx` (`runRangesId` ASC) VISIBLE,
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `fk_assignmentsMaterializedView_runRanges1_idx` (`runRangesId` ASC),
   CONSTRAINT `fk_assignmentsMaterializedView_assignments1`
     FOREIGN KEY (`assignmentsId`)
     REFERENCES `assignments` (`id`)
@@ -337,10 +347,10 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`) VALUES (1, DEFAULT, DEFAULT, 'default', 'Default variation', 2, 'Default variation', 0, DEFAULT, NULL);
-INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`) VALUES (2, DEFAULT, DEFAULT, 'mc', 'Mone-Carlo variations', 2, 'Monte-Carlo specific variation', 1, DEFAULT, NULL);
-INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`) VALUES (3, DEFAULT, DEFAULT, 'test', 'Test variation', 2, 'Variation for software test', 1, DEFAULT, NULL);
-INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`) VALUES (4, DEFAULT, DEFAULT, 'subtest', 'Test variation of second level', 2, 'Variation for software test which has test variation as parent', 3, DEFAULT, NULL);
+INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`, `lockAuthorId`, `goBackBehavior`, `goBackTime`) VALUES (1, DEFAULT, DEFAULT, 'default', 'Default variation', 2, 'Default variation', 0, DEFAULT, NULL, NULL, DEFAULT, NULL);
+INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`, `lockAuthorId`, `goBackBehavior`, `goBackTime`) VALUES (2, DEFAULT, DEFAULT, 'mc', 'Mone-Carlo variations', 2, 'Monte-Carlo specific variation', 1, DEFAULT, NULL, NULL, DEFAULT, NULL);
+INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`, `lockAuthorId`, `goBackBehavior`, `goBackTime`) VALUES (3, DEFAULT, DEFAULT, 'test', 'Test variation', 2, 'Variation for software test', 1, DEFAULT, NULL, NULL, DEFAULT, NULL);
+INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`, `lockAuthorId`, `goBackBehavior`, `goBackTime`) VALUES (4, DEFAULT, DEFAULT, 'subtest', 'Test variation of second level', 2, 'Variation for software test which has test variation as parent', 3, DEFAULT, NULL, NULL, DEFAULT, NULL);
 
 COMMIT;
 
@@ -360,9 +370,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `authorId`, `comment`) VALUES (1, DEFAULT, DEFAULT, 'test', 0, 2, 'Soft test directory');
-INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `authorId`, `comment`) VALUES (2, DEFAULT, DEFAULT, 'subtest', 1, 2, 'Soft test first subdirectory');
-INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `authorId`, `comment`) VALUES (3, DEFAULT, DEFAULT, 'test_vars', 1, 2, NULL);
+INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `authorId`, `comment`, `isDeprecated`, `deprecatedById`) VALUES (1, DEFAULT, DEFAULT, 'test', 0, 2, 'Soft test directory', DEFAULT, DEFAULT);
+INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `authorId`, `comment`, `isDeprecated`, `deprecatedById`) VALUES (2, DEFAULT, DEFAULT, 'subtest', 1, 2, 'Soft test first subdirectory', DEFAULT, DEFAULT);
+INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `authorId`, `comment`, `isDeprecated`, `deprecatedById`) VALUES (3, DEFAULT, DEFAULT, 'test_vars', 1, 2, NULL, DEFAULT, DEFAULT);
 
 COMMIT;
 
@@ -372,8 +382,8 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `ccdb`;
-INSERT INTO `typeTables` (`id`, `created`, `modified`, `directoryId`, `name`, `nRows`, `nColumns`, `nAssignments`, `authorId`, `comment`) VALUES (1, DEFAULT, DEFAULT, 3, 'test_table', 2, 3, 2, 2, 'Test type');
-INSERT INTO `typeTables` (`id`, `created`, `modified`, `directoryId`, `name`, `nRows`, `nColumns`, `nAssignments`, `authorId`, `comment`) VALUES (2, DEFAULT, DEFAULT, 3, 'test_table2', 1, 3, 1, 2, 'Test type 2');
+INSERT INTO `typeTables` (`id`, `created`, `modified`, `directoryId`, `name`, `nRows`, `nColumns`, `nAssignments`, `authorId`, `comment`, `isDeprecated`, `deprecatedById`, `isLocked`, `lockAuthorId`, `lockTime`) VALUES (1, DEFAULT, DEFAULT, 3, 'test_table', 2, 3, 2, 2, 'Test type', DEFAULT, DEFAULT, DEFAULT, NULL, NULL);
+INSERT INTO `typeTables` (`id`, `created`, `modified`, `directoryId`, `name`, `nRows`, `nColumns`, `nAssignments`, `authorId`, `comment`, `isDeprecated`, `deprecatedById`, `isLocked`, `lockAuthorId`, `lockTime`) VALUES (2, DEFAULT, DEFAULT, 3, 'test_table2', 1, 3, 1, 2, 'Test type 2', DEFAULT, DEFAULT, DEFAULT, NULL, NULL);
 
 COMMIT;
 

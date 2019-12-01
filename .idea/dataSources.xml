@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="ccdb@localhost" uuid="9ae17c30-ce99-4fec-b848-61b2167ee45f">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/ccdb</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="SQLite - ccdb.sqlite" uuid="f788979c-e347-4c7e-9d70-56534d0f6c92">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/sql/ccdb.sqlite</jdbc-url>
+    </data-source>
+  </component>
+</project>

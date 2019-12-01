@@ -1,4 +1,6 @@
+import inspect
 import os
+import shutil
 import sys
 import ccdb
 import subprocess
@@ -15,8 +17,6 @@ ccdb_test_path = os.path.join(ccdb_path, 'python', 'tests')
 # Name of environment variable that holds MySql connection string
 ENV_TEST_MYSQL = "CCDB_TEST_MYSQL_CONNECTION"
 
-# Name of environment variable that holds SQLite connection string
-ENV_TEST_SQLITE = "CCDB_TEST_SQLITE_CONNECTION"
 
 
 # MySql connection string for tests
@@ -24,10 +24,11 @@ mysql_test_connection_str = os.environ[ENV_TEST_MYSQL] \
     if ENV_TEST_MYSQL in os.environ \
     else "mysql://ccdb_user@127.0.0.1:3306/ccdb_test"
 
+
+sqlite_test_file_path = os.path.join(os.getcwd(), 'test.sqlite')
+
 # SQLite connection string for tests
-sqlite_test_connection_str = os.environ[ENV_TEST_SQLITE] \
-    if ENV_TEST_SQLITE in os.environ \
-    else "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
+sqlite_test_connection_str = "sqlite:///" + os.path.join(os.getcwd(), 'test.sqlite')
 
 
 def recreate_mysql_db(username="ccdb_user", password=""):
@@ -48,6 +49,31 @@ def recreate_mysql_db(username="ccdb_user", password=""):
     ret_code = p.wait()
 
     print("MySQL recreation ended with the return code:", ret_code)
+
+
+def get_script_path(func, follow_symlinks=True):
+    path = inspect.getabsfile(func)
+    if follow_symlinks:
+        path = os.path.realpath(path)
+    return path
+
+
+def copy_test_sqlite_db(follow_symlinks=True):
+    """Copies sqlite DB located in $CCDB_HOME/sql directory to current working dir and uses tests on it"""
+
+    script_path = get_script_path(copy_test_sqlite_db, follow_symlinks)
+    ccdb_home_dir = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))   # tests/../..
+    sql_dir = os.path.join(ccdb_home_dir, 'sql')                                     # tests/../../sql
+    origin_sqlite_path = os.path.join(sql_dir, 'ccdb.sqlite')
+
+    return shutil.copy(origin_sqlite_path, sqlite_test_file_path)
+
+
+def clean_test_sqlite_db():
+    os.remove(sqlite_test_file_path)
+
+
+# In  sqlite DB connection string
 
 
 @contextmanager
