@@ -1,6 +1,29 @@
+import posixpath
 from abc import abstractmethod
 
 from .themes import NoColorTheme
+
+class CliContext(object):
+    def __init__(self):
+        self.is_interactive = False
+        self.current_path = "/"
+
+    # --------------------------------
+    #  prepare_path
+    # --------------------------------
+    def prepare_path(self, path):
+
+        # correct ending /
+        if path.endswith("/"):
+            path = path[:-1]
+
+        # local or absolute path?
+        if not path.startswith("/"):
+            path = posixpath.join(self.current_path, path)
+            # normalize
+        path = posixpath.normpath(path)
+
+        return path
 
 
 class CliCommandBase(object):

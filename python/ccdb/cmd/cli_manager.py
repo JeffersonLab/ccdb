@@ -13,7 +13,7 @@ import ccdb.cmd.commands
 import ccdb.path_utils
 from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
-from .cli_command import CliCommandBase
+from .cli_command import CliCommandBase, CliContext
 from . import themes
 from . import colorama
 
@@ -51,11 +51,9 @@ class ConsoleContext(object):
 
     def __init__(self):
         self._prov = AlchemyProvider()
-        self._is_interactive = False
         self.user_name = self.anonymous_user_name
-        self._is_interactive = False
         self._current_run = 0
-        self._current_path = "/"
+
         self._current_variation = "default"
         self._commands = {}
         self._verbose = False
@@ -64,6 +62,7 @@ class ConsoleContext(object):
         self.silent_exceptions = True  # rethrow happened exceptions
         self._theme = themes.NoColorTheme()
         self.log_sqlite = False
+        self.context = CliContext
 
     # prop verbose
     # _______________________
@@ -93,14 +92,6 @@ class ConsoleContext(object):
     @property
     def provider(self):
         return self._prov
-
-    @property
-    def current_path(self):
-        return self._current_path
-
-    @current_path.setter
-    def current_path(self, new_path):
-        self._current_path = new_path
 
     @property
     def current_run(self):
@@ -133,14 +124,6 @@ class ConsoleContext(object):
     @user_name.setter
     def user_name(self, name):
         self._prov.authentication.current_user_name = name
-
-    @property
-    def is_interactive(self):
-        return self._is_interactive
-
-    @is_interactive.setter
-    def is_interactive(self, value):
-        self._is_interactive = value
 
     @property
     def theme(self):
@@ -227,7 +210,7 @@ class ConsoleContext(object):
 
                 # it is an interactive mode
                 elif token == "-I" or token == "-i" or token == "--interactive":
-                    self._is_interactive = True
+                    self.context.is_interactive = True
 
                 # working run
                 elif token == "-r" or token == "--run":
@@ -267,7 +250,7 @@ class ConsoleContext(object):
                     else:
                         raise
 
-        if self._is_interactive:
+        if self.context.is_interactive:
             self.interactive_loop()
 
     # --------------------------------
@@ -451,7 +434,7 @@ class ConsoleContext(object):
 
             # read command from user
             try:
-                user_input = eval(input(self.current_path + "> "))
+                user_input = eval(input(self.context.current_path + "> "))
             except EOFError:
                 log.debug("EOF sequence received. Ending interactive loop")
                 break
@@ -500,7 +483,7 @@ class ConsoleContext(object):
         self.matching_words = [w for w in self.words if w.startswith(prefix)]
 
         # get name patches
-        path_prefix = posixpath.join(self.current_path, prefix)
+        path_prefix = posixpath.join(self.context.current_path, prefix)
         log.debug("getting path completion for: " + path_prefix)
         try:
             self.check_connection(self._ls)
@@ -559,22 +542,7 @@ class ConsoleContext(object):
             # --------  G E T T I N G    O B J E C T S  -------------------------------------------
             # =====================================================================================
 
-    # --------------------------------
-    #  prepare_path
-    # --------------------------------
-    def prepare_path(self, path):
 
-        # correct ending /
-        if path.endswith("/"):
-            path = path[:-1]
-
-        # local or absolute path?
-        if not path.startswith("/"):
-            path = posixpath.join(self.current_path, path)
-            # normalize
-        path = posixpath.normpath(path)
-
-        return path
 
     # --------------------------------
     #  parse_run_range
