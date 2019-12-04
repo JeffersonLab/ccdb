@@ -10,16 +10,9 @@ from ccdb import BraceMessage as LogFmt
 log = logging.getLogger("ccdb.cmd.commands.info")
 
 
-#ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering Info")
-    return Info()
-
-
-#*********************************************************************
+# ********************************************************************
 #   Class Info - Prints extended information of object by the path   *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class Info(CliCommandBase):
     """ Prints extended information of object by the path """
 
@@ -29,6 +22,7 @@ class Info(CliCommandBase):
     name = "Info"
     short_descr = "Prints extended information of object by the path"
     uses_db = True
+
 
     #----------------------------------------
     #   process

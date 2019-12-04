@@ -5,12 +5,15 @@ from datetime import datetime
 from ccdb import get_ccdb_home_path
 from ccdb.model import gen_flatten_data, list_to_blob, blob_to_list, list_to_table, TypeTableColumn
 from ccdb.model import LogRecord, User
-from ccdb.errors import DatabaseStructureError, TypeTableNotFound, DirectoryNotFound, \
-    UserNotFoundError, VariationNotFound, RunRangeNotFound
+from ccdb.errors import DatabaseStructureError, UserNotFoundError, ObjectIsNotFoundInDbError
 
 from ccdb import AlchemyProvider
 from ccdb.path_utils import ParseRequestResult
-from . import helper
+
+try:
+    from . import helper
+except ImportError:
+    import helper
 
 
 class AlchemyProviderTest(unittest.TestCase):
@@ -69,12 +72,12 @@ class AlchemyProviderTest(unittest.TestCase):
         # Ok, lets check if directory for the next text exists...
         try:
             self.provider.delete_directory("/test/testdir/constants")
-        except DirectoryNotFound:
+        except ObjectIsNotFoundInDbError:
             pass
 
         try:
             self.provider.delete_directory("/test/testdir")
-        except DirectoryNotFound:
+        except ObjectIsNotFoundInDbError:
             pass
 
         # cleanup directories
@@ -200,7 +203,7 @@ class AlchemyProviderTest(unittest.TestCase):
 
         # delete
         self.provider.delete_type_table(table)
-        self.assertRaises(TypeTableNotFound, self.provider.get_type_table, "/test/test_vars/new_table")
+        self.assertRaises(ObjectIsNotFoundInDbError, self.provider.get_type_table, "/test/test_vars/new_table")
 
     def test_run_ranges(self):
         """Test run ranges """
@@ -228,7 +231,7 @@ class AlchemyProviderTest(unittest.TestCase):
             rr = self.provider.get_run_range(0, 2001)
             self.assertIsNotNone(rr)
 
-        except RunRangeNotFound:
+        except ObjectIsNotFoundInDbError:
             pass      # test passed
 
         # GET OR CREATE RUNRANGE
@@ -245,7 +248,7 @@ class AlchemyProviderTest(unittest.TestCase):
         # DELETE RUN-RANGE TEST
         # ----------------------------------------------------
         self.provider.delete_run_range(rr)
-        self.assertRaises(RunRangeNotFound, self.provider.get_run_range, 0, 2001)
+        self.assertRaises(ObjectIsNotFoundInDbError, self.provider.get_run_range, 0, 2001)
 
     def test_variations(self):
         """Test variations"""
@@ -279,7 +282,7 @@ class AlchemyProviderTest(unittest.TestCase):
             v = self.provider.get_variation("abra_kozyabra")
             self.assertIsNotNone(v)
 
-        except VariationNotFound:
+        except ObjectIsNotFoundInDbError:
             pass     # test passed
 
         # create variation
@@ -296,7 +299,7 @@ class AlchemyProviderTest(unittest.TestCase):
         # DELETE RUN-RANGE TEST
         # ----------------------------------------------------
         self.provider.delete_variation(v)
-        self.assertRaises(VariationNotFound, self.provider.get_variation, "abra_kozyabra")
+        self.assertRaises(ObjectIsNotFoundInDbError, self.provider.get_variation, "abra_kozyabra")
 
         # Now create with comment and parent
         v = self.provider.create_variation("abra_kozyabra", "Abra!!!", "test")
@@ -479,7 +482,7 @@ class AlchemyProviderTest(unittest.TestCase):
         self.provider.connect(self.connection_str)
         source_assignment = self.provider.get_assignment_by_request("/test/test_vars/test_table")
         run_range = self.provider.get_or_create_run_range(0, 330)
-        #assert(source_assignment is Assignment)how to assert it is assignment
+        # assert(source_assignment is Assignment)how to assert it is assignment
         assignment = self.provider.copy_assignment(source_assignment,
                                                    new_run_range=run_range,
                                                    new_variation="test",
@@ -490,7 +493,7 @@ class AlchemyProviderTest(unittest.TestCase):
                                                    new_variation="default",
                                                    comment="")
         self.assertIsNotNone(assignment)
-        self.assertRaises(VariationNotFound, self.provider.copy_assignment, source_assignment,
+        self.assertRaises(ObjectIsNotFoundInDbError, self.provider.copy_assignment, source_assignment,
                                                    new_run_range=run_range,
                                                    new_variation="",
                                                    comment="")

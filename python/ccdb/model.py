@@ -18,6 +18,8 @@ blob_delimiter = "|"
 # we have to encode blob_delimiter to blob_delimiter_replace on data write and decode it bach on data read
 blob_delimiter_replacement = "&delimiter;"
 
+# The default "infinite run" number
+INFINITE_RUN = 2147483647
 
 # noinspection PyClassHasNoInit
 # --------------------------------------------
@@ -611,3 +613,42 @@ def list_to_table(data, col_count):
             row.append(data[row_i * col_count + col_i])
         tabled_data.append(row)
     return tabled_data
+
+
+# --------------------------------
+#  parse_run_range
+# --------------------------------
+def parse_run_range(self, run_range_str):
+    """ @brief parse run range string in form of <run_min>-<run-max>
+
+        if one inputs '<run_min>-' this means <run_min>-<infinite run>
+        if one inputs '-<run_max>' this means <0>-<run_max>
+
+        @return (run_min, run_max, run_min_set, run_max_set)
+        run_min_set, run_max_set - are flags indicating that values was set by user
+        """
+
+    assert isinstance(run_range_str, str)
+    if not "-" in run_range_str:
+        return None
+
+    # split <>-<>
+    (str_min, str_max) = run_range_str.split("-")
+    run_min_set = False
+    run_max_set = False
+
+    # parse run min
+    try:
+        run_min = int(str_min)
+        run_min_set = True
+    except ValueError:
+        run_min = 0
+
+    # parse run max
+    try:
+        run_max = int(str_max)
+        run_max_set = True
+    except ValueError:
+        run_max = INFINITE_RUN
+
+    return run_min, run_max, run_min_set, run_max_set

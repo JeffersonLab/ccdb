@@ -3,16 +3,10 @@ import logging
 
 log = logging.getLogger("ccdb.cmd.commands.help")
 
-# ccdb cmd module interface
-def create_util_instance():
-    log.debug("      registering HelpUtil")
-    return HelpUtil()
 
-
-#*********************************************************************
+# ********************************************************************
 #   Class HelpUtil - Prints help for each util                       *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class HelpUtil(CliCommandBase):
     """ Prints help for each util """
     
@@ -22,6 +16,7 @@ class HelpUtil(CliCommandBase):
     name = "Help"
     short_descr = "Prints help for each util"
     help_util = True
+
 
     # ----------------------------------------
     #   print_help

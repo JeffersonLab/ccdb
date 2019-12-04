@@ -2,7 +2,7 @@ import posixpath
 import logging
 import os
 
-from ccdb.errors import DirectoryNotFound
+from ccdb.errors import ObjectIsNotFoundInDbError
 from ccdb.model import Directory, TypeTable
 from ccdb.provider import AlchemyProvider
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
@@ -10,10 +10,10 @@ from ccdb import BraceMessage as LogFmt
 
 log = logging.getLogger("ccdb.cmd.commands.ls")
 
-#*********************************************************************
+
+# ********************************************************************
 #   Class List - List objects in a given directory                   *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class List(CliCommandBase):
     """ List objects in a given directory """
 
@@ -24,8 +24,8 @@ class List(CliCommandBase):
     short_descr = "List objects in a given directory"
     uses_db = True
 
-    def __init__(self):
-        CliCommandBase.__init__(self)
+    def __init__(self, context):
+        CliCommandBase.__init__(self, context)
         self.raw_entry = "/"  # object path with possible pattern, like /mole/*
         self.parent_path = "/"  # parent path
         self.parent_dir = None  # @type parent_dir DDirectory
@@ -39,7 +39,6 @@ class List(CliCommandBase):
         self.parent_dir = None  # @type parent_dir DDirectory
         self.pattern = ""  # pattern on the end of parent path like file?*
         self.is_extended = False
-
 
     def execute(self, args):
         if log.isEnabledFor(logging.DEBUG):
@@ -155,32 +154,32 @@ class List(CliCommandBase):
             self.parent_dir = provider.get_directory(self.raw_entry)
             self.parent_path = self.raw_entry
             self.pattern = ""
-        except DirectoryNotFound:
+        except ObjectIsNotFoundInDbError:
             self.parent_dir = None
             log.debug(" |  |  |- directory {0} not found.".format(self.raw_entry))
 
         if not self.parent_dir:
-            #we have not find the directory by brute rawentry.
-            #but maybe it is just /path/plus*some*pattern
-            (head, tale) = posixpath.split(self.raw_entry)
+            # we have not find the directory by brute rawentry.
+            # but maybe it is just /path/plus*some*pattern
+            (head, tail) = posixpath.split(self.raw_entry)
             self.parent_path = head
-            self.pattern = tale
+            self.pattern = tail
             log.debug(" |  |  |- searching parent directory as:")
             log.debug(" |  |  |- new path: " + self.parent_path)
             if self.pattern:
                 log.debug(" |  |  |- pattern: " + self.pattern)
 
-            #try to find such dir once more
+            # try to find such dir once more
             self.parent_dir = provider.get_directory(self.parent_path)
 
-        #found a directory
+        # found a directory
         assert isinstance(self.parent_dir, Directory)
         log.debug(" |  |  |- searching sub directories ")
         log.debug(" |  |  |- full path: " + self.parent_dir.path)
         if self.pattern:
             log.debug(" |  |  |- pattern: " + self.pattern)
 
-        #part 1 directories for this path
+        # part 1 directories for this path
         if self.pattern == "":
             sub_dirs = self.parent_dir.sub_dirs
             log.debug(" |  |  |- simply taking sub directories ")
@@ -188,13 +187,13 @@ class List(CliCommandBase):
             sub_dirs = provider.search_directories(self.pattern, self.parent_path)
             log.debug(" |  |  |- use database search for directories ")
 
-        #fill list of directory names
+        # fill list of directory names
         dir_list = [subdir.name for subdir in sub_dirs]
 
         log.debug(" |  |  |- found dirs:" + " ".join([d for d in dir_list]))
 
         log.debug(" |  |  |- searching tables ")
-        #part 2 is tables for this path
+        # part 2 is tables for this path
         if self.pattern == "":
             tables = self.context.provider.get_type_tables(self.parent_dir)
         else:
@@ -222,22 +221,21 @@ class List(CliCommandBase):
         if not path.startswith("/"):
             path = posixpath.join(self.context.current_path, path)
 
-        #normalize
+        # normalize
         path = posixpath.normpath(path)
 
         return path
 
     def print_directory_tree(self, directory, printFullPath, level):
-        """prints a full tree of directories
-            This is recursive function"""
+        """ prints a full tree of directories  This is recursive function"""
 
-        #print this directory
+        # print this directory
         if not printFullPath:
             print(("".join(["   " for i in range(0, level)]) + directory.name))
         else:
             print((directory.path))
 
-        #print subdirectories recursively
+        # print subdirectories recursively
         sub_dirs = directory.sub_dirs
         if len(sub_dirs) > 0:
             for subDir in sub_dirs:
@@ -257,7 +255,7 @@ class List(CliCommandBase):
         tables = self.context.provider.search_type_tables("*")
         for table in tables:
             assert (isinstance(table, TypeTable))
-            print((table.path))
+            print(table.path)
 
     def table_info(self, table, is_extended):
         log.info(table.path)

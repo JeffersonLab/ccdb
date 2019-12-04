@@ -1,29 +1,8 @@
 import posixpath
 from abc import abstractmethod
 
+from .cli_context import CliContext
 from .themes import NoColorTheme
-
-class CliContext(object):
-    def __init__(self):
-        self.is_interactive = False
-        self.current_path = "/"
-
-    # --------------------------------
-    #  prepare_path
-    # --------------------------------
-    def prepare_path(self, path):
-
-        # correct ending /
-        if path.endswith("/"):
-            path = path[:-1]
-
-        # local or absolute path?
-        if not path.startswith("/"):
-            path = posixpath.join(self.current_path, path)
-            # normalize
-        path = posixpath.normpath(path)
-
-        return path
 
 
 class CliCommandBase(object):
@@ -33,19 +12,21 @@ class CliCommandBase(object):
     uses_db = False
     changes_db = False
     help_util = False
+    is_alias = False
     command = ""
     _context = None
 
-    @property
-    def context(self):
-        """:return: context object for current utility
-           :rtype: ConsoleContext
-        """
-        return self._context
+    def __init__(self, context):
+        assert isinstance(context, CliContext)
+        self.context = context
 
-    @context.setter
-    def context(self, value):
-        self._context = value
+    @property
+    def theme(self):
+        return self.context.theme
+
+    @theme.setter
+    def theme(self, value):
+        self.context.theme = value
 
     @abstractmethod
     def execute(self, args):
@@ -53,6 +34,7 @@ class CliCommandBase(object):
         :parameter args: [] - a List of arguments
         """
         pass
+
 
 
     def print_help(self):
@@ -67,10 +49,6 @@ class CliCommandBase(object):
     def print_examples(self):
         """Prints examples of the command usage"""
         print(("Examples are not defined for command " + self.command))
-
-    def __init__(self):
-        self._context = None
-        self.theme = NoColorTheme()
 
     def read_multiline(self):
         user_input = []

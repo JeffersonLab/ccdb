@@ -4,16 +4,10 @@ from ccdb.brace_log_message import BraceMessage as Lfm
 
 log = logging.getLogger("ccdb.cmd.commands.run")
 
-#ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering CurrentRun")
-    return CurrentRun()
 
-
-#*********************************************************************
+# ********************************************************************
 #   Class CurrentRun - gets or sets current working run              *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class CurrentRun(CliCommandBase):
     """ gets or sets current working run """
     
@@ -23,6 +17,24 @@ class CurrentRun(CliCommandBase):
     name = "CurrentRun"
     short_descr = "gets or sets current working run"
     
+    def execute(self, args):
+        log.debug("CurrentRun is gained a control over the process.")
+        log.debug("  " + " ".join(args))
+
+        assert self.context is not None
+
+        if not args:
+            # just print current run
+            print(self.context.current_run)
+        else:
+            # set working run?
+            try:
+                self.context.current_run = int(args[0])
+                log.info("Working run is %i", self.context.current_run)
+            except ValueError:
+                raise ValueError("Cannot read run number from the string: '{}'".format(args[0]))
+        return self.context.current_run
+
     def print_help(self):
         print(""" gets or sets current working run
         run (with no arguments) will display current working run
@@ -40,27 +52,4 @@ Example:
    > ccdb -r 1000 cat /test/some_constants
 
 If no run specified at ccdb start, current working run is 0
-        """) 
-    # ---- end of print_help() ----
-
-
-    def execute(self, args):
-        log.debug("CurrentRun is gained a control over the process.")
-        log.debug("  " + " ".join(args))
-        
-        assert self.context is not None
-
-        if len(args):
-            #set working run?
-            try:
-                self.context.current_run = int(args[0])
-                log.info("Working run is %i", self.context.current_run)
-            except ValueError:
-                log.warning("cannot read run number")
-                return 1
-        else:
-            #get working run
-            print((self.context.current_run))
-        
-        # all is fine
-        return 0
+        """)

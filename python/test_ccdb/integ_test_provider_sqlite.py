@@ -2,11 +2,11 @@ import os
 
 from ccdb import get_ccdb_home_path
 from ccdb.errors import DatabaseStructureError
-import tests.provider_fixture
-from tests import helper
+import provider_fixture
+import helper
 
 
-class SQLiteAlchemyProviderTest(tests.provider_fixture.AlchemyProviderTest):
+class SQLiteAlchemyProviderTest(provider_fixture.AlchemyProviderTest):
 
     def setUp(self):
         super(SQLiteAlchemyProviderTest, self).setUp()

@@ -1,12 +1,18 @@
 from ccdb.errors import DatabaseStructureError
 from ccdb.errors import AnonymousUserForbiddenError
-import tests.provider_fixture
-from . import helper
+
+try:
+    from . import provider_fixture
+    from . import helper
+except:
+    import provider_fixture
+    import helper
+
 import unittest
 import ccdb
 
 
-class MySQLAlchemyProviderTest(tests.provider_fixture.AlchemyProviderTest):
+class MySQLAlchemyProviderTest(provider_fixture.AlchemyProviderTest):
 
     mysql_is_recreated = False
 

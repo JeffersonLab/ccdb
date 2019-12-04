@@ -5,15 +5,8 @@ import logging
 log = logging.getLogger("ccdb.cmd.commands.howto")
 
 
-# ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering HowTo")
-    return HowTo()
-
-
 # *********************************************************************
 #   Class HowTo - Prints howtos                                       *
-#                                                                     *
 # *********************************************************************
 class HowTo(CliCommandBase):
     """ Prints howtos """
@@ -25,6 +18,7 @@ class HowTo(CliCommandBase):
     short_descr = "Prints howtos"
     help_util = True
     howtos = []
+
 
     # ---- end of print_help() ----
     def execute(self, args):

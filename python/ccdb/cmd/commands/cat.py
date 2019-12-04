@@ -12,6 +12,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 log = logging.getLogger("ccdb.cmd.commands.cat")
 
+
 # *********************************************************************
 #   Class Cat - Show assignment data by ID                           *
 # *********************************************************************
@@ -31,12 +32,11 @@ class Cat(CliCommandBase):
     show_comments = False
     show_date = False
 
-    def __init__(self):
-        CliCommandBase.__init__(self)
+    def __init__(self, context):
+        CliCommandBase.__init__(self, context)
         self.raw_entry = "/"  # object path with possible pattern, like /mole/*
         self.path = "/"       # parent path
         self.raw_table_path = ""
-        self.use_ass_id = False
         self.ass_id = 0
         self.print_horizontal = True
 
@@ -58,38 +58,30 @@ class Cat(CliCommandBase):
 
         assert self.context is not None
 
-        # reset arguments on each process
-        self.raw_table_path = ""
+        parsed_args = self.process_arguments(args)
 
-
-        self.request = ParseRequestResult()
-        self.ass_id = 0
-
-
-        self.process_arguments(args)
-
-        if self.use_ass_id:
-            assignment = self.get_assignment_by_id(self.ass_id)
+        if self.ass_id:
+            assignment = self.get_assignment_by_id(parsed_args.ass_id)
         else:
-            assignment = self.get_assignment_by_request(self.request)
+            assignment = self.get_assignment_by_request(parsed_args.request)
 
         if assignment:
             # now we have to know, how to print an assignment
             data = assignment.constant_set.data_table
 
             if len(data) and len(data[0]):
-                if self.user_request_print_horizontal:
-                    self.print_assignment_horizontal(assignment, self.show_header, self.show_borders,
-                                                     self.show_comments)
-                elif self.user_request_print_vertical:
-                    self.print_assignment_vertical(assignment, self.show_header, self.show_borders, self.show_comments)
+                if parsed_args.user_request_print_horizontal:
+                    self.print_assignment_horizontal(assignment, parsed_args.show_header, parsed_args.show_borders,
+                                                     parsed_args.show_comments)
+                elif parsed_args.user_request_print_vertical:
+                    self.print_assignment_vertical(assignment, parsed_args.show_header, parsed_args.show_borders, parsed_args.show_comments)
                 else:
                     if len(data) == 1 and len(data[0]) > 3:
-                        self.print_assignment_vertical(assignment, self.show_header, self.show_borders,
-                                                       self.show_comments)
+                        self.print_assignment_vertical(assignment, parsed_args.show_header, parsed_args.show_borders,
+                                                       parsed_args.show_comments)
                     else:
-                        self.print_assignment_horizontal(assignment, self.show_header, self.show_borders,
-                                                         self.show_comments)
+                        self.print_assignment_horizontal(assignment, parsed_args.show_header, parsed_args.show_borders,
+                                                         parsed_args.show_comments)
             else:
                 log.warning("Assignment contains no data")
         else:
@@ -127,7 +119,7 @@ class Cat(CliCommandBase):
     #   process_arguments
     # ----------------------------------------
     def process_arguments(self, args):
-        parser = UtilityArgumentParser()
+        parser = UtilityArgumentParser(add_help=False)
         parser.add_argument("obj_name", default="")
 
         # border
@@ -150,57 +142,21 @@ class Cat(CliCommandBase):
         group.add_argument("-t", "--time", action="store_true", dest='show_date', default=False)
         group.add_argument("-nt", "--no-time", action="store_true", dest='show_date')
 
-
-        group.add_argument("-d", "--directory")
-        group.add_argument("-f", "--file")
-        group.add_argument("-ph", "--horizontal", action="store_true", dest='user_request_print_horizontal')
-        group.add_argument("-pv", "--vertical", action="store_true", dest='user_request_print_vertical')
+        parser.add_argument("-d", "--directory")
+        parser.add_argument("-v", "--variation")
+        parser.add_argument("-a", "--ass-id")
+        parser.add_argument("-r", "--run")
+        parser.add_argument("-f", "--file")
+        parser.add_argument("-ph", "--horizontal", action="store_true", dest='user_request_print_horizontal')
+        parser.add_argument("-pv", "--vertical", action="store_true", dest='user_request_print_vertical')
 
         result = parser.parse_args(args)
         # parse loop
-        i = 0
-        while i < len(args):
-            token = args[i].strip()
-            i += 1
-            if token.startswith('-'):
-                # it is some command, lets parse what is the command
+        if result.obj_name:
+            # it probably must be a request or just a table name
+            result.request = parse_request(result.obj_name)
 
-                # variation
-                if token == "-v" or token.startswith("--variation"):
-                    if i < len(args):
-                        self.request.variation = args[i].strip()
-                        self.request.variation_is_parsed = True
-                        i += 1
-
-                # runrange
-                if token == "-r" or token == "--run":
-                    try:
-                        self.request.run = int(args[i].strip())
-                        self.request.run_is_parsed = True
-                        i += 1
-                    except ValueError:
-                        log.warning("Cannot parse run from '{}' command", token)
-                        return False
-
-                # get assignment by id
-                if token == "--id" and i < len(args):
-
-                    token = args[i].strip()
-                    i += 1
-                    try:
-                        self.ass_id = int(token)
-                        self.use_ass_id = True
-                        log.debug(Lfm(" |- parsed DB id : '{}' ", self.ass_id))
-                    except ValueError:
-                        log.warning("Cannot parse assignment DB id: '{}'", token)
-                        return False
-
-            else:  # !token.startswith('-')
-                # it probably must be a request or just a table name
-                log.debug(Lfm(" |- parsing request : '{0}'", token))
-                self.request = parse_request(token)
-
-        return True
+        return result
 
     # ----------------------------------------
     #   validate

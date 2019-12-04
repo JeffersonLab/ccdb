@@ -19,9 +19,8 @@ import sqlalchemy.orm
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
-from .errors import DirectoryNotFound, TypeTableNotFound, RunRangeNotFound, AnonymousUserForbiddenError, \
-    DatabaseStructureError, UserNotFoundError, UserExistsError, VariationNotFound, MissingArgumentError, AllowDefaultsError, \
-    MissingVariation
+from .errors import ObjectIsNotFoundInDbError, AnonymousUserForbiddenError, DatabaseStructureError, UserNotFoundError, \
+    UserExistsError, MissingArgumentError, AllowDefaultsError
 
 from .table_file import TextFileDOM
 from .authentication import Authentication
@@ -165,8 +164,8 @@ class AlchemyProvider(object):
         self._ensure_dirs_loaded()
 
         # we don't have this directory
-        if not path in list(self.dirs_by_path.keys()):
-            raise DirectoryNotFound("Can't find the directory with path '{0}'".format(path))
+        if path not in list(self.dirs_by_path.keys()):
+            raise ObjectIsNotFoundInDbError(Directory, "Can't find the directory with path '{0}'".format(path))
 
         return self.dirs_by_path[path]
 
@@ -473,7 +472,7 @@ class AlchemyProvider(object):
             table = query.one()
         except sqlalchemy.orm.exc.NoResultFound:
             message = "No type table found by exact path: '{0}'".format(exact_path)
-            raise TypeTableNotFound(message)
+            raise ObjectIsNotFoundInDbError(TypeTable, message)
 
         return table
 
@@ -729,7 +728,7 @@ class AlchemyProvider(object):
         try:
             return self.session.query(RunRange).filter(RunRange.min == min_run).filter(RunRange.max == max_run).one()
         except sqlalchemy.orm.exc.NoResultFound:
-            raise RunRangeNotFound("Run range '{0}-{1}' is not found".format(min_run, max_run))
+            raise ObjectIsNotFoundInDbError(RunRange, "Run range '{0}-{1}' is not found".format(min_run, max_run))
 
     # ------------------------------------------------
     # GetRun Range from db by name
@@ -744,7 +743,7 @@ class AlchemyProvider(object):
         try:
             return self.session.query(RunRange).filter(RunRange.name == name).one()
         except sqlalchemy.orm.exc.NoResultFound:
-            raise RunRangeNotFound("Run range with name '{0}' is not found".format(name))
+            raise ObjectIsNotFoundInDbError(RunRange, "Run range with name '{0}' is not found".format(name))
 
     # ------------------------------------------------
     # Gets run range from DB Or Creates RunRange in DB
@@ -832,7 +831,7 @@ class AlchemyProvider(object):
             return self.session.query(Variation).filter(Variation.name == name).one()
         except NoResultFound:
             message = "No variation found with name: '{0}'".format(name)
-            raise VariationNotFound(message)
+            raise ObjectIsNotFoundInDbError(Variation, message)
 
     # ----------------------------------------- --------------
     # Searches all variations associated with this type table
@@ -1074,7 +1073,11 @@ class AlchemyProvider(object):
         :return: Assignment by database Id
         :rtype: Assignment
         """
-        return self.session.query(Assignment).filter(Assignment.id == assignment_id).one()
+
+        try:
+            return self.session.query(Assignment).filter(Assignment.id == assignment_id).one()
+        except NoResultFound:
+            raise ObjectIsNotFoundInDbError(Assignment, "Assignment with the id='{}' is not found in th DB", id)
 
     # ------------------------------------------------
     # get list of assignments
@@ -1171,27 +1174,25 @@ class AlchemyProvider(object):
             else:
                 request.time = None
 
-        try:
-            type_table = self.get_type_table(request.path)
-        except:
-            log.error("Cant load: " + request.path)
+        type_table = self.get_type_table(request.path)
+
         try:
             assignment = self.get_assignment(type_table, request.run, request.variation, request.time)
             return assignment
-        except NoResultFound:
+        except ObjectIsNotFoundInDbError:
             # if we here there were no assignments selected
             log.warning(("There is no data for table {}, run {}, variation '{}'",
                          request.path, request.run, request.variation))
             if request.time_is_parsed:
                 log.warning("    on ".format(request.time_str))
-        return None
+            raise
 
     # ------------------------------------------------
     # Creates Assignment using related object
     # ------------------------------------------------
 
     def create_assignment(self, data, path, min_run, max_run, variation_name, comment):
-            """
+        """
             Validation:
             If no such run range found, the new will be created (with no name)
             No assignment will be created (and NULL will be returned):
@@ -1209,75 +1210,75 @@ class AlchemyProvider(object):
             @rtype: Assignment
             """
 
-            # maybe it is a dom?
-            if isinstance(data, TextFileDOM):
-                rows = data.rows
-            else:
-                # it should be list than...
-                assert isinstance(data, list)
-                rows = data
+        # maybe it is a dom?
+        if isinstance(data, TextFileDOM):
+            rows = data.rows
+        else:
+            # it should be list than...
+            assert isinstance(data, list)
+            rows = data
 
-            # get objects
-            table = self.get_type_table(path)  # TODO create path_or_table variable
+        # get objects
+        table = self.get_type_table(path)  # TODO create path_or_table variable
 
-            variation = self.get_variation(
-                variation_name)  # TODO create variation_name_or_obj instead of variation_name
-            run_range = self.get_or_create_run_range(min_run, max_run)
+        variation = self.get_variation(
+            variation_name)  # TODO create variation_name_or_obj instead of variation_name
+        run_range = self.get_or_create_run_range(min_run, max_run)
 
-            # validate data.. a little =)
-            if len(rows) == 0:
-                raise ValueError(
-                    "Try to create variation with data length = 0. Fill data prior inserting into database")
-            if not isinstance(rows[0], list):
-                # the data is plain list, like [1,2,3,4,5,6]
-                # rows_count = len(data) / table._columns_count
-                raise NotImplementedError()  # TODO check and implement this branch
+        # validate data.. a little =)
+        if len(rows) == 0:
+            raise ValueError(
+                "Try to create variation with data length = 0. Fill data prior inserting into database")
+        if not isinstance(rows[0], list):
+            # the data is plain list, like [1,2,3,4,5,6]
+            # rows_count = len(data) / table._columns_count
+            raise NotImplementedError()  # TODO check and implement this branch
 
-            # validate that the data rows and cols correspond to table rows and cols
-            data_rows_count = len(rows)
-            data_cols_count = len(rows[0])
+        # validate that the data rows and cols correspond to table rows and cols
+        data_rows_count = len(rows)
+        data_cols_count = len(rows[0])
 
-            if data_rows_count != table.rows_count or data_cols_count != table.columns_count:
-                message = "Data rows or columns count is inconsistent with table declared rows or columns count. " \
-                          "Data rows='{0}', columns='{1}'. Table declared rows='{2}', columns='{3}'" \
-                          "".format(data_rows_count, data_cols_count, table.rows_count, table.columns_count)
-                raise ValueError(message)
+        if data_rows_count != table.rows_count or data_cols_count != table.columns_count:
+            message = "Data rows or columns count is inconsistent with table declared rows or columns count. " \
+                      "Data rows='{0}', columns='{1}'. Table declared rows='{2}', columns='{3}'" \
+                      "".format(data_rows_count, data_cols_count, table.rows_count, table.columns_count)
+            raise ValueError(message)
 
-            # check for type
-            for row_index, row in enumerate(rows):
-                for column_index, cell in enumerate(row):
-                    column = table.columns[column_index]
-                    self.validate_data_value(cell, column, column_index, row_index)
+        # check for type
+        for row_index, row in enumerate(rows):
+            for column_index, cell in enumerate(row):
+                column = table.columns[column_index]
+                self.validate_data_value(cell, column, column_index, row_index)
 
-            # Get user
-            user = self.get_current_user()
+        # Get user
+        user = self.get_current_user()
 
-            if user.name == 'anonymous':
-                # anonymous user can't create assignments
-                raise AnonymousUserForbiddenError
-            else:
-                # construct assignment
-                assignment = Assignment()
-                assignment.constant_set = ConstantSet()
-                assignment.constant_set.type_table_id = table.id
-                assignment.constant_set.type_table = table
-                assignment.run_range = run_range
-                assignment.run_range_id = run_range.id
-                assignment.variation = variation
-                assignment.variation_id = variation.id
-                assignment.constant_set.data_table = rows
-                assignment.comment = comment
-                assignment.author_id = user.id
-                self.session.add(assignment)
-                self.session.commit()
+        if user.name == 'anonymous':
+            # anonymous user can't create assignments
+            raise AnonymousUserForbiddenError
+        else:
+            # construct assignment
+            assignment = Assignment()
+            assignment.constant_set = ConstantSet()
+            assignment.constant_set.type_table_id = table.id
+            assignment.constant_set.type_table = table
+            assignment.run_range = run_range
+            assignment.run_range_id = run_range.id
+            assignment.variation = variation
+            assignment.variation_id = variation.id
+            assignment.constant_set.data_table = rows
+            assignment.comment = comment
+            assignment.author_id = user.id
+            self.session.add(assignment)
+            self.session.commit()
 
-                # add log
-                self.create_log_record(user=user,
-                                       affected_ids=[assignment.__tablename__ + str(assignment.id)],
-                                       action="create",
-                                       description="Created assignment '{0}'".format(assignment.request),
-                                       comment=assignment.comment)
-                return assignment
+            # add log
+            self.create_log_record(user=user,
+                                   affected_ids=[assignment.__tablename__ + str(assignment.id)],
+                                   action="create",
+                                   description="Created assignment '{0}'".format(assignment.request),
+                                   comment=assignment.comment)
+            return assignment
 
     def copy_assignment(self, source_assignment, new_run_range=None, new_variation=None, comment=''):
         """

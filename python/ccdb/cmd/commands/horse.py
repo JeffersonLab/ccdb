@@ -4,15 +4,8 @@ from ccdb.cmd import CliCommandBase
 log = logging.getLogger("ccdb.cmd.commands.horse")
 
 
-# ccdb module interface
-def create_util_instance():
-    log.debug("      registering Horse")
-    return Horse()
-
-
 # *********************************************************************
 #   Class Horse - Horse                                               *
-#                                                                     *
 # *********************************************************************
 class Horse(CliCommandBase):
     """ horse """
@@ -22,6 +15,7 @@ class Horse(CliCommandBase):
     command = "horse"
     name = "Horse"
     short_descr = "Horse"
+
 
     # ----------------------------------------
     #   print_help

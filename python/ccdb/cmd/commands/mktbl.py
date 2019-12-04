@@ -10,17 +10,9 @@ from ccdb.table_file import read_ccdb_text_file, TextFileDOM, META_VARIATION
 
 log = logging.getLogger("ccdb.cmd.commands.mktbl")
 
-#ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering MakeTable")
-    return MakeTable()
-
-
-#*********************************************************************
-#                                                                    *
+# ********************************************************************
 #   Class MakeTable - Create constants type table                    *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class MakeTable(CliCommandBase):
     """ Create constants type table """
 
@@ -34,8 +26,8 @@ class MakeTable(CliCommandBase):
     #----------------------------------------
     #   __init__
     #----------------------------------------
-    def __init__(self):
-        CliCommandBase.__init__(self)
+    def __init__(self, context):
+        super(MakeTable, self).__init__(context)
         self.columns = {}
         self.unparsed_columns = []
         self.rows = 1
@@ -74,44 +66,43 @@ class MakeTable(CliCommandBase):
         self.infer_from_file = False
         self.file_name = ""
 
-    #----------------------------------------
+    # ----------------------------------------
     #   process - processes commands
-    #----------------------------------------
+    # ----------------------------------------
     def execute(self, args):
 
-        #>oO debug
+        # >oO debug
         log.debug(LogFmt("{0}MakeTable is in charge{0}\\".format(os.linesep)))
         log.debug(LogFmt(" |- arguments : '" + "' '".join(args) + "'"))
 
-        #reset all needed variables
+        # reset all needed variables
         self.reset_on_process()
 
-        #process arguments
+        # process arguments
         self.process_arguments(args)
 
-        #do we need just infer mktable from file?
+        # do we need just infer mktable from file?
         if self.infer_from_file:
-            self.analyse_file()
-            return 0
+            return self.analyse_file()
 
         if self.interactive:
             self.interactive_mode()
 
-        #lets parse columns
+        # lets parse columns
         self.columns = self.parse_columns(self.unparsed_columns)
 
-        #set name
+        # set name
         self.table_path = self.context.prepare_path(self.table_path)
         (self.table_parent_path, self.table_name) = posixpath.split(self.table_path)
 
-        #>oO debug
+        # >oO debug
         if log.getEffectiveLevel() <= logging.DEBUG:
             self.print_settings_summary()
             if not self.interactive:
                 self.print_validation()
 
-        #create table
-        self.do_create_type()
+        # create table
+        return self.do_create_type()
 
     #------------------------------------------
     #   interactive_mode - run interactive mode
@@ -133,13 +124,11 @@ class MakeTable(CliCommandBase):
         """this function finally creates table"""
 
         log.debug("  write table to database...")
-        self.context.provider.create_type_table(self.table_name, self.table_parent_path, self.rows, self.columns,
-                                                self.comment)
+        table = self.context.provider.create_type_table(self.table_name, self.table_parent_path,
+                                                        self.rows, self.columns, self.comment)
         print(("saving table to database... " + self.theme.Success + " completed" + self.theme.Reset))
+        return table
 
-    #----------------------------------------------
-    #   process_arguments - process input arguments
-    #----------------------------------------------
     def process_arguments(self, args):
         """@brief process input arguments
         
@@ -152,14 +141,14 @@ class MakeTable(CliCommandBase):
         
         """
 
-        #parse loop
+        # parse loop
         i = 0
         while i < len(args):
             token = args[i].strip()
             i += 1
             if token.startswith('-'):    # it is some command
 
-                #rows number
+                # rows number
                 if token == "-r" or token.startswith("--rows"):
                     if i < len(args):
                         try:
@@ -180,12 +169,12 @@ class MakeTable(CliCommandBase):
                     else:
                         log.warning("Cannot parse file name from -f (--file) flag")
 
-                #no columns quantity 
+                # no columns quantity
                 if token == "-nq" or token.startswith("--no-quantity"):
                     self.no_columns_quantity = True
                     continue
 
-                #interactive mode
+                # interactive mode
                 if token == "-i" or token == "--interactive":
                     self.interactive = True
                     self.interactive_set = True
@@ -208,11 +197,6 @@ class MakeTable(CliCommandBase):
                 #othervise it is one of the columns
                 else:
                     self.unparsed_columns.append(token)
-
-
-                    #--------------------------------------------------
-                    #   parse_columns - parse columns part of arguments
-                    #--------------------------------------------------
 
     def parse_columns(self, unparsed_columns):
         """ parse columns part of arguments """
@@ -246,15 +230,15 @@ class MakeTable(CliCommandBase):
         return columns
 
 
-    #----------------------------------------------
+    # ----------------------------------------------
     #   parse_column - parse each column
-    #----------------------------------------------
+    # ----------------------------------------------
     def parse_column(self, value):
         """parse each column argument record"""
 
         result = {"type": "double", "name": "", "quantity": 1, "no_columns_quantity": self.no_columns_quantity}
 
-        #regular expression that matches strings like this
+        # regular expression that matches strings like this
         # <quantity><name>(<type>) or <quantity>(<pretype>)<name>
 
         preg = "(?P<quantity>^[0-9]*)(?P<name>[0-9a-zA-Z_]+)*(=(?P<type>.*))*"
@@ -263,7 +247,7 @@ class MakeTable(CliCommandBase):
 
         m = re.match(preg, value)
 
-        #fill results
+        # fill results
         if not self.no_columns_quantity and m.group("quantity"):
             try:
                 result["quantity"] = int(m.group("quantity"))
@@ -283,25 +267,25 @@ class MakeTable(CliCommandBase):
 
     def analyse_file(self):
 
-        #reading file
+        # reading file
         try:
             dom = read_ccdb_text_file(self.file_name)
         except IOError as error:
             log.warning(LogFmt("Unable to read file '{0}'. The error message is: '{1}'", self.file_name, error))
             raise
 
-        #Is there data at all?
+        # Is there data at all?
         if not dom.has_data:
             message = "Seems like file has no appropriate data"
             log.warning(message)
-            raise ValueError(message=message)
+            raise ValueError(message)
 
-        #check what we've got
+        # check what we've got
         assert isinstance(dom, TextFileDOM)
         if not dom.data_is_consistent:
             message = "Inconsistency error. " + dom.inconsistent_reason
             log.warning(message)
-            raise ValueError(message=message)
+            raise ValueError(message)
 
         if dom.column_names:
             columns_str = " ".join([col_name for col_name in dom.column_names])
@@ -316,10 +300,11 @@ class MakeTable(CliCommandBase):
         log.info(linesep)
         if dom.comment_lines:
             log.info(LogFmt("{0}Comments in file: {0}{1}", linesep, linesep.join(ln for ln in dom.comment_lines)))
+        return dom
 
-    #----------------------------------------------
+    # ----------------------------------------------
     #   print_help - prints help for MakeTable
-    #----------------------------------------------
+    # ----------------------------------------------
     def print_help(self):
         """prints help for MakeTable"""
 
@@ -389,11 +374,11 @@ keys:
     -f <file> or --file <file>  Infer type table from text table file.(Hint: column names row should start with #&)
             """)
 
-    #----------------------------------------------
+    # ----------------------------------------------
     #   print_validation - PRINTS VALIDATION TABLE
-    #----------------------------------------------
+    # ----------------------------------------------
     def print_validation(self):
-        #basic values: name rows columns path
+        # basic values: name rows columns path
         print()
         if not len(self.table_name):
             print(("Table: " + self.theme.Fail + "Name is not set"))
@@ -403,21 +388,22 @@ keys:
         print(("Rows num: " + repr(self.rows) + self.theme.Reset + \
               "   Columns num: " + repr(len(self.columns))))
         print(("Full path: " + self.table_path))
-        #columns info 
+        # columns info
         print()
         print("Columns: ")
         print("   (type)    : (name)")
         for (colname, coltype) in self.columns:
             print(("   " + self.theme.Type + "%-10s" % coltype + self.theme.Reset + ": " + colname))
         print()
-        #comment
+
+        # comment
         print("Comment: ")
         if len(self.comment):
-            print((self.comment))
+            print(self.comment)
         else:
-            print((self.theme.Fail + "Comment is empty"))
+            print(self.theme.Fail + "Comment is empty")
 
-        #additional info print
+        # additional info print
         print()
         print("Additional info: ")
         if self.rows_set:
@@ -430,24 +416,23 @@ keys:
         else:
             print("   No comments are set")
 
-
     def print_settings_summary(self):
-        print((self.theme.Success + " Summary: "))
-        print(("  columns: ", self.columns))
-        print(("  unparsed_columns: ", self.unparsed_columns))
+        print(self.theme.Success + " Summary: ")
+        print("  columns: ", self.columns)
+        print("  unparsed_columns: ", self.unparsed_columns)
         print()
-        print(("    rows            : ", self.rows))
-        print(("    rows_set        : ", repr(self.rows_set)))
+        print("    rows            : ", self.rows)
+        print("    rows_set        : ", repr(self.rows_set))
         print()
-        print(("    interactive     : ", repr(self.interactive)))
-        print(("    interactive_set : ", repr(self.interactive_set)))
+        print("    interactive     : ", repr(self.interactive))
+        print("    interactive_set : ", repr(self.interactive_set))
         print()
-        print(("    comment         : ", self.comment))
-        print(("    comment_set     : ", repr(self.comment_set)))
+        print("    comment         : ", self.comment)
+        print("    comment_set     : ", repr(self.comment_set))
         print()
-        print(("    table_name      : ", self.table_name))
+        print("    table_name      : ", self.table_name)
         print()
-        print(("    table_path      : ", self.table_path))
-        print(("    table_path_set  : ", repr(self.table_path_set)))
+        print("    table_path      : ", self.table_path)
+        print("    table_path_set  : ", repr(self.table_path_set))
         print()
-        print(("    table_parent_path      : ", self.table_parent_path))
+        print("    table_parent_path      : ", self.table_parent_path)

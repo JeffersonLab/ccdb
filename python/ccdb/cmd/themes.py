@@ -1,6 +1,5 @@
-import sys
-
 from .colorama import Fore, Back, Style
+
 
 class NoColorTheme(object):
     Ok = ""
@@ -20,7 +19,8 @@ class NoColorTheme(object):
     AsgmtBorder = ""
 
     def __repr__(self):
-        "NoColorTheme"
+        return "NoColorTheme"
+
 
 class ColoredTheme(NoColorTheme):
     Ok = Fore.GREEN + Style.BRIGHT
@@ -40,6 +40,6 @@ class ColoredTheme(NoColorTheme):
     AsgmtBorder = Fore.GREEN
 
     def __repr__(self):
-        "ColoredTheme"
+        return "ColoredTheme"
 
 

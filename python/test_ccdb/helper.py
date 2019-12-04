@@ -7,17 +7,14 @@ import subprocess
 from contextlib import contextmanager
 from six import StringIO
 
-
 # path to CCDB_HOME
 ccdb_path = ccdb.get_ccdb_home_path()
 
 # path of the tests folder
-ccdb_test_path = os.path.join(ccdb_path, 'python', 'tests')
+ccdb_test_path = os.path.join(ccdb_path, 'python', 'test_ccdb')
 
 # Name of environment variable that holds MySql connection string
 ENV_TEST_MYSQL = "CCDB_TEST_MYSQL_CONNECTION"
-
-
 
 # MySql connection string for tests
 mysql_test_connection_str = os.environ[ENV_TEST_MYSQL] \

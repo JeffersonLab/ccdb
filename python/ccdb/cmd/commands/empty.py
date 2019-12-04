@@ -50,15 +50,15 @@ log = logging.getLogger("ccdb.cmd.commands.empty")
 class Empty(CliCommandBase):
     """Empty utility example"""
     
-    # ccdb utility class descr part 
-    #------------------------------
+    # ccdb command related attributes:
+
     command = "empty"
     name = "Empty"
     short_descr = "empty utility example"
     uses_db = True
 
-    def __init__(self):
-        super(Empty, self).__init__()
+    def __init__(self, context):
+        super(Empty, self).__init__(context)
         self.raw_entry = "/"         # object path with possible pattern, like /mole/*
 
     #----------------------------------------

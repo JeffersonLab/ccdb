@@ -4,16 +4,9 @@ import logging
 log = logging.getLogger("ccdb.cmd.commands.pwd")
 
 
-#ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering PrintWorkDir")
-    return PrintWorkDir()
-
-
-#*********************************************************************
+# ********************************************************************
 #   Class PrintWorkDir - Prints working directory                    *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class PrintWorkDir(CliCommandBase):
     """ Prints working directory """
     
@@ -26,9 +19,8 @@ class PrintWorkDir(CliCommandBase):
     def print_help(self):
         print(""" Prints working directory """) 
 
-
     def execute(self, args):
         log.debug("  PrintWorkDir is gained a control over the process.")
         log.debug("    ".join(args))
         assert self.context is not None
-        print((self.context.current_path))
+        print(self.context.current_path)

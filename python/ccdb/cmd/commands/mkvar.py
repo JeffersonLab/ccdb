@@ -5,16 +5,9 @@ import logging
 log = logging.getLogger("ccdb.cmd.commands.mkvar")
 
 
-#ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering MakeVariation")
-    return MakeVariation()
-
-
-#*********************************************************************
+# ********************************************************************
 #   Class MakeVariation - Create variation                           *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class MakeVariation(CliCommandBase):
     """ Create variation """
 
@@ -25,7 +18,6 @@ class MakeVariation(CliCommandBase):
     short_descr = "Create variation"
     uses_db = True
 
-
     def execute(self, args):
         log.debug("MakeVariation module gained control")
         log.debug("Arguments: \n " + "     ".join(args))
@@ -33,7 +25,7 @@ class MakeVariation(CliCommandBase):
         if not len(args):
             return
 
-        #find #comment
+        # find #comment
         comment = ""
         for i in range(len(args)):
             arg = args[i]
@@ -42,7 +34,7 @@ class MakeVariation(CliCommandBase):
                 args = args[:i]
                 break
 
-        #utility argument parser is argparse which raises errors instead of exiting app
+        # utility argument parser is argparse which raises errors instead of exiting app
         parser = UtilityArgumentParser()
         parser.add_argument("name", default="")
         parser.add_argument("-p", "--parent", default="")
@@ -51,12 +43,11 @@ class MakeVariation(CliCommandBase):
         parser.add_argument("--verbose", help="increase output verbosity",
                             action="store_true")
 
-        #in case there is a space between comments and name
-
+        # in case there is a space between comments and name
         if not validate_name(result.name):
             raise ValueError("Invalid variation name. Only [a-z A-Z 0-9 _] symbols are allowed for variation name")
 
-        #try to create directory
+        # try to create directory
         log.debug("  creating variation. Name: {0},  comment: {1}".format(result.name, comment))
 
         self.context.provider.create_variation(result.name, comment, result.parent)

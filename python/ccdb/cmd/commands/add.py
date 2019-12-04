@@ -24,7 +24,8 @@ class AddData(CliCommandBase):
     short_descr = "Add data constants"
     uses_db = True
 
-    def __init__(self):
+    def __init__(self, context):
+        super(AddData, self).__init__(context)
         self.raw_table_path = ""
         self.table_path = ""
         self.raw_file_path = ""
@@ -47,7 +48,7 @@ class AddData(CliCommandBase):
     # ----------------------------------------
     def reset(self):
         """Resets state for a new command"""
-        self.__init__()
+        self.__init__(self.context)
 
     # ----------------------------------------
     #   process

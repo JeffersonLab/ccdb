@@ -22,7 +22,7 @@ import logging
 import inspect
 
 from .provider import AlchemyProvider
-from .model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn
+from .model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn, INFINITE_RUN
 from .table_file import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
 from .cmd.themes import NoColorTheme, ColoredTheme
 from .brace_log_message import BraceMessage
@@ -32,7 +32,7 @@ from . import path_utils
 # the default ccdb logger
 logger = logging.getLogger("ccdb")
 
-INFINITE_RUN = 2147483647
+
 
 if sys.version_info < (2, 7, 0):
     sys.stderr.write("You need python 2.7 or later to run CCDB\n")
@@ -92,7 +92,7 @@ def _check_dependent_libraries():
 
 
 def init_ccdb_console():
-    from .cmd import ConsoleContext
+    from .cmd import CliManager
     import ccdb.cmd.colorama
 
     # SETUP LOGGER
@@ -119,7 +119,7 @@ def init_ccdb_console():
     _check_dependent_libraries()
 
     # create console context
-    context = ConsoleContext()
+    context = CliManager()
 
     # CHECK SOME COMMAND LINE KEYS
     # ------------------------------

@@ -1,18 +1,14 @@
 import logging
+
+from ccdb.cmd.cli_context import CliContext
 from ccdb.path_utils import validate_name
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 
 log = logging.getLogger("ccdb.cmd.commands.user")
 
-#ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering User")
-    return User()
-
-#*********************************************************************
+# ********************************************************************
 #   Class User - Create user                                         *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class User(CliCommandBase):
     """ Create variation """
 
@@ -29,11 +25,10 @@ class User(CliCommandBase):
 
         if not len(args):
             # print current user
-            print((self.context.provider.authentication.current_user_name))
-            return
+            print(self.context.provider.authentication.current_user_name)
+            return self.context.provider.authentication.current_user_name
 
-
-        #utility argument parser is argparse which raises errors instead of exiting app
+        # utility argument parser is argparse which raises errors instead of exiting app
         parser = UtilityArgumentParser()
         parser.add_argument("--create", default="")
         parser.add_argument("--list", default="", action="store_true")
@@ -42,19 +37,16 @@ class User(CliCommandBase):
         if result.list:
             users = self.context.provider.get_users()
             for user in users:
-                print((user.name))
-            return
+                print(user.name)
+            return users
 
         if result.create:
             if not validate_name(result.create):
                 raise ValueError("Invalid user name. Only [a-z A-Z 0-9 _] symbols are allowed for user name")
-            self.context.provider.create_user(result.create)
-            print(("{0} was created.".format(result.create)))
-            return
+            user = self.context.provider.create_user(result.create)
+            print("{0} was created.".format(result.create))
+            return user
 
-    #----------------------------------------------
-    #   print_help - prints help
-    #----------------------------------------------
     def print_help(self):
         """prints help to user"""
 

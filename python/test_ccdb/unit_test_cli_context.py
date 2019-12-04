@@ -9,13 +9,13 @@ class CliContextTest(unittest.TestCase):
         pass
 
     def test_prepare_path(self):
-        context = CliContext()
+        context = CliContext(None, None, None)
         context.current_path = '/cat'
         result = context.prepare_path('mew/')
         self.assertEqual(result, '/cat/mew')
 
     def test_prepare_abs_path(self):
-        context = CliContext()
+        context = CliContext(None, None, None)
         context.current_path = '/cat'
         result = context.prepare_path('/dog/bark/')
         self.assertEqual(result, '/dog/bark')

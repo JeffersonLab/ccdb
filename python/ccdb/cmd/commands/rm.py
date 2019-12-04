@@ -1,21 +1,16 @@
 import logging
 import os
-from ccdb import AlchemyProvider
+from ccdb import AlchemyProvider, TypeTable, Directory, Variation
 from ccdb.cmd import CliCommandBase
 from sqlalchemy.orm.exc import NoResultFound
 
+from ccdb.errors import ObjectIsNotFoundInDbError
+
 log = logging.getLogger("ccdb.cmd.commands.rm")
 
-#ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering Remove")
-    return Remove()
-
-
-#*********************************************************************
+# ********************************************************************
 #   Class Info - Prints extended information of object by the path   *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class Remove(CliCommandBase):
     """ Removes directory or type table """
     
@@ -42,103 +37,96 @@ class Remove(CliCommandBase):
         provider = self.context.provider
         isinstance(provider, AlchemyProvider)
         
-        #process arguments
-        self.raw_entry = ""
-        self.object_type = "type_table" 
-        self.ask_confirm = True
-        self.process_arguments(args)
-        log.debug(" |- object_type: '{0}'".format(self.object_type))
-        log.debug(" |- ask confirm: '{0}'".format(self.ask_confirm))
-        log.debug(" |- raw entry:   '{0}'".format(self.raw_entry))
+        # process arguments
+        raw_entry, object_type, ask_confirm = self.process_arguments(args)
+        log.debug(" |- object_type: '{0}'".format(object_type))
+        log.debug(" |- ask confirm: '{0}'".format(ask_confirm))
+        log.debug(" |- raw entry:   '{0}'".format(raw_entry))
 
-        #correct ending /
-        self.path = self.context.prepare_path(self.raw_entry)
+        # correct ending /
+        path = self.context.prepare_path(raw_entry)
                 
-        if not self.raw_entry:
+        if not raw_entry:
             log.warning("No path is given. Use 'help info' or 'usage info' for getting help.")
 
         self.print_warning()
         
-        #ask confirmation
-        if self.ask_confirm:
+        # ask confirmation
+        if ask_confirm:
             result = eval(input("To confirm delete type 'yes': "))
             if result != 'yes':
-                return 0
+                return None
 
-        #it is a type table
-        if self.object_type == "type_table":
-
-            try:
-                self.type_table = provider.get_type_table(self.path)
-                provider.delete_type_table(self.type_table)
-            except NoResultFound:
-                log.warning("No type table with this path: '{0}'".format(self.path))
-                raise
+        # it is a type table
+        if object_type == "type_table":
+            type_table = provider.get_type_table(path)
+            provider.delete_type_table(type_table)
+            return type_table
         
-        #it is a directory
-        if self.object_type == "directory":
-            try:
-                parent_dir = provider.get_directory(self.path)
-                provider.delete_directory(parent_dir)
-            except KeyError:
-                log.warning("No directory with this path: '{0}'".format(self.path))
-                raise
+        # it is a directory
+        if object_type == "directory":
+            directory = provider.get_directory(path)
+            provider.delete_directory(directory)
+            return directory
         
-        #it is a variation
-        if self.object_type == "variation":
-            try:
-                variation = provider.get_variation(self.raw_entry)
-                provider.delete_variation(variation)
-            except NoResultFound:
-                log.warning("Unable to delete variation '{0}'".format(self.raw_entry))
-                raise
+        # it is a variation
+        if object_type == "variation":
+            variation = provider.get_variation(raw_entry)
+            provider.delete_variation(variation)
+            return variation
 
-        if self.object_type == "assignment":
-            assignment = provider.get_assignment_by_id(int(self.raw_entry))
+        # it is assignment
+        if object_type == "assignment":
+            assignment = provider.get_assignment_by_id(int(raw_entry))
             provider.delete_assignment(assignment)
-            #TODO use request instead of id
+            return assignment
 
-        #everything is fine!
+        # everything is fine!
         return 0
             
 #----------------------------------------
 #   process_arguments 
 #----------------------------------------  
     def process_arguments(self, args):
-        
+
+        raw_entry = ""
+        object_type = "type_table"
+        ask_confirm = True
         #parse loop
         i=0
         while i < len(args):
             token = args[i].strip()
             i+=1
             if token.startswith('-'):
-                #it is some command, lets parse what is the command
+                # it is some command, lets parse what is the command
 
-                #variation
+                # variation
                 if token == "-v" or token.startswith("--variation"):
                     if i<len(args):
-                        self.raw_entry =  args[i]
-                        self.object_type = "variation"
+                        raw_entry =  args[i]
+                        object_type = "variation"
                         i+=1
                         
-                #directory
+                # directory
                 if token == "-d" or token == "--directory":
-                    self.raw_entry = args[i]
-                    self.object_type = "directory"
+                    raw_entry = args[i]
+                    object_type = "directory"
                     i+=1
 
                 if token == "-a" or token == "--assignment":
-                    self.raw_entry = args[i]
-                    self.object_type = "assignment"
+                    raw_entry = args[i]
+                    object_type = "assignment"
                     i+=1
 
                 if token == "-f" or token == "--force":
-                    self.ask_confirm = False
+                    ask_confirm = False
                 
             else:
-                #it probably must be a type table path
-                self.raw_entry = token
-                self.object_type = "type_table"
+                # it probably must be a type table path
+                raw_entry = token
+                object_type = "type_table"
+
+            return raw_entry, object_type, ask_confirm
                 
                 
 

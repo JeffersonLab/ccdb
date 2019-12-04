@@ -8,32 +8,12 @@ class AuthVerificationError(Exception):
     pass
 
 
-class DirectoryNotFound(Exception):
-    """
-    Exception raised if directory path is wrong
-    """
-    pass
+class ObjectIsNotFoundInDbError(Exception):
 
-
-class TypeTableNotFound(Exception):
-    """
-    Exception raised if type table is not found
-    """
-    pass
-
-
-class RunRangeNotFound(Exception):
-    """
-    Exception raised if run range is not found
-    """
-    pass
-
-
-class VariationNotFound(Exception):
-    """
-    Variation is not found in the database
-    """
-    pass
+    def __init__(self, db_obj_type, message="", **kwargs):
+        self.__dict__.update(kwargs)
+        self.db_obj_type = db_obj_type
+        Exception.__init__(self, message)
 
 
 class DatabaseStructureError(Exception):
@@ -49,8 +29,8 @@ class UserNotFoundError(Exception):
     """ Exception raised if user not found in the database"""
 
     def __init__(self, message="", username=""):
-        self.message = message,
         self.username = username
+        Exception.__init__(self, message)
 
 
 class UserExistsError(Exception):

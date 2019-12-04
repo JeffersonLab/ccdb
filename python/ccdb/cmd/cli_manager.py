@@ -13,7 +13,8 @@ import ccdb.cmd.commands
 import ccdb.path_utils
 from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
-from .cli_command import CliCommandBase, CliContext
+from .cli_command import CliCommandBase
+from .cli_context import CliContext
 from . import themes
 from . import colorama
 
@@ -22,22 +23,19 @@ log = logging.getLogger("ccdb.cmd.console_context")
 
 
 def import_all_submodules(modules_dir, package_name):
-    """
+    """Imports all modules in a package"""
 
-
-    :param package_name:
-    :return:
-    """
     # >oO debug   for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
     # >oO debug       print("module_loader {}, name {}, ispkg {}".format(module_loader, name, ispkg))
 
     # parent_module =  imp.find_module('packets', path)
-    for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
+    for (module_loader, name, is_pkg) in pkgutil.iter_modules([modules_dir]):
         importlib.import_module('.' + name, package_name)
         # module = importlib.import_module('.' + name, package_name)
         # >oO debug   print(module)
 
-class ConsoleContext(object):
+
+class CliManager(object):
     """
     Class to manage console commands
 
@@ -45,35 +43,16 @@ class ConsoleContext(object):
 
     """
 
-    anonymous_user_name = "anonymous"
     prefix = None
     words = []
 
     def __init__(self):
         self._prov = AlchemyProvider()
-        self.user_name = self.anonymous_user_name
-        self._current_run = 0
-
-        self._current_variation = "default"
         self._commands = {}
-        self._verbose = False
         self._ls = None
-        self._connection_string = ""
         self.silent_exceptions = True  # rethrow happened exceptions
-        self._theme = themes.NoColorTheme()
         self.log_sqlite = False
-        self.context = CliContext
-
-    # prop verbose
-    # _______________________
-    def _get_verbose(self):
-        """Sets or gets verbose behaviour for this class"""
-        return self._verbose
-
-    def _set_verbose(self, is_verbose):
-        self._verbose = is_verbose
-
-    verbose = property(_get_verbose, _set_verbose)
+        self.context = CliContext(self._prov, themes.NoColorTheme(), self._commands)
 
     @property
     def utils(self):
@@ -83,52 +62,20 @@ class ConsoleContext(object):
     @property
     def connection_string(self):
         """:rtype: str"""
-        return self._connection_string
+        return self.context.connection_string
 
     @connection_string.setter
     def connection_string(self, con_str):
-        self._connection_string = con_str
+        self.context.connection_string = con_str
 
     @property
     def provider(self):
         return self._prov
 
     @property
-    def current_run(self):
-        """
-        Sets or gets current working run
-        :rtype: int
-        """
-        return self._current_run
-
-    @current_run.setter
-    def current_run(self, new_run):
-        self._current_run = new_run
-
-    @property
-    def current_variation(self):
-        """
-        Sets or gets current working variation
-        :rtype: str
-        """
-        return self._current_variation
-
-    @current_variation.setter
-    def current_variation(self, new_var):
-        self._current_variation = new_var
-
-    @property
-    def user_name(self):
-        return self._prov.authentication.current_user_name
-
-    @user_name.setter
-    def user_name(self, name):
-        self._prov.authentication.current_user_name = name
-
-    @property
     def theme(self):
         """:rtype: themes.NoColorTheme"""
-        return self._theme
+        return self.context.theme
 
     @theme.setter
     def theme(self, value):
@@ -136,17 +83,12 @@ class ConsoleContext(object):
         :param value: new theme to set
         :type value: themes.NoColorTheme
         """
-        assert (isinstance(value, themes.NoColorTheme))
-        for key in list(self._commands.keys()):
-            self._commands[key].theme = value
         log.debug(lfm(" |- theme(value) {0} | \\{0} |  |- theme switched to : '{1}'", os.linesep, value))
-        self._theme = value
+        self.context.theme = value
 
     # =====================================================================================
-    # ------------------ P L U G I N   M A N A G E M E N T  -------------------------------
+    # ------------------ C O M M A N D S   M A N A G E M E N T  ---------------------------
     # =====================================================================================
-
-
 
     # --------------------------------
     #  register_utilities
@@ -162,10 +104,13 @@ class ConsoleContext(object):
 
         # Create all subclasses of PacketInstallationInstruction and add here
         for cls in CliCommandBase.__subclasses__():
-            util = cls()
+            try:
+                util = cls(self.context)
+            except Exception as ex:
+                log.warning(lfm("Error loading command: '{}'", cls))
+                continue
 
             self._commands[util.command] = util
-            util.context = self
             util.theme = self.theme
             if util.command == "ls":
                 self._ls = util
@@ -176,8 +121,6 @@ class ConsoleContext(object):
                                      for command, util
                                      in list(self._commands.items())]))
 
-
-
     # --------------------------------
     #   processes the arguments
     # --------------------------------
@@ -187,8 +130,6 @@ class ConsoleContext(object):
         if len(args) < (start_index + 1):
             self.print_general_usage()
             return
-
-
 
         # get working arguments list
         workargs = args[start_index:]
@@ -205,7 +146,7 @@ class ConsoleContext(object):
 
                 # connection string
                 if (token == "-c" or token == "--connection") and (i < len(workargs)):
-                    self.connection_string = workargs[i]
+                    self.context.connection_string = workargs[i]
                     i += 1
 
                 # it is an interactive mode
@@ -216,8 +157,8 @@ class ConsoleContext(object):
                 elif token == "-r" or token == "--run":
                     # working run
                     try:
-                        self.current_run = int(workargs[i])
-                        log.info("Working run is %i", self.current_run)
+                        self.context.current_run = int(workargs[i])
+                        log.info("Working run is %i", self.context.current_run)
                     except ValueError:
                         log.warning("(!) Warning. Cannot read run from %s command" % token)
                     i += 1
@@ -228,14 +169,14 @@ class ConsoleContext(object):
                         log.warning("(!) Warning. Cannot read variation from --variation flag. "
                                     "Variation name should consist of A-Z, a-z, 0-9, _")
                     else:
-                        self._current_variation = workargs[i]
+                        self.context.current_variation = workargs[i]
                     i += 1
 
                 # we have to ask mysql password
-                if "--mysql-pwd" in args[start_index:] and self.connection_string.startswith("mysql"):
+                if "--mysql-pwd" in args[start_index:] and self.context.connection_string.startswith("mysql"):
                     print("Enter MySql password: ")
                     password = getpass.getpass()
-                    self.connection_string = self.connection_string.replace("@", ":" + password + "@")
+                    self.context.connection_string = self.context.connection_string.replace("@", ":" + password + "@")
                     i += 1
             else:
                 # looks like is is a command
@@ -347,6 +288,9 @@ class ConsoleContext(object):
                 self.theme = themes.NoColorTheme()
 
             result = command.execute(args)
+            if command.is_alias:
+                # Aliases return the next command to execute...
+                result = self.process_command_line(result)
 
         except Exception as ex:
             log.info(ex)
@@ -375,21 +319,20 @@ class ConsoleContext(object):
             log.debug(" |- check_connection(util){0} | \\".format(os.linesep))
             log.debug(" |  |- utility '{}' requires DB. CCDB not yet connected. Connecting.".format(util.name))
             log.debug(" |  |- connection string is: '{}{}{}'"
-                      .format(self.theme.Accent, self.connection_string, self.theme.Reset))
+                      .format(self.theme.Accent, self.context.connection_string, self.theme.Reset))
 
         # connecting
         try:
-            self._prov.connect(self.connection_string)
+            self._prov.connect(self.context.connection_string)
         except Exception as ex:
             log.critical("CCDB provider unable to connect to {0}. Aborting command. Exception details: {1}".format(
-                self.connection_string, ex))
+                self.context.connection_string, ex))
             return False
 
         # skip user for sqlite
         if (not self.log_sqlite) and (self.provider.connection_string.startswith("sqlite://")):
             log.debug(" |  |- log_sqlite == False, set user to anonymous and disable logging'")
             self.provider.logging_enabled = False
-            # self.user_name = self.anonymous_user_name
 
         # connected
         if log.isEnabledFor(logging.DEBUG):
@@ -455,8 +398,7 @@ class ConsoleContext(object):
         try:
             readline.write_history_file()
         except:
-            log.warn("unable to write history file")
-
+            log.warning("unable to write history file")
 
             # =====================================================================================
             # ------------------------ C O M P L E T I O N ----------------------------------------
@@ -489,7 +431,6 @@ class ConsoleContext(object):
             self.check_connection(self._ls)
             try:
                 result = self._ls.get_name_pathes(path_prefix)
-
             except:
                 result = None
 
@@ -536,73 +477,25 @@ class ConsoleContext(object):
         except IndexError:
             return None
 
-            # endregion
-
-            # =====================================================================================
-            # --------  G E T T I N G    O B J E C T S  -------------------------------------------
-            # =====================================================================================
-
-
-
-    # --------------------------------
-    #  parse_run_range
-    # --------------------------------
-    def parse_run_range(self, run_range_str):
-        """ @brief parse run range string in form of <run_min>-<run-max>
-
-            if one inputs '<run_min>-' this means <run_min>-<infinite run>
-            if one inputs '-<run_max>' this means <0>-<run_max>
-
-            @return (run_min, run_max, run_min_set, run_max_set)
-            run_min_set, run_max_set - are flags indicating that values was set by user
-            """
-
-        assert isinstance(run_range_str, str)
-        if not "-" in run_range_str:
-            return None
-
-        # split <>-<>
-        (str_min, str_max) = run_range_str.split("-")
-        run_min = 0
-        run_min_set = False
-        run_max = ccdb.INFINITE_RUN
-        run_max_set = False
-
-        # parse run min
-        try:
-            run_min = int(str_min)
-            run_min_set = True
-        except ValueError:
-            self.run_min = 0
-
-        # parse run max
-        try:
-            run_max = int(str_max)
-            run_max_set = True
-        except ValueError:
-            self.run_max = ccdb.INFINITE_RUN
-
-        return run_min, run_max, run_min_set, run_max_set
-
     # =====================================================================================
     # ------------------------- H E L P   A N D   I N F O ---------------------------------
     # =====================================================================================
-
-    def print_general_usage(self):
+    @staticmethod
+    def print_general_usage():
         print("Use '-i'   option to enter interactive shell")
         print("Use 'help' option for help")
         print("Use 'help command' to get help for particular command")
 
     def print_info(self):
-        log.info("Login as   : '" + self.user_name + "'")
-        log.info("Connect to : '" + self.connection_string + "'")
-        log.info("Variation  : '" + self.current_variation + "'")
-        log.info("Deflt. run : '" + str(self.current_run) + "'")
+        log.info("Login as   : '" + self.context.user_name + "'")
+        log.info("Connect to : '" + self.context.connection_string + "'")
+        log.info("Variation  : '" + self.context.current_variation + "'")
+        log.info("Deflt. run : '" + str(self.context.current_run) + "'")
 
     def print_interactive_intro(self):
         print("""
 +--------------------------+
-  CCDB shell v.1.07.00
+  CCDB shell v.2.00.00
 +--------------------------+
        """)
         print((self.theme.Title + "Interactive mode"))

@@ -13,17 +13,9 @@ from ccdb import BraceMessage as LogFmt
 log = logging.getLogger("ccdb.cmd.commands.edit")
 
 
-# ccdbcmd module interface
-def create_util_instance():
-
-    log.debug("      registering Edit")
-    return Edit()
-
-
-# *********************************************************************
-#   Class Edit- Change a value in a table            *
-#                                                                    *
-# *********************************************************************
+# ********************************************************************
+#   Class Edit- Change a value in a table                            *
+# ********************************************************************
 class Edit(CliCommandBase):
     """Edit a value in a table"""
 
@@ -34,8 +26,8 @@ class Edit(CliCommandBase):
     short_descr = "Edit a value in the table"
     uses_db = True
 
-    def __init__(self):
-        super(Edit, self).__init__()
+    def __init__(self, context):
+        super(Edit, self).__init__(context)
         self.raw_entry = "/"  # object path with possible pattern, like /mole/*
 
     # ----------------------------------------

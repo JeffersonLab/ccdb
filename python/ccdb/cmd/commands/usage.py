@@ -3,16 +3,10 @@ import logging
 
 log = logging.getLogger("ccdb.cmd.commands.usage")
 
-#ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering Usage")
-    return Usage()
 
-
-#*********************************************************************
+# ********************************************************************
 #   Class Usage - Prints usage for each util                         *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class Usage(CliCommandBase):
     """ Prints usage for each util """
     
@@ -24,9 +18,7 @@ class Usage(CliCommandBase):
     help_util = True
     
     def print_help(self):
-        print(""" Prints the usage of the command """) 
-    # ---- end of print_help() ----
-
+        print(""" Prints the usage of the command """)
 
     def execute(self, args):
         log.debug("  Usage is gained a control over the process")

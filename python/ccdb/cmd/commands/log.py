@@ -11,21 +11,9 @@ from ccdb import BraceMessage as LogFmt
 
 log = logging.getLogger("ccdb.cmd.commands.log")
 
-#ccdbcmd module interface
-def create_util_instance():
-    """
-    This function is a module interface
 
-    :return: new ShowLog util
-    :rtype: ShowLog
-    """
-    log.debug("      registering ShowLog")
-    return ShowLog()
-
-
-#*********************************************************************
-#   Class ShowLog - Add data constants                               *
-#                                                                    *
+# ********************************************************************
+#      Class ShowLog - Add data constants                            *
 #*********************************************************************
 class ShowLog(CliCommandBase):
     """ Show log record"""
@@ -36,9 +24,6 @@ class ShowLog(CliCommandBase):
     name = "ShowLog"
     short_descr = "Shows log records"
     uses_db = True
-
-    def __init(self):
-        pass
 
     #----------------------------------------
     #   process

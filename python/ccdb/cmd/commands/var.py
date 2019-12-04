@@ -9,16 +9,9 @@ from ccdb.brace_log_message import BraceMessage as Lfm
 log = logging.getLogger("ccdb.cmd.commands.var")
 
 
-#ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering CurrentVariation")
-    return CurrentVariation()
-
-
-#*********************************************************************
+# ********************************************************************
 #   Class CurrentVariation - gets or sets current working variation  *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class CurrentVariation(CliCommandBase):
     """ gets or sets current working run """
     
@@ -27,7 +20,30 @@ class CurrentVariation(CliCommandBase):
     command = "var"
     name = "CurrentVariation"
     short_descr = "gets or sets current working variation"
+
+    def __init__(self, context):
+        self.context = context
     
+    # ---- end of print_help() ----
+    def execute(self, args):
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(Lfm("{0}CurrentVariation is in charge{0}\\".format(os.linesep)))
+            log.debug(Lfm(" |- arguments : '" + "' '".join(args)+"'"))
+
+        assert self.context is not None
+
+        if len(args):
+            if not validate_name(args[0]):
+                raise ValueError("Error. Variation name should consist of A-Z, a-z, 0-9, _")
+            self.context.current_variation = args[0]
+            log.info(Lfm("Working variation is set to '{}'", self.context.current_variation))
+        else:
+            # get variation
+            print(self.context.current_variation)
+
+        # all is fine
+        return self.context.current_variation
+
     def print_help(self):
         print("""Gets or sets current working variation
         var (no arguments)     displays current variation
@@ -45,24 +61,3 @@ Current working variation can be set on ccdb start by '-v' flag.
 
 If no variation specified at ccdb start, current working variation is 'default'
         """)
-    # ---- end of print_help() ----
-
-
-    def execute(self, args):
-        if log.isEnabledFor(logging.DEBUG):
-            log.debug(Lfm("{0}CurrentVariation is in charge{0}\\".format(os.linesep)))
-            log.debug(Lfm(" |- arguments : '" + "' '".join(args)+"'"))
-        
-        assert self.context is not None
-
-        if len(args):
-            if not validate_name(args[0]):
-                raise ValueError("Error. Variation name should consist of A-Z, a-z, 0-9, _")
-            self.context.current_variation = args[0]
-            log.info(Lfm("Working variation is set to '{}'", self.context.current_variation))
-        else:
-            #get working run
-            print((self.context.current_variation))
-        
-        # all is fine
-        return 0

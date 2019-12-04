@@ -11,16 +11,9 @@ from ccdb.brace_log_message import BraceMessage as LogFmt
 log = logging.getLogger("ccdb.cmd.commands.vers")
 
 
-# ccdbcmd module interface
-def create_util_instance():
-    log.debug("      registering Versions")
-    return Versions()
-
-
-#*********************************************************************
+# ********************************************************************
 #   Class Versions - Show versions of data for specified type table  *
-#                                                                    *
-#*********************************************************************
+# ********************************************************************
 class Versions(CliCommandBase):
     """" Show versions of data. Assignments in terms of CCDB """
     
@@ -30,6 +23,9 @@ class Versions(CliCommandBase):
     name = "Versions"
     short_descr = "Show versions of data for specified type table"
     uses_db = True
+
+    def __init__(self, context):
+        self.context = context
 
     # - - - - - - - - - - - - - - - - - - - - -
     def execute(self, args):

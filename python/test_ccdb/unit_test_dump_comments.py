@@ -5,11 +5,14 @@ import sys
 import shlex
 
 import ccdb.cmd.colorama
-from ccdb.errors import DirectoryNotFound, TypeTableNotFound
 import ccdb.path_utils
 import ccdb.cmd.themes
-from ccdb.cmd.cli_manager import ConsoleContext
-from . import helper
+from ccdb.cmd.cli_manager import CliManager
+
+try:
+    from test_ccdb import helper
+except ImportError:
+    import helper
 
 logger = logging.getLogger("ccdb")
 
@@ -28,7 +31,7 @@ class AddThenDumpFileTests(unittest.TestCase):
         self.sqlite_connection_str = helper.sqlite_test_connection_str
 
         # create console context
-        self.context = ConsoleContext()
+        self.context = CliManager()
         self.context.silent_exceptions = False
         self.context.theme = ccdb.cmd.themes.NoColorTheme()
         self.context.connection_string = self.sqlite_connection_str
