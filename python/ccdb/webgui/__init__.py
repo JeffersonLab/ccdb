@@ -18,19 +18,21 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.update(test_config)
 
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+    # # ensure the instance folder exists
+    # try:
+    #     os.makedirs(app.instance_path)
+    # except OSError:
+    #     pass
 
     @app.route("/hello")
     def hello():
         return "Hello, World!"
 
-    import ccdb.webgui.data_timeline
+    from ccdb.webgui.data_timeline import bp as time_line_bp
+    from ccdb.webgui.dashboard import bp as dashboard_bp
 
-    app.register_blueprint(ccdb.webgui.data_timeline.bp)
+    app.register_blueprint(time_line_bp)
+    app.register_blueprint(dashboard_bp)
 
     # make url_for('index') == url_for('blog.index')
     # in another app, you might define a separate main index here with

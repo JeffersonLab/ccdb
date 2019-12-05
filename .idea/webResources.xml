@@ -6,6 +6,7 @@
         <entryData>
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/sql" />
+            <path value="file://$PROJECT_DIR$/python/ccdb/webgui/static" />
           </resourceRoots>
         </entryData>
       </entry>
