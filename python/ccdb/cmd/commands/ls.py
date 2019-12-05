@@ -45,33 +45,36 @@ class List(CliCommandBase):
             log.debug(LogFmt("{0}List is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args) + "'"))
 
+        # This command might be used as an alias
+        self.is_alias = False
+
         assert self.context is not None
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
         self.reset()
 
-        #PARSE ARGUMENTS
-        #-------------------------------
+        # PARSE ARGUMENTS
+        # -------------------------------
         raw_path, task, is_extended = self._process_arguments(args)
 
-        #dump as tree
+        # dump as tree
         if task == ListTasks.directory_tree:
             self.parent_dir = provider.get_root_directory()
             self.print_directory_tree(self.parent_dir, False, 0)
             return
 
-        #dump as directories
+        # dump as directories
         if task == ListTasks.directories:
             self.parent_dir = provider.get_root_directory()
             self.print_directory_tree(self.parent_dir, True, 0)
             return
 
-        #dump variations
+        # dump variations
         if task == ListTasks.variations:
             self.print_variations()
             return
 
-        #dump type_tables
+        # dump type_tables
         if task == ListTasks.type_tables:
             self.print_tables()
             return
@@ -80,8 +83,6 @@ class List(CliCommandBase):
             self.raw_entry = raw_path
         else:
             self.raw_entry = self.context.current_path
-
-
 
         dirs, tables = self.get_name_pathes(self.raw_entry)
 
@@ -93,8 +94,16 @@ class List(CliCommandBase):
            ("?" not in self.raw_entry) and\
            (not dirs) and\
            (len(tables) == 1):
-            self.table_info(tables[0], is_extended)
-            return
+            table = tables[0]
+
+            self.table_info(table, is_extended)
+
+            # we will use this command as alias
+            # (return string is called by cli_manager)
+            self.is_alias = True
+            if is_extended:
+                return "info " + table.path
+            return "vers " + table.path
 
         for directory in dirs:
             log.info(self.theme.Directories + directory.name + self.theme.Reset)
@@ -259,9 +268,6 @@ class List(CliCommandBase):
 
     def table_info(self, table, is_extended):
         log.info(table.path)
-        if is_extended:
-            self.context.process_command("info", [table.path])
-        self.context.process_command("vers", [table.path])
 
     def print_help(self):
         """Prints help of the command"""

@@ -125,7 +125,7 @@ class Cat(CliCommandBase):
         # border
         group = parser.add_mutually_exclusive_group()
         group.add_argument("-b", "--borders", action="store_true", dest='show_borders', default=True)
-        group.add_argument("-nb", "--no-borders", action="store_false")
+        group.add_argument("-nb", "--no-borders", action="store_false", dest='show_borders')
 
         # header
         group = parser.add_mutually_exclusive_group()

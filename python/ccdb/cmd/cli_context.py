@@ -30,6 +30,10 @@ class CliContext(object):
     def user_name(self, name):
         self._prov.authentication.current_user_name = name
 
+    @property
+    def commands(self):
+        return self._commands
+
     # --------------------------------
     #  prepare_path
     # --------------------------------

@@ -25,27 +25,28 @@ class HelpUtil(CliCommandBase):
         print((self.help_text))
 
         if self.context:
-            print ("Available commands:")
-            print(("   %-10s %-15s %s:"%("(command)", "(name)", "(description)")))
-            print(("   " + "\n  ".join(
+            print("Available commands:")
+            print("   %-10s %-15s %s:"%("(command)", "(name)", "(description)"))
+            print("   " + "\n  ".join(
                 ["%-10s %-15s %s" % (command, util.name, util.short_descr) 
-                for command, util 
-                in list(self.context.utils.items())
-                if not util.help_util])))
-        print((self.flags_text))
-        print((self.enveron_text))
+                    for command, util
+                    in list(self.context.commands.items())
+                    if not util.help_util]))
+        print(self.flags_text)
+        print(self.enveron_text)
 
     # ----------------------------------------
     #   process
     # ----------------------------------------
     def execute(self, args):
         if self.context:
-            commands = list(self.context.utils.keys())
-            if len(args)>0:
+            commands = list(self.context.commands.keys())
+            if args:
                 if args[0] in commands:
-                    self.context.utils[args[0]].print_help()
+                    self.context.commands[args[0]].print_help()
                 else:
-                    print(("Command %s not found. Available commands are: "%args[0]))
+                    msg = "Command {} is not found. Please run 'ccdb help' for the list of commands".format(args[0])
+                    raise ModuleNotFoundError(msg)
             else:
                 self.print_help()
     

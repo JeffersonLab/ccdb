@@ -84,39 +84,35 @@ class Remove(CliCommandBase):
         # everything is fine!
         return 0
             
-#----------------------------------------
-#   process_arguments 
-#----------------------------------------  
     def process_arguments(self, args):
-
         raw_entry = ""
         object_type = "type_table"
         ask_confirm = True
-        #parse loop
-        i=0
+        # parse loop
+        i = 0
         while i < len(args):
             token = args[i].strip()
-            i+=1
+            i += 1
             if token.startswith('-'):
                 # it is some command, lets parse what is the command
 
                 # variation
                 if token == "-v" or token.startswith("--variation"):
-                    if i<len(args):
-                        raw_entry =  args[i]
+                    if i < len(args):
+                        raw_entry = args[i]
                         object_type = "variation"
-                        i+=1
+                        i += 1
                         
                 # directory
                 if token == "-d" or token == "--directory":
                     raw_entry = args[i]
                     object_type = "directory"
-                    i+=1
+                    i += 1
 
                 if token == "-a" or token == "--assignment":
                     raw_entry = args[i]
                     object_type = "assignment"
-                    i+=1
+                    i += 1
 
                 if token == "-f" or token == "--force":
                     ask_confirm = False
@@ -126,14 +122,8 @@ class Remove(CliCommandBase):
                 raw_entry = token
                 object_type = "type_table"
 
-            return raw_entry, object_type, ask_confirm
+        return raw_entry, object_type, ask_confirm
                 
-                
-
-
-#----------------------------------------
-#   print_warning
-#----------------------------------------        
     def print_warning(self):
         """print warning"""
         
@@ -149,11 +139,6 @@ Deleting a table and recreating with different signature could
 lead to even more severe hard-to-diagnose errors.
 """)
         
-
-
-#----------------------------------------
-#   print_help 
-#----------------------------------------
     def print_help(self):
         """Prints help of the command"""
           

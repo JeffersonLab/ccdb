@@ -1462,7 +1462,7 @@ class AlchemyProvider(object):
         query = self.session.query(User).filter(User.name == username)
         try:
             return query.one()
-        except sqlalchemy.orm.exc.NoResultFound as ex:
+        except NoResultFound:
             message = "No user with name '{0}' is found in database. " \
                       "Set the user name by CCDB_USER environment variable. " \
                       "See 'ccdb user' command to create a user.".format(username)

@@ -10,7 +10,7 @@ import ccdb.cmd.themes
 from ccdb.cmd.cli_manager import CliManager
 
 try:
-    from test_ccdb import helper
+    from . import helper
 except ImportError:
     import helper
 
@@ -55,7 +55,6 @@ class AddThenDumpFileTests(unittest.TestCase):
                 sys.stderr.write("mktbl /test/channel_mc_efficiency already exists")
             else:
                 raise
-
 
     def tearDown(self):
         with helper.captured_output() as (out, err):

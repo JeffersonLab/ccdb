@@ -11,7 +11,7 @@ from six import StringIO
 ccdb_path = ccdb.get_ccdb_home_path()
 
 # path of the tests folder
-ccdb_test_path = os.path.join(ccdb_path, 'python', 'test_ccdb')
+ccdb_test_path = os.path.join(ccdb_path, 'python', 'tests')
 
 # Name of environment variable that holds MySql connection string
 ENV_TEST_MYSQL = "CCDB_TEST_MYSQL_CONNECTION"

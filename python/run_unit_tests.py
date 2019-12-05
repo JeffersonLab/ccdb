@@ -2,7 +2,7 @@ import glob
 import unittest
 import inspect
 import os
-import test_ccdb
+import tests
 
 test_names = [
     'unit_test_authentication',
@@ -10,12 +10,14 @@ test_names = [
     'unit_test_dump_comments',
     'unit_test_path_utils',
     'unit_test_utility_argument_parse',
+    'integ_test_cli_manager',
+    'integ_test_provider_sqlite'
 ]
 
 
 def get_unit_tests_suite():
     """Searches unit tests (and only unit tests, no integration tests) in this folder"""
-    suites = [unittest.defaultTestLoader.loadTestsFromName("test_ccdb."+name) for name in test_names]
+    suites = [unittest.defaultTestLoader.loadTestsFromName("tests."+name) for name in test_names]
     for suite in suites:
         print(suite)
     test_suite = unittest.TestSuite(suites)

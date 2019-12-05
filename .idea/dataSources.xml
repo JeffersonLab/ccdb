@@ -13,5 +13,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/sql/ccdb.sqlite</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="tests.sqlite" uuid="3a394296-5cfa-4ccd-8200-87ae91978dfe">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/python/tests/test.sqlite</jdbc-url>
+    </data-source>
   </component>
 </project>
