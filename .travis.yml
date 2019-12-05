@@ -10,4 +10,4 @@ install:
 before_install:
   - source environment.bash
 script:
-  - python python/tests/integ_test_provider_sqlite.py
+  - python python/run_unit_tests.py
