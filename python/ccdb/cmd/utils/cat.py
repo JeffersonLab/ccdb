@@ -73,6 +73,7 @@ class Cat(ConsoleUtilBase):
         self.show_date = False
         self.request = ParseRequestResult()
         self.ass_id = 0
+        self.use_ass_id = False 
         self.user_request_print_horizontal = False
         self.user_request_print_vertical = False
 
