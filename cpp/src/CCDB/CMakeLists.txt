@@ -6,9 +6,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories(${MYSQL_INCLUDE_DIR})
 
-find_package(fmt)
 
-find_package (SQLite3)
+find_package (SQLite3 REQUIRED)
 if (SQLITE3_FOUND)
     include_directories(${SQLITE3_INCLUDE_DIRS})
 endif (SQLITE3_FOUND)
