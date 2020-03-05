@@ -1134,7 +1134,6 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
         "SELECT `assignments`.`id` AS `asId`, "
         "`constantSets`.`vault` AS `blob` "
         "FROM  `assignments` "
-        "USE INDEX (id_UNIQUE) "
         "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
         "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
         "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
