@@ -20,7 +20,7 @@ class FileLoaderTestCase(unittest.TestCase):
         """ Tests list_names.
         """
         assert (
-            'shared/master.html',
+            'shared/main.html',
             'shared/snippet/script.html',
             'tmpl1.html'
         ) == self.loader.list_names()
@@ -49,14 +49,14 @@ class DictLoaderTestCase(unittest.TestCase):
         from wheezy.template.loader import DictLoader
         self.loader = DictLoader(templates={
             'tmpl1.html': 'x',
-            'shared/master.html': 'x'
+            'shared/main.html': 'x'
         })
 
     def test_list_names(self):
         """ Tests list_names.
         """
         assert (
-            'shared/master.html',
+            'shared/main.html',
             'tmpl1.html'
         ) == self.loader.list_names()
 
@@ -83,14 +83,14 @@ class ChainLoaderTestCase(unittest.TestCase):
                 'tmpl1.html': 'x1',
             }),
             DictLoader(templates={
-                'shared/master.html': 'x2'
+                'shared/main.html': 'x2'
             })])
 
     def test_list_names(self):
         """ Tests list_names.
         """
         assert (
-            'shared/master.html',
+            'shared/main.html',
             'tmpl1.html'
         ) == self.loader.list_names()
 
@@ -98,7 +98,7 @@ class ChainLoaderTestCase(unittest.TestCase):
         """ Tests load.
         """
         assert 'x1' == self.loader.load('tmpl1.html')
-        assert 'x2' == self.loader.load('shared/master.html')
+        assert 'x2' == self.loader.load('shared/main.html')
 
     def test_load_not_found(self):
         """ Tests load if the name is not found.
