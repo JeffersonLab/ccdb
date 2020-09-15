@@ -8,8 +8,8 @@ env = default_env.Clone()  #Clone it to add library specified things
 
 #Mac Os X requires install_name flag to be built properly
 if env['PLATFORM'] == 'darwin':
-    print
-    print "Darwin platform is detected. Setting -install_name @rpath/"+'${TARGET.file}'
+    print()
+    print("Darwin platform is detected. Setting -install_name @rpath/"+'${TARGET.file}')
     env.Append(SHLINKFLAGS = ['-install_name', '@rpath/'+'${TARGET.file}'])
     
 
@@ -74,21 +74,21 @@ else:
 #Read user flag for using mysql dependencies or not
 if ARGUMENTS.get("mysql","no")=="yes" or ARGUMENTS.get("with-mysql","true")=="true":
     #User wants mysql!
-    print "Building CCDB using MySQL dependencies"
-    print "To build CCDB without mysql dependencies. Run scons with 'with-mysql=false'"
-    print ""
+    print("Building CCDB using MySQL dependencies")
+    print("To build CCDB without mysql dependencies. Run scons with 'with-mysql=false'")
+    print("")
 
     print('WhereIs("mysql_config"): {}'.format(WhereIs("mysql_config")))
 
     mysql_config_path = WhereIs("mysql_config")
 
     if not mysql_config_path:
-        print
-        print 	"ERROR. Can't find 'mysql_config' utility which is needed to build CCDB with MySQL support."
-        print 	"Two options is possible to build CCDB:"
-        print   "  1. Install mysql_config (RHEL has it in mysql-devel package, Ubuntu in libmysqlclient-dev)"
-        print   "  2. Build CCDB without MySQL dependencies (use 'mysql=no' scons flag)"
-        print
+        print()
+        print("ERROR. Can't find 'mysql_config' utility which is needed to build CCDB with MySQL support.")
+        print("Two options is possible to build CCDB:")
+        print("  1. Install mysql_config (RHEL has it in mysql-devel package, Ubuntu in libmysqlclient-dev)")
+        print("  2. Build CCDB without MySQL dependencies (use 'mysql=no' scons flag)")
+        print()
         Exit()
 
     mysql_sources = [
