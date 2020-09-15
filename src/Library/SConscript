@@ -118,7 +118,7 @@ if ARGUMENTS.get("mysql","no")=="yes" or ARGUMENTS.get("with-mysql","true")=="tr
     env.Append(LIBS=['mysqlclient'])
     env.ParseConfig('mysql_config --cflags')
 else:
-    print "CCDB is being build WITHOUT MySQL support. Use 'with-mysql=true' flag to explicitly enable MySQL support"
+    print("CCDB is being build WITHOUT MySQL support. Use 'with-mysql=true' flag to explicitly enable MySQL support")
 
 
 if ARGUMENTS.get("with-perflog","false")=="true":
