@@ -797,7 +797,6 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
         "SELECT `assignments`.`id` AS `asId`, "
         "`constantSets`.`vault` AS `blob` "
         "FROM  `assignments` "
-        "USE INDEX (id_UNIQUE) "
         "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
         "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
         "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
@@ -859,18 +858,6 @@ Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& p
 	FreeMySQLResult();
 	return result;
 
-}
-
-Assignment* ccdb::MySQLDataProvider::GetAssignmentFull( int run, const string& path, const string& variation )
-{
-	if(!CheckConnection("MySQLDataProvider::GetAssignmentFull(int run, cconst string& path, const string& variation")) return NULL;
-	return DataProvider::GetAssignmentFull(run, path, variation);
-}
-
-Assignment* ccdb::MySQLDataProvider::GetAssignmentFull( int run, const string& path,int version, const string& variation/*= "default"*/)
-{
-	if(!CheckConnection("MySQLDataProvider::GetAssignmentFull( int run, const char* path, const char* variation, int version /*= -1*/ )")) return NULL;
-	return DataProvider::GetAssignmentFull(run, path, variation);
 }
 
 

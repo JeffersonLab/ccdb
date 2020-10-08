@@ -132,3 +132,5 @@ src/\.idea/workspace\.xml
 
 venv/
 
+
+.idea/

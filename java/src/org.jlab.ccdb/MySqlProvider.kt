@@ -75,7 +75,6 @@ class MySqlProvider(connectionString: String) : JDBCProvider(connectionString) {
                         "`constantSets`.`vault` AS `blob`, " +
                         "`assignments`.`modified` as `asModified`" +
                         "FROM  `assignments` " +
-                        "USE INDEX (id_UNIQUE) " +
                         "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` " +
                         "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` " +
                         "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` " +
