@@ -134,3 +134,10 @@ venv/
 
 
 .idea/
+
+.clone_done
+.cmake_done
+.make_done
+.make_install_done
+bin/CCDB_tests
+include
