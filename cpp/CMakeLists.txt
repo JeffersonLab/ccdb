@@ -6,6 +6,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_COLOR_MAKEFILE   ON)
+set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/..)
 
 # Remove 'lib' prefix for shared libraries on Windows
 if (WIN32)
