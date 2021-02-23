@@ -15,6 +15,8 @@ endif ()
 
 FIND_PACKAGE(MySQL)
 
+add_compile_options(-g)
+
 #add_definitions(-DCCDB_MYSQL)
 #add_definitions(-DCCDB_PERFLOG_ON=1)
 add_subdirectory(src/fmt)
