@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
-project(CCDB_lib)
+#project(CCDB_lib)
+project(ccdb)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
@@ -43,7 +44,7 @@ set(SOURCE_FILES
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 get_filename_component(CCDB_LIB_PARENT_DIR ${PROJECT_SOURCE_DIR} DIRECTORY)
-message(${CCDB_LIB_PARENT_DIR})
+message("CCDB_LIB_PARENT_DIR = ${CCDB_LIB_PARENT_DIR}")
 target_include_directories(${PROJECT_NAME} PRIVATE ${CCDB_LIB_PARENT_DIR})
 
 
@@ -60,3 +61,11 @@ SET(GCC_COVERAGE_COMPILE_FLAGS "-I/usr/include/mysql -DBIG_JOINS=1  -fno-strict-
 SET(GCC_COVERAGE_LINK_FLAGS    "-L/usr/lib/x86_64-linux-gnu -lmysqlclient -lpthread -lz -lm -ldl")
 SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
 SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
+
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/" # source directory
+        DESTINATION "include" # target directory
+        FILES_MATCHING # install only matched files
+        PATTERN "*.h" # select header files
+)
+
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)

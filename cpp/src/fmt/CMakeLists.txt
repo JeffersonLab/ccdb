@@ -297,3 +297,5 @@ if (MASTER_PROJECT AND EXISTS ${gitignore})
   set(CPACK_RESOURCE_FILE_README ${PROJECT_SOURCE_DIR}/README.rst)
   include(CPack)
 endif ()
+
+install(TARGETS fmt DESTINATION lib)
