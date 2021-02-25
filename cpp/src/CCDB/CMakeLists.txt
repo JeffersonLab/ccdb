@@ -63,7 +63,7 @@ SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
 SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/" # source directory
-        DESTINATION "include" # target directory
+        DESTINATION "include/CCDB" # target directory
         FILES_MATCHING # install only matched files
         PATTERN "*.h" # select header files
 )
