@@ -141,3 +141,11 @@ venv/
 .make_install_done
 bin/CCDB_tests
 include
+.scons_done
+.untar_local_scons
+scripts/scons-LICENSE
+scripts/scons-README
+scripts/scons-local-2.1.0/
+scripts/scons-time.py
+scripts/scons.py
+scripts/sconsign.py
