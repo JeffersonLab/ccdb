@@ -1,6 +1,6 @@
 #!/bin/bash
-host=localhost
-scratch_dir=/u/scratch/$USER/ccdb_convert
+host=$1
+scratch_dir=/tmp/1_to_2_temp
 echo host is $host
 echo scratch_dir is $scratch_dir
 echo delete scratch_dir
@@ -9,6 +9,8 @@ echo create scratch_dir
 mkdir -p $scratch_dir
 echo dump ccdb 1
 mysqldump -h$host -uccdb_user ccdb > $scratch_dir/ccdb1.sql
+echo wc of dump file
+wc $scratch_dir/ccdb1.sql
 echo drop ccdb 2 database
 mysql -h$host -uccdb_user -e "drop database if exists ccdb2"
 echo create ccdb 2 database
