@@ -118,3 +118,11 @@ python/.idea/workspace.xml
 python/.idea/misc.xml
 python/.idea/usage.statistics.xml
 python/.idea/dataSources.local.xml
+
+# unpacked scons files
+scripts/scons-LICENSE
+scripts/scons-README
+scripts/scons-local-2.1.0/
+scripts/scons-time.py
+scripts/scons.py
+scripts/sconsign.py
