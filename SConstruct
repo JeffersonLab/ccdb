@@ -3,8 +3,8 @@ import os
 
 #Setup default environment. This environment 
 if not 'CCDB_HOME' in os.environ:
-    print "CCDB_HOME environment variable is not found but should be set to compile the CCDB"
-    print "One can run 'source environment.bash' from your bash shell to automatically set environment variables"
+    print("CCDB_HOME environment variable is not found but should be set to compile the CCDB")
+    print("One can run 'source environment.bash' from your bash shell to automatically set environment variables")
     exit(1)
 
 #Create 'default' environment. Other environments will be a copy of this one
