@@ -20,24 +20,7 @@ import os
 import sys
 import logging
 import inspect
-
-from .provider import AlchemyProvider
-from .model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn, INFINITE_RUN
-from .table_file import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
-from .cmd.themes import NoColorTheme, ColoredTheme
-from .brace_log_message import BraceMessage
-from .cmd import themes
 from . import path_utils
-
-# the default ccdb logger
-logger = logging.getLogger("ccdb")
-
-
-
-if sys.version_info < (2, 7, 0):
-    sys.stderr.write("You need python 2.7 or later to run CCDB\n")
-    exit(1)
-
 
 def get_ccdb_home_path():
     if "CCDB_HOME" in os.environ:
@@ -48,47 +31,54 @@ def get_ccdb_home_path():
     this_dir = os.path.normpath(this_dir)
     return this_dir
 
+def insert_ext_lib_in_python_path():
+    """
+    CCDB ships some external libraries in external_libs folder
+    if CCDB is cloned from GitHub we can load them
+    if CCDB is installed from pip, dependendencies should be installed too
+    """
+    ext_lib_dir = os.path.join(get_ccdb_home_path(), 'python', 'external_libs')
+    if os.path.isdir(ext_lib_dir):
+        sys.path.append(ext_lib_dir)
+    else:
+        print("Not all ccdb core dependencies have been found")
+        print("Please make sure, that SqlALchemy, pymysql and six are installed")
+        print("run 'ccdb --debug' for info on what exact dependency is missing")
+        exit(1)
 
-def _check_dependent_libraries():
-    """Checks if there are dependent libraries like SqlAlchemy"""
 
-    def insert_ext_lib_in_python_path():
-        """
-        CCDB ships some external libraries in external_libs folder
-        if CCDB is cloned from GitHub we can load them
-        if CCDB is installed from pip, dependendencies should be installed too
-        """
-        ext_lib_dir = os.path.join(get_ccdb_home_path(), 'python', 'external_libs')
-        if os.path.isdir(ext_lib_dir):
-            logger.debug("Found 'ext_lib_dir' = '{}'. Adding to PYTHONPATH...".format(ext_lib_dir))
-            sys.path.append(ext_lib_dir)
-        else:
-            logger.debug("No 'ext_lib_dir' = '{}' is found (or has the right permission)".format(ext_lib_dir))
-            print("Not all ccdb core dependencies have been found")
-            print("Please make sure, that SqlALchemy, pymysql and six are installed")
-            print("run 'ccdb --debug' for info on what exact dependency is missing")
-            exit(1)
+try:
+    import sqlalchemy
+except:
+    insert_ext_lib_in_python_path()
 
-    def log_lib_not_found(libname):
-        logger.debug(libname + " is not found. Trying to load embedded one (will not work if CCDB installed by PIP")
+try:
+    import six
+except:
+    insert_ext_lib_in_python_path()
 
-    try:
-        import sqlalchemy
-    except:
-        log_lib_not_found('sqlalchemy')
-        insert_ext_lib_in_python_path()
+try:
+    import pymysql
+except:
+    insert_ext_lib_in_python_path()
 
-    try:
-        import six
-    except:
-        log_lib_not_found('six')
-        insert_ext_lib_in_python_path()
+# import the other parts (basically forwards names to ccdb.xxx)
+from .provider import AlchemyProvider
+from .model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn, INFINITE_RUN
+from .table_file import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
+from .cmd.themes import NoColorTheme, ColoredTheme
+from .brace_log_message import BraceMessage
+from .cmd import themes
 
-    try:
-        import pymysql
-    except:
-        log_lib_not_found('pymysql')
-        insert_ext_lib_in_python_path()
+
+# the default ccdb logger
+logger = logging.getLogger("ccdb")
+
+
+
+if sys.version_info < (2, 7, 0):
+    sys.stderr.write("You need python 2.7 or later to run CCDB\n")
+    exit(1)
 
 
 def init_ccdb_console():
@@ -114,9 +104,6 @@ def init_ccdb_console():
         logger.setLevel(logging.CRITICAL)
     else:
         logger.setLevel(logging.INFO)
-
-    # Should we load external libraries?
-    _check_dependent_libraries()
 
     # create console context
     context = CliManager()

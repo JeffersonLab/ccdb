@@ -13,8 +13,9 @@ ccdb_path = ccdb.get_ccdb_home_path()
 # path of the tests folder
 ccdb_test_path = os.path.join(ccdb_path, 'python', 'tests')
 
-# Name of environment variable that holds MySql connection string
+# Name of environment variable that holds MySql and SQLite connection strings
 ENV_TEST_MYSQL = "CCDB_TEST_MYSQL_CONNECTION"
+ENV_TEST_SQLITE = "CCDB_TEST_SQLITE_CONNECTION"
 
 # MySql connection string for tests
 mysql_test_connection_str = os.environ[ENV_TEST_MYSQL] \

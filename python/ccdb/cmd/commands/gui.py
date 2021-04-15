@@ -9,7 +9,6 @@ import ccdb.path_utils
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
-from ccdb import webgui
 
 
 # logger must be set to ccdb.cmd.commands.<command name>
@@ -32,6 +31,7 @@ class WebGui(CliCommandBase):
 
     def execute(self, args):
         """This is an entry point for each time the command is called"""
+        from ccdb import webgui
 
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}WebGui is in charge{0}\\".format(os.linesep)))
