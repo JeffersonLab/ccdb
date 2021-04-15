@@ -614,9 +614,9 @@ string Calibration::GetConnectionString() const
 
     // Check if we have this value in the cache
     if (loadColumns) {
-      loadColumnsFlag = "withCols"
+      loadColumnsFlag = "cols";
     } else {
-      loadColumnsFlag = "withoutCols"
+      loadColumnsFlag = "no_cols";
     }
     string cache_key = namepath + ":" + to_string(run) + ":" + variation + ":" + to_string(time) + ":" + loadColumnsFlag;
     if(mIsCacheEnabled)
