@@ -1,6 +1,6 @@
 #pragma warning(disable:4800)
-#include "Tests/tests.h"
-#include "Tests/catch.hpp"
+#include "tests/tests.h"
+#include "tests/catch.hpp"
 
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Providers/SQLiteDataProvider.h"

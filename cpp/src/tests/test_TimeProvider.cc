@@ -1,4 +1,4 @@
-#include "Tests/catch.hpp"
+#include "tests/catch.hpp"
 
 #include "CCDB/Helpers/TimeProvider.h"
 #include <vector>

@@ -1,24 +1,18 @@
-#pragma warning(disable:4800)
-#include "Tests/catch.hpp"
-#include "Tests/tests.h"
+#include "tests/catch.hpp"
+#include "tests/tests.h"
 
 #include "CCDB/Providers/SQLiteDataProvider.h"
-
 
 using namespace std;
 using namespace ccdb;
 
-
-
-/********************************************************************* ** 
+/********************************************************************* **
  * @brief Test basic connection
  *
  * @return true if test passed
  */
 TEST_CASE("CCDB/SQLiteDataProvider/Connection","Connection tests")
 {
-	
-
 	SQLiteDataProvider *prov = new SQLiteDataProvider();
 
 	//Pre Connection

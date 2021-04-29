@@ -2,7 +2,7 @@
 #define test_StringUtils_h
 
 
-#include "Tests/catch.hpp"
+#include "tests/catch.hpp"
 
 #include "CCDB/Helpers/PathUtils.h"
 

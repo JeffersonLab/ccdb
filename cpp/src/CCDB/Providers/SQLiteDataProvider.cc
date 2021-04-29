@@ -40,7 +40,7 @@ void ccdb::SQLiteDataProvider::Connect(const std::string& connectionString )
 {
 	//check for uri type
 	std::string thisFuncName = "ccdb::SQLiteDataProvider::Connect";
-	int typePos = connectionString.find("sqlite://");
+	int typePos = connectionString.find("sqlite:///");
 	if(typePos==string::npos)
 	{
 	    throw std::runtime_error(thisFuncName + "=>Error parse SQLite string. The string is not started with sqlite://");
@@ -60,7 +60,7 @@ void ccdb::SQLiteDataProvider::Connect(const std::string& connectionString )
     mConnectionString = connectionString;   // save connection string as "the last one" before changing...
 
     std::string filePath (connectionString);
-    filePath.erase(0,9);            // ok we dont need sqlite:// in the beginning.
+    filePath.erase(0,10);            // ok we dont need sqlite:// in the beginning.
 
 	//Try to open sqlite database
 	int result = sqlite3_open_v2(filePath.c_str(), &mDatabase, SQLITE_OPEN_READONLY|SQLITE_OPEN_FULLMUTEX|SQLITE_OPEN_SHAREDCACHE, nullptr); // NOLINT(hicpp-signed-bitwise)

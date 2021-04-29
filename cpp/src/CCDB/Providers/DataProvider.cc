@@ -81,7 +81,7 @@ Directory* DataProvider::GetDirectory( const string& path )
 	UpdateDirectoriesIfNeeded();
 
 	//search full path
-	map<string, Directory*>::iterator it = mDirectoriesByFullPath.find(string(path));
+	auto it = mDirectoriesByFullPath.find(string(path));
 
 	//found?
 	if(it == mDirectoriesByFullPath.end()) return NULL; //not found

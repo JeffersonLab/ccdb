@@ -29,9 +29,8 @@ set(SOURCE_FILES
         
         )
 
-
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ccdb)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ccdb fmt::fmt)
 
 get_filename_component(TESTS_PARENT_DIR ${PROJECT_SOURCE_DIR} DIRECTORY)
 message("TESTS_PARENT_DIR = ${TESTS_PARENT_DIR}")
