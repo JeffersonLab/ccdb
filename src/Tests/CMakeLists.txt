@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.3)
-project(CCDB_tests)
+project(ccdb_tests)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 include_directories("../../include")
 include_directories("../../include/SQLite")
+include_directories(${MYSQL_INCLUDE_DIR})
 
 find_package (Threads)
 
@@ -15,7 +16,6 @@ set(SOURCE_FILES
         "test_PathUtils.cc"
         "test_ModelObjects.cc"
         "test_NoMySqlUserAPI.cc"
-        "test_MySqlUserAPI.cc"
         "test_Authentication.cc"
         "test_SQLiteProvider_Assignments.cc"
         "test_SQLiteProvider_Connection.cc"
@@ -36,5 +36,7 @@ set(SOURCE_FILES
 
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} CCDB_lib)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ccdb ccdb_sqlite)
+add_dependencies(${PROJECT_NAME} ccdb)
+
 
