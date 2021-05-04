@@ -1,0 +1,15 @@
+#
+# Input for cmake to create the package configuration file: ccdbConfig.cmake
+# for find_package()
+#
+# Note: This sets up a Modern CMake package which puts all the information
+# in a *target*.
+# To build against this, you only need to do "find_package(ccdb REQUIRED)"
+# and then "target_link_libraries(mytarg PUBLIC ccdb)"
+# This will link against the library and it will *also*
+# include the includes directories automatically.
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+find_dependency(MySQL REQUIRED)
+find_dependency(Threads REQUIRED)
+include("${CMAKE_CURRENT_LIST_DIR}/ccdbTargets.cmake")
