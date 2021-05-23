@@ -14,4 +14,4 @@ set(SOURCE_FILES
 
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} CCDB_lib)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ccdb ccdb_sqlite)
