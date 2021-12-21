@@ -15,7 +15,7 @@ message(STATUS "CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}")
 # Find SQLite3
 find_package (SQLite3 REQUIRED)
 if (SQLITE3_FOUND)
-    include_directories(${SQLITE3_INCLUDE_DIRS})
+    include_directories(${SQLite3_INCLUDE_DIRS})
 endif (SQLITE3_FOUND)
 
 # Source files
