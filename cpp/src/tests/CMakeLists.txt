@@ -4,6 +4,7 @@ project(CCDB_tests)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 find_package (Threads)
+find_package (SQLite3 REQUIRED)
 
 set(SOURCE_FILES
         "tests.cc"
@@ -30,9 +31,12 @@ set(SOURCE_FILES
         )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+message("SQLite3_LIBRARIES = ${SQLite3_LIBRARIES}")
 target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ccdb)
-
+target_link_directories(${PROJECT_NAME} PRIVATE ${SQLite3_LIBRARIES})
 get_filename_component(TESTS_PARENT_DIR ${PROJECT_SOURCE_DIR} DIRECTORY)
 message("TESTS_PARENT_DIR = ${TESTS_PARENT_DIR}")
-target_include_directories(${PROJECT_NAME} PRIVATE ${TESTS_PARENT_DIR})
+message("SQLite3_INCLUDE_DIRS = ${SQLite3_INCLUDE_DIRS}")
+target_include_directories(${PROJECT_NAME} PRIVATE ${TESTS_PARENT_DIR}
+    ${SQLite3_INCLUDE_DIRS})
 install(TARGETS CCDB_tests DESTINATION bin)
