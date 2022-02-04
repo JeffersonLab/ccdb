@@ -15,7 +15,8 @@ message(STATUS "CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}")
 # Find SQLite3
 find_package (SQLite3 REQUIRED)
 if (SQLITE3_FOUND)
-    include_directories(${SQLITE3_INCLUDE_DIRS})
+    message("SQLite3_INCLUDE_DIRS = ${SQLite3_INCLUDE_DIRS}")
+    include_directories(${SQLite3_INCLUDE_DIRS})
 endif (SQLITE3_FOUND)
 
 # Source files
@@ -52,7 +53,9 @@ add_library(ccdb STATIC ${SOURCE_FILES})
 get_filename_component(CCDB_LIB_PARENT_DIR ${PROJECT_SOURCE_DIR} DIRECTORY)
 message(STATUS "CCDB_LIB_PARENT_DIR = ${CCDB_LIB_PARENT_DIR}")
 
-target_include_directories(ccdb PRIVATE ${CCDB_LIB_PARENT_DIR})
+message("SQLite3_INCLUDE_DIRS = ${SQLite3_INCLUDE_DIRS}")
+target_include_directories(ccdb PRIVATE ${CCDB_LIB_PARENT_DIR}
+    ${SQLite3_INCLUDE_DIRS})
 target_link_libraries(ccdb LINK_PUBLIC fmt sqlite3)
 
 

@@ -33,6 +33,3 @@ ccdb -i
 ```
 
 Instructions how to build CCDB for different programming languages and other info are [in the wiki](https://github.com/JeffersonLab/ccdb/wiki/Installation)
-
-
-

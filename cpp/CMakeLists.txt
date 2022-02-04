@@ -26,7 +26,7 @@ if (WIN32)
 endif ()
 
 
-add_subdirectory(src/fmt)
+#add_subdirectory(src/fmt)
 add_subdirectory(src/CCDB)
 add_subdirectory(src/tests)
 #add_subdirectory(src/Benchmarks)
