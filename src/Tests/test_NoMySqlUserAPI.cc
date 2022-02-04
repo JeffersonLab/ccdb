@@ -75,6 +75,14 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
     vector<string> paths;
     REQUIRE_NOTHROW(calib->GetListOfNamepaths(paths));
     REQUIRE(paths.size()>0);
+
+    //test of getting an assignment
+    //----------------------------------------------------
+    Assignment* assignment;
+    assignment = calib->GetAssignment("/test/test_vars/test_table:1000:default", true);
+    vector<ConstantsTypeColumn *> columns;
+    columns = assignment->GetTypeTable()->GetColumns();
+    REQUIRE(columns.size()==3);
 }
 
 

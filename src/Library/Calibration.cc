@@ -600,6 +600,7 @@ string Calibration::GetConnectionString() const
 
     RequestParseResult result = PathUtils::ParseRequest(namepath);
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
+    string loadColumnsFlag;
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
 
 
@@ -612,7 +613,12 @@ string Calibration::GetConnectionString() const
     std::lock_guard<std::mutex> lock(mReadMutex);
 
     // Check if we have this value in the cache
-    string cache_key = namepath + ":" + to_string(run) + ":" + variation + ":" + to_string(time);
+    if (loadColumns) {
+      loadColumnsFlag = "cols";
+    } else {
+      loadColumnsFlag = "no_cols";
+    }
+    string cache_key = namepath + ":" + to_string(run) + ":" + variation + ":" + to_string(time) + ":" + loadColumnsFlag;
     if(mIsCacheEnabled)
     {
         if (  cache.find(cache_key) != cache.end() ) {
