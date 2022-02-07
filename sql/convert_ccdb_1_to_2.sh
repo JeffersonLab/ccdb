@@ -1,8 +1,10 @@
 #!/bin/bash
 host=localhost
-scratch_dir=/u/scratch/$USER/ccdb_convert
+scratch_dir=./ccdb_convert_scratch
+echo CCDB_HOME is $CCDB_HOME
 echo host is $host
 echo scratch_dir is $scratch_dir
+read -p "press enter to continue..." dummy
 echo delete scratch_dir
 rm -rf $scratch_dir
 echo create scratch_dir
