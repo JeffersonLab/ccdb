@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 $groupid = 267;
-open (YPCAT,"getent group |");
+open (YPCAT,"getent group halld |");
 $group_count = 0;
 while (<YPCAT>) {
     if (/:$groupid:/) {
