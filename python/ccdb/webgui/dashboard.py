@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask import render_template
+from flask import g
 
 
 bp = Blueprint("dashboard", __name__, url_prefix='/d')
@@ -8,6 +9,8 @@ bp = Blueprint("dashboard", __name__, url_prefix='/d')
 @bp.route("/")
 def index():
     """Show all the posts, most recent first."""
+    provider = g.tdb
+    
     return render_template(
         "dash_base.html",
         app_name="Material Dashboard with Bokeh embedded in Flask",

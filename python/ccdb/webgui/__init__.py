@@ -1,6 +1,9 @@
 import os
 
-from flask import Flask
+from flask import Flask, g
+
+import ccdb
+from ccdb import provider
 
 
 def create_app(test_config=None):
@@ -8,8 +11,24 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         # a default secret that should be overridden by instance config
-        SECRET_KEY="dev"
+        SECRET_KEY="dev",
+        SQL_CONNECTION_STRING="mysql://ccdb_user@hallddb.jlab.org/ccdb"
     )
+
+    app = Flask(__name__)
+    app.config.from_object(__name__)
+
+    @app.before_request
+    def before_request():
+        g.tdb = ccdb.AlchemyProvider()
+        g.tdb.connect(app.config["SQL_CONNECTION_STRING"])
+        #app.jinja_env.globals['datetime_now'] = datetime.now
+
+    @app.teardown_request
+    def teardown_request(exception):
+        tdb = getattr(g, 'db', None)
+        if tdb:
+            tdb.close()
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
