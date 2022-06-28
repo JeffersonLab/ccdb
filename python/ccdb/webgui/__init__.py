@@ -6,7 +6,7 @@ import ccdb
 from ccdb import provider
 
 
-def create_app(test_config=None):
+def cerate_ccdb_flask_app(test_config=None):
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
@@ -63,4 +63,4 @@ def create_app(test_config=None):
 
 
 if __name__ == '__main__':
-    create_app().run()
+    cerate_ccdb_flask_app().run()
