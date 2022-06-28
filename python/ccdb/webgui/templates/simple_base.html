@@ -7,6 +7,7 @@
 <nav>
   <h1><a href="{{ url_for('index') }}">Index</a></h1>
 </nav>
+
 <section class="content">
   <header>
     {% block header %}{% endblock %}
@@ -14,5 +15,6 @@
   {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
   {% endfor %}
+
   {% block content %}{% endblock %}
 </section>
