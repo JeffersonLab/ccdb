@@ -1,0 +1,43 @@
+#!/usr/bin/python
+###MEW Changed to use the local Python. M. Wise, 3/16/2015. 
+###MEW #!/apps/python/python-2.7.1/bin/python
+print "Content-Type: text/html; charset=ISO-8859-1"
+print ""
+
+
+import ccdb_web_config as config
+config.python_config()
+
+import cgi
+
+#------------ RENDER --------------------------------
+from wheezy.template.engine import Engine
+from wheezy.template.ext.core import CoreExtension
+from wheezy.template.loader import FileLoader
+template_engine = Engine(loader=FileLoader(['templates/']), extensions=[CoreExtension()])
+template = template_engine.get_template('test_request.html')
+
+
+
+#------ CCDB DATABASE API-----------------------------
+import ccdb
+prov = ccdb.AlchemyProvider()
+prov.connect(config.connection_string)
+
+prov.get_root_directory() #Loads directories
+
+tables = prov.search_type_tables("*")
+
+tables_autocomplete = '[' + ','.join(['"'+table.path+'"' for table in tables]) + ']'
+variations = prov.get_variations()
+
+
+print(template.render({
+    "site_url":config.site_url,
+    "site_cgi_root": config.site_cgi_root,
+    "site_root":config.site_root,
+    "variations":variations,
+    "tables":tables,
+    "tables_autocomplete": tables_autocomplete
+}))
+

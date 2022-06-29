@@ -15,6 +15,38 @@ def print_app_functions(app):
     print("====================================")
     print()
 
+
+def dir_to_ul(directory, level=0):
+    """
+    :param directory: Directory
+    :type directory: ccdb.model.Directory
+    :param level: level of the recursion
+    :return: String
+    :rtype; str
+    """
+
+    if not len(directory.sub_dirs) and not len(directory.type_tables):
+        return ""
+
+    spaces = level * "  "
+    result = f"{spaces}<!-- {directory.name} -->\n"\
+             f"{spaces}<ul>\n"
+
+    # print subdirectories
+    for sub_dir in directory.sub_dirs:
+        result += f'{spaces}  <li> <strong>{directory.name}</strong> \n'\
+                  f'{dir_to_ul(sub_dir, level+1)} \n'\
+                  f'{spaces}  </li>\n'
+
+    # print type tables
+    for table in directory.type_tables:
+        result += f'{spaces}  <li> {table.name} </li> \n'
+
+    # close
+    result += f"{spaces}</ul>\n"
+    return result
+
+
 def cerate_ccdb_flask_app(test_config=None):
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
@@ -55,7 +87,6 @@ def cerate_ccdb_flask_app(test_config=None):
         # Render a template with the directories
         return render_template("simple_direcotires.html", dirs_by_path=db.dirs_by_path)
 
-
     @app.route('/')
     def index():
         return render_template(
@@ -68,6 +99,21 @@ def cerate_ccdb_flask_app(test_config=None):
     @app.route('/simple')
     def simple():
         return render_template("simple.html")
+
+
+    @app.route('/tree')
+    def directory_tree():
+        # Get ccdb Alchemy provider from flask global state 'g'
+        db: ccdb.AlchemyProvider = g.db
+
+        # This will make ccdb to get direcotries from db
+        root_dir = db.get_root_directory()
+
+        # Generate html code of directory tree
+        html_tree = dir_to_ul(root_dir, level=0)
+
+        return render_template("simple_tree.html", html_tree=html_tree)
+
 
     # THIS IS FOR FUTURE
     # ====================================================================
