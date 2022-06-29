@@ -1,0 +1,32 @@
+{% extends 'simple_base.html' %}
+
+{% block header %}
+  <h1>{% block title %}List of directories{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <p> Simple directories list </p>
+
+    <table style="border: 1px solid;">
+        <tr>
+            <th>Path</th>
+            <th>Directory object</th>
+        </tr>
+    <!-- Now using flask for to go through the list of directories -->
+    {% for path, directory in dirs_by_path.items() %}
+        <tr>
+            <td> {{ path }}</td>
+            <td> {{ directory }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+
+    <script>
+        document.onload(function() {
+            console.log( "ready!" );
+        });
+    </script>
+
+{% endblock %}

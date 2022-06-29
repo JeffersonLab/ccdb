@@ -43,6 +43,19 @@ def cerate_ccdb_flask_app(test_config=None):
     def hello():
         return "Hello, World!"
 
+    @app.route('/dirs')
+    def directories():
+
+        # Get ccdb Alchemy provider from flask global state 'g'
+        db: ccdb.AlchemyProvider = g.db
+
+        # This will make ccdb to get direcotries from db
+        db.get_root_directory()
+
+        # Render a template with the directories
+        return render_template("simple_direcotires.html", dirs_by_path=db.dirs_by_path)
+
+
     @app.route('/')
     def index():
         return render_template(
