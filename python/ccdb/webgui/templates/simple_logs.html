@@ -1,0 +1,30 @@
+{% extends 'simple_base.html' %}
+
+{% block header %}
+  <h1>{% block title %}logs{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <p> Logs </p>
+
+
+     <table style="border: 1px solid;">
+        <tr>
+            <th>Created</th>
+            <th>Action</th>
+            <th>Description</th>
+            <th>Author</th>
+        </tr>
+        {% for record in records %}
+        <tr>
+            <td>{{ record.created }}</td>
+            <td>{{ record.action }}</td>
+            <td>{{ record.description }}</td>
+            <td>{{ record.author.name }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+{% endblock %}
