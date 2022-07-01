@@ -1,3 +1,5 @@
+START TRANSACTION;
+
 ALTER TABLE `variations`
 ADD COLUMN `isLocked` TINYINT NOT NULL DEFAULT 0 AFTER `parentId`,
 ADD COLUMN `lockTime` TIMESTAMP NULL DEFAULT NULL AFTER `isLocked`,
@@ -36,6 +38,8 @@ CREATE TABLE IF NOT EXISTS `assignmentsMaterializedView` (
 
 
 UPDATE `schemaVersions` SET schemaVersion = 5 WHERE `id` = 1;
+
+COMMIT;
 
 
 
