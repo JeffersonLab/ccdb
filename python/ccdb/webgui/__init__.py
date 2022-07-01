@@ -1,3 +1,4 @@
+import cgi
 import os
 
 from flask import Flask, g, render_template
@@ -114,11 +115,37 @@ def cerate_ccdb_flask_app(test_config=None):
 
     @app.route('/vars')
     def variations_test():
+        # Get ccdb Alchemy provider from flask global state 'g'
         db: ccdb.AlchemyProvider = g.db
 
         variations = db.get_variations()
 
-        return render_template("variations.html", variations=variations )
+        return render_template("variations.html", variations=variations)
+
+    @app.route('/logs')
+    def log_records():
+        # Get ccdb Alchemy provider from flask global state 'g'
+        db: ccdb.AlchemyProvider = g.db
+
+        records = db.get_log_records(100)
+
+        return render_template("simple_logs.html", records=records)
+
+    @app.route('/versions')
+    def versions():
+        # Get ccdb Alchemy provider from flask global state 'g'
+        db: ccdb.AlchemyProvider = g.db
+
+        form = cgi.FieldStorage()
+        table = form.getfirst("table", None)
+
+        if table:
+            assignments = db.get_assignments(table)  # "/test/test_vars/test_table")
+        else:
+            assignments = None
+
+        return render_template("simple_versions.html", assignments=assignments)
+
 
     # THIS IS FOR FUTURE
     # ====================================================================
