@@ -105,7 +105,7 @@ def cerate_ccdb_flask_app(test_config=None):
         # Get ccdb Alchemy provider from flask global state 'g'
         db: ccdb.AlchemyProvider = g.db
 
-        # This will make ccdb to get direcotries from db
+        # This will make ccdb to get directories from db
         root_dir = db.get_root_directory()
 
         # Generate html code of directory tree
@@ -131,20 +131,18 @@ def cerate_ccdb_flask_app(test_config=None):
 
         return render_template("simple_logs.html", records=records)
 
-    @app.route('/versions')
-    def versions():
+    @app.route('/versions/<path:table_path>')
+    def versions(table_path):
+
         # Get ccdb Alchemy provider from flask global state 'g'
         db: ccdb.AlchemyProvider = g.db
 
-        form = cgi.FieldStorage()
-        table = form.getfirst("table", None)
-
-        if table:
-            assignments = db.get_assignments(table)  # "/test/test_vars/test_table")
+        if table_path:
+            assignments = db.get_assignments("/"+table_path)  # "/test/test_vars/test_table")
         else:
             assignments = None
 
-        return render_template("simple_versions.html", assignments=assignments)
+        return render_template("simple_versions.html", assignments=assignments, table_path=table_path)
 
 
     # THIS IS FOR FUTURE

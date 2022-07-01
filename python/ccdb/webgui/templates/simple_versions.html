@@ -17,6 +17,10 @@
             <th>min</th>
             <th>max</th>
         </tr>
+
+         {{ table_path }}
+     <!-- -->
+
      {% for assignment in assignments %}
         <tr>
             <td>{{ assignment.run_range.min }}</td>
@@ -26,6 +30,7 @@
             <td><a href='show_request?request=@assignment.request'>view</a></td>
         </tr>
     {% endfor %}
+
 </table>
 
 {% endblock %}
