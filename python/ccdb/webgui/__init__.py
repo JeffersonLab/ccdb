@@ -29,13 +29,13 @@ def dir_to_ul(directory, level=0):
         return ""
 
     spaces = level * "  "
-    result = f"{spaces}<!-- {directory.name} -->\n"\
+    result = f"{spaces}<!-- {directory.name} -->\n" \
              f"{spaces}<ul>\n"
 
     # print subdirectories
     for sub_dir in directory.sub_dirs:
-        result += f'{spaces}  <li> <strong>{directory.name}</strong> \n'\
-                  f'{dir_to_ul(sub_dir, level+1)} \n'\
+        result += f'{spaces}  <li> <strong>{directory.name}</strong> \n' \
+                  f'{dir_to_ul(sub_dir, level + 1)} \n' \
                   f'{spaces}  </li>\n'
 
     # print type tables
@@ -77,7 +77,6 @@ def cerate_ccdb_flask_app(test_config=None):
 
     @app.route('/dirs')
     def directories():
-
         # Get ccdb Alchemy provider from flask global state 'g'
         db: ccdb.AlchemyProvider = g.db
 
@@ -100,7 +99,6 @@ def cerate_ccdb_flask_app(test_config=None):
     def simple():
         return render_template("simple.html")
 
-
     @app.route('/tree')
     def directory_tree():
         # Get ccdb Alchemy provider from flask global state 'g'
@@ -114,6 +112,13 @@ def cerate_ccdb_flask_app(test_config=None):
 
         return render_template("simple_tree.html", html_tree=html_tree)
 
+    @app.route('/vars')
+    def variations_test():
+        db: ccdb.AlchemyProvider = g.db
+
+        variations = db.get_variations()
+
+        return render_template("variations.html", variations=variations )
 
     # THIS IS FOR FUTURE
     # ====================================================================
