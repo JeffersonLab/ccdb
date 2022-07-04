@@ -6,67 +6,75 @@
 
 {% block content %}
 
-<link type="text/css" href="static/css/jquery-ui/jquery-ui.css')}}" rel="stylesheet" />
-<script src="static/js/jquery-ui.min.js"></script>
-
-    <script type="text/javascript">
-        function combineRequest()
-        {
-            //type table
-            var type_table = $('#tableName').val();
-            if(!type_table) {
-                alert("Please specify type table");
-                return false;
-            }
-
-            //run number
-            var run = $('#runNumber').val();
-            if(!run){
-                alert("Please specify run number");
-                return false;
-            }
-
-            //variation
-            var variation = $('#variationSelect').val();
-
-            //now we have everything to build request
-            var request = type_table+":"+run +":"+ variation;
-
-            //is there a date?
-            var date = $('#dateText').val();
-            if(date) request = request + ":" +date;
-
-            //insert request value to our hidden input and return true
-            console.log(request);
-            $("#requestHidden").val(request);
-
-            return true;
+<script type="text/javascript">
+    function combineRequest()
+    {
+        console.log("hahaha")
+        /*//type table
+        var type_table = $('#tableName').val();
+        if(!type_table) {
+            alert("Please specify type table");
+            return false;
         }
 
-        var acpl = @tables_autocomplete;
+        //run number
+        var run = $('#runNumber').val();
+        if(!run){
+            alert("Please specify run number");
+            return false;
+        }
+
+        //variation
+        var variation = $('#variationSelect').val();
+
+        //now we have everything to build request
+        var request = type_table+":"+run +":"+ variation;
+
+        //is there a date?
+        var date = $('#dateText').val();
+        if(date) request = request + ":" +date;
+
+        //insert request value to our hidden input and return true
+        console.log(request);
+        $("#requestHidden").val(request);
+        */
+        let hidden = document.getElementById('requestHidden')
+        hidden.setAttribute("value", "/test/test_vars/test_table")
+
+        return true;
+    }
+
+    /*var acpl = @tables_autocomplete;
 
 
-        $(document).ready(function () {
+    $(document).ready(function () {
 
-            $("#variationSelect").find("option[value=default]").attr('selected', true);
+        $("#variationSelect").find("option[value=default]").attr('selected', true);
 
-            $("input#tableName").autocomplete({
-                                                  source: function(request, response) {
-                                                      //show only first 10 autocomplete results
-                                                      var results = $.ui.autocomplete.filter(acpl, request.term);
-                                                      response(results.slice(0, 10));
-                                                  }
-                                              });
-            //catch form submit
-            $("#form1").submit(function(){
-                return combineRequest();
-            });
-
+        $("input#tableName").autocomplete({
+                                              source: function(request, response) {
+                                                  //show only first 10 autocomplete results
+                                                  var results = $.ui.autocomplete.filter(acpl, request.term);
+                                                  response(results.slice(0, 10));
+                                              }
+                                          });
+        //catch form submit
+        $("#form1").submit(function(){
+            return combineRequest();
         });
+    });
+    */
 
-    </script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let form = document.getElementById("form1");
+        if(form.addEventListener) {
+            form.addEventListener("submit", combineRequest, false);  //Modern browsers
+        };
+    });
 
-<form id="form1" runat="server" method="get" action="show_request" >
+</script>
+
+<form id="form1" runat="server" method="get" action="{{ url_for('show_request') }}" >
 
         <table>
             <!-- TYPE TABLE -->
