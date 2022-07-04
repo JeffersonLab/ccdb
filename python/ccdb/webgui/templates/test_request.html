@@ -1,0 +1,105 @@
+{% extends 'simple_base.html' %}
+
+{% block header %}
+  <h1>{% block title %}CCDB - Test Request{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<link type="text/css" href="static/css/jquery-ui/jquery-ui.css')}}" rel="stylesheet" />
+<script src="static/js/jquery-ui.min.js"></script>
+
+    <script type="text/javascript">
+        function combineRequest()
+        {
+            //type table
+            var type_table = $('#tableName').val();
+            if(!type_table) {
+                alert("Please specify type table");
+                return false;
+            }
+
+            //run number
+            var run = $('#runNumber').val();
+            if(!run){
+                alert("Please specify run number");
+                return false;
+            }
+
+            //variation
+            var variation = $('#variationSelect').val();
+
+            //now we have everything to build request
+            var request = type_table+":"+run +":"+ variation;
+
+            //is there a date?
+            var date = $('#dateText').val();
+            if(date) request = request + ":" +date;
+
+            //insert request value to our hidden input and return true
+            console.log(request);
+            $("#requestHidden").val(request);
+
+            return true;
+        }
+
+        var acpl = @tables_autocomplete;
+
+
+        $(document).ready(function () {
+
+            $("#variationSelect").find("option[value=default]").attr('selected', true);
+
+            $("input#tableName").autocomplete({
+                                                  source: function(request, response) {
+                                                      //show only first 10 autocomplete results
+                                                      var results = $.ui.autocomplete.filter(acpl, request.term);
+                                                      response(results.slice(0, 10));
+                                                  }
+                                              });
+            //catch form submit
+            $("#form1").submit(function(){
+                return combineRequest();
+            });
+
+        });
+
+    </script>
+
+<form id="form1" runat="server" method="get" action="show_request" >
+
+        <table>
+            <!-- TYPE TABLE -->
+            <tr>
+                <td>Table</td>
+                <td><input id="tableName" type="text"></td>
+                <td class="remark">Start with typing / </td>
+            </tr>
+
+            <!-- VARIATION -->
+            <tr>
+                <td>Variation </td>
+                <td>
+                    <select id="variationSelect">
+                        {% for variation in variations %}
+                            <option value="@variation.name">{{ variation.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td></td>
+            </tr>
+
+            <!-- RUN RANGE -->
+            <tr>
+                <td>Run number</td>
+                <td><input id="runNumber" type="text" value="0"></td>
+            </tr>
+
+            <!-- DATE -->
+            <tr><td>Date</td> <td><input id="dateText" type="text"></td></tr>
+        </table>
+        <input type="hidden" value="" name="request" id="requestHidden">
+        <input type="submit" value="Run">
+    </form>
+
+{% endblock %}

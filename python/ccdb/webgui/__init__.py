@@ -138,11 +138,25 @@ def cerate_ccdb_flask_app(test_config=None):
         db: ccdb.AlchemyProvider = g.db
 
         if table_path:
-            assignments = db.get_assignments("/"+table_path)  # "/test/test_vars/test_table")
+            assignments = db.get_assignments("/"+table_path)  # "/test/test_vars/test_table"
         else:
             assignments = None
 
         return render_template("simple_versions.html", assignments=assignments, table_path=table_path)
+
+    @app.route('/test_request')
+    def test_request():
+        db: ccdb.AlchemyProvider = g.db
+
+        db.get_root_directory()  # Loads directories
+
+        tables = db.search_type_tables("*")
+
+        tables_autocomplete = '[' + ','.join(['"' + table.path + '"' for table in tables]) + ']'
+        variations = db.get_variations()
+
+        return render_template("test_request.html", variations=variations, tables=tables, tables_autocomplete=tables_autocomplete)
+
 
 
     # THIS IS FOR FUTURE
