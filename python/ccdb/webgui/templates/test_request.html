@@ -9,35 +9,43 @@
 <script type="text/javascript">
     function combineRequest()
     {
-        console.log("hahaha")
-        /*//type table
-        var type_table = $('#tableName').val();
-        if(!type_table) {
-            alert("Please specify type table");
-            return false;
-        }
+        console.log("hahaha");
+         //type table
+         let type_table = document.getElementsByTagName('input')[0];
+         type_table = type_table.value;
+         console.log(type_table);
+         if(!type_table) {
+             alert("Please specify type table");
+             return false;
+         }
 
-        //run number
-        var run = $('#runNumber').val();
-        if(!run){
-            alert("Please specify run number");
-            return false;
-        }
+         //run number
+         let run = document.getElementsByTagName('input')[1];
+         run = run.value;
+         console.log(run)
+         if(!run){
+             alert("Please specify run number");
+             return false;
+         }
+         //variation
+         let variation = document.getElementsByTagName('input')[2];
+         variation= variation.value
+         console.log(variation)
 
-        //variation
-        var variation = $('#variationSelect').val();
+         //now we have everything to build request
+         let request = type_table+":"+run +":"+ variation;
 
-        //now we have everything to build request
-        var request = type_table+":"+run +":"+ variation;
+         //is there a date?
+         let date = document.getElementsByTagName('input')[3];
+         date= date.value;
+         if(date) request = request + ":" +date;
+         console.log(request)
+        document.
 
-        //is there a date?
-        var date = $('#dateText').val();
-        if(date) request = request + ":" +date;
+        // //insert request value to our hidden input and return true
+        // console.log(request);
+        // // $("#requestHidden").val(request);
 
-        //insert request value to our hidden input and return true
-        console.log(request);
-        $("#requestHidden").val(request);
-        */
         let hidden = document.getElementById('requestHidden')
         hidden.setAttribute("value", "/test/test_vars/test_table")
 
