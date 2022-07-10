@@ -7,12 +7,14 @@
 {% block content %}
 
 <script type="text/javascript">
-    function combineRequest()
+    function combineRequest(event)
     {
-        console.log("hahaha");
+         console.log(event);
          //type table
          let type_table = document.getElementsByTagName('input')[0];
          type_table = type_table.value;
+         //event.preventDefault();
+
          console.log(type_table);
          if(!type_table) {
              alert("Please specify type table");
@@ -46,9 +48,9 @@
         // // $("#requestHidden").val(request);
 
         let hidden = document.getElementById('requestHidden');
-        hidden.setAttribute("value", "request");
+        hidden.setAttribute("value", request);
 
-        return true;
+        return false;
     }
 
     /*var acpl = @tables_autocomplete;

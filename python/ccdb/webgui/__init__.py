@@ -214,7 +214,9 @@ def cerate_ccdb_flask_app(test_config=None):
                                created=created,
                                author=author,
                                run_range=run_range,
-                               comment=comment)
+                               comment=comment,
+                               str_request=str_request
+                               )
 
 
 
