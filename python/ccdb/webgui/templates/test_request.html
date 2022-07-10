@@ -40,14 +40,13 @@
          date= date.value;
          if(date) request = request + ":" +date;
          console.log(request)
-        document.
 
         // //insert request value to our hidden input and return true
         // console.log(request);
         // // $("#requestHidden").val(request);
 
-        let hidden = document.getElementById('requestHidden')
-        hidden.setAttribute("value", "/test/test_vars/test_table")
+        let hidden = document.getElementById('requestHidden');
+        hidden.setAttribute("value", "request");
 
         return true;
     }
