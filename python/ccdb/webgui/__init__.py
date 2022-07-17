@@ -140,7 +140,7 @@ def cerate_ccdb_flask_app(test_config=None):
         db: ccdb.AlchemyProvider = g.db
 
         if table_path:
-            assignments = db.get_assignments("/"+table_path)  # "/test/test_vars/test_table"
+            assignments = db.get_assignments("/" + table_path)  # "/test/test_vars/test_table"
         else:
             assignments = None
 
@@ -157,14 +157,15 @@ def cerate_ccdb_flask_app(test_config=None):
         tables_autocomplete = '[' + ','.join(['"' + table.path + '"' for table in tables]) + ']'
         variations = db.get_variations()
 
-        return render_template("test_request.html", variations=variations, tables=tables, tables_autocomplete=tables_autocomplete)
+        return render_template("test_request.html", variations=variations, tables=tables,
+                               tables_autocomplete=tables_autocomplete)
 
     @app.route('/show_request', methods=['GET', 'POST'])
     def show_request():
         from flask import request
 
         db: ccdb.AlchemyProvider = g.db
-        #return str(request.form["request"])
+        # return str(request.form["request"])
 
         str_request = request.args.get('request', '')
 
@@ -218,9 +219,54 @@ def cerate_ccdb_flask_app(test_config=None):
                                user_request_str=str_request
                                )
 
+    @app.route('/dowload_request')
+    def download_request():
+        from flask import request
 
+        db: ccdb.AlchemyProvider = g.db
+        # return str(request.form["request"])
 
+        str_request = request.args.get('request', '')
 
+        if str_request:
+
+            # parse request and prepare time
+            request = parse_request(str_request)
+            assert isinstance(request, ParseRequestResult)
+            time = request.time if request.time_is_parsed else None
+
+            # query database for assignments for this request
+            assignments = db.get_assignments(request.path, request.run, request.variation, time)
+
+            # get first assignment
+            if not assignments or len(assignments) == 0:
+                return "No assignments found"
+
+            assignment = assignments[0]
+            assert (isinstance(assignment, ccdb.Assignment))
+            result = " "
+            # print META information about the request
+            result += f"#meta full request: {assignment.request}\n<br>"
+            result += f"#meta variation: {assignment.variation.name}\n<br>"
+            result += f"#meta created: {assignment.created}\n<br>"
+            max_run = assignment.run_range.max if assignment.run_range.max != 2147483647 else "inf."
+            result += f"#meta run range: {assignment.run_range.min} - {max_run}<br>"
+            try:
+                result += f"#meta author:  {db.session.query(User).filter(User.id == assignment.author_id).one().name}<br>"  # TODO make provider proper function to handl author by id
+            except Exception as ex:
+                result += f"#meta author: error getting name by id = {assignment.author_id}<br>"
+
+            # print comment
+            result += "<br>\n#" + assignment.comment.replace("\n", "\n#") + "\n\n<br><br>"
+
+            # column names
+            result += "#& ".join([column.name for column in assignment.constant_set.type_table.columns]) + "<br>"
+
+            # print
+            for row in assignment.constant_set.data_table:
+                result += " ".join(row) + "<br>"
+
+            return result
 
     # THIS IS FOR FUTURE
     # ====================================================================
@@ -240,6 +286,7 @@ def cerate_ccdb_flask_app(test_config=None):
     print_app_functions(app)
 
     return app
+
 
 if __name__ == '__main__':
     cerate_ccdb_flask_app().run()
