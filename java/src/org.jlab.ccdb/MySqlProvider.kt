@@ -66,7 +66,7 @@ class MySqlProvider(connectionString: String) : JDBCProvider(connectionString) {
 
         val con: Connection = connection!!
 
-        prsDirectories = con.prepareStatement("SELECT id, parentId, name, created, modified, comment FROM directories");
+        prsDirectories = con.prepareStatement("SELECT id, parentId, name, created, modified, comment FROM directories ORDER BY parentId");
         prsVariationById = con.prepareStatement("SELECT id, parentId, name FROM variations WHERE id = ?")
         prsVariationByName = con.prepareStatement("SELECT id, parentId, name FROM variations WHERE name = ?")
         //ok now we must build our mighty query...
