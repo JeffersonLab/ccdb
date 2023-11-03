@@ -1,0 +1,24 @@
+@extends("master.html")
+@require(site_root, site_url,site_cgi_root)
+
+@def title():
+CCDB - Documentation
+@end
+
+@def content():
+    <!-- UNCOMMENT if one wants to use GOOGLE search for the documentation
+    <link rel="stylesheet" type="text/css" href="@site_root/css/doc_pages.css">
+    <div id="search_documents" >
+        <form method="get" action="http://www.google.com/search">
+            <input type="text" placeholder="Search documents" name="q" value="">
+            <input type="hidden"  name="sitesearch" value="@site_url/@site_cgi_root" />
+        </form>
+    </div>
+    -->
+
+
+    <h1>Information</h1>
+    <p><a target="_blank" href="https://halldweb1.jlab.org/wiki/index.php/Calibration_Database">Calibration Database GluEX wiki page</a></p>
+    <p></p>
+    
+@end

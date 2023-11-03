@@ -1,0 +1,80 @@
+@extends("master.html")
+@require(site_root, assignment, request, variation, created, author, run_range, comment )
+
+@def title():
+CCDB - Data
+    @if request:
+         - @request
+    @end
+@end
+
+@def content():
+
+    <link rel="stylesheet" href="@site_root/js/data_tables/media/css/jquery.dataTables.css" />
+    <link rel="stylesheet" href="@site_root/js/data_tables/media/css/jquery.dataTables_themeroller.css" />
+    <script src="@site_root/js/jquery.cookie.js" type="text/javascript"></script>
+    <script src="@site_root/js/data_tables/media/js/jquery.dataTables.js" type="text/javascript"></script>
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#data_table").dataTable( {
+                                                     "sPaginationType": "full_numbers",
+                                                     "aaSorting": []
+                                                 } );
+
+
+        });
+
+    </script>
+    <style>
+        .paddedItem{
+            padding-left: 20px;
+        }
+    </style>
+
+    <h2>Request: &nbsp; &nbsp; @request</h2>
+
+    @if assignment:
+
+
+
+        <h3>Constants information:</h3>
+        <table class="dataInfoTable">
+            <tr><td>Table        </td>  <td class="paddedItem"><a href="versions?table=@assignment.constant_set.type_table.path" title="See all data for the table">[@assignment.constant_set.type_table.path]</a></td></tr>
+            <tr><td>Variation    </td>  <td class="paddedItem">@variation</td></tr>
+            <tr><td>Created      </td>  <td class="paddedItem">@created</td></tr>
+            <tr><td>Run range    </td>  <td class="paddedItem">@run_range</td></tr>
+            <tr><td>Author       </td>  <td class="paddedItem">@author</td></tr>
+            <tr><td>Exact id     </td>  <td class="paddedItem">@assignment.request</td></tr>
+        </table>
+        <a href="download_request?request=@assignment.request" target="_blank">[Download text data]</a>
+
+        <p></p>
+        <h3>Comment:</h3>
+        <p>@comment</p>
+
+        <h3>Data:</h3>
+        <table id="data_table" class="data_versions">
+            <thead>
+                <tr>
+                    @for column in assignment.constant_set.type_table.columns:
+                        <th>@column.name</th>
+                    @end
+                </tr>
+            </thead>
+            <tbody>
+                @for row in assignment.constant_set.data_table:
+                    <tr>
+                        @for cell in row:
+                            <td>@cell</td>
+                        @end
+                    </tr>
+                @end
+            </tbody>
+        </table>
+    @else:
+        No assignemnt found
+    @end
+@end

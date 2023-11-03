@@ -1,0 +1,28 @@
+{% extends 'simple_base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Variations{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+    <p> Variations </p>
+
+
+     <table style="border: 1px solid;">
+        <tr>
+            <th>Name</th>
+            <th>Created</th>
+            <th>Description</th>
+        </tr>
+        {% for variation in variations %}
+        <tr>
+            <td>{{ variation.name }}</td>
+            <td>{{ variation.created }}</td>
+            <td>{{ variation.comment }}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+{% endblock %}

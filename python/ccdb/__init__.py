@@ -47,20 +47,20 @@ def insert_ext_lib_in_python_path():
         exit(1)
 
 
-try:
-    import sqlalchemy
-except:
-    insert_ext_lib_in_python_path()
-
-try:
-    import six
-except:
-    insert_ext_lib_in_python_path()
-
-try:
-    import pymysql
-except:
-    insert_ext_lib_in_python_path()
+# try:
+#     import sqlalchemy
+# except:
+#     insert_ext_lib_in_python_path()
+#
+# try:
+#     import six
+# except:
+#     insert_ext_lib_in_python_path()
+#
+# try:
+#     import pymysql
+# except:
+#     insert_ext_lib_in_python_path()
 
 # import the other parts (basically forwards names to ccdb.xxx)
 from .provider import AlchemyProvider

@@ -1,0 +1,46 @@
+{% extends 'simple_base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Show request{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<h2>Request: &nbsp; &nbsp; {{ user_request_str }}</h2>
+
+
+    <h3>Constants information:</h3>
+    <table class="dataInfoTable">
+        <tr><td>Table        </td>  <td class="paddedItem"><a href="{{ url_for('versions', table_path=assignment.constant_set.type_table.path) }}" title="See all data for the table">[{{ assignment.constant_set.type_table.path }}]</a></td></tr>
+        <tr><td>Variation    </td>  <td class="paddedItem">{{ variation }}</td></tr>
+        <tr><td>Created      </td>  <td class="paddedItem">{{ created }}</td></tr>
+        <tr><td>Run range    </td>  <td class="paddedItem">{{ run_range }}</td></tr>
+        <tr><td>Author       </td>  <td class="paddedItem">{{ author }}</td></tr>
+        <tr><td>Exact id     </td>  <td class="paddedItem">{{ assignment.request }}</td></tr>
+    </table>
+    <a href="{{ url_for('download_request', request=assignment.request) }}" target="_blank">[Download text data]</a>
+
+    <p></p>
+    <h3>Comment:</h3>
+    <p>{{ comment }}</p>
+
+    <h3>Data:</h3>
+    <table id="data_table" class="data_versions">
+        <thead>
+            <tr>
+                {% for column in assignment.constant_set.type_table.columns %}
+                    <th>{{ column.name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in assignment.constant_set.data_table %}
+                <tr>
+                    {% for cell in row %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
