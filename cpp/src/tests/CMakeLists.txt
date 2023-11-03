@@ -7,6 +7,7 @@ find_package (Threads)
 find_package (SQLite3 REQUIRED)
 
 set(SOURCE_FILES
+        "catch.cc"
         "tests.cc"
         #"test_Console.cc"
         "test_StringUtils.cc"
