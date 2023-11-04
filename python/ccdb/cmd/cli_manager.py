@@ -1,7 +1,6 @@
 import importlib
 import pkgutil
 
-import six
 import os
 import sys
 import logging
@@ -53,6 +52,7 @@ class CliManager(object):
         self.silent_exceptions = True  # rethrow happened exceptions
         self.log_sqlite = False
         self.context = CliContext(self._prov, themes.NoColorTheme(), self._commands)
+        self.matching_words = []
 
     @property
     def utils(self):
@@ -107,7 +107,7 @@ class CliManager(object):
             try:
                 util = cls(self.context)
             except Exception as ex:
-                log.warning(lfm("Error loading command: '{}'", cls))
+                log.warning(lfm("Error loading command: '{}' with exception: '{}'", cls, ex))
                 continue
 
             self._commands[util.command] = util
@@ -363,7 +363,7 @@ class CliManager(object):
         except:
             pass  # eat it
 
-        # readline..set_completion_display_matches_hook(self.show_completions)
+        # readline.set_completion_display_matches_hook(self.show_completions)
         # readline.set_completion_display_matches_hook([function])
 
         # Set or remove the completion display function. If function is specified, it will be used as the new completion
@@ -377,7 +377,7 @@ class CliManager(object):
 
             # read command from user
             try:
-                user_input = eval(input(self.context.current_path + "> "))
+                user_input = input(self.context.current_path + "> ")
             except EOFError:
                 log.debug("EOF sequence received. Ending interactive loop")
                 break
@@ -426,7 +426,7 @@ class CliManager(object):
 
         # get name patches
         path_prefix = posixpath.join(self.context.current_path, prefix)
-        log.debug("getting path completion for: " + path_prefix)
+        log.debug("getting path completion for: " + str(path_prefix))
         try:
             self.check_connection(self._ls)
             try:
@@ -490,7 +490,7 @@ class CliManager(object):
         log.info("Login as   : '" + self.context.user_name + "'")
         log.info("Connect to : '" + self.context.connection_string + "'")
         log.info("Variation  : '" + self.context.current_variation + "'")
-        log.info("Deflt. run : '" + str(self.context.current_run) + "'")
+        log.info("Default run: '" + str(self.context.current_run) + "'")
 
     def print_interactive_intro(self):
         print("""

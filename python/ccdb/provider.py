@@ -1257,20 +1257,23 @@ class AlchemyProvider(object):
             # anonymous user can't create assignments
             raise AnonymousUserForbiddenError
         else:
-            # construct assignment
-            assignment = Assignment()
-            assignment.constant_set = ConstantSet()
-            assignment.constant_set.type_table_id = table.id
-            assignment.constant_set.type_table = table
-            assignment.run_range = run_range
-            assignment.run_range_id = run_range.id
-            assignment.variation = variation
-            assignment.variation_id = variation.id
-            assignment.constant_set.data_table = rows
-            assignment.comment = comment
-            assignment.author_id = user.id
-            self.session.add(assignment)
-            self.session.commit()
+            with self.session.no_autoflush:
+                # construct assignment
+                assignment = Assignment()
+                self.session.add(assignment)
+                constant_set = ConstantSet()
+                self.session.add(constant_set)
+                assignment.constant_set = constant_set
+                assignment.constant_set.type_table_id = table.id
+                assignment.constant_set.type_table = table
+                assignment.run_range = run_range
+                assignment.run_range_id = run_range.id
+                assignment.variation = variation
+                assignment.variation_id = variation.id
+                assignment.constant_set.data_table = rows
+                assignment.comment = comment
+                assignment.author_id = user.id
+                self.session.commit()
 
             # add log
             self.create_log_record(user=user,

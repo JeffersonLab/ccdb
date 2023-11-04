@@ -24,8 +24,7 @@ if __name__ == "__main__":
         provider.connect(connection_string)
         print("Connected to database")
     except Exception as ex:
-        print(("ERROR> CCDB provider unable to connect to {0}. Aborting. Exception details: {1}"
-              "".format(connection_string, ex)))
+        print(f"ERROR> Unable to connect to {connection_string}. Aborting. Exception details: {ex}")
         exit()
 
     # it is bug of search_type_tables in 0.7 version.

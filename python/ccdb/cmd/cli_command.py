@@ -52,10 +52,10 @@ class CliCommandBase(object):
 
     def read_multiline(self):
         user_input = []
-        entry = eval(input("Enter comment text, put 'EOF' on its own line to quit: \n"))
+        entry = input("Enter comment text, put 'EOF' on its own line to quit: \n")
 
         while entry != "EOF":
             user_input.append(entry)
-            entry = eval(input(""))
+            entry = input("")
         return user_input
 

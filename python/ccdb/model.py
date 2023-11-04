@@ -1,4 +1,4 @@
-import collections
+import collections.abc
 import datetime
 import posixpath
 from sqlalchemy import text
@@ -6,7 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.types import Integer, String, Text, DateTime, Enum, Boolean
-from sqlalchemy.orm import reconstructor, relation
+from sqlalchemy.orm import reconstructor, relationship
 from sqlalchemy.orm import relationship, backref
 
 Base = declarative_base()
@@ -311,8 +311,8 @@ class Variation(Base):
     author_id = Column('authorId', Integer, nullable=False, server_default=text("'1'"), default=1)
     parent_id = Column('parentId', Integer, ForeignKey('variations.id'), nullable=False, index=True,
                        server_default=text("'1'"), default=1)
-    parent = relation('Variation', remote_side=[id])
-    children = relation("Variation")
+    parent = relationship('Variation', remote_side=[id], back_populates='children')
+    children = relationship("Variation", back_populates='parent')
 
     is_locked = Column('isLocked', Boolean, nullable=False, default=True)
     lock_time = Column('lockTime', DateTime, default=datetime.datetime.now, nullable=False)
@@ -488,7 +488,7 @@ def gen_flatten_data(data):
         check_type = str
 
     for el in data:
-        if isinstance(el, collections.Iterable) and not isinstance(el, check_type):
+        if isinstance(el, collections.abc.Iterable) and not isinstance(el, check_type):
             for sub in gen_flatten_data(el):
                 yield sub
         else:

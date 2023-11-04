@@ -18,9 +18,13 @@ ENV_TEST_MYSQL = "CCDB_TEST_MYSQL_CONNECTION"
 ENV_TEST_SQLITE = "CCDB_TEST_SQLITE_CONNECTION"
 
 # MySql connection string for tests
-mysql_test_connection_str = os.environ[ENV_TEST_MYSQL] \
-    if ENV_TEST_MYSQL in os.environ \
-    else "mysql://ccdb_user@127.0.0.1:3306/ccdb_test"
+if ENV_TEST_MYSQL in os.environ:
+    mysql_test_connection_str = os.environ[ENV_TEST_MYSQL]
+else:
+    if os.name == 'nt':
+        mysql_test_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb_test"
+    else:
+        mysql_test_connection_str = "mysql://ccdb_user@localhost/ccdb_test"
 
 
 sqlite_test_file_path = os.path.join(os.getcwd(), 'test.sqlite')
@@ -47,6 +51,41 @@ def recreate_mysql_db(username="ccdb_user", password=""):
     ret_code = p.wait()
 
     print("MySQL recreation ended with the return code:", ret_code)
+
+def recreate_mysql_db2(connection_string='mysql+pymysql://ccdb_user@localhost/ccdb_test'):
+    from sqlalchemy import create_engine, text
+    from sqlalchemy.exc import SQLAlchemyError
+
+    # Create an engine that connects to the MySQL server
+    engine = create_engine(connection_string)
+
+    # Path to the file containing SQL queries
+    sql_file_path = os.path.join(ccdb_path, 'sql', 'ccdb.mysql.sql')
+
+    # Function to determine if a line is a valid SQL command
+    def is_executable_line(line):
+        line = line.strip()
+        if line.startswith('SET') and 'FOREIGN_KEY_CHECKS' in line:
+            return False  # Skip setting FOREIGN_KEY_CHECKS
+        return not (line.startswith('--') or line.startswith('/*') or line == '')
+
+    # Read the SQL file and execute each statement
+    try:
+        with engine.begin() as conn:
+            with open(sql_file_path, 'r') as file:
+                # Split the script into separate statements on semicolons
+                sql_statements = file.read().split(';')
+                for statement in sql_statements:
+                    # Skip any empty or whitespace-only statements
+                    if statement.strip():
+
+                        print("----------")
+                        final_sql_query = statement.strip().replace("`ccdb`", "`ccdb_test`")
+                        print(final_sql_query)
+                        print("----------")
+                        conn.execute(text(final_sql_query))
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 def get_script_path(func, follow_symlinks=True):
@@ -94,8 +133,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     if args.rmysql:
-        print("Recreate MySQL command. username={}".format(args.user))
-        recreate_mysql_db(args.user)
+        print("Recreate MySQL command. connection_string={}".format(mysql_test_connection_str))
+        recreate_mysql_db2(mysql_test_connection_str)
     else:
         print("# path to CCDB_HOME")
         print("ccdb_path = '{}'".format(ccdb_path))

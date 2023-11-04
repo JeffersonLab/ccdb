@@ -53,7 +53,7 @@ class Remove(CliCommandBase):
         
         # ask confirmation
         if ask_confirm:
-            result = eval(input("To confirm delete type 'yes': "))
+            result = input("To confirm delete type 'yes': ")
             if result != 'yes':
                 return None
 

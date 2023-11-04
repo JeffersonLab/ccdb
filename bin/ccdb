@@ -1,15 +1,9 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 if __name__ == "__main__":
     import ccdb
     ccdb.init_ccdb_console()
 
-    
-    
-    
-    
-    
-        
 
 
 
