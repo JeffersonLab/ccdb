@@ -1,115 +1,72 @@
-#--------------------------------------------------------
-# Copyright (C) 1995-2007 MySQL AB
+# FindMySQL.cmake
+# Attempt to find MySQL or MariaDB
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of version 2 of the GNU General Public License as
-# published by the Free Software Foundation.
-#
-# There are special exceptions to the terms and conditions of the GPL
-# as it is applied to this software. View the full text of the exception
-# in file LICENSE.exceptions in the top-level directory of this software
-# distribution.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
-#
-# The MySQL Connector/ODBC is licensed under the terms of the
-# GPL, like most MySQL Connectors. There are special exceptions
-# to the terms and conditions of the GPL as it is applied to
-# this software, see the FLOSS License Exception available on
-# mysql.com.
+# This module will set the following variables in your project:
+#   MySQL_FOUND - System has MySQL
+#   MySQL_INCLUDE_DIRS - the MySQL include directories
+#   MySQL_LIBRARIES - the MySQL libraries
 
-##########################################################################
+# Find mysql_config or mariadb_config executables
+find_program(MySQL_CONFIG_EXECUTABLE NAMES mysql_config mariadb_config
+        HINTS ENV MySQL_DIR
+        PATH_SUFFIXES bin
+)
 
+macro(get_mysql_config_flag FLAG OUTPUT_VARIABLE)
+    execute_process(COMMAND "${MySQL_CONFIG_EXECUTABLE}" "${FLAG}"
+            RESULT_VARIABLE MySQL_CONFIG_RESULT
+            OUTPUT_VARIABLE "${OUTPUT_VARIABLE}"
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(NOT MySQL_CONFIG_RESULT EQUAL "0")
+        message(STATUS "Unable to obtain ${FLAG} from mysql_config/mariadb_config")
+    endif()
+    separate_arguments("${OUTPUT_VARIABLE}" UNIX_COMMAND "${${OUTPUT_VARIABLE}}")
+endmacro()
 
-#-------------- FIND MYSQL_INCLUDE_DIR ------------------
-FIND_PATH(MYSQL_INCLUDE_DIR mysql.h
-        /usr/include/mysql
-        /usr/local/include/mysql
-        /opt/mysql/mysql/include
-        /opt/mysql/mysql/include/mysql
-        /opt/mysql/include
-        /opt/local/include/mysql5
-        /usr/local/mysql/include
-        /usr/local/mysql/include/mysql
-        $ENV{ProgramFiles}/MySQL/*/include
-        $ENV{SystemDrive}/MySQL/*/include)
+if(MySQL_CONFIG_EXECUTABLE)
+    get_mysql_config_flag("--cflags" MySQL_CFLAGS)
+    get_mysql_config_flag("--include" MySQL_INCLUDE_DIRS)
+    get_mysql_config_flag("--libs" MySQL_LIBRARIES)
 
-#----------------- FIND MYSQL_LIB_DIR -------------------
-IF (WIN32)
-    # Set lib path suffixes
-    # dist = for mysql binary distributions
-    # build = for custom built tree
-    IF (CMAKE_BUILD_TYPE STREQUAL Debug)
-        SET(libsuffixDist debug)
-        SET(libsuffixBuild Debug)
-    ELSE (CMAKE_BUILD_TYPE STREQUAL Debug)
-        SET(libsuffixDist opt)
-        SET(libsuffixBuild Release)
-        ADD_DEFINITIONS(-DDBUG_OFF)
-    ENDIF (CMAKE_BUILD_TYPE STREQUAL Debug)
+    # For version we don't need separate_output so we don't user the above function
+    execute_process(COMMAND "${MySQL_CONFIG_EXECUTABLE}" "--version"
+            RESULT_VARIABLE MySQL_CONFIG_RESULT
+            OUTPUT_VARIABLE MySQL_VERSION
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-    FIND_LIBRARY(MYSQL_LIB NAMES mysqlclient
-            PATHS
-            $ENV{MYSQL_DIR}/lib/${libsuffixDist}
-            $ENV{MYSQL_DIR}/libmysql
-            $ENV{MYSQL_DIR}/libmysql/${libsuffixBuild}
-            $ENV{MYSQL_DIR}/client/${libsuffixBuild}
-            $ENV{MYSQL_DIR}/libmysql/${libsuffixBuild}
-            $ENV{ProgramFiles}/MySQL/*/lib/${libsuffixDist}
-            $ENV{SystemDrive}/MySQL/*/lib/${libsuffixDist})
-ELSE (WIN32)
-    FIND_LIBRARY(MYSQL_LIB NAMES mysqlclient_r mysqlclient
-            PATHS
-            /usr/lib/mysql
-            /usr/local/lib/mysql
-            /usr/local/mysql/lib
-            /usr/local/mysql/lib/mysql
-            /opt/local/mysql5/lib
-            /opt/local/lib/mysql5/mysql
-            /opt/mysql/mysql/lib/mysql
-            /opt/mysql/lib/mysql)
-ENDIF (WIN32)
+    string(REGEX REPLACE "-I" "" MySQL_INCLUDE_DIRS "${MySQL_INCLUDE_DIRS}")
+    string(REGEX MATCHALL "-L[^;]+" MySQL_LINK_DIRS "${MySQL_LIBRARIES}")
+    string(REGEX MATCHALL "-l[^;]+" MySQL_LINK_LIBS "${MySQL_LIBRARIES}")
 
-IF(MYSQL_LIB)
-    GET_FILENAME_COMPONENT(MYSQL_LIB_DIR ${MYSQL_LIB} PATH)
-ENDIF(MYSQL_LIB)
+    set(MySQL_LIBRARIES) # Clear before appending properly formatted libraries
+    foreach(DIR ${MySQL_LINK_DIRS})
+        string(REPLACE "-L" "" DIR "${DIR}")
+        list(APPEND MySQL_LIBRARIES "-L${DIR}")
+    endforeach()
+    foreach(LIB ${MySQL_LINK_LIBS})
+        string(REPLACE "-l" "" LIB "${LIB}")
+        list(APPEND MySQL_LIBRARIES "-l${LIB}")
+    endforeach()
+else()
+    # Fallback to default paths and find the header and libraries manually
+    find_path(MySQL_INCLUDE_DIR NAMES mysql.h
+            HINTS ENV MySQL_DIR
+            PATH_SUFFIXES include/mysql include/mariadb
+    )
 
-IF (MYSQL_INCLUDE_DIR AND MYSQL_LIB_DIR)
-    SET(MYSQL_FOUND TRUE)
+    find_library(MySQL_LIBRARY NAMES mysqlclient mariadb
+            HINTS ENV MySQL_DIR
+            PATH_SUFFIXES lib lib/mysql lib/mariadb
+    )
 
-    INCLUDE_DIRECTORIES(${MYSQL_INCLUDE_DIR})
-    LINK_DIRECTORIES(${MYSQL_LIB_DIR})
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(MySQL DEFAULT_MSG MySQL_INCLUDE_DIR MySQL_LIBRARY)
+    set(MySQL_VERSION "Not Known")
 
-    FIND_LIBRARY(MYSQL_ZLIB zlib PATHS ${MYSQL_LIB_DIR})
-    FIND_LIBRARY(MYSQL_TAOCRYPT taocrypt PATHS ${MYSQL_LIB_DIR})
-    IF (MYSQL_LIB)
-        SET(MYSQL_CLIENT_LIBS ${MYSQL_LIB})
-    ELSE()
-        SET(MYSQL_CLIENT_LIBS mysqlclient_r)
-    ENDIF()
-    IF (MYSQL_ZLIB)
-        SET(MYSQL_CLIENT_LIBS ${MYSQL_CLIENT_LIBS} zlib)
-    ENDIF (MYSQL_ZLIB)
-    IF (MYSQL_TAOCRYPT)
-        SET(MYSQL_CLIENT_LIBS ${MYSQL_CLIENT_LIBS} taocrypt)
-    ENDIF (MYSQL_TAOCRYPT)
-    # Added needed mysqlclient dependencies on Windows
-    IF (WIN32)
-        SET(MYSQL_CLIENT_LIBS ${MYSQL_CLIENT_LIBS} ws2_32)
-    ENDIF (WIN32)
+    if(MySQL_FOUND)
+        set(MySQL_INCLUDE_DIRS "${MySQL_INCLUDE_DIR}")
+        set(MySQL_LIBRARIES "${MySQL_LIBRARY}")
+    endif()
+endif()
 
-    MESSAGE(STATUS "MySQL Include dir: ${MYSQL_INCLUDE_DIR}  library dir: ${MYSQL_LIB_DIR}")
-    MESSAGE(STATUS "MySQL client libraries: ${MYSQL_CLIENT_LIBS}")
-    SET(MySQL_FOUND 1)
-    SET(MYSQL_FOUND 1)
-ELSEIF (MySQL_FIND_REQUIRED)
-    MESSAGE(FATAL_ERROR "Cannot find MySQL. Include dir: ${MYSQL_INCLUDE_DIR}  library dir: ${MYSQL_LIB_DIR}")
-ENDIF (MYSQL_INCLUDE_DIR AND MYSQL_LIB_DIR)
+mark_as_advanced(MySQL_CONFIG_EXECUTABLE MySQL_INCLUDE_DIR MySQL_LIBRARY)

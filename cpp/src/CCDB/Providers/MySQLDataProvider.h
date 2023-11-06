@@ -46,7 +46,7 @@ namespace ccdb
          * @param connectionString "mysql://<username>:<password>@<mysql.address>:<port> <database>"
          * @return true if connected
          */
-        virtual void Connect(string connectionString);
+        void Connect(const std::string& connectionString) override;
 
         /**
          * @brief Connects to database using DMySQLConnectionInfo
@@ -54,7 +54,7 @@ namespace ccdb
          * @param connection
          * @return true if connected
          */
-        virtual bool Connect(MySQLConnectionInfo connection);
+        virtual void Connect(MySQLConnectionInfo connection);
 
         /**
          * @brief indicates ether the connection is open or not
@@ -74,7 +74,7 @@ namespace ccdb
          * @param   [out] DMySQLConnectionInfo & connection
          * @return   bool
          */
-        static bool ParseConnectionString(std::string conStr, MySQLConnectionInfo &connection);
+        static MySQLConnectionInfo ParseConnectionString(std::string conStr);
 
 
         //----------------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ namespace ccdb
          * thus  references to them will become broken
          * @return   bool
          */
-        bool LoadDirectories() override;
+        void LoadDirectories() override;
 
 
 
@@ -158,7 +158,7 @@ namespace ccdb
          * @param [in out] table
          * @return true if no errors (even if no columns loaded)
          */
-        virtual bool LoadColumns(ConstantsTypeTable* table);
+        virtual void LoadColumns(ConstantsTypeTable* table);
 
         #pragma endregion Constant type table
 

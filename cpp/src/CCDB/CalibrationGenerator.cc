@@ -1,10 +1,10 @@
 #include <iostream>
 #include <sstream>
 
-#include "CCDB/CalibrationGenerator.h"
-#include "CCDB/SQLiteCalibration.h"
-#include "CCDB/Providers/SQLiteDataProvider.h"
-#include "CCDB/Helpers/TimeProvider.h"
+#include "CalibrationGenerator.h"
+#include "SQLiteCalibration.h"
+#include "Providers/SQLiteDataProvider.h"
+#include "Helpers/TimeProvider.h"
 #ifdef CCDB_MYSQL
 #include "CCDB/MySQLCalibration.h"
 #include "CCDB/Providers/MySQLDataProvider.h"

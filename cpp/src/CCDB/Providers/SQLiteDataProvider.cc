@@ -6,8 +6,6 @@
 #include <string.h>
 #include <limits.h>
 
-#include <fmt/format.h>
-
 #include "CCDB/Globals.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/PathUtils.h"
@@ -39,7 +37,7 @@ ccdb::SQLiteDataProvider::~SQLiteDataProvider()
 void ccdb::SQLiteDataProvider::Connect(const std::string& connectionString )
 {
 	//check for uri type
-	std::string thisFuncName = "ccdb::SQLiteDataProvider::Connect";
+	std::string thisFuncName(__PRETTY_FUNCTION__);
 	int typePos = connectionString.find("sqlite:///");
 	if(typePos==string::npos)
 	{
@@ -292,7 +290,7 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
     //Get type table
     ConstantsTypeTable *table = DataProvider::GetConstantsTypeTable(path, loadColumns);
     if(!table) {
-        string error("SQLiteDataProvider::GetAssignmentShort => Type table was not found: '"+path+"'" );
+        string error(std::string(__PRETTY_FUNCTION__ ) + " => Type table was not found: '" + path + "'" );
         throw std::runtime_error(error);
     }
     

@@ -12,8 +12,6 @@
 #include "CCDB/Model/Variation.h"
 
 
-
-
 /* @class DataProvider
  * This is the main base interface to the Providers class family. 
  * Each derived <Something>Provider, provides access to data from a specified data source
@@ -50,7 +48,6 @@
  */
 namespace ccdb
 {
-
     class DataProvider
     {
     public:
@@ -72,7 +69,7 @@ namespace ccdb
          * @param connectionString "mysql://<username>:<password>@<mysql.address>:<port> <database>"
          * @return true if connected
          */
-        virtual void Connect(const std::string &connectionString) = 0;
+        virtual void Connect(const std::string& connectionString) = 0;
 
         /**
          * @brief closes connection to data
@@ -128,7 +125,7 @@ namespace ccdb
         * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
         * @return DAssignment object or NULL if no assignment is found or error
         */
-        virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation, bool loadColumns)=0;
+        virtual Assignment* GetAssignmentShort(int run, const std::string& path, time_t time, const std::string& variation, bool loadColumns)=0;
 
 
 
@@ -152,7 +149,7 @@ namespace ccdb
         * @param   Full path of the directory
         * @return DDirectory object if directory exists, NULL otherwise
         */
-        Directory* GetDirectory(const string& path);
+        Directory* GetDirectory(const std::string& path);
 
         /** @brief return reference to root directory
          *
@@ -179,7 +176,7 @@ namespace ccdb
          * @param  [in] path absolute path of the type table
          * @return new object of ConstantsTypeTable
          */
-        ConstantsTypeTable * GetConstantsTypeTable(const string& path, bool loadColumns);
+        ConstantsTypeTable * GetConstantsTypeTable(const std::string& path, bool loadColumns);
 
 
 
@@ -192,14 +189,14 @@ namespace ccdb
          * @param     string name
          * @return   bool
          */
-        bool ValidateName(const string& name);
+        bool ValidateName(const std::string& name);
 
 
     protected:
 
         std::vector<Directory *>  mDirectories;
         std::map<dbkey_t,Directory *> mDirectoriesById;
-        std::map<string,Directory *>  mDirectoriesByFullPath;
+        std::map<std::string,Directory *>  mDirectoriesByFullPath;
         bool mDirsAreLoaded;                 //Directories are loaded from database
         Directory *mRootDir;                ///root directory. This directory contains all other directories. It is not stored in databases
 
