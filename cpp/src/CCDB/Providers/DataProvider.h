@@ -98,7 +98,7 @@ namespace ccdb
          * @param  [in] parentDir directory that contains type table
          * @return new object of ConstantsTypeTable
          */
-        virtual ConstantsTypeTable * GetConstantsTypeTable(const string& name, Directory *parentDir, bool loadColumns)=0;
+        virtual ConstantsTypeTable * GetConstantsTypeTable(const std::string& name, Directory *parentDir, bool loadColumns)=0;
 
 
         /** @brief gets all type tables from DB

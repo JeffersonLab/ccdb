@@ -242,8 +242,6 @@ void ccdb::MySQLDataProvider::LoadDirectories()
 }
 
 
-
-
 ccdb::ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const string& name, Directory *parentDir, bool loadColumns/*=false*/ )
 {
     using namespace std;
@@ -353,7 +351,7 @@ void ccdb::MySQLDataProvider::LoadColumns(ConstantsTypeTable* table)
 }
 
 
-RunRange* ccdb::MySQLDataProvider::GetRunRange( int min, int max, const string& name /*= ""*/ )
+ccdb::RunRange* ccdb::MySQLDataProvider::GetRunRange( int min, int max, const string& name /*= ""*/ )
 {
     //build query
     string query = "SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `runMin`, `runMax`,  `comment` "
@@ -367,7 +365,7 @@ RunRange* ccdb::MySQLDataProvider::GetRunRange( int min, int max, const string& 
         return nullptr;
     }
 
-    //Ok! We queried our run range! lets catch it!
+    //Ok! We queried our run range! Lets catch it!
     if(!FetchRow())
     {
         //nothing was selected
@@ -400,8 +398,7 @@ ccdb::RunRange* ccdb::MySQLDataProvider::GetRunRange( const string& name )
 
     //build query
     string query = "SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `runMin`, `runMax`,  `comment`"
-        " FROM `runRanges` WHERE `name`=\"%s\"";
-    query = StringUtils::Format(query.c_str(), name.c_str());
+        " FROM `runRanges` WHERE `name`=\"" + name + "\"";
 
     //query this
     if(!QuerySelect(query))
@@ -418,7 +415,7 @@ ccdb::RunRange* ccdb::MySQLDataProvider::GetRunRange( const string& name )
     }
 
     //ok lets read the data...
-    RunRange *result = new RunRange(this, this);
+    RunRange *result = new RunRange();
     result->SetId(ReadULong(0));
     result->SetCreatedTime(ReadUnixTime(1));
     result->SetModifiedTime(ReadUnixTime(2));
@@ -438,86 +435,6 @@ ccdb::RunRange* ccdb::MySQLDataProvider::GetRunRange( const string& name )
 }
 
 
-bool ccdb::MySQLDataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, ConstantsTypeTable* table, const string& variation/*=""*/, int take/*=0*/, int startWith/*=0*/)
-{
-    CheckConnection("MySQLDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, ConstantsTypeTable* table, int take, int startWith)")) return false;
-
-    //validate table
-    if(!table || !table->GetId())
-    {
-        //TODO report error
-        Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetRunRanges", "Type table is null or have invalid id");
-        return false;
-    }
-    //variation handle
-    string variationWhere("");
-    if(variation != "")
-    {
-        variationWhere.assign(StringUtils::Format(" AND `variations`.`name`=\"%s\" ", variation.c_str()));
-    }
-
-    //limits handle
-    string limitInsertion = PrepareLimitInsertion(take, startWith);
-
-    //Ok, lets cleanup result list
-    if(resultRunRanges.size()>0)
-    {
-        vector<RunRange *>::iterator iter = resultRunRanges.begin();
-        while(iter != resultRunRanges.end())
-        {
-            RunRange *obj = *iter;
-            if(IsOwner(obj)) delete obj;        //delete objects if this provider is owner
-            iter++;
-        }
-    }
-    resultRunRanges.clear(); //we clear the consts. Considering that some one else should handle deletion
-
-
-    //ok now we must build our mighty query...
-    string query=
-        " SELECT "
-        " DISTINCT `runRanges`.`id` as `id`, "
-        " UNIX_TIMESTAMP(`runRanges`.`created`) as `created`, "
-        " UNIX_TIMESTAMP(`runRanges`.`modified`) as `modified`, "
-        " `runRanges`.`name` as `name`, "
-        " `runRanges`.`runMin` as `runMin`, "
-        " `runRanges`.`runMax` as `runMax`, "
-        "`runRanges`.`comment` as `comment` "
-        " FROM `typeTables` "
-        " INNER JOIN `assignments` ON `assignments`.`runRangeId`= `runRanges`.`id` "
-        " INNER JOIN `variations` ON `assignments`.`variationId`= `variations`.`id` "
-        " INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
-        " INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
-        " WHERE `typeTables`.`id` = '" + to_string(table->GetId()) + "' "
-        + variationWhere +
-        " ORDER BY `runRanges`.`runMin` ASC " + limitInsertion;
-
-    //query this
-    if(!QuerySelect(query))
-    {
-        //TODO report error
-        return false;
-    }
-
-    //Ok! We querried our run range! lets catch it!
-    while(FetchRow())
-    {
-        //ok lets read the data...
-        RunRange *result = new RunRange();
-        result->SetId(ReadULong(0));
-        result->SetCreatedTime(ReadUnixTime(1));
-        result->SetModifiedTime(ReadUnixTime(2));
-        result->SetName(ReadString(3));
-        result->SetMin(ReadInt(4));
-        result->SetMax(ReadInt(5));
-        result->SetComment(ReadString(7));
-
-        resultRunRanges.push_back(result);
-    }
-
-    FreeMySQLResult();
-    return true;
-}
 
 
 ccdb::Variation* ccdb::MySQLDataProvider::GetVariation( const string& name )
@@ -614,7 +531,7 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
 
     //Get directory. Directories should be cached. So this doesn't make a database request
     
-    ConstantsTypeTable *table = GetConstantsTypeTable(path, loadColumns);
+    ConstantsTypeTable *table = ccdb::DataProvider::GetConstantsTypeTable(path, loadColumns);
     if(!table)
     {
         throw runtime_error(thisFuncName+" => Type table was not found: '"+path+"'");
@@ -835,7 +752,9 @@ time_t ccdb::MySQLDataProvider::ReadUnixTime( int fieldNum )
 
 bool ccdb::MySQLDataProvider::QuerySelect(const char* query)
 {
-    if(!CheckConnection("MySQLDataProvider::QuerySelect")) return false;
+    if(!IsConnected()) {
+        throw std::runtime_error(std::string(__PRETTY_FUNCTION__ ) + " : Error. No connection to DB");
+    }
 
     //do we have some results we need to free?
     if(mResult!=nullptr)
@@ -859,7 +778,6 @@ bool ccdb::MySQLDataProvider::QuerySelect(const char* query)
         string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
         Error(CCDB_ERROR_QUERY_SELECT,"ccdb::MySQLDataProvider::QuerySelect()",errStr.c_str());
 
-
         mReturnedRowsNum = 0;
         mReturnedFieldsNum = 0;
         return false;
@@ -872,7 +790,6 @@ bool ccdb::MySQLDataProvider::QuerySelect(const char* query)
     mReturnedFieldsNum = mysql_num_fields(mResult);
 
     return true;
-
 }
 
 bool ccdb::MySQLDataProvider::QuerySelect(const string& query )
@@ -902,58 +819,11 @@ void ccdb::MySQLDataProvider::FreeMySQLResult()
 
 std::string ccdb::MySQLDataProvider::ComposeMySQLError(std::string mySqlFunctionName)
 {
-    string mysqlErr=StringUtils::Format("%s failed:\nError %u (%s)\n",mySqlFunctionName.c_str(), mysql_errno(mMySQLHnd), mysql_error (mMySQLHnd));
+    string mysqlErr = mySqlFunctionName + " failed:\n"
+                      "mysql_errno " + std::to_string(mysql_errno(mMySQLHnd)) +
+                      " (" + mysql_error(mMySQLHnd) + ")\n";
     return mysqlErr;
 }
 
 
-
-
-dbkey_t ccdb::MySQLDataProvider::GetUserId( string userName )
-{
-    if(userName == "" || !ValidateName(userName))
-    {
-        return 1; //anonymous id
-    }
-
-    string query = "SELECT `id` FROM `authors` WHERE `name` = \"" + userName + "\" LIMIT 0,1");
-    if(!QuerySelect(query))
-    {
-        return 1; //anonymous id
-    }
-
-
-    if(!FetchRow())
-    {
-        return 1; //anonymous id
-    }
-
-    dbkey_t id = ReadIndex(0);
-
-    FreeMySQLResult();
-
-    if(id<=0) return 1;
-    return id;
-}
-
-
-std::string ccdb::MySQLDataProvider::PrepareLimitInsertion(  int take/*=0*/, int startWith/*=0*/ )
-{
-    if(startWith != 0 && take != 0) return " LIMIT " + to_string(startWith) +", " + to_string(take) + " ";
-    if(startWith != 0 && take == 0) return " LIMIT " + to_string(startWith) +", " + to_string(INFINITE_RUN) + " ";
-    if(startWith == 0 && take != 0) return " LIMIT " + to_string(take) + " ";
-
-    return {}; //No LIMIT at all, if run point is here it corresponds to if(startWith == 0 && take ==0 )
-}
-
-
-int ccdb::MySQLDataProvider::CountConstantsTypeTables(Directory *dir)
-{
-    /**
-     * @brief This function counts number of type tables for a given directory
-     * @param [in] directory to look tables in
-     * @return number of tables to return
-     */
-    return 0;
-}
 

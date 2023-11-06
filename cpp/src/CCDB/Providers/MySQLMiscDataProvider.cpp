@@ -419,3 +419,135 @@ bool ccdb::MySQLDataProvider::QueryCustom( const string& query )
     }
     return true;
 }
+
+
+
+dbkey_t ccdb::MySQLDataProvider::GetUserId( string userName )
+{
+    if(userName == "" || !ValidateName(userName))
+    {
+        return 1; //anonymous id
+    }
+
+    string query = "SELECT `id` FROM `authors` WHERE `name` = \"" + userName + "\" LIMIT 0,1");
+    if(!QuerySelect(query))
+    {
+        return 1; //anonymous id
+    }
+
+
+    if(!FetchRow())
+    {
+        return 1; //anonymous id
+    }
+
+    dbkey_t id = ReadIndex(0);
+
+    FreeMySQLResult();
+
+    if(id<=0) return 1;
+    return id;
+}
+
+
+std::string ccdb::MySQLDataProvider::PrepareLimitInsertion(  int take/*=0*/, int startWith/*=0*/ )
+{
+    if(startWith != 0 && take != 0) return " LIMIT " + to_string(startWith) +", " + to_string(take) + " ";
+    if(startWith != 0 && take == 0) return " LIMIT " + to_string(startWith) +", " + to_string(INFINITE_RUN) + " ";
+    if(startWith == 0 && take != 0) return " LIMIT " + to_string(take) + " ";
+
+    return {}; //No LIMIT at all, if run point is here it corresponds to if(startWith == 0 && take ==0 )
+}
+
+
+int ccdb::MySQLDataProvider::CountConstantsTypeTables(Directory *dir)
+{
+    /**
+     * @brief This function counts number of type tables for a given directory
+     * @param [in] directory to look tables in
+     * @return number of tables to return
+     */
+    return 0;
+}
+
+
+
+bool ccdb::MySQLDataProvider::GetRunRanges(vector<RunRange*>& resultRunRanges, ConstantsTypeTable* table, const string& variation/*=""*/, int take/*=0*/, int startWith/*=0*/)
+{
+    CheckConnection("MySQLDataProvider::GetRunRanges(vector<DRunRange*>& resultRunRanges, ConstantsTypeTable* table, int take, int startWith)");
+
+    //validate table
+    if(!table || !table->GetId())
+    {
+        //TODO report error
+        Error(CCDB_ERROR_NO_TYPETABLE,"MySQLDataProvider::GetRunRanges", "Type table is null or have invalid id");
+        return false;
+    }
+    //variation handle
+    string variationWhere("");
+    if(variation != "")
+    {
+        variationWhere.assign(" AND `variations`.`name`=\"" + variation + "\" ");
+    }
+
+    //limits handle
+    string limitInsertion = PrepareLimitInsertion(take, startWith);
+
+    //Ok, lets cleanup result list
+    if(resultRunRanges.size()>0)
+    {
+        vector<RunRange *>::iterator iter = resultRunRanges.begin();
+        while(iter != resultRunRanges.end())
+        {
+            RunRange *obj = *iter;
+            iter++;
+        }
+    }
+    resultRunRanges.clear(); //we clear the consts. Considering that some one else should handle deletion
+
+
+    //ok now we must build our mighty query...
+    string query=
+            " SELECT "
+            " DISTINCT `runRanges`.`id` as `id`, "
+            " UNIX_TIMESTAMP(`runRanges`.`created`) as `created`, "
+            " UNIX_TIMESTAMP(`runRanges`.`modified`) as `modified`, "
+            " `runRanges`.`name` as `name`, "
+            " `runRanges`.`runMin` as `runMin`, "
+            " `runRanges`.`runMax` as `runMax`, "
+            "`runRanges`.`comment` as `comment` "
+            " FROM `typeTables` "
+            " INNER JOIN `assignments` ON `assignments`.`runRangeId`= `runRanges`.`id` "
+            " INNER JOIN `variations` ON `assignments`.`variationId`= `variations`.`id` "
+            " INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
+            " INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
+            " WHERE `typeTables`.`id` = '" + to_string(table->GetId()) + "' "
+            + variationWhere +
+            " ORDER BY `runRanges`.`runMin` ASC " + limitInsertion;
+
+    //query this
+    if(!QuerySelect(query))
+    {
+        //TODO report error
+        return false;
+    }
+
+    //Ok! We querried our run range! lets catch it!
+    while(FetchRow())
+    {
+        //ok lets read the data...
+        RunRange *result = new RunRange();
+        result->SetId(ReadULong(0));
+        result->SetCreatedTime(ReadUnixTime(1));
+        result->SetModifiedTime(ReadUnixTime(2));
+        result->SetName(ReadString(3));
+        result->SetMin(ReadInt(4));
+        result->SetMax(ReadInt(5));
+        result->SetComment(ReadString(7));
+
+        resultRunRanges.push_back(result);
+    }
+
+    FreeMySQLResult();
+    return true;
+}

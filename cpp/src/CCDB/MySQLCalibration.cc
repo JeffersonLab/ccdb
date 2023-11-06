@@ -88,8 +88,8 @@ bool MySQLCalibration::Connect( std::string connectionString )
         throw std::logic_error(ERRMSG_CONNECT_LOCKED);
     }
 
-    bool result = mProvider->Connect(connectionString);
-    return result;
+    mProvider->Connect(connectionString);
+    return true;
     //TODO decide maybe to throw an exception here?
 }
 
