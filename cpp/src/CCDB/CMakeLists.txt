@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.3)
 
 # CCDB library
 project(ccdb_lib)
-message(STATUS "=== Configuring CCDB library====")
+message(STATUS "=== Configuring CCDB library ===")
 
-add_library(ccdb_obj OBJECT
+add_library(ccdb SHARED
 
         #user api
         Calibration.cc
@@ -27,7 +27,8 @@ add_library(ccdb_obj OBJECT
         Providers/DataProvider.cc
         )
 
-target_include_directories(ccdb_obj PUBLIC "${PROJECT_SOURCE_DIR}/..")
+target_include_directories(ccdb PUBLIC "${PROJECT_SOURCE_DIR}/..")
+set_target_properties(ccdb PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # Add SQLITE3
 find_package (SQLite3 REQUIRED)
@@ -37,9 +38,9 @@ if (SQLite3_FOUND)
     message(STATUS "SQLite3_LIBRARY     = ${SQLite3_LIBRARY}")
     message(STATUS "SQLite3_VERSION     = ${SQLite3_VERSION}")
 
-    target_include_directories(ccdb_obj SYSTEM PRIVATE ${SQLite3_INCLUDE_DIR})
-    target_link_libraries(ccdb_obj ${SQLite3_LIBRARY})
-    target_sources(ccdb_obj PRIVATE
+    target_include_directories(ccdb SYSTEM PRIVATE ${SQLite3_INCLUDE_DIR})
+    target_link_libraries(ccdb PUBLIC ${SQLite3_LIBRARY})
+    target_sources(ccdb PRIVATE
             SQLiteCalibration.cc
             Providers/SQLiteDataProvider.cc
     )
@@ -47,28 +48,25 @@ endif (SQLite3_FOUND)
 
 # Add MySQL/MariaDB
 find_package (MySQL REQUIRED)
-if (SQLite3_FOUND)
+if (MySQL_FOUND)
     message(STATUS "MySQL_FOUND")
     message(STATUS "MySQL_INCLUDE_DIRS = ${MySQL_INCLUDE_DIRS}")
     message(STATUS "MySQL_LIBRARIES    = ${MySQL_LIBRARIES}")
     message(STATUS "MySQL_VERSION      = ${MySQL_VERSION}")
 
-    target_include_directories(ccdb_obj SYSTEM PRIVATE ${MySQL_INCLUDE_DIRS})
-    target_link_libraries(ccdb_obj ${MySQL_LIBRARIES})
-    target_sources(ccdb_obj PRIVATE
+    target_include_directories(ccdb SYSTEM PRIVATE ${MySQL_INCLUDE_DIRS})
+    target_link_libraries(ccdb PUBLIC ${MySQL_LIBRARIES})
+    target_sources(ccdb PRIVATE
             MySQLCalibration.cc
             MySQLCalibration.h
             Providers/MySQLDataProvider.cc
     )
-    target_compile_definitions(ccdb_obj PUBLIC "CCDB_MYSQL=1")
-endif (SQLite3_FOUND)
+    target_compile_definitions(ccdb PUBLIC "CCDB_MYSQL=1")
+endif (MySQL_FOUND)
 
-# Create the static library from the object files
-add_library(ccdb_static STATIC $<TARGET_OBJECTS:ccdb_obj>)
+find_package (Threads)
 
-# Create the shared library from the same object files
-add_library(ccdb SHARED $<TARGET_OBJECTS:ccdb_obj>)
-
+message(STATUS "CMAKE_THREAD_LIBS_INIT = ${CMAKE_THREAD_LIBS_INIT}")
 # If you need to set properties specific to the shared or static library, do it here
 #target_compile_definitions(ccdb_shared PRIVATE SHARED_LIBRARY_DEFINITION)
 #target_compile_definitions(ccdb_static PRIVATE STATIC_LIBRARY_DEFINITION)
@@ -120,12 +118,11 @@ add_library(ccdb SHARED $<TARGET_OBJECTS:ccdb_obj>)
 ##SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
 ##SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 #
-#install(DIRECTORY "${PROJECT_SOURCE_DIR}/" # source directory
-#        DESTINATION "include/CCDB" # target directory
-#        FILES_MATCHING # install only matched files
-#        PATTERN "*.h" # select header files
-#)
-#
-#install(TARGETS ccdb DESTINATION lib)
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/" # source directory
+        DESTINATION "include/CCDB" # target directory
+        FILES_MATCHING # install only matched files
+        PATTERN "*.h" # select header files
+)
+install(TARGETS ccdb DESTINATION lib)
 #
 #message(STATUS "===END OF CCDB CMAKE====")

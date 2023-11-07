@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 #include <sqlite3.h>
-#include <fmt/format.h>
+
 
 namespace ccdb {
     class SQLiteStatement{
@@ -30,7 +30,7 @@ namespace ccdb {
         void Prepare(const std::string& query) {
             int result = sqlite3_prepare_v2(mDatabase, query.c_str(), -1, &mStatement, nullptr);
             if( result ) {
-                auto error = fmt::format("Error in sqlite3_prepare_v2: {}", sqlite3_errmsg(mDatabase));
+                auto error = "Error in sqlite3_prepare_v2: {}" + std::string(sqlite3_errmsg(mDatabase));
                 throw std::runtime_error(error);
             }
 
@@ -44,9 +44,10 @@ namespace ccdb {
         void ValidateColumnIndex(int columnIndex) {
             if(mLastQueryColumnCount <= columnIndex) {
                 //Add error, we have less fields than fieldNum
-                auto error = fmt::format("Requested column index doesn't correspond to the last query. "
-                                         "Req. Index: {}, LastQueryColumnCount: {}, Last Query: {}",
-                                         columnIndex, mLastQueryColumnCount, mLastQuery);
+                auto error = "Requested column index doesn't correspond to the last query. "
+                                   "Req. Index: " + std::to_string(columnIndex) + ", "
+                                   "LastQueryColumnCount: " + std::to_string(mLastQueryColumnCount) + ","
+                                   " Last Query: " + mLastQuery;
                 throw std::runtime_error(error);
             }
         }
@@ -54,7 +55,7 @@ namespace ccdb {
         void BindInt32(int32_t varId, int32_t value) {
             int result = sqlite3_bind_int(mStatement, varId, value);
             if( result ) {
-                auto error = fmt::format("sqlite3_bind_int error: {}. Query: {}", sqlite3_errmsg(mDatabase), mLastQuery);
+                auto error = "sqlite3_bind_int error: " + std::string(sqlite3_errmsg(mDatabase)) + ". Query: " + mLastQuery;
                 throw std::runtime_error(error);
             }
         }
@@ -62,7 +63,7 @@ namespace ccdb {
         void BindInt64(int32_t varId, int64_t value) {
             int result = sqlite3_bind_int64(mStatement, varId, value);
             if( result ) {
-                auto error = fmt::format("sqlite3_bind_int64 error: {}. Query: {}", sqlite3_errmsg(mDatabase), mLastQuery);
+                auto error = "sqlite3_bind_int64 error: " + std::string(sqlite3_errmsg(mDatabase)) + ". Query: " + mLastQuery;
                 throw std::runtime_error(error);
             }
         }
@@ -70,7 +71,7 @@ namespace ccdb {
         void BindString(int32_t varId,const std::string& str) {
             int result = sqlite3_bind_text(mStatement, varId, str.c_str(), -1, SQLITE_TRANSIENT); /*`name`*/
             if( result ) {
-                auto error = fmt::format("sqlite3_bind_text error: {}. Query: {}", sqlite3_errmsg(mDatabase), mLastQuery);
+                auto error = "sqlite3_bind_text error: " + std::string(sqlite3_errmsg(mDatabase)) + ". Query: " + mLastQuery;
                 throw std::runtime_error(error);
             }
         }
@@ -94,8 +95,7 @@ namespace ccdb {
                         rowsProcessed++;
                         break;
                     default:
-                        auto error = fmt::format("sqlite3_step error: {}. Query: {}",
-                                                 sqlite3_errmsg(mDatabase), mLastQuery);
+                        auto error = "sqlite3_step error: " + std::string(sqlite3_errmsg(mDatabase)) + ". Query: " + mLastQuery;
                         throw std::runtime_error(error);
                 }
             }

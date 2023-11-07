@@ -17,10 +17,10 @@ using namespace ccdb;
  */
 TEST_CASE("CCDB/SQLiteDataProvider/Assignments","Assignments tests")
 {
-	bool result;
+	std::string connectStr = TESTS_SQLITE_STRING;
 	
 	DataProvider *prov = new SQLiteDataProvider();
-	prov->Connect(TESTS_SQLITE_STRING);
+	prov->Connect(connectStr);
 
 	//GET ASSIGNMENTS TESTS
 	//----------------------------------------------------

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 
-project(ccdb)
+project(ccdb_main)
 
 message("=== CCDB CMAKE ===")
 
