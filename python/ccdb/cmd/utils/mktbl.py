@@ -120,11 +120,11 @@ class MakeTable(ConsoleUtilBase):
         """asks data in interactive mode"""
 
         if not self.table_path_set:
-            self.table_name = raw_input("Enter table name :")
-            self.table_parent_path = raw_input("Enter table parent path: ")
+            self.table_name = input("Enter table name :")
+            self.table_parent_path = input("Enter table parent path: ")
             self.table_path = posixpath.join(self.table_parent_path, self.table_name)
         if not self.comment_set:
-            self.comment = raw_input("Enter comment :")
+            self.comment = input("Enter comment :")
 
     #----------------------------------------------
     #   do_create_type - creates table

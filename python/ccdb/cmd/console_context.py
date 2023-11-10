@@ -466,7 +466,7 @@ class ConsoleContext(object):
 
             # read command from user
             try:
-                user_input = raw_input(self.current_path + "> ")
+                user_input = input(self.current_path + "> ")
             except EOFError:
                 log.debug("EOF sequence received. Ending interactive loop")
                 break

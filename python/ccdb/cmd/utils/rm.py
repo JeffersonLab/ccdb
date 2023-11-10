@@ -61,7 +61,7 @@ class Remove(ConsoleUtilBase):
         
         #ask confirmation
         if self.ask_confirm:
-            result = raw_input("To confirm delete type 'yes': ")
+            result = input("To confirm delete type 'yes': ")
             if result != 'yes':
                 return 0
 
