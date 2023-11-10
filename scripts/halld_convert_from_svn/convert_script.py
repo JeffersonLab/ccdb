@@ -10,7 +10,7 @@ import subprocess
 
 dom = xml.dom.minidom.getDOMImplementation();
 #dom = xml.dom.dom()
-print """
+print ("""
 ============================
 SVN CALIB to CCDB convertion
 ============================
@@ -24,7 +24,7 @@ JANA_CALIB_RULES - path to xml files with conversion rules
 
 run this script with '--rehearsal' flag to see what will be done. 
 run this script with '--execute' flag will execute ccdb commands
-"""
+""")
 
 
 #--------------------------
@@ -33,7 +33,7 @@ run this script with '--execute' flag will execute ccdb commands
 
 #ccdb pakage path
 if not "CCDB_HOME" in os.environ:
-    print "CCDB_HOME must be set"
+    print ("CCDB_HOME must be set")
     exit(1)
 
 ccdb_dir = os.environ['CCDB_HOME']
@@ -47,7 +47,7 @@ except:
     try:
         import ccdb
     except:
-        print "Cannot load ccdb python library. Check it is in path"
+        print ("Cannot load ccdb python library. Check it is in path")
         exit(1)
 
 #configure ccdbcmd
@@ -59,7 +59,7 @@ ccdbcmd_opts = ""
 #--------------------------------------------
 
 if not "JANA_CALIB_URL" in  os.environ:
-    print "JANA_CALIB_URL must be set"
+    print ("JANA_CALIB_URL must be set")
     exit(1)
 
 #this is directory with calib data
@@ -71,7 +71,7 @@ calib_dir = calib_dir[7:] #skip 'file://' part
 #-------------------------------------
 
 if not "JANA_CALIB_RULES" in  os.environ:
-    print "JANA_CALIB_RULES must be set"
+    print ("JANA_CALIB_RULES must be set")
     exit(1)
 
 #this is 'rules dir' the directory where xml files with data table definition are located
@@ -108,14 +108,14 @@ if result.colorless: ccdbcmd_opts = ccdbcmd_opts+" --no-color"
 #-----------------------------
 # *** PRINT CONFIGURATION  ***
 #-----------------------------
-print "CCDB path:      " + ccdb_dir
-print "CCDB options:   " + ccdbcmd_opts
-print "SVN calib:      " + calib_dir
-print "Converse rules: " + rules_dir
-print "Cnv. rules xml: " + rules_xml_dir
-print " execute_commands " + repr(execute_ccdb_commands)
-print " is_reharsal " + repr(is_reharsal)
-print " is verbose " + repr(is_verbose)
+print ("CCDB path:      " + ccdb_dir)
+print ("CCDB options:   " + ccdbcmd_opts)
+print ("SVN calib:      " + calib_dir)
+print ("Converse rules: " + rules_dir)
+print ("Cnv. rules xml: " + rules_xml_dir)
+print (" execute_commands " + repr(execute_ccdb_commands))
+print (" is_reharsal " + repr(is_reharsal))
+print (" is verbose " + repr(is_verbose))
 
 
 #-----------------------------------------------------"
@@ -128,8 +128,8 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
     xmldoc = minidom.parse(rule_file_path) 
 
     #>oO
-    print "  Processing file " + rule_file_path
-    print "  ***********************************************"
+    print ("  Processing file " + rule_file_path)
+    print ("  ***********************************************")
     
     #get type tables    
     xml_tables = xmldoc.getElementsByTagName('type')
@@ -154,22 +154,22 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
             #comments = comments.replace("\\n",os.linesep)
         
         #print out what we've got
-        print "     Process table: " + table_name
-        print "     Comments: " 
-        print "     " + comments[0:50]
-        print "     Rows Number: " + str(nrows)
-        print "     Is namevalue: " + repr(is_name_value_format)
+        print ("     Process table: " + table_name)
+        print ("     Comments: " )
+        print ("     " + comments[0:50])
+        print ("     Rows Number: " + str(nrows))
+        print ("     Is namevalue: " + repr(is_name_value_format))
         
 
         #iterate columns, create columns command
         columns_create_command = ''
         xml_columns = xml_table.getElementsByTagName('column')
-        if not is_verbose: print "    Columns : " + repr(len(xml_columns))
-        else: print "    Columns: "
+        if not is_verbose: print ("    Columns : " + repr(len(xml_columns)))
+        else: print ("    Columns: ")
         for xml_column in xml_columns:
             column_name = xml_column.attributes['name'].value
             column_type = xml_column.attributes['type'].value
-            if(is_verbose): print "      {:<35} = {}".format(column_name, column_type)
+            if(is_verbose): print ("      {:<35} = {}".format(column_name, column_type))
             columns_create_command+=' "{}={}"'.format(column_name, column_type)
 
         #create table command
@@ -177,24 +177,24 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         create_table_command = 'ccdb ' + ccdbcmd_opts +' mktbl  --no-quantity {0} -r {1} {2} "#{3}"'
         create_table_command = create_table_command.format(table_path, nrows, columns_create_command, "")
 
-        print "    Create command"
-        print "    " + create_table_command
-#        print "    " + create_table_command[0:50]+" ... "
+        print ("    Create command")
+        print ("    " + create_table_command)
+#        print ("    " + create_table_command[0:50]+" ... ")
         if(execute_ccdb_commands):
             (code, response) = get_status_output(create_table_command)
-            print code, response
+            print (code, response)
             if code!=0 or "error" in response or "failed" in response: exit("Conversion aborted")
         
-        print
-        print "  Filling data "
-        print "  ============================================="
+        print ()
+        print ("  Filling data ")
+        print ("  =============================================")
         
 
         #now fill it with data
 
         data_file_path = os.path.join(ccdb_parent_path, table_name)
         data_file_path = (calib_dir + "/" + data_file_path).replace("//","/")
-        print "     Data file is: " + data_file_path
+        print ("     Data file is: " + data_file_path)
 
         #read dom
         dom = ccdb.TextFileDOM()
@@ -203,23 +203,23 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
         
         #print verbose info
         if is_verbose:
-            print dom.column_names
-            print dom.rows
+            print (dom.column_names)
+            print (dom.rows)
             for i in range(min(len(dom.column_names),50)):
-                print "{:>35}     {}".format(dom.column_names[i], dom.rows[0][i])
+                print ("{:>35}     {}".format(dom.column_names[i], dom.rows[0][i]))
 
         add_command = "ccdb " + ccdbcmd_opts + " add  --c-comments "
         if(is_name_value_format) : add_command += "--name-value "
         add_command += table_path +" -v default -r 0- " + data_file_path
-        print add_command
+        print (add_command)
         
         if(execute_ccdb_commands):
             (code, response) = get_status_output(add_command)
-            print code, response
+            print (code, response)
             if code!=0 or "error" in response or "failed" in response: exit("Conversion aborted")
 
-        print "  ============================================="
-        print "  Finished with file "
+        print ("  =============================================")
+        print ("  Finished with file ")
         
 
 
@@ -229,32 +229,32 @@ def process_file(home_dir, rule_file_name, ccdb_parent_path):
 def process_directories(processing_dir):
     """ Create all directories according to rules_xml_dir"""
     
-    print
-    print "----------------------------------------------------------------------------------------------------------"
-    print "Entered directory  " + processing_dir
-    print "----------------------------------------------------------------------------------------------------------"
-    print
+    print ()
+    print ("----------------------------------------------------------------------------------------------------------")
+    print ("Entered directory  " + processing_dir)
+    print ("----------------------------------------------------------------------------------------------------------")
+    print ()
     
     #get ccdb directory that corresponds to this directory
     ccdb_dir = processing_dir[len(rules_xml_dir):].replace("\\","/")
-    print processing_dir[len(rules_xml_dir):]
-    print "  CCDB parent path that corresponds to this directory: "
-    print "  " + ccdb_dir
-    print
+    print (processing_dir[len(rules_xml_dir):])
+    print ("  CCDB parent path that corresponds to this directory: ")
+    print ("  " + ccdb_dir)
+    print ()
 
     #get all xml files in the directory
     sub_files = [f 
                  for f in os.listdir(processing_dir) 
                  if os.path.isfile(os.path.join(processing_dir, f)) and f.endswith(".xml")
                  ]
-    print "  Found " + repr(len(sub_files)) + " files"
+    print ("  Found " + repr(len(sub_files)) + " files")
 
     #iterate and process xml files
     for filename in sub_files:
         process_file(processing_dir, filename, ccdb_dir)
 
     
-    print "  Scanning for subdirectories"
+    print ("  Scanning for subdirectories")
     sub_dirs = [dir 
                 for dir in os.listdir(processing_dir) 
                 if os.path.isdir(os.path.join(processing_dir, dir)) and not dir == '.svn'
@@ -263,29 +263,29 @@ def process_directories(processing_dir):
     if not len(sub_dirs): return
 
     for directory in sub_dirs:
-        print "  found subdirectory " + directory
+        print ("  found subdirectory " + directory)
         create_directory(directory, ccdb_dir)
         process_directories(os.path.join(processing_dir, directory))
 
 
-    #print "Xml dir names"
+    #print ("Xml dir names")
     #for xml_name in xml_dirs_names:
-    #    print xml_name
+    #    print (xml_name)
     #create_directory(dir, '/')
-    print "==================================================================================================="
-    print "CONVERSION IS SUCCESSFULL"
+    print ("===================================================================================================")
+    print ("CONVERSION IS SUCCESSFULL")
 
 #----------------------------------
 def create_directory(dir_name, parent_path):
     path = (parent_path + "/" + dir_name).replace("//","/")
-    print "creating ccdb directory: " + path
+    print ("creating ccdb directory: " + path)
     command = "ccdb " + ccdbcmd_opts + " mkdir " + path
-    print command
+    print (command)
     if(execute_ccdb_commands):
         (code, response) = get_status_output(command)
-        print code, response
+        print (code, response)
         if code!=0 or "error" in response or "failed" in response: exit("Conversion aborted")
-    print "here"
+    print ("here")
 
 
 def get_status_output(cmd):

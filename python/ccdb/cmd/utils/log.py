@@ -102,13 +102,13 @@ class ShowLog(ConsoleUtilBase):
 #----------------------------------------
     def print_logs(self, log_records):
 
-        print self.theme.Directories + "(action)        (author)         (date)                 (description)"
+        print (self.theme.Directories + "(action)        (author)         (date)                 (description)")
 
         for log_record in log_records:
-            print " %-13s "%log_record.action +\
-                " %-16s"%log_record.author.name + \
-                " %-18s"%log_record.created.strftime("%Y-%m-%d %H-%M-%S   ") + " " +\
-                 log_record.description
+            print (" %-13s "%log_record.action +
+                " %-16s"%log_record.author.name +
+                " %-18s"%log_record.created.strftime("%Y-%m-%d %H-%M-%S   ") + " " +
+                 log_record.description)
 
 
 #----------------------------------------
@@ -117,10 +117,10 @@ class ShowLog(ConsoleUtilBase):
     def print_help(self):
         """Prints help of the command"""
           
-        print """Shows log records
+        print ("""Shows log records
     log <records to show>  <records to skip>
 
 Example:
     > log
     > log 50
-    """
+    """)

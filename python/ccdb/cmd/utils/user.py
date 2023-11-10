@@ -58,7 +58,7 @@ class User(ConsoleUtilBase):
     def print_help(self):
         """prints help to user"""
 
-        print """
+        print ("""
 User or user - manages users
 
 usage:
@@ -68,4 +68,4 @@ usage:
     user                  - prints the current user of the database.
 
     name           - is the username of the new user. [a-z A-Z 0-9 _] are allowed symbols
-            """
+            """)

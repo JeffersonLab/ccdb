@@ -135,7 +135,7 @@ class MakeTable(ConsoleUtilBase):
         log.debug("  write table to database...")
         self.context.provider.create_type_table(self.table_name, self.table_parent_path, self.rows, self.columns,
                                                 self.comment)
-        print "saving table to database... " + self.theme.Success + " completed" + self.theme.Reset
+        print ("saving table to database... " + self.theme.Success + " completed" + self.theme.Reset)
 
     #----------------------------------------------
     #   process_arguments - process input arguments
@@ -323,7 +323,7 @@ class MakeTable(ConsoleUtilBase):
     def print_help(self):
         """prints help for MakeTable"""
 
-        print """
+        print ("""
 MakeTable or mktbl - create type table with the specified namepath and parameters
 
 usage: 
@@ -387,67 +387,67 @@ keys:
                                      mktbl -nq ... 10val  - creates 1 column named '10val'
 
     -f <file> or --file <file>  Infer type table from text table file.(Hint: column names row should start with #&)
-            """
+            """)
 
     #----------------------------------------------
     #   print_validation - PRINTS VALIDATION TABLE
     #----------------------------------------------
     def print_validation(self):
         #basic values: name rows columns path
-        print
+        print ()
         if not len(self.table_name):
-            print "Table: " + self.theme.Fail + "Name is not set"
+            print ("Table: " + self.theme.Fail + "Name is not set")
         else:
-            print "Table: " + self.theme.Success + self.table_name
+            print ("Table: " + self.theme.Success + self.table_name)
 
-        print "Rows num: " + repr(self.rows) + self.theme.Reset + \
-              "   Columns num: " + repr(len(self.columns))
-        print "Full path: " + self.table_path
+        print ("Rows num: " + repr(self.rows) + self.theme.Reset + \
+              "   Columns num: " + repr(len(self.columns)))
+        print ("Full path: " + self.table_path)
         #columns info 
-        print
-        print "Columns: "
-        print "   (type)    : (name)"
+        print ()
+        print ("Columns: ")
+        print ("   (type)    : (name)")
         for (colname, coltype) in self.columns:
-            print "   " + self.theme.Type + "%-10s" % coltype + self.theme.Reset + ": " + colname
-        print
+            print ("   " + self.theme.Type + "%-10s" % coltype + self.theme.Reset + ": " + colname)
+        print ()
         #comment
-        print "Comment: "
+        print ("Comment: ")
         if len(self.comment):
-            print self.comment
+            print (self.comment)
         else:
-            print self.theme.Fail + "Comment is empty"
+            print (self.theme.Fail + "Comment is empty")
 
         #additional info print
-        print
-        print "Additional info: "
+        print ()
+        print ("Additional info: ")
         if self.rows_set:
-            print "   Rows number is set by " + self.theme.Success + "User"
+            print ("   Rows number is set by " + self.theme.Success + "User")
         else:
-            print "   Rows number is set by " + self.theme.Accent + "Default"
+            print ("   Rows number is set by " + self.theme.Accent + "Default")
 
         if self.comment_set:
-            print "   Comments added by " + self.theme.Success + "User"
+            print ("   Comments added by " + self.theme.Success + "User")
         else:
-            print "   No comments are set"
+            print ("   No comments are set")
 
 
     def print_settings_summary(self):
-        print self.theme.Success + " Summary: "
-        print "  columns: ", self.columns
-        print "  unparsed_columns: ", self.unparsed_columns
-        print
-        print "    rows            : ", self.rows
-        print "    rows_set        : ", repr(self.rows_set)
-        print
-        print "    interactive     : ", repr(self.interactive)
-        print "    interactive_set : ", repr(self.interactive_set)
-        print
-        print "    comment         : ", self.comment
-        print "    comment_set     : ", repr(self.comment_set)
-        print
-        print "    table_name      : ", self.table_name
-        print
-        print "    table_path      : ", self.table_path
-        print "    table_path_set  : ", repr(self.table_path_set)
-        print
-        print "    table_parent_path      : ", self.table_parent_path
+        print (self.theme.Success + " Summary: ")
+        print ("  columns: ", self.columns)
+        print ("  unparsed_columns: ", self.unparsed_columns)
+        print ()
+        print ("    rows            : ", self.rows)
+        print ("    rows_set        : ", repr(self.rows_set))
+        print ()
+        print ("    interactive     : ", repr(self.interactive))
+        print ("    interactive_set : ", repr(self.interactive_set))
+        print ()
+        print ("    comment         : ", self.comment)
+        print ("    comment_set     : ", repr(self.comment_set))
+        print ()
+        print ("    table_name      : ", self.table_name)
+        print ()
+        print ("    table_path      : ", self.table_path)
+        print ("    table_path_set  : ", repr(self.table_path_set))
+        print ()
+        print ("    table_parent_path      : ", self.table_parent_path)

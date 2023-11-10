@@ -8,7 +8,7 @@ import select
 
 #-------------------------------------------------------------------------------------------------------------
 def print_help():
-    print """
+    print ("""
 This utility can add users to ccdb database by user names.
 The idea behind this utility is to recreate users list from cronjob.
 
@@ -27,7 +27,7 @@ Examples:
     echo "anna,bob,smith' | python users_create.py mysql://ccdb_user@localhost/ccdb
 
 The scripts fails if no '--recreate' flag is given and a user exists.
-    """
+    """)
 
 
 #-------------------------------------------------------------------------------------------------------------

@@ -103,21 +103,21 @@ class Info(ConsoleUtilBase):
     # ----------------------------------------
     def print_directory(self, directory):
         assert isinstance(directory, Directory)
-        print " Name      :  " + self.theme.Success + directory.name
-        print " Full path :  " + directory.path
+        print (" Name      :  " + self.theme.Success + directory.name)
+        print (" Full path :  " + directory.path)
         try:
-            print " Created   :  " + directory.created.strftime("%Y-%m-%d %H-%M-%S")
+            print (" Created   :  " + directory.created.strftime("%Y-%m-%d %H-%M-%S"))
         except Exception as ex:
             log.warning("Directory created time getting error: " + str(ex))
         try:
-            print " Modified  :  " + directory.modified.strftime("%Y-%m-%d %H-%M-%S")
+            print (" Modified  :  " + directory.modified.strftime("%Y-%m-%d %H-%M-%S"))
         except Exception as ex:
             log.warning("Directory modify time getting error: " + str(ex))
 
         #comment
-        print " Comment: "
-        print directory.comment
-        print
+        print (" Comment: ")
+        print (directory.comment)
+        print ()
 
     #----------------------------------------
     #   print_type_table
@@ -125,33 +125,33 @@ class Info(ConsoleUtilBase):
     def print_type_table(self, table):
         #basic values: name rows columns path
         assert isinstance(table, TypeTable)
-        print "+------------------------------------------+"
-        print "| Type table information                   |"
-        print "+------------------------------------------+"
-        print " Name       :  " + self.theme.Success + table.name
-        print " Full path  :  " + table.path
-        print " Rows       :  " + self.theme.Accent + repr(int(table.rows_count))
-        print " Columns    :  " + self.theme.Accent + repr(int(table.columns_count))
-        print " Created    :  " + table.created.strftime("%Y-%m-%d %H-%M-%S")
-        print " Modified   :  " + table.modified.strftime("%Y-%m-%d %H-%M-%S")
-        print " DB Id      :  " + repr(int(table.id))
-        print "+------------------------------------------+"
-        print "| Columns info                             |"
-        print "+------------------------------------------+"
+        print ("+------------------------------------------+")
+        print ("| Type table information                   |")
+        print ("+------------------------------------------+")
+        print (" Name       :  " + self.theme.Success + table.name)
+        print (" Full path  :  " + table.path)
+        print (" Rows       :  " + self.theme.Accent + repr(int(table.rows_count)))
+        print (" Columns    :  " + self.theme.Accent + repr(int(table.columns_count)))
+        print (" Created    :  " + table.created.strftime("%Y-%m-%d %H-%M-%S"))
+        print (" Modified   :  " + table.modified.strftime("%Y-%m-%d %H-%M-%S"))
+        print (" DB Id      :  " + repr(int(table.id)))
+        print ("+------------------------------------------+")
+        print ("| Columns info                             |")
+        print ("+------------------------------------------+")
         #columns info 
-        print
-        print "Columns info "
-        print " N.   (type)    : (name)"
+        print ()
+        print ("Columns info ")
+        print (" N.   (type)    : (name)")
         for column in table.columns:
-            print " " + repr(int(column.order)).ljust(4) \
-                  + " " + self.theme.Type + "%-10s" % column.type + self.theme.Reset + ": " + column.name
+            print (" " + repr(int(column.order)).ljust(4) 
+                  + " " + self.theme.Type + "%-10s" % column.type + self.theme.Reset + ": " + column.name)
 
-        print
-        print "+------------------------------------------+"
+        print ()
+        print ("+------------------------------------------+")
         #comment
-        print "Comment: "
-        print table.comment
-        print
+        print ("Comment: ")
+        print (table.comment)
+        print ()
 
     #----------------------------------------
     #   print_variation
@@ -159,16 +159,16 @@ class Info(ConsoleUtilBase):
     def print_variation(self, variation):
         #basic values: name rows columns path
         assert isinstance(variation, Variation)
-        print "+------------------------------------------+"
-        print "| Variation information                    |"
-        print "+------------------------------------------+"
-        print " Name       :  " + self.theme.Success + variation.name
-        print " Created    :  " + variation.created.strftime("%Y-%m-%d %H-%M-%S")
-        print " DB Id      :  " + repr(int(variation.id))
-        print " Parent     :  " + (variation.parent.name if variation.parent else "--")
-        print " Comment:  "
-        print variation.comment
-        print
+        print ("+------------------------------------------+")
+        print ("| Variation information                    |")
+        print ("+------------------------------------------+")
+        print (" Name       :  " + self.theme.Success + variation.name)
+        print (" Created    :  " + variation.created.strftime("%Y-%m-%d %H-%M-%S"))
+        print (" DB Id      :  " + repr(int(variation.id)))
+        print (" Parent     :  " + (variation.parent.name if variation.parent else "--"))
+        print (" Comment:  ")
+        print (variation.comment)
+        print ()
 
     #----------------------------------------
     #   print_help
@@ -176,13 +176,13 @@ class Info(ConsoleUtilBase):
     def print_help(self):
         """Prints help of the command"""
 
-        print """Prints extended info about the object
+        print ("""Prints extended info about the object
     info <type table path>   - info about type table with given path
     info -d <directory path> - info about directory with given path
     info -v <variation name> - info about variation with given name
     info -f <file name>      - info about text file (col. names), rows, etc.
     
-    """
+    """)
 
     def print_file(self, file_path):
         #reading file

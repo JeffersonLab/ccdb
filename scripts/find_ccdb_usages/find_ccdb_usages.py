@@ -22,7 +22,7 @@ def search_calib_function(line):
             return (m.group("namepath"), m.group("variable"))
 
     except Exception as ex:
-        print ex
+        print (ex)
         
     return None
 
@@ -48,7 +48,7 @@ for dir_to_search in dirs_to_search:
                              ])
 
 report = ""
-print "SEARCHING {} files in {} directories".format(len(files_to_process), len(dirs_to_search))
+print ("SEARCHING {} files in {} directories".format(len(files_to_process), len(dirs_to_search)))
 for file in files_to_process:
     try:
         line_num = 0
@@ -86,4 +86,4 @@ for file in files_to_process:
     except:
         pass
 
-print report
+print (report)

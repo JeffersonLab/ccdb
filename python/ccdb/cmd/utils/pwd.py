@@ -24,11 +24,11 @@ class PrintWorkDir(ConsoleUtilBase):
     short_descr = "Prints working directory"
     
     def print_help(self):
-        print """ Prints working directory """ 
+        print (""" Prints working directory """ )
 
 
     def process(self, args):
         log.debug("  PrintWorkDir is gained a control over the process.")
         log.debug("    ".join(args))
         assert self.context is not None
-        print self.context.current_path
+        print (self.context.current_path)

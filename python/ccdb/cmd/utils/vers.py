@@ -84,24 +84,24 @@ class Versions(ConsoleUtilBase):
             print("For variation: {}".format(variation))
 
         # table header... and table =)
-        print self.theme.Directories + "(ID)   (Created)              (Modified)              (variation)     (run range)      (comments)"
+        print (self.theme.Directories + "(ID)   (Created)              (Modified)              (variation)     (run range)      (comments)")
         for asgmnt in assignments:
             assert isinstance(asgmnt, ccdb.Assignment)
             max_str = repr(asgmnt.run_range.max)
             if asgmnt.run_range.max == ccdb.INFINITE_RUN:
                 max_str="inf"
-            print " %-5i "%asgmnt.id +\
-                  " %-20s"%asgmnt.created.strftime("%Y-%m-%d %H-%M-%S   ") +\
-                  " %-20s"%asgmnt.modified.strftime("%Y-%m-%d %H-%M-%S   ") + " " +\
-                  " %-14s "%asgmnt.variation.name +\
-                  " %-15s "%(repr(asgmnt.run_range.min) + "-" + max_str) +\
-                  asgmnt.comment[0:20].replace("\n", " ")
+            print (" %-5i "%asgmnt.id +
+                  " %-20s"%asgmnt.created.strftime("%Y-%m-%d %H-%M-%S   ") +
+                  " %-20s"%asgmnt.modified.strftime("%Y-%m-%d %H-%M-%S   ") + " " +
+                  " %-14s "%asgmnt.variation.name +
+                  " %-15s "%(repr(asgmnt.run_range.min) + "-" + max_str) +
+                  asgmnt.comment[0:20].replace("\n", " "))
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def print_help(self):
         """Prints help of the command"""
           
-        print """Show versions of data for specified type table
+        print ("""Show versions of data for specified type table
 
 Flags:
     -v or --variation  - filters output by variation
@@ -114,4 +114,4 @@ Example:
     >> vers /test/test_vars/test_table   #get all data versions
     >> cd /test/test_vars                #navigate to directory
     >> vers -v default test_table        #shows only data versions in default variation
-    """
+    """)

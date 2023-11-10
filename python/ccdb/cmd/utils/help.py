@@ -27,7 +27,7 @@ class HelpUtil(ConsoleUtilBase):
     #   print_help
     #----------------------------------------
     def print_help(self):
-        print self.help_text
+        print (self.help_text)
 
         if self.context:
             print ("Available commands:")
@@ -37,8 +37,8 @@ class HelpUtil(ConsoleUtilBase):
                 for command, util 
                 in self.context.utils.items()
                 if not util.help_util]))
-        print self.flags_text
-        print self.enveron_text
+        print (self.flags_text)
+        print (self.enveron_text)
 
 
     #----------------------------------------

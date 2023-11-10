@@ -130,7 +130,7 @@ class MySQLConnectionAbstract(object):
                                     config_options[option][1] <= value[1]):
                                 config_options[option] = value
                         except KeyError:
-                            if group is 'connector_python':
+                            if group == 'connector_python':
                                 raise AttributeError("Unsupported argument "
                                                      "'{0}'".format(option))
                 except KeyError:
