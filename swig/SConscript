@@ -43,7 +43,7 @@ pyllapi_env.ParseConfig('python-config --cflags --libs')
 use_swig = int(ARGUMENTS.get("swig",0))
 
 if use_swig==1:
-	print "Building CCDB using SWIG conversion"
+	print("Building CCDB using SWIG conversion")
 	
 	#Setup environment
 	
@@ -57,7 +57,7 @@ if use_swig==1:
 	pyllapi_env.InstallAs('#swig/ccdb_pyllapi_wrap.cc','ccdb_pyllapi_wrap.cc')
 	pyllapi_env.InstallAs('#swig/ccdb_pyllapi.py','ccdb_pyllapi.py')
 else:
-	print "Skipping SWIG wrapper generation. Use 'scons ... swig=1' to enable it"
+	print("Skipping SWIG wrapper generation. Use 'scons ... swig=1' to enable it")
 	pyllapi_lib = pyllapi_env.SharedLibrary('_ccdb_pyllapi', ['ccdb_pyllapi_wrap.cc'], LIBS=["ccdb"], LIBPATH='#lib')
 
 pyllapi_env.Append(CPPPATH = ['#include', '#src'])
