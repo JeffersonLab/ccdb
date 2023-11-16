@@ -47,7 +47,7 @@ if (SQLite3_FOUND)
 endif (SQLite3_FOUND)
 
 # Add MySQL/MariaDB
-find_package (MySQL REQUIRED)
+find_package(MySQL)
 if (MySQL_FOUND)
     message(STATUS "MySQL_FOUND")
     message(STATUS "MySQL_INCLUDE_DIRS = ${MySQL_INCLUDE_DIRS}")
@@ -62,9 +62,12 @@ if (MySQL_FOUND)
             Providers/MySQLDataProvider.cc
     )
     target_compile_definitions(ccdb PUBLIC "CCDB_MYSQL=1")
+elseif (MySQL_FOUND)
+    message(STATUS "(!) MySQL IS NOT FOUND. Building without MySQL")
 endif (MySQL_FOUND)
 
-find_package (Threads)
+
+find_package(Threads)
 
 message(STATUS "CMAKE_THREAD_LIBS_INIT = ${CMAKE_THREAD_LIBS_INIT}")
 # If you need to set properties specific to the shared or static library, do it here

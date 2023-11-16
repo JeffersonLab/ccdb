@@ -26,7 +26,7 @@ endmacro()
 if(MySQL_CONFIG_EXECUTABLE)
     get_mysql_config_flag("--cflags" MySQL_CFLAGS)
     get_mysql_config_flag("--include" MySQL_INCLUDE_DIRS)
-    get_mysql_config_flag("--libs" MySQL_LIBRARIES)
+    get_mysql_config_flag("--libs" MySQL_LIB_CONFIGS)
 
     # For version we don't need separate_output so we don't user the above function
     execute_process(COMMAND "${MySQL_CONFIG_EXECUTABLE}" "--version"
@@ -34,18 +34,31 @@ if(MySQL_CONFIG_EXECUTABLE)
             OUTPUT_VARIABLE MySQL_VERSION
             OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+
     string(REGEX REPLACE "-I" "" MySQL_INCLUDE_DIRS "${MySQL_INCLUDE_DIRS}")
-    string(REGEX MATCHALL "-L[^;]+" MySQL_LINK_DIRS "${MySQL_LIBRARIES}")
-    string(REGEX MATCHALL "-l[^;]+" MySQL_LINK_LIBS "${MySQL_LIBRARIES}")
+    string(REGEX MATCHALL "-L[^;]+" MySQL_LINK_DIRS "${MySQL_LIB_CONFIGS}")
+
+    # (!) We now need to remove -L<whatever> from the list before we proceed
+    foreach(DIR ${MySQL_LINK_DIRS})
+        list(REMOVE_ITEM MySQL_LIB_CONFIGS ${DIR})
+    endforeach()
+
+    # Now select -l result
+    string(REGEX MATCHALL "-l[^;]+" MySQL_LINK_LIBS "${MySQL_LIB_CONFIGS}")
+
+    message(DEBUG " FindMySQL MySQL_LIBRARIES=${MySQL_LIB_CONFIGS}")
+    message(DEBUG " FindMySQL MySQL_LINK_LIBS=${MySQL_LINK_LIBS}")
+    message(DEBUG " FindMySQL MySQL_LINK_DIRS=${MySQL_LINK_DIRS}")
 
     set(MySQL_LIBRARIES) # Clear before appending properly formatted libraries
-    foreach(DIR ${MySQL_LINK_DIRS})
-        string(REPLACE "-L" "" DIR "${DIR}")
-        list(APPEND MySQL_LIBRARIES "-L${DIR}")
-    endforeach()
+
     foreach(LIB ${MySQL_LINK_LIBS})
         string(REPLACE "-l" "" LIB "${LIB}")
         list(APPEND MySQL_LIBRARIES "-l${LIB}")
+        find_library(DEP_LIB ${LIB} PATHS ${MySQL_LINK_DIRS})
+        if(DEP_LIB)
+            list(APPEND MySQL_LIBRARIES "${DEP_LIB}")
+        endif (DEP_LIB)
     endforeach()
 else()
     # Fallback to default paths and find the header and libraries manually
@@ -62,11 +75,6 @@ else()
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args(MySQL DEFAULT_MSG MySQL_INCLUDE_DIR MySQL_LIBRARY)
     set(MySQL_VERSION "Not Known")
-
-    if(MySQL_FOUND)
-        set(MySQL_INCLUDE_DIRS "${MySQL_INCLUDE_DIR}")
-        set(MySQL_LIBRARIES "${MySQL_LIBRARY}")
-    endif()
 endif()
 
-mark_as_advanced(MySQL_CONFIG_EXECUTABLE MySQL_INCLUDE_DIR MySQL_LIBRARY)
+find_package_handle_standard_args(MySQL REQUIRED_VARS MySQL_INCLUDE_DIRS MySQL_LIBRARIES)
