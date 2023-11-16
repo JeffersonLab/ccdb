@@ -100,7 +100,7 @@ namespace ccdb
          * @param  [in] parentDir directory that contains type table
          * @return new object of ConstantsTypeTable
          */
-        ConstantsTypeTable * GetConstantsTypeTable(const string& name, Directory *parentDir, bool loadColumns=false) override;
+        ccdb::ConstantsTypeTable * GetConstantsTypeTable(const std::string& name, Directory *parentDir, bool loadColumns=false) override;
 
 
         /** @brief Searches for type tables that matches the patten
@@ -122,7 +122,11 @@ namespace ccdb
          * @param  parentPath
          * @return vector<ConstantsTypeTable *>
          */
-        std::vector<ConstantsTypeTable *> GetAllConstantsTypeTables(bool loadColumns = false) override;
+        std::vector<ccdb::ConstantsTypeTable *> SearchConstantsTypeTables(const std::string &pattern,
+                                                                          const std::string &parentPath="",
+                                                                          bool loadColumns=false,
+                                                                          int take=0,
+                                                                          int startWith=0);
 
         /** @brief Searches for type tables that matches the patten
          *
@@ -143,14 +147,14 @@ namespace ccdb
          * @param  parentPath
          * @return bool
          */
-        virtual bool SearchConstantsTypeTables(vector<ConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 );
+        virtual bool SearchConstantsTypeTables(vector<ccdb::ConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath = "", bool loadColumns=false, int take=0, int startWith=0 );
 
-        /**
-         * @brief This function counts number of type tables for a given directory
-         * @param [in] directory to look tables in
-         * @return number of tables to return
+        /** @brief Gets all constant type tables that are in DB
+         *
+         * @param loadColumns - loads columns for each table (additional DB queries)
+         * @return list of DataTables in DB
          */
-        virtual int CountConstantsTypeTables(Directory *dir);
+        std::vector<ccdb::ConstantsTypeTable *> GetAllConstantsTypeTables(bool loadColumns = false) override;
 
 
         /** @brief Loads columns for "table" type table
@@ -184,19 +188,6 @@ namespace ccdb
          * @return   DRunRange* return NULL if not found or failed
          */
         virtual RunRange* GetRunRange(const string& name);
-
-        /**
-         * @brief Searches all run ranges associated with this type table
-         *
-         * @param [out] resultRunRanges result run ranges
-         * @param [in]  table		table to search run ranges in
-         * @param [in]  variation	variation to search, if not set all variations will be selected
-         * @param [in]  take			how many records to take
-         * @param [in]  startWith	start record to take
-         * @return
-         */
-        virtual bool GetRunRanges(vector<RunRange *>& resultRunRanges, ConstantsTypeTable *table, const string& variation="", int take=0, int startWith=0 );
-
 
 
         #pragma endregion Run ranges
@@ -235,20 +226,6 @@ namespace ccdb
     public:
         #pragma region Assignments
 
-        /** @brief Get Assignment with data blob only
-         *
-         * This function is optimized for fast data retrieving and is assumed to be performance critical;
-         * This function doesn't return any specified information like variation object or run-range object
-         * @see GetAssignmentFull
-         * @param [in] run - run number
-         * @param [in] path - object path
-         * @param [in] variation - variation name
-         * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
-         * @return DAssignment object or NULL if no assignment is found or error
-         */
-        virtual Assignment* GetAssignmentShort(int run, const string& path, const string& variation="default", bool loadColumns=false);
-
-
          /** @brief Get specified by creation time version of Assignment with data blob only.
          *
          * The Time is a timestamp, data that is equal or earlier in time than that timestamp is returned
@@ -267,12 +244,8 @@ namespace ccdb
 
     protected:
 
-
-
-
         virtual bool QuerySelect(const char* query);	///Do "select" queries
         virtual bool QuerySelect(const string& query);	///Do "select" queries
-        virtual bool QueryCustom(const string& query);	///Do any custom queries queries
 
         virtual void FreeMySQLResult();	///Frees my sql result manually
 

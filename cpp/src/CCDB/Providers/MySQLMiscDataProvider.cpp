@@ -3,115 +3,6 @@
 // Subject to the terms in the LICENSE file found in the top-level directory.
 //
 
-std::vector<ConstantsTypeTable *> ccdb::MySQLDataProvider::GetAllConstantsTypeTables(const string &pattern,
-                                                                                     const string &parentPath /*= ""*/,
-                                                                                     bool loadColumns/*=false*/,
-                                                                                     int take/*=0*/,
-                                                                                     int startWith/*=0 */ )
-{
-    std::vector<ConstantsTypeTable *> tables;
-    SearchConstantsTypeTables(tables, pattern, parentPath,loadColumns, take, startWith);
-    return tables;
-}
-
-
-bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath /*= ""*/, bool loadColumns/*=false*/, int take/*=0*/, int startWith/*=0 */ )
-{
-
-    // in MYSQL compared to wildcards % is * and _ is
-    // convert it.
-    string likePattern = WilcardsToLike(pattern);
-
-    //do we need to search only in specific directory?
-    string parentAddon("");         //this addition is to query with right parent directory
-    Directory *parentDir = nullptr;    //we will need it later anyway
-    if(parentPath!="")
-    {
-        //we must take care of parent path!
-        if((parentDir = GetDirectory(parentPath.c_str())))
-        {
-            parentAddon = StringUtils::Format(" AND `directoryId` = '%i'", parentDir->GetId());
-        }
-        else
-        {
-            //request was made for directory that doesn't exits
-            //TODO place warning or not?
-            Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"MySQLDataProvider::GetAllConstantsTypeTables", "Path to search is not found");
-            return false;
-        }
-    }
-    else
-    {
-        //In this case we will need mDirectoriesById
-        //maybe we need to update our directories?
-        UpdateDirectoriesIfNeeded();
-    }
-
-    //Ok, lets cleanup result list
-    if(typeTables.size()>0)
-    {
-        vector<ConstantsTypeTable *>::iterator iter = typeTables.begin();
-        while(iter != typeTables.end())
-        {
-            ConstantsTypeTable *obj = *iter;
-            iter++;
-        }
-    }
-    typeTables.clear(); //we clear the consts. Considering that some one else  should handle deletion
-
-    string limitAddon = PrepareLimitInsertion(take, startWith);
-
-    //combine query
-    string query = StringUtils::Format("SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` FROM `typeTables` WHERE `name` LIKE '%s' %s ORDER BY `name` %s;",
-                                       likePattern.c_str(), parentAddon.c_str(), limitAddon.c_str());
-
-    if(!QuerySelect(query))
-    {
-        //no report error
-        return false;
-    }
-
-
-    //Ok! We queried our directories! lets catch them!
-    while(FetchRow())
-    {
-        //ok lets read the data...
-        ConstantsTypeTable *result = new ConstantsTypeTable(this, this);
-
-        result->SetId(ReadULong(0));
-        result->SetCreatedTime(ReadUnixTime(1));
-        result->SetModifiedTime(ReadUnixTime(2));
-        result->SetName(ReadString(3));
-        result->SetDirectoryId(ReadULong(4));
-        result->SetNRows(ReadInt(5));
-        result->SetNColumnsFromDB(ReadInt(6));
-        result->SetComment(ReadString(7));
-
-        if(parentDir) //we already may have parrent directory
-        {
-            result->SetDirectory(parentDir);
-        }
-        else //Or we should find it...
-        {
-            result->SetDirectory(mDirectoriesById[result->GetDirectoryId()]);
-        }
-
-        typeTables.push_back(result);
-    }
-
-    //Load COLUMNS if needed...
-    if(loadColumns)
-    {
-        for (int i=0; i< typeTables.size(); i++)
-        {
-            LoadColumns(typeTables[i]);
-        }
-    }
-
-    FreeMySQLResult();
-
-    return true;
-}
 
 
 
@@ -355,23 +246,6 @@ bool ccdb::MySQLDataProvider::FillAssignment(Assignment* assignment)
 }
 
 
-std::string ccdb::MySQLDataProvider::WilcardsToLike( const string& str )
-{
-    //MySQL - wildcards
-    //% - *
-    //_ - ?
-
-    //encode underscores
-    string result = StringUtils::Replace("_", "\\_", str);
-
-    //replace ? to _
-    StringUtils::Replace("?","_",result, result);
-
-    //replace * to %
-    StringUtils::Replace("*","%",result, result);
-
-    return result;
-}
 
 std::string ccdb::MySQLDataProvider::PrepareCommentForInsert( const string& comment )
 {
@@ -450,14 +324,7 @@ dbkey_t ccdb::MySQLDataProvider::GetUserId( string userName )
 }
 
 
-std::string ccdb::MySQLDataProvider::PrepareLimitInsertion(  int take/*=0*/, int startWith/*=0*/ )
-{
-    if(startWith != 0 && take != 0) return " LIMIT " + to_string(startWith) +", " + to_string(take) + " ";
-    if(startWith != 0 && take == 0) return " LIMIT " + to_string(startWith) +", " + to_string(INFINITE_RUN) + " ";
-    if(startWith == 0 && take != 0) return " LIMIT " + to_string(take) + " ";
 
-    return {}; //No LIMIT at all, if run point is here it corresponds to if(startWith == 0 && take ==0 )
-}
 
 
 int ccdb::MySQLDataProvider::CountConstantsTypeTables(Directory *dir)

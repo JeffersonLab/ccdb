@@ -19,6 +19,7 @@ inline std::string get_test_sqlite_connection() {
     if(!conStr) {
         throw std::runtime_error("Environment variable CCDB_TEST_SQLITE_CONNECTION is not set. It is required for MySQL tests");
     }
+    return conStr;
 }
 
 #endif // tests_h__

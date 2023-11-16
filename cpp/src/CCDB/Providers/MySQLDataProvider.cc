@@ -12,12 +12,41 @@
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
 #include "CCDB/Model/RunRange.h"
+#include "CCDB/Helpers/StringUtils.h"
 
 #ifdef __MACH__
 #include <mach/clock.h>
 #include <mach/mach.h>
 #endif
 
+
+static inline std::string WilcardsToLike( const string& str )
+{
+    //MySQL - wildcards
+    //% - *
+    //_ - ?
+
+    //encode underscores
+    string result = ccdb::StringUtils::Replace("_", "\\_", str);
+
+    //replace ? to _
+    ccdb::StringUtils::Replace("?","_",result, result);
+
+    //replace * to %
+    ccdb::StringUtils::Replace("*","%",result, result);
+
+    return result;
+}
+
+
+static inline std::string PrepareLimitInsertion(int take=0, int startWith=0)
+{
+    if(startWith != 0 && take != 0) return " LIMIT " + to_string(startWith) +", " + to_string(take) + " ";
+    if(startWith != 0 && take == 0) return " LIMIT " + to_string(startWith) +", " + to_string(INFINITE_RUN) + " ";
+    if(startWith == 0 && take != 0) return " LIMIT " + to_string(take) + " ";
+
+    return {}; //No LIMIT at all, if run point is here it corresponds to if(startWith == 0 && take ==0 )
+}
 
 static void Error(int errorCode, std::string funcName, std::string message) {
     /// TODO this needs to be replaced. This is a stub to replace old CCDB logging that was removed
@@ -312,6 +341,116 @@ ccdb::ConstantsTypeTable * ccdb::MySQLDataProvider::GetConstantsTypeTable( const
     return result;
 }
 
+std::vector<ccdb::ConstantsTypeTable *> ccdb::MySQLDataProvider::GetAllConstantsTypeTables(bool loadColumns) {
+    return SearchConstantsTypeTables("*", "", loadColumns);
+}
+
+
+std::vector<ccdb::ConstantsTypeTable *> ccdb::MySQLDataProvider::SearchConstantsTypeTables(const std::string &pattern, const std::string &parentPath /*=""*/, bool loadColumns/*=false*/, int take/*=0*/, int startWith/*=0*/)
+{
+    std::vector<ConstantsTypeTable *> tables;
+    SearchConstantsTypeTables(tables, pattern, parentPath,loadColumns, take, startWith);
+    return tables;
+}
+
+
+bool ccdb::MySQLDataProvider::SearchConstantsTypeTables( vector<ConstantsTypeTable *>& typeTables, const string& pattern, const string& parentPath /*= ""*/, bool loadColumns/*=false*/, int take/*=0*/, int startWith/*=0*/)
+{
+
+    // in MYSQL compared to wildcards % is * and _ is
+    // convert it.
+    string likePattern = WilcardsToLike(pattern);
+
+    //do we need to search only in specific directory?
+    string parentAddon("");         //this addition is to query with right parent directory
+    Directory *parentDir = nullptr;    //we will need it later anyway
+    if(parentPath!="")
+    {
+        //we must take care of parent path!
+        if((parentDir = GetDirectory(parentPath.c_str())))
+        {
+            parentAddon += " AND `directoryId` = '" + to_string(parentDir->GetId()) + "'";
+        }
+        else
+        {
+            //request was made for directory that doesn't exits
+            //TODO place warning or not?
+            Error(CCDB_ERROR_DIRECTORY_NOT_FOUND,"MySQLDataProvider::GetAllConstantsTypeTables", "Path to search is not found");
+            return false;
+        }
+    }
+    else
+    {
+        //In this case we will need mDirectoriesById
+        //maybe we need to update our directories?
+        UpdateDirectoriesIfNeeded();
+    }
+
+    //Ok, lets cleanup result list
+    if(typeTables.size()>0)
+    {
+        vector<ConstantsTypeTable *>::iterator iter = typeTables.begin();
+        while(iter != typeTables.end())
+        {
+            ConstantsTypeTable *obj = *iter;
+            iter++;
+        }
+    }
+    typeTables.clear(); //we clear the consts. Considering that some one else  should handle deletion
+
+    string limitAddon = PrepareLimitInsertion(take, startWith);
+
+    //combine query
+    string query = "SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `directoryId`, `nRows`, `nColumns`, `comment` "
+                   "FROM `typeTables` WHERE `name` LIKE '" + likePattern + "' " + parentAddon + " ORDER BY `name` " + limitAddon + ";";
+
+    if(!QuerySelect(query))
+    {
+        //no report error
+        return false;
+    }
+
+
+    //Ok! We queried our directories! lets catch them!
+    while(FetchRow())
+    {
+        //ok lets read the data...
+        ConstantsTypeTable *result = new ConstantsTypeTable();
+
+        result->SetId(ReadULong(0));
+        result->SetCreatedTime(ReadUnixTime(1));
+        result->SetModifiedTime(ReadUnixTime(2));
+        result->SetName(ReadString(3));
+        result->SetDirectoryId(ReadULong(4));
+        result->SetNRows(ReadInt(5));
+        result->SetNColumnsFromDB(ReadInt(6));
+        result->SetComment(ReadString(7));
+
+        if(parentDir) //we already may have parrent directory
+        {
+            result->SetDirectory(parentDir);
+        }
+        else //Or we should find it...
+        {
+            result->SetDirectory(mDirectoriesById[result->GetDirectoryId()]);
+        }
+
+        typeTables.push_back(result);
+    }
+
+    //Load COLUMNS if needed...
+    if(loadColumns)
+    {
+        for (int i=0; i< typeTables.size(); i++)
+        {
+            LoadColumns(typeTables[i]);
+        }
+    }
+
+    FreeMySQLResult();
+
+    return true;
+}
 
 void ccdb::MySQLDataProvider::LoadColumns(ConstantsTypeTable* table)
 {
@@ -824,6 +963,7 @@ std::string ccdb::MySQLDataProvider::ComposeMySQLError(std::string mySqlFunction
                       " (" + mysql_error(mMySQLHnd) + ")\n";
     return mysqlErr;
 }
+
 
 
 
