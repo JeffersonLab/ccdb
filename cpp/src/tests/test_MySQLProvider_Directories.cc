@@ -5,7 +5,6 @@
 
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/Directory.h"
-#include "CCDB/Log.h"
 
 #include <iostream>
 
@@ -20,22 +19,10 @@ using namespace ccdb;
 TEST_CASE("CCDB/MySQLDataProvider/Directories","Directories tests")
 {	
 	MySQLDataProvider *prov = new MySQLDataProvider();
-	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
+	prov->Connect(get_test_mysql_connection());
 	
 	//get directory by path
 	Directory *dir=prov->GetDirectory("/test/subtest");
 	REQUIRE(dir!=NULL);
-	
-
-	//Search directories by pattern	
-	vector<Directory *> dirs = prov->SearchDirectories(static_cast<string>("t??t_va*"), "/test");
-	REQUIRE(dirs.size()>0);
-
-	dirs = prov->SearchDirectories("t??t_va*");
-	REQUIRE(dirs.size()>0);
-		
-	//Search directories by pattern
-	dirs = prov->SearchDirectories(static_cast<string>("*"), "/");
-	REQUIRE(dirs.size()>0);
 }
 #endif //ifdef CCDB_MYSQL

@@ -19,16 +19,16 @@ TEST_CASE("CCDB/SQLiteDataProvider/Connection","Connection tests")
 	REQUIRE_FALSE(prov->IsConnected());
     
     //Connection
-    REQUIRE_NOTHROW(prov->Connect(TESTS_SQLITE_STRING));
+    REQUIRE_NOTHROW(prov->Connect(get_test_sqlite_connection()));
 	REQUIRE(prov->IsConnected());
-    REQUIRE(string(prov->GetConnectionString()) == string(TESTS_SQLITE_STRING));
+    REQUIRE(string(prov->GetConnectionString()) == string(get_test_sqlite_connection()));
 
     //disconnect
 	prov->Disconnect();
 	REQUIRE_FALSE(prov->IsConnected());
 
 	//reconnect
-    REQUIRE_NOTHROW(prov->Connect(TESTS_SQLITE_STRING));
+    REQUIRE_NOTHROW(prov->Connect(get_test_sqlite_connection()));
 
 	//cleanup
 	prov->Disconnect();

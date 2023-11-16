@@ -3,7 +3,6 @@
 #include "Tests/catch.hpp"
 #include "Tests/tests.h"
 
-#include "CCDB/Console.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/Directory.h"
 
@@ -25,16 +24,16 @@ TEST_CASE("CCDB/MySQLDataProvider/Connection","Connection tests")
 	REQUIRE_FALSE(prov->IsConnected());
     
     //Connection
-	REQUIRE(prov->Connect(TESTS_CONENCTION_STRING));
+	REQUIRE_NOTHROW(prov->Connect(get_test_mysql_connection()));
 	REQUIRE(prov->IsConnected());
-    REQUIRE(prov->GetConnectionString() == TESTS_CONENCTION_STRING);
+    REQUIRE(prov->GetConnectionString() == get_test_mysql_connection());
 
     //disconnect
 	prov->Disconnect();
 	REQUIRE_FALSE(prov->IsConnected());
 
 	//reconnect
-	REQUIRE(prov->Connect(TESTS_CONENCTION_STRING));
+	REQUIRE_NOTHROW(prov->Connect(get_test_mysql_connection()));
 
 	//cleanup
 	prov->Disconnect();

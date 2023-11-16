@@ -34,9 +34,9 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
     SQLiteCalibration *calib = new SQLiteCalibration(100);
     result = false;
 
-    REQUIRE_NOTHROW(result = calib->Connect(TESTS_SQLITE_STRING));
+    REQUIRE_NOTHROW(result = calib->Connect(get_test_sqlite_connection()));
     REQUIRE(result);
-    REQUIRE(calib->GetConnectionString() == TESTS_SQLITE_STRING);
+    REQUIRE(calib->GetConnectionString() == get_test_sqlite_connection());
 
     
     
@@ -84,7 +84,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 {
 	bool result;
 	CalibrationGenerator* gen = new CalibrationGenerator();
-	Calibration* sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, "default");
+	Calibration* sqliteCalib = gen->MakeCalibration(get_test_sqlite_connection(), 100, "default");
 	REQUIRE(static_cast<SQLiteCalibration*>(sqliteCalib)!=NULL);
 	REQUIRE(sqliteCalib->IsConnected());
 	vector<vector<string> > tabledValues;
@@ -117,10 +117,10 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 	ConstantsTypeTable* table = sqliteCalib->GetProvider()->GetConstantsTypeTable("/test/test_vars/test_table2", true);
 	REQUIRE(table->GetColumns()[0]->GetType() == ConstantsTypeColumn::cIntColumn);
 
-	Calibration* sqliteCalib2 = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, "default");
+	Calibration* sqliteCalib2 = gen->MakeCalibration(get_test_sqlite_connection(), 100, "default");
 	REQUIRE(sqliteCalib == sqliteCalib2);
 		
-	REQUIRE(CalibrationGenerator::CheckOpenable(TESTS_SQLITE_STRING));
+	REQUIRE(CalibrationGenerator::CheckOpenable(get_test_sqlite_connection()));
 	REQUIRE_FALSE(CalibrationGenerator::CheckOpenable("abra_kadabra://protocol"));
 
 
@@ -128,7 +128,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 	SECTION("Default Time SQLite", "Test that test vars are opened with default date")
 	{		
 		ContextParseResult res = PathUtils::ParseContext("variation=default calibtime=2012-08");
-		Calibration* sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime);
+		Calibration* sqliteCalib = gen->MakeCalibration(get_test_sqlite_connection(), 100, res.Variation, res.ConstantsTime);
 		REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
 		REQUIRE(result);
 		REQUIRE(tabledValues.size()>0);
@@ -138,7 +138,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 
 		//No such calibration exist in mc variation, but constants should fallback to default varitaion
 		res = PathUtils::ParseContext("variation=subtest calibtime=2012-11");
-		sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime);
+		sqliteCalib = gen->MakeCalibration(get_test_sqlite_connection(), 100, res.Variation, res.ConstantsTime);
 		REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
 		REQUIRE(result);
 		REQUIRE(tabledValues.size()>0);
@@ -148,7 +148,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		
 		//No such calibration exist in test variation run 100, but constants should fallback to variation
 		res = PathUtils::ParseContext("variation=test");
-		sqliteCalib = gen->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation);
+		sqliteCalib = gen->MakeCalibration(get_test_sqlite_connection(), 100, res.Variation);
 		REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
 		REQUIRE(result);
 		REQUIRE(tabledValues.size()>0);
@@ -187,9 +187,9 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
             unique_ptr<CalibrationGenerator> gen2(new CalibrationGenerator());
 
             ContextParseResult res = PathUtils::ParseContext("variation=default calibtime=2012-08");
-            unique_ptr<Calibration> sqliteCalib1(gen2->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime));
+            unique_ptr<Calibration> sqliteCalib1(gen2->MakeCalibration(get_test_sqlite_connection(), 100, res.Variation, res.ConstantsTime));
             //unique_ptr<Calibration> sqliteCalib2(gen2->MakeCalibration(TESTS_SQLITE_STRING, 100, res.Variation, res.ConstantsTime));
-            unique_ptr<Calibration> sqliteCalib3(gen2->MakeCalibration(TESTS_SQLITE_STRING, 101, res.Variation, res.ConstantsTime));
+            unique_ptr<Calibration> sqliteCalib3(gen2->MakeCalibration(get_test_sqlite_connection(), 101, res.Variation, res.ConstantsTime));
             sqliteCalib1->GetAssignment("/test/test_vars/test_table2:0:test");
             //Now lets check the teardown...
         }

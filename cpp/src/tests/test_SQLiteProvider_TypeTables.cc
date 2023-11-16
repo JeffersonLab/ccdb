@@ -19,7 +19,7 @@ TEST_CASE("CCDB/SQLiteDataProvider/TypeTables","TypeTables tests")
 {
 	
 	SQLiteDataProvider *prov = new SQLiteDataProvider();
-	prov->Connect(TESTS_SQLITE_STRING);
+	prov->Connect(get_test_sqlite_connection());
 
     bool result;
 	

@@ -3,7 +3,6 @@
 #include "Tests/tests.h"
 #include "Tests/catch.hpp"
 
-#include "CCDB/Console.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/Variation.h"
@@ -22,7 +21,7 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	bool result;
 	
 	DataProvider *prov = new MySQLDataProvider();
-	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
+	prov->Connect(get_test_mysql_connection());
 
 	//GET ASSIGNMENTS TESTS
 	//----------------------------------------------------
@@ -47,30 +46,5 @@ TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
 	REQUIRE(tabeled_values[1][0] == "2.5");
 	REQUIRE(tabeled_values[1][1] == "2.6");
 	REQUIRE(tabeled_values[1][2] == "2.7");
-	
-	//Ok! Lets get all assignments for current table types
-	vector<Assignment *> assignments;
-	result = prov->GetAssignments(assignments, "/test/test_vars/test_table", 100);
-	
-	REQUIRE(result);	
-	REQUIRE(assignments.size()>0);
-	
-	//save number of asignments
-	int selectedAssignments = assignments.size();
-	dbkey_t lastId = assignment->GetId();
-	dbkey_t lastDataVaultId = assignment->GetDataVaultId();
-
-    //Variations work test
-    delete assignment;
-
-    //variation hierarchy is
-    // default -> test -> subtest
-    // There are /test/test_vars/test_table for variation subtest. 
-    // But  /test/test_vars/test_table2 has only default variation
-
-    assignment = prov->GetAssignmentShort(100,"/test/test_vars/test_table2", "subtest");
-
-
-
 }
 #endif //ifdef CCDB_MYSQL

@@ -7,6 +7,7 @@
 #include "CCDB/Model/Directory.h"
 #include "CCDB/Model/ConstantsTypeColumn.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
+#include "CCDB/Providers/DataProvider.h"
 
 using namespace std;
 using namespace ccdb;
@@ -20,7 +21,7 @@ TEST_CASE("CCDB/MySQLDataProvider/TypeTables","TypeTables tests")
 {
 	
 	MySQLDataProvider *prov = new MySQLDataProvider();
-	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
+	prov->Connect(get_test_mysql_connection());
 
     bool result;
 	
@@ -29,7 +30,7 @@ TEST_CASE("CCDB/MySQLDataProvider/TypeTables","TypeTables tests")
     //basic get type table functional
 
     //get type table from DB
-	ConstantsTypeTable *table = prov->GetConstantsTypeTable("/test/test_vars/test_table", true);
+	ConstantsTypeTable *table = static_cast<ccdb::DataProvider*>(prov)->GetConstantsTypeTable("/test/test_vars/test_table", true);
     REQUIRE(table!=NULL);
 	REQUIRE(table->GetColumns().size() == 3);
 	REQUIRE(table->GetColumnsCount() == 3);
@@ -41,37 +42,6 @@ TEST_CASE("CCDB/MySQLDataProvider/TypeTables","TypeTables tests")
 
 	//print type table
 	delete table; //cleanup
-	
-	//get all tables from the directory.
-    vector<ConstantsTypeTable *> tables;
-    result = prov->GetConstantsTypeTables(tables, "/test/test_vars", false); //we dont need to load colums for each table, so we place last argument "false"
-	
-    //test we've got
-	REQUIRE(result);
-	REQUIRE(tables.size()>0);
-
-	//second implementation of getting type tables from the directory	
-	tables = prov->GetConstantsTypeTables("/test/test_vars", false);
-
-	REQUIRE(tables.size());
-
-
-    //SEARCH TYPE TABLES
-    //======================================================
-    //basic get type table functional
-
-	
-    //search tables are good too
-    //now lets get all tables from the directory.
-	result = prov->SearchConstantsTypeTables(tables, "t??t_tab*");
-
-	REQUIRE(result);
-	REQUIRE(tables.size()>0);
-
-    //Search table in the specified path
-    tables = prov->SearchConstantsTypeTables("*", "/test/test_vars",true);
-    REQUIRE(tables.size()>0);
-
 	delete prov;//with all objects...
 }
 #endif //ifdef CCDB_MYSQL

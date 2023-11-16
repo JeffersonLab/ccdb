@@ -19,7 +19,7 @@ TEST_CASE("CCDB/MySQLDataProvider/RunRanges","RunRanges tests")
 {
 	
 	MySQLDataProvider *prov = new MySQLDataProvider();
-	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
+	prov->Connect(get_test_mysql_connection());
 
     // GET RUN-RANGE TEST
     //----------------------------------------------------

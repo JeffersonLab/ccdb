@@ -18,7 +18,7 @@ using namespace ccdb;
 TEST_CASE("CCDB/SQLiteDataProvider/Directories","Directories tests")
 {	
 	SQLiteDataProvider *prov = new SQLiteDataProvider();
-	prov->Connect(TESTS_SQLITE_STRING);
+	prov->Connect(get_test_sqlite_connection());
 	
 	//get directory by path
 	Directory *dir=prov->GetDirectory("/test/subtest");

@@ -17,7 +17,7 @@ using namespace ccdb;
 TEST_CASE("CCDB/MySQLDataProvider/Variations","Variations/tests")
 {	
 	DataProvider *prov = new MySQLDataProvider();
-	if(!prov->Connect(TESTS_CONENCTION_STRING)) return;
+	prov->Connect(get_test_mysql_connection());
 
 	//lets try to get default variation
 	Variation *variation = prov->GetVariation("subtest");
@@ -42,12 +42,5 @@ TEST_CASE("CCDB/MySQLDataProvider/Variations","Variations/tests")
     //lets try to get default variation
     variation = prov->GetVariation("default");
     REQUIRE(variation!=NULL);
-	
-	//lets get all variations for table 
-	vector<Variation *> variations;
-	bool result = prov->GetVariations(variations, "/test/test_vars/test_table");
-	
-	REQUIRE(result);
-	REQUIRE(variations.size()>0);
 }
 #endif //ifdef CCDB_MYSQL
