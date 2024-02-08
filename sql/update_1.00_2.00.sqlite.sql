@@ -14,16 +14,17 @@ ALTER TABLE directories ADD COLUMN isDeprecated TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE directories ADD COLUMN deprecatedById INT(11) NOT NULL DEFAULT -1;
 
 
-CREATE TABLE IF NOT EXISTS assignmentsMaterializedView (
-  id INT(11) NOT NULL,
-  assignmentsId INT(11) NOT NULL,
-  variationsId INT(11) NOT NULL,
-  constantSetsId INT(11) NOT NULL,
-  typeTablesId INT(11) NOT NULL,
-  runRangesId INT(11) NOT NULL,
-  runMin INT(11) NOT NULL,
-  runMax INT(11) NOT NULL,
-  assignmentTime TIMESTAMP NOT NULL,
-  PRIMARY KEY (id ASC));
+CREATE TABLE IF NOT EXISTS `assignmentsMaterializedView` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `assignmentsId` INT NOT NULL,
+    `variationsId` INT NOT NULL,
+    `constantSetsId` INT NOT NULL,
+    `typeTablesId` INT NOT NULL,
+    `runRangesId` INT NOT NULL,
+    `runMin` INT NOT NULL,
+    `runMax` INT NOT NULL,
+    `assignmentTime` TIMESTAMP NOT NULL,
+    PRIMARY KEY (`id`))
+    ENGINE = MyISAM;
 
 UPDATE schemaVersions SET schemaVersion = 5 WHERE id = 1;
