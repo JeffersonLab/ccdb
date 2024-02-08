@@ -8,7 +8,49 @@ from ccdb.provider import AlchemyProvider
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import BraceMessage as LogFmt
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import SQLAlchemyError
+
 log = logging.getLogger("ccdb.cmd.commands.db")
+
+def run_sql_script(file_path, db_url):
+    # Create an engine and bind the session to it
+    engine = create_engine(db_url)
+    Session = sessionmaker(bind=engine)
+
+    # Start a session
+    session = Session()
+
+    try:
+        # Start the transaction
+        session.begin()
+
+        # Read SQL commands from the file
+        with open(file_path, 'r') as file:
+            sql_commands = file.read()
+
+        # Execute SQL commands
+        session.execute(sql_commands)
+
+        # Commit the changes
+        session.commit()
+        print("SQL script executed successfully.")
+    except SQLAlchemyError as e:
+        # Rollback in case of error
+        session.rollback()
+        print(f"An error occurred: {e}")
+    finally:
+        # Close the session
+        session.close()
+
+# # Example usage
+# db_url = 'mysql+pymysql://username:password@localhost/dbname'  # Replace with your actual database URL
+# file_path = 'path/to/your/sql/script.sql'  # Replace with the path to your SQL file
+# run_sql_script(file_path, db_url)
+#
+#
+# log = logging.getLogger("ccdb.cmd.commands.db")
 
 
 # ********************************************************************
@@ -23,7 +65,7 @@ class Database(CliCommandBase):
     command = "db"
     name = "Database"
     short_descr = "Database information and management"
-    uses_db = True
+    uses_db = False
 
     def __init__(self, context):
         CliCommandBase.__init__(self, context)
@@ -31,7 +73,7 @@ class Database(CliCommandBase):
 
     def execute(self, args):
         if log.isEnabledFor(logging.DEBUG):
-            log.debug(LogFmt("{0}Database is in charge{0}\\".format(os.linesep)))
+            log.debug(LogFmt("{0}Database command is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args) + "'"))
 
         # This command might be used as an alias
@@ -72,6 +114,8 @@ class Database(CliCommandBase):
 
 
     def db_init(self, provider):
+        log.debug(f" |- Initializing database : '{self.context.connection_string}'")
+        log.debug(f" |- This script path : '{ os.path.abspath(__file__) }'")
         log.error("NOT IMPLEMENTED YET")
         pass
 

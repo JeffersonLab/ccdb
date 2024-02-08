@@ -18,6 +18,7 @@ from . import themes
 from . import colorama
 
 
+
 log = logging.getLogger("ccdb.cmd.console_context")
 
 
