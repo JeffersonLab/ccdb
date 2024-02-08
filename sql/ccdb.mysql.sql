@@ -1,18 +1,4 @@
--- MySQL Workbench Forward Engineering
 
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-
--- -----------------------------------------------------
--- Schema ccdb
--- -----------------------------------------------------
-
--- -----------------------------------------------------
--- Schema ccdb
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `ccdb` DEFAULT CHARACTER SET latin1 ;
-USE `ccdb` ;
 
 -- -----------------------------------------------------
 -- Table `runRanges`
@@ -20,10 +6,10 @@ USE `ccdb` ;
 DROP TABLE IF EXISTS `runRanges` ;
 
 CREATE TABLE IF NOT EXISTS `runRanges` (
-                                           `id` INT NOT NULL AUTO_INCREMENT,
-                                           `created` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                                           `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                           `name` VARCHAR(45) NULL DEFAULT '',
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `created` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+    `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `name` VARCHAR(45) NULL DEFAULT '',
     `runMin` INT NOT NULL,
     `runMax` INT NOT NULL,
     `comment` TEXT NULL DEFAULT NULL,
@@ -39,10 +25,10 @@ CREATE TABLE IF NOT EXISTS `runRanges` (
 DROP TABLE IF EXISTS `variations` ;
 
 CREATE TABLE IF NOT EXISTS `variations` (
-                                            `id` INT NOT NULL AUTO_INCREMENT,
-                                            `created` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                                            `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                            `name` VARCHAR(100) NOT NULL DEFAULT 'default',
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `created` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+    `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `name` VARCHAR(100) NOT NULL DEFAULT 'default',
     `description` VARCHAR(255) NULL,
     `authorId` INT NOT NULL DEFAULT 1,
     `comment` TEXT NULL DEFAULT NULL,
@@ -67,14 +53,14 @@ CREATE TABLE IF NOT EXISTS `variations` (
 DROP TABLE IF EXISTS `eventRanges` ;
 
 CREATE TABLE IF NOT EXISTS `eventRanges` (
-                                             `id` INT NOT NULL AUTO_INCREMENT,
-                                             `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                             `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                                             `runNumber` INT NOT NULL,
-                                             `eventMin` INT NOT NULL,
-                                             `eventMax` INT NOT NULL,
-                                             `comment` TEXT NULL DEFAULT NULL,
-                                             PRIMARY KEY (`id`),
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+    `runNumber` INT NOT NULL,
+    `eventMin` INT NOT NULL,
+    `eventMax` INT NOT NULL,
+    `comment` TEXT NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
     UNIQUE INDEX `ideventRanges_UNIQUE` (`id` ASC) VISIBLE)
     ENGINE = MyISAM;
 
@@ -85,10 +71,10 @@ CREATE TABLE IF NOT EXISTS `eventRanges` (
 DROP TABLE IF EXISTS `directories` ;
 
 CREATE TABLE IF NOT EXISTS `directories` (
-                                             `id` INT NOT NULL AUTO_INCREMENT,
-                                             `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                             `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                                             `name` VARCHAR(255) NOT NULL DEFAULT '',
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+    `name` VARCHAR(255) NOT NULL DEFAULT '',
     `parentId` INT NOT NULL DEFAULT 0,
     `authorId` INT NOT NULL DEFAULT 1,
     `comment` TEXT NULL DEFAULT NULL,
@@ -108,11 +94,11 @@ CREATE TABLE IF NOT EXISTS `directories` (
 DROP TABLE IF EXISTS `typeTables` ;
 
 CREATE TABLE IF NOT EXISTS `typeTables` (
-                                            `id` INT NOT NULL AUTO_INCREMENT,
-                                            `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                            `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                                            `directoryId` INT NOT NULL,
-                                            `name` VARCHAR(255) NOT NULL,
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+    `directoryId` INT NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
     `nRows` INT NOT NULL DEFAULT 1,
     `nColumns` INT NOT NULL,
     `nAssignments` INT NOT NULL DEFAULT 0,
@@ -135,12 +121,12 @@ CREATE TABLE IF NOT EXISTS `typeTables` (
 DROP TABLE IF EXISTS `constantSets` ;
 
 CREATE TABLE IF NOT EXISTS `constantSets` (
-                                              `id` INT NOT NULL AUTO_INCREMENT,
-                                              `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                              `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                                              `vault` LONGTEXT NOT NULL,
-                                              `constantTypeId` INT NOT NULL,
-                                              PRIMARY KEY (`id`),
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+    `vault` LONGTEXT NOT NULL,
+    `constantTypeId` INT NOT NULL,
+    PRIMARY KEY (`id`),
     UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
     INDEX `fk_constantSets_constantTypes1_idx` (`constantTypeId` ASC) VISIBLE)
     ENGINE = MyISAM;
@@ -152,16 +138,16 @@ CREATE TABLE IF NOT EXISTS `constantSets` (
 DROP TABLE IF EXISTS `assignments` ;
 
 CREATE TABLE IF NOT EXISTS `assignments` (
-                                             `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                                             `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                             `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                                             `variationId` INT NOT NULL,
-                                             `runRangeId` INT NULL,
-                                             `eventRangeId` INT NULL,
-                                             `authorId` INT NOT NULL DEFAULT 1,
-                                             `comment` TEXT NULL,
-                                             `constantSetId` INT NOT NULL,
-                                             PRIMARY KEY (`id`),
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+    `variationId` INT NOT NULL,
+    `runRangeId` INT NULL,
+    `eventRangeId` INT NULL,
+    `authorId` INT NOT NULL DEFAULT 1,
+    `comment` TEXT NULL,
+    `constantSetId` INT NOT NULL,
+    PRIMARY KEY (`id`),
     INDEX `fk_assignments_variations1_idx` (`variationId` ASC) VISIBLE,
     INDEX `fk_assignments_runRanges1_idx` (`runRangeId` ASC) VISIBLE,
     INDEX `fk_assignments_eventRanges1_idx` (`eventRangeId` ASC) VISIBLE,
@@ -177,10 +163,10 @@ CREATE TABLE IF NOT EXISTS `assignments` (
 DROP TABLE IF EXISTS `columns` ;
 
 CREATE TABLE IF NOT EXISTS `columns` (
-                                         `id` INT NOT NULL AUTO_INCREMENT,
-                                         `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                         `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                                         `name` VARCHAR(45) NOT NULL,
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
+    `name` VARCHAR(45) NOT NULL,
     `typeId` INT NOT NULL,
     `columnType` ENUM('int', 'uint','long','ulong','double','string','bool') NULL,
     `order` INT NOT NULL,
@@ -197,8 +183,8 @@ CREATE TABLE IF NOT EXISTS `columns` (
 DROP TABLE IF EXISTS `tags` ;
 
 CREATE TABLE IF NOT EXISTS `tags` (
-                                      `id` INT NOT NULL AUTO_INCREMENT,
-                                      `name` VARCHAR(45) NOT NULL,
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(45) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
     ENGINE = MyISAM;
@@ -210,9 +196,9 @@ CREATE TABLE IF NOT EXISTS `tags` (
 DROP TABLE IF EXISTS `variationsToTags` ;
 
 CREATE TABLE IF NOT EXISTS `variationsToTags` (
-                                                  `variations_id` INT NOT NULL,
-                                                  `tags_id` INT NOT NULL,
-                                                  PRIMARY KEY (`variations_id`, `tags_id`),
+    `variations_id` INT NOT NULL,
+    `tags_id` INT NOT NULL,
+    PRIMARY KEY (`variations_id`, `tags_id`),
     INDEX `fk_variations_has_tags_tags1_idx` (`tags_id` ASC) VISIBLE)
     ENGINE = MyISAM;
 
@@ -223,10 +209,10 @@ CREATE TABLE IF NOT EXISTS `variationsToTags` (
 DROP TABLE IF EXISTS `users` ;
 
 CREATE TABLE IF NOT EXISTS `users` (
-                                       `id` INT NOT NULL AUTO_INCREMENT,
-                                       `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                       `lastActionTime` TIMESTAMP NOT NULL DEFAULT 00010101000000,
-                                       `name` VARCHAR(100) NOT NULL,
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `lastActionTime` TIMESTAMP NOT NULL DEFAULT 00010101000000,
+    `name` VARCHAR(100) NOT NULL,
     `password` VARCHAR(100) NULL,
     `roles` TEXT NOT NULL,
     `info` VARCHAR(125) NOT NULL,
@@ -242,10 +228,10 @@ CREATE TABLE IF NOT EXISTS `users` (
 DROP TABLE IF EXISTS `logs` ;
 
 CREATE TABLE IF NOT EXISTS `logs` (
-                                      `id` INT NOT NULL AUTO_INCREMENT,
-                                      `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                      `affectedIds` TEXT NOT NULL,
-                                      `action` VARCHAR(7) NOT NULL,
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `affectedIds` TEXT NOT NULL,
+    `action` VARCHAR(7) NOT NULL,
     `description` VARCHAR(255) NOT NULL,
     `comment` TEXT NULL,
     `authorId` INT NOT NULL,
@@ -261,10 +247,10 @@ CREATE TABLE IF NOT EXISTS `logs` (
 DROP TABLE IF EXISTS `schemaVersions` ;
 
 CREATE TABLE IF NOT EXISTS `schemaVersions` (
-                                                `id` INT NOT NULL,
-                                                `schemaVersion` INT NOT NULL DEFAULT 1,
-                                                PRIMARY KEY (`id`))
-    ENGINE = InnoDB;
+    `id` INT NOT NULL,
+    `schemaVersion` INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (`id`))
+    ENGINE = MyISAM;
 
 
 -- -----------------------------------------------------
@@ -285,59 +271,23 @@ CREATE TABLE IF NOT EXISTS `user` (
 DROP TABLE IF EXISTS `assignmentsMaterializedView` ;
 
 CREATE TABLE IF NOT EXISTS `assignmentsMaterializedView` (
-                                                             `id` INT NOT NULL AUTO_INCREMENT,
-                                                             `assignmentsId` INT NOT NULL,
-                                                             `variationsId` INT NOT NULL,
-                                                             `constantSetsId` INT NOT NULL,
-                                                             `typeTablesId` INT NOT NULL,
-                                                             `runRangesId` INT NOT NULL,
-                                                             `runMin` INT NOT NULL,
-                                                             `runMax` INT NOT NULL,
-                                                             `assignmentTime` TIMESTAMP NOT NULL,
-                                                             INDEX `fk_assignmentsMaterializedView_assignments1_idx` (`assignmentsId` ASC) VISIBLE,
-    INDEX `fk_assignmentsMaterializedView_variations1_idx` (`variationsId` ASC) VISIBLE,
-    INDEX `fk_assignmentsMaterializedView_constantSets1_idx` (`constantSetsId` ASC) VISIBLE,
-    INDEX `fk_assignmentsMaterializedView_typeTables1_idx` (`typeTablesId` ASC) VISIBLE,
-    PRIMARY KEY (`id`),
-    UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-    INDEX `fk_assignmentsMaterializedView_runRanges1_idx` (`runRangesId` ASC) VISIBLE,
-    CONSTRAINT `fk_assignmentsMaterializedView_assignments`
-    FOREIGN KEY (`assignmentsId`)
-    REFERENCES `assignments` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-    CONSTRAINT `fk_assignmentsMaterializedView_variations`
-    FOREIGN KEY (`variationsId`)
-    REFERENCES `variations` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-    CONSTRAINT `fk_assignmentsMaterializedView_constantSets`
-    FOREIGN KEY (`constantSetsId`)
-    REFERENCES `constantSets` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-    CONSTRAINT `fk_assignmentsMaterializedView_typeTables`
-    FOREIGN KEY (`typeTablesId`)
-    REFERENCES `typeTables` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-    CONSTRAINT `fk_assignmentsMaterializedView_runRanges`
-    FOREIGN KEY (`runRangesId`)
-    REFERENCES `runRanges` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-    ENGINE = InnoDB;
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `assignmentsId` INT NOT NULL,
+    `variationsId` INT NOT NULL,
+    `constantSetsId` INT NOT NULL,
+    `typeTablesId` INT NOT NULL,
+    `runRangesId` INT NOT NULL,
+    `runMin` INT NOT NULL,
+    `runMax` INT NOT NULL,
+    `assignmentTime` TIMESTAMP NOT NULL,
+    PRIMARY KEY (`id`))
+    ENGINE = MyISAM;
 
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 -- -----------------------------------------------------
 -- Data for table `runRanges`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `runRanges` (`id`, `created`, `modified`, `name`, `runMin`, `runMax`, `comment`) VALUES (1, DEFAULT, DEFAULT, 'all', 0, 2147483647, 'Default runrange that covers all runs');
 INSERT INTO `runRanges` (`id`, `created`, `modified`, `name`, `runMin`, `runMax`, `comment`) VALUES (2, DEFAULT, DEFAULT, 'test', 500, 3000, 'Test runrange for software tests');
 INSERT INTO `runRanges` (`id`, `created`, `modified`, `name`, `runMin`, `runMax`, `comment`) VALUES (3, DEFAULT, DEFAULT, '', 0, 2000, 'Test runrange. Secont test runrange for software test');
@@ -349,7 +299,6 @@ COMMIT;
 -- Data for table `variations`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`, `lockedByUserId`, `goBackBehavior`, `goBackTime`, `isDeprecated`, `deprecatedByUserId`) VALUES (1, DEFAULT, DEFAULT, 'default', 'Default variation', 2, 'Default variation', 0, DEFAULT, NULL, NULL, DEFAULT, NULL, DEFAULT, NULL);
 INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`, `lockedByUserId`, `goBackBehavior`, `goBackTime`, `isDeprecated`, `deprecatedByUserId`) VALUES (2, DEFAULT, DEFAULT, 'mc', 'Mone-Carlo variations', 2, 'Monte-Carlo specific variation', 1, DEFAULT, NULL, NULL, DEFAULT, NULL, DEFAULT, NULL);
 INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`, `lockedByUserId`, `goBackBehavior`, `goBackTime`, `isDeprecated`, `deprecatedByUserId`) VALUES (3, DEFAULT, DEFAULT, 'test', 'Test variation', 2, 'Variation for software test', 1, DEFAULT, NULL, NULL, DEFAULT, NULL, DEFAULT, NULL);
@@ -362,7 +311,6 @@ COMMIT;
 -- Data for table `eventRanges`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `eventRanges` (`id`, `created`, `modified`, `runNumber`, `eventMin`, `eventMax`, `comment`) VALUES (1, DEFAULT, DEFAULT, 1, 0, 1000, 'test');
 
 COMMIT;
@@ -372,7 +320,6 @@ COMMIT;
 -- Data for table `directories`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `authorId`, `comment`, `isDeprecated`, `deprecatedByUserId`, `isLocked`, `lockedByUserId`) VALUES (1, DEFAULT, DEFAULT, 'test', 0, 2, 'Soft test directory', DEFAULT, NULL, DEFAULT, NULL);
 INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `authorId`, `comment`, `isDeprecated`, `deprecatedByUserId`, `isLocked`, `lockedByUserId`) VALUES (2, DEFAULT, DEFAULT, 'subtest', 1, 2, 'Soft test first subdirectory', DEFAULT, NULL, DEFAULT, NULL);
 INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `authorId`, `comment`, `isDeprecated`, `deprecatedByUserId`, `isLocked`, `lockedByUserId`) VALUES (3, DEFAULT, DEFAULT, 'test_vars', 1, 2, NULL, DEFAULT, NULL, DEFAULT, NULL);
@@ -380,11 +327,12 @@ INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `aut
 COMMIT;
 
 
+
+
 -- -----------------------------------------------------
 -- Data for table `typeTables`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `typeTables` (`id`, `created`, `modified`, `directoryId`, `name`, `nRows`, `nColumns`, `nAssignments`, `authorId`, `comment`, `isDeprecated`, `deprecatedByUserId`, `isLocked`, `lockedByUserId`, `lockTime`) VALUES (1, DEFAULT, DEFAULT, 3, 'test_table', 2, 3, 2, 2, 'Test type', DEFAULT, NULL, DEFAULT, NULL, NULL);
 INSERT INTO `typeTables` (`id`, `created`, `modified`, `directoryId`, `name`, `nRows`, `nColumns`, `nAssignments`, `authorId`, `comment`, `isDeprecated`, `deprecatedByUserId`, `isLocked`, `lockedByUserId`, `lockTime`) VALUES (2, DEFAULT, DEFAULT, 3, 'test_table2', 1, 3, 1, 2, 'Test type 2', DEFAULT, NULL, DEFAULT, NULL, NULL);
 
@@ -395,7 +343,6 @@ COMMIT;
 -- Data for table `constantSets`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (1, '2012-07-30 23:48:42', '2012-07-30 23:48:42', '1.11|1.991211|10.002|2.001|2.9912|20.111', 1);
 INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (2, '2012-08-30 23:48:42', '2012-08-30 23:48:42', '1.0|2.0|3.0|4.0|5.0|6.0', 1);
 INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (3, '2012-09-30 23:48:42', '2012-09-30 23:48:42', '10|20|30', 2);
@@ -409,13 +356,11 @@ COMMIT;
 -- Data for table `assignments`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (1, '2012-07-30 23:48:42', '2012-07-30 23:48:42', 1, 1, NULL, 2, 'Test assignment for software tests', 1);
 INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (2, '2012-08-30 23:48:42', '2012-08-30 23:48:42', 3, 2, NULL, 2, 'Test assignment for software tests 2', 2);
 INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (3, '2012-09-30 23:48:42', '2012-09-30 23:48:42', 3, 1, NULL, 2, 'Test assignment for software tests 3', 3);
 INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (4, '2012-10-30 23:48:42', '2012-10-30 23:48:42', 1, 1, NULL, 2, 'Test assignment for software tests 4', 4);
 INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (5, '2012-10-30 23:48:43', '2012-10-30 23:48:43', 4, 1, NULL, 2, 'Test assignment for software tests 5', 5);
-
 COMMIT;
 
 
@@ -423,7 +368,6 @@ COMMIT;
 -- Data for table `columns`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `columns` (`id`, `created`, `modified`, `name`, `typeId`, `columnType`, `order`, `comment`) VALUES (DEFAULT, DEFAULT, DEFAULT, 'x', 1, 'double', 0, NULL);
 INSERT INTO `columns` (`id`, `created`, `modified`, `name`, `typeId`, `columnType`, `order`, `comment`) VALUES (DEFAULT, DEFAULT, DEFAULT, 'y', 1, 'double', 1, NULL);
 INSERT INTO `columns` (`id`, `created`, `modified`, `name`, `typeId`, `columnType`, `order`, `comment`) VALUES (DEFAULT, DEFAULT, DEFAULT, 'z', 1, 'double', 2, NULL);
@@ -438,7 +382,6 @@ COMMIT;
 -- Data for table `users`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`, `isDeleted`) VALUES (1, DEFAULT, DEFAULT, 'anonymous', NULL, '', 'User anonymous is a default user for CCDB. It has no modify privilegies', 0);
 INSERT INTO `users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`, `isDeleted`) VALUES (2, '2012-07-15 15:16:30', '2012-09-20 08:11:12', 'test_user', 'test', 'runrange_crate,runrange_delete', 'User for unit tests', 0);
 
@@ -449,7 +392,6 @@ COMMIT;
 -- Data for table `logs`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `logs` (`id`, `created`, `affectedIds`, `action`, `description`, `comment`, `authorId`) VALUES (1, DEFAULT, 'users_1', 'create', 'Created user \'anonymous\'', 'User anonymous is a default user for CCDB. It has no modify privilegies', 1);
 
 COMMIT;
@@ -459,7 +401,6 @@ COMMIT;
 -- Data for table `schemaVersions`
 -- -----------------------------------------------------
 START TRANSACTION;
-USE `ccdb`;
 INSERT INTO `schemaVersions` (`id`, `schemaVersion`) VALUES (1, 5);
 
 COMMIT;
