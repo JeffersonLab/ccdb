@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(ccdb_tests)
 
 find_package (Threads)
@@ -27,7 +27,7 @@ if (SQLite3_FOUND)
 endif (SQLite3_FOUND)
 
 # Add MySQL/MariaDB
-find_package (MySQL REQUIRED)
+find_package (MySQL)
 if (MySQL_FOUND)
         target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${MySQL_INCLUDE_DIRS})
         target_link_libraries(${PROJECT_NAME} ${MySQL_LIBRARIES})
