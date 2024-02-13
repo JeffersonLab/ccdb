@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.16)
 
 # CCDB library
 project(ccdb_lib)

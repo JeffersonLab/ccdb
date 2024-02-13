@@ -37,6 +37,7 @@ if(MySQL_CONFIG_EXECUTABLE)
 
     string(REGEX REPLACE "-I" "" MySQL_INCLUDE_DIRS "${MySQL_INCLUDE_DIRS}")
     string(REGEX MATCHALL "-L[^;]+" MySQL_LINK_DIRS "${MySQL_LIB_CONFIGS}")
+    string(REGEX REPLACE "-L" "" MySQL_LINK_DIRS "${MySQL_LINK_DIRS}")
 
     # (!) We now need to remove -L<whatever> from the list before we proceed
     foreach(DIR ${MySQL_LINK_DIRS})
@@ -45,35 +46,38 @@ if(MySQL_CONFIG_EXECUTABLE)
 
     # Now select -l result
     string(REGEX MATCHALL "-l[^;]+" MySQL_LINK_LIBS "${MySQL_LIB_CONFIGS}")
+    string(REGEX REPLACE "-l" "" MySQL_LINK_LIBS "${MySQL_LINK_LIBS}")
 
     message(DEBUG " FindMySQL MySQL_LIBRARIES=${MySQL_LIB_CONFIGS}")
     message(DEBUG " FindMySQL MySQL_LINK_LIBS=${MySQL_LINK_LIBS}")
     message(DEBUG " FindMySQL MySQL_LINK_DIRS=${MySQL_LINK_DIRS}")
+    message(DEBUG " ^^^^^^^^^^^^^^^^^")
 
-    set(MySQL_LIBRARIES) # Clear before appending properly formatted libraries
-
+    unset(MySQL_LIBRARIES) # Clear before appending properly formatted libraries
     foreach(LIB ${MySQL_LINK_LIBS})
-        string(REPLACE "-l" "" LIB "${LIB}")
-        list(APPEND MySQL_LIBRARIES "-l${LIB}")
-        find_library(DEP_LIB ${LIB} PATHS ${MySQL_LINK_DIRS})
+        unset(DEP_LIB)
+        find_library(DEP_LIB ${LIB} PATHS ${MySQL_LINK_DIRS} NO_CACHE)
+        message(DEBUG "   LIB ${LIB} DEP_LIB ${DEP_LIB}")
+
         if(DEP_LIB)
             list(APPEND MySQL_LIBRARIES "${DEP_LIB}")
         endif (DEP_LIB)
     endforeach()
+    message(DEBUG "MySQL_LIBRARIES ${MySQL_LIBRARIES}")
+    message(DEBUG "^^^^^^^^^^^^^^^^^")
 else()
     # Fallback to default paths and find the header and libraries manually
-    find_path(MySQL_INCLUDE_DIR NAMES mysql.h
+    find_path(MySQL_INCLUDE_DIRS NAMES mysql.h
             HINTS ENV MySQL_DIR
             PATH_SUFFIXES include/mysql include/mariadb
     )
 
-    find_library(MySQL_LIBRARY NAMES mysqlclient mariadb
+    find_library(MySQL_LIBRARIES NAMES mysqlclient mariadb
             HINTS ENV MySQL_DIR
             PATH_SUFFIXES lib lib/mysql lib/mariadb
     )
 
     include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args(MySQL DEFAULT_MSG MySQL_INCLUDE_DIR MySQL_LIBRARY)
     set(MySQL_VERSION "Not Known")
 endif()
 
