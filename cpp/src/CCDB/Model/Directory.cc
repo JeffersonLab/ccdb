@@ -53,7 +53,12 @@ void ccdb::Directory::AddSubdirectory(Directory* subdirectory)
 std::string ccdb::Directory::GetFullPath() const
 {
     string parentFullPath = mParent ? mParent->GetFullPath() : "";
-    return parentFullPath + "/" + mName;
+	if(!parentFullPath.empty() && parentFullPath[parentFullPath.size()-1] == '/') {
+		// We have parent ending '/'
+		return parentFullPath + mName;
+	}
+
+	return parentFullPath + "/" + mName;
 }
 
 
