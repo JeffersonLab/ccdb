@@ -622,9 +622,9 @@ ccdb::Variation* ccdb::MySQLDataProvider::SelectVariation(const string& whereCla
     //ok lets read the data...
     Variation *result = new Variation();
     result->SetId(ReadULong(0));
-    result->SetName(ReadString(3));
-    result->SetComment(ReadString(5));
-    result->SetParentDbId(ReadULong(6));
+    result->SetName(ReadString(1));
+    result->SetComment(ReadString(2));
+    result->SetParentDbId(ReadULong(3));
 
     if(mReturnedRowsNum>1)
     {
