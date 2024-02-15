@@ -11,6 +11,7 @@ from ccdb import BraceMessage as LogFmt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import text
 
 log = logging.getLogger("ccdb.cmd.commands.db")
 
@@ -116,11 +117,19 @@ class Database(CliCommandBase):
     def db_init(self, provider):
         log.debug(f" |- Initializing database : '{self.context.connection_string}'")
         log.debug(f" |- This script path : '{ os.path.abspath(__file__) }'")
-        log.error("NOT IMPLEMENTED YET")
+        sql_file = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "sql", "ccdb.mysql.sql")
+        sql_file = os.path.abspath(sql_file)
+        log.debug(f" |- sql init file: '{(sql_file)}'")
+
+        with open(sql_file, 'r') as file:
+            sql_contents = file.read()
+            provider.connect(connection_string=self.context.connection_string, check_version=False)
+            provider.session.execute(text(sql_contents))
         pass
 
     def db_upgrade(self, provider):
-        log.error("NOT IMPLEMENTED YET")
+
+        #log.info(os.path.isfile(sql_file))
         pass
 
     def db_stats(self, provider):
