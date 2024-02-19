@@ -2,11 +2,14 @@ import posixpath
 import logging
 import os
 
+import ccdb.model
 from ccdb.errors import ObjectIsNotFoundInDbError
-from ccdb.model import Directory, TypeTable
+from ccdb.model import Directory, TypeTable, Assignment, CcdbSchemaVersion
 from ccdb.provider import AlchemyProvider
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import BraceMessage as LogFmt
+from ccdb.sql.mysql_schema import init_mysql_database
+from ccdb.sql.update_v5 import update_v5
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -79,10 +82,7 @@ class Database(CliCommandBase):
 
         # This command might be used as an alias
         self.is_alias = False
-
         assert self.context is not None
-        provider = self.context.provider
-        assert isinstance(provider, AlchemyProvider)
 
         # PARSE ARGUMENTS
         # -------------------------------
@@ -99,46 +99,43 @@ class Database(CliCommandBase):
                 log.info("This command removes DB tables and recreates them. ALL DATA IS LOST")
                 log.info("Add --init-i-am-sure flag to this command to really execute")
             else:
-                self.db_init(provider)
+                self.db_init()
         elif result.sub_command == 'upgrade':
             if not result.upgrade_i_am_sure:
                 log.info("(!!!) DO NOT PERFORM ON PRODUCTION DATABASE WITHOUT PROPER BACKUP (!!!)")
                 log.info("This command tries to upgrade DB structure to current version")
                 log.info("Add --upgrade-i-am-sure flag to this command to really execute")
             else:
-                self.db_upgrade(provider)
+                self.db_upgrade()
         elif result.sub_command == 'stats':
-            self.db_stats(provider)
+            self.db_stats()
         else:
-            self.db_base_info(provider)
+            self.db_base_info()
 
-
-
-    def db_init(self, provider):
+    def db_init(self):
         log.debug(f" |- Initializing database : '{self.context.connection_string}'")
         log.debug(f" |- This script path : '{ os.path.abspath(__file__) }'")
-        sql_file = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "sql", "ccdb.mysql.sql")
-        sql_file = os.path.abspath(sql_file)
-        log.debug(f" |- sql init file: '{(sql_file)}'")
+        init_mysql_database(self.context.connection_string)
+        log.debug(f" |- Done DB init")
 
-        with open(sql_file, 'r') as file:
-            sql_contents = file.read()
-            provider.connect(connection_string=self.context.connection_string, check_version=False)
-            provider.session.execute(text(sql_contents))
-        pass
+    def db_upgrade(self):
+        log.debug(f" |- Upgrading database : '{self.context.connection_string}'")
+        update_v5(self.context.connection_string)
+        log.debug(f" |- Done DB upgrade")
 
-    def db_upgrade(self, provider):
 
-        #log.info(os.path.isfile(sql_file))
-        pass
-
-    def db_stats(self, provider):
-        log.error("NOT IMPLEMENTED YET")
-        pass
+    def db_stats(self):
+        provider = self.context.provider
+        assert isinstance(provider, AlchemyProvider)
+        asgm_count = provider.session.query(Assignment).count()
+        print(f"Num assignments: {asgm_count}")
 
     def db_base_info(self, provider):
-        log.error("NOT IMPLEMENTED YET")
-        pass
+        provider = self.context.provider
+        assert isinstance(provider, AlchemyProvider)
+        version = provider.session.query(CcdbSchemaVersion).one()
+        assert isinstance(version, CcdbSchemaVersion)
+        print(f"Schema version: {version.version}")
 
     def print_help(self):
         """Prints help of the command"""
