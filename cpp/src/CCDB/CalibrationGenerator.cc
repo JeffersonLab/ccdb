@@ -105,7 +105,7 @@ namespace ccdb
         string calibHash = GetCalibrationHash(connectionString, run, variation, time);
 
         //first we look maybe we already have such a calibration
-        if(mCalibrationsByHash.find(calibHash) != mCalibrationsByHash.end())
+        if(mCalibrationsByHash.count(calibHash))
         {
             return mCalibrationsByHash[calibHash];
         }

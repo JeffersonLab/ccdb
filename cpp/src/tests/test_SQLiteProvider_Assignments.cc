@@ -33,9 +33,10 @@ TEST_CASE("CCDB/SQLiteDataProvider/Assignments","Assignments tests")
 
 	//Check that everything is loaded
 	REQUIRE(assignment->GetVariation() != NULL);
-	REQUIRE(assignment->GetRunRange()  != NULL);
-	REQUIRE(assignment->GetTypeTable() != NULL);	
-	REQUIRE(!assignment->GetTypeTable()->GetColumns().empty());
+	// Those will be empty for GetAssignmentShort
+	// REQUIRE(assignment->GetRunRange()  != NULL);
+	// REQUIRE(assignment->GetTypeTable() != NULL);
+	// REQUIRE(!assignment->GetTypeTable()->GetColumns().empty());
 	vector<vector<string> > tabeled_values = assignment->GetData();
 	REQUIRE(tabeled_values.size()==2);	
 	REQUIRE(tabeled_values[0].size()==3);

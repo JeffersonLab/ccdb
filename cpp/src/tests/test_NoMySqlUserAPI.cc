@@ -24,9 +24,9 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
 	bool result;
 	
 	DataProvider *prov = new SQLiteDataProvider();
+	auto con_str = get_test_sqlite_connection();
 
-	std::string connectionStr("sqlite://" + string(getenv("CCDB_HOME")) + "/sql/ccdb.sqlite");
-	prov->Connect(connectionStr);
+	prov->Connect(con_str);
 
 	//U S I N G   U S E R   A P I   D I R E C T L Y
 	//----------------------------------------------------

@@ -126,6 +126,7 @@ void ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
         mMySQLHnd=nullptr;        //some compilers dont set nullptr after delete
     }
     mIsConnected = true;
+    mLastVariation = nullptr;     // reset last variation cache
 }
 
 ccdb::MySQLConnectionInfo ccdb::MySQLDataProvider::ParseConnectionString(std::string conStr)
@@ -745,7 +746,6 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
     //type table
     result->SetTypeTable(table);
 
-
     if(mReturnedRowsNum>1)
     {
         //TODO warning not uniq row
@@ -753,7 +753,6 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
 
     FreeMySQLResult();
     return result;
-
 }
 
 

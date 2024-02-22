@@ -96,7 +96,6 @@ void ccdb::SQLiteDataProvider::Disconnect()
 
 void ccdb::SQLiteDataProvider::LoadDirectories()
 {
-
     string thisFunc("SQliteDataProvider::LoadDirectories");
     //
     if (!IsConnected()) {
@@ -105,7 +104,6 @@ void ccdb::SQLiteDataProvider::LoadDirectories()
     // prepare the SQL statement from the command line
 
     SQLiteStatement query(mDatabase, "SELECT `id`, `name`, `parentId`, `comment` FROM `directories`");
-
 
     //clear diretory arrays
     mDirectories.clear();

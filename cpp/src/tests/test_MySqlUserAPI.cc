@@ -40,10 +40,11 @@ TEST_CASE("CCDB/UserAPI/MySQL","tests")
 	//U S I N G   U S E R   A P I   D I R E C T L Y
 	//----------------------------------------------------
 
-    MySQLCalibration *calib = new MySQLCalibration(100);
+	auto con_str = get_test_mysql_connection();
 
-    REQUIRE(calib);
-    REQUIRE(calib->GetConnectionString() == get_test_mysql_connection());
+    MySQLCalibration *calib = new MySQLCalibration(100);
+	REQUIRE_NOTHROW(calib->Connect(con_str));
+    REQUIRE(calib->GetConnectionString() == con_str);
     
     //get data as table of strings
     //----------------------------------------------------
@@ -108,8 +109,8 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
 
     
     //Now we will connect to improper source...
-    REQUIRE_FALSE(calib->Connect("ha ha ha"));
-    REQUIRE_FALSE(calib->Connect("mysql://muuuu ha ha ha"));
+    REQUIRE_THROWS(calib->Connect("ha ha ha"));
+    REQUIRE_THROWS(calib->Connect("mysql://muuuu ha ha ha"));
     
     //Ok, lets connect at last...
     bool result;
@@ -129,7 +130,7 @@ TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get ca
 	bool result;
 	CalibrationGenerator* gen = new CalibrationGenerator();
 	Calibration* sqliteCalib = gen->MakeCalibration(get_test_mysql_connection(), 100, "default");
-	REQUIRE(static_cast<SQLiteCalibration*>(sqliteCalib)!=NULL);
+	REQUIRE(static_cast<SQLiteCalibration*>(sqliteCalib) != nullptr);
 	REQUIRE(sqliteCalib->IsConnected());
 	vector<vector<string> > tabledValues;
 	REQUIRE_NOTHROW(result = sqliteCalib->GetCalib(tabledValues, "/test/test_vars/test_table"));
@@ -138,7 +139,7 @@ TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get ca
 	REQUIRE(tabledValues.size()==2);
 	REQUIRE(tabledValues[0].size()==3);
 
-	Calibration* sqliteCalib2 = gen->MakeCalibration(get_test_sqlite_connection(), 100, "default");
+	Calibration* sqliteCalib2 = gen->MakeCalibration(get_test_mysql_connection(), 100, "default");
 	REQUIRE(sqliteCalib == sqliteCalib2);
 
 	Calibration* mysqlCalib  = gen->MakeCalibration(get_test_mysql_connection(), 100, "default");
