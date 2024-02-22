@@ -60,18 +60,17 @@ sqlite_update_v5_queries = [
     "ALTER TABLE directories ADD COLUMN deprecatedById INT(11) NOT NULL DEFAULT -1;",
 
     """
-    CREATE TABLE IF NOT EXISTS `assignmentsMaterializedView` (
-        `id` INT NOT NULL AUTO_INCREMENT,
-        `assignmentsId` INT NOT NULL,
-        `variationsId` INT NOT NULL,
-        `constantSetsId` INT NOT NULL,
-        `typeTablesId` INT NOT NULL,
-        `runRangesId` INT NOT NULL,
-        `runMin` INT NOT NULL,
-        `runMax` INT NOT NULL,
-        `assignmentTime` TIMESTAMP NOT NULL,
-        PRIMARY KEY (`id`))
-        ENGINE = MyISAM;
+        CREATE TABLE IF NOT EXISTS assignmentsMaterializedView (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            assignmentsId INTEGER NOT NULL,
+            variationsId INTEGER NOT NULL,
+            constantSetsId INTEGER NOT NULL,
+            typeTablesId INTEGER NOT NULL,
+            runRangesId INTEGER NOT NULL,
+            runMin INTEGER NOT NULL,
+            runMax INTEGER NOT NULL,
+            assignmentTime TIMESTAMP NOT NULL
+        );
         """,
 
     "UPDATE schemaVersions SET schemaVersion = 5 WHERE id = 1;",
@@ -87,7 +86,7 @@ def update_v5(engine, queries=None):
     :param queries: List of SQL queries to be executed.
     """
 
-    connection_string = engine.connection_string
+    connection_string = engine.url
     if not queries:
         if 'mysql' in connection_string or 'mariadb' in connection_string:
             queries = mysql_update_v5_queries

@@ -122,7 +122,9 @@ class Database(CliCommandBase):
 
     def db_upgrade(self):
         log.debug(f" |- Upgrading database : '{self.context.connection_string}'")
-        update_v5(self.context.connection_string)
+        provider = self.context.provider
+        provider.connect(connection_string=self.context.connection_string, check_version=False)
+        update_v5(provider.engine)
         log.debug(f" |- Done DB upgrade")
 
 
