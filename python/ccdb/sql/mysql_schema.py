@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -325,7 +325,7 @@ mysql_tables = {
 }
 
 
-def init_mysql_database(db_url, tables_dict=None):
+def init_mysql_database(engine, tables_dict=None):
     """
     Setup a database schema and fill it with data based on the provided dictionary.
 
@@ -334,26 +334,26 @@ def init_mysql_database(db_url, tables_dict=None):
     """
     if tables_dict is None:
         tables_dict = mysql_tables
-    engine = create_engine(db_url)
+
     with engine.connect() as connection:
         for table_name, commands in tables_dict.items():
             try:
                 # Drop the existing table if it exists
                 if 'drop' in commands:
-                    connection.execute(commands['drop'])
+                    connection.execute(text(commands['drop']))
 
                 # Create the table
                 if 'create' in commands:
-                    connection.execute(commands['create'])
+                    connection.execute(text(commands['create']))
 
                 # Insert data into the table
                 if 'data' in commands:
                     for insert_query in commands['data']:
-                        connection.execute(insert_query)
+                        connection.execute(text(insert_query))
 
                 print(f"Table {table_name} processed successfully.")
             except SQLAlchemyError as e:
-                print(f"Error processing table {table_name}: {str(e)}")
+                print(f"Error processing table '{table_name}': {str(e)}")
 
 def generate_mysql_sql_file(tables_dict, file_path='mysql_setup.sql'):
     """

@@ -115,7 +115,9 @@ class Database(CliCommandBase):
     def db_init(self):
         log.debug(f" |- Initializing database : '{self.context.connection_string}'")
         log.debug(f" |- This script path : '{ os.path.abspath(__file__) }'")
-        init_mysql_database(self.context.connection_string)
+        provider = self.context.provider
+        provider.connect(connection_string=self.context.connection_string, check_version=False)
+        init_mysql_database(provider.engine)
         log.debug(f" |- Done DB init")
 
     def db_upgrade(self):

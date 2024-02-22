@@ -78,7 +78,7 @@ sqlite_update_v5_queries = [
 ]
 
 
-def update_v5(connection_string, queries=None):
+def update_v5(engine, queries=None):
     """
     Execute a series of SQL update queries to migrate the database to version 5,
     after checking if the current schema version is 4.
@@ -87,6 +87,7 @@ def update_v5(connection_string, queries=None):
     :param queries: List of SQL queries to be executed.
     """
 
+    connection_string = engine.connection_string
     if not queries:
         if 'mysql' in connection_string or 'mariadb' in connection_string:
             queries = mysql_update_v5_queries
@@ -94,8 +95,6 @@ def update_v5(connection_string, queries=None):
             queries = sqlite_update_v5_queries
         else:
             raise ValueError(f"Connection string '{connection_string}' is not recognized as SQLite or MySQL/MariaDB")
-
-    engine = create_engine(connection_string)
 
     with engine.connect() as connection:
         transaction = connection.begin()
