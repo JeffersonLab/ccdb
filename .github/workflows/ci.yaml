@@ -10,7 +10,7 @@ jobs:
         image: mysql:8.3
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: testdb
+          MYSQL_DATABASE: ccdb_test
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
@@ -25,13 +25,13 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r requirements.txt # Replace this with your actual command to install Python dependencies
+          pip install -r python/requirements.txt
           ls
 
-      - name: Set up C++ environment
+      - name: Set up environment
         run: |
           sudo apt-get update
-          sudo apt-get install build-essential # This installs gcc/g++ and make
+          sudo apt-get install build-essential cmake mysql-client
 
       # Add any other dependencies for C++ here
       # For example, if you use CMake:
@@ -39,10 +39,11 @@ jobs:
       #   run: sudo apt-get install cmake
 
       - name: Create MySQL Database
-        run: |
-          sudo apt-get install mysql-client
-          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE DATABASE IF NOT EXISTS testdb;'
-          mysql -h 127.0.0.1 -u root --password=root testdb < sql/ccdb.mysql.sql
+        run: |          
+          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE USER `ccdb_user`@`localhost`;'
+          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE SCHEMA IF NOT EXISTS `ccdb_test`;'
+          mysql -h 127.0.0.1 -u root --password=root -e 'GRANT ALL PRIVILEGES ON ccdb_test.* TO `ccdb_user`@`localhost`;'
+          mysql -h 127.0.0.1 -u root --password=root ccdb_test < sql/ccdb.mysql.sql
 
       - name: Run tests
         env:
@@ -50,6 +51,8 @@ jobs:
           MYSQL_USER: root
           MYSQL_PASSWORD: root
           MYSQL_DB: testdb
+          CCDB_TEST_MYSQL_CONNECTION: mysql://ccdb_user@localhost/ccdb_test
+          CCDB_TEST_SQLITE_CONNECTION: sqlite:///sql/ccdb.sqlite
         run: |
           # Command to run your Python tests
           # For example, if you use pytest:
