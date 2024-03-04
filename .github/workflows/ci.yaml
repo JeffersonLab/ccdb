@@ -1,0 +1,63 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.3
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testdb
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8' # Choose the Python version as per your requirement
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt # Replace this with your actual command to install Python dependencies
+          ls
+
+      - name: Set up C++ environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install build-essential # This installs gcc/g++ and make
+
+      # Add any other dependencies for C++ here
+      # For example, if you use CMake:
+      # - name: Install CMake
+      #   run: sudo apt-get install cmake
+
+      - name: Create MySQL Database
+        run: |
+          sudo apt-get install mysql-client
+          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE DATABASE IF NOT EXISTS testdb;'
+          mysql -h 127.0.0.1 -u root --password=root testdb < sql/ccdb.mysql.sql
+
+      - name: Run tests
+        env:
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+          MYSQL_DB: testdb
+        run: |
+          # Command to run your Python tests
+          # For example, if you use pytest:
+          #python -m pytest
+          chmod +x ./bin/test_ccdb_python3
+          ./bin/test_ccdb_python3
+          
+          # Command to compile and run your C++ tests
+          # Adjust these commands according to your build system and test framework
+          #g++ -o test_program source_code.cpp
+          #./test_program
