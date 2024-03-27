@@ -4,7 +4,7 @@ import os
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
-
+from ccdb.model import parse_run_range
 
 log = logging.getLogger("ccdb.cmd.commands.cp")
 
@@ -38,7 +38,7 @@ class Copy(CliCommandBase):
             variation = parsed_args.variation
         if parsed_args.run:
             run_range_str = parsed_args.run
-            run_min, run_max, run_set, run_max_set = self.context.parse_run_range(run_range_str)
+            run_min, run_max, run_set, run_max_set = parse_run_range(run_range_str)
             run_range = provider.get_or_create_run_range(run_min, run_max)
         else:
             run_range = None

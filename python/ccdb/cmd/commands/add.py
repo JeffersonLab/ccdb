@@ -6,6 +6,7 @@ from ccdb import TextFileDOM
 from ccdb import AlchemyProvider
 from ccdb.cmd import CliCommandBase
 from ccdb import BraceMessage as LogFmt
+from ccdb.model import parse_run_range
 
 log = logging.getLogger("ccdb.cmd.commands.add")
 
@@ -146,7 +147,7 @@ class AddData(CliCommandBase):
 
                 # runrange
                 if token == "-r" or token == "--runrange":
-                    result = self.context.parse_run_range(args[i])
+                    result = parse_run_range(args[i])
                     i += 1
                     if not result:
                         log.warning("Run range should be in form of: min-max, or min- , or -max")

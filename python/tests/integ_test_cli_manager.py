@@ -174,6 +174,19 @@ class CliManagerTests(unittest.TestCase):
         assignment_id = int(shlex.split(line)[0])
         self.cli.process_command_line("rm -f -a {0}".format(assignment_id))
 
+    def test_add_with_run_range_assignment(self):
+        """Regression tests for failing add with run range"""
+        tests_dir = os.path.dirname(os.path.realpath(__file__))
+        test_file = os.path.join(tests_dir, "test_table.txt")
+        print(test_file)
+        self.cli.process_command_line("add -r 0-1000 /test/test_vars/test_table " + test_file)
+        self.output.truncate(0)
+        self.cli.process_command_line("vers /test/test_vars/test_table")
+        text = str(self.output.getvalue())
+        line = text.split("\n")[1]
+        assignment_id = int(shlex.split(line)[0])
+        self.cli.process_command_line("rm -f -a {0}".format(assignment_id))
+
     def test_pwd(self):
         """pwd. General test"""
         self.cli.process_command_line("pwd")

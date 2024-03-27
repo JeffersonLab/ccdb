@@ -18,6 +18,7 @@ from sqlalchemy import text
 
 log = logging.getLogger("ccdb.cmd.commands.db")
 
+
 def run_sql_script(file_path, db_url):
     # Create an engine and bind the session to it
     engine = create_engine(db_url)
@@ -74,7 +75,6 @@ class Database(CliCommandBase):
     def __init__(self, context):
         CliCommandBase.__init__(self, context)
 
-
     def execute(self, args):
         if log.isEnabledFor(logging.DEBUG):
             log.debug(LogFmt("{0}Database command is in charge{0}\\".format(os.linesep)))
@@ -92,6 +92,7 @@ class Database(CliCommandBase):
         parser.add_argument("--init-i-am-sure",  action="store_true")
         parser.add_argument("--upgrade-i-am-sure",  action="store_true")
         result = parser.parse_args(args)
+
 
         if result.sub_command == 'init':
             if not result.init_i_am_sure:
@@ -127,18 +128,19 @@ class Database(CliCommandBase):
         update_v5(provider.engine)
         log.debug(f" |- Done DB upgrade")
 
-
     def db_stats(self):
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
         asgm_count = provider.session.query(Assignment).count()
         print(f"Num assignments: {asgm_count}")
 
-    def db_base_info(self, provider):
+    def db_base_info(self):
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
+        provider.connect(self.context.connection_string, False)
         version = provider.session.query(CcdbSchemaVersion).one()
         assert isinstance(version, CcdbSchemaVersion)
+        print(f"Connection to: {self.context.connection_string}")
         print(f"Schema version: {version.version}")
 
     def print_help(self):

@@ -11,7 +11,8 @@ test_names = [
     'unit_test_path_utils',
     'unit_test_utility_argument_parse',
     'integ_test_cli_manager',
-    'integ_test_provider_sqlite'
+    'integ_test_provider_sqlite',
+    'integ_test_provider_mysql'
 ]
 
 

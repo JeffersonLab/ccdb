@@ -618,7 +618,7 @@ def list_to_table(data, col_count):
 # --------------------------------
 #  parse_run_range
 # --------------------------------
-def parse_run_range(self, run_range_str):
+def parse_run_range(run_range_str):
     """ @brief parse run range string in form of <run_min>-<run-max>
 
         if one inputs '<run_min>-' this means <run_min>-<infinite run>
