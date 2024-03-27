@@ -101,6 +101,8 @@ class Database(CliCommandBase):
                 log.info("Add --init-i-am-sure flag to this command to really execute")
             else:
                 self.db_init()
+        elif result.sub_command == 'update':
+            log.info("There is no 'update' command. Did you meant 'upgrade'?")
         elif result.sub_command == 'upgrade':
             if not result.upgrade_i_am_sure:
                 log.info("(!!!) DO NOT PERFORM ON PRODUCTION DATABASE WITHOUT PROPER BACKUP (!!!)")
@@ -111,6 +113,8 @@ class Database(CliCommandBase):
         elif result.sub_command == 'stats':
             self.db_stats()
         else:
+            if result.sub_command:
+                log.info(f"There is no '{result.sub_command}' command.")
             self.db_base_info()
 
     def db_init(self):
@@ -124,6 +128,7 @@ class Database(CliCommandBase):
     def db_upgrade(self):
         log.debug(f" |- Upgrading database : '{self.context.connection_string}'")
         provider = self.context.provider
+        assert isinstance(provider, AlchemyProvider)
         provider.connect(connection_string=self.context.connection_string, check_version=False)
         update_v5(provider.engine)
         log.debug(f" |- Done DB upgrade")
