@@ -5,6 +5,7 @@
 pymysql
 sqlalchemy
 six
+cryptography
 
 # web gui requirements
 Flask

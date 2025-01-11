@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mysqldb:
+    build:
+      context: .. # Use the parent directory as the context
+      dockerfile: docker/mysqldb/Dockerfile
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      # Set the MySQL database name so the ccdb.mysql.sql can proceed
+      MYSQL_DATABASE: test_ccdb
+    ports:
+      - "3306:3306" # Expose MySQL to the host
+    networks:
+      - app_network
+    volumes:
+      # Adjust the path for sql directory relative to docker-compose.yml
+      - mysql_data:/var/lib/mysql
+      - mysql_init_data:/docker-entrypoint-initdb.d
+
+  webgui:
+    build:
+      context: .. # Use the parent directory as the context
+      dockerfile: docker/webgui/Dockerfile
+    container_name: webgui
+    environment:
+      # dialect://username:password@host:port/database
+      SQL_CONNECTION_STRING: mysql://test_user:test_password@mysqldb:3306/test_ccdb
+    depends_on:
+      - mysqldb
+    ports:
+      - "5000:5000" # Expose web GUI
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  mysql_init_data:
+  mysql_data:
