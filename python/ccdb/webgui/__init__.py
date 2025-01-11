@@ -1,3 +1,4 @@
+import os
 import ccdb
 from ccdb.model import User, TypeTable
 from ccdb.path_utils import parse_request, ParseRequestResult
@@ -54,7 +55,11 @@ def cerate_ccdb_flask_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         # a default secret that should be overridden by instance config
-        SQL_CONNECTION_STRING="mysql://ccdb_user@hallddb.jlab.org/ccdb2"
+        #SQL_CONNECTION_STRING="mysql://ccdb_user@hallddb.jlab.org/ccdb2"
+        SQL_CONNECTION_STRING = os.getenv(
+            "SQL_CONNECTION_STRING",
+            "mysql://test_user:test_user_password@localhost:3306/test_ccdb"
+        )
     )
 
     @app.before_request

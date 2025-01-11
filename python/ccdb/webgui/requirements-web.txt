@@ -1,0 +1,7 @@
+# Load the CCDB requirements
+-r requirements.txt
+# Requirements for the webgui
+Flask
+Bokeh
+bokeh_sampledata
+gunicorn

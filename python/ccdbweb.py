@@ -1,8 +1,8 @@
-#python
+import ccdb.webgui
+
+# Create the Flask app
+app = ccdb.webgui.cerate_ccdb_flask_app()
 
 if __name__ == "__main__":
-
-    import ccdb.webgui
-    # import ccdb.ccdb_pyllapi
-    app = ccdb.webgui.cerate_ccdb_flask_app()
+    # Run the app in debug mode when executed directly
     app.run(debug=True)
