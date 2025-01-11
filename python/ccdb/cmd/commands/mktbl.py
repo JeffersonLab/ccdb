@@ -348,7 +348,7 @@ columns format:
     
     The last one is change start index of auto naming the colums
     5) '50channel1'    -  create 50 columns channel1,channel1, ..., channel50
-    6) '3item_15=long - create item_15, item_16, item_17 of type long
+    6) '3item_15=double - create item_15, item_16, item_17 of type double
        /   \    \   \__________
       /     \    \             \           
  <quantity><name><start_index>=<type> 

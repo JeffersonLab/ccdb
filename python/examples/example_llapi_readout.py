@@ -31,10 +31,10 @@ if __name__ == "__main__":
     # returned directory is python
     assert (isinstance(directory, Directory))
 
-    print((directory.name))           # Name of this directory
-    print((directory.path))           # Full path
-    print((directory.parent_dir))     # Link to parent directory
-    print((directory.sub_dirs))       # Link to child directories
+    print(directory.name)           # Name of this directory
+    print(directory.path)           # Full path
+    print(directory.parent_dir)     # Link to parent directory
+    print(directory.sub_dirs)       # Link to child directories
 
     # directory is SQLAlchemy object, so you can get to its directories right through it
     for table in directory.type_tables:
@@ -111,8 +111,8 @@ if __name__ == "__main__":
     # Get all data in variation!
     print(("\n\n== All data for variation '{}' ==".format(variation.name)))
     for assignment in variation.assignments:
-        print((assignment.constant_set.type_table.path))
-        print((assignment.constant_set.data_table))
+        print(assignment.constant_set.type_table.path)
+        print(assignment.constant_set.data_table)
 
     #that is it.
     #check it with
