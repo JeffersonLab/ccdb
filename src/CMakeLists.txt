@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.5)
 project(CCDB)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
