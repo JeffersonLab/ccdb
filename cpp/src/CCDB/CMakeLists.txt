@@ -30,6 +30,15 @@ add_library(ccdb SHARED
 target_include_directories(ccdb PUBLIC "${PROJECT_SOURCE_DIR}/..")
 set_target_properties(ccdb PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
+option(CCDB_CACHE_ON "Enable CCDB cache support" OFF)
+
+if(CCDB_CACHE_ON)
+    message(STATUS "Cache is ENABLED")
+    target_compile_definitions(ccdb PUBLIC CCDB_CACHE_ON)
+else()
+    message(STATUS "Cache is DISABLED")
+endif()
+
 # Add SQLITE3
 find_package (SQLite3 REQUIRED)
 if (SQLite3_FOUND)
