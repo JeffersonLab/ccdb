@@ -149,3 +149,5 @@ scripts/scons-local-2.1.0/
 scripts/scons-time.py
 scripts/scons.py
 scripts/sconsign.py
+
+uv.lock
