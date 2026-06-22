@@ -19,7 +19,6 @@ ENV CCDB_HOME=/app
 RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
-COPY ./python/requirements.txt .
 COPY ./python/ccdb/webgui/requirements-web.txt .
 # Install Python dependencies
 RUN pip install --upgrade pip && \

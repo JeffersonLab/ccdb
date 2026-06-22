@@ -3,11 +3,9 @@ import datetime
 import posixpath
 from sqlalchemy import text
 
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.types import Integer, String, Text, DateTime, Enum, Boolean
-from sqlalchemy.orm import reconstructor, relationship
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import declarative_base, reconstructor, relationship, backref
 
 Base = declarative_base()
 

@@ -5,7 +5,7 @@ python:
   - "3.6"      # current default Python on Travis CI
 # command to install dependencies
 install:
-  - pip install -r python/requirements.txt
+  - pip install .
 # command to run tests
 before_install:
   - source environment.bash

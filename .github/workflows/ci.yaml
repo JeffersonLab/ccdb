@@ -25,7 +25,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r python/requirements.txt
+          pip install .
           ls
 
       - name: Set up environment

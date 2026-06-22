@@ -48,7 +48,7 @@ class AlchemyProvider(object):
         self.root_dir.path = '/'
         self.root_dir.name = ''
         self.root_dir.id = 0
-        self.path_name_regex = re.compile('^[\w\-_]+$', re.IGNORECASE)
+        self.path_name_regex = re.compile(r'^[\w\-_]+$', re.IGNORECASE)
         self._connection_string = ""
         self._auth = Authentication(self)
         self._auth.current_user_name = "anonymous"

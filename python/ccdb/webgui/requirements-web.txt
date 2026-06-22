@@ -1,6 +1,14 @@
-# Load the CCDB requirements
--r requirements.txt
-# Requirements for the webgui
+# Dependencies for the CCDB web GUI Docker image (docker/webgui/Dockerfile).
+# This is a deployment manifest. Core runtime deps mirror the [project]
+# dependencies in the repo-root pyproject.toml; keep them in sync.
+
+# CCDB core runtime
+pymysql
+sqlalchemy
+six
+cryptography
+
+# Web GUI + WSGI server
 Flask
 Bokeh
 bokeh_sampledata

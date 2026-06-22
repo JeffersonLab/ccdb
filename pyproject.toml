@@ -1,0 +1,78 @@
+[build-system]
+# These tell pip / uv / other installers how to build the project
+requires = [
+    "setuptools>=61.0",  # 61+ supports PEP 621 metadata in pyproject.toml
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ccdb"
+description = "CCDB - Calibration Constants DataBase"
+readme = "README.md"
+# Version is read dynamically from ccdb.version.version (see [tool.setuptools.dynamic])
+dynamic = ["version"]
+license = "GPL-2.0-or-later"
+authors = [
+    { name = "Dmitry Romanov", email = "romanov@jlab.org" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Database",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "pymysql>=1.0",
+    "sqlalchemy>=1.4",
+    "six",
+    "cryptography",
+]
+
+[project.optional-dependencies]
+# Web GUI (the `ccdb gui` command / ccdbweb WSGI app)
+web = ["flask>=2.0"]
+# Extras used by python/examples
+examples = ["jsonpickle", "pandas"]
+dev = ["pyflakes>=3", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/JeffersonLab/ccdb"
+Repository = "https://github.com/JeffersonLab/ccdb"
+
+# Console entry point: `ccdb` -> ccdb.init_ccdb_console (reads sys.argv)
+[project.scripts]
+ccdb = "ccdb:init_ccdb_console"
+
+# ---------------------------------------------------------------------------
+# setuptools configuration
+# The Python package lives in python/ccdb (this repo also holds cpp/ and java/),
+# so point setuptools at the python/ directory.
+# ---------------------------------------------------------------------------
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["python"]
+include = ["ccdb*"]
+
+[tool.setuptools.package-data]
+# Ship the web GUI assets inside the wheel
+ccdb = [
+    "webgui/static/**/*.*",
+    "webgui/templates/**/*.*",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "ccdb.version.version" }
