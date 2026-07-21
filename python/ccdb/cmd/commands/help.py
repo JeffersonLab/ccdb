@@ -22,7 +22,7 @@ class HelpUtil(CliCommandBase):
     #   print_help
     # ----------------------------------------
     def print_help(self):
-        print((self.help_text))
+        print(self.help_text)
 
         if self.context:
             print("Available commands:")
@@ -30,7 +30,7 @@ class HelpUtil(CliCommandBase):
             print("   " + "\n  ".join(
                 ["%-10s %-15s %s" % (f"'{command}'", util.name, util.short_descr)
                     for command, util
-                    in list(self.context.commands.items())
+                    in self.context.commands.items()
                     if not util.help_util]))
         print(self.flags_text)
         print(self.enveron_text)
@@ -49,6 +49,8 @@ class HelpUtil(CliCommandBase):
                     raise ModuleNotFoundError(msg)
             else:
                 self.print_help()
+        # The CLI treats a None result as failure (exit code 1), so report success
+        return True
     
     help_text = """
 Calibration Constants Data Base (CCDB) command line tools.
@@ -96,7 +98,8 @@ Environment:
 
 Connection string examples:
     MySql  : mysql://ccdb_user@localhost/ccdb
-    SQLite : sqlite:///$CCDB_HOME/sql/ccdb.sqlite
+    SQLite : sqlite:////full/path/to/ccdb.sqlite
+             (create one with: ccdb -c sqlite:////full/path/to/ccdb.sqlite db init --init-i-am-sure)
              (notice 3 slashes)
     """
     

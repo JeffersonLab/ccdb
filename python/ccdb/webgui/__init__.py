@@ -5,7 +5,6 @@ from ccdb.path_utils import parse_request, ParseRequestResult
 from flask import Flask, g, render_template, url_for, jsonify
 
 from ccdb.model import Directory
-from ccdb.errors import ObjectIsNotFoundInDbError
 
 
 def print_app_functions(app):
@@ -27,7 +26,6 @@ def dir_to_ul(directory, level=0):
     :rtype; str
     """
 
-    opened_class = 'bi-folder2-open'
     closed_class = 'bi-folder'
     file_class = 'bi-table'
 
@@ -279,7 +277,7 @@ def cerate_ccdb_flask_app(test_config=None):
             result += f"#meta run range: {assignment.run_range.min} - {max_run}<br>"
             try:
                 result += f"#meta author:  {db.session.query(User).filter(User.id == assignment.author_id).one().name}<br>"  # TODO make provider proper function to handl author by id
-            except Exception as ex:
+            except Exception:
                 result += f"#meta author: error getting name by id = {assignment.author_id}<br>"
 
             # print comment

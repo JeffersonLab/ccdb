@@ -4,13 +4,8 @@ import logging
 import sys
 import shlex
 
-# python 3 support
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 
-import ccdb.cmd.colorama
 from ccdb.errors import ObjectIsNotFoundInDbError
 import ccdb.path_utils
 import ccdb.cmd.themes
@@ -35,11 +30,8 @@ class CliManagerTests(unittest.TestCase):
         # We need only sqlite tests. We test that we work with all databases in the provider fixture
         self.sqlite_connection_str = helper.sqlite_test_connection_str
 
-        # DON'T USE COLORAMA IN TESTS. PyCharm test runner FAILS BECAUSE OF IT
-        # DON'T - ccdb.cmd.colorama.init(autoreset=True)
-        # DON'T - ccdb.cmd.colorama.deinit()
-        # Copy the DB
-        helper.copy_test_sqlite_db()
+        # Create a fresh test DB
+        helper.recreate_test_sqlite_db()
 
         # create console context
         self.cli = CliManager()

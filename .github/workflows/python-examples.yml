@@ -1,0 +1,59 @@
+name: Python examples
+
+on:
+  push:
+  pull_request:
+    branches: [v2-main]
+
+jobs:
+  run-examples:
+    runs-on: ubuntu-latest
+    env:
+      CCDB_HOME: ${{ github.workspace }}
+      CCDB_CONNECTION: "sqlite:///${{ github.workspace }}/examples.sqlite"
+      CCDB_USER: test_user
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 3.9 on purpose: proves examples run on the lowest supported python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install ccdb with examples extras
+        run: pip install ".[examples]"
+
+      - name: Create database (ccdb db init)
+        run: ccdb db init --init-i-am-sure
+
+      - name: example_llapi_readout
+        working-directory: python
+        run: python examples/example_llapi_readout.py
+
+      - name: example_llapi_change_value
+        working-directory: python
+        run: python examples/example_llapi_change_value.py
+
+      - name: example_llapi_variations
+        working-directory: python
+        run: python examples/example_llapi_variations.py
+
+      - name: example_llapi_copy
+        working-directory: python
+        run: python examples/example_llapi_copy.py
+
+      # This example documents its own prerequisite: the custom_data table
+      - name: example_llapi_add_custom_data
+        working-directory: python
+        run: |
+          ccdb mktbl /test/test_vars/custom_data -r 1 xml_data=string "#Store xml in ccdb"
+          python examples/example_llapi_add_custom_data.py
+
+      # SKIPPED examples (cannot run in CI):
+      #   example_halld_connect.py        - connects to the JLab HallD MySQL server (network/VPN)
+      #   example_llapi_edit_assignment.py - snippet with hardcoded /home/user paths, not runnable as-is
+      #   example_run_period_to_pandas.py  - needs HallD run-period data absent from the standard test DB
+      - name: List skipped examples
+        run: echo "Skipped (need JLab MySQL or HallD data) - example_halld_connect, example_llapi_edit_assignment, example_run_period_to_pandas"

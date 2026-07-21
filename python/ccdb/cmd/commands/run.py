@@ -1,6 +1,5 @@
 import logging
 from ccdb.cmd import CliCommandBase
-from ccdb.brace_log_message import BraceMessage as Lfm
 
 log = logging.getLogger("ccdb.cmd.commands.run")
 

@@ -30,7 +30,7 @@ import posixpath
 log = logging.getLogger("ccdb.provider")
 
 
-class AlchemyProvider(object):
+class AlchemyProvider:
     """
     CCDB data provider that uses SQLAlchemy for accessing databases
     """
@@ -168,7 +168,7 @@ class AlchemyProvider(object):
             raise ValueError(f"Can't get directory as 'path' is null or empty: '{path}'")
 
         # we don't have this directory
-        if path not in list(self.dirs_by_path.keys()):
+        if path not in self.dirs_by_path:
             raise ObjectIsNotFoundInDbError(Directory, "Can't find the directory with path '{0}'".format(path))
 
         return self.dirs_by_path[path]
@@ -262,7 +262,7 @@ class AlchemyProvider(object):
 
         # check if no such directory exists
         new_full_path = posixpath.join(parent_dir.path, new_dir_name)
-        if new_full_path in list(self.dirs_by_path.keys()):
+        if new_full_path in self.dirs_by_path:
             raise ValueError("The directory with path '{0}' already exist".format(new_full_path))
 
         # Get user
@@ -399,8 +399,6 @@ class AlchemyProvider(object):
             self.dirs_by_id = self._get_dirs_by_id_dic(self.session.query(Directory).all())
         except OperationalError as err:
             if 'no such table' in str(err):
-                import os
-
                 raise DatabaseStructureError(self._no_structure_message.format(err))
             else:
                 raise
@@ -421,7 +419,7 @@ class AlchemyProvider(object):
         dirs_by_full_path = {self.root_dir.path: self.root_dir}
 
         # clear subdirectories to append them from the beginning in the next step
-        for directory in list(directories.values()):
+        for directory in directories.values():
             directory.sub_dirs = []
 
         # root dir is artificial (not from database).
@@ -429,7 +427,7 @@ class AlchemyProvider(object):
         self.root_dir.sub_dirs = []
 
         # begin loop through the directories
-        for directory in list(directories.values()):
+        for directory in directories.values():
             assert (isinstance(directory, Directory))
 
             parent_dir = self.root_dir
@@ -826,7 +824,7 @@ class AlchemyProvider(object):
         data_count = self.session.query(Assignment).filter(Assignment.run_range_id == run_range.id).count()
         if data_count > 0:
             message = ("Can't delete run range that has data assigned to it."
-                       "The run range with id '{0}', name '{2}' [{3} - {4}] has {5} data sets which reference it."
+                       "The run range with id '{0}', name '{1}' [{2} - {3}] has {4} data sets which reference it."
                        "Please, delete the data first"). \
                 format(run_range.id,
                        run_range.name,
@@ -1206,10 +1204,10 @@ class AlchemyProvider(object):
             return assignment
         except ObjectIsNotFoundInDbError:
             # if we here there were no assignments selected
-            log.warning(("There is no data for table {}, run {}, variation '{}'",
+            log.warning("There is no data for table {}, run {}, variation '{}'".format(
                          request.path, request.run, request.variation))
             if request.time_is_parsed:
-                log.warning("    on ".format(request.time_str))
+                log.warning("    on {}".format(request.time_str))
             raise
 
     # ------------------------------------------------
@@ -1404,7 +1402,7 @@ class AlchemyProvider(object):
         if col_type == 'int':
             try:
                 value = int(value)
-            except ValueError as e:
+            except ValueError:
                 failure = True
 
         elif col_type == 'uint':
@@ -1482,7 +1480,7 @@ class AlchemyProvider(object):
         Find user in the database by user name
 
         :param username: username to find
-        :type username: basestring
+        :type username: str
 
         :return: User db object
         :rtype: User

@@ -48,7 +48,12 @@ is picked up automatically by the build (dynamic version).
 Unit tests look for two environment variables:
 
 1. `CCDB_TEST_MYSQL_CONNECTION` — if not found, `mysql://ccdb_user@localhost/ccdb_test` is used.
-2. `CCDB_TEST_SQLITE_CONNECTION` — if not found, `sqlite:///$CCDB_HOME/sql/ccdb.sqlite` is used.
+2. `CCDB_TEST_SQLITE_CONNECTION` — if not found, `sqlite:///$PWD/test.sqlite` is used.
+
+Tests create their own SQLite database (schema + standard test data) via
+`ccdb.testing.recreate_test_sqlite_db()`, which uses `ccdb.sql.sqlite_schema`.
+There is no committed database file; the same schema/data can be created from
+the command line with `ccdb -c sqlite:////path/to/db.sqlite db init --init-i-am-sure`.
 
 It is assumed that, for unit tests on a MySQL database, a schema named `ccdb_test` and a user named
 `ccdb_user` are used.

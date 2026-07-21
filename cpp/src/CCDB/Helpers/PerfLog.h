@@ -5,6 +5,8 @@
 #ifndef CCDB_PERFLOG_H
 #define CCDB_PERFLOG_H
 
+#include <cstdint>
+
 #include <iostream>
 #include <string>
 #include <thread>

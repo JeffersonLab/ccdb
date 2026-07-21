@@ -9,7 +9,7 @@ from .errors import AuthVerificationError
 #   A U T H E N T I C A T I O N   P R O V I D E R
 #
 #----------------------------------------------------------------------------------------
-class Authentication(object):
+class Authentication:
     """
         This is a base class for CCDB authentication.
 
@@ -61,7 +61,7 @@ class Authentication(object):
                   called. In this case CCDB will avoid calling get_current_user_name without a reason.
 
         :return: True if user name is already available
-        :rtype: basestring
+        :rtype: str
         """
         return True
 
@@ -79,7 +79,7 @@ class Authentication(object):
         2. If it is impossible to determine user name, 'anonymous' should be returned
 
         :return: verified user name
-        :rtype: basestring
+        :rtype: str
         """
         return self._username
 
@@ -128,7 +128,7 @@ class EnvironmentAuthentication(Authentication, object):
     #------------------------------------------------------------------------------------
     def __init__(self, prov):
         #assert(isinstance(prov, provider.AlchemyProvider))
-        super(EnvironmentAuthentication,self).__init__(prov)
+        super().__init__(prov)
         self._username = ""
         self._env_variable = ""
         self._is_validated = False

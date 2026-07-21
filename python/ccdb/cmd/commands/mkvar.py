@@ -54,6 +54,9 @@ class MakeVariation(CliCommandBase):
 
         log.info("Variation " + result.name + self.theme.Success + " created" + self.theme.Reset)
 
+        # The CLI treats a None result as failure (exit code 1), so report success
+        return True
+
     #----------------------------------------------
     #   print_help - prints help
     #----------------------------------------------

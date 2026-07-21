@@ -15,7 +15,6 @@ from ccdb import AlchemyProvider
 from .cli_command import CliCommandBase
 from .cli_context import CliContext
 from . import themes
-from . import colorama
 from ccdb.version import version as ccdb_version
 
 CCDB_EXCEPTIONS_THROW = "throw"       # Rethrow all exceptions
@@ -38,7 +37,7 @@ def import_all_submodules(modules_dir, package_name):
         # >oO debug   print(module)
 
 
-class CliManager(object):
+class CliManager:
     """
     Class to manage console commands
 
@@ -140,7 +139,7 @@ class CliManager(object):
                 log.debug("{0:<10} {1:<15} {2}:".format("(command)", "(name)", "(description)"))
                 log.debug("\n".join(["{0:<10} {1:<15} {2}:".format(command, util.name, util.short_descr)
                                      for command, util
-                                     in list(self._commands.items())]))
+                                     in self._commands.items()]))
 
     # --------------------------------
     #   processes the arguments
@@ -310,7 +309,6 @@ class CliManager(object):
         # execute command
         try:
             if redir_to_file:
-                colorama.deinit()
                 sys.stdout = redir_file
                 self.theme = themes.NoColorTheme()
 
@@ -330,7 +328,6 @@ class CliManager(object):
                 sys.stdout = redir_stream_backup
                 redir_file.close()
                 self.theme = redir_theme_backup
-                colorama.reinit()
         return result
 
     # --------------------------------
@@ -382,7 +379,6 @@ class CliManager(object):
         # initialise autocomplete
         self.words = list(self._commands.keys())
         # completer = Completer(words)
-        colorama.deinit()  # make colorama to release stderr and stdout
         readline.parse_and_bind("tab: complete")
         readline.set_completer(self.complete)
         try:
@@ -400,8 +396,6 @@ class CliManager(object):
 
         # Begin user commands read loop
         while 1:
-            colorama.deinit()
-
             # read command from user
             try:
                 user_input = input(self.context.current_path + "> ")
@@ -411,8 +405,6 @@ class CliManager(object):
             except KeyboardInterrupt:
                 log.debug("Break sequence received. Ending interactive loop")
                 break
-
-            colorama.reinit()
 
             # exit if user wishes so
             if user_input in ("quit", "q", "exit"):
@@ -478,12 +470,6 @@ class CliManager(object):
     # --------------------------------
     def complete(self, prefix, index):
 
-        # print "prefix ", prefix, "  index ", index
-        # readline.insert_text("bla bla bla")
-        # colorama.deinit()
-        # print "ha ha ha"
-        # colorama.reinit()
-
         if prefix != self.prefix:
             # get new completions
             self.generate_completion_words(prefix)
@@ -492,10 +478,6 @@ class CliManager(object):
             self.prefix = prefix
 
         else:
-
-            # print  "prefix the same, matching:", len(self.matching_words)
-
-            # print "  ".join([word for word in self.matching_words])
             # readline.redisplay()
             pass
 
@@ -525,10 +507,10 @@ class CliManager(object):
   CCDB shell {ccdb_version}
 +--------------------------+
        """)
-        print((self.theme.Title + "Interactive mode"))
-        print(("print " + self.theme.Accent + "help" + self.theme.Reset + " to get help"))
-        print((
-            "print " + self.theme.Accent + "quit" + self.theme.Reset + " or " + self.theme.Accent + "q" + self.theme.Reset + " to exit"))
+        print(self.theme.Title + "Interactive mode")
+        print("print " + self.theme.Accent + "help" + self.theme.Reset + " to get help")
+        print(
+            "print " + self.theme.Accent + "quit" + self.theme.Reset + " or " + self.theme.Accent + "q" + self.theme.Reset + " to exit")
         print("print !<command> to execute shell command")
         print()
         self.print_info()

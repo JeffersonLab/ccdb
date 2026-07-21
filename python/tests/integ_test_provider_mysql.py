@@ -1,4 +1,3 @@
-from ccdb.errors import DatabaseStructureError
 from ccdb.errors import AnonymousUserForbiddenError
 from ccdb import testing as helper
 import unittest
@@ -16,14 +15,14 @@ class MySQLAlchemyProviderTest(provider_fixture.AlchemyProviderTest):
     mysql_is_recreated = False
 
     def __init__(self, *args, **kwargs):
-        super(MySQLAlchemyProviderTest, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if not MySQLAlchemyProviderTest.mysql_is_recreated:
             MySQLAlchemyProviderTest.mysql_is_recreated = True
             helper.recreate_mysql_db(helper.mysql_test_connection_str)
 
     def setUp(self):
-        super(MySQLAlchemyProviderTest, self).setUp()
+        super().setUp()
         self.connection_str = helper.mysql_test_connection_str
 
 

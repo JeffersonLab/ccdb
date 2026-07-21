@@ -4,8 +4,6 @@ Runs CCDB local Web GUI
 import logging
 import os
 
-import ccdb
-import ccdb.path_utils
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt

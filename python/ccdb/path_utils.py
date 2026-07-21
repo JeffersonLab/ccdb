@@ -25,7 +25,7 @@ class PathObjectType:
     Run = "Run"
 
 
-class ParseRequestResult(object):
+class ParseRequestResult:
     """@brief ParseRequestResult is a class that represents parse result of
     a string request. @see PathUtils::ParseRequest
     """

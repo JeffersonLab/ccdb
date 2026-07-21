@@ -2,8 +2,6 @@ import os
 import logging
 from sqlalchemy import desc
 
-import ccdb
-from ccdb import TextFileDOM
 from ccdb import AlchemyProvider
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb.model import LogRecord
@@ -87,13 +85,13 @@ class ShowLog(CliCommandBase):
 #----------------------------------------
     def print_logs(self, log_records):
 
-        print((self.theme.Directories + "(action)        (author)         (date)                 (description)"))
+        print(self.theme.Directories + "(action)        (author)         (date)                 (description)")
 
         for log_record in log_records:
-            print((" %-13s "%log_record.action +\
+            print(" %-13s "%log_record.action +\
                 " %-16s"%log_record.author.name + \
                 " %-18s"%log_record.created.strftime("%Y-%m-%d %H-%M-%S   ") + " " +\
-                 log_record.description))
+                 log_record.description)
 
 
 #----------------------------------------

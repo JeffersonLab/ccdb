@@ -1,6 +1,7 @@
 import unittest
 
-from ccdb.errors import *
+from ccdb.errors import (AuthVerificationError, ObjectIsNotFoundInDbError, DatabaseStructureError,
+                         UserNotFoundError, UserExistsError, AnonymousUserForbiddenError)
 
 
 class PathUtilsTest(unittest.TestCase):

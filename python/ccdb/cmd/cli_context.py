@@ -1,7 +1,7 @@
 import posixpath
 
 
-class CliContext(object):
+class CliContext:
     anonymous_user_name = "anonymous"
 
     def __init__(self, provider, theme, commands):

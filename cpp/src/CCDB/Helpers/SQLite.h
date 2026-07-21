@@ -7,6 +7,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <cstdint>
 
 #include <sqlite3.h>
 

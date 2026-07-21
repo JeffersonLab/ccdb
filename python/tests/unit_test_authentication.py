@@ -1,16 +1,15 @@
 import unittest
 import os
-from ccdb import get_ccdb_home_path
 from ccdb.authentication import EnvironmentAuthentication
 from ccdb import AlchemyProvider
+from ccdb import testing as helper
 
 
 class AuthenticationTest(unittest.TestCase):
 
     def setUp(self):
-        ccdb_path = get_ccdb_home_path()
-
-        self.sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
+        helper.recreate_test_sqlite_db()
+        self.sqlite_connection_str = helper.sqlite_test_connection_str
 
         self.provider = AlchemyProvider()
 

@@ -97,20 +97,20 @@ class Info(CliCommandBase):
     # ----------------------------------------
     def print_directory(self, directory):
         assert isinstance(directory, Directory)
-        print((" Name      :  " + self.theme.Success + directory.name))
-        print((" Full path :  " + directory.path))
+        print(" Name      :  " + self.theme.Success + directory.name)
+        print(" Full path :  " + directory.path)
         try:
-            print((" Created   :  " + directory.created.strftime("%Y-%m-%d %H-%M-%S")))
+            print(" Created   :  " + directory.created.strftime("%Y-%m-%d %H-%M-%S"))
         except Exception as ex:
             log.warning("Directory created time getting error: " + str(ex))
         try:
-            print((" Modified  :  " + directory.modified.strftime("%Y-%m-%d %H-%M-%S")))
+            print(" Modified  :  " + directory.modified.strftime("%Y-%m-%d %H-%M-%S"))
         except Exception as ex:
             log.warning("Directory modify time getting error: " + str(ex))
 
         #comment
         print(" Comment: ")
-        print((directory.comment))
+        print(directory.comment)
         print()
 
     #----------------------------------------
@@ -122,13 +122,13 @@ class Info(CliCommandBase):
         print("+------------------------------------------+")
         print("| Type table information                   |")
         print("+------------------------------------------+")
-        print((" Name       :  " + self.theme.Success + table.name))
-        print((" Full path  :  " + table.path))
-        print((" Rows       :  " + self.theme.Accent + repr(int(table.rows_count))))
-        print((" Columns    :  " + self.theme.Accent + repr(int(table.columns_count))))
-        print((" Created    :  " + table.created.strftime("%Y-%m-%d %H-%M-%S")))
-        print((" Modified   :  " + table.modified.strftime("%Y-%m-%d %H-%M-%S")))
-        print((" DB Id      :  " + repr(int(table.id))))
+        print(" Name       :  " + self.theme.Success + table.name)
+        print(" Full path  :  " + table.path)
+        print(" Rows       :  " + self.theme.Accent + repr(int(table.rows_count)))
+        print(" Columns    :  " + self.theme.Accent + repr(int(table.columns_count)))
+        print(" Created    :  " + table.created.strftime("%Y-%m-%d %H-%M-%S"))
+        print(" Modified   :  " + table.modified.strftime("%Y-%m-%d %H-%M-%S"))
+        print(" DB Id      :  " + repr(int(table.id)))
         print("+------------------------------------------+")
         print("| Columns info                             |")
         print("+------------------------------------------+")
@@ -137,14 +137,14 @@ class Info(CliCommandBase):
         print("Columns info ")
         print(" N.   (type)    : (name)")
         for column in table.columns:
-            print((" " + repr(int(column.order)).ljust(4) \
-                  + " " + self.theme.Type + "%-10s" % column.type + self.theme.Reset + ": " + column.name))
+            print(" " + repr(int(column.order)).ljust(4) \
+                  + " " + self.theme.Type + "%-10s" % column.type + self.theme.Reset + ": " + column.name)
 
         print()
         print("+------------------------------------------+")
         #comment
         print("Comment: ")
-        print((table.comment))
+        print(table.comment)
         print()
 
     #----------------------------------------
@@ -156,12 +156,12 @@ class Info(CliCommandBase):
         print("+------------------------------------------+")
         print("| Variation information                    |")
         print("+------------------------------------------+")
-        print((" Name       :  " + self.theme.Success + variation.name))
-        print((" Created    :  " + variation.created.strftime("%Y-%m-%d %H-%M-%S")))
-        print((" DB Id      :  " + repr(int(variation.id))))
-        print((" Parent     :  " + (variation.parent.name if variation.parent else "--")))
+        print(" Name       :  " + self.theme.Success + variation.name)
+        print(" Created    :  " + variation.created.strftime("%Y-%m-%d %H-%M-%S"))
+        print(" DB Id      :  " + repr(int(variation.id)))
+        print(" Parent     :  " + (variation.parent.name if variation.parent else "--"))
         print(" Comment:  ")
-        print((variation.comment))
+        print(variation.comment)
         print()
 
     #----------------------------------------
@@ -229,7 +229,7 @@ class Info(CliCommandBase):
                         " (rows and columns must consist)", file_path, ccdb_prefix))
 
 
-class InfoTypes(object):
+class InfoTypes:
     variation = "variation"
     type_table = "type_table"
     directory = "directory"

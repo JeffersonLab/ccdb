@@ -1,0 +1,48 @@
+name: MySQL tests
+
+on:
+  push:
+  pull_request:
+    branches: [v2-main]
+
+jobs:
+  mysql-tests:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.3
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: ccdb_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ccdb
+        run: pip install .
+
+      - name: Install MySQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mysql-client
+
+      - name: Create MySQL test user and schema
+        run: |
+          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE USER `ccdb_user`@`%`;'
+          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE SCHEMA IF NOT EXISTS `ccdb_test`;'
+          mysql -h 127.0.0.1 -u root --password=root -e 'GRANT ALL PRIVILEGES ON ccdb_test.* TO `ccdb_user`@`%`;'
+
+      # The test suite itself creates the schema via `ccdb db init`
+      - name: Run MySQL integration tests
+        working-directory: python
+        env:
+          CCDB_TEST_MYSQL_CONNECTION: mysql://ccdb_user@127.0.0.1:3306/ccdb_test
+        run: python -m unittest tests.integ_test_provider_mysql

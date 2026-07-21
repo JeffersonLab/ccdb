@@ -4,7 +4,6 @@ import logging
 import sys
 import shlex
 
-import ccdb.cmd.colorama
 import ccdb.path_utils
 import ccdb.cmd.themes
 from ccdb.cmd.cli_manager import CliManager, CCDB_EXCEPTIONS_THROW
@@ -20,8 +19,8 @@ class AddThenDumpFileTests(unittest.TestCase):
 
     def setUp(self):
 
-        # Copy sqlite DB
-        helper.copy_test_sqlite_db()
+        # Create a fresh test DB
+        helper.recreate_test_sqlite_db()
 
         # We need only sqlite tests. We test that we work with all databases in the provider fixture
         self.sqlite_connection_str = helper.sqlite_test_connection_str

@@ -1,4 +1,4 @@
-class BraceMessage(object):
+class BraceMessage:
     """
     This class is used for logger formatting via new string format
     example:

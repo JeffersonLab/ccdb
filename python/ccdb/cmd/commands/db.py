@@ -1,20 +1,18 @@
-import posixpath
 import logging
 import os
 
 import ccdb.model
-from ccdb.errors import ObjectIsNotFoundInDbError
-from ccdb.model import Directory, TypeTable, Assignment, CcdbSchemaVersion
+from ccdb.model import Assignment, CcdbSchemaVersion
 from ccdb.provider import AlchemyProvider
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import BraceMessage as LogFmt
 from ccdb.sql.mysql_schema import init_mysql_database
+from ccdb.sql.sqlite_schema import init_sqlite_database
 from ccdb.sql.update_v5 import update_v5
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import text
 
 log = logging.getLogger("ccdb.cmd.commands.db")
 
@@ -122,8 +120,11 @@ class Database(CliCommandBase):
         log.debug(f" |- This script path : '{ os.path.abspath(__file__) }'")
         provider = self.context.provider
         provider.connect(connection_string=self.context.connection_string, check_version=False)
-        init_mysql_database(provider.engine)
-        log.debug(f" |- Done DB init")
+        if provider.engine.dialect.name == "sqlite":
+            init_sqlite_database(provider.engine)
+        else:
+            init_mysql_database(provider.engine)
+        log.debug(" |- Done DB init")
         return True
 
     def db_upgrade(self):
@@ -132,7 +133,7 @@ class Database(CliCommandBase):
         assert isinstance(provider, AlchemyProvider)
         provider.connect(connection_string=self.context.connection_string, check_version=False)
         update_v5(provider.engine)
-        log.debug(f" |- Done DB upgrade")
+        log.debug(" |- Done DB upgrade")
         return True
 
     def db_stats(self):

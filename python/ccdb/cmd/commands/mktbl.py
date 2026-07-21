@@ -6,7 +6,7 @@ import os
 
 from ccdb.cmd import CliCommandBase
 from ccdb import BraceMessage as LogFmt
-from ccdb.table_file import read_ccdb_text_file, TextFileDOM, META_VARIATION
+from ccdb.table_file import read_ccdb_text_file, TextFileDOM
 
 log = logging.getLogger("ccdb.cmd.commands.mktbl")
 
@@ -27,7 +27,7 @@ class MakeTable(CliCommandBase):
     #   __init__
     #----------------------------------------
     def __init__(self, context):
-        super(MakeTable, self).__init__(context)
+        super().__init__(context)
         self.columns = {}
         self.unparsed_columns = []
         self.rows = 1
@@ -126,7 +126,7 @@ class MakeTable(CliCommandBase):
         log.debug("  write table to database...")
         table = self.context.provider.create_type_table(self.table_name, self.table_parent_path,
                                                         self.rows, self.columns, self.comment)
-        print(("saving table to database... " + self.theme.Success + " completed" + self.theme.Reset))
+        print("saving table to database... " + self.theme.Success + " completed" + self.theme.Reset)
         return table
 
     def process_arguments(self, args):
@@ -385,19 +385,19 @@ keys:
         # basic values: name rows columns path
         print()
         if not len(self.table_name):
-            print(("Table: " + self.theme.Fail + "Name is not set"))
+            print("Table: " + self.theme.Fail + "Name is not set")
         else:
-            print(("Table: " + self.theme.Success + self.table_name))
+            print("Table: " + self.theme.Success + self.table_name)
 
-        print(("Rows num: " + repr(self.rows) + self.theme.Reset + \
-              "   Columns num: " + repr(len(self.columns))))
-        print(("Full path: " + self.table_path))
+        print("Rows num: " + repr(self.rows) + self.theme.Reset + \
+              "   Columns num: " + repr(len(self.columns)))
+        print("Full path: " + self.table_path)
         # columns info
         print()
         print("Columns: ")
         print("   (type)    : (name)")
         for (colname, coltype) in self.columns:
-            print(("   " + self.theme.Type + "%-10s" % coltype + self.theme.Reset + ": " + colname))
+            print("   " + self.theme.Type + "%-10s" % coltype + self.theme.Reset + ": " + colname)
         print()
 
         # comment
@@ -411,12 +411,12 @@ keys:
         print()
         print("Additional info: ")
         if self.rows_set:
-            print(("   Rows number is set by " + self.theme.Success + "User"))
+            print("   Rows number is set by " + self.theme.Success + "User")
         else:
-            print(("   Rows number is set by " + self.theme.Accent + "Default"))
+            print("   Rows number is set by " + self.theme.Accent + "Default")
 
         if self.comment_set:
-            print(("   Comments added by " + self.theme.Success + "User"))
+            print("   Comments added by " + self.theme.Success + "User")
         else:
             print("   No comments are set")
 

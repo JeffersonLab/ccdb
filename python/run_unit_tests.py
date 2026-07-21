@@ -4,6 +4,7 @@ from ccdb import testing as ccdb_testing
 
 test_names = [
     'unit_test_authentication',
+    'unit_test_exceptions',
     'unit_test_cli_context',
     'unit_test_dump_comments',
     'unit_test_path_utils',

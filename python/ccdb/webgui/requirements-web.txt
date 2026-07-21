@@ -3,10 +3,9 @@
 # dependencies in the repo-root pyproject.toml; keep them in sync.
 
 # CCDB core runtime
-pymysql
+pymysql[rsa]
 sqlalchemy
-six
-cryptography
+rich
 
 # Web GUI + WSGI server
 Flask

@@ -1,0 +1,24 @@
+name: Lint (pyflakes)
+
+on:
+  push:
+  pull_request:
+    branches: [v2-main]
+
+jobs:
+  pyflakes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ccdb with dev extras
+        run: pip install ".[dev]"
+
+      # Mandatory gate: fails on any finding
+      - name: Run pyflakes
+        run: pyflakes python/ccdb python/tests

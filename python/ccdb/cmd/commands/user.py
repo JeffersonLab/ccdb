@@ -1,6 +1,5 @@
 import logging
 
-from ccdb.cmd.cli_context import CliContext
 from ccdb.path_utils import validate_name
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 

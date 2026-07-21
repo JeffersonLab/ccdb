@@ -1,0 +1,89 @@
+name: CLI smoke test
+
+on:
+  push:
+  pull_request:
+    branches: [v2-main]
+
+jobs:
+  cli-smoke:
+    runs-on: ubuntu-latest
+    env:
+      CCDB_CONNECTION: "sqlite:///${{ github.workspace }}/cli_smoke.sqlite"
+      CCDB_USER: test_user
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ccdb
+        run: pip install .
+
+      - name: ccdb --version
+        run: ccdb --version
+
+      - name: ccdb help
+        run: ccdb help
+
+      - name: Fails cleanly without a usable connection
+        run: |
+          set +e
+          output=$(env -u CCDB_CONNECTION ccdb ls 2>&1)
+          code=$?
+          set -e
+          echo "$output"
+          test $code -ne 0 || { echo "expected non-zero exit code"; exit 1; }
+          if echo "$output" | grep -q "Traceback"; then
+            echo "CLI leaked a python traceback on a connection error"
+            exit 1
+          fi
+
+      # The single canonical way to create a ccdb SQLite database -
+      # no checked-in binary fixture to drift out of sync
+      - name: Create database (ccdb db init)
+        run: ccdb db init --init-i-am-sure
+
+      - name: ccdb db (info)
+        run: ccdb db
+
+      - name: ccdb ls
+        run: |
+          ccdb ls
+          ccdb ls /test/test_vars
+
+      - name: ccdb info
+        run: ccdb info /test/test_vars/test_table
+
+      - name: ccdb cat
+        run: ccdb cat /test/test_vars/test_table
+
+      - name: ccdb dump
+        run: |
+          ccdb dump /test/test_vars/test_table
+          ccdb dump /test/test_vars/test_table | grep -q "1.11"
+
+      - name: ccdb vers
+        run: ccdb vers /test/test_vars/test_table
+
+      - name: ccdb mkdir
+        run: ccdb mkdir /test/smoke_dir
+
+      - name: ccdb mktbl + add + vers
+        run: |
+          ccdb mktbl /test/smoke_dir/data_table -r 2 x y z
+          ccdb add /test/smoke_dir/data_table python/tests/test_table.txt
+          ccdb vers /test/smoke_dir/data_table
+
+      - name: ccdb rm (empty table, then directory)
+        run: |
+          ccdb mktbl /test/smoke_dir/empty_table -r 1 x
+          ccdb rm --force /test/smoke_dir/empty_table
+
+      - name: ccdb mkvar + rm variation
+        run: |
+          ccdb mkvar smoke_variation
+          ccdb rm --force -v smoke_variation

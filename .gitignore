@@ -2,8 +2,8 @@
 bin/test_ccdb_lib
 tmp/
 
-# test db
-/python/tests/test.sqlite
+# test db (created by ccdb.testing.recreate_test_sqlite_db in the test cwd)
+test.sqlite
 
 # SCONS
 .sconsign.dblite

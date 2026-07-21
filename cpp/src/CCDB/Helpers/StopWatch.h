@@ -10,6 +10,8 @@
 #ifndef STOPWATCH_HEADER_H
 #define STOPWATCH_HEADER_H
 
+#include <cstdint>
+
 #include <chrono>
 
 namespace ccdb {

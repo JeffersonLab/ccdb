@@ -61,23 +61,23 @@ class List(CliCommandBase):
         if task == ListTasks.directory_tree:
             self.parent_dir = provider.get_root_directory()
             self.print_directory_tree(self.parent_dir, False, 0)
-            return
+            return True
 
         # dump as directories
         if task == ListTasks.directories:
             self.parent_dir = provider.get_root_directory()
             self.print_directory_tree(self.parent_dir, True, 0)
-            return
+            return True
 
         # dump variations
         if task == ListTasks.variations:
             self.print_variations()
-            return
+            return True
 
         # dump type_tables
         if task == ListTasks.type_tables:
             self.print_tables()
-            return
+            return True
 
         if len(args) > 0:
             self.raw_entry = raw_path
@@ -110,6 +110,9 @@ class List(CliCommandBase):
 
         for table in tables:
             log.info(table.name)
+
+        # The CLI treats a None result as failure (exit code 1), so report success
+        return True
 
     @staticmethod
     def _process_arguments(args):
@@ -240,9 +243,9 @@ class List(CliCommandBase):
 
         # print this directory
         if not printFullPath:
-            print(("".join(["   " for i in range(0, level)]) + directory.name))
+            print("".join(["   " for i in range(0, level)]) + directory.name)
         else:
-            print((directory.path))
+            print(directory.path)
 
         # print subdirectories recursively
         sub_dirs = directory.sub_dirs
@@ -252,7 +255,7 @@ class List(CliCommandBase):
 
     def print_variations(self):
         default_variation = self.context.provider.get_variation("default")
-        print(( self._get_variation_tree_str(default_variation) ))
+        print( self._get_variation_tree_str(default_variation) )
 
     def _get_variation_tree_str(self, variation, level=0):
         ret = "  "*level + str(variation.name)+"\n"
@@ -290,7 +293,7 @@ keys:
 """)
 
 
-class ListTasks(object):
+class ListTasks:
     default = "default"
     variations = "variations"
     type_tables = "type_tables"

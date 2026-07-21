@@ -1,0 +1,43 @@
+name: C++ tests
+
+on:
+  push:
+  pull_request:
+    branches: [v2-main]
+
+jobs:
+  cpp-sqlite:
+    runs-on: ubuntu-latest
+    env:
+      CCDB_TEST_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/cpp_test.sqlite"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ libsqlite3-dev
+
+      # Python CLI is the single canonical way to create the test database
+      - name: Install ccdb python package
+        run: pip install .
+
+      - name: Create test database (ccdb db init)
+        run: ccdb -c "$CCDB_TEST_SQLITE_CONNECTION" db init --init-i-am-sure
+
+      # No MySQL dev libraries installed => MySQL support is not compiled,
+      # only the SQLite providers and tests are built
+      - name: Configure
+        run: cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build tests
+        run: cmake --build cpp/build --target ccdb_tests -j"$(nproc)"
+
+      - name: Run tests
+        run: ./cpp/build/src/tests/ccdb_tests

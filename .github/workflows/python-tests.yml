@@ -1,0 +1,51 @@
+name: Python tests
+
+on:
+  push:
+  pull_request:
+    branches: [v2-main]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install ccdb
+        run: pip install .
+
+      - name: Run unit tests
+        working-directory: python
+        run: >
+          python -m unittest
+          tests.unit_test_authentication
+          tests.unit_test_cli_context
+          tests.unit_test_dump_comments
+          tests.unit_test_exceptions
+          tests.unit_test_path_utils
+          tests.unit_test_utility_argument_parse
+          tests.unit_test_version
+
+      # SQLite integration tests create their own database
+      # (via ccdb.testing.recreate_test_sqlite_db) - no fixture files needed
+      - name: Run SQLite integration tests
+        working-directory: python
+        run: >
+          python -m unittest
+          tests.integ_test_provider_sqlite
+          tests.integ_test_cli_manager
+
+      - name: CLI entry point smoke
+        run: |
+          ccdb --version
+          ccdb help

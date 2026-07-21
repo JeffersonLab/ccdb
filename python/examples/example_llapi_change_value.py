@@ -8,13 +8,14 @@ import os
 
 if __name__ == "__main__":
 
-    # Will connect to demo sqlite DB
-    connection = "sqlite:///" + os.path.join(ccdb.get_ccdb_home_path(), 'sql', 'ccdb.sqlite')
+    # Connection string from environment. To create a demo sqlite DB run:
+    #   ccdb -c sqlite:////full/path/to/ccdb.sqlite db init --init-i-am-sure
+    connection = os.environ["CCDB_CONNECTION"]
 
     # create CCDB api class
     provider = ccdb.AlchemyProvider()                        # this class has all CCDB manipulation functions
     provider.connect(connection)     # use usual connection string to connect to database
-    provider.authentication.current_user_name = "anonymous"  # to have a name in logs
+    provider.authentication.current_user_name = "test_user"  # anonymous user is not allowed to create assignments
 
     # get assignment
     assignment = provider.get_assignment("/test/test_vars/test_table2", 1, "test")  # table, run, variation
@@ -40,7 +41,7 @@ if __name__ == "__main__":
     # lets read the assignment once again. We will get the latest assignment ==> the assignment we just added
     assignment = provider.get_assignment("/test/test_vars/test_table2", 1, "test")  # table, run, variation
     print("Updated data")
-    print((assignment.constant_set.data_table))
+    print(assignment.constant_set.data_table)
 
     # that is it.
     # check it with

@@ -249,7 +249,7 @@ class Cat(CliCommandBase):
 
             # cap?
             if display_borders:
-                print((self.theme.AsgmtBorder + cap))
+                print(self.theme.AsgmtBorder + cap)
 
             # names line
             for i in range(0, columns_count):
@@ -257,18 +257,18 @@ class Cat(CliCommandBase):
                 col_format = " %%-%is " % column_width[i]
                 sys.stdout.write(self.theme.AsgmtHead + col_format % column_names[i] + self.theme.Reset)
 
-            print((self.theme.AsgmtBorder + border + self.theme.Reset))  # last border
+            print(self.theme.AsgmtBorder + border + self.theme.Reset)  # last border
 
             # types line
             for i in range(0, columns_count):
                 sys.stdout.write(self.theme.AsgmtBorder + border + self.theme.Reset)
                 col_format = " %%-%is " % column_width[i]
                 sys.stdout.write(self.theme.AsgmtType + col_format % column_types[i] + self.theme.Reset)
-            print((self.theme.AsgmtBorder + border + self.theme.Reset))  # last border
+            print(self.theme.AsgmtBorder + border + self.theme.Reset)  # last border
 
         # cap?
         if display_borders:
-            print((self.theme.AsgmtBorder + cap))
+            print(self.theme.AsgmtBorder + cap)
 
         # data line by line
         column_iter = 0
@@ -282,11 +282,11 @@ class Cat(CliCommandBase):
             # new line?
             if column_iter == columns_count:
                 column_iter = 0
-                print((self.theme.AsgmtBorder + border + self.theme.Reset))
+                print(self.theme.AsgmtBorder + border + self.theme.Reset)
 
         # final cap?
         if display_borders:
-            print((self.theme.AsgmtBorder + cap))
+            print(self.theme.AsgmtBorder + cap)
 
     # --------------------------------------------------------------------------------
     #   print_assignment_horizontal
@@ -320,7 +320,7 @@ class Cat(CliCommandBase):
 
         # PRINT COMMENTS
         if comments:
-            print(("#" + str(assignment.comment).replace(os.linesep, "#" + os.linesep)))
+            print("#" + str(assignment.comment).replace(os.linesep, "#" + os.linesep))
 
         column_names = [column.name for column in table.columns]
         column_types = [column.type for column in table.columns]
@@ -385,7 +385,7 @@ class Cat(CliCommandBase):
 
         # cap?
         if display_borders:
-            print((self.theme.AsgmtBorder + cap + self.theme.Reset))
+            print(self.theme.AsgmtBorder + cap + self.theme.Reset)
 
         # #data line by line
         # columnIter = 0
@@ -409,7 +409,7 @@ class Cat(CliCommandBase):
 
         # #final cap?
         if display_borders:
-            print((self.theme.AsgmtBorder + cap + self.theme.Reset))
+            print(self.theme.AsgmtBorder + cap + self.theme.Reset)
 
     # ----------------------------------------
     #   print_help

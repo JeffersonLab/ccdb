@@ -27,14 +27,15 @@ so no ccdb #comment line is added prior xml start
 """
 import ccdb
 import io
+import os
 
 
 if __name__ == "__main__":
 
     #create CCDB api class
     provider = ccdb.AlchemyProvider()                        # this class has all CCDB manipulation functions
-    provider.connect("mysql://ccdb_user@localhost/ccdb")     # use usual connection string to connect to database
-    provider.authentication.current_user_name = "anonymous"  # to have a name in logs
+    provider.connect(os.environ["CCDB_CONNECTION"])          # use usual connection string to connect to database
+    provider.authentication.current_user_name = "test_user"  # anonymous user is not allowed to create assignments
 
     #read file
     xml_content = io.open("tt.xml", "r").read()

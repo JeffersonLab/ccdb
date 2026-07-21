@@ -15,12 +15,12 @@ except:
 class SQLiteAlchemyProviderTest(provider_fixture.AlchemyProviderTest):
 
     def setUp(self):
-        super(SQLiteAlchemyProviderTest, self).setUp()
+        super().setUp()
         self.connection_str = helper.sqlite_test_connection_str
-        helper.copy_test_sqlite_db()
+        helper.recreate_test_sqlite_db()
 
     def tearDown(self):
-        super(SQLiteAlchemyProviderTest, self).tearDown()
+        super().tearDown()
         helper.clean_test_sqlite_db()
 
     def test_sqlite_wrong_file(self):

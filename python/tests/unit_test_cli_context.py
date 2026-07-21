@@ -1,5 +1,4 @@
 import unittest
-import os
 from ccdb.cmd import CliContext
 
 

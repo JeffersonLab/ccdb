@@ -58,7 +58,7 @@ class Empty(CliCommandBase):
     uses_db = True
 
     def __init__(self, context):
-        super(Empty, self).__init__(context)
+        super().__init__(context)
         self.raw_entry = "/"         # object path with possible pattern, like /mole/*
 
     #----------------------------------------

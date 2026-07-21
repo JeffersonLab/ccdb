@@ -25,8 +25,6 @@ class Dump(CliCommandBase):
         log.debug("{0}Dump is gained a control {0}\\".format(os.linesep))
         log.debug(" |- arguments: " + " ".join(args))
 
-        theme_backup = self.theme
-
         self.theme = NoColorTheme()
         # self.context.utils["cat"].theme = NoColorTheme()
         return "cat --no-borders --no-header --comments --horizontal " + " ".join(args)

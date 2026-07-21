@@ -34,10 +34,10 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "pymysql>=1.0",
+    # [rsa] extra pulls `cryptography`, needed for MySQL 8 caching_sha2_password auth
+    "pymysql[rsa]>=1.0",
     "sqlalchemy>=1.4",
-    "six",
-    "cryptography",
+    "rich",
 ]
 
 [project.optional-dependencies]

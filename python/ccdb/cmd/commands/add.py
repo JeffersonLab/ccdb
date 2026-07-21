@@ -26,7 +26,7 @@ class AddData(CliCommandBase):
     uses_db = True
 
     def __init__(self, context):
-        super(AddData, self).__init__(context)
+        super().__init__(context)
         self.raw_table_path = ""
         self.table_path = ""
         self.raw_file_path = ""
@@ -108,11 +108,11 @@ class AddData(CliCommandBase):
                          len(dom.rows[0]), len(dom.rows), len(dom.comment_lines), len(dom.metas)))
 
         try:
-            table = provider.get_type_table(self.table_path)
+            provider.get_type_table(self.table_path)
         except Exception as ex:
             if 'No table found by exact path' in str(ex):  # TODO replace with good exception type
                 # it is safe to use len(dom.rows[0]) because dom.data_is_consistant checked that
-                print((self._get_notable_instruction(self.table_path, len(dom.rows[0]), len(dom.rows))))
+                print(self._get_notable_instruction(self.table_path, len(dom.rows[0]), len(dom.rows)))
 
         # try to create
         assignment = provider.create_assignment(dom,

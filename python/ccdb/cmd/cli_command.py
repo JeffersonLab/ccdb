@@ -1,11 +1,9 @@
-import posixpath
 from abc import abstractmethod
 
 from .cli_context import CliContext
-from .themes import NoColorTheme
 
 
-class CliCommandBase(object):
+class CliCommandBase:
     """base class for a single CCDB CLI command"""
 
     #context = ConsoleContext()
@@ -40,15 +38,15 @@ class CliCommandBase(object):
     def print_help(self):
         """Prints help of the command"""
 
-        print(("Help is not defined for command " + self.command))
+        print("Help is not defined for command " + self.command)
 
     def print_usage(self):
         """Prints usage of the command"""
-        print(("@brief Usage is not defined for command " + self.command))
+        print("@brief Usage is not defined for command " + self.command)
 
     def print_examples(self):
         """Prints examples of the command usage"""
-        print(("Examples are not defined for command " + self.command))
+        print("Examples are not defined for command " + self.command)
 
     def read_multiline(self):
         user_input = []

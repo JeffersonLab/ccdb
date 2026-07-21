@@ -1,0 +1,73 @@
+name: Publish to PyPI
+
+# Publishes on version tags (v2.0.5, v2.1.0, ...).
+# Uses PyPI trusted publishing (OIDC) - no API token secrets needed,
+# but the repo must be registered as a trusted publisher ONCE, manually:
+#   - https://test.pypi.org/manage/account/publishing/  (project ccdb, workflow publish.yml, environment testpypi)
+#   - https://pypi.org/manage/account/publishing/       (project ccdb, workflow publish.yml, environment pypi)
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build sdist and wheel
+        run: |
+          pip install build twine
+          python -m build
+          twine check dist/*
+
+      - name: Check tag matches package version
+        run: |
+          version=$(python -c "import sys; sys.path.insert(0, 'python'); from ccdb.version import version; print(version)")
+          test "v$version" = "$GITHUB_REF_NAME" || {
+            echo "Tag $GITHUB_REF_NAME does not match ccdb.version '$version'"; exit 1; }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish-testpypi:
+    name: Dry-run publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment: testpypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

@@ -24,7 +24,7 @@ class DatabaseStructureError(Exception):
     Possibly because of connecting to wrong SQLite file or to MySQL database without schema.
     """
 
-    def __init__(self, message):
+    def __init__(self, message=""):
         if not message:
             message = ("No database structure found. "
                        "Possibly because of connecting to wrong SQLite file or to MySQL database without schema")

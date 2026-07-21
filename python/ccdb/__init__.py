@@ -1,5 +1,4 @@
 
-# -*- coding: utf-8 -*-
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
 #       the Free Software Foundation; either version 2 of the License, or
@@ -33,37 +32,6 @@ def get_ccdb_home_path():
     return this_dir
 
 
-def insert_ext_lib_in_python_path():
-    """
-    CCDB ships some external libraries in external_libs folder
-    if CCDB is cloned from GitHub we can load them
-    if CCDB is installed from pip, dependendencies should be installed too
-    """
-    ext_lib_dir = os.path.join(get_ccdb_home_path(), 'python', 'external_libs')
-    if os.path.isdir(ext_lib_dir):
-        sys.path.append(ext_lib_dir)
-    else:
-        print("Not all ccdb core dependencies have been found")
-        print("Please make sure, that SqlALchemy, pymysql and six are installed")
-        print("run 'ccdb --debug' for info on what exact dependency is missing")
-        exit(1)
-
-
-# try:
-#     import sqlalchemy
-# except:
-#     insert_ext_lib_in_python_path()
-#
-# try:
-#     import six
-# except:
-#     insert_ext_lib_in_python_path()
-#
-# try:
-#     import pymysql
-# except:
-#     insert_ext_lib_in_python_path()
-
 # import the other parts (basically forwards names to ccdb.xxx)
 from .provider import AlchemyProvider
 from .model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn, INFINITE_RUN
@@ -74,19 +42,25 @@ from .cmd import themes
 from ccdb.cmd.cli_manager import CCDB_EXCEPTIONS_THROW, CCDB_EXCEPTIONS_SILENT
 from ccdb.version import version as ccdb_version
 
+__all__ = [
+    "AlchemyProvider",
+    "Variation", "RunRange", "Assignment", "ConstantSet", "Directory", "TypeTable", "TypeTableColumn",
+    "INFINITE_RUN",
+    "TextFileDOM", "read_ccdb_text_file", "read_namevalue_text_file",
+    "NoColorTheme", "ColoredTheme", "themes",
+    "BraceMessage",
+    "CCDB_EXCEPTIONS_THROW", "CCDB_EXCEPTIONS_SILENT",
+    "ccdb_version",
+    "get_ccdb_home_path", "init_ccdb_console", "logger",
+]
+
 
 # the default ccdb logger
 logger = logging.getLogger("ccdb")
 
 
-if sys.version_info < (2, 7, 0):
-    sys.stderr.write("You need python 2.7 or later to run CCDB\n")
-    exit(1)
-
-
 def init_ccdb_console():
     from .cmd import CliManager
-    import ccdb.cmd.colorama
 
     # SETUP LOGGER
     # ------------------------------
@@ -120,8 +94,6 @@ def init_ccdb_console():
         print(ccdb_version)
         exit(0)
 
-    ccdb.cmd.colorama.init(autoreset=True)
-
     if "--no-color" in sys.argv:
         # no colors for output
         context.theme = NoColorTheme()
@@ -151,12 +123,12 @@ def init_ccdb_console():
     context.connection_string = "mysql://ccdb_user@localhost/ccdb"
 
     # connection string
-    if "CCDB_CONNECTION" in list(os.environ.keys()):
+    if "CCDB_CONNECTION" in os.environ:
         context.connection_string = os.environ["CCDB_CONNECTION"]
         logger.debug("Set connection string from $CCDB_CONNECTION :" + context.connection_string)
     else:
         # fallback to jana calib url
-        if "JANA_CALIB_URL" in list(os.environ.keys()):
+        if "JANA_CALIB_URL" in os.environ:
             jana_url = os.environ["JANA_CALIB_URL"]
             logger.debug("$CCDB_CONNECTION was not found. Found JANA_CALIB_URL ('"+jana_url+"'). Try use it")
 
@@ -167,7 +139,7 @@ def init_ccdb_console():
 
     # connection string in in command line arguments ( by -c or --connection) is processed by context.process(sys.argv)
 
-    if "CCDB_USER" in list(os.environ.keys()):
+    if "CCDB_USER" in os.environ:
         context.user_name = os.environ["CCDB_USER"]
         logger.debug("Set user name from $CCDB_USER :" + context.user_name)
 

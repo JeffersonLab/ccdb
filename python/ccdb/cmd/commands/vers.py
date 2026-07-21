@@ -73,14 +73,14 @@ class Versions(CliCommandBase):
 
         # if user specifies run, show it!
         if run != -1:
-            print(("For run: {}".format(run)))
+            print("For run: {}".format(run))
 
         # if user specified variation, show it!
         if variation:
-            print(("For variation: {}".format(variation)))
+            print("For variation: {}".format(variation))
 
         # table header... and table =)
-        print((self.theme.Directories + "(ID)     (created)              (user)           (variation)     (run range)      (comments)"))
+        print(self.theme.Directories + "(ID)     (created)              (user)           (variation)     (run range)      (comments)")
         for asgmnt in assignments:
             assert isinstance(asgmnt, ccdb.model.Assignment)
             assert isinstance(asgmnt.author, ccdb.model.User)
@@ -88,12 +88,12 @@ class Versions(CliCommandBase):
             max_str = repr(asgmnt.run_range.max)
             if asgmnt.run_range.max == ccdb.INFINITE_RUN:
                 max_str="inf"
-            print((" %-6i "%asgmnt.id +\
+            print(" %-6i "%asgmnt.id +\
                   " %-20s"%asgmnt.created.strftime("%Y-%m-%d %H-%M-%S   ") +\
                   " %-15s" % asgmnt.author.name + " " +\
                   " %-14s "%asgmnt.variation.name +\
                   " %-15s "%(repr(asgmnt.run_range.min) + "-" + max_str) +\
-                  asgmnt.comment[0:20].replace("\n", " ")))
+                  asgmnt.comment[0:20].replace("\n", " "))
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     def print_help(self):

@@ -28,8 +28,7 @@ from ccdb.cmd.cli_manager import CliManager, CCDB_EXCEPTIONS_THROW
 # =============================
 
 # connection strings:
-ccdb_path = get_ccdb_home_path()
-sqlite_connection_str = "sqlite:///" + os.path.join(ccdb_path, "sql", "ccdb.sqlite")
+sqlite_connection_str = "sqlite:////full/path/to/ccdb.sqlite"
 mysql_connection_str = "mysql://ccdb_user@127.0.0.1:3306/ccdb"
 
 # create the CLI manager, this is the main class

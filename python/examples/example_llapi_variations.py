@@ -16,12 +16,14 @@ if __name__ == "__main__":
     from ccdb import Variation
     from sqlalchemy import desc
 
-    sqlite_connect_str = "sqlite:///" + os.path.join(ccdb_home, "sql", "ccdb.sqlite")
+    # Connection string from environment. To create a demo sqlite DB run:
+    #   ccdb -c sqlite:////full/path/to/ccdb.sqlite db init --init-i-am-sure
+    sqlite_connect_str = os.environ["CCDB_CONNECTION"]
 
     # create CCDB api class
     provider = ccdb.AlchemyProvider()  # this class has all CCDB manipulation functions
     provider.connect(sqlite_connect_str)  # use usual connection string to connect to database
-    provider.authentication.current_user_name = "anonymous"  # to have a name in logs
+    provider.authentication.current_user_name = "test_user"  # anonymous user is not allowed to create variations
 
     # create parent variation
     parent_var = provider.create_variation("test_pyllapi_parent")  # Parent is omitted => parent is 'default'
@@ -29,14 +31,14 @@ if __name__ == "__main__":
     # create child variation. We specify its name, comment and parent variation
     child_var = provider.create_variation("test_pyllapi", "Test how to work from py llapi", "test_pyllapi_parent")
     print("Created variations: ")
-    print(("{} , parent {}".format(child_var, child_var.parent)))     # 'test_pyllapi' has parent 'test_pyllapi_parent'
-    print(("{} , parent {}".format(parent_var, parent_var.parent)))   # 'test_pyllapi_parent' has 'parent default'
+    print("{} , parent {}".format(child_var, child_var.parent))     # 'test_pyllapi' has parent 'test_pyllapi_parent'
+    print("{} , parent {}".format(parent_var, parent_var.parent))   # 'test_pyllapi_parent' has 'parent default'
 
     # Modify variation comment
     parent_var.comment = "We changed comment"
     provider.update_variation(parent_var)
     parent_var = provider.get_variation("test_pyllapi_parent")     # reread variation from DB to check comment
-    print(("test_var_parent comment changed to: '{}'".format(parent_var.comment)))
+    print("test_var_parent comment changed to: '{}'".format(parent_var.comment))
     print()
 
     # Modify variation parent
@@ -46,14 +48,14 @@ if __name__ == "__main__":
 
     # Just to be sure the magic works, we reread variation (one doesn't have to reread variations after update actually)
     print("Changed variation parent: ")
-    print(("{} , parent {}".format(child_var, child_var.parent)))        # 'test_pyllapi' has parent 'test_pyllapi_parent'
-    print(("{} , parent {}".format(new_parent_var, parent_var.parent)))  # 'test_pyllapi_parent' has 'parent default'
+    print("{} , parent {}".format(child_var, child_var.parent))        # 'test_pyllapi' has parent 'test_pyllapi_parent'
+    print("{} , parent {}".format(new_parent_var, parent_var.parent))  # 'test_pyllapi_parent' has 'parent default'
     print()
 
-    # Delete variations
+    # Delete variations (children first, so no variation is deleted while another still references it)
+    provider.delete_variation(child_var)
     provider.delete_variation(parent_var)
     provider.delete_variation(new_parent_var)
-    provider.delete_variation(child_var)
 
     # Lets get last 3 variations and see, that we really deleted those we used before
     # We will use SQL Alchemy for that

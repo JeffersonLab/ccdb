@@ -3,12 +3,10 @@
 
 import inspect
 import os
-import shutil
 import sys
 import ccdb
-import subprocess
 from contextlib import contextmanager
-from six import StringIO
+from io import StringIO
 
 from ccdb import CCDB_EXCEPTIONS_THROW
 from ccdb.cmd import CliManager
@@ -33,12 +31,15 @@ else:
         mysql_test_connection_str = "mysql://ccdb_user@localhost/ccdb_test"
 
 
-# SQLite connection string for tests
+# Default SQLite test database file (created fresh by recreate_test_sqlite_db)
 sqlite_test_file_path = os.path.join(os.getcwd(), 'test.sqlite')
 
-
-# SQLite connection string for tests
-sqlite_test_connection_str = "sqlite:///" + os.path.join(ccdb_path, 'sql', 'ccdb.sqlite')
+# SQLite connection string for tests. Never points at a committed file:
+# tests create their own database via recreate_test_sqlite_db()
+if ENV_TEST_SQLITE in os.environ:
+    sqlite_test_connection_str = os.environ[ENV_TEST_SQLITE]
+else:
+    sqlite_test_connection_str = "sqlite:///" + sqlite_test_file_path
 
 
 def recreate_mysql_db(connection_str):
@@ -57,7 +58,6 @@ def recreate_mysql_db(connection_str):
 
 def recreate_mysql_db2(connection_string):
     from sqlalchemy import create_engine, text
-    from sqlalchemy.exc import SQLAlchemyError
 
     # Create an engine that connects to the MySQL server
     engine = create_engine(connection_string)
@@ -98,19 +98,23 @@ def get_script_path(func, follow_symlinks=True):
     return path
 
 
-def copy_test_sqlite_db(follow_symlinks=True):
-    """Copies sqlite DB located in $CCDB_HOME/sql directory to current working dir and uses tests on it"""
+def recreate_test_sqlite_db():
+    """Creates a fresh SQLite test database (schema v5 + standard test data)
 
-    script_path = get_script_path(copy_test_sqlite_db, follow_symlinks)
-    ccdb_home_dir = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))   # tests/../..
-    sql_dir = os.path.join(ccdb_home_dir, 'sql')                                     # tests/../../sql
-    origin_sqlite_path = os.path.join(sql_dir, 'ccdb.sqlite')
+    Uses sqlite_test_connection_str, so CCDB_TEST_SQLITE_CONNECTION env var
+    can redirect where the database is created. Any existing data is erased.
+    """
+    from sqlalchemy import create_engine
+    from ccdb.sql.sqlite_schema import init_sqlite_database
 
-    return shutil.copy(origin_sqlite_path, sqlite_test_file_path)
+    engine = create_engine(sqlite_test_connection_str)
+    init_sqlite_database(engine)
+    engine.dispose()
 
 
 def clean_test_sqlite_db():
-    os.remove(sqlite_test_file_path)
+    if os.path.exists(sqlite_test_file_path):
+        os.remove(sqlite_test_file_path)
 
 
 # In  sqlite DB connection string

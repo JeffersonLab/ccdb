@@ -23,4 +23,6 @@
 
 **Advanced**:
 - [Development](development/development.md)
+- [CLI output modernization](development/cli-output-modernization.md)
+- [CLI command coherence](development/cli-command-coherence.md)
 - [Utilities & scripts](utilities.md)

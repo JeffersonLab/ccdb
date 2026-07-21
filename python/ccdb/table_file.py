@@ -15,7 +15,7 @@ META_AUTHOR = 'author'
 #   Class TextFileDOM - store information of text data files         *
 #                                                                    *
 # *********************************************************************
-class TextFileDOM(object):
+class TextFileDOM:
     """store information of text data files"""
 
     def __init__(self):

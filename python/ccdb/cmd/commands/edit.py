@@ -27,7 +27,7 @@ class Edit(CliCommandBase):
     uses_db = True
 
     def __init__(self, context):
-        super(Edit, self).__init__(context)
+        super().__init__(context)
         self.raw_entry = "/"  # object path with possible pattern, like /mole/*
 
     # ----------------------------------------

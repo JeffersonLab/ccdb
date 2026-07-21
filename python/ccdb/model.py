@@ -220,7 +220,7 @@ class Assignment(Base):
     def comment(self):
         """
         returns comment for the object
-        :rtype: basestring
+        :rtype: str
         """
         return self._comment if self._comment is not None else ""
 
@@ -232,7 +232,7 @@ class Assignment(Base):
     def request(self):
         """
         Gets the unique "request" string in form of <path>:<run>:<variation>:<time>
-        :rtype: basestring
+        :rtype: str
         """
 
         path = self.constant_set.type_table.path
@@ -246,11 +246,11 @@ class Assignment(Base):
         return "<Assignment '{0}'>".format(self.id)
 
     def print_info(self):
-        print((" ASSIGNMENT: " + repr(self)
+        print(" ASSIGNMENT: " + repr(self)
               + " TABLE: " + repr(self.constant_set.type_table)
               + " RUN RANGE: " + repr(self.run_range)
               + " VARIATION: " + repr(self.variation)
-              + " SET: " + repr(self.constant_set)))
+              + " SET: " + repr(self.constant_set))
         print("      |")
         print("      +-->" + repr(self.constant_set.vault))
         print("      +-->" + repr(self.constant_set.data_list))
@@ -453,7 +453,6 @@ def get_roles():
     Returns list of all known roles
     :return:
     """
-    global _roles
     return _roles
 
 
@@ -474,19 +473,8 @@ def gen_flatten_data(data):
     [1, 2, 3, 4, 5, "abs"]
 
     """
-    # python 3 hack to basestr
-    try:
-        u = str
-    except NameError:
-        # 'unicode' is undefined, must be Python 3
-        check_type = str
-    else:
-        # 'unicode' exists, must be Python 2
-
-        check_type = str
-
     for el in data:
-        if isinstance(el, collections.abc.Iterable) and not isinstance(el, check_type):
+        if isinstance(el, collections.abc.Iterable) and not isinstance(el, str):
             for sub in gen_flatten_data(el):
                 yield sub
         else:

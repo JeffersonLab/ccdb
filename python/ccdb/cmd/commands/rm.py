@@ -1,10 +1,7 @@
 import logging
 import os
-from ccdb import AlchemyProvider, TypeTable, Directory, Variation
+from ccdb import AlchemyProvider
 from ccdb.cmd import CliCommandBase
-from sqlalchemy.orm.exc import NoResultFound
-
-from ccdb.errors import ObjectIsNotFoundInDbError
 
 log = logging.getLogger("ccdb.cmd.commands.rm")
 

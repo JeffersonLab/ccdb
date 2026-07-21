@@ -60,6 +60,9 @@ class MakeDirectory(CliCommandBase):
             log.warning(self.theme.Fail+"Failed"+self.theme.Reset+" to create directory. Exception message: {0}".format(ex))
             raise
 
+        # The CLI treats a None result as failure (exit code 1), so report success
+        return True
+
     def print_help(self):
         """prints help for MakeDirectory"""
 
