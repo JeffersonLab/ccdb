@@ -12,7 +12,7 @@ jobs:
       CCDB_TEST_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/cpp_test.sqlite"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v5
