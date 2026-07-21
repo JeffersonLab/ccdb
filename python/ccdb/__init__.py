@@ -151,5 +151,10 @@ def init_ccdb_console():
 
     # start processor
     result = context.process(sys.argv)
-    if result is None:                      # The result must be something! (even true)
+
+    # Exit code contract: commands return None or False on failure,
+    # anything else (True, objects, strings, numbers - even 0) means success.
+    # Identity checks on purpose: run/var return domain values like 0 that are valid successes.
+    if result is None or result is False:
         sys.exit(1)
+    sys.exit(0)

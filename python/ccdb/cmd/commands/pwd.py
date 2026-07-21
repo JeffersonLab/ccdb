@@ -24,3 +24,4 @@ class PrintWorkDir(CliCommandBase):
         log.debug("    ".join(args))
         assert self.context is not None
         print(self.context.current_path)
+        return True

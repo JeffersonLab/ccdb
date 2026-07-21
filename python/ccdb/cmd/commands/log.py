@@ -41,6 +41,7 @@ class ShowLog(CliCommandBase):
             print("No entries matching the filter criteria.")
         else:
             self.print_logs(log_records)
+        return True
 
     def process_arguments(self, args):
         # utility argument parser is argparse which raises errors instead of exiting app

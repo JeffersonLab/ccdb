@@ -1,0 +1,16 @@
+# Dependabot configuration.
+# Python deps are declared in the repo-root pyproject.toml (PEP 621).
+# We deliberately use the `pip` ecosystem, NOT `uv`: uv.lock is gitignored
+# (not committed), and Dependabot's uv support requires a committed lockfile -
+# without one it fails with dependency_file_not_supported.
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

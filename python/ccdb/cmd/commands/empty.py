@@ -90,7 +90,7 @@ class Empty(CliCommandBase):
         parsed_args = self.process_arguments(args)
 
         if not self.validate(parsed_args):
-            return 1   # the return is like application ret. 1 means problems
+            return False   # False means the command failed
 
         path = self.context.prepare_path(parsed_args.raw_path)   # add current path to user input
 

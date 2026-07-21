@@ -41,8 +41,8 @@ class Cat(CliCommandBase):
         """
         Process this command
         :param args:
-        :return: 0 if command was successful, value!=0 means command was not successful
-        :rtype: int
+        :return: True if command was successful, False/None means failure
+        :rtype: bool
         """
         if log.isEnabledFor(logging.DEBUG):
             log.debug(Lfm("{0}Cat command is in charge {0}\\", os.linesep))
@@ -78,9 +78,9 @@ class Cat(CliCommandBase):
                 log.warning("Assignment contains no data")
         else:
             print("Cannot fill data for assignment with this ID")
-            return 1
+            return False
 
-        return 0
+        return True
 
     # ----------------------------------------
     #   gets assignment by database id

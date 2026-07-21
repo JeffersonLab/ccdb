@@ -45,7 +45,7 @@ class Versions(CliCommandBase):
 
         if not raw_table_path:
             log.info("Table name (path) is required. See 'help vers'")
-            return 0    # OK return
+            return True
 
         # correct path
         table_path = self.context.prepare_path(raw_table_path)
@@ -53,7 +53,7 @@ class Versions(CliCommandBase):
         # get and print assignments
         assignments = provider.get_assignments(table_path, run, variation)
         self.print_assignments(assignments, variation, run)
-        return 0
+        return True
             
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     @staticmethod

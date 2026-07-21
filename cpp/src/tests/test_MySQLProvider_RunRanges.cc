@@ -15,7 +15,7 @@ using namespace ccdb;
  *
  * @return true if test passed
  */
-TEST_CASE("CCDB/MySQLDataProvider/RunRanges","RunRanges tests")
+TEST_CASE("CCDB/MySQLDataProvider/RunRanges", "[mysql] RunRanges tests")
 {
 	
 	MySQLDataProvider *prov = new MySQLDataProvider();

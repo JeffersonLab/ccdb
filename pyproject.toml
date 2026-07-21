@@ -45,7 +45,8 @@ dependencies = [
 web = ["flask>=2.0"]
 # Extras used by python/examples
 examples = ["jsonpickle", "pandas"]
-dev = ["pyflakes>=3", "pytest"]
+# Tests use stdlib unittest; pytest is intentionally NOT a dependency
+dev = ["pyflakes>=3"]
 
 [project.urls]
 Homepage = "https://github.com/JeffersonLab/ccdb"

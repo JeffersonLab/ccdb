@@ -14,7 +14,7 @@ using namespace ccdb;
  *
  * @return true if test passed
  */
-TEST_CASE("CCDB/MySQLDataProvider/Variations","Variations/tests")
+TEST_CASE("CCDB/MySQLDataProvider/Variations", "[mysql] Variations/tests")
 {	
 	DataProvider *prov = new MySQLDataProvider();
 	prov->Connect(get_test_mysql_connection());

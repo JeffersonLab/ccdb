@@ -48,6 +48,7 @@ class Horse(CliCommandBase):
             elif args[0] == "--funny":
                 horse = self.horse3
         print (horse)
+        return True
 
     full_horse = (r"""
                                                  `T",.`-,

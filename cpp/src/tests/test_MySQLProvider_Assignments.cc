@@ -16,7 +16,7 @@ using namespace ccdb;
  *
  * @return true if test passed
  */
-TEST_CASE("CCDB/MySQLDataProvider/Assignments","Assignments tests")
+TEST_CASE("CCDB/MySQLDataProvider/Assignments", "[mysql] Assignments tests")
 {
 	bool result;
 

@@ -17,7 +17,7 @@ using namespace ccdb;
  *
  * @return true if test passed
  */
-TEST_CASE("CCDB/MySQLDataProvider/TypeTables","TypeTables tests")
+TEST_CASE("CCDB/MySQLDataProvider/TypeTables", "[mysql] TypeTables tests")
 {
 	
 	MySQLDataProvider *prov = new MySQLDataProvider();

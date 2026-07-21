@@ -2,7 +2,7 @@
 
 Themes are plain string constants holding ANSI escape prefixes that commands
 concatenate into their output. The escape codes are produced through rich's
-color API so color names stay symbolic; see docs/development/cli-output-modernization.md
+color API so color names stay symbolic; see docs/development/cli-modernization.md
 for the longer-term plan of moving output to rich Console entirely.
 """
 

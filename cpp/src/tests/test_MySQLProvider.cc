@@ -11,7 +11,7 @@
 using namespace std;
 using namespace ccdb;
 
-TEST_CASE("CCDB/MySQLDataProvider","MySQLDataProvider base tests")
+TEST_CASE("CCDB/MySQLDataProvider", "[mysql] MySQLDataProvider base tests")
 {
     MySQLDataProvider * prov = NULL;
     prov = new MySQLDataProvider();

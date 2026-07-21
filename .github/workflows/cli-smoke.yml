@@ -61,10 +61,13 @@ jobs:
       - name: ccdb cat
         run: ccdb cat /test/test_vars/test_table
 
+      # The default-variation assignment for run 0 is constant set 4 (values 2.2 ... 2.7).
+      # No `grep -q`: it closes the pipe early, and with pipefail the resulting
+      # BrokenPipeError in ccdb would fail the step.
       - name: ccdb dump
         run: |
           ccdb dump /test/test_vars/test_table
-          ccdb dump /test/test_vars/test_table | grep -q "1.11"
+          ccdb dump /test/test_vars/test_table | grep "2.2" > /dev/null
 
       - name: ccdb vers
         run: ccdb vers /test/test_vars/test_table
@@ -87,3 +90,27 @@ jobs:
         run: |
           ccdb mkvar smoke_variation
           ccdb rm --force -v smoke_variation
+
+      # Every step above already fails the job if a command exits nonzero
+      # (each `run:` uses bash -e). This step pins the rest of the exit code
+      # contract: successful commands exit 0, real errors exit nonzero.
+      - name: Exit code contract
+        run: |
+          # remaining commands that print successfully must also exit 0
+          ccdb pwd
+          ccdb cd test
+          ccdb run 100
+          ccdb var test
+          ccdb user
+          ccdb log
+          ccdb howto
+          ccdb horse
+          # genuine errors must exit nonzero
+          failures=0
+          for bad in "nosuchcommand" "cat /no/such/table" "info /no/such/table" "rm --force /no/such/table"; do
+            if ccdb $bad > /dev/null 2>&1; then
+              echo "ERROR: 'ccdb $bad' should have exited nonzero"
+              failures=$((failures+1))
+            fi
+          done
+          test $failures -eq 0

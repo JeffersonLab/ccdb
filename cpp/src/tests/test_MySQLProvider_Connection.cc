@@ -16,7 +16,7 @@ bool test_DMySQLDataProviderConnection();  //Test basic connection
  *
  * @return true if test passed
  */
-TEST_CASE("CCDB/MySQLDataProvider/Connection","Connection tests")
+TEST_CASE("CCDB/MySQLDataProvider/Connection", "[mysql] Connection tests")
 {
 	MySQLDataProvider *prov = new MySQLDataProvider();
 

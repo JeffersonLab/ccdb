@@ -29,7 +29,7 @@ void test_UserAPI_PrintData(const map<string,int> & data);
  *
  * @return true if test passed
  */
-TEST_CASE("CCDB/UserAPI/MySQL","tests")
+TEST_CASE("CCDB/UserAPI/MySQL", "[mysql] tests")
 {
 	bool result;
 	
@@ -92,7 +92,7 @@ TEST_CASE("CCDB/UserAPI/MySQL","tests")
     REQUIRE(paths.size()>0);
 }
 
-TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
+TEST_CASE("CCDB/UserAPI/StressTests", "[mysql] Try faulty operations tests")
 {
     //The next tests will give some errors
     
@@ -125,7 +125,7 @@ TEST_CASE("CCDB/UserAPI/StressTests","Try faulty operations tests")
     REQUIRE_THROWS(result = calib->Connect("mysql://muuuu ha ha ha"));
 }
 
-TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get calibrations")
+TEST_CASE("CCDB/UserAPI/CalibrationGenerator", "[mysql] Use universal generator to get calibrations")
 {
 	bool result;
 	CalibrationGenerator* gen = new CalibrationGenerator();
@@ -182,7 +182,7 @@ TEST_CASE("CCDB/UserAPI/CalibrationGenerator","Use universal generator to get ca
 	}
 }
 
-TEST_CASE("CCDB/UserAPI/CalibrationGenerator/Timeout","Disconnect database with timeout")
+TEST_CASE("CCDB/UserAPI/CalibrationGenerator/Timeout", "[mysql] Disconnect database with timeout")
 {
     //Set fake time
     TimeProvider::SetTimeUnitTest(true);

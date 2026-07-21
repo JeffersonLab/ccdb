@@ -60,7 +60,7 @@ class Info(CliCommandBase):
             self.print_file(obj_name)
 
         #everything is fine!
-        return 0
+        return True
 
     #----------------------------------------
     #   process_arguments

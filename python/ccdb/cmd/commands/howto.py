@@ -26,6 +26,7 @@ class HowTo(CliCommandBase):
         log.debug(Lfm("Arguments: '{0}'  ".join(args)))
 
         print ("No examples yet")
+        return True
 
     def print_help(self):
         print ("""

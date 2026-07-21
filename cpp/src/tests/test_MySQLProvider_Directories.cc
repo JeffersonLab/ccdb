@@ -16,7 +16,7 @@ using namespace ccdb;
  *
  * @return true if test passed
  */
-TEST_CASE("CCDB/MySQLDataProvider/Directories","Directories tests")
+TEST_CASE("CCDB/MySQLDataProvider/Directories", "[mysql] Directories tests")
 {	
 	MySQLDataProvider *prov = new MySQLDataProvider();
 	prov->Connect(get_test_mysql_connection());

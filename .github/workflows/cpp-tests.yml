@@ -31,13 +31,14 @@ jobs:
       - name: Create test database (ccdb db init)
         run: ccdb -c "$CCDB_TEST_SQLITE_CONNECTION" db init --init-i-am-sure
 
-      # No MySQL dev libraries installed => MySQL support is not compiled,
-      # only the SQLite providers and tests are built
       - name: Configure
         run: cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build tests
         run: cmake --build cpp/build --target ccdb_tests -j"$(nproc)"
 
-      - name: Run tests
-        run: ./cpp/build/src/tests/ccdb_tests
+      # MySQL support may get compiled in (runners ship MySQL dev libs), so the
+      # MySQL Catch2 cases are excluded by their [mysql] tag - they need a MySQL
+      # server and CCDB_TEST_MYSQL_CONNECTION, provided by the mysql-tests workflow
+      - name: Run tests (SQLite only, MySQL cases excluded by tag)
+        run: ./cpp/build/src/tests/ccdb_tests "~[mysql]"
