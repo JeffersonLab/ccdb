@@ -14,7 +14,7 @@ jobs:
       CCDB_USER: test_user
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # 3.9 on purpose: proves examples run on the lowest supported python
       - name: Set up Python
