@@ -49,8 +49,8 @@ examples = ["jsonpickle", "pandas"]
 dev = ["pyflakes>=3"]
 
 [project.urls]
-Homepage = "https://github.com/JeffersonLab/ccdb"
 Repository = "https://github.com/JeffersonLab/ccdb"
+Documentation = "https://jeffersonlab.github.io/ccdb"
 
 # Console entry point: `ccdb` -> ccdb.init_ccdb_console (reads sys.argv)
 [project.scripts]

@@ -73,6 +73,7 @@ class Info(CliCommandBase):
         #utility argument parser is argparse which raises errors instead of exiting app
         parser = UtilityArgumentParser()
         parser.add_argument("obj_name", default="")
+        parser.add_argument("-t", "--table", action="store_true")
         parser.add_argument("-v", "--variation", action="store_true")
         parser.add_argument("-d", "--directory", action="store_true")
         parser.add_argument("-f", "--file", action="store_true")
@@ -97,7 +98,7 @@ class Info(CliCommandBase):
     # ----------------------------------------
     def print_directory(self, directory):
         assert isinstance(directory, Directory)
-        print(" Name      :  " + self.theme.Success + directory.name)
+        print(" Name      :  " + self.theme.Success + directory.name + self.theme.Reset)
         print(" Full path :  " + directory.path)
         try:
             print(" Created   :  " + directory.created.strftime("%Y-%m-%d %H-%M-%S"))
@@ -122,10 +123,10 @@ class Info(CliCommandBase):
         print("+------------------------------------------+")
         print("| Type table information                   |")
         print("+------------------------------------------+")
-        print(" Name       :  " + self.theme.Success + table.name)
+        print(" Name       :  " + self.theme.Success + table.name + self.theme.Reset)
         print(" Full path  :  " + table.path)
-        print(" Rows       :  " + self.theme.Accent + repr(int(table.rows_count)))
-        print(" Columns    :  " + self.theme.Accent + repr(int(table.columns_count)))
+        print(" Rows       :  " + self.theme.Accent + repr(int(table.rows_count)) + self.theme.Reset)
+        print(" Columns    :  " + self.theme.Accent + repr(int(table.columns_count)) + self.theme.Reset)
         print(" Created    :  " + table.created.strftime("%Y-%m-%d %H-%M-%S"))
         print(" Modified   :  " + table.modified.strftime("%Y-%m-%d %H-%M-%S"))
         print(" DB Id      :  " + repr(int(table.id)))
@@ -156,7 +157,7 @@ class Info(CliCommandBase):
         print("+------------------------------------------+")
         print("| Variation information                    |")
         print("+------------------------------------------+")
-        print(" Name       :  " + self.theme.Success + variation.name)
+        print(" Name       :  " + self.theme.Success + variation.name + self.theme.Reset)
         print(" Created    :  " + variation.created.strftime("%Y-%m-%d %H-%M-%S"))
         print(" DB Id      :  " + repr(int(variation.id)))
         print(" Parent     :  " + (variation.parent.name if variation.parent else "--"))
@@ -172,10 +173,11 @@ class Info(CliCommandBase):
 
         print("""Prints extended info about the object
     info <type table path>   - info about type table with given path
+    info -t <type table path> - the same, explicit -t/--table flag
     info -d <directory path> - info about directory with given path
     info -v <variation name> - info about variation with given name
     info -f <file name>      - info about text file (col. names), rows, etc.
-    
+
     """)
 
     def print_file(self, file_path):
@@ -190,14 +192,14 @@ class Info(CliCommandBase):
         if not dom.has_data:
             message = "Seems like file has no data"
             log.warning(message)
-            raise ValueError(message=message)
+            raise ValueError(message)
 
         #check what we've got
         assert isinstance(dom, TextFileDOM)
         if not dom.data_is_consistent:
             message = "Inconsistency error. " + dom.inconsistent_reason
             log.warning(message)
-            raise ValueError(message=message)
+            raise ValueError(message)
 
         log.info(LogFmt("Rows: {}{}{}", self.theme.Accent, len(dom.rows), self.theme.Reset))
         log.info(LogFmt("Columns: {}{}{}", self.theme.Accent, len(dom.rows[0]), self.theme.Reset))

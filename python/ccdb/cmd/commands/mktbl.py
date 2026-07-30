@@ -385,11 +385,11 @@ keys:
         # basic values: name rows columns path
         print()
         if not len(self.table_name):
-            print("Table: " + self.theme.Fail + "Name is not set")
+            print("Table: " + self.theme.Fail + "Name is not set" + self.theme.Reset)
         else:
-            print("Table: " + self.theme.Success + self.table_name)
+            print("Table: " + self.theme.Success + self.table_name + self.theme.Reset)
 
-        print("Rows num: " + repr(self.rows) + self.theme.Reset + \
+        print("Rows num: " + repr(self.rows) + \
               "   Columns num: " + repr(len(self.columns)))
         print("Full path: " + self.table_path)
         # columns info
@@ -405,23 +405,23 @@ keys:
         if len(self.comment):
             print(self.comment)
         else:
-            print(self.theme.Fail + "Comment is empty")
+            print(self.theme.Fail + "Comment is empty" + self.theme.Reset)
 
         # additional info print
         print()
         print("Additional info: ")
         if self.rows_set:
-            print("   Rows number is set by " + self.theme.Success + "User")
+            print("   Rows number is set by " + self.theme.Success + "User" + self.theme.Reset)
         else:
-            print("   Rows number is set by " + self.theme.Accent + "Default")
+            print("   Rows number is set by " + self.theme.Accent + "Default" + self.theme.Reset)
 
         if self.comment_set:
-            print("   Comments added by " + self.theme.Success + "User")
+            print("   Comments added by " + self.theme.Success + "User" + self.theme.Reset)
         else:
             print("   No comments are set")
 
     def print_settings_summary(self):
-        print(self.theme.Success + " Summary: ")
+        print(self.theme.Success + " Summary: " + self.theme.Reset)
         print("  columns: ", self.columns)
         print("  unparsed_columns: ", self.unparsed_columns)
         print()

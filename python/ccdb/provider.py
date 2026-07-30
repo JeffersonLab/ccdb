@@ -1100,7 +1100,8 @@ class AlchemyProvider:
         try:
             return self.session.query(Assignment).filter(Assignment.id == assignment_id).one()
         except NoResultFound:
-            raise ObjectIsNotFoundInDbError(Assignment, "Assignment with the id='{}' is not found in th DB", id)
+            raise ObjectIsNotFoundInDbError(
+                Assignment, "Assignment with id='{}' is not found in the DB".format(assignment_id))
 
     # ------------------------------------------------
     # get list of assignments
@@ -1202,13 +1203,15 @@ class AlchemyProvider:
         try:
             assignment = self.get_assignment(type_table, request.run, request.variation, request.time)
             return assignment
-        except ObjectIsNotFoundInDbError:
-            # if we here there were no assignments selected
-            log.warning("There is no data for table {}, run {}, variation '{}'".format(
-                         request.path, request.run, request.variation))
+        except (ObjectIsNotFoundInDbError, NoResultFound) as ex:
+            # get_assignment raises sqlalchemy NoResultFound; translate it to a
+            # human readable ccdb error instead of "No row was found when one was required"
+            message = "There is no data for table {}, run {}, variation '{}'".format(
+                request.path, request.run, request.variation)
             if request.time_is_parsed:
-                log.warning("    on {}".format(request.time_str))
-            raise
+                message += " on {}".format(request.time_str)
+            message += ". Use 'vers {}' to list existing data".format(request.path)
+            raise ObjectIsNotFoundInDbError(Assignment, message) from ex
 
     # ------------------------------------------------
     # Creates Assignment using related object

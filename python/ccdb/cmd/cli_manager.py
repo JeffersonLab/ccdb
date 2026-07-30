@@ -507,7 +507,7 @@ class CliManager:
   CCDB shell {ccdb_version}
 +--------------------------+
        """)
-        print(self.theme.Title + "Interactive mode")
+        print(self.theme.Title + "Interactive mode" + self.theme.Reset)
         print("print " + self.theme.Accent + "help" + self.theme.Reset + " to get help")
         print(
             "print " + self.theme.Accent + "quit" + self.theme.Reset + " or " + self.theme.Accent + "q" + self.theme.Reset + " to exit")

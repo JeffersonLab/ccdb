@@ -86,7 +86,7 @@ class ShowLog(CliCommandBase):
 #----------------------------------------
     def print_logs(self, log_records):
 
-        print(self.theme.Directories + "(action)        (author)         (date)                 (description)")
+        print(self.theme.Directories + "(action)        (author)         (date)                 (description)" + self.theme.Reset)
 
         for log_record in log_records:
             print(" %-13s "%log_record.action +\

@@ -93,6 +93,30 @@ class CliManagerTests(unittest.TestCase):
         self.cli.process_command_line("cat --id=2")
         self.assertIn("6.0", self.output.getvalue())
 
+    def test_cat_by_bad_id(self):
+        """cat. Nonexistent assignment id gives a ccdb error (used to crash with TypeError)"""
+        self.assertRaises(ObjectIsNotFoundInDbError, self.cli.process_command_line, "cat -a 999999")
+
+    def test_cat_no_arguments(self):
+        """cat. Without a table path it explains usage and fails"""
+        result = self.cli.process_command_line("cat")
+        self.assertFalse(result)
+        self.assertIn("No table path", self.output.getvalue())
+
+    def test_cat_bad_time(self):
+        """cat. Unparsable -t value produces a readable error, not 'The hour length !=2'"""
+        with self.assertRaises(ValueError) as ctx:
+            self.cli.process_command_line("cat -t 2022_05_07_MLP_Base.tflite /test/test_vars/test_table")
+        self.assertIn("-t/--time", str(ctx.exception))
+
+    def test_cat_no_data(self):
+        """cat. Table without assignments gives a readable ccdb error,
+        not sqlalchemy 'No row was found when one was required'"""
+        self.cli.process_command_line("mktbl /test/cat_no_data -r 1 x #test")
+        with self.assertRaises(ObjectIsNotFoundInDbError) as ctx:
+            self.cli.process_command_line("cat /test/cat_no_data")
+        self.assertIn("There is no data", str(ctx.exception))
+
     def test_cat_time(self):
         """cat. Test specifying time to get particular constants"""
 
@@ -198,6 +222,11 @@ class CliManagerTests(unittest.TestCase):
         self.assertIn("Test type", out_str)
         self.assertIn("z", out_str)
 
+    def test_info_table_flag(self):
+        """info. Explicit -t/--table flag selects a type table"""
+        self.cli.process_command_line("info -t /test/test_vars/test_table")
+        self.assertIn("test_table", self.output.getvalue())
+
     def test_ls(self):
         """ls. General test"""
         self.cli.process_command_line("ls")
@@ -207,6 +236,14 @@ class CliManagerTests(unittest.TestCase):
         """ls. General test"""
         self.cli.process_command_line("ls /test/test_vars/test_table")
         self.assertIn("test", self.output.getvalue())
+
+    def test_ls_empty_directory(self):
+        """ls. An existing but empty directory is not an error"""
+        self.cli.process_command_line("mkdir /test/empty_dir #empty")
+        self.clear_output()
+        result = self.cli.process_command_line("ls /test/empty_dir")
+        self.assertTrue(result)
+        self.assertIn("is empty", self.output.getvalue())
 
     def test_mk_rm_dir(self):
         """mkdir, rm. Create directory and delete it"""
