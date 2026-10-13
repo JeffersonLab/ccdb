@@ -43,6 +43,7 @@ class WebGui(CliCommandBase):
         parsed_args = self.process_arguments(args)
 
         app = webgui.cerate_ccdb_flask_app()
+        app.config["SQL_CONNECTION_STRING"] = self.context.connection_string
         app.config["db"] = provider
         app.config["cli_context"] = self.context
 
