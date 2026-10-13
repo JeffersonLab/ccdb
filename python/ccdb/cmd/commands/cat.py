@@ -54,8 +54,11 @@ class Cat(CliCommandBase):
 
         if parsed_args.ass_id:
             assignment = self.get_assignment_by_id(parsed_args.ass_id)
-        else:
+        elif parsed_args.obj_name:
             assignment = self.get_assignment_by_request(parsed_args.request)
+        else:
+            log.warning("No table path is given. Usage: 'cat <table path>'. See 'help cat' for details")
+            return False
 
         if assignment:
             # now we have to know, how to print an assignment
@@ -175,7 +178,12 @@ class Cat(CliCommandBase):
         # Check if user set time
         if not result.request.time_is_parsed and result.time:
             result.request.time_str = result.time
-            result.request.time = parse_time(result.time)
+            try:
+                result.request.time = parse_time(result.time)
+            except ValueError as ex:
+                raise ValueError("Cannot parse -t/--time value '{}' ({}). "
+                                 "-t expects a date like 2012-08 or 2012-08-30-14-00-00"
+                                 .format(result.time, ex)) from ex
             result.request.time_is_parsed = True
 
         return result
@@ -429,7 +437,7 @@ Formatting flags:
     -nc or --no-comments
 
     -ph or --horizontal   - Print table horizontally
-    -pa or --vertical     - Print table vertically
+    -pv or --vertical     - Print table vertically
     (If no '--horizontal' or '--vertical' flag is given, the layout of table is determined automatically:
     vertical layout if table has only 1 row and more than 3 columns, horizontal otherwise)
 
@@ -439,8 +447,12 @@ Formatting flags:
     -h  or --header       - Show header on/off
     -nh or --no-header
 
-    -t  or --time         - Show time
-    -nt or --no-time
+Data selection flags:
+
+    -v <variation> or --variation <variation> - Get constants of the variation
+    -r <run>  or --run <run>    - Get constants for the run
+    -t <time> or --time <time>  - Get constants that were valid at the time.
+                                  Time format is YYYY-MM-DD-hh-mm-ss, can be truncated: 2012-08
 
 Examples:
     > cat /test/test_vars/test_table               #print latest data for test_table

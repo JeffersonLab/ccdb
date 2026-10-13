@@ -80,7 +80,7 @@ class Versions(CliCommandBase):
             print("For variation: {}".format(variation))
 
         # table header... and table =)
-        print(self.theme.Directories + "(ID)     (created)              (user)           (variation)     (run range)      (comments)")
+        print(self.theme.Directories + "(ID)     (created)              (user)           (variation)     (run range)      (comments)" + self.theme.Reset)
         for asgmnt in assignments:
             assert isinstance(asgmnt, ccdb.model.Assignment)
             assert isinstance(asgmnt.author, ccdb.model.User)

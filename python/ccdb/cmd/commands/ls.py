@@ -87,7 +87,13 @@ class List(CliCommandBase):
         dirs, tables = self.get_name_pathes(self.raw_entry)
 
         if (not dirs) and (not tables):
-            log.info("Can't find the directory or tables")
+            # An existing but empty directory is not an error;
+            # "not found" is only right when a search pattern matched nothing
+            if self.pattern:
+                log.info(LogFmt("No directories or tables match '{0}'", self.raw_entry))
+            else:
+                log.info(LogFmt("Directory '{0}' is empty", self.parent_dir.path))
+            return True
 
         # it is not a wild card search, and
         if ("*" not in self.raw_entry) and\

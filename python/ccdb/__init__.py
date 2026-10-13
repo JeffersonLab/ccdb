@@ -94,8 +94,9 @@ def init_ccdb_console():
         print(ccdb_version)
         exit(0)
 
-    if "--no-color" in sys.argv:
-        # no colors for output
+    if "--no-color" in sys.argv or not sys.stdout.isatty():
+        # No colors if the user asked so, or when output is piped/redirected
+        # (otherwise ANSI escapes end up as garbage in files and grep)
         context.theme = NoColorTheme()
     else:
         # colors are ON
