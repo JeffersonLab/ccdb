@@ -12,7 +12,7 @@
             <h3 class="card-title">Constants Information:</h3>
             <table class="table">
                 <tbody>
-                    <tr><th scope="row">Table</th><td><a href="{{ url_for('versions', table_path=assignment.constant_set.type_table.path) }}" title="See all data for the table">[{{ assignment.constant_set.type_table.path }}]</a></td></tr>
+                    <tr><th scope="row">Table</th><td><a href="{{ url_for('versions', table_path=assignment.constant_set.type_table.path.lstrip('/')) }}" title="See all data for the table">[{{ assignment.constant_set.type_table.path }}]</a></td></tr>
                     <tr><th scope="row">Variation</th><td>{{ variation }}</td></tr>
                     <tr><th scope="row">Created</th><td>{{ created }}</td></tr>
                     <tr><th scope="row">Run Range</th><td>{{ run_range }}</td></tr>
@@ -20,13 +20,14 @@
                     <tr><th scope="row">Exact ID</th><td>{{ assignment.request }}</td></tr>
                 </tbody>
             </table>
-            <a href="{{ url_for('download_request', request=assignment.request) }}" target="_blank" class="btn btn-primary">Download Text Data</a>
+            <a href="{{ url_for('assignment_text', request=assignment.request) }}" target="_blank" class="btn btn-primary">Download Text Data</a>
+            <a href="{{ url_for('assignment_json', request=assignment.request) }}" target="_blank" class="btn btn-outline-primary">JSON</a>
         </div>
     </div>
 
     <div>
         <h3>Comment:</h3>
-        <p>{{ comment | safe }}</p>
+        <p>{{ comment | e | replace("\n", "<br>" | safe) }}</p>
     </div>
 
     <div class="card">

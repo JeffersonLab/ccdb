@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function() {
         form.addEventListener("submit", combineRequest, false);  //Modern browsers
     }
 
-    var acpl = {{ tables_autocomplete|safe }};
+    var acpl = {{ table_paths | tojson }};  // tojson escapes <, >, & and quotes for a <script> block
 
     var tableNameInput = $("input#tableName");
     tableNameInput.autocomplete({

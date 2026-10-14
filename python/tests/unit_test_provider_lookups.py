@@ -50,6 +50,11 @@ class ProviderLookupsTest(unittest.TestCase):
             self.provider.get_directory_by_id(999999)
         self.assertIn("999999", str(raised.exception))
 
+    def test_get_assignment_by_id_has_the_full_request_string(self):
+        assignment = self.provider.get_assignment_by_id(4)
+        self.assertEqual(assignment.constant_set.type_table.path, "/test/test_vars/test_table")
+        self.assertEqual(assignment.request, "/test/test_vars/test_table:0:default:2012-10-30_23-48-42")
+
     def test_get_assignments_loads_relations_in_one_query(self):
         assignments = self.provider.get_assignments("/test/test_vars/test_table")
         self.assertGreaterEqual(len(assignments), 3)

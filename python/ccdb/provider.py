@@ -1158,10 +1158,17 @@ class AlchemyProvider:
         """
 
         try:
-            return self.session.query(Assignment).filter(Assignment.id == assignment_id).one()
+            assignment = self.session.query(Assignment).filter(Assignment.id == assignment_id).one()
         except NoResultFound:
             raise ObjectIsNotFoundInDbError(
                 Assignment, "Assignment with id='{}' is not found in the DB".format(assignment_id))
+
+        # A directory knows its full path only inside the directory cache (see _load_dirs); the table reached
+        # through assignment.constant_set.type_table is loaded plain, with a path-less directory, and
+        # assignment.request would then start with the bare table name. Point the table at the cached directory.
+        table = assignment.constant_set.type_table
+        table.parent_dir = self.get_directory_by_id(table.parent_dir_id)
+        return assignment
 
     # ------------------------------------------------
     # get list of assignments

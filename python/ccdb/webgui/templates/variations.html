@@ -20,7 +20,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for variation in variations %}
+            {% for variation in page.items %}
             <tr>
               <td>{{ variation.name }}</td>
               <td>{{ variation.created }}</td>
@@ -29,6 +29,11 @@
             {% endfor %}
           </tbody>
         </table>
+                <p class="text-muted" data-total="{{ page.total }}" data-pages="{{ page.pages }}">
+                    Rows {{ page.first_row }}–{{ page.last_row }} of {{ page.total }}{% if page.pages > 1 %}, page {{ page.page }} of {{ page.pages }}{% endif %}
+                    {% if page.has_prev %}<a href="{{ page_url(page.page - 1) }}">‹ previous</a>{% endif %}
+                    {% if page.has_next %}<a href="{{ page_url(page.page + 1) }}">next ›</a>{% endif %}
+                </p>
 
         <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
         <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
@@ -38,8 +43,8 @@
           $(document).ready(function() {
             $('#variationsTable').DataTable({
               "pagingType": "full_numbers",
-              "order": [[1, "asc"]],
-              "pageLength": 100,
+              "order": [],
+              "paging": false,
               "dom": "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",

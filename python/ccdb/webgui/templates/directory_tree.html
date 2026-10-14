@@ -101,7 +101,7 @@
 {% block content %}
 <div class="container mt-3">
   <div id="tree2" class="tree">
-    {{ html_tree | safe }}
+    {{ html_tree }}
   </div>
 </div>
 
@@ -116,24 +116,10 @@
 
 
 <script type="text/javascript">
-function showDirInfo(dirId) {
-    fetch(`/get-dir-info/${dirId}`)
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.text();
-        })
-        .then(html => {
-            $('#infoModal .modal-content').html(html);
-            $('#infoModal').modal('show');
-            adjustModal();
-        })
-        .catch(error => {
-            console.error('Fetch error:', error);
-        });
-}
-
-function showTableInfo(tableId) {
-    fetch(`/get-table-info/${tableId}`)
+// Loads a directory or table info fragment into the modal. The URL comes from the button's data-url,
+// built server-side with url_for, so the page also works under a URL prefix.
+function showInfo(url) {
+    fetch(url)
         .then(response => {
             if (!response.ok) throw new Error('Network response was not ok');
             return response.text();
