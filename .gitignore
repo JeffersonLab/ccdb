@@ -5,6 +5,9 @@ tmp/
 # test db (created by ccdb.testing.recreate_test_sqlite_db in the test cwd)
 test.sqlite
 
+# agent workspaces: notes, reports, fixture and screenshots of a program run (see web-agents-common.md)
+space-*/
+
 # SCONS
 .sconsign.dblite
 

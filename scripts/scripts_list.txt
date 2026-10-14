@@ -9,3 +9,8 @@ install_web_site - scripts to automate website installation from $CCDB_HOME web 
                    real server folders.
 
 users_create - massively create or recreate users (for example during cron job)
+
+
+webgui - checks of the web GUI: deterministic fixture database, smoke suite, golden data
+         comparison, Playwright browser check (screenshots), working-tree checkpoints.
+         Used by CI and by agent runs; see webgui/README.md and web-agents-common.md
