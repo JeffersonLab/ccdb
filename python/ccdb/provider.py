@@ -16,6 +16,7 @@ from datetime import datetime
 import sqlalchemy
 from sqlalchemy.exc import OperationalError
 import sqlalchemy.orm
+from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
@@ -349,21 +350,33 @@ class AlchemyProvider:
             return directory
 
     def get_directory_by_id(self, dir_id):
+        """
+        Gets Directory by its database id
+
+        :raises ObjectIsNotFoundInDbError: no directory has this id
+        :rtype: Directory
+        """
         self._ensure_dirs_loaded()
-        return self.dirs_by_id[dir_id]
+        try:
+            return self.dirs_by_id[dir_id]
+        except KeyError:
+            raise ObjectIsNotFoundInDbError(Directory, "Directory with id='{0}' is not found in the DB".format(dir_id))
 
     def get_type_table_by_id(self, table_id):
-        type_table = self.session.query(TypeTable).filter(TypeTable.id == table_id).one()
-        assert isinstance(type_table, TypeTable)
+        """
+        Gets TypeTable by its database id, with parent_dir set so that table.path is complete
 
-        # We set parent_dir here manually because we want to ensure that
-        # the directory comes after self._ensure_dirs_loaded() is called
-        # this is important to have all directories correct full paths to be set
-        # and consequently to have correct full path set for the table!!!!!!
-        parent_dir = self.get_directory_by_id(type_table.parent_dir_id)
-        type_table.parent_dir = parent_dir
+        :raises ObjectIsNotFoundInDbError: no table has this id
+        :rtype: TypeTable
+        """
+        try:
+            type_table = self.session.query(TypeTable).filter(TypeTable.id == table_id).one()
+        except NoResultFound:
+            raise ObjectIsNotFoundInDbError(TypeTable, "TypeTable with id='{0}' is not found in the DB".format(table_id))
 
-        return parent_dir
+        # parent_dir comes from the directory cache: only there do directories carry their full paths
+        type_table.parent_dir = self.get_directory_by_id(type_table.parent_dir_id)
+        return type_table
 
     # @brief Updates directory
     #
@@ -1183,9 +1196,13 @@ class AlchemyProvider:
             assert isinstance(path_or_table, TypeTable)
             table = path_or_table
 
-        # build query
+        # build query; the joined rows also populate the relationships, so reading
+        # assignment.run_range, .variation or .request afterwards runs no further queries
         query = self.session.query(Assignment) \
             .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation) \
+            .options(contains_eager(Assignment.constant_set).contains_eager(ConstantSet.type_table),
+                     contains_eager(Assignment.run_range),
+                     contains_eager(Assignment.variation)) \
             .filter(TypeTable.id == table.id)
 
         # filter variation
