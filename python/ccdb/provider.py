@@ -75,7 +75,7 @@ class AlchemyProvider:
         :type connection_string: str
         """
         try:
-            self.engine = sqlalchemy.create_engine(connection_string)
+            engine = sqlalchemy.create_engine(connection_string)
         except ImportError as err:
             # sql alchemy uses MySQLdb by default. But it might not be installed in the system
             # in such case we fallback to mysqlconnector which is included in CCDB
@@ -83,32 +83,79 @@ class AlchemyProvider:
                     and "No module named" in repr(err) \
                     and "MySQLdb" in repr(err):
                 connection_string = connection_string.replace("mysql://", "mysql+pymysql://")
-                self.engine = sqlalchemy.create_engine(connection_string)
+                engine = sqlalchemy.create_engine(connection_string)
             else:
                 raise
 
-        #
-        session_type = sqlalchemy.orm.sessionmaker(bind=self.engine)
-        self.session = session_type()
-        self._is_connected = True
+        session_type = sqlalchemy.orm.sessionmaker(bind=engine)
+        session = session_type()
+
+        # connect() may be called on a connected provider to switch databases; attach() refuses that, so reset first
+        self._is_connected = False
+        self.attach(engine, session, check_version)
         self._connection_string = connection_string
 
-        # since it is a new connection we need to rebuild directories
+    # ------------------------------------------------
+    #  Attaches to an existing engine and session
+    # ------------------------------------------------
+    def attach(self, engine, session, check_version=True):
+        """
+        Uses an existing SQLAlchemy engine and session instead of opening a new connection.
+
+        A web server keeps one engine (connection pool) per process and gives each request its own
+        session; connect() would build a new engine and pool on every call. The caller owns both
+        objects: it creates them and closes or removes the session. disconnect() marks the provider
+        as disconnected and closes the session, which keeps a scoped session reusable.
+
+        :param engine: engine the session is bound to
+        :type engine: sqlalchemy.engine.Engine
+        :param session: session bound to that engine; a scoped_session registry is accepted
+        :type session: sqlalchemy.orm.Session | sqlalchemy.orm.scoped_session
+        :param check_version: Instantly check the schema version
+        :raises TypeError: engine or session has the wrong type
+        :raises ValueError: the session has no bind or is bound to another engine
+        :raises RuntimeError: the provider is connected already; call disconnect() first
+        :raises DatabaseStructureError: the database has no CCDB schema or the wrong schema version
+        """
+        if not isinstance(engine, sqlalchemy.engine.Engine):
+            raise TypeError("attach() expects 'engine' to be a sqlalchemy.engine.Engine, got {0}"
+                            .format(type(engine).__name__))
+        if not isinstance(session, (sqlalchemy.orm.Session, sqlalchemy.orm.scoped_session)):
+            raise TypeError("attach() expects 'session' to be a sqlalchemy.orm.Session or scoped_session, got {0}"
+                            .format(type(session).__name__))
+        try:
+            bound_engine = session.get_bind()
+        except sqlalchemy.exc.UnboundExecutionError:
+            raise ValueError("attach() expects a session bound to the given engine, but the session has no bind")
+        if bound_engine is not engine:
+            raise ValueError("attach() expects the session to be bound to the given engine, "
+                             "but it is bound to {0}".format(bound_engine))
+        if self._is_connected:
+            raise RuntimeError("attach() called on a provider that is connected already; call disconnect() first")
+        if check_version:
+            self._check_schema_version(session)  # before any state changes: a failed attach leaves the provider untouched
+
+        self.engine = engine
+        self.session = session
+        self._is_connected = True
+        self._connection_string = engine.url.render_as_string(hide_password=False)
+
+        # the data behind a new engine may differ, so directories are reloaded on demand
         self._are_dirs_loaded = False
 
-        # check data schema version
-        if check_version:
-            try:
-                vers_rec = self.session.query(CcdbSchemaVersion).first()
-                if vers_rec.version != 5:
-                    message = "Version mismatch. The database schema version is '{0}'. " \
-                              "This CCDB version works with schema version 5".format(vers_rec.version)
-                    raise DatabaseStructureError(message)
-            except OperationalError as err:
-                if "no such table" in str(err):
-                    raise DatabaseStructureError(self._no_structure_message.format(err))
-                else:
-                    raise
+    def _check_schema_version(self, session):
+        """Raises DatabaseStructureError unless the database behind the session has CCDB schema version 5"""
+        try:
+            vers_rec = session.query(CcdbSchemaVersion).first()
+            if vers_rec.version != 5:
+                message = "Version mismatch. The database schema version is '{0}'. " \
+                          "This CCDB version works with schema version 5".format(vers_rec.version)
+                raise DatabaseStructureError(message)
+        except OperationalError as err:
+            if "no such table" in str(err):
+                raise DatabaseStructureError(self._no_structure_message.format(err))
+            else:
+                raise
 
     # ------------------------------------------------
     # Closes connection to data
