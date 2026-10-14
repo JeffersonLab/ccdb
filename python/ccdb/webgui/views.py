@@ -9,7 +9,7 @@ tree loads them into a modal.
 """
 import ccdb
 from ccdb.errors import ObjectIsNotFoundInDbError
-from ccdb.model import User, TypeTable, Directory
+from ccdb.model import User, TypeTable
 import json
 
 from flask import g, render_template, url_for, request, redirect, make_response
