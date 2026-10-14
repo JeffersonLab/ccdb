@@ -1,8 +1,8 @@
 """WSGI entry point of the CCDB web GUI: `gunicorn ccdbweb:app`.
 
-The connection string comes from CCDB_CONNECTION (the CLI's variable) or SQL_CONNECTION_STRING
-(the docker-compose one). Neither set → the import fails with the message below, so a misconfigured
-server stops at startup instead of answering 500 to every request.
+The connection string comes from CCDB_CONNECTION, the same variable the ccdb command reads.
+Not set → the import fails with the message below, so a misconfigured server stops at startup
+instead of answering 500 to every request.
 """
 import ccdb.webgui
 from ccdb.webgui.db import NO_CONNECTION_MESSAGE

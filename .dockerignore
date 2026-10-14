@@ -1,0 +1,14 @@
+# Build context for every image under docker/ (compose builds them from the repository root): drop what no image needs.
+# docker/mysqldb copies sql/*.sql, so sql/ and docker/ stay in.
+.git
+.venv
+build
+dist
+**/__pycache__
+**/*.egg-info
+space-ccdb-webgui
+cpp
+java
+docs
+scripts
+*.sqlite

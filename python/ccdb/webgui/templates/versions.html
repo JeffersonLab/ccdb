@@ -3,7 +3,12 @@
 
 {% block page_header %}
 <div class="mb-3">
-  <h1 class="h3 mb-1"><svg class="ico me-1"><use href="#i-table"/></svg>{{ table.path }}</h1>
+  {%- set segments = table.path.strip('/').split('/') %}
+  <h1 class="h3 mb-1 text-break">
+    <svg class="ico me-1"><use href="#i-table"/></svg>
+    {%- set prefix = namespace(path='') %}
+    {%- for segment in segments[:-1] %}{% set prefix.path = prefix.path + '/' + segment %}/<a class="link-body-emphasis text-decoration-none" href="{{ url_for('directory_tree', filter=prefix.path) }}" title="Show {{ prefix.path }} in the tree">{{ segment }}</a>{% endfor %}/{{ segments[-1] }}
+  </h1>
   <p class="text-body-secondary small mb-0">
     {{ table.rows_count }} rows × {{ table.columns | length }} columns:
     {% for column in table.columns %}<span class="cell-mono">{{ column.name }}</span>{{ ', ' if not loop.last }}{% endfor %}{% if table.comment %} — {{ table.comment }}{% endif %}

@@ -20,7 +20,7 @@ log = logging.getLogger("ccdb.webgui")
 
 EXTENSION_KEY = "ccdb"
 NO_CONNECTION_MESSAGE = ("CCDB web GUI has no database connection string. Set CCDB_CONNECTION "
-                         "(or SQL_CONNECTION_STRING) to something like mysql://ccdb_user@hallddb.jlab.org/ccdb "
+                         "to something like mysql://ccdb_user@hallddb.jlab.org/ccdb "
                          "or sqlite:////path/to/ccdb.sqlite")
 
 # Idle MySQL connections are dropped by the server after `wait_timeout` (8 h by default);
@@ -44,7 +44,7 @@ class Database:
         self.sessions = None  # scoped_session registry, created together with the engine
 
     def connection_string(self):
-        value = self.app.config.get("SQL_CONNECTION_STRING")
+        value = self.app.config.get("CCDB_CONNECTION")
         if not value:
             raise RuntimeError(NO_CONNECTION_MESSAGE)
         return value
@@ -96,8 +96,8 @@ def init_app(app):
 
     @app.before_request
     def attach_provider():
-        if request.endpoint == "static":
-            return  # static files need no database
+        if request.endpoint in ("static", "health"):
+            return  # static files need no database; the health view handles a dead database itself
         g.db = database.provider()
 
     @app.teardown_appcontext

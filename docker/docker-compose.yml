@@ -21,18 +21,27 @@ services:
 
   webgui:
     build:
-      context: .. # Use the parent directory as the context
+      context: .. # the repository root: the image builds the ccdb wheel from python/
       dockerfile: docker/webgui/Dockerfile
     container_name: webgui
     environment:
-      # dialect://username:password@host:port/database
-      SQL_CONNECTION_STRING: mysql://test_user:test_password@mysqldb:3306/test_ccdb
+      # dialect://username:password@host:port/database — the same variable the ccdb CLI reads
+      CCDB_CONNECTION: mysql://test_user:test_password@mysqldb:3306/test_ccdb
+      CCDB_WEBGUI_WORKERS: 4
+      # set to 1 behind a reverse proxy that forwards under a sub-path (X-Forwarded-Prefix)
+      CCDB_WEBGUI_PROXY_FIX: 0
     depends_on:
       - mysqldb
     ports:
       - "5000:5000" # Expose web GUI
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
 
 networks:
   app_network:

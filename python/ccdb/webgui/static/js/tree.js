@@ -29,6 +29,9 @@ filter.addEventListener('input', () => {
   });
 });
 
+// A link such as /tree?filter=/test/mydir lands with the box prefilled by the server; apply it once.
+if (filter.value) filter.dispatchEvent(new Event('input'));
+
 tree.addEventListener('click', event => {
   const button = event.target.closest('button.info');
   if (!button) return;

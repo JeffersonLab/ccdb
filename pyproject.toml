@@ -69,10 +69,10 @@ where = ["python"]
 include = ["ccdb*"]
 
 [tool.setuptools.package-data]
-# Ship the web GUI assets inside the wheel
+# Ship the web GUI assets inside the wheel (the vendor LICENSE file has no extension, hence "*" and not "*.*")
 ccdb = [
-    "webgui/static/**/*.*",
-    "webgui/templates/**/*.*",
+    "webgui/static/**/*",
+    "webgui/templates/**/*",
 ]
 
 [tool.setuptools.dynamic]

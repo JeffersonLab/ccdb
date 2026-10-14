@@ -3,9 +3,9 @@
 Two ways to run it:
 
 - `ccdb gui [-p PORT]` builds the app with cerate_ccdb_flask_app() and then sets
-  app.config["SQL_CONNECTION_STRING"] from the CLI context.
-- `gunicorn ccdbweb:app` imports python/ccdbweb.py, which reads CCDB_CONNECTION (or SQL_CONNECTION_STRING)
-  and fails at import when neither is set.
+  app.config["CCDB_CONNECTION"] from the CLI context.
+- `gunicorn ccdbweb:app` imports python/ccdbweb.py, which reads CCDB_CONNECTION
+  and fails at import when it is not set.
 
 Set CCDB_WEBGUI_PROXY_FIX=1 behind a reverse proxy that forwards under a sub-path; see cerate_ccdb_flask_app().
 
@@ -25,8 +25,8 @@ log = logging.getLogger("ccdb.webgui")
 
 
 def connection_string_from_env():
-    """CCDB_CONNECTION, the CLI's variable, wins over SQL_CONNECTION_STRING, the docker-compose one."""
-    return os.getenv("CCDB_CONNECTION") or os.getenv("SQL_CONNECTION_STRING") or ""
+    """CCDB_CONNECTION, the same variable the ccdb command reads; empty when it is not set."""
+    return os.getenv("CCDB_CONNECTION") or ""
 
 
 def cerate_ccdb_flask_app(connection_string=None, test_config=None):
@@ -35,9 +35,12 @@ def cerate_ccdb_flask_app(connection_string=None, test_config=None):
     :param connection_string: database connection string; the environment is used when it is None.
         An empty value is allowed here and fails with a clear message at the first request.
     :param test_config: mapping merged into app.config, for tests
+
+    The connection string lives in app.config["CCDB_CONNECTION"]; the `ccdb gui` command sets it after
+    creating the app, which works because the engine is created on the first request.
     """
     app = Flask(__name__, instance_relative_config=True)
-    app.config["SQL_CONNECTION_STRING"] = connection_string if connection_string is not None else connection_string_from_env()
+    app.config["CCDB_CONNECTION"] = connection_string if connection_string is not None else connection_string_from_env()
     app.config["PROXY_FIX"] = os.getenv("CCDB_WEBGUI_PROXY_FIX", "").lower() in ("1", "true", "yes")
     if test_config:
         app.config.update(test_config)

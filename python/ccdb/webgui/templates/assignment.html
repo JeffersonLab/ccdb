@@ -18,7 +18,10 @@
         {#- The golden comparison reads this as the first table: two-cell rows labelled Variation, Created, Run Range, Author, Exact ID. -#}
         <table class="table table-sm mb-0 meta">
           <tbody>
-            <tr><th scope="row">Table</th><td><a href="{{ url_for('versions', table_path=table.path.lstrip('/')) }}" title="All assignments of this table">{{ table.path }}</a></td></tr>
+            {%- set segments = table.path.strip('/').split('/') %}{% set prefix = namespace(path='') %}
+            <tr><th scope="row">Table</th><td class="text-break">
+              {%- for segment in segments[:-1] %}{% set prefix.path = prefix.path + '/' + segment %}/<a class="link-body-emphasis" href="{{ url_for('directory_tree', filter=prefix.path) }}" title="Show {{ prefix.path }} in the tree">{{ segment }}</a>{% endfor %}/<a href="{{ url_for('versions', table_path=table.path.lstrip('/')) }}" title="All assignments of this table">{{ segments[-1] }}</a>
+            </td></tr>
             <tr><th scope="row">Variation</th><td>{{ variation }}</td></tr>
             <tr><th scope="row">Created</th><td>{{ created }}</td></tr>
             <tr><th scope="row">Run Range</th><td>{{ run_range }}</td></tr>

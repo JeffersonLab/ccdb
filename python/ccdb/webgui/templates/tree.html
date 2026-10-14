@@ -30,7 +30,7 @@
 {% block page_header %}
 <div class="toolbar mb-3">
   <h1 class="h3 m-0">Tables</h1>
-  <input id="tree-filter" class="form-control" style="max-width: 24rem" type="search" placeholder="Filter by path…" autocomplete="off" aria-label="Filter by path">
+  <input id="tree-filter" class="form-control" style="max-width: 24rem" type="search" placeholder="Filter by path…" autocomplete="off" aria-label="Filter by path" value="{{ request.args.get('filter', '') }}">
   <span class="text-body-secondary small">{{ directory_count }} directories · {{ table_count }} tables</span>
 </div>
 {% endblock %}

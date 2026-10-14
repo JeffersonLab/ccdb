@@ -26,3 +26,4 @@
 - [CLI modernization](development/cli-modernization.md)
 - [CLI command coherence](development/cli-command-coherence.md)
 - [Utilities & scripts](utilities.md)
+- [Deploying the web GUI](deployment/webgui.md)

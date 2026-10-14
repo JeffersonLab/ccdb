@@ -13,9 +13,11 @@ from ccdb.model import User, TypeTable, Directory
 import json
 
 from flask import g, render_template, url_for, request, redirect, make_response
-from sqlalchemy import select
+from sqlalchemy import select, text
 
+from ccdb import ccdb_version
 from ccdb.webgui import assignments, queries
+from ccdb.webgui.db import get_database
 
 
 def author_name(db, author_id):
@@ -121,6 +123,18 @@ def register(app):
     @app.route('/doc')
     def documentation():
         return render_template("doc.html")
+
+    @app.route('/health')
+    def health():
+        """Liveness and database check for load balancers and the container HEALTHCHECK: JSON, never cached."""
+        try:
+            engine = get_database(app).ensure_engine()
+            with engine.connect() as connection:
+                connection.execute(text("SELECT 1"))
+            body, status = {"status": "ok", "database": "ok", "version": ccdb_version}, 200
+        except Exception as error:  # a dead or wrong database must answer 503, not raise
+            body, status = {"status": "error", "database": str(error).splitlines()[0][:300], "version": ccdb_version}, 503
+        return json.dumps(body), status, {"Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store"}
 
     @app.route('/versions/<path:table_path>')
     def versions(table_path):

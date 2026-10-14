@@ -19,7 +19,7 @@ class WebGuiAppTest(unittest.TestCase):
         db_path = os.path.join(self.tmp_dir.name, "webgui_test.sqlite")
         create_sqlite_database(db_path)
         self.connection_string = "sqlite:///" + db_path
-        self.saved_env = {name: os.environ.pop(name, None) for name in ("CCDB_CONNECTION", "SQL_CONNECTION_STRING")}
+        self.saved_env = {name: os.environ.pop(name, None) for name in ("CCDB_CONNECTION",)}
         self.apps = []
 
     def tearDown(self):
@@ -40,12 +40,11 @@ class WebGuiAppTest(unittest.TestCase):
         self.assertEqual(app.test_client().get("/doc").status_code, 200)
         self.assertEqual(app.test_client().get("/vars").status_code, 200)
 
-    def test_environment_order(self):
-        os.environ["SQL_CONNECTION_STRING"] = "sqlite:///compose.sqlite"
-        self.assertEqual(connection_string_from_env(), "sqlite:///compose.sqlite")
+    def test_environment_variable(self):
+        self.assertEqual(connection_string_from_env(), "")
         os.environ["CCDB_CONNECTION"] = "sqlite:///cli.sqlite"
         self.assertEqual(connection_string_from_env(), "sqlite:///cli.sqlite")
-        self.assertEqual(self.make_app().config["SQL_CONNECTION_STRING"], "sqlite:///cli.sqlite")
+        self.assertEqual(self.make_app().config["CCDB_CONNECTION"], "sqlite:///cli.sqlite")
 
     def test_no_connection_fails_at_first_request_with_the_message(self):
         app = self.make_app()  # nothing in the environment
@@ -56,7 +55,7 @@ class WebGuiAppTest(unittest.TestCase):
 
     def test_config_set_after_creation_as_the_cli_does(self):
         app = self.make_app()
-        app.config["SQL_CONNECTION_STRING"] = self.connection_string  # the `ccdb gui` command does this
+        app.config["CCDB_CONNECTION"] = self.connection_string  # the `ccdb gui` command does this
         self.assertEqual(app.test_client().get("/vars").status_code, 200)
 
     def test_one_engine_for_all_requests(self):
@@ -99,6 +98,26 @@ class WebGuiAppTest(unittest.TestCase):
         self.assertIsNone(get_database(app).engine)
         create_sqlite_database(empty)
         self.assertEqual(app.test_client().get("/vars").status_code, 200)
+
+    def test_health(self):
+        import json
+        app = self.make_app(self.connection_string)
+        response = app.test_client().get("/health")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Cache-Control"], "no-store")
+        body = json.loads(response.get_data(as_text=True))
+        self.assertEqual((body["status"], body["database"]), ("ok", "ok"))
+        self.assertIn("version", body)
+
+    def test_health_reports_a_dead_database_as_503_and_recovers(self):
+        import json
+        missing = os.path.join(self.tmp_dir.name, "not_yet.sqlite")
+        app = self.make_app("sqlite:///" + missing)
+        response = app.test_client().get("/health")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(json.loads(response.get_data(as_text=True))["status"], "error")
+        create_sqlite_database(missing)
+        self.assertEqual(app.test_client().get("/health").status_code, 200)
 
     def test_mysql_uses_pymysql(self):
         self.assertEqual(normalize_dialect("mysql://u@h/d"), "mysql+pymysql://u@h/d")
