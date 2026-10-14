@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}{{ assignment.request }} · CCDB{% endblock %}
+{%- set table = assignment.constant_set.type_table -%}
+
+{% block page_header %}
+<h1 class="h3 mb-1">Constants</h1>
+<p class="mb-3">
+  <code class="user-select-all" id="request-string">{{ assignment.request }}</code>
+  <button class="btn btn-sm btn-outline-secondary ms-1" type="button" id="copy-request" data-text="{{ assignment.request }}" title="Copy the request string"><svg class="ico"><use href="#i-copy"/></svg> Copy</button>
+</p>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-3">
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-body">
+        {#- The golden comparison reads this as the first table: two-cell rows labelled Variation, Created, Run Range, Author, Exact ID. -#}
+        <table class="table table-sm mb-0 meta">
+          <tbody>
+            <tr><th scope="row">Table</th><td><a href="{{ url_for('versions', table_path=table.path.lstrip('/')) }}" title="All assignments of this table">{{ table.path }}</a></td></tr>
+            <tr><th scope="row">Variation</th><td>{{ variation }}</td></tr>
+            <tr><th scope="row">Created</th><td>{{ created }}</td></tr>
+            <tr><th scope="row">Run Range</th><td>{{ run_range }}</td></tr>
+            <tr><th scope="row">Author</th><td>{{ author }}</td></tr>
+            <tr><th scope="row">Exact ID</th><td class="cell-mono">{{ assignment.request }}</td></tr>
+            <tr><th scope="row">Database id</th><td>{{ assignment.id }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer d-flex flex-wrap gap-2">
+        <a class="btn btn-sm btn-primary" href="{{ url_for('assignment_text', request=assignment.request) }}"><svg class="ico"><use href="#i-download"/></svg> Text (ccdb dump)</a>
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('assignment_json', request=assignment.request) }}">JSON</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('show_request', assignment_id=assignment.id) }}" title="Short link by database id">Short link</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h6 text-body-secondary">Comment</h2>
+        <p class="mb-0" style="white-space: pre-line">{{ comment }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="h5">Data <span class="text-body-secondary fw-normal small">{{ table.rows_count }} rows × {{ table.columns | length }} columns</span></h2>
+<div class="table-responsive" style="max-height: 70vh">
+  <table class="table table-sm table-striped table-sticky cell-mono mb-0">
+    <thead>
+      <tr>{% for column in table.columns %}<th scope="col" title="{{ column.type }}">{{ column.name }}</th>{% endfor %}</tr>
+    </thead>
+    <tbody>
+      {% for row in assignment.constant_set.data_table %}
+      <tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+

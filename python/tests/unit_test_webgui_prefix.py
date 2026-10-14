@@ -39,7 +39,7 @@ class PrefixAndAuthorsTest(unittest.TestCase):
     def test_forwarded_headers_are_ignored_by_default(self):
         html = self.make_app().test_client().get("/", headers=FORWARDED).get_data(as_text=True)
         self.assertIn('href="/versions/test/test_vars/test_table"', html)
-        self.assertNotIn("/ccdb/", html)
+        self.assertNotIn('href="/ccdb/', html)  # the footer links github.com/JeffersonLab/ccdb/issues
 
     def test_redirect_keeps_the_prefix(self):
         response = self.make_app(PROXY_FIX=True).test_client().get("/download_request?request=/test/test_vars/test_table:0:default", headers=FORWARDED)

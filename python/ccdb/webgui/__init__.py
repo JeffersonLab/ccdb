@@ -18,6 +18,7 @@ import os
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from ccdb import ccdb_version
 from ccdb.webgui import db, errors, views
 
 log = logging.getLogger("ccdb.webgui")
@@ -48,6 +49,10 @@ def cerate_ccdb_flask_app(connection_string=None, test_config=None):
     db.init_app(app)
     views.register(app)
     errors.register(app)
+
+    @app.context_processor
+    def template_globals():
+        return {"ccdb_version": ccdb_version}
     log.debug("CCDB web GUI app created with %d routes", len(app.url_map._rules))
     return app
 

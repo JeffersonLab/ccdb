@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Tables · CCDB{% endblock %}
+
+{#- A node is a Directory with .sub_dirs and .type_tables set by the view. Each <li> carries data-path and
+    data-kind for the filter script and for the golden comparison. -#}
+{% macro node(directory, tables_of) -%}
+<li data-path="{{ directory.path }}" data-kind="dir">
+  <details data-path="{{ directory.path }}">
+    <summary>
+      <svg class="ico closed"><use href="#i-folder"/></svg><svg class="ico opened"><use href="#i-folder-open"/></svg>
+      <span>{{ directory.name }}</span>
+      <button class="info" type="button" data-url="{{ url_for('get_dir_info', dir_id=directory.id) }}" aria-label="About {{ directory.name }}"><svg class="ico"><use href="#i-info"/></svg></button>
+    </summary>
+    <ul>
+      {% for sub_dir in directory.sub_dirs %}{{ node(sub_dir, tables_of) }}{% endfor %}
+      {% for table in tables_of.get(directory.id, []) %}
+      <li data-path="{{ table.path }}" data-kind="table">
+        <span class="leaf">
+          <svg class="ico"><use href="#i-table"/></svg>
+          <a href="{{ url_for('versions', table_path=table.path.lstrip('/')) }}">{{ table.name }}</a>
+          <button class="info" type="button" data-url="{{ url_for('get_table_info', table_id=table.id) }}" aria-label="About {{ table.name }}"><svg class="ico"><use href="#i-info"/></svg></button>
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+  </details>
+</li>
+{%- endmacro %}
+
+{% block page_header %}
+<div class="toolbar mb-3">
+  <h1 class="h3 m-0">Tables</h1>
+  <input id="tree-filter" class="form-control" style="max-width: 24rem" type="search" placeholder="Filter by path…" autocomplete="off" aria-label="Filter by path">
+  <span class="text-body-secondary small">{{ directory_count }} directories · {{ table_count }} tables</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="tree" class="tree">
+  <ul>
+    {% for directory in root.sub_dirs %}{{ node(directory, tables_of) }}{% endfor %}
+    {% for table in tables_of.get(0, []) %}
+    <li data-path="{{ table.path }}" data-kind="table">
+      <span class="leaf"><svg class="ico"><use href="#i-table"/></svg><a href="{{ url_for('versions', table_path=table.path.lstrip('/')) }}">{{ table.name }}</a></span>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+
+{% block page_scripts %}<script type="module" src="{{ url_for('static', filename='js/tree.js') }}"></script>{% endblock %}

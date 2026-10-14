@@ -38,18 +38,18 @@ class EscapingTest(unittest.TestCase):
         html = self.client.get("/").get_data(as_text=True)
         self.assertNotIn("<script>alert(1)", html)
         self.assertIn("&lt;script&gt;alert(1)&lt;b&gt;", html)
-        self.assertIn('data="/test/x&#34;y&#39;z&amp;&lt;script&gt;alert(1)&lt;b&gt;"', html)
+        self.assertIn('data-path="/test/x&#34;y&#39;z&amp;&lt;script&gt;alert(1)&lt;b&gt;"', html)
         self.assertIn("test_table2", html, "the tables after the hostile one are still there")
 
-    def test_autocomplete_list_is_json_safe(self):
+    def test_autocomplete_list_is_escaped(self):
         html = self.client.get("/test_request").get_data(as_text=True)
         self.assertNotIn("<script>alert(1)", html)
-        self.assertIn("\\u003cscript\\u003ealert(1)", html)
+        self.assertIn('<option value="/test/x&#34;y&#39;z&amp;&lt;script&gt;alert(1)&lt;b&gt;"></option>', html)
 
     def test_comment_and_cells_are_escaped_on_the_assignment_page(self):
         html = self.client.get("/show_request?request=" + quote("/test/" + HOSTILE + ":0:default")).get_data(as_text=True)
         self.assertNotIn('<script>alert("x")</script>', html)
-        self.assertIn("&lt;script&gt;alert(&#34;x&#34;)&lt;/script&gt;<br>line two &amp; more", html)
+        self.assertIn("&lt;script&gt;alert(&#34;x&#34;)&lt;/script&gt;\nline two &amp; more", html)  # newlines kept; CSS pre-line breaks them
         self.assertIn("&lt;b&gt;cell&lt;/b&gt;", html)
 
     def test_text_dump_is_plain_text(self):

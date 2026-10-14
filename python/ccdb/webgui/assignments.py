@@ -37,6 +37,15 @@ def parse_request_or_400(text):
     return parsed
 
 
+def compose_request(args):
+    """The request string from the request form's parts: path, run (default 0), variation (default `default`), time."""
+    path = args.get("path", "").strip()
+    run = args.get("run", "").strip() or "0"
+    variation = args.get("variation", "").strip() or "default"
+    time = args.get("time", "").strip()
+    return "{0}:{1}:{2}".format(path, run, variation) + (":" + time if time else "")
+
+
 def resolve_assignment(db, request_string=None, assignment_id=None):
     """The assignment behind a request string or a database id; unknown → 404, malformed → 400."""
     if assignment_id is not None:

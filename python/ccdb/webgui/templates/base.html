@@ -1,0 +1,91 @@
+{#- Base layout: navbar, offcanvas sidebar on phones, main column, footer.
+    Blocks: title, page_header (inside <main>, above content), content, page_scripts (ES module tags).
+    The only inline script is the theme bootstrap in <head>: it must run before first paint. -#}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CCDB{% endblock %}</title>
+  <script>
+    (function () {
+      var theme = null;
+      try { theme = localStorage.getItem('ccdb-theme'); } catch (e) {}
+      if (theme !== 'light' && theme !== 'dark') {
+        theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-bs-theme', theme);
+    })();
+  </script>
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap-5.3.8/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ccdb.css') }}">
+</head>
+<body>
+{% include '_icons.html' %}
+{%- set section = {
+      'directory_tree': 'tables', 'versions': 'tables', 'show_request': 'tables',
+      'assignment_json': 'tables', 'assignment_text': 'tables',
+      'variations': 'variations', 'test_request': 'request', 'log_records': 'logs', 'documentation': 'doc'
+    }.get(request.endpoint, '') -%}
+<nav class="navbar navbar-expand bg-body-tertiary border-bottom sticky-top">
+  <div class="container-fluid">
+    <button class="btn btn-outline-secondary d-md-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" aria-label="Menu">
+      <svg class="ico"><use href="#i-menu"/></svg>
+    </button>
+    <a class="navbar-brand" href="{{ url_for('directory_tree') }}">CCDB <small class="text-body-secondary">{{ ccdb_version }}</small></a>
+    <div class="ms-auto dropdown">
+      <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Theme">
+        <svg class="ico theme-light-only"><use href="#i-sun"/></svg><svg class="ico theme-dark-only"><use href="#i-moon"/></svg>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end" id="theme-menu">
+        <li><button class="dropdown-item" type="button" data-theme="light"><svg class="ico me-2"><use href="#i-sun"/></svg>Light</button></li>
+        <li><button class="dropdown-item" type="button" data-theme="dark"><svg class="ico me-2"><use href="#i-moon"/></svg>Dark</button></li>
+        <li><button class="dropdown-item" type="button" data-theme="auto">Auto</button></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="row">
+    <aside class="col-md-3 col-lg-2 offcanvas-md offcanvas-start bg-body-tertiary sidebar border-end" id="sidebar" tabindex="-1">
+      <div class="offcanvas-header d-md-none">
+        <h5 class="offcanvas-title">CCDB {{ ccdb_version }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Close"></button>
+      </div>
+      <nav class="nav flex-column py-md-3">
+        <a class="nav-link {{ 'active' if section == 'tables' }}" href="{{ url_for('directory_tree') }}"><svg class="ico me-2"><use href="#i-table"/></svg>Tables</a>
+        <a class="nav-link {{ 'active' if section == 'variations' }}" href="{{ url_for('variations') }}"><svg class="ico me-2"><use href="#i-folder"/></svg>Variations</a>
+        <a class="nav-link {{ 'active' if section == 'request' }}" href="{{ url_for('test_request') }}"><svg class="ico me-2"><use href="#i-search"/></svg>Request</a>
+        <a class="nav-link {{ 'active' if section == 'logs' }}" href="{{ url_for('log_records') }}"><svg class="ico me-2"><use href="#i-info"/></svg>Logs</a>
+        <a class="nav-link {{ 'active' if section == 'doc' }}" href="{{ url_for('documentation') }}"><svg class="ico me-2"><use href="#i-download"/></svg>Documentation</a>
+      </nav>
+    </aside>
+
+    <main class="col-md-9 col-lg-10 py-3 px-md-4">
+      {% block page_header %}{% endblock %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<footer class="border-top py-3 mt-4">
+  <div class="container-fluid small text-body-secondary px-md-4">
+    CCDB {{ ccdb_version }} — Calibration and Conditions Database.
+    <a href="https://github.com/JeffersonLab/ccdb/issues" rel="noopener">Report a bug</a> ·
+    <a href="https://jeffersonlab.github.io/ccdb" rel="noopener">Documentation</a>
+  </div>
+</footer>
+
+<div class="modal fade" id="info-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='vendor/bootstrap-5.3.8/bootstrap.bundle.min.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/common.js') }}"></script>
+{% block page_scripts %}{% endblock %}
+</body>
+</html>

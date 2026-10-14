@@ -1,32 +1,39 @@
-{% extends 'dash_base.html' %}
+{% extends 'base.html' %}
+{% block title %}Documentation · CCDB{% endblock %}
 
-{% block header %}
-  <h1 class="mt-4 mb-4 text-center" style="font-size: 2.5rem;">Information</h1>
+{% block page_header %}
+<h1 class="h3 mb-3">Documentation</h1>
 {% endblock %}
 
 {% block content %}
-  <div class="container mt-5">
-    <div class="card">
-      <div class="card-body" style="font-size: 1.25rem;">
-
-        <!-- GitHub Link -->
-        <div class="row">
-          <h4 class="col-auto">GitHub Repository</h4>-
-          <p class="col-auto"><a href="https://github.com/JeffersonLab/ccdb" target="_blank">Jefferson Lab CCDB GitHub repository</a>.</p>
-        </div>
-
-        <!-- GitHub Issues Link -->
-        <div class="row">
-          <h4 class="col-auto">Support & Issues</h4>-
-          <p class="col-auto"><a href="https://github.com/JeffersonLab/ccdb/issues" target="_blank">GitHub Issues page</a>.</p>
-        </div>
-
-        <!-- Wiki Link -->
-        <div class="row">
-          <h4 class="col-auto">Documentation & Resources</h4>-
-          <p class="col-auto"><a href="https://halldweb1.jlab.org/wiki/index.php/Calibration_Database" target="_blank">Calibration Database GluEX Wiki Page</a>.</p>
-        </div>
-      </div>
-    </div>
+<div class="row g-3" style="max-width: 60rem">
+  <div class="col-md-6">
+    <div class="card h-100"><div class="card-body">
+      <h2 class="h5">User guide and APIs</h2>
+      <p class="mb-2">Installation, the <code>ccdb</code> command line, and the Python, C++ and Java APIs.</p>
+      <a class="btn btn-primary" href="https://jeffersonlab.github.io/ccdb" rel="noopener">jeffersonlab.github.io/ccdb</a>
+    </div></div>
   </div>
+  <div class="col-md-6">
+    <div class="card h-100"><div class="card-body">
+      <h2 class="h5">Source code and issues</h2>
+      <p class="mb-2">Report a problem with this site or with CCDB on GitHub.</p>
+      <a class="btn btn-outline-primary" href="https://github.com/JeffersonLab/ccdb" rel="noopener">Repository</a>
+      <a class="btn btn-outline-primary" href="https://github.com/JeffersonLab/ccdb/issues" rel="noopener">Issues</a>
+    </div></div>
+  </div>
+  <div class="col-12">
+    <div class="card"><div class="card-body">
+      <h2 class="h5">Reading this site</h2>
+      <dl class="row mb-0">
+        <dt class="col-sm-3">Request string</dt>
+        <dd class="col-sm-9"><code>/directory/table:run:variation:date</code> names one set of constants. The <a href="{{ url_for('test_request') }}">Request</a> page builds it from its parts; every assignment page shows the exact string that identifies its data, with the date of its creation.</dd>
+        <dt class="col-sm-3">Variations</dt>
+        <dd class="col-sm-9">A request for a variation that has no assignment for the table and run falls back to the variation it inherits from, down to <code>default</code>. See <a href="{{ url_for('variations') }}">Variations</a>.</dd>
+        <dt class="col-sm-3">Data downloads</dt>
+        <dd class="col-sm-9">Each assignment offers its data as text in the <code>ccdb dump</code> layout and as JSON (columns and rows as strings).</dd>
+      </dl>
+    </div></div>
+  </div>
+</div>
 {% endblock %}

@@ -1,0 +1,49 @@
+/* CCDB web GUI styles on top of Bootstrap 5.3. Colours are variables so both themes and scripts can read them. */
+:root {
+  --ccdb-tree-line: var(--bs-border-color);
+  --ccdb-muted-icon: 0.45;
+}
+[data-bs-theme="dark"] {
+  --ccdb-tree-line: var(--bs-border-color);
+}
+
+/* inline SVG sprite icons follow the text size and colour */
+.ico { width: 1em; height: 1em; fill: currentColor; vertical-align: -0.125em; flex: none; }
+.theme-dark-only { display: none; }
+[data-bs-theme="dark"] .theme-dark-only { display: inline; }
+[data-bs-theme="dark"] .theme-light-only { display: none; }
+
+/* sidebar */
+.sidebar .nav-link { color: var(--bs-body-color); }
+.sidebar .nav-link.active { background: var(--bs-primary-bg-subtle); color: var(--bs-primary-text-emphasis); border-radius: var(--bs-border-radius); }
+@media (min-width: 768px) {
+  .sidebar { position: sticky; top: 3.6rem; height: calc(100vh - 3.6rem); overflow-y: auto; }
+}
+
+/* directory tree: native <details>/<summary> */
+.tree ul { list-style: none; padding-left: 1.25rem; margin: 0; }
+.tree > ul { padding-left: 0; }
+.tree ul ul { border-left: 1px solid var(--ccdb-tree-line); }
+.tree li { line-height: 2rem; }
+.tree summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: .4rem; }
+.tree summary::-webkit-details-marker { display: none; }
+.tree details > summary .opened, .tree details[open] > summary .closed { display: none; }
+.tree details[open] > summary .opened { display: inline; }
+.tree .leaf { display: flex; align-items: center; gap: .4rem; }
+.tree .leaf a { color: var(--bs-body-color); text-decoration: none; }
+.tree .leaf a:hover { text-decoration: underline; }
+.tree .info { border: 0; background: none; padding: 0 .25rem; color: inherit; opacity: var(--ccdb-muted-icon); line-height: 1; }
+.tree .info:hover, .tree .info:focus-visible { opacity: 1; }
+.tree li[hidden] { display: none; }
+
+/* long identifiers (request strings, chains) must wrap on phones instead of widening the page */
+#request-string, .meta td { overflow-wrap: anywhere; }
+.chain summary { cursor: pointer; list-style: none; }
+.chain summary::-webkit-details-marker { display: none; }
+.chain .chain-more { border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); padding: 0 .3rem; }
+.chain details[open] summary { display: none !important; }
+
+/* tables */
+.table-sticky thead th { position: sticky; top: 0; background: var(--bs-body-bg); z-index: 1; }
+.cell-mono { font-family: var(--bs-font-monospace); font-size: .875em; }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }

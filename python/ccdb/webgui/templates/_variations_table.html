@@ -1,0 +1,44 @@
+{#- The variations table; also the live-search fragment. The golden comparison reads cells 0 (name) and 2 (comment). -#}
+<div id="table-fragment">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+    <p class="text-body-secondary small m-0" data-total="{{ page.total }}" data-pages="{{ page.pages }}">
+      {% if page.total %}Rows {{ page.first_row }}–{{ page.last_row }} of {{ page.total }}{% else %}No variations match.{% endif %}
+    </p>
+    {% include '_pagination.html' %}
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm table-hover table-sticky align-middle mb-2">
+      <thead>
+        <tr>
+          {% for key, label in [('name', 'Name'), ('created', 'Created')] %}
+          <th scope="col" class="text-nowrap"><a class="sort link-body-emphasis text-decoration-none" href="{{ sort_url(key, query.sort, query.order) }}">{{ label }}{% if query.sort == key %} {{ '▲' if query.order == 'asc' else '▼' }}{% endif %}</a></th>
+          {% endfor %}
+          <th scope="col">Comment</th>
+          <th scope="col" title="Where a request falls back when this variation has no assignment">Inherits from</th>
+          <th scope="col">Author</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.items %}
+        <tr>
+          <td class="fw-medium">{{ row.name }}</td>
+          <td class="text-nowrap">{{ row.created }}</td>
+          <td>{{ row.comment }}</td>
+          {#- Long chains collapse to root › … › last two; the ellipsis is a <details> summary that expands the full chain in place. -#}
+          {%- set levels = chains.get(row.name, []) %}
+          <td class="text-body-secondary chain">
+            {%- if levels | length <= 3 %}{{ levels | join(' › ') }}
+            {%- else %}
+            <details class="d-inline" title="{{ levels | join(' › ') }}">
+              <summary class="d-inline">{{ levels[0] }} › <span class="chain-more">…</span> › {{ levels[-2:] | join(' › ') }}</summary>
+              <span class="d-block mt-1">{{ levels | join(' › ') }}</span>
+            </details>
+            {%- endif %}
+          </td>
+          <td>{{ row.author }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

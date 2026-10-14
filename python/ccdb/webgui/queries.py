@@ -197,6 +197,15 @@ def list_assignments(session, table, query, variation=None, run=None, run_min=No
     return run_page(session, statement, query, ASSIGNMENT_SORTS, Assignment.id, row_factory)
 
 
+def table_variation_names(session, table):
+    """Names of the variations that have at least one assignment on the table, for the filter select."""
+    statement = (select(Variation.name).distinct()
+                 .join(Assignment, Assignment.variation_id == Variation.id)
+                 .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
+                 .where(ConstantSet.type_table_id == table.id).order_by(Variation.name))
+    return [row[0] for row in session.execute(statement)]
+
+
 # --------------------------------------------------------------------------- logs
 
 LOG_SORTS = {"created": LogRecord.created, "action": LogRecord.action, "author": User.name, "id": LogRecord.id}
@@ -235,3 +244,18 @@ def list_variations(session, query):
         statement = statement.where(contains_text([Variation.name, Variation.comment], query.search))
     return run_page(session, statement, query, VARIATION_SORTS, Variation.id,
                     lambda row: VariationRow(row[0], row[1], row[2], row[3] or "", row[4] or "", row[5] or ""))
+
+
+def variation_chains(session):
+    """name -> the ancestry from the root as a list, for example ['default', 'test', 'subtest']. Variations are few, one query."""
+    rows = session.execute(select(Variation.id, Variation.name, Variation.parent_id)).all()
+    by_id = {row[0]: (row[1], row[2]) for row in rows}
+    chains = {}
+    for variation_id, (name, _parent) in by_id.items():
+        chain, current, seen = [], variation_id, set()
+        while current in by_id and current not in seen:  # `seen` guards against a cycle in bad data
+            seen.add(current)
+            chain.append(by_id[current][0])
+            current = by_id[current][1]
+        chains[name] = list(reversed(chain))
+    return chains

@@ -78,6 +78,18 @@ class AssignmentViewsTest(unittest.TestCase):
         self.assertEqual(self.get("/show_request?request=" + quote(TABLE + ":abc")).status_code, 400)
         self.assertEqual(self.get("/show_request?request=garbage").status_code, 400)
 
+    def test_request_form_parts_redirect_to_the_request_string(self):
+        response = self.get("/show_request?path=" + quote(TABLE) + "&run=0&variation=default&time=")
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.headers["Location"].endswith("/show_request?request=" + quote(TABLE + ":0:default", safe="/:")), response.headers["Location"])
+        with_time = self.get("/show_request?path=" + quote(TABLE) + "&run=5&variation=mc&time=2020-01-04")
+        self.assertTrue(with_time.headers["Location"].endswith(quote(TABLE + ":5:mc:2020-01-04", safe="/:")), with_time.headers["Location"])
+        with_clock = self.get("/show_request?path=" + quote(TABLE) + "&run=0&variation=default&time=2012-10-30_23-48-42")
+        self.assertEqual(with_clock.status_code, 302)
+        followed = self.get(with_clock.headers["Location"])
+        self.assertEqual(followed.status_code, 200)
+        self.assertIn(TABLE + ":0:default:2012-10-30_23-48-42", followed.get_data(as_text=True))
+
     def test_old_download_routes_redirect(self):
         for old in ("/dowload_request", "/download_request"):
             response = self.get(old + "?request=" + quote(AMBIGUOUS))

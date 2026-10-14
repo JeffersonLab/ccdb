@@ -1,0 +1,39 @@
+{#- The versions table with its row count and page navigation. Rendered inside versions.html and alone
+    for live-search requests (X-Fragment). The first four cells of a row (run min, run max, created,
+    variation) are what the golden comparison reads; keep them first. -#}
+<div id="table-fragment">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+    <p class="text-body-secondary small m-0" data-total="{{ page.total }}" data-pages="{{ page.pages }}">
+      {% if page.total %}Rows {{ page.first_row }}–{{ page.last_row }} of {{ page.total }}{% else %}No assignments match.{% endif %}
+    </p>
+    {% include '_pagination.html' %}
+  </div>
+  <div class="table-responsive">
+    <table class="table table-sm table-hover table-sticky align-middle mb-2">
+      <thead>
+        <tr>
+          {% for key, label in [('run_min', 'Run min'), ('run_max', 'Run max'), ('created', 'Created'), ('variation', 'Variation'), ('author', 'Author')] %}
+          <th scope="col" class="text-nowrap">
+            <a class="sort link-body-emphasis text-decoration-none" href="{{ sort_url(key, query.sort, query.order) }}">{{ label }}{% if query.sort == key %} {{ '▲' if query.order == 'asc' else '▼' }}{% endif %}</a>
+          </th>
+          {% endfor %}
+          <th scope="col">Comment</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.items %}
+        <tr>
+          <td class="cell-mono">{{ row.run_min }}</td>
+          <td class="cell-mono">{{ '∞' if row.run_max == INFINITE_RUN else row.run_max }}</td>
+          <td class="text-nowrap">{{ row.created }}</td>
+          <td>{{ row.variation }}</td>
+          <td>{{ row.author }}</td>
+          <td class="text-truncate" style="max-width: 24rem" title="{{ row.comment }}">{{ row.comment }}</td>
+          <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('show_request', request=row.request) }}">View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

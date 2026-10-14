@@ -1,19 +1,13 @@
-{% extends 'dash_base.html' %}
-
-{% block header %}
-<h1 class="text-center mt-4">{{ status }} {{ title }}</h1>
-{% endblock %}
+{% extends 'base.html' %}
+{% block title %}{{ status }} {{ title }} · CCDB{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="alert alert-danger" role="alert">
-        <p style="font-size: 1.2rem;">{{ message }}</p>
-        <hr>
-        <p class="mb-0" style="font-size: 1.1rem;">Please check the URL and try again.</p>
-
-        <div class="mt-4">
-            <a class="btn btn-primary" style="font-size: 1.1rem;" href="{{ url_for('directory_tree') }}">Browse all directories and tables</a>
-        </div>
-    </div>
+<div class="mx-auto" style="max-width: 40rem">
+  <div class="alert alert-{{ 'warning' if status == 404 else 'danger' }}" role="alert">
+    <h1 class="h4 alert-heading">{{ status }} {{ title }}</h1>
+    <p class="mb-0">{{ message }}</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('directory_tree') }}"><svg class="ico me-1"><use href="#i-table"/></svg>Browse the tables</a>
+  <a class="btn btn-outline-secondary" href="{{ url_for('test_request') }}">Make a request</a>
 </div>
 {% endblock %}

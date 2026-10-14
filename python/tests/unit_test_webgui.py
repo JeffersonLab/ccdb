@@ -37,7 +37,7 @@ class WebGuiAppTest(unittest.TestCase):
 
     def test_connection_string_argument(self):
         app = self.make_app(self.connection_string)
-        self.assertEqual(app.test_client().get("/hello").status_code, 200)
+        self.assertEqual(app.test_client().get("/doc").status_code, 200)
         self.assertEqual(app.test_client().get("/vars").status_code, 200)
 
     def test_environment_order(self):
@@ -50,7 +50,7 @@ class WebGuiAppTest(unittest.TestCase):
     def test_no_connection_fails_at_first_request_with_the_message(self):
         app = self.make_app()  # nothing in the environment
         with self.assertLogs("ccdb.webgui", level="ERROR") as logs:  # app.logger is named after the import name
-            response = app.test_client().get("/hello")
+            response = app.test_client().get("/doc")
         self.assertEqual(response.status_code, 500)
         self.assertIn(NO_CONNECTION_MESSAGE, "\n".join(logs.output))
 
@@ -62,7 +62,7 @@ class WebGuiAppTest(unittest.TestCase):
     def test_one_engine_for_all_requests(self):
         app = self.make_app(self.connection_string)
         client = app.test_client()
-        client.get("/hello")
+        client.get("/doc")
         engine = get_database(app).engine
         self.assertIsNotNone(engine)
         client.get("/vars")
@@ -79,9 +79,9 @@ class WebGuiAppTest(unittest.TestCase):
         event.listen(Engine, "before_cursor_execute", count)
         try:
             client = app.test_client()
-            client.get("/hello")
+            client.get("/doc")
             first = len(counted)
-            client.get("/hello")
+            client.get("/doc")
             self.assertEqual(first, 1, "the first request runs the schema check and nothing else")
             self.assertEqual(len(counted), 1, "a view that needs no data runs no query")
         finally:

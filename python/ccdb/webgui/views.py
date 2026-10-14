@@ -12,42 +12,10 @@ from ccdb.errors import ObjectIsNotFoundInDbError
 from ccdb.model import User, TypeTable, Directory
 import json
 
-from flask import g, render_template, url_for, request, redirect
-from markupsafe import Markup
+from flask import g, render_template, url_for, request, redirect, make_response
+from sqlalchemy import select
 
 from ccdb.webgui import assignments, queries
-
-
-def dir_to_ul(directory, level=0):
-    """The directory tree as nested <ul> markup, for directory_tree.html.
-
-    Names and paths come from the database and go through Markup.format(), which escapes them:
-    a table called `<script>` must show as text, not run or swallow the rest of the page.
-
-    :type directory: ccdb.model.Directory
-    :rtype: markupsafe.Markup
-    """
-    if not len(directory.sub_dirs) and not len(directory.type_tables):
-        return Markup("<ul></ul>")
-
-    result = Markup("<ul>\n")
-    for sub_dir in directory.sub_dirs:
-        assert isinstance(sub_dir, Directory)
-        result += Markup('<li data="{path}" class="directory"><i class="indicator bi bi-folder"></i>'
-                         '<span class="clickable">{name}</span><button onclick="showInfo(this.dataset.url)" data-url="{url}">&#128712;</button>'
-                         ).format(path=sub_dir.path, name=sub_dir.name, url=url_for('get_dir_info', dir_id=sub_dir.id))
-        result += dir_to_ul(sub_dir, level + 1)
-        result += Markup("</li>\n")
-
-    for table in directory.type_tables:
-        assert isinstance(table, TypeTable)
-        result += Markup('<li data="{path}"><i class="indicator bi bi-table"></i><a class="clickable" href="{url}">{name}</a> '
-                         '<button onclick="showInfo(this.dataset.url)" data-url="{info_url}">&#128712;</button></li>\n'
-                         ).format(path=table.path, url=url_for('versions', table_path=table.path.lstrip('/')), name=table.name,
-                                  info_url=url_for('get_table_info', table_id=table.id))
-
-    result += Markup("</ul>\n")
-    return result
 
 
 def author_name(db, author_id):
@@ -62,27 +30,59 @@ def page_url(page_number):
     return url_for(request.endpoint, **args)
 
 
+def sort_url(column, current_sort, current_order):
+    """URL that sorts by `column`; clicking the active column flips the order. Back to page 1."""
+    order = "asc" if (column == current_sort and current_order == "desc") else "desc"
+    if column != current_sort and column in ("variation", "author", "name", "action"):
+        order = "asc"  # text columns read better ascending on the first click
+    args = {**request.view_args, **request.args.to_dict(), "sort": column, "order": order}
+    args.pop("page", None)
+    return url_for(request.endpoint, **args)
+
+
+def page_window(page, width=2):
+    """Page numbers to show around the current one; None marks a gap. Example: [1, None, 4, 5, 6, None, 72]."""
+    numbers = sorted({1, page.pages} | {n for n in range(page.page - width, page.page + width + 1) if 1 <= n <= page.pages})
+    with_gaps = []
+    for number in numbers:
+        if with_gaps and number - with_gaps[-1] > 1:
+            with_gaps.append(None)
+        with_gaps.append(number)
+    return with_gaps
+
+
+def wants_fragment():
+    """True when the page script asks for the table alone (X-Fragment) or an HTMX client would (HX-Request)."""
+    return request.headers.get("X-Fragment") == "1" or request.headers.get("HX-Request") == "true"
+
+
+def table_page(page_template, fragment_template, **context):
+    """The full page, or only the table fragment for a live-search request. Vary tells caches the two differ."""
+    template = fragment_template if wants_fragment() else page_template
+    response = make_response(render_template(template, **context))
+    response.headers["Vary"] = "X-Fragment, HX-Request"
+    return response
+
+
 def register(app):
     """Adds every page view to the app with its original endpoint name."""
-    app.jinja_env.globals["page_url"] = page_url
-
-    @app.route("/hello")
-    def hello():
-        return "Hello, World!"
-
-    @app.route('/dirs')
-    def directories():
-        db: ccdb.AlchemyProvider = g.db
-        db.get_root_directory()
-        return render_template("direcotires.html", dirs_by_path=db.dirs_by_path)
+    app.jinja_env.globals.update(page_url=page_url, sort_url=sort_url, page_window=page_window,
+                                 page_sizes=queries.PAGE_SIZES, INFINITE_RUN=queries.INFINITE_RUN)
 
     @app.route('/')
     @app.route('/tree')
     def directory_tree():
         db: ccdb.AlchemyProvider = g.db
-        root_dir = db.get_root_directory()
-        html_tree = dir_to_ul(root_dir, level=0)
-        return render_template("directory_tree.html", html_tree=html_tree, dirs_by_path=db.dirs_by_path)
+        root_dir = db.get_root_directory()  # loads every directory in one query and builds the paths
+        # One query for every table. Reading directory.type_tables per directory would lazy-load 65 times
+        # on hallddb (F30). The tables get parent_dir from the cache so table.path is complete.
+        tables_of = {}
+        for table in db.session.execute(select(TypeTable).order_by(TypeTable.name)).scalars():
+            table.parent_dir = db.dirs_by_id.get(table.parent_dir_id, root_dir)
+            tables_of.setdefault(table.parent_dir_id, []).append(table)
+        directory_count = len(db.dirs_by_id)
+        table_count = sum(len(tables) for tables in tables_of.values())
+        return render_template("tree.html", root=root_dir, tables_of=tables_of, directory_count=directory_count, table_count=table_count)
 
     @app.route('/get-dir-info/<int:dir_id>')
     def get_dir_info(dir_id):
@@ -107,7 +107,7 @@ def register(app):
         db: ccdb.AlchemyProvider = g.db
         query = queries.parse_page_query(request.args, queries.VARIATION_SORTS, default_sort="id", default_order="asc")
         page = queries.list_variations(db.session, query)
-        return render_template("variations.html", page=page)
+        return table_page("variations.html", "_variations_table.html", page=page, query=query, chains=queries.variation_chains(db.session))
 
     @app.route('/logs')
     def log_records():
@@ -116,7 +116,7 @@ def register(app):
         # production logs table — ORDER BY created costs 0.4 s over 820 000 rows on hallddb.
         query = queries.parse_page_query(request.args, queries.LOG_SORTS, default_sort="id")
         page = queries.list_logs(db.session, query)
-        return render_template("logs.html", page=page)
+        return table_page("logs.html", "_logs_table.html", page=page, query=query)
 
     @app.route('/doc')
     def documentation():
@@ -127,13 +127,13 @@ def register(app):
         db: ccdb.AlchemyProvider = g.db
         table = db.get_type_table("/" + table_path)  # unknown path → ObjectIsNotFoundInDbError → 404 page
         query = queries.parse_page_query(request.args, queries.ASSIGNMENT_SORTS, default_sort="created")
-        page = queries.list_assignments(
-            db.session, table, query,
-            variation=request.args.get("variation") or None,
-            run=queries.integer_arg(request.args, "run", minimum=0),
-            run_min=queries.integer_arg(request.args, "run_min", minimum=0),
-            run_max=queries.integer_arg(request.args, "run_max", minimum=0))
-        return render_template("versions.html", page=page, table=table, table_path=table_path)
+        filters = dict(variation=request.args.get("variation") or None,
+                       run=queries.integer_arg(request.args, "run", minimum=0),
+                       run_min=queries.integer_arg(request.args, "run_min", minimum=0),
+                       run_max=queries.integer_arg(request.args, "run_max", minimum=0))
+        page = queries.list_assignments(db.session, table, query, **filters)
+        return table_page("versions.html", "_versions_table.html", page=page, query=query, table=table, filters=filters,
+                          variation_names=queries.table_variation_names(db.session, table))
 
     @app.route('/test_request')
     def test_request():
@@ -141,8 +141,7 @@ def register(app):
         db.get_root_directory()  # Loads directories
         tables = db.search_type_tables("*")
         variations = db.get_variations()
-        return render_template("test_request.html", variations=variations, tables=tables,
-                               table_paths=[table.path for table in tables])
+        return render_template("request.html", variations=variations, table_paths=sorted(table.path for table in tables))
 
     # ---------------------------------------------------------------- assignments: page, JSON, text
 
@@ -155,9 +154,13 @@ def register(app):
     @app.route('/assignments/<int:assignment_id>')
     def show_request(assignment_id=None):
         db: ccdb.AlchemyProvider = g.db
+        if assignment_id is None and not request.args.get('request') and request.args.get('path'):
+            # The request form sends the parts; compose the request string and redirect to its canonical URL,
+            # so the address bar shows the request string that scripts and the CLI understand.
+            return redirect(url_for('show_request', request=assignments.compose_request(request.args)))
         resolved = assignments.resolve_assignment(db, request.args.get('request', ''), assignment_id)
         assignment = resolved.assignment
-        return render_template("show_request.html",
+        return render_template("assignment.html",
                                assignment=assignment,
                                variation=assignment.variation.name,
                                created=str(assignment.created),

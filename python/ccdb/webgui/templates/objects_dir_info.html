@@ -1,9 +1,9 @@
 <div class="modal-header">
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    <h5 class="modal-title w-100 text-center" id="directoryInfoModalLabel">Directory name: {{ directory.name }}</h5>
- </div>
-  <div class="modal-body">
-    <table class="table">
+  <h5 class="modal-title"><svg class="ico me-1"><use href="#i-folder"/></svg>{{ directory.name }}</h5>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <table class="table table-sm mb-0">
       <tbody>
         <tr>
           <th scope="row">DB ID</th>

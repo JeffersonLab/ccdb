@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Request · CCDB{% endblock %}
+
+{% block page_header %}
+<h1 class="h3 mb-1">Request</h1>
+<p class="text-body-secondary small mb-3">Find the constants a program would get for a table, run, variation and date. The server builds the request string <code>/path/table:run:variation:date</code>; no script needed.</p>
+{% endblock %}
+
+{% block content %}
+<form method="get" action="{{ url_for('show_request') }}" class="row g-3" style="max-width: 44rem">
+  <div class="col-12">
+    <label for="path" class="form-label">Table</label>
+    <input id="path" name="path" class="form-control cell-mono" list="table-paths" required placeholder="/directory/table" autocomplete="off" spellcheck="false" value="{{ request.args.get('path', '') }}">
+    <datalist id="table-paths">
+      {% for table_path in table_paths %}<option value="{{ table_path }}"></option>{% endfor %}
+    </datalist>
+    <div class="form-text">Start typing to pick from {{ table_paths | length }} tables.</div>
+  </div>
+  <div class="col-sm-6">
+    <label for="variation" class="form-label">Variation</label>
+    <select id="variation" name="variation" class="form-select">
+      {% for variation in variations %}<option value="{{ variation.name }}" {{ 'selected' if variation.name == 'default' }}>{{ variation.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-sm-6">
+    <label for="run" class="form-label">Run number</label>
+    <input id="run" name="run" type="number" min="0" class="form-control" value="0" required>
+  </div>
+  <div class="col-12">
+    <label for="time" class="form-label">Date <span class="text-body-secondary fw-normal">(optional)</span></label>
+    <input id="time" name="time" class="form-control cell-mono" placeholder="YYYY-MM-DD or YYYY-MM-DD_hh-mm-ss" pattern="\d{4}(-\d{2}(-\d{2}(_\d{2}(-\d{2}(-\d{2})?)?)?)?)?" title="A date, and optionally a time: 2020-01-04 or 2020-01-04_10-03-20; a partial date means its end">
+    <div class="form-text">Shows the constants as they were at that moment: the newest assignment created on or before it.</div>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-primary px-4">Show constants</button>
+  </div>
+</form>
+{% endblock %}

@@ -1,108 +1,33 @@
-{% extends 'dash_base.html' %}
-{% block header %}
-  <h1 class="mt-4 mb-4 text-center">{% block title %}Versions{% endblock %}</h1>
+{% extends 'base.html' %}
+{% block title %}{{ table.path }} · CCDB{% endblock %}
+
+{% block page_header %}
+<div class="mb-3">
+  <h1 class="h3 mb-1"><svg class="ico me-1"><use href="#i-table"/></svg>{{ table.path }}</h1>
+  <p class="text-body-secondary small mb-0">
+    {{ table.rows_count }} rows × {{ table.columns | length }} columns:
+    {% for column in table.columns %}<span class="cell-mono">{{ column.name }}</span>{{ ', ' if not loop.last }}{% endfor %}{% if table.comment %} — {{ table.comment }}{% endif %}
+  </p>
+</div>
 {% endblock %}
 
 {% block content %}
-  <div class="container mt-5">
-    <div class="card">
-        <div class="card-body">
-            <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" />
-            {% if page.total %}
-                <table id="versionsTable" class="table table-striped table-bordered" style="width:100%">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">Run Min</th>
-                            <th scope="col">Run Max</th>
-                            <th scope="col">Created</th>
-                            <th scope="col">Variation</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for assignment in page.items %}
-                            <tr>
-                                <td>{{ assignment.run_min }}</td>
-                                <td>{{ assignment.run_max }}</td>
-                                <td>{{ assignment.created }}</td>
-                                <td>{{ assignment.variation }}</td>
-                                <td><a href="{{ url_for('show_request', request=assignment.request) }}" class="btn btn-primary btn-sm">View</a></td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="5" class="text-center">No assignments found.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <p class="text-muted" data-total="{{ page.total }}" data-pages="{{ page.pages }}">
-                    Rows {{ page.first_row }}–{{ page.last_row }} of {{ page.total }}{% if page.pages > 1 %}, page {{ page.page }} of {{ page.pages }}{% endif %}
-                    {% if page.has_prev %}<a href="{{ page_url(page.page - 1) }}">‹ previous</a>{% endif %}
-                    {% if page.has_next %}<a href="{{ page_url(page.page + 1) }}">next ›</a>{% endif %}
-                </p>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
-
-<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
-
-<script>
-  $(document).ready(function() {
-    var table = $('#versionsTable').DataTable({
-      "pagingType": "full_numbers",
-      "order": [],
-      "paging": false,
-      "dom": "<'row'<'col-sm-12 col-md-4'l><'col-sm-12 col-md-4'<\"min-max-wrapper\">><'col-sm-12 col-md-4'f>>" +
-              "<'row'<'col-sm-12'tr>>" +
-              "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-      "language": {
-          "paginate": {
-              "first": "«",
-              "previous": "‹",
-              "next": "›",
-              "last": "»"
-          }
-      },
-        "columnDefs": [
-          {
-            "targets": 1,
-            "render": function(data, type, row) {
-              return type === 'display' && data >= 2147483647 ? '&#x221E;' : data;
-            }
-          }
-        ]
-    });
-
-    $("div.min-max-wrapper").html('<div class="input-group mb-3">' +
-        '<input type="text" id="minRun" class="form-control" placeholder="Min Run">' +
-        '<input type="text" id="maxRun" class="form-control" placeholder="Max Run">' +
-        '</div>');
-
-    $.fn.dataTable.ext.search.push(
-      function(settings, data, dataIndex) {
-        var min = parseInt($('#minRun').val(), 10);
-        var max = parseInt($('#maxRun').val(), 10);
-        var runMin = parseFloat(data[0]) || 0;
-        var runMax = parseFloat(data[1]) || 0;
-
-        if ((isNaN(min) && isNaN(max)) ||
-            (isNaN(min) && runMax <= max) ||
-            (min <= runMin && isNaN(max)) ||
-            (min <= runMin && runMax <= max)) {
-          return true;
-        }
-        return false;
-      }
-    );
-
-    $('#minRun, #maxRun').keyup(function() {
-      table.draw();
-    });
-});
-
-</script>
+{#- A plain GET form: without JavaScript the Apply button reloads the page; table.js turns it into live search. -#}
+<form class="toolbar mb-3" method="get" data-live-table="#table-fragment" role="search">
+  <input class="form-control" style="max-width: 16rem" type="search" name="search" value="{{ query.search }}" placeholder="Search comment or author" aria-label="Search">
+  <select class="form-select" style="max-width: 12rem" name="variation" aria-label="Variation">
+    <option value="">All variations</option>
+    {% for name in variation_names %}<option value="{{ name }}" {{ 'selected' if name == filters.variation }}>{{ name }}</option>{% endfor %}
+  </select>
+  <input class="form-control" style="max-width: 9rem" type="number" min="0" name="run" value="{{ filters.run if filters.run is not none }}" placeholder="Run" aria-label="Run number" title="Show the assignments whose run range contains this run">
+  <select class="form-select" style="max-width: 8rem" name="per_page" aria-label="Rows per page">
+    {% for size in page_sizes %}<option value="{{ size }}" {{ 'selected' if size == query.per_page }}>{{ size }} rows</option>{% endfor %}
+  </select>
+  <input type="hidden" name="sort" value="{{ query.sort }}">
+  <input type="hidden" name="order" value="{{ query.order }}">
+  <button class="btn btn-outline-secondary" type="submit">Apply</button>
+</form>
+{% include '_versions_table.html' %}
 {% endblock %}
+
+{% block page_scripts %}<script type="module" src="{{ url_for('static', filename='js/table.js') }}"></script>{% endblock %}
