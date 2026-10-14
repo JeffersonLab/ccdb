@@ -26,8 +26,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      # The web extra (Flask) is needed by the web GUI unit tests
       - name: Install ccdb
-        run: pip install .
+        run: pip install ".[web]"
 
       - name: Install MySQL client
         run: |
@@ -56,6 +57,14 @@ jobs:
           tests.unit_test_path_utils
           tests.unit_test_utility_argument_parse
           tests.unit_test_version
+          tests.unit_test_provider_attach
+          tests.unit_test_provider_lookups
+          tests.unit_test_webgui
+          tests.unit_test_webgui_assignments
+          tests.unit_test_webgui_escaping
+          tests.unit_test_webgui_fragments
+          tests.unit_test_webgui_prefix
+          tests.unit_test_webgui_queries
           tests.integ_test_provider_sqlite
           tests.integ_test_cli_manager
           tests.integ_test_provider_mysql

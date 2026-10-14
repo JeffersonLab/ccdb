@@ -1,0 +1,57 @@
+name: Web GUI browser check
+
+# Opens every page of the web GUI in Chromium and Firefox, light and dark, desktop and phone,
+# with scripts/webgui/browse.py: zero console errors, zero failed requests, no horizontal
+# overflow, and a screenshot per visit as an artifact. Firefox is the default browser on lab
+# Linux desktops, so it is part of the gate. Runs when the web GUI or the scripts change.
+
+on:
+  push:
+    paths:
+      - "python/ccdb/webgui/**"
+      - "python/ccdbweb.py"
+      - "scripts/webgui/**"
+      - ".github/workflows/webgui-browser.yml"
+  pull_request:
+    branches: [v2-main]
+    paths:
+      - "python/ccdb/webgui/**"
+      - "python/ccdbweb.py"
+      - "scripts/webgui/**"
+      - ".github/workflows/webgui-browser.yml"
+  workflow_dispatch:
+
+jobs:
+  browser-check:
+    runs-on: ubuntu-latest
+    env:
+      CCDB_SPACE: ${{ github.workspace }}/space-ci
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install ccdb with the web extra and Playwright
+        run: pip install ".[web]" playwright==1.63.0
+
+      - name: Install the browsers
+        run: playwright install --with-deps chromium firefox
+
+      - name: Build the fixture database
+        run: python scripts/webgui/make_fixture.py
+
+      - name: Browser check in Chromium and Firefox
+        run: python scripts/webgui/browse.py --browser all --label ci --check
+
+      - name: Upload the screenshots and the report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: webgui-screenshots
+          path: |
+            space-ci/plots/
+            space-ci/reports/

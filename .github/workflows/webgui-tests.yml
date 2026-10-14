@@ -1,0 +1,50 @@
+name: Web GUI checks
+
+# The web GUI gate from scripts/webgui/: the deterministic fixture database, the smoke suite
+# (status per URL, no server errors), the golden comparison (page contents against SQL on the
+# fixture) and the vendored-asset manifest. Unit tests run in the Python tests workflow.
+
+on:
+  push:
+  pull_request:
+    branches: [v2-main]
+
+jobs:
+  webgui-checks:
+    runs-on: ubuntu-latest
+    env:
+      CCDB_SPACE: ${{ github.workspace }}/space-ci
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install ccdb with the web extra
+        run: pip install ".[web]"
+
+      - name: Vendored browser libraries match their sha256 manifest
+        run: python -m ccdb.webgui.vendor
+
+      # Built on every run, never checked in: the hash depends on the SQLite library version,
+      # so determinism is checked by building twice (--verify), not against a stored hash.
+      - name: Build the fixture database
+        run: python scripts/webgui/make_fixture.py --verify
+
+      - name: Smoke suite
+        run: python scripts/webgui/smoke.py --label ci --check
+
+      - name: Golden comparison
+        run: |
+          python scripts/webgui/golden.py compute
+          python scripts/webgui/golden.py compare --label ci
+
+      - name: Upload the reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: webgui-reports
+          path: space-ci/reports/

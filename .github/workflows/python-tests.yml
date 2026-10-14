@@ -21,8 +21,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      # The web extra (Flask) is needed by the web GUI unit tests
       - name: Install ccdb
-        run: pip install .
+        run: pip install ".[web]"
 
       - name: Run unit tests
         working-directory: python
@@ -35,6 +36,14 @@ jobs:
           tests.unit_test_path_utils
           tests.unit_test_utility_argument_parse
           tests.unit_test_version
+          tests.unit_test_provider_attach
+          tests.unit_test_provider_lookups
+          tests.unit_test_webgui
+          tests.unit_test_webgui_assignments
+          tests.unit_test_webgui_escaping
+          tests.unit_test_webgui_fragments
+          tests.unit_test_webgui_prefix
+          tests.unit_test_webgui_queries
 
       # SQLite integration tests create their own database
       # (via ccdb.testing.recreate_test_sqlite_db) - no fixture files needed
