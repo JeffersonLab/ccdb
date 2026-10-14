@@ -24,6 +24,8 @@ on:
 jobs:
   browser-check:
     runs-on: ubuntu-latest
+    # 160 visits with a 120 s navigation timeout each: a hung server must not hold the runner for hours
+    timeout-minutes: 30
     env:
       CCDB_SPACE: ${{ github.workspace }}/space-ci
 

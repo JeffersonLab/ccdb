@@ -6,7 +6,7 @@ tmp/
 test.sqlite
 
 # agent workspaces: notes, reports, fixture and screenshots of a program run (see web-agents-common.md)
-space-*/
+/space-*/
 
 # SCONS
 .sconsign.dblite

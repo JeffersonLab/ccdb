@@ -12,6 +12,7 @@ on:
 jobs:
   webgui-checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     env:
       CCDB_SPACE: ${{ github.workspace }}/space-ci
 
