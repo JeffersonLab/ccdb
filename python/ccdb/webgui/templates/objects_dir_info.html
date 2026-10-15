@@ -17,9 +17,17 @@
           <th scope="row">Created</th>
           <td>{{ directory.created.strftime('%Y-%m-%d %H:%M:%S') }}</td>
         </tr>
+                <tr>
+          <th scope="row">Tables</th>
+          <td>{{ table_count }}</td>
+        </tr>
         <tr>
-          <th scope="row">Modified</th>
-          <td>{{ directory.modified.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <th scope="row">Assignments</th>
+          <td>{{ activity.assignments }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Last assignment</th>
+          <td>{% if activity.assignments %}{{ activity.last_created.strftime('%Y-%m-%d %H:%M:%S') }} by {{ activity.last_author }}{% else %}none{% endif %}</td>
         </tr>
         <tr>
           <th scope="row">Author</th>

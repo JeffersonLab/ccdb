@@ -6,6 +6,7 @@ The result is CCDB schema v5 with the standard test content (ccdb.sql.sqlite_sch
 cases the web GUI checks need:
 
 - /calib/fcal/gains: 3600 assignments over 6 variations and run ranges that end at 2147483647
+- /calib/ccal/parms: one row, six columns, one assignment (the vertical data layout)
 - /deep/l1/l2/l3/l4/l5/l6/bottom: a table seven directory levels down
 - /bulk/dNN/tNNN: 1000 tables so the tree page can be sized up
 - /hostile: names and comments with <script>, quotes, &, newlines and non-ASCII text
@@ -178,6 +179,13 @@ def build(session):
     for i in range(2400):
         author = authors[i % 3]
         b.add_log(author, actions[i % 3], f"assignments{i + 10}", f"Created assignment '/calib/fcal/gains:{i}:default'", HOSTILE_COMMENT if i % 400 == 0 else f"log comment {i}")
+
+    # A key-value style table, one row and six columns, as many CCDB parameter tables are: the data view
+    # shows it vertically. Added after the logs so the timestamps of everything above stay as they were.
+    ccal = b.add_directory("ccal", calib_dir, "Compton calorimeter")
+    parms = b.add_table("parms", ccal, [("threshold", "double"), ("n_crystals", "int"), ("scale", "double"), ("offset", "double"), ("use_fit", "bool"), ("label", "string")],
+                        rows_count=1, comment="Key-value parameters: one row, six columns")
+    b.add_assignment(parms, run_ranges[0], variations["default"], [["0.195", "144", "2.17828", "1.08421", "1", "pass1"]], "initial parameters")
     session.commit()
 
 

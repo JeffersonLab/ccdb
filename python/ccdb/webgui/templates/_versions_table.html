@@ -9,7 +9,7 @@
     {% include '_pagination.html' %}
   </div>
   <div class="table-responsive">
-    <table class="table table-sm table-hover table-sticky align-middle mb-2">
+    <table class="table table-sm table-hover table-sticky align-middle mb-2" id="versions-table">
       <thead>
         <tr>
           {% for key, label in [('run_min', 'Run min'), ('run_max', 'Run max'), ('created', 'Created'), ('variation', 'Variation'), ('author', 'Author')] %}

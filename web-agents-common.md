@@ -92,6 +92,7 @@ starts only after the user has read the previous report and answered its BLOCKIN
 - **Never write to a database other than the fixture DB.** If `CCDB_CONNECTION` points to a real server, use it read-only through the web GUI and the smoke suite. Never run a `ccdb` CLI command that modifies data against it, and never point a test runner at it.
 - Use **uv** for Python (`uv run --project {repo} python …`) and add packages with uv; plain argparse, no typer. If you need system packages (browsers for Playwright, fonts, …), install them and record what must be installed for future runs in `{space}/notes/ENVIRONMENT.md`. Do not change the host beyond that.
 - Check the core count (`nproc`) and use it for parallel jobs, keeping ~2 cores headroom. Timing measurements run with nothing else beside them.
+- Tool calls issued together run in one shell and race its working directory: use absolute paths in every command, redirects included, and `cd` only inside a subshell `( cd … && … )`.
 
 ### How you work
 

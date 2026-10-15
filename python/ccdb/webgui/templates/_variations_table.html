@@ -16,6 +16,7 @@
           <th scope="col">Comment</th>
           <th scope="col" title="Where a request falls back when this variation has no assignment">Inherits from</th>
           <th scope="col">Author</th>
+          <th scope="col"><span class="visually-hidden">Compare</span></th>
         </tr>
       </thead>
       <tbody>
@@ -36,6 +37,8 @@
             {%- endif %}
           </td>
           <td>{{ row.author }}</td>
+          {#- The eye opens the comparison with the parent; the root has no parent and no eye. Last column, so the golden reader's cell indexes hold. -#}
+          <td class="text-end">{% if row.parent %}<a class="btn btn-sm btn-outline-secondary py-0" href="{{ url_for('compare_variations', variation=row.name) }}" title="Tables with assignments in {{ row.name }}, compared with {{ row.parent }}" aria-label="Compare {{ row.name }} with {{ row.parent }}"><svg class="ico"><use href="#i-eye"/></svg></a>{% endif %}</td>
         </tr>
         {% endfor %}
       </tbody>

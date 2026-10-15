@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% from '_tree.html' import tree, tree_buttons with context %}
+{% block title %}Compare variations · CCDB{% endblock %}
+
+{#- One badge per variation of the segment that has assignments on the table; the link opens the versions page
+    filtered by that variation (and the run). The golden comparison reads data-variation and data-count. -#}
+{% macro badges(table) -%}
+  {%- for variation_name, count, newest in affected[table.id] %}
+  <a class="badge rounded-pill text-bg-secondary text-decoration-none" href="{{ url_for('versions', table_path=table.path.lstrip('/'), variation=variation_name, run=run) }}" data-variation="{{ variation_name }}" data-count="{{ count }}" title="{{ count }} assignment{{ 's' if count != 1 }} in {{ variation_name }}, newest {{ newest }}">{{ variation_name }} · {{ count }}</a>
+  {%- endfor %}
+{%- endmacro %}
+
+{% block page_header %}
+<h1 class="h3 mb-1">Compare variations</h1>
+<p class="text-body-secondary small mb-3">The tables that take their constants from a variation instead of the variations it inherits from: every table with an assignment between the chosen parent (excluded) and the variation. A run or a time narrows the assignments considered.</p>
+{% endblock %}
+
+{% block content %}
+{#- A plain GET form: every view has a URL. compare.js resubmits it when a select changes. -#}
+<form id="compare-form" class="toolbar mb-3" method="get">
+  <select class="form-select" style="max-width: 16rem" name="variation" aria-label="Variation">
+    <option value="">Variation…</option>
+    {% for each in names %}<option value="{{ each }}" {{ 'selected' if each == name }}>{{ each }}</option>{% endfor %}
+  </select>
+  <label class="text-body-secondary" for="compare-parent">compared with</label>
+  <select class="form-select" style="max-width: 16rem" name="parent" id="compare-parent" aria-label="Parent variation" {{ 'disabled' if not ancestors }}>
+    {% if not ancestors %}<option value="">{{ 'the root has no parent' if name else 'its parent' }}</option>{% endif %}
+    {% for each in ancestors %}<option value="{{ each }}" {{ 'selected' if each == parent }}>{{ each }}{{ ' (parent)' if loop.last }}</option>{% endfor %}
+  </select>
+  <input class="form-control" style="max-width: 8rem" type="number" min="0" name="run" value="{{ run if run is not none }}" placeholder="Run" aria-label="Run number" title="Only assignments whose run range contains this run">
+  <input class="form-control cell-mono" style="max-width: 13rem" name="time" value="{{ time_text }}" placeholder="YYYY-MM-DD[_hh-mm-ss]" pattern="\d{4}(-\d{2}(-\d{2}(_\d{2}(-\d{2}(-\d{2})?)?)?)?)?" aria-label="Time" title="Only assignments created up to this moment: 2020-01-04 or 2020-01-04_10-03-20; a partial date means its end">
+  <button class="btn btn-outline-secondary" type="submit">Compare</button>
+</form>
+
+{% if name and not ancestors %}
+<p class="text-body-secondary"><strong>{{ name }}</strong> is the root variation: every table with assignments takes them from it, and there is no parent to compare with. Pick a variation that inherits from another one.</p>
+{% elif name %}
+<p class="mb-2">
+  {%- for level in chain %}{% if not loop.first %} › {% endif %}{% if level in segment %}<strong>{{ level }}</strong>{% else %}<span class="text-body-secondary">{{ level }}</span>{% endif %}{% endfor %}
+  <span class="text-body-secondary small ms-2">{{ affected | length }} affected table{{ 's' if affected | length != 1 }}{% if run is not none %} · run {{ run }}{% endif %}{% if time_text %} · up to {{ time_text }}{% endif %}</span>
+</p>
+{% if affected %}
+<div class="mb-2">{{ tree_buttons() }}</div>
+{{ tree(root, tables_of, keep_dirs=keep_dirs, annotate=badges, open=True, remember=False) }}
+{% else %}
+<p class="text-body-secondary">No table has an assignment in {{ segment | join(' › ') }}{% if run is not none or time_text %} within these limits{% endif %}.</p>
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block page_scripts %}<script type="module" src="{{ url_for('static', filename='js/tree.js') }}"></script><script type="module" src="{{ url_for('static', filename='js/compare.js') }}"></script>{% endblock %}

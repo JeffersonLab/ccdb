@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pages  # noqa: E402
 import workspace  # noqa: E402
 from smoke import make_app  # noqa: E402  (the pages are requested the way the smoke suite does)
+from ccdb.webgui.views import natural_key  # noqa: E402  (the order the tree is rendered in)
 
 INFINITE_RUN = 2147483647
 
@@ -36,9 +37,22 @@ SHOW_REQUESTS = {  # label in pages.py -> (table path, run, variation)
     "show_big": (pages.BIG_TABLE, 1500, "default"),
     "show_big_mc": (pages.BIG_TABLE, 1500, "mc"),
     "show_hostile": (pages.HOSTILE_TABLE, 0, "default"),
+    "show_kv": (pages.KV_TABLE, 0, "default"),
+}
+SHOW_LAYOUTS = {  # pages that show one of the assignments above in another data layout -> its golden key
+    "show_kv_horizontal": "show_kv",
+    "show_big_vertical": "show_big",
+    "assignment_by_id_vertical": "show_small",
 }
 VERSIONS = {"versions_big": pages.BIG_TABLE, "versions_small": pages.SMALL_TABLE, "versions_deep": pages.DEEP_TABLE,
             "versions_hostile": pages.HOSTILE_TABLE, "versions_unicode": pages.UNICODE_TABLE}
+COMPARES = {  # label in pages.py -> (variation, parent or None for the direct parent, run, time text as the page takes it)
+    "compare_calib_v2": ("calib_v2", None, None, None),
+    "compare_calib_v2_default": ("calib_v2", "default", None, None),
+    "compare_run": ("calib_v2", None, 1500, None),
+    "compare_time": ("calib_v2", "default", None, "2020-01-02"),
+    "compare_subsubtest": ("subsubtest", None, None, None),
+}
 
 
 # ----------------------------------------------------------------------------- compute from SQL
@@ -103,7 +117,8 @@ def compute(space):
     golden["show"] = {}
     for label, (path, run, variation) in SHOW_REQUESTS.items():
         table_id = table_id_by_path[path]
-        columns = [r["name"] for r in db.execute("SELECT name FROM columns WHERE typeId = ? ORDER BY \"order\"", (table_id,))]
+        column_rows = db.execute("SELECT name, columnType FROM columns WHERE typeId = ? ORDER BY \"order\"", (table_id,)).fetchall()
+        columns, types = [r["name"] for r in column_rows], [r["columnType"] for r in column_rows]
         rows_count = db.execute("SELECT nRows FROM typeTables WHERE id = ?", (table_id,)).fetchone()[0]
         match = [r for r in assignments_of(db, table_id) if r["variation"] == variation and r["runMin"] <= run <= r["runMax"]]
         newest = match[0]  # assignments_of is newest first; the CLI picks the newest too
@@ -112,7 +127,7 @@ def compute(space):
         golden["show"][label] = {"path": path, "variation": variation, "created": shown_stamp(newest["created"]), "author": newest["author"],
                                  "run_min": newest["runMin"], "run_max": newest["runMax"], "comment": newest["comment"],
                                  "request": request_string(path, newest["runMin"], variation, parse_stamp(newest["created"])),
-                                 "columns": columns, "data": data, "candidates": len(match)}
+                                 "columns": columns, "types": types, "data": data, "candidates": len(match)}
 
     logs = db.execute("SELECT l.created, l.action, l.description, u.name AS author FROM logs l JOIN users u ON u.id = l.authorId ORDER BY l.id DESC").fetchall()
     golden["logs"] = {"total": len(logs), "newest_first_1000": [{**dict(r), "created": shown_stamp(r["created"])} for r in logs[:1000]]}
@@ -120,10 +135,45 @@ def compute(space):
     variations = db.execute("SELECT v.name, v.created, v.comment, p.name AS parent FROM variations v LEFT JOIN variations p ON p.id = v.parentId ORDER BY v.id").fetchall()
     golden["variations"] = [{**dict(r), "created": shown_stamp(r["created"])} for r in variations]
 
+    # compare variations: the chain segment from SQL on parentId links, then the grouped assignment counts
+    parents = {r["name"]: r["parent"] for r in db.execute("SELECT v.name, p.name AS parent FROM variations v LEFT JOIN variations p ON p.id = v.parentId")}
+    golden["compare"] = {}
+    for label, (variation, parent, run, time_text) in COMPARES.items():
+        chain, level = [], variation
+        while level is not None:
+            chain.insert(0, level)
+            level = parents[level]
+        parent = parent or (chain[-2] if len(chain) > 1 else None)
+        segment = chain[chain.index(parent) + 1:] if parent else []
+        sql = ("SELECT c.constantTypeId AS table_id, v.name AS variation, COUNT(*) AS n FROM assignments a "
+               "JOIN constantSets c ON c.id = a.constantSetId JOIN variations v ON v.id = a.variationId JOIN runRanges r ON r.id = a.runRangeId "
+               f"WHERE v.name IN ({','.join('?' * len(segment))})")
+        params = list(segment)
+        if run is not None:
+            sql += " AND r.runMin <= ? AND r.runMax >= ?"
+            params += [run, run]
+        if time_text:  # a date alone means its end, as in a request string
+            sql += " AND a.created <= ?"
+            params.append(time_text + " 23:59:59")
+        affected = {}
+        for row in db.execute(sql + " GROUP BY c.constantTypeId, v.name", params):
+            affected.setdefault(tables[row["table_id"]], {})[row["variation"]] = row["n"]
+        golden["compare"][label] = {"segment": segment, "tables": affected}
+
     table1 = db.execute("SELECT t.id, t.name, t.comment, u.name AS author FROM typeTables t JOIN users u ON u.id = t.authorId WHERE t.id = 1").fetchone()
     dir1 = db.execute("SELECT d.id, d.name, d.comment, u.name AS author FROM directories d JOIN users u ON u.id = d.authorId WHERE d.id = 1").fetchone()
-    golden["table_info"] = {**dict(table1), "path": tables[1]}
-    golden["dir_info"] = {**dict(dir1), "path": dirs[1]}
+
+    def activity(table_ids):
+        """Assignment count and the newest assignment (date, author) over the tables, as the info boxes show them."""
+        marks = ",".join("?" * len(table_ids))
+        count = db.execute(f"SELECT COUNT(*) FROM assignments a JOIN constantSets c ON c.id = a.constantSetId WHERE c.constantTypeId IN ({marks})", table_ids).fetchone()[0]
+        newest = db.execute(f"""SELECT a.created, u.name FROM assignments a JOIN constantSets c ON c.id = a.constantSetId JOIN users u ON u.id = a.authorId
+                                WHERE c.constantTypeId IN ({marks}) ORDER BY a.created DESC, a.id DESC LIMIT 1""", table_ids).fetchone()
+        return {"assignments": count, "last": f"{shown_stamp(newest['created'])} by {newest['name']}" if newest else "none"}
+
+    tables_under_dir1 = [table_id for table_id, path in tables.items() if path.startswith(dirs[1] + "/")]
+    golden["table_info"] = {**dict(table1), "path": tables[1], **activity([1])}
+    golden["dir_info"] = {**dict(dir1), "path": dirs[1], "tables": len(tables_under_dir1), **activity(tables_under_dir1)}
     golden_path(space).write_text(json.dumps(golden, indent=1, ensure_ascii=False))
     print(f"{golden_path(space)}: {len(dirs)} directories, {len(tables)} tables, logs {golden['logs']['total']}, "
           f"versions rows {[v['count'] for v in golden['versions'].values()]}")
@@ -132,27 +182,36 @@ def compute(space):
 # ----------------------------------------------------------------------------- page readers
 
 class TableReader(HTMLParser):
-    """Collects every <table> as a list of rows; each row is the list of its cell texts (th and td)."""
+    """Collects every <table> as a list of rows; each row is the list of its cell texts (th and td).
+
+    `cell_attrs` mirrors `tables` with the attributes of every cell (the data table marks its columns with
+    data-column and data-type), and `table_attrs` holds each table's own attributes (data-layout).
+    """
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.tables, self.row, self.cell, self.attrs = [], None, None, []
+        self.tables, self.cell_attrs, self.table_attrs = [], [], []
+        self.row, self.row_attrs, self.cell, self.current_attrs = None, None, None, None
 
     def handle_starttag(self, tag, attrs):
-        self.attrs.append(dict(attrs))
+        attrs = dict(attrs)
         if tag == "table":
             self.tables.append([])
+            self.cell_attrs.append([])
+            self.table_attrs.append(attrs)
         elif tag == "tr" and self.tables:
-            self.row = []
+            self.row, self.row_attrs = [], []
         elif tag in ("td", "th") and self.row is not None:
-            self.cell = []
+            self.cell, self.current_attrs = [], attrs
 
     def handle_endtag(self, tag):
         if tag in ("td", "th") and self.cell is not None:
             self.row.append(" ".join("".join(self.cell).split()))
+            self.row_attrs.append(self.current_attrs)
             self.cell = None
         elif tag == "tr" and self.row is not None:
             self.tables[-1].append(self.row)
+            self.cell_attrs[-1].append(self.row_attrs)
             self.row = None
 
     def handle_data(self, data):
@@ -161,16 +220,19 @@ class TableReader(HTMLParser):
 
 
 class TreeReader(HTMLParser):
-    """The tree marks every node with <li data-path="/path" data-kind="dir|table">."""
+    """The tree marks every node with <li data-path="/path" data-kind="dir|table">; on the compare page a table
+    node holds badges <a data-variation=".." data-count="..">, collected per table path."""
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.paths = []
+        self.paths, self.badges = [], {}
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == "li" and "data-path" in attrs:
             self.paths.append((attrs["data-path"], attrs.get("data-kind") == "dir"))
+        elif tag == "a" and "data-variation" in attrs and self.paths:
+            self.badges.setdefault(self.paths[-1][0], {})[attrs["data-variation"]] = int(attrs["data-count"])
 
 
 class PageInfoReader(HTMLParser):
@@ -186,8 +248,17 @@ class PageInfoReader(HTMLParser):
             self.total, self.pages = int(attrs["data-total"]), int(attrs["data-pages"])
 
 
+def main_table(reader):
+    """The table a paginated page is about: the one marked id="versions-table" when present (the versions page also
+    carries the info block's table, which comes first in the document), otherwise the first table."""
+    for table, attrs in zip(reader.tables, reader.table_attrs):
+        if attrs.get("id") == "versions-table":
+            return table
+    return reader.tables[0]
+
+
 def walk_pages(get, url, max_rows=None):
-    """Rows of the first table of every page of a paginated route (per_page=200), the first status, and the shown total."""
+    """Rows of the main table of every page of a paginated route (per_page=200), the first status, and the shown total."""
     rows, page_number, status = [], 1, None
     separator = "&" if "?" in url else "?"
     while True:
@@ -195,17 +266,34 @@ def walk_pages(get, url, max_rows=None):
         status = page_status if status is None else status
         info = PageInfoReader()
         info.feed(html)
-        tables = read_tables(html)
-        rows += data_rows(tables[0]) if tables else []
+        page = read_page(html)
+        rows += data_rows(main_table(page)) if page.tables else []
         if info.pages is None or page_number >= info.pages or (max_rows and len(rows) >= max_rows):
             return status, rows, info.total
         page_number += 1
 
 
 def read_tables(html):
+    return read_page(html).tables
+
+
+def read_page(html):
     reader = TableReader()
     reader.feed(html)
-    return reader.tables
+    return reader
+
+
+def shown_data_table(reader, index=1):
+    """Columns, types and rows of the assignment data table, whichever layout the page rendered it in."""
+    rows, attrs, layout = reader.tables[index], reader.cell_attrs[index], reader.table_attrs[index].get("data-layout")
+    if layout == "vertical":  # one line per column: name, type, then the value of row 0, 1, ...; transpose it back
+        body = rows[1:]
+        values_per_column = [line[2:] for line in body]
+        return [line[0] for line in body], [line[1] for line in body], [list(row) for row in zip(*values_per_column)]
+    header = attrs[0]
+    columns = [cell["data-column"] for cell in header if "data-column" in cell]
+    types = [cell["data-type"] for cell in header if "data-type" in cell]
+    return columns, types, [row[1:] for row in rows[1:]]  # the first cell of a body row is the row index
 
 
 def data_rows(table):
@@ -241,6 +329,14 @@ def compare(space, phase, label, db_url):
     shown_tables = sorted(p for p, is_dir in reader.paths if not is_dir)
     check(results, "tree.directories", golden["tree"]["directories"], shown_dirs, sample=f"{len(golden['tree']['directories'])} expected, {len(shown_dirs)} shown; missing {sorted(set(golden['tree']['directories']) - set(shown_dirs))[:5]}")
     check(results, "tree.tables", golden["tree"]["tables"], shown_tables, sample=f"{len(golden['tree']['tables'])} expected, {len(shown_tables)} shown; missing {sorted(set(golden['tree']['tables']) - set(shown_tables))[:5]}")
+    # tree order: under every parent, directories before tables and each kind in natural name order — the order the
+    # page is rendered in (views.by_name) and the one tree.js restores with Sort A…Z
+    siblings = {}
+    for path, is_dir in reader.paths:  # document order
+        parent, _, name = path.rpartition("/")
+        siblings.setdefault(parent, []).append((0 if is_dir else 1, natural_key(name)))
+    unsorted = sorted(parent or "/" for parent, keys in siblings.items() if keys != sorted(keys))
+    check(results, "tree.order", [], unsorted[:5])
 
     # versions: row set, count and newest-first order
     for label_, expected in golden["versions"].items():
@@ -256,10 +352,12 @@ def compare(space, phase, label, db_url):
         check(results, f"{label_}.rows", sorted(map(key, wanted)), sorted(map(key, shown)), sample=f"first expected {wanted[:1]}, first shown {shown[:1]}")
         check(results, f"{label_}.newest_first", [w["created"] for w in wanted[:3]], [s["created"] for s in shown[:3]])
 
-    # show_request: metadata and data
-    for label_, expected in golden["show"].items():
+    # show_request: metadata and data, in every layout the page offers
+    for label_, golden_key in [(key, key) for key in golden["show"]] + list(SHOW_LAYOUTS.items()):
+        expected = golden["show"][golden_key]
         status, html = get(label_)
-        tables = read_tables(html)
+        page = read_page(html)
+        tables = page.tables
         meta = {row[0]: row[1] for row in (tables[0] if tables else []) if len(row) == 2}
         check(results, f"{label_}.status", 200, status)
         check(results, f"{label_}.variation", expected["variation"], meta.get("Variation"))
@@ -268,9 +366,10 @@ def compare(space, phase, label, db_url):
         run_max = "inf." if expected["run_max"] == INFINITE_RUN else str(expected["run_max"])
         check(results, f"{label_}.run_range", f"{expected['run_min']} - {run_max}", meta.get("Run Range"))
         check(results, f"{label_}.request", expected["request"], meta.get("Exact ID"))
-        data_table = tables[1] if len(tables) > 1 else []
-        check(results, f"{label_}.columns", expected["columns"], data_table[0] if data_table else None)
-        check(results, f"{label_}.data", expected["data"], data_rows(data_table))
+        columns, types, data = shown_data_table(page) if len(tables) > 1 else (None, None, None)
+        check(results, f"{label_}.columns", expected["columns"], columns)
+        check(results, f"{label_}.types", expected["types"], types)
+        check(results, f"{label_}.data", expected["data"], data)
 
     # assignment JSON through both addressing forms, against the same golden values as the page
     for label_, expected in golden["show"].items():
@@ -301,6 +400,19 @@ def compare(space, phase, label, db_url):
     check(results, "variations.names", [v["name"] for v in golden["variations"]], [r[0] for r in rows])
     check(results, "variations.comments", [" ".join((v["comment"] or "").split()) for v in golden["variations"]], [r[2] for r in rows if len(r) > 2])
 
+    # compare variations: the affected tables with their badges, and only their ancestor directories
+    for label_, expected in golden["compare"].items():
+        status, html = get(label_)
+        reader = TreeReader()
+        reader.feed(html)
+        shown_tables = sorted(p for p, is_dir in reader.paths if not is_dir)
+        shown_dirs = sorted(p for p, is_dir in reader.paths if is_dir)
+        ancestors = sorted({p[:i] for p in shown_tables for i in range(1, len(p)) if p[i] == "/"})
+        check(results, f"{label_}.status", 200, status)
+        check(results, f"{label_}.tables", sorted(expected["tables"]), shown_tables)
+        check(results, f"{label_}.badges", expected["tables"], {p: reader.badges.get(p, {}) for p in shown_tables})
+        check(results, f"{label_}.directories", ancestors, shown_dirs)
+
     # info modals
     for label_, expected in (("table_info", golden["table_info"]), ("dir_info", golden["dir_info"])):
         status, html = get(label_)
@@ -310,6 +422,9 @@ def compare(space, phase, label, db_url):
         check(results, f"{label_}.path", expected["path"], meta.get("Full path"))
         check(results, f"{label_}.author", expected["author"], meta.get("Author"))
         check(results, f"{label_}.id", str(expected["id"]), meta.get("DB ID"))
+        check(results, f"{label_}.assignments", str(expected["assignments"]), meta.get("Assignments"))
+        check(results, f"{label_}.last_assignment", expected["last"], meta.get("Last assignment"))
+    check(results, "dir_info.tables", str(golden["dir_info"]["tables"]), meta.get("Tables"))
 
     out = space / "reports" / workspace.report_name("golden_compare", phase, label)
     passed = sum(1 for r in results if r["pass"])

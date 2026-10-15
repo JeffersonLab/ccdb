@@ -90,6 +90,29 @@ class AssignmentViewsTest(unittest.TestCase):
         self.assertEqual(followed.status_code, 200)
         self.assertIn(TABLE + ":0:default:2012-10-30_23-48-42", followed.get_data(as_text=True))
 
+    def test_data_layout(self):
+        """auto is vertical for one row with more than two columns; the parameter forces either; both address forms carry it"""
+        wide_one_row = "/show_request?request=" + quote("/test/test_vars/test_table2:0:test")  # 1 row x 3 columns
+        two_rows = "/show_request?request=" + quote(AMBIGUOUS)  # 2 rows x 3 columns
+        self.assertIn('data-layout="vertical"', self.get(wide_one_row).get_data(as_text=True))
+        self.assertIn('data-layout="horizontal"', self.get(two_rows).get_data(as_text=True))
+        self.assertIn('data-layout="horizontal"', self.get(wide_one_row + "&layout=horizontal").get_data(as_text=True))
+        vertical = self.get(two_rows + "&layout=vertical").get_data(as_text=True)
+        self.assertIn('data-layout="vertical"', vertical)
+        self.assertIn('<th scope="row" data-column="x">x</th><td class="col-type">double</td><td>2.2</td><td>2.5</td>', vertical)
+        by_id = self.get("/assignments/4?layout=vertical").get_data(as_text=True)
+        self.assertIn('data-layout="vertical"', by_id)
+        # the switch links use the request string on both address forms, so the forms stay byte-identical
+        self.assertRegex(by_id, r'href="/show_request\?request=[^"&]+" >Auto</a>')  # auto: no parameter
+        self.assertRegex(by_id, r'href="/show_request\?request=[^"]+&amp;layout=vertical" aria-current="page">Vertical</a>')
+        self.assertEqual(self.get(two_rows + "&layout=sideways").status_code, 400)
+
+    def test_column_types_in_the_data_view(self):
+        """the horizontal header names the type under each column; JSON is unchanged"""
+        html = self.get("/assignments/4").get_data(as_text=True)
+        self.assertIn('<th scope="col" data-column="x" data-type="double">x<small class="col-type d-block">double</small></th>', html)
+        self.assertIn('<th scope="row" class="row-index">0</th><td>2.2</td>', html)
+
     def test_old_download_routes_redirect(self):
         for old in ("/dowload_request", "/download_request"):
             response = self.get(old + "?request=" + quote(AMBIGUOUS))

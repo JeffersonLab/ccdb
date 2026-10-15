@@ -9,10 +9,16 @@
     {%- set prefix = namespace(path='') %}
     {%- for segment in segments[:-1] %}{% set prefix.path = prefix.path + '/' + segment %}/<a class="link-body-emphasis text-decoration-none" href="{{ url_for('directory_tree', filter=prefix.path) }}" title="Show {{ prefix.path }} in the tree">{{ segment }}</a>{% endfor %}/{{ segments[-1] }}
   </h1>
-  <p class="text-body-secondary small mb-0">
+  <p class="text-body-secondary small mb-2">
     {{ table.rows_count }} rows × {{ table.columns | length }} columns:
     {% for column in table.columns %}<span class="cell-mono">{{ column.name }}</span>{{ ', ' if not loop.last }}{% endfor %}{% if table.comment %} — {{ table.comment }}{% endif %}
   </p>
+  {#- Show info rolls down the rows the tree's info button shows in a modal (_table_info_rows.html); Bootstrap's
+      collapse keeps aria-expanded current, and the stylesheet shows one of the two labels from it. -#}
+  <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#table-info" aria-expanded="false" aria-controls="table-info"><svg class="ico"><use href="#i-info"/></svg> <span class="when-collapsed">Show info</span><span class="when-expanded">Hide info</span></button>
+  <div class="collapse" id="table-info">
+    <div class="card mt-2" style="max-width: 40rem"><div class="card-body py-2">{% include '_table_info_rows.html' %}</div></div>
+  </div>
 </div>
 {% endblock %}
 

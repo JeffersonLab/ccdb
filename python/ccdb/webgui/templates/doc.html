@@ -30,6 +30,10 @@
         <dd class="col-sm-9"><code>/directory/table:run:variation:date</code> names one set of constants. The <a href="{{ url_for('test_request') }}">Request</a> page builds it from its parts; every assignment page shows the exact string that identifies its data, with the date of its creation.</dd>
         <dt class="col-sm-3">Variations</dt>
         <dd class="col-sm-9">A request for a variation that has no assignment for the table and run falls back to the variation it inherits from, down to <code>default</code>. See <a href="{{ url_for('variations') }}">Variations</a>.</dd>
+        <dt class="col-sm-3">Compare variations</dt>
+        <dd class="col-sm-9">The eye of a variation, or <a href="{{ url_for('compare_variations') }}">Compare variations</a>, lists the tables that take their constants from that variation instead of the ones it inherits from: every table with an assignment between the chosen parent and the variation. A run or a time narrows the assignments considered.</dd>
+        <dt class="col-sm-3">Finding a table</dt>
+        <dd class="col-sm-9">The filter box of <a href="{{ url_for('directory_tree') }}">Tables</a> matches text anywhere in a path. With <code>*</code> (any text) or <code>?</code> (one character) the pattern must match a whole name, or a whole path when it contains <code>/</code>, as in <code>ccdb ls</code>. Sort A…Z and Sort by ID order the tree by name or by database id, the order things were created in; the choice stays, like the open directories. The info button of a table, and Show info on the table's own page, tell how many assignments it has and when the last one was added.</dd>
         <dt class="col-sm-3">Data downloads</dt>
         <dd class="col-sm-9">Each assignment offers its data as text in the <code>ccdb dump</code> layout and as JSON (columns and rows as strings).</dd>
       </dl>

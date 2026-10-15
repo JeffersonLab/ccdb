@@ -100,6 +100,14 @@ class VariationRow:
     author: str
 
 
+@dataclass
+class Activity:
+    """How much a table, or the tables under a directory, has been used: the assignment count and the newest assignment."""
+    assignments: int
+    last_created: datetime = None
+    last_author: str = ""
+
+
 def integer_arg(args, name, default=None, minimum=None):
     """An integer request argument; empty means default; text that is not a number is a 400."""
     raw = args.get(name)
@@ -197,6 +205,30 @@ def list_assignments(session, table, query, variation=None, run=None, run_min=No
     return run_page(session, statement, query, ASSIGNMENT_SORTS, Assignment.id, row_factory)
 
 
+def assignment_activity(session, table_ids):
+    """The number of assignments over the tables and the newest one (date and author); two bounded queries.
+
+    Serves the info boxes of the tree. A table's `modified` column never changes after creation, so the
+    newest assignment is what tells when a table was last worked on.
+    """
+    table_ids = list(table_ids)
+    if not table_ids:
+        return Activity(0)
+    on_tables = ConstantSet.type_table_id.in_(table_ids)
+    count = session.execute(select(func.count(Assignment.id))
+                            .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id).where(on_tables)).scalar_one()
+    if not count:
+        return Activity(0)
+    # ORDER BY created DESC LIMIT 1 walks the index on `created` backwards and stops at the first match
+    # (50 ms on hallddb for a directory with 300 000 assignments); MAX(created) over the same join reads
+    # every row instead (8 s cold). Keep the ORDER BY form.
+    newest = session.execute(select(Assignment.created, User.name)
+                             .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
+                             .join(User, Assignment.author_id == User.id, isouter=True)
+                             .where(on_tables).order_by(Assignment.created.desc(), Assignment.id.desc()).limit(1)).first()
+    return Activity(count, newest[0], newest[1] or "")
+
+
 def table_variation_names(session, table):
     """Names of the variations that have at least one assignment on the table, for the filter select."""
     statement = (select(Variation.name).distinct()
@@ -244,6 +276,32 @@ def list_variations(session, query):
         statement = statement.where(contains_text([Variation.name, Variation.comment], query.search))
     return run_page(session, statement, query, VARIATION_SORTS, Variation.id,
                     lambda row: VariationRow(row[0], row[1], row[2], row[3] or "", row[4] or "", row[5] or ""))
+
+
+def variation_ids(session):
+    """name -> id for every variation; one query."""
+    return {name: variation_id for name, variation_id in session.execute(select(Variation.name, Variation.id))}
+
+
+def affected_tables(session, variation_ids, run=None, before=None):
+    """The tables with assignments in the variations: {table id: {variation id: (count, newest created)}}.
+
+    `run` keeps the assignments whose run range contains it; `before` keeps the ones created up to that
+    moment, the way a request with a timestamp resolves. One grouped query over the index on variationId;
+    its cost grows with the assignments of the variations (0.4 s for 85 000 on hallddb), so the root
+    variation, which owns most assignments, is never passed here.
+    """
+    statement = (select(Assignment.variation_id, ConstantSet.type_table_id, func.count(Assignment.id), func.max(Assignment.created))
+                 .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
+                 .where(Assignment.variation_id.in_(list(variation_ids))))
+    if run is not None:
+        statement = statement.join(RunRange, Assignment.run_range_id == RunRange.id).where(RunRange.min <= run, RunRange.max >= run)
+    if before is not None:
+        statement = statement.where(Assignment.created <= before)
+    grouped = {}
+    for variation_id, table_id, count, newest in session.execute(statement.group_by(Assignment.variation_id, ConstantSet.type_table_id)):
+        grouped.setdefault(table_id, {})[variation_id] = (count, newest)
+    return grouped
 
 
 def variation_chains(session):

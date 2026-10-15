@@ -65,6 +65,7 @@ jobs:
           tests.unit_test_webgui_fragments
           tests.unit_test_webgui_prefix
           tests.unit_test_webgui_queries
+          tests.unit_test_webgui_compare
           tests.integ_test_provider_sqlite
           tests.integ_test_cli_manager
           tests.integ_test_provider_mysql

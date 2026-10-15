@@ -48,18 +48,44 @@
   </div>
 </div>
 
-<h2 class="h5">Data <span class="text-body-secondary fw-normal small">{{ table.rows_count }} rows × {{ table.columns | length }} columns</span></h2>
+<div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+  <h2 class="h5 m-0">Data <span class="text-body-secondary fw-normal small">{{ table.rows_count }} rows × {{ table.columns | length }} columns</span></h2>
+  {#- The layout is a GET parameter, so a view stays shareable. Auto is vertical for one row with more than two columns.
+      The links address the assignment by its request string on both address forms, so the two forms stay byte-identical. -#}
+  <div class="btn-group btn-group-sm" role="group" aria-label="Data layout">
+    {% for name, label in [('auto', 'Auto'), ('horizontal', 'Horizontal'), ('vertical', 'Vertical')] %}
+    <a class="btn btn-outline-secondary {{ 'active' if layout == name }}" href="{{ url_for('show_request', request=assignment.request) if name == 'auto' else url_for('show_request', request=assignment.request, layout=name) }}" {% if layout == name %}aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </div>
+</div>
+{#- Rows and columns are counted from 0, so a value can be named "column X, row N" the way the CLI and the APIs count.
+    Horizontal: the first cell of every row is the row index. Vertical: one line per column (name, type, the values),
+    the row indexes in the header. The golden comparison reads data-layout and data-column to compare either form. -#}
 <div class="table-responsive" style="max-height: 70vh">
-  <table class="table table-sm table-striped table-sticky cell-mono mb-0">
+{% if vertical %}
+  <table class="table table-sm table-striped table-sticky cell-mono mb-0" data-layout="vertical">
     <thead>
-      <tr>{% for column in table.columns %}<th scope="col" title="{{ column.type }}">{{ column.name }}</th>{% endfor %}</tr>
+      <tr><th scope="col" class="text-body-secondary fw-normal">column</th><th scope="col" class="text-body-secondary fw-normal">type</th>
+        {%- for row in data %}<th scope="col" class="text-body-secondary fw-normal" title="Row index, counted from 0">{{ 'value' if data | length == 1 else loop.index0 }}</th>{% endfor %}</tr>
     </thead>
     <tbody>
-      {% for row in assignment.constant_set.data_table %}
-      <tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+      {% for column in table.columns %}{% set column_i = loop.index0 %}
+      <tr><th scope="row" data-column="{{ column.name }}">{{ column.name }}</th><td class="col-type">{{ column.type }}</td>{% for row in data %}<td>{{ row[column_i] }}</td>{% endfor %}</tr>
       {% endfor %}
     </tbody>
   </table>
+{% else %}
+  <table class="table table-sm table-striped table-sticky cell-mono mb-0" data-layout="horizontal">
+    <thead>
+      <tr><th scope="col" class="row-index" title="Row index, counted from 0">#</th>{% for column in table.columns %}<th scope="col" data-column="{{ column.name }}" data-type="{{ column.type }}">{{ column.name }}<small class="col-type d-block">{{ column.type }}</small></th>{% endfor %}</tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+      <tr><th scope="row" class="row-index">{{ loop.index0 }}</th>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
 </div>
 {% endblock %}
 

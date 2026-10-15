@@ -4,7 +4,7 @@ Scripts that check the CCDB web GUI (`python/ccdb/webgui`) against a determinist
 
 | script | what it does |
 |---|---|
-| `make_fixture.py` | builds the fixture database: the CCDB schema with the standard test content plus a 3600-assignment table over 6 variations, a 7-level directory chain, 1000 bulk tables, hostile names and comments, a 4-level variation chain and 2400 log records. Fixed seed and timestamps, so every build hashes the same; `--verify` builds twice and compares |
+| `make_fixture.py` | builds the fixture database: the CCDB schema with the standard test content plus a 3600-assignment table over 6 variations, a 7-level directory chain, 1000 bulk tables, hostile names and comments, a 4-level variation chain, 2400 log records and a one-row six-column table. Fixed seed and timestamps, so every build hashes the same; `--verify` builds twice and compares |
 | `pages.py` | the URL list the other scripts share, with a kind per URL: page, fragment, data or edge. Paths refer to objects of the fixture, so change both files together |
 | `smoke.py` | requests every URL in-process, or a live server with `--base-url`, and records status, bytes, time and SQL query count; `--check` fails on a server error or on a status outside what the kind allows |
 | `golden.py` | `compute` derives what every page must show from SQL on the fixture, with no ORM in between; `compare` parses the pages and reports every mismatch, with exit code 1 on a failure |

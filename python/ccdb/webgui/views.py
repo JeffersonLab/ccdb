@@ -10,9 +10,11 @@ tree loads them into a modal.
 import ccdb
 from ccdb.errors import ObjectIsNotFoundInDbError
 from ccdb.model import User, TypeTable
+from ccdb.path_utils import parse_time
 import json
+import re
 
-from flask import g, render_template, url_for, request, redirect, make_response
+from flask import g, render_template, url_for, request, redirect, make_response, abort
 from sqlalchemy import select, text
 
 from ccdb import ccdb_version
@@ -40,6 +42,52 @@ def sort_url(column, current_sort, current_order):
     args = {**request.view_args, **request.args.to_dict(), "sort": column, "order": order}
     args.pop("page", None)
     return url_for(request.endpoint, **args)
+
+
+TIME_ARGUMENT = re.compile(r"^\d{4}(-\d{2}(-\d{2}(_\d{2}(-\d{2}(-\d{2})?)?)?)?)?$")
+
+
+def time_arg_or_400(text):
+    """A time argument in the request-string form, `2020-01-04` or `2020-01-04_10-03-20`, or any leading part
+    of it; a partial value means the end of that period, as in a request string. Empty → None; other text → 400."""
+    text = (text or "").strip()
+    if not text:
+        return None
+    if not TIME_ARGUMENT.match(text):
+        abort(400, "'time' must look like 2020-01-04 or 2020-01-04_10-03-20, got '{0}'".format(text))
+    return parse_time(text)
+
+
+def affected_tree(db, grouped, variation_names):
+    """The affected tables as a pruned directory tree: the root, the tables per directory id, the directory ids to
+    keep (every ancestor of an affected table), and per table id the (variation, count, newest) badges in chain order."""
+    root = db.get_root_directory()
+    tables = db.session.execute(select(TypeTable).where(TypeTable.id.in_(list(grouped)))).scalars().all() if grouped else []
+    tables_of, keep_dirs, badges = {}, set(), {}
+    for table in sorted(tables, key=lambda each: each.name):
+        table.parent_dir = db.dirs_by_id.get(table.parent_dir_id, root)
+        tables_of.setdefault(table.parent_dir_id, []).append(table)
+        directory = db.dirs_by_id.get(table.parent_dir_id)
+        while directory is not None and directory.id not in keep_dirs:
+            keep_dirs.add(directory.id)
+            directory = db.dirs_by_id.get(directory.parent_id)
+        badges[table.id] = [(name, *grouped[table.id][variation_id]) for variation_id, name in variation_names.items() if variation_id in grouped[table.id]]
+    return dict(root=root, tables_of=tables_of, keep_dirs=keep_dirs, affected=badges)
+
+
+def natural_key(name):
+    """Sort key of a directory or table name: case-insensitive, digit runs as numbers (layer2 before layer10).
+
+    The tree is rendered in this order and tree.js sorts by the same rule (compareNames); keep the two in step.
+    re.split with a capturing group alternates text and digit chunks, text first, so two keys compare element
+    by element without ever meeting a str against an int.
+    """
+    return [int(part) if i % 2 else part for i, part in enumerate(re.split(r"(\d+)", name.lower()))]
+
+
+def by_name(items):
+    """Directories or tables in natural name order: the Jinja filter the tree macros use."""
+    return sorted(items, key=lambda item: natural_key(item.name))
 
 
 def page_window(page, width=2):
@@ -70,6 +118,7 @@ def register(app):
     """Adds every page view to the app with its original endpoint name."""
     app.jinja_env.globals.update(page_url=page_url, sort_url=sort_url, page_window=page_window,
                                  page_sizes=queries.PAGE_SIZES, INFINITE_RUN=queries.INFINITE_RUN)
+    app.jinja_env.filters["by_name"] = by_name
 
     @app.route('/')
     @app.route('/tree')
@@ -93,7 +142,16 @@ def register(app):
             directory = db.get_directory_by_id(dir_id)
         except ObjectIsNotFoundInDbError as error:
             return str(error), 404, {"Content-Type": "text/plain; charset=utf-8"}
-        return render_template('objects_dir_info.html', directory=directory, author_name=author_name(db, directory.author_id))
+        # Everything under the directory: the provider's directory cache gives the subtree without a query,
+        # then one query lists the tables in it and two more count and date their assignments.
+        directory_ids, pending = [], [directory]
+        while pending:
+            current = pending.pop()
+            directory_ids.append(current.id)
+            pending.extend(current.sub_dirs)
+        table_ids = db.session.execute(select(TypeTable.id).where(TypeTable.parent_dir_id.in_(directory_ids))).scalars().all()
+        return render_template('objects_dir_info.html', directory=directory, author_name=author_name(db, directory.author_id),
+                               table_count=len(table_ids), activity=queries.assignment_activity(db.session, table_ids))
 
     @app.route('/get-table-info/<int:table_id>')
     def get_table_info(table_id):
@@ -102,7 +160,8 @@ def register(app):
             table = db.get_type_table_by_id(table_id)
         except ObjectIsNotFoundInDbError as error:
             return str(error), 404, {"Content-Type": "text/plain; charset=utf-8"}
-        return render_template('objects_table_info.html', table=table, author_name=author_name(db, table.author_id))
+        return render_template('objects_table_info.html', table=table, author_name=author_name(db, table.author_id),
+                               activity=queries.assignment_activity(db.session, [table.id]))
 
     @app.route('/vars')
     def variations():
@@ -110,6 +169,41 @@ def register(app):
         query = queries.parse_page_query(request.args, queries.VARIATION_SORTS, default_sort="id", default_order="asc")
         page = queries.list_variations(db.session, query)
         return table_page("variations.html", "_variations_table.html", page=page, query=query, chains=queries.variation_chains(db.session))
+
+    @app.route('/vars/compare')
+    def compare_variations():
+        """The tables that take their constants from a variation instead of the variations it inherits from.
+
+        `variation` names it; `parent` is an ancestor to compare with (default: the direct parent): every table
+        with an assignment in the chain segment from the parent (excluded) to the variation counts as affected.
+        `run` and `time` narrow the assignments considered. Without `variation` the page shows the form alone.
+        The root variation has no parent and gets no comparison: grouping its assignments is the one query
+        that is slow on a production database.
+        """
+        db: ccdb.AlchemyProvider = g.db
+        chains = queries.variation_chains(db.session)
+        name = request.args.get("variation") or ""
+        run = queries.integer_arg(request.args, "run", minimum=0)
+        time_text = (request.args.get("time") or "").strip()
+        before = time_arg_or_400(time_text)
+        context = dict(names=sorted(chains), name=name, run=run, time_text=time_text,
+                       chain=[], ancestors=[], parent="", segment=[], affected=None, root=None, tables_of={}, keep_dirs=set())
+        if name:
+            if name not in chains:
+                abort(404, "No variation named '{0}'".format(name))
+            chain = chains[name]
+            ancestors = chain[:-1]
+            parent = request.args.get("parent") or (ancestors[-1] if ancestors else "")
+            if ancestors and parent not in ancestors:
+                abort(400, "'parent' must be a variation {0} inherits from ({1}), got '{2}'".format(name, ", ".join(ancestors), parent))
+            segment = chain[chain.index(parent) + 1:] if ancestors else []
+            context.update(chain=chain, ancestors=ancestors, parent=parent, segment=segment)
+            if segment:
+                ids = queries.variation_ids(db.session)
+                variation_names = {ids[level]: level for level in segment}  # chain order, for the badges
+                grouped = queries.affected_tables(db.session, variation_names, run=run, before=before)
+                context.update(affected_tree(db, grouped, variation_names))
+        return render_template("compare.html", **context)
 
     @app.route('/logs')
     def log_records():
@@ -146,8 +240,12 @@ def register(app):
                        run_min=queries.integer_arg(request.args, "run_min", minimum=0),
                        run_max=queries.integer_arg(request.args, "run_max", minimum=0))
         page = queries.list_assignments(db.session, table, query, **filters)
+        # The full page carries the table's info block (the rows of the tree's info modal) behind a Show info button;
+        # the live-search fragment does not, so its two queries are skipped there.
+        info = {} if wants_fragment() else dict(activity=queries.assignment_activity(db.session, [table.id]),
+                                                author_name=author_name(db, table.author_id))
         return table_page("versions.html", "_versions_table.html", page=page, query=query, table=table, filters=filters,
-                          variation_names=queries.table_variation_names(db.session, table))
+                          variation_names=queries.table_variation_names(db.session, table), **info)
 
     @app.route('/test_request')
     def test_request():
@@ -172,10 +270,17 @@ def register(app):
             # The request form sends the parts; compose the request string and redirect to its canonical URL,
             # so the address bar shows the request string that scripts and the CLI understand.
             return redirect(url_for('show_request', request=assignments.compose_request(request.args)))
+        layout = request.args.get("layout") or "auto"
+        if layout not in assignments.LAYOUTS:
+            abort(400, "'layout' must be one of {0}, got '{1}'".format(", ".join(assignments.LAYOUTS), layout))
         resolved = assignments.resolve_assignment(db, request.args.get('request', ''), assignment_id)
         assignment = resolved.assignment
+        data = assignment.constant_set.data_table
         return render_template("assignment.html",
                                assignment=assignment,
+                               data=data,
+                               layout=layout,
+                               vertical=assignments.vertical_layout(layout, len(data), len(assignment.constant_set.type_table.columns)),
                                variation=assignment.variation.name,
                                created=str(assignment.created),
                                author=assignment.author.name if assignment.author else "",

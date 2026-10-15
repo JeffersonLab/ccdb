@@ -3,33 +3,5 @@
   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
-    <table class="table table-sm mb-0">
-        <tbody>
-            <tr>
-                <th scope="row">DB ID</th>
-                <td>{{ table.id }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Full path</th>
-                <td>{{ table.path }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Created</th>
-                <td>{{ table.created.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Modified</th>
-                <td>{{ table.modified.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Author</th>
-                <td>{{ author_name }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Comment</th>
-                <td>{{ table.comment }}</td>
-            </tr>
-        </tbody>
-    </table>
+  {% include '_table_info_rows.html' %}
 </div>
-

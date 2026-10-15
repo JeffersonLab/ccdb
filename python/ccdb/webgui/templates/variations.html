@@ -2,8 +2,11 @@
 {% block title %}Variations · CCDB{% endblock %}
 
 {% block page_header %}
-<h1 class="h3 mb-1">Variations</h1>
-<p class="text-body-secondary small mb-3">A request for a variation without an assignment falls back to the variation it inherits from, down to <code>default</code>.</p>
+<div class="toolbar mb-1">
+  <h1 class="h3 m-0">Variations</h1>
+  <a class="btn btn-primary" href="{{ url_for('compare_variations') }}"><svg class="ico"><use href="#i-eye"/></svg> Compare variations</a>
+</div>
+<p class="text-body-secondary small mb-3">A request for a variation without an assignment falls back to the variation it inherits from, down to <code>default</code>. The eye of a row shows the tables that get their constants from that variation.</p>
 {% endblock %}
 
 {% block content %}

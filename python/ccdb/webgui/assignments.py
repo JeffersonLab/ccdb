@@ -16,6 +16,7 @@ from ccdb.path_utils import parse_request, ParseRequestResult
 
 INFINITE_RUN = 2147483647
 EXAMPLE_REQUEST = "/test/test_vars/test_table:0:default"
+LAYOUTS = ("auto", "horizontal", "vertical")
 
 
 @dataclass
@@ -62,6 +63,17 @@ def resolve_assignment(db, request_string=None, assignment_id=None):
     # into the year 2137) still resolves to the newest assignment, so it must not be cached as exact.
     exact = parsed.time_is_parsed and parsed.time <= datetime.datetime.now()
     return Resolved(assignments[0], exact=exact)
+
+
+def vertical_layout(layout, row_count, column_count):
+    """Whether the data table is shown with one line per column.
+
+    `auto` picks vertical for a single row with more than two columns, the shape of a key-value parameter
+    table, where a wide one-line table reads badly; everything else is horizontal, as `ccdb cat` does.
+    """
+    if layout == "auto":
+        return row_count == 1 and column_count > 2
+    return layout == "vertical"
 
 
 def run_range_text(assignment):

@@ -1,0 +1,55 @@
+{#- The directory tree shared by the tables page and the variation comparison.
+    A node is a Directory with .sub_dirs (set by the provider); its tables come from tables_of[directory.id].
+    Each <li> carries data-path, data-kind and data-id for tree.js and for the golden comparison.
+    Directories come before tables, each kind in natural name order (the by_name filter, views.natural_key);
+    tree.js reorders by database id when that choice is remembered.
+    keep_dirs: directory ids to render, None for all. annotate: a macro called with each table; its output
+    goes after the table name. open: render every folder open. remember: let tree.js store the open state. -#}
+{% macro node(directory, tables_of, keep_dirs=None, annotate=None, open=False) -%}
+<li data-path="{{ directory.path }}" data-kind="dir" data-id="{{ directory.id }}">
+  <details data-path="{{ directory.path }}"{% if open %} open{% endif %}>
+    <summary>
+      <svg class="ico closed"><use href="#i-folder"/></svg><svg class="ico opened"><use href="#i-folder-open"/></svg>
+      <span>{{ directory.name }}</span>
+      <button class="info" type="button" data-url="{{ url_for('get_dir_info', dir_id=directory.id) }}" aria-label="About {{ directory.name }}"><svg class="ico"><use href="#i-info"/></svg></button>
+    </summary>
+    <ul>
+      {% for sub_dir in directory.sub_dirs | by_name %}{% if keep_dirs is none or sub_dir.id in keep_dirs %}{{ node(sub_dir, tables_of, keep_dirs, annotate, open) }}{% endif %}{% endfor %}
+      {% for table in tables_of.get(directory.id, []) | by_name %}{{ leaf(table, annotate) }}{% endfor %}
+    </ul>
+  </details>
+</li>
+{%- endmacro %}
+
+{% macro leaf(table, annotate=None) -%}
+<li data-path="{{ table.path }}" data-kind="table" data-id="{{ table.id }}">
+  <span class="leaf">
+    <svg class="ico"><use href="#i-table"/></svg>
+    <a href="{{ url_for('versions', table_path=table.path.lstrip('/')) }}">{{ table.name }}</a>
+    <button class="info" type="button" data-url="{{ url_for('get_table_info', table_id=table.id) }}" aria-label="About {{ table.name }}"><svg class="ico"><use href="#i-info"/></svg></button>
+    {% if annotate %}{{ annotate(table) }}{% endif %}
+  </span>
+</li>
+{%- endmacro %}
+
+{% macro tree(root, tables_of, keep_dirs=None, annotate=None, open=False, remember=True) -%}
+<div id="tree" class="tree"{% if not remember %} data-remember="no"{% endif %}>
+  <ul>
+    {% for directory in root.sub_dirs | by_name %}{% if keep_dirs is none or directory.id in keep_dirs %}{{ node(directory, tables_of, keep_dirs, annotate, open) }}{% endif %}{% endfor %}
+    {% for table in tables_of.get(0, []) | by_name %}{{ leaf(table, annotate) }}{% endfor %}
+  </ul>
+</div>
+{%- endmacro %}
+
+{#- Expand / Collapse (wired by tree.js through the two ids) and the order, Sort A…Z or Sort by ID (data-sort).
+    The page arrives in name order, so A…Z is pressed; tree.js moves the mark when another order is remembered. -#}
+{% macro tree_buttons() -%}
+<div class="btn-group btn-group-sm" role="group" aria-label="Open or close every directory">
+  <button class="btn btn-outline-secondary" type="button" id="tree-expand"><svg class="ico"><use href="#i-expand"/></svg> Expand</button>
+  <button class="btn btn-outline-secondary" type="button" id="tree-collapse"><svg class="ico"><use href="#i-collapse"/></svg> Collapse</button>
+</div>
+<div class="btn-group btn-group-sm" role="group" aria-label="Order of the tree">
+  <button class="btn btn-outline-secondary active" type="button" data-sort="name" aria-pressed="true" title="Directories and tables by name">Sort A…Z</button>
+  <button class="btn btn-outline-secondary" type="button" data-sort="id" aria-pressed="false" title="By database id: the order they were created in">Sort by ID</button>
+</div>
+{%- endmacro %}

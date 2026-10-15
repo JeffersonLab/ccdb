@@ -1,5 +1,6 @@
 """Tests the web GUI app wiring: connection configuration, one engine per process, one session per request"""
 import os
+import re
 import tempfile
 import unittest
 
@@ -9,6 +10,7 @@ from sqlalchemy.engine import Engine
 from ccdb.sql.sqlite_schema import create_sqlite_database
 from ccdb.webgui import cerate_ccdb_flask_app, create_ccdb_flask_app, connection_string_from_env
 from ccdb.webgui.db import NO_CONNECTION_MESSAGE, get_database, normalize_dialect
+from ccdb.webgui.views import natural_key
 
 
 class WebGuiAppTest(unittest.TestCase):
@@ -52,6 +54,54 @@ class WebGuiAppTest(unittest.TestCase):
             response = app.test_client().get("/doc")
         self.assertEqual(response.status_code, 500)
         self.assertIn(NO_CONNECTION_MESSAGE, "\n".join(logs.output))
+
+    def test_info_boxes_show_the_assignment_activity(self):
+        """The table box counts its assignments and names the newest; the directory box does the same for the tables under it"""
+        client = self.make_app(self.connection_string).test_client()
+        table_box = client.get("/get-table-info/1").get_data(as_text=True)  # /test/test_vars/test_table: 4 assignments in the standard content
+        self.assertIn("<th scope=\"row\">Assignments</th>", table_box)
+        self.assertIn("<td>4</td>", table_box)
+        self.assertRegex(table_box, r"Last assignment</th>\s*<td>2012-10-30 23:48:43 by test_user</td>")
+        self.assertNotIn("Modified", table_box)
+        directory_box = client.get("/get-dir-info/1").get_data(as_text=True)  # /test holds test_vars with 2 tables
+        self.assertRegex(directory_box, r"Tables</th>\s*<td>2</td>")
+        self.assertRegex(directory_box, r"Last assignment</th>\s*<td>\d{4}-\d\d-\d\d \d\d:\d\d:\d\d by \w+</td>")
+        self.assertNotIn("Modified", directory_box)
+        empty_box = client.get("/get-dir-info/2").get_data(as_text=True)  # /test/subtest has no tables
+        self.assertRegex(empty_box, r"Tables</th>\s*<td>0</td>")
+        self.assertRegex(empty_box, r"Last assignment</th>\s*<td>none</td>")
+
+    def test_tree_nodes_carry_ids_in_name_order(self):
+        """Every node has data-id for Sort by ID; the page arrives sorted: directories first, then tables, each by name"""
+        html = self.make_app(self.connection_string).test_client().get("/tree").get_data(as_text=True)
+        nodes = re.findall(r'<li data-path="([^"]+)" data-kind="(dir|table)" data-id="(\d+)">', html)
+        self.assertGreaterEqual(len(nodes), 4)
+        self.assertEqual(len(nodes), html.count("<li data-path="))  # no node without an id
+        siblings = {}
+        for path, kind, _ in nodes:
+            parent, _, name = path.rpartition("/")
+            siblings.setdefault(parent, []).append((kind != "dir", natural_key(name)))
+        for parent, keys in siblings.items():
+            self.assertEqual(keys, sorted(keys), parent)
+        for label in ("Expand<", "Collapse<", "Sort A…Z<", "Sort by ID<"):
+            self.assertIn(label, html)
+        self.assertNotIn("Expand all", html)
+
+    def test_versions_page_rolls_down_the_info_block(self):
+        """The versions page carries the table's info rows in a collapsed block; the live-search fragment does not"""
+        client = self.make_app(self.connection_string).test_client()
+        html = client.get("/versions/test/test_vars/test_table").get_data(as_text=True)
+        self.assertIn('data-bs-target="#table-info"', html)
+        self.assertIn("Show info", html)
+        self.assertRegex(html, r'id="table-info">[\s\S]*?Assignments</th><td>4</td>')
+        self.assertIn('id="versions-table"', html)
+        fragment = client.get("/versions/test/test_vars/test_table", headers={"X-Fragment": "1"}).get_data(as_text=True)
+        self.assertNotIn("table-info", fragment)
+        self.assertIn('id="versions-table"', fragment)
+
+    def test_natural_key(self):
+        names = ["Layer10", "layer2", "layer1", "a", "B", "x1y", "x1", "1start", "z"]
+        self.assertEqual(sorted(names, key=natural_key), ["1start", "a", "B", "layer1", "layer2", "Layer10", "x1", "x1y", "z"])
 
     def test_config_set_after_creation_as_the_cli_does(self):
         app = self.make_app()

@@ -46,4 +46,10 @@
 /* tables */
 .table-sticky thead th { position: sticky; top: 0; background: var(--bs-body-bg); z-index: 1; }
 .cell-mono { font-family: var(--bs-font-monospace); font-size: .875em; }
+/* column types in the data view, under the name (horizontal) or in their own column (vertical) */
+.col-type { color: var(--bs-secondary-color); font-weight: normal; font-size: .8em; }
+/* row index of the data table: a spreadsheet-like row header, set apart from the first value */
+.table .row-index { color: var(--bs-secondary-color); font-weight: normal; text-align: right; width: 1%; padding-right: .6rem; border-right: 1px solid var(--bs-border-color); }
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+/* a collapse trigger carries two labels and shows the one for its state; Bootstrap keeps aria-expanded current */
+[aria-expanded="true"] > .when-collapsed, [aria-expanded="false"] > .when-expanded { display: none; }

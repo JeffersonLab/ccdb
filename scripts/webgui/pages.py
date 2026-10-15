@@ -9,6 +9,7 @@ The --check modes of smoke.py and browse.py enforce the status each kind allows.
 from urllib.parse import quote
 
 BIG_TABLE = "/calib/fcal/gains"                 # 3600 assignments over 6 variations
+KV_TABLE = "/calib/ccal/parms"                  # one row, six columns: shown vertically by default
 SMALL_TABLE = "/test/test_vars/test_table"      # standard test content, a handful of assignments
 DEEP_TABLE = "/deep/l1/l2/l3/l4/l5/l6/bottom"   # bottom of the 7-level directory chain
 HOSTILE_TABLE = "/hostile/x\"y'z&<script>alert(1)<b>"
@@ -66,6 +67,25 @@ PAGES = [
     # the health route and the tree with a prefilled filter
     ("health", "/health", "data"),
     ("tree_filtered", "/?filter=/calib", "page"),
+    # data layouts: auto (vertical for one row and more than two columns), forced, and a bad value
+    ("show_kv", "/show_request?request=" + quote(KV_TABLE + ":0:default"), "page"),
+    ("show_kv_horizontal", "/show_request?request=" + quote(KV_TABLE + ":0:default") + "&layout=horizontal", "page"),
+    ("show_big_vertical", "/show_request?request=" + quote(BIG_TABLE + ":1500:default") + "&layout=vertical", "page"),
+    ("assignment_by_id_vertical", "/assignments/4?layout=vertical", "page"),
+    ("show_bad_layout", "/show_request?request=" + quote(KV_TABLE + ":0:default") + "&layout=sideways", "edge"),
+    # compare variations: the form, a chain segment of one and of two variations, the filters, the empty case,
+    # the root, and the bad inputs
+    ("compare_form", "/vars/compare", "page"),
+    ("compare_calib_v2", "/vars/compare?variation=calib_v2", "page"),
+    ("compare_calib_v2_default", "/vars/compare?variation=calib_v2&parent=default", "page"),
+    ("compare_run", "/vars/compare?variation=calib_v2&run=1500", "page"),
+    ("compare_time", "/vars/compare?variation=calib_v2&parent=default&time=2020-01-02", "page"),
+    ("compare_subsubtest", "/vars/compare?variation=subsubtest", "page"),
+    ("compare_root", "/vars/compare?variation=default", "page"),
+    ("compare_unknown", "/vars/compare?variation=nosuch", "edge"),
+    ("compare_bad_parent", "/vars/compare?variation=calib_v2&parent=mc", "edge"),
+    ("compare_bad_run", "/vars/compare?variation=calib_v2&run=abc", "edge"),
+    ("compare_bad_time", "/vars/compare?variation=calib_v2&time=yesterday", "edge"),
 ]
 
 # What a person opens in a browser: every page once (the tree alias duplicates the tree) plus one

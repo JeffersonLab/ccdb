@@ -1,0 +1,13 @@
+{#- The info rows of a table: shown in the tree's info modal (objects_table_info.html) and rolled down by
+    Show info on the versions page. Needs table, author_name and activity (queries.assignment_activity). -#}
+<table class="table table-sm mb-0">
+  <tbody>
+    <tr><th scope="row">DB ID</th><td>{{ table.id }}</td></tr>
+    <tr><th scope="row">Full path</th><td class="text-break">{{ table.path }}</td></tr>
+    <tr><th scope="row">Created</th><td>{{ table.created.strftime('%Y-%m-%d %H:%M:%S') }}</td></tr>
+    <tr><th scope="row">Assignments</th><td>{{ activity.assignments }}</td></tr>
+    <tr><th scope="row">Last assignment</th><td>{% if activity.assignments %}{{ activity.last_created.strftime('%Y-%m-%d %H:%M:%S') }} by {{ activity.last_author }}{% else %}none{% endif %}</td></tr>
+    <tr><th scope="row">Author</th><td>{{ author_name }}</td></tr>
+    <tr><th scope="row">Comment</th><td>{{ table.comment }}</td></tr>
+  </tbody>
+</table>
