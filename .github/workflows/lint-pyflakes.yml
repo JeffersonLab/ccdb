@@ -21,4 +21,4 @@ jobs:
 
       # Mandatory gate: fails on any finding
       - name: Run pyflakes
-        run: pyflakes python/ccdb python/tests scripts/webgui
+        run: pyflakes python/ccdb python/tests scripts/webgui scripts/shallow_copy

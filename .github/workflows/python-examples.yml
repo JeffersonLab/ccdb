@@ -8,19 +8,26 @@ on:
 jobs:
   run-examples:
     runs-on: ubuntu-latest
+    # RHEL 9 platform: its system python 3.9 is the lowest supported version and the one used at JLab
+    container: almalinux:9
     env:
-      CCDB_HOME: ${{ github.workspace }}
-      CCDB_CONNECTION: "sqlite:///${{ github.workspace }}/examples.sqlite"
       CCDB_USER: test_user
 
     steps:
       - uses: actions/checkout@v7
 
-      # 3.9 on purpose: proves examples run on the lowest supported python
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: "3.9"
+      # The system python 3.9 on purpose: proves examples run on the lowest supported python
+      - name: Set up the system Python in a virtual environment
+        run: |
+          dnf -y install python3
+          python3 -m venv /opt/venv
+          echo /opt/venv/bin >> "$GITHUB_PATH"
+
+      # The github.workspace context is the host path; inside the container the workspace is $GITHUB_WORKSPACE
+      - name: Point CCDB at the workspace
+        run: |
+          echo "CCDB_HOME=$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          echo "CCDB_CONNECTION=sqlite:///$GITHUB_WORKSPACE/examples.sqlite" >> "$GITHUB_ENV"
 
       - name: Install ccdb with examples extras
         run: pip install ".[examples]"

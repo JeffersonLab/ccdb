@@ -117,12 +117,12 @@ CREATE TABLE IF NOT EXISTS "directories" (
   "name" varchar(255) NOT NULL DEFAULT '',
   "parentId" integer NOT NULL DEFAULT '0',
   "authorId" integer NOT NULL DEFAULT '1',
-  "comment" text, isDeprecated TINYINT(1) NOT NULL DEFAULT 0, deprecatedById INT(11) NOT NULL DEFAULT -1,
+  "comment" text, isDeprecated TINYINT(1) NOT NULL DEFAULT 0, deprecatedByUserId INT(11) NULL DEFAULT NULL, isLocked TINYINT(1) NOT NULL DEFAULT 0, lockedByUserId INT(11) NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 );
-INSERT INTO directories VALUES(1,'2014-04-10 17:20:28','2014-04-10 17:20:28','test',0,2,'Soft test directory',0,-1);
-INSERT INTO directories VALUES(2,'2014-04-10 17:20:28','2014-04-10 17:20:28','subtest',1,2,'Soft test first subdirectory',0,-1);
-INSERT INTO directories VALUES(3,'2014-04-10 17:20:28','2014-04-10 17:20:28','test_vars',1,2,NULL,0,-1);
+INSERT INTO directories VALUES(1,'2014-04-10 17:20:28','2014-04-10 17:20:28','test',0,2,'Soft test directory',0,NULL,0,NULL);
+INSERT INTO directories VALUES(2,'2014-04-10 17:20:28','2014-04-10 17:20:28','subtest',1,2,'Soft test first subdirectory',0,NULL,0,NULL);
+INSERT INTO directories VALUES(3,'2014-04-10 17:20:28','2014-04-10 17:20:28','test_vars',1,2,NULL,0,NULL,0,NULL);
 CREATE TABLE IF NOT EXISTS "eventRanges" (
   "id" integer NOT NULL ,
   "created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -192,11 +192,11 @@ CREATE TABLE IF NOT EXISTS "typeTables" (
   "nColumns" integer NOT NULL,
   "nAssignments" integer NOT NULL DEFAULT '0',
   "authorId" integer NOT NULL DEFAULT '1',
-  "comment" text, isDeprecated TINYINT(1) NOT NULL DEFAULT 0, deprecatedById INT(11) NOT NULL DEFAULT -1, isLocked TINYINT(1) NOT NULL DEFAULT 0, lockAuthorId INT(11) NULL DEFAULT NULL, lockTime TIMESTAMP NULL DEFAULT NULL,
+  "comment" text, isDeprecated TINYINT(1) NOT NULL DEFAULT 0, deprecatedByUserId INT(11) NULL DEFAULT NULL, isLocked TINYINT(1) NOT NULL DEFAULT 0, lockedByUserId INT(11) NULL DEFAULT NULL, lockTime TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 );
-INSERT INTO typeTables VALUES(1,'2014-04-10 17:20:28','2014-04-10 17:20:28',3,'test_table',2,3,2,2,'Test type',0,-1,0,NULL,NULL);
-INSERT INTO typeTables VALUES(2,'2014-04-10 17:20:28','2014-04-10 17:20:28',3,'test_table2',1,3,1,2,'Test type 2',0,-1,0,NULL,NULL);
+INSERT INTO typeTables VALUES(1,'2014-04-10 17:20:28','2014-04-10 17:20:28',3,'test_table',2,3,2,2,'Test type',0,NULL,0,NULL,NULL);
+INSERT INTO typeTables VALUES(2,'2014-04-10 17:20:28','2014-04-10 17:20:28',3,'test_table2',1,3,1,2,'Test type 2',0,NULL,0,NULL,NULL);
 CREATE TABLE IF NOT EXISTS "users" (
   "id" integer NOT NULL ,
   "created" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -218,13 +218,13 @@ CREATE TABLE IF NOT EXISTS "variations" (
   "description" varchar(255) DEFAULT NULL,
   "authorId" integer NOT NULL DEFAULT '1',
   "comment" text,
-  "parentId" integer NOT NULL DEFAULT '0', isLocked TINYINT(1) NOT NULL DEFAULT 0, lockTime TIMESTAMP NULL DEFAULT NULL, lockAuthorId INT(11) NULL DEFAULT NULL, goBackBehavior INT(11) NOT NULL DEFAULT 0, goBackTime TIMESTAMP NULL DEFAULT NULL,
+  "parentId" integer NOT NULL DEFAULT '0', isLocked TINYINT(1) NOT NULL DEFAULT 0, lockTime TIMESTAMP NULL DEFAULT NULL, lockedByUserId INT(11) NULL DEFAULT NULL, goBackBehavior INT(11) NOT NULL DEFAULT 0, goBackTime TIMESTAMP NULL DEFAULT NULL, isDeprecated TINYINT(1) NOT NULL DEFAULT 0, deprecatedByUserId INT(11) NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 );
-INSERT INTO variations VALUES(1,'2014-04-10 17:20:28','2014-04-10 17:20:28','default','Default variation',2,'Default variation',0,0,NULL,NULL,0,NULL);
-INSERT INTO variations VALUES(2,'2014-04-10 17:20:28','2014-04-10 17:20:28','mc','Mone-Carlo variations',2,'Monte-Carlo specific variation',1,0,NULL,NULL,0,NULL);
-INSERT INTO variations VALUES(3,'2014-04-10 17:20:28','2014-04-10 17:20:28','test','Test variation',2,'Variation for software test',1,0,NULL,NULL,0,NULL);
-INSERT INTO variations VALUES(4,'2014-04-10 17:20:28','2014-04-10 17:20:28','subtest','Test variation of second level',2,'Variation for software test which has test variation as parent',3,0,NULL,NULL,0,NULL);
+INSERT INTO variations VALUES(1,'2014-04-10 17:20:28','2014-04-10 17:20:28','default','Default variation',2,'Default variation',0,0,NULL,NULL,0,NULL,0,NULL);
+INSERT INTO variations VALUES(2,'2014-04-10 17:20:28','2014-04-10 17:20:28','mc','Mone-Carlo variations',2,'Monte-Carlo specific variation',1,0,NULL,NULL,0,NULL,0,NULL);
+INSERT INTO variations VALUES(3,'2014-04-10 17:20:28','2014-04-10 17:20:28','test','Test variation',2,'Variation for software test',1,0,NULL,NULL,0,NULL,0,NULL);
+INSERT INTO variations VALUES(4,'2014-04-10 17:20:28','2014-04-10 17:20:28','subtest','Test variation of second level',2,'Variation for software test which has test variation as parent',3,0,NULL,NULL,0,NULL,0,NULL);
 CREATE TABLE IF NOT EXISTS "variations_has_tags" (
   "variations_id" integer NOT NULL,
   "tags_id" integer NOT NULL,

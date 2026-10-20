@@ -7,19 +7,35 @@ on:
 
 jobs:
   tests:
+    name: tests (${{ matrix.python-version }}${{ matrix.container && ', AlmaLinux 9' || '' }})
     runs-on: ubuntu-latest
+    # Empty for the Ubuntu entries: those run directly on the runner
+    container: ${{ matrix.container }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        include:
+          # 3.9 is the RHEL 9 system python used at JLab. AlmaLinux 9 gives the real
+          # platform (python 3.9, SQLite 3.34, pip 21.3); setup-python has no 3.9 for new Ubuntu.
+          - python-version: "3.9"
+            container: almalinux:9
 
     steps:
       - uses: actions/checkout@v7
 
       - name: Set up Python ${{ matrix.python-version }}
+        if: ${{ !matrix.container }}
         uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Set up the system Python in a virtual environment
+        if: ${{ matrix.container }}
+        run: |
+          dnf -y install python3
+          python3 -m venv /opt/venv
+          echo /opt/venv/bin >> "$GITHUB_PATH"
 
       # The web extra (Flask) is needed by the web GUI unit tests
       - name: Install ccdb
@@ -54,6 +70,10 @@ jobs:
           python -m unittest
           tests.integ_test_provider_sqlite
           tests.integ_test_cli_manager
+
+      # Builds its own small SQLite databases in a temporary directory
+      - name: Run shallow copy script tests
+        run: python -m unittest discover -s scripts/shallow_copy
 
       - name: CLI entry point smoke
         run: |
