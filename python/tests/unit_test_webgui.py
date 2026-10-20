@@ -169,6 +169,52 @@ class WebGuiAppTest(unittest.TestCase):
         create_sqlite_database(missing)
         self.assertEqual(app.test_client().get("/health").status_code, 200)
 
+    def test_url_control_arguments_are_not_taken_from_the_query_string(self):
+        """url_for() reads `_external`, `_scheme`, `_anchor` and `_method` as control arguments. A page must
+        ignore them in its own query string: `?_method=POST` used to fail the link build and answer 500."""
+        client = self.make_app(self.connection_string).test_client()
+        for query in ("?_method=POST", "?_external=1", "?_scheme=javascript&_external=1", "?_anchor=x"):
+            response = client.get("/vars" + query)
+            self.assertEqual(response.status_code, 200, query)
+            body = response.get_data(as_text=True)
+            self.assertNotIn("javascript:", body.lower(), query)
+            self.assertIn('href="/vars?sort=', body, "links stay relative to this app: " + query)
+
+    def test_out_of_range_numbers_are_400_not_500(self):
+        """Every number a URL carries is bounded before it reaches the driver."""
+        client = self.make_app(self.connection_string).test_client()
+        cases = ["/logs?page=" + "9" * 30,
+                 "/versions/test/test_vars/test_table?run=" + "9" * 30,
+                 "/versions/test/test_vars/test_table?run_min=-1",
+                 "/show_request?request=/test/test_vars/test_table:" + "9" * 30 + ":default"]
+        for url in cases:
+            self.assertLess(client.get(url).status_code, 500, url)
+
+    def test_a_page_past_the_end_renders_rows(self):
+        """A stale or hand-edited `page` lands on the last page and shows its rows, instead of an empty table.
+
+        The standard test content holds 13 log records, so the last page is the only one and the page
+        navigation is not rendered; unit_test_webgui_queries covers the clamp on a multi-page table.
+        """
+        client = self.make_app(self.connection_string).test_client()
+        body = client.get("/logs?page=9999&per_page=25").get_data(as_text=True)
+        self.assertIn('data-pages="1"', body)
+        self.assertIn("Created user", body, "the clamped page carries real rows")
+
+    def test_health_error_does_not_name_the_database(self):
+        """The route is unauthenticated: a failure answers a fixed string, not the driver's message, which
+        carries the host and the user it connected as."""
+        app = self.make_app("sqlite:////nonexistent/directory/ccdb.sqlite")
+        response = app.test_client().get("/health")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.get_json()["database"], "unavailable")
+        self.assertNotIn("nonexistent", response.get_data(as_text=True))
+
+    def test_show_request_rejects_a_post(self):
+        """No view reads a request body; the form submits with GET."""
+        client = self.make_app(self.connection_string).test_client()
+        self.assertEqual(client.post("/show_request").status_code, 405)
+
     def test_mysql_uses_pymysql(self):
         self.assertEqual(normalize_dialect("mysql://u@h/d"), "mysql+pymysql://u@h/d")
         self.assertEqual(normalize_dialect("mysql+pymysql://u@h/d"), "mysql+pymysql://u@h/d")

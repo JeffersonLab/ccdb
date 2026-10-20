@@ -7,6 +7,8 @@ Errors: a view calls abort(400, ...) or abort(404, ...) or lets the provider's O
 propagate; errors.py renders the page. The two info fragments answer plain text instead, because the
 tree loads them into a modal.
 """
+import logging
+
 import ccdb
 from ccdb.errors import ObjectIsNotFoundInDbError
 from ccdb.model import User, TypeTable
@@ -21,6 +23,8 @@ from ccdb import ccdb_version
 from ccdb.webgui import assignments, queries
 from ccdb.webgui.db import get_database
 
+log = logging.getLogger("ccdb.webgui")
+
 
 def author_name(db, author_id):
     """The user name behind an author id; directories and tables store the id without a relationship."""
@@ -28,9 +32,21 @@ def author_name(db, author_id):
     return user.name if user else ""
 
 
+def link_args():
+    """The current view's path and query arguments, ready to merge into a url_for() call.
+
+    Keys starting with an underscore are dropped. url_for() reads `_external`, `_scheme`, `_anchor` and
+    `_method` as its own control arguments, so a query string carrying one steers every link the page
+    builds: `?_external=1` makes them absolute against the request's Host header, and `?_method=POST`
+    fails the build and answers 500.
+    """
+    merged = {**request.view_args, **request.args.to_dict()}
+    return {name: value for name, value in merged.items() if not name.startswith("_")}
+
+
 def page_url(page_number):
     """URL of the current view with the same arguments and another page number; for the page navigation."""
-    args = {**request.view_args, **request.args.to_dict(), "page": page_number}
+    args = {**link_args(), "page": page_number}
     return url_for(request.endpoint, **args)
 
 
@@ -39,7 +55,7 @@ def sort_url(column, current_sort, current_order):
     order = "asc" if (column == current_sort and current_order == "desc") else "desc"
     if column != current_sort and column in ("variation", "author", "name", "action"):
         order = "asc"  # text columns read better ascending on the first click
-    args = {**request.view_args, **request.args.to_dict(), "sort": column, "order": order}
+    args = {**link_args(), "sort": column, "order": order}
     args.pop("page", None)
     return url_for(request.endpoint, **args)
 
@@ -183,7 +199,7 @@ def register(app):
         db: ccdb.AlchemyProvider = g.db
         chains = queries.variation_chains(db.session)
         name = request.args.get("variation") or ""
-        run = queries.integer_arg(request.args, "run", minimum=0)
+        run = queries.run_arg(request.args, "run")
         time_text = (request.args.get("time") or "").strip()
         before = time_arg_or_400(time_text)
         context = dict(names=sorted(chains), name=name, run=run, time_text=time_text,
@@ -227,7 +243,10 @@ def register(app):
                 connection.execute(text("SELECT 1"))
             body, status = {"status": "ok", "database": "ok", "version": ccdb_version}, 200
         except Exception as error:  # a dead or wrong database must answer 503, not raise
-            body, status = {"status": "error", "database": str(error).splitlines()[0][:300], "version": ccdb_version}, 503
+            # The driver's message names the database host and the user it connected as. The route is
+            # unauthenticated, so the answer stays a fixed string and the detail goes to the server log.
+            log.warning("CCDB web GUI health check failed: %s", error)
+            body, status = {"status": "error", "database": "unavailable", "version": ccdb_version}, 503
         return json.dumps(body), status, {"Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store"}
 
     @app.route('/versions/<path:table_path>')
@@ -236,9 +255,9 @@ def register(app):
         table = db.get_type_table("/" + table_path)  # unknown path → ObjectIsNotFoundInDbError → 404 page
         query = queries.parse_page_query(request.args, queries.ASSIGNMENT_SORTS, default_sort="created")
         filters = dict(variation=request.args.get("variation") or None,
-                       run=queries.integer_arg(request.args, "run", minimum=0),
-                       run_min=queries.integer_arg(request.args, "run_min", minimum=0),
-                       run_max=queries.integer_arg(request.args, "run_max", minimum=0))
+                       run=queries.run_arg(request.args, "run"),
+                       run_min=queries.run_arg(request.args, "run_min"),
+                       run_max=queries.run_arg(request.args, "run_max"))
         page = queries.list_assignments(db.session, table, query, **filters)
         # The full page carries the table's info block (the rows of the tree's info modal) behind a Show info button;
         # the live-search fragment does not, so its two queries are skipped there.
@@ -262,7 +281,7 @@ def register(app):
         a request without a timestamp resolves to the newest assignment and must be fetched again."""
         return {"Content-Type": content_type, "Cache-Control": "public, max-age=86400" if resolved.exact else "no-cache"}
 
-    @app.route('/show_request', methods=['GET', 'POST'])
+    @app.route('/show_request')
     @app.route('/assignments/<int:assignment_id>')
     def show_request(assignment_id=None):
         db: ccdb.AlchemyProvider = g.db

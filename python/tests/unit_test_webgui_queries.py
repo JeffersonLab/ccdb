@@ -38,6 +38,14 @@ class ParsePageQueryTest(unittest.TestCase):
             with self.assertRaises(BadRequest, msg=str(args)):
                 self.parse(**args)
 
+    def test_run_arg_is_bounded_by_the_run_sentinel(self):
+        """A run wider than the runRanges columns is a 400; the driver would raise on it and answer 500."""
+        self.assertEqual(queries.run_arg(MultiDict({"run": str(queries.INFINITE_RUN)}), "run"), queries.INFINITE_RUN)
+        self.assertIsNone(queries.run_arg(MultiDict({}), "run"))
+        for value in (str(queries.INFINITE_RUN + 1), "9" * 30, "-1"):
+            with self.assertRaises(BadRequest, msg=value):
+                queries.run_arg(MultiDict({"run": value}), "run")
+
 
 class ListQueriesTest(unittest.TestCase):
     """Runs against the standard test database: table 1 has 4 assignments, 4 variations, 13 log records"""
@@ -74,9 +82,30 @@ class ListQueriesTest(unittest.TestCase):
         self.assertFalse(first.has_prev)
         self.assertFalse(first.has_next)
         beyond = queries.list_assignments(self.session, self.table, self.query(queries.ASSIGNMENT_SORTS, page="9"))
-        self.assertEqual(beyond.items, [])
-        self.assertEqual((beyond.first_row, beyond.last_row), (0, 400))
-        self.assertTrue(beyond.has_prev)
+        self.assertEqual(beyond.page, beyond.pages, "a page past the end is clamped to the last page")
+        self.assertTrue(beyond.items, "the clamped page shows rows instead of an empty table")
+        self.assertFalse(beyond.has_next)
+        huge = queries.list_assignments(self.session, self.table, self.query(queries.ASSIGNMENT_SORTS, page="9" * 30))
+        self.assertEqual((huge.page, huge.items), (huge.pages, beyond.items), "a page number wider than the database integers is clamped too")
+
+    def test_search_wildcards_match_literally(self):
+        """A search term is a literal substring: `%` and `_` are escaped instead of reaching LIKE as wildcards.
+
+        Unescaped, `%` matched every row, which on the production logs table means two full scans per request.
+        The test data holds no percent sign, so a literal search for one matches nothing; it does hold the
+        author `test_user`, so a literal underscore legitimately matches the rows that carry that name.
+        """
+        everything = queries.list_assignments(self.session, self.table, self.query(queries.ASSIGNMENT_SORTS))
+        self.assertTrue(everything.items)
+        for wildcard in ("%", "%%", "a%b"):
+            found = queries.list_assignments(self.session, self.table, self.query(queries.ASSIGNMENT_SORTS, search=wildcard))
+            self.assertEqual(found.total, 0, "search={0!r} matches no row: the data has no percent sign".format(wildcard))
+        underscore = queries.list_assignments(self.session, self.table, self.query(queries.ASSIGNMENT_SORTS, search="_"))
+        for row in underscore.items:
+            self.assertIn("_", row.comment + row.author, "every matched row carries a literal underscore")
+        self.assertEqual(queries.like_pattern("50%"), "%50\\%%")
+        self.assertEqual(queries.like_pattern("a_b"), "%a\\_b%")
+        self.assertEqual(queries.like_pattern("c\\d"), "%c\\\\d%")
 
     def test_sorting(self):
         ascending = queries.list_assignments(self.session, self.table, self.query(queries.ASSIGNMENT_SORTS, sort="id", order="asc"))

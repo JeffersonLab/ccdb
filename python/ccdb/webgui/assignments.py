@@ -27,7 +27,7 @@ class Resolved:
 
 
 def parse_request_or_400(text):
-    """The parsed CCDB request string; empty or malformed → 400."""
+    """The parsed CCDB request string; empty, malformed, or carrying an out-of-range run → 400."""
     if not text:
         abort(400, "The 'request' parameter is empty. Expected a CCDB request such as " + EXAMPLE_REQUEST)
     try:
@@ -35,6 +35,10 @@ def parse_request_or_400(text):
     except ValueError as error:
         abort(400, "Bad request string '{0}': {1}".format(text, error))
     assert isinstance(parsed, ParseRequestResult)
+    # parse_request() accepts any whole number as the run, including one wider than the `runRanges` columns,
+    # which raises in the driver and answers 500. The same range the run query parameter allows applies here.
+    if not 0 <= parsed.run <= INFINITE_RUN:
+        abort(400, "The run in a request must be between 0 and {0}, got {1}".format(INFINITE_RUN, parsed.run))
     return parsed
 
 

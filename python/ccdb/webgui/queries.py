@@ -3,9 +3,10 @@
 Views render these objects; a JSON view is `dataclasses.asdict` away. The only Flask-flavoured piece
 is parse_page_query(), which reads a request's argument mapping and raises BadRequest.
 
-Parameter policy: a value that is not a whole number, or a sort column or order the page does not
-have, is a 400; a `per_page` outside PAGE_SIZES snaps to the nearest allowed size; a `page` past the
-end gives an empty page with navigation, so a stale link still renders.
+Parameter policy: a value that is not a whole number, out of range, or a sort column or order the
+page does not have, is a 400; a `per_page` outside PAGE_SIZES snaps to the nearest allowed size; a
+`page` past the end is clamped to the last page, so a stale link lands on rows instead of on an
+empty table, and no request turns into an OFFSET that walks the whole table.
 """
 import math
 from dataclasses import dataclass
@@ -108,8 +109,13 @@ class Activity:
     last_author: str = ""
 
 
-def integer_arg(args, name, default=None, minimum=None):
-    """An integer request argument; empty means default; text that is not a number is a 400."""
+def integer_arg(args, name, default=None, minimum=None, maximum=None):
+    """An integer request argument; empty means default; text that is not a number, or a value outside
+    [minimum, maximum], is a 400.
+
+    Bound every argument that reaches a query. Python integers have no width, but the database columns do:
+    a run number past the 32-bit range reaches the driver and raises there, which answers 500 instead of 400.
+    """
     raw = args.get(name)
     if raw in (None, ""):
         return default
@@ -119,7 +125,15 @@ def integer_arg(args, name, default=None, minimum=None):
         raise BadRequest("'{0}' must be a whole number, got '{1}'".format(name, raw))
     if minimum is not None and value < minimum:
         raise BadRequest("'{0}' must be at least {1}, got {2}".format(name, minimum, value))
+    if maximum is not None and value > maximum:
+        raise BadRequest("'{0}' must be at most {1}, got {2}".format(name, maximum, value))
     return value
+
+
+def run_arg(args, name):
+    """A run-number argument: a whole number from 0 to the open-ended run sentinel, the widest value the
+    `runRanges` columns hold."""
+    return integer_arg(args, name, minimum=0, maximum=INFINITE_RUN)
 
 
 def parse_page_query(args, sort_columns, default_sort, default_order="desc"):
@@ -148,6 +162,10 @@ def run_page(session, statement, query, sort_columns, tiebreak, row_factory, cou
     if count_statement is None:
         count_statement = select(func.count()).select_from(statement.subquery())
     total = session.execute(count_statement).scalar_one()
+    # The page number is clamped here, not in parse_page_query(), because the row count is what bounds it.
+    # Without the clamp, `?page=10000000` becomes an OFFSET the database walks row by row before returning
+    # nothing, and a value past the platform integer width reaches the driver and raises.
+    query.page = min(query.page, max(1, math.ceil(total / query.per_page)))
     sort_column = sort_columns[query.sort]
     ordered = statement.order_by(sort_column.asc() if query.order == "asc" else sort_column.desc(),
                                  tiebreak.asc() if query.order == "asc" else tiebreak.desc())
@@ -155,10 +173,22 @@ def run_page(session, statement, query, sort_columns, tiebreak, row_factory, cou
     return Page(items=[row_factory(row) for row in rows], query=query, total=total)
 
 
+def like_pattern(text):
+    r"""A LIKE pattern matching `text` as a literal substring, for a like() call with escape="\".
+
+    `%`, `_` and the escape character itself are escaped, so searching for `%` looks for a percent sign
+    instead of matching every row — which on the production logs table means two full scans per request.
+    Escape the backslash first, or escaping the wildcards would be undone. AlchemyProvider's search
+    methods follow the same rule.
+    """
+    escaped = text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    return "%{0}%".format(escaped)
+
+
 def contains_text(columns, text):
     """Case-insensitive substring match on any of the columns (LIKE is case-insensitive on MySQL and for ASCII on SQLite)."""
-    pattern = "%{0}%".format(text)
-    return or_(*[column.like(pattern) for column in columns])
+    pattern = like_pattern(text)
+    return or_(*[column.like(pattern, escape="\\") for column in columns])
 
 
 # --------------------------------------------------------------------------- versions
@@ -253,8 +283,9 @@ def list_logs(session, query):
                  .join(User, LogRecord.author_id == User.id, isouter=True))
     count_statement = select(func.count()).select_from(LogRecord)
     if query.search:
-        matching_authors = select(User.id).where(User.name.like("%{0}%".format(query.search)))
-        condition = or_(LogRecord.description.like("%{0}%".format(query.search)), LogRecord.author_id.in_(matching_authors))
+        pattern = like_pattern(query.search)
+        matching_authors = select(User.id).where(User.name.like(pattern, escape="\\"))
+        condition = or_(LogRecord.description.like(pattern, escape="\\"), LogRecord.author_id.in_(matching_authors))
         statement = statement.where(condition)
         count_statement = count_statement.where(condition)
     return run_page(session, statement, query, LOG_SORTS, LogRecord.id,

@@ -25,6 +25,52 @@ CREATE USER 'ccdb_web'@'%' IDENTIFIED BY '...';
 GRANT SELECT ON ccdb.* TO 'ccdb_web'@'%';
 ```
 
+## Exposing the GUI
+
+The GUI has no accounts and no password. It reads the database and writes nothing, so exposure does not put the
+constants at risk — once the steps below are in place. Work through them before the GUI becomes reachable beyond
+the lab network.
+
+1. **Connect with the read-only user.** Use the `GRANT SELECT` account shown above. The application issues no
+   write statements; a read-only account makes the database itself enforce that, and it bounds what a leaked
+   connection string gives away.
+2. **Bound every query with a statement timeout.** One GET can ask for a count over every assignment of a
+   directory, or a substring search across the whole log table. A timeout turns a slow query into an error the
+   proxy logs instead of a worker that stalls, and it covers the queries nobody has measured yet:
+
+   ```sql
+   -- Only on a database server the GUI has to itself: these are server-wide and apply to every client,
+   -- including the ccdb CLI, the C++ API and analysis jobs.
+   SET GLOBAL MAX_EXECUTION_TIME = 5000;   -- MySQL 8: milliseconds, applies to SELECT
+   SET GLOBAL max_statement_time = 5;      -- MariaDB: seconds
+   ```
+
+   On a shared server such as a hall's production database, limit the web user instead of the server. MySQL 8
+   has no per-user form of `MAX_EXECUTION_TIME`; the limit then belongs to the sessions the application opens.
+   MariaDB can cap `max_statement_time` per user — check your server's manual for the grant syntax.
+
+   Cap the connections the web user may hold, sized from the pool rather than guessed. Each worker process
+   keeps a SQLAlchemy pool of `pool_size` 5 plus `max_overflow` 10, so 15 connections per worker: 60 for the
+   Docker image's four workers. A cap below that turns ordinary load into errors:
+
+   ```sql
+   ALTER USER 'ccdb_web'@'%' WITH MAX_USER_CONNECTIONS 60;   -- workers × 15
+   ```
+3. **Rate-limit at the proxy.** The WSGI server runs a small pool of synchronous workers — four in the Docker
+   image — so a few concurrent slow requests occupy all of them. The nginx example below sets a limit.
+4. **Bind the application to the loopback address** and let only the proxy reach it. With
+   `CCDB_WEBGUI_PROXY_FIX=1` the application trusts `X-Forwarded-Host` and `X-Forwarded-Prefix`; when clients
+   reach it directly, a forged header rewrites every link the page builds.
+5. **Serve with a WSGI server.** Deploy `gunicorn ccdbweb:app`; the development server must not face users. Running
+   `python ccdbweb.py` starts Flask's development server with the debugger enabled, and `FLASK_DEBUG` in the
+   environment does the same to `ccdb gui`. The debugger runs code a request sends it. Keep `FLASK_DEBUG` out
+   of the service environment.
+6. **Send security headers from the proxy.** The nginx example below sets them.
+
+Decide what exposure may publish. An open GUI serves every constant, every assignment comment, the full change
+log and the author names in it. If any of that is not public lab data, restrict `/logs` at the proxy or put the
+site behind the lab sign-on; both are narrower than a password over the whole GUI.
+
 ## Health check
 
 `GET /health` answers `200 {"status": "ok", "database": "ok", "version": "2.4.0"}` after a `SELECT 1` on the database, or `503 {"status": "error", ...}` when the database is unreachable. The response is never cached. Load balancers, Docker's `HEALTHCHECK` and monitoring use it.
@@ -63,6 +109,9 @@ The app works under a sub-path. The proxy forwards the prefix and the app, with 
 nginx example, serving the GUI under `/ccdb/`:
 
 ```nginx
+# http context: one rate-limit zone for the GUI
+limit_req_zone $binary_remote_addr zone=ccdb:10m rate=5r/s;
+
 location /ccdb/ {
     proxy_pass http://127.0.0.1:5000/;
     proxy_set_header Host $host;
@@ -70,6 +119,17 @@ location /ccdb/ {
     proxy_set_header X-Forwarded-Proto $scheme;
     proxy_set_header X-Forwarded-Host $host;
     proxy_set_header X-Forwarded-Prefix /ccdb;
+
+    limit_req zone=ccdb burst=20 nodelay;
+
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    add_header Referrer-Policy no-referrer always;
+    # The pages load their own assets only. `unsafe-inline` covers the theme script that must run before first
+    # paint and the inline style attributes in the templates. `data:` is required: Bootstrap draws the select
+    # arrows, the offcanvas close button, the check marks and the navbar toggler as data: SVG backgrounds, and
+    # they render blank without it.
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'" always;
 }
 gzip on;
 gzip_types text/css application/javascript application/json text/plain image/svg+xml;  # text/html is always included
