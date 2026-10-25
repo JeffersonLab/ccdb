@@ -46,4 +46,7 @@ TEST_CASE("CCDB/SQLiteDataProvider/Assignments","Assignments tests")
 	REQUIRE(tabeled_values[1][0] == "2.5");
 	REQUIRE(tabeled_values[1][1] == "2.6");
 	REQUIRE(tabeled_values[1][2] == "2.7");
+
+	delete assignment;
+	delete prov;
 }

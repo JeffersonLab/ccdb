@@ -6,7 +6,11 @@
 #include <string.h>
 #include <limits.h>
 
+#include <mutex>
+#include <errmsg.h>
+
 #include "CCDB/Globals.h"
+#include "CCDB/Helpers/EnvUtils.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
@@ -70,10 +74,7 @@ ccdb::MySQLDataProvider::MySQLDataProvider()
 
 ccdb::MySQLDataProvider::~MySQLDataProvider(void)
 {
-    if(IsConnected())
-    {
-        Disconnect();
-    }
+    Disconnect();
 }
 
 
@@ -100,14 +101,30 @@ void ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
     //    Log::Verbose("ccdb::MySQLDataProvider::Connect", StringUtils::Format("Connecting to database:\n UserName: %s \n Password: %i symbols \n HostName: %s Database: %s Port: %i",
     //                    connection.UserName.c_str(), connection.Password.length(), connection.HostName.c_str(), connection.Database.c_str(), connection.Port) );
 
-    // init connection variable
-    if(mMySQLHnd == nullptr) {
-        mMySQLHnd = mysql_init(nullptr);
-        if(mMySQLHnd == nullptr)
-        {
-            Error(CCDB_ERROR_CONNECTION_INITIALIZATION, "MySQLDataProvider::Connect(DMySQLConnectionInfo)", "mysql_init() returned nullptr, probably memory allocation problem");
-        }
+    // mysql_init() initializes the client library lazily, which is not thread safe
+    static std::once_flag libraryInitFlag;
+    std::call_once(libraryInitFlag, [](){ mysql_library_init(0, nullptr, nullptr); });
+
+    // Release a handle left by a previous failed attempt and start from a clean one
+    if(mMySQLHnd != nullptr) {
+        mysql_close(mMySQLHnd);
+        mMySQLHnd = nullptr;
     }
+
+    mMySQLHnd = mysql_init(nullptr);
+    if(mMySQLHnd == nullptr)
+    {
+        Error(CCDB_ERROR_CONNECTION_INITIALIZATION, "MySQLDataProvider::Connect(DMySQLConnectionInfo)", "mysql_init() returned nullptr, probably memory allocation problem");
+    }
+
+    // Without explicit timeouts an unreachable host blocks for the OS TCP timeout (minutes)
+    // and a dead connection may block a read forever
+    unsigned int connectTimeout = GetEnvPositiveUInt("CCDB_MYSQL_CONNECT_TIMEOUT", CCDB_DEFAULT_MYSQL_CONNECT_TIMEOUT, 24*3600);
+    unsigned int readTimeout = GetEnvPositiveUInt("CCDB_MYSQL_READ_TIMEOUT", CCDB_DEFAULT_MYSQL_READ_TIMEOUT, 24*3600);
+    unsigned int writeTimeout = GetEnvPositiveUInt("CCDB_MYSQL_WRITE_TIMEOUT", CCDB_DEFAULT_MYSQL_WRITE_TIMEOUT, 24*3600);
+    mysql_options(mMySQLHnd, MYSQL_OPT_CONNECT_TIMEOUT, &connectTimeout);
+    mysql_options(mMySQLHnd, MYSQL_OPT_READ_TIMEOUT, &readTimeout);
+    mysql_options(mMySQLHnd, MYSQL_OPT_WRITE_TIMEOUT, &writeTimeout);
 
     //Try to connect to server
     if(!mysql_real_connect (
@@ -121,13 +138,15 @@ void ccdb::MySQLDataProvider::Connect(MySQLConnectionInfo connection)
         0))                         //flags (none)
     {
         string errStr = ComposeMySQLError("mysql_real_connect()");
+        mysql_close(mMySQLHnd);
+        mMySQLHnd = nullptr;
         Error(CCDB_ERROR_CONNECTION_EXTERNAL_ERROR,"bool MySQLDataProvider::Connect(MySQLConnectionInfo)",errStr.c_str());
-
-        mMySQLHnd=nullptr;        //some compilers dont set nullptr after delete
     }
+    mConnectionInfo = connection;
     mIsConnected = true;
     mLastVariation = nullptr;     // reset last variation cache
 }
+
 
 ccdb::MySQLConnectionInfo ccdb::MySQLDataProvider::ParseConnectionString(std::string conStr)
 {
@@ -144,7 +163,7 @@ ccdb::MySQLConnectionInfo ccdb::MySQLDataProvider::ParseConnectionString(std::st
     int typePos = conStr.find("mysql://");
     if(typePos==string::npos)
     {
-        throw std::runtime_error("MySQL connection string parse error! The string '" + conStr + "' should start with mysql://");
+        throw std::runtime_error("MySQL connection string parse error! The string '" + StringUtils::MaskPassword(conStr) + "' should start with mysql://");
     }
 
     //ok we don't need mysql:// in the future. Moreover, it will mess up the separation logic
@@ -225,14 +244,15 @@ bool ccdb::MySQLDataProvider::IsConnected()
 
 void ccdb::MySQLDataProvider::Disconnect()
 {
-    if(IsConnected())
-    {
-        FreeMySQLResult();    //it would free the result or do nothing
+    FreeMySQLResult();    //it would free the result or do nothing
 
+    // The handle may exist without a connection after a failed connect
+    if(mMySQLHnd != nullptr)
+    {
         mysql_close(mMySQLHnd);
         mMySQLHnd = nullptr;
-        mIsConnected = false;
     }
+    mIsConnected = false;
 }
 
 
@@ -744,7 +764,7 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
     result->SetVariationId(variation->GetId());
 
     //type table
-    result->SetTypeTable(table);
+    result->SetTypeTable(table, /*ownsTypeTable*/ true);
 
     if(mReturnedRowsNum>1)
     {
@@ -888,6 +908,12 @@ time_t ccdb::MySQLDataProvider::ReadUnixTime( int fieldNum )
 
 #pragma region Queries
 
+static bool IsConnectionLost(unsigned int mysqlErrno)
+{
+    return mysqlErrno == CR_SERVER_GONE_ERROR || mysqlErrno == CR_SERVER_LOST;
+}
+
+
 bool ccdb::MySQLDataProvider::QuerySelect(const char* query)
 {
     if(!IsConnected()) {
@@ -900,25 +926,41 @@ bool ccdb::MySQLDataProvider::QuerySelect(const char* query)
         FreeMySQLResult();
     }
 
-    //query
-    if(mysql_query(mMySQLHnd, query))
+    // The server may close an idle connection (wait_timeout, restart). All queries here are
+    // read-only SELECTs, so it is safe to reconnect once and repeat the query.
+    for(int attempt = 0; ; attempt++)
     {
-        string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-        Error(CCDB_ERROR_QUERY_SELECT,"ccdb::MySQLDataProvider::QuerySelect()",errStr.c_str());
-        return false;
-    }
+        const char* failedFunction = nullptr;
+        if(mysql_query(mMySQLHnd, query)) {
+            failedFunction = "mysql_query()";
+        }
+        else {
+            mResult = mysql_store_result(mMySQLHnd);
+            if(!mResult) failedFunction = "mysql_store_result()";
+        }
 
-    //get results
-    mResult = mysql_store_result(mMySQLHnd);
-
-    if(!mResult)
-    {
-        string errStr = ComposeMySQLError("mysql_query()"); errStr.append("\n Query: "); errStr.append(query);
-        Error(CCDB_ERROR_QUERY_SELECT,"ccdb::MySQLDataProvider::QuerySelect()",errStr.c_str());
+        if(failedFunction == nullptr) break;     // success
 
         mReturnedRowsNum = 0;
         mReturnedFieldsNum = 0;
-        return false;
+        string errStr = ComposeMySQLError(failedFunction); errStr.append("\n Query: "); errStr.append(query);
+
+        if(!IsConnectionLost(mysql_errno(mMySQLHnd))) {
+            Error(CCDB_ERROR_QUERY_SELECT,"ccdb::MySQLDataProvider::QuerySelect()",errStr.c_str());
+        }
+
+        // The connection is gone: report it as not connected whatever happens next
+        Disconnect();
+        if(attempt > 0) {
+            Error(CCDB_ERROR_QUERY_SELECT,"ccdb::MySQLDataProvider::QuerySelect()", errStr + "\n Reconnect and retry also failed");
+        }
+
+        try {
+            Connect(mConnectionInfo);
+        }
+        catch (const std::exception& ex) {
+            Error(CCDB_ERROR_QUERY_SELECT,"ccdb::MySQLDataProvider::QuerySelect()", errStr + "\n Reconnect failed: " + ex.what());
+        }
     }
 
     //a rows number?

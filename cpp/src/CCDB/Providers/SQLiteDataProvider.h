@@ -10,6 +10,9 @@
 #include "CCDB/Model/ConstantsTypeTable.h"
 #include "CCDB/Helpers/SQLite.h"
 
+/// Default time to wait for a lock held by another process (env CCDB_SQLITE_BUSY_TIMEOUT overrides, ms)
+#define CCDB_SQLITE_DEFAULT_BUSY_TIMEOUT_MS 30000
+
 ///We making this define to be sure if we switch to other library nothing will change
 //#define SQLITE_ULONG my_ulonglong
 

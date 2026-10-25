@@ -122,8 +122,11 @@ class ConstantsTable
         calib.Connect(conn);
 
         calib.GetCalib(values, constsetid_str);
-        columns = calib.GetAssignment(constsetid_str)->GetTypeTable()->GetColumnNames();
-        column_types = calib.GetAssignment(constsetid_str)->GetTypeTable()->GetColumnTypeStrings();
+        Assignment* assignment = calib.GetAssignment(constsetid_str);
+        if(assignment == nullptr) return;
+        columns = assignment->GetTypeTable()->GetColumnNames();
+        column_types = assignment->GetTypeTable()->GetColumnTypeStrings();
+        if(!calib.IsCacheEnabled()) delete assignment;   // otherwise it is owned by the calibration cache
     }
 
     /** \return number of rows in this data set.

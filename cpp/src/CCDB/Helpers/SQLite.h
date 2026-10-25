@@ -31,7 +31,7 @@ namespace ccdb {
         void Prepare(const std::string& query) {
             int result = sqlite3_prepare_v2(mDatabase, query.c_str(), -1, &mStatement, nullptr);
             if( result ) {
-                auto error = "Error in sqlite3_prepare_v2: {}" + std::string(sqlite3_errmsg(mDatabase));
+                auto error = "Error in sqlite3_prepare_v2: " + std::string(sqlite3_errmsg(mDatabase));
                 throw std::runtime_error(error);
             }
 

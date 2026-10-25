@@ -77,6 +77,9 @@ TEST_CASE("CCDB/UserAPI/SQLite","tests")
     vector<string> paths;
     REQUIRE_NOTHROW(calib->GetListOfNamepaths(paths));
     REQUIRE(!paths.empty());
+
+    delete calib;
+    delete prov;
 }
 
 
@@ -116,6 +119,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 	//Get Type table through the Provider()
 	ConstantsTypeTable* table = sqliteCalib->GetProvider()->GetConstantsTypeTable("/test/test_vars/test_table2", true);
 	REQUIRE(table->GetColumns()[0]->GetType() == ConstantsTypeColumn::cIntColumn);
+	delete table;
 
 	Calibration* sqliteCalib2 = gen->MakeCalibration(get_test_sqlite_connection(), 100, "default");
 	REQUIRE(sqliteCalib == sqliteCalib2);
@@ -178,6 +182,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 		REQUIRE(a->GetValueInt("c1") == 10);
 		REQUIRE(a->GetValueInt(0, "c3") == 30);
 		REQUIRE(a->GetValueDouble(2) > 29);
+		if(!sqliteCalib->IsCacheEnabled()) delete a;   // otherwise owned by the calibration cache
 	}
 
 	//=== Default time ===
@@ -194,4 +199,7 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
             //Now lets check the teardown...
         }
 	}
+
+	gen->DeleteCalibrations();
+	delete gen;
 }

@@ -28,5 +28,7 @@ TEST_CASE("CCDB/SQLiteDataProvider/Vars","Varests")
 	
 	//REQUIRE(result);
 	//REQUIRE(variations.size()>0);
+
+	delete prov;
 }
 

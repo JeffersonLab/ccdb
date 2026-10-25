@@ -299,3 +299,18 @@ void ccdb::StringUtils::LexicalSplit(std::vector<std::string>& tokens, const std
     }
 }
 
+
+//______________________________________________________________________________
+std::string ccdb::StringUtils::MaskPassword(const std::string& connectionString)
+{
+    size_t schemeEnd = connectionString.find("://");
+    size_t userStart = (schemeEnd == std::string::npos) ? 0 : schemeEnd + 3;
+
+    size_t atPos = connectionString.rfind('@');
+    if(atPos == std::string::npos || atPos < userStart) return connectionString;
+
+    size_t colonPos = connectionString.find(':', userStart);
+    if(colonPos == std::string::npos || colonPos > atPos) return connectionString;   // user name only
+
+    return connectionString.substr(0, colonPos + 1) + "***" + connectionString.substr(atPos);
+}

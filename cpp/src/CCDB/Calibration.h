@@ -7,6 +7,7 @@
 #include <time.h>
 #include <memory>
 #include <mutex>
+#include <atomic>
 
 #include "Globals.h"
 #include "Providers/DataProvider.h"
@@ -18,8 +19,10 @@
 
 namespace ccdb
 {
+    class CalibrationGenerator;
 
     class Calibration {
+        friend class CalibrationGenerator;
 
     public:
         Calibration(); ///< Default constructor
@@ -243,12 +246,14 @@ namespace ccdb
          *                connection hasn't been successful or hasn't been at all
          *
          */
-        time_t GetLastActivityTime() const {return mLastActivityTime;}
+        time_t GetLastActivityTime() const {return mLastActivityTime.load();}
 
         /** @brief Gets the assignment from provider using namepath
         * namepath is the common ccdb request; @see GetCalib
         *
         * @remark the function is thread safe
+        * @remark if the cache is disabled the caller owns (must delete) the returned object.
+        *         If the cache is enabled the object is owned by this Calibration.
         *
         * @parameter [in] namepath -  full namepath is /path/to/data:run:variation:time but usually it is only /path/to/data
         * @return   DAssignment *
@@ -294,15 +299,26 @@ namespace ccdb
         int mDefaultRun;                 /// Default run number
         string mDefaultVariation;        /// Default variation
         time_t mDefaultTime;             /// Set default time
-        time_t mLastActivityTime;        /// Time of the last request
+        std::atomic<time_t> mLastActivityTime;   /// Time of the last request (read by the generator from other threads)
         bool mIsAutoReconnect;           /// Try to auto-reconnect if possible
-        bool mIsCacheEnabled;            /// If true the data is cached
+        std::atomic<bool> mIsCacheEnabled;       /// If true the data is cached
 
-        std::mutex mReadMutex;
+        /// Guards the provider and the cache. Recursive because Connect and IsConnected
+        /// are also called while a request already holds it (auto-reconnect).
+        std::recursive_mutex mReadMutex;
     private:
         Calibration(const Calibration& rhs);
         Calibration& operator=(const Calibration& rhs);
         void CheckConnection(); /// Check if is connected and reconnect if needed (and allowed)
+
+        /// GetAssignment that also tells whether the result is owned by the cache (must not be deleted)
+        Assignment* GetAssignmentInternal(const string& namepath, bool loadColumns, bool& isCached);
+
+        /// Request => assignment cache. Key includes the connection string
+        std::map<std::string, Assignment*> mAssignmentCache;
+
+        /// Generator that created this object (it closes connections on destruction), may be null
+        CalibrationGenerator* mGenerator = nullptr;
     };
 }
 

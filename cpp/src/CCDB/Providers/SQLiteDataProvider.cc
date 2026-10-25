@@ -10,6 +10,7 @@
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Helpers/SQLite.h"
+#include "CCDB/Helpers/EnvUtils.h"
 #include "CCDB/Providers/SQLiteDataProvider.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
 #include "CCDB/Model/RunRange.h"
@@ -60,19 +61,28 @@ void ccdb::SQLiteDataProvider::Connect(const std::string& connectionString )
     std::string filePath (connectionString);
     filePath.erase(0,10);            // ok we dont need sqlite:// in the beginning.
 
-	//Try to open sqlite database
-	int result = sqlite3_open_v2(filePath.c_str(), &mDatabase, SQLITE_OPEN_READONLY|SQLITE_OPEN_FULLMUTEX|SQLITE_OPEN_SHAREDCACHE, nullptr); // NOLINT(hicpp-signed-bitwise)
+	// The C++ API only reads, so the file is opened read-only and is never created.
+	// SQLITE_OPEN_URI lets users pass e.g. "file:/path/ccdb.sqlite?immutable=1" for snapshots
+	// on network file systems (NFS, Lustre) where file locking is slow or unavailable.
+	// Plain paths keep working as before.
+	int flags = SQLITE_OPEN_READONLY|SQLITE_OPEN_FULLMUTEX|SQLITE_OPEN_SHAREDCACHE|SQLITE_OPEN_URI; // NOLINT(hicpp-signed-bitwise)
+	int result = sqlite3_open_v2(filePath.c_str(), &mDatabase, flags, nullptr);
 
-	if (result != SQLITE_OK) 
+	if (result != SQLITE_OK)
 	{
-		string errStr(sqlite3_errmsg(mDatabase));
-		mDatabase=nullptr;		//some compilers dont set NULL after delete
+		string errStr(mDatabase ? sqlite3_errmsg(mDatabase) : sqlite3_errstr(result));
+		sqlite3_close(mDatabase);   // sqlite allocates a handle even when open fails
+		mDatabase=nullptr;
 		mConnectionString = "";
-        throw std::runtime_error(thisFuncName + "=> SQLite open error:" + errStr);
+        throw std::runtime_error(thisFuncName + "=> SQLite open error: " + errStr + ". File: '" + filePath + "'");
 	}
 
+	// Wait for a writer in another process instead of failing at once with "database is locked"
+	int busyTimeoutMs = static_cast<int>(GetEnvPositiveUInt("CCDB_SQLITE_BUSY_TIMEOUT", CCDB_SQLITE_DEFAULT_BUSY_TIMEOUT_MS, INT_MAX));
+	sqlite3_busy_timeout(mDatabase, busyTimeoutMs);
+
     sqlite3_exec(mDatabase, "PRAGMA journal_mode = OFF;", nullptr, nullptr, nullptr);
-	
+
 	mIsConnected = true;
 }
 
@@ -334,6 +344,9 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
     });
 
 
+    // The type table was created for this request only
+    if(assignment == nullptr) delete table;
+
     //If We have not found data for this variation, getting data for parent variation
     if((assignment == nullptr && selectedRows==0) && variation->GetParentDbId()!=0)
     {
@@ -342,7 +355,7 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
     
 	if(assignment != nullptr)
 	{
-        assignment->SetTypeTable(table);
+        assignment->SetTypeTable(table, /*ownsTypeTable*/ true);
         assignment->SetVariation(variation);
 	}
 

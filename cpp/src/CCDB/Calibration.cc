@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "CCDB/Calibration.h"
+#include "CCDB/CalibrationGenerator.h"
 #include "CCDB/Providers/DataProvider.h"
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Helpers/TimeProvider.h"
@@ -13,6 +14,15 @@ using namespace std;
 
 namespace ccdb
 {
+    namespace {
+        /// Deletes an assignment unless it is owned by the Calibration cache
+        struct AssignmentDeleter {
+            bool owned;
+            void operator()(Assignment* assignment) const { if(owned) delete assignment; }
+        };
+        using AssignmentPtr = std::unique_ptr<Assignment, AssignmentDeleter>;
+    }
+
 
 //______________________________________________________________________________
 Calibration::Calibration()
@@ -61,6 +71,11 @@ Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/, 
 Calibration::~Calibration()
 {
     //Destructor
+    if(mGenerator != nullptr) mGenerator->ForgetCalibration(this);
+
+    for(auto& item: mAssignmentCache) delete item.second;
+    mAssignmentCache.clear();
+
     if(!mProviderIsLocked && mProvider!=nullptr) delete mProvider;
 }
 
@@ -71,7 +86,13 @@ void Calibration::UseProvider( DataProvider * provider, bool lockProvider/*=true
     // set provider to use. 
     //if lockProvider==true, than @see Connect, @see Disconnect and @see SetConnectionString 
     //will not affect connection of provider. The provider will not be deleted in destruction. 
-    std::lock_guard<std::mutex> lock(mReadMutex);
+    std::lock_guard<std::recursive_mutex> lock(mReadMutex);
+    if(!mProviderIsLocked && mProvider != nullptr && mProvider != provider) delete mProvider;
+
+    // Cached assignments reference objects of the previous provider
+    for(auto& item: mAssignmentCache) delete item.second;
+    mAssignmentCache.clear();
+
 	mProvider = provider;	
 	mProviderIsLocked = lockProvider;
 }
@@ -100,7 +121,9 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
 	 * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
 	 */  
 
-    auto assignment = GetAssignment(namepath, true);
+    bool isCached = false;
+    Assignment* rawAssignment = GetAssignmentInternal(namepath, true, isCached);
+    AssignmentPtr assignment(rawAssignment, AssignmentDeleter{!isCached});
         
     if(!assignment)
     {       
@@ -212,7 +235,9 @@ bool Calibration::GetCalib( vector< vector<string> > &values, const string & nam
      * @return true if constants were found and filled. false if namepath was not found. raises std::logic_error if any other error acured.
      */
     
-    auto assignment = GetAssignment(namepath, false);
+    bool isCached = false;
+    Assignment* rawAssignment = GetAssignmentInternal(namepath, false, isCached);
+    AssignmentPtr assignment(rawAssignment, AssignmentDeleter{!isCached});
     
     if(!assignment)
     {
@@ -309,9 +334,11 @@ bool Calibration::GetCalib( map<string, string> &values, const string & namepath
      */
 
 
-    auto assignment = GetAssignment(namepath, true);
+    bool isCached = false;
+    Assignment* rawAssignment = GetAssignmentInternal(namepath, true, isCached);
+    AssignmentPtr assignment(rawAssignment, AssignmentDeleter{!isCached});
     
-    if(assignment == NULL)
+    if(!assignment)
     {
         //TODO possibly exception throwing?
         return false;
@@ -447,9 +474,11 @@ bool Calibration::GetCalib( vector<string> &values, const string & namepath )
 
 	
     
-	auto assignment = GetAssignment(namepath, true);
+	bool isCached = false;
+	Assignment* rawAssignment = GetAssignmentInternal(namepath, true, isCached);
+	AssignmentPtr assignment(rawAssignment, AssignmentDeleter{!isCached});
     
-    if(assignment == nullptr) return false; //TODO possibly exception throwing?
+    if(!assignment) return false; //TODO possibly exception throwing?
 
     //Get data
     values.clear();
@@ -589,8 +618,15 @@ Assignment* Calibration::GetAssignment(const string& namepath, bool loadColumns 
      * @return   DAssignment *
      */
 
+    bool isCached = false;
+    return GetAssignmentInternal(namepath, loadColumns, isCached);
+}
+
+
+//______________________________________________________________________________
+Assignment* Calibration::GetAssignmentInternal(const string& namepath, bool loadColumns, bool& isCached)
+{
     auto pl = PerfLog("Calibration::GetAssignment=>" + namepath );
-    static std::map<std::string, Assignment*> cache;
 
 	UpdateActivityTime();
 
@@ -598,35 +634,36 @@ Assignment* Calibration::GetAssignment(const string& namepath, bool loadColumns 
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
 
-
-
     auto time = result.WasParsedTime ? result.Time: mDefaultTime;
+    if(time < 0) time = 0;
+
+    // Connection check, reconnect and the query must be atomic against Disconnect from other threads
+    std::lock_guard<std::recursive_mutex> lock(mReadMutex);
 
     CheckConnection();  // Check if is connected and reconnect if needed (and allowed)
-	
-    //Lock();Unlock();
-    std::lock_guard<std::mutex> lock(mReadMutex);
 
-    // Check if we have this value in the cache
-    string cache_key = namepath + ":" + to_string(run) + ":" + variation + ":" + to_string(time);
-    if(mIsCacheEnabled)
+    // The same request to different databases must not share a cache entry
+    bool useCache = mIsCacheEnabled;
+    string cacheKey;
+    if(useCache)
     {
-        if (  cache.find(cache_key) != cache.end() ) {
-            return cache[cache_key];
+        cacheKey = GetConnectionString() + "\x1f" + result.Path + "\x1f" + to_string(run) + "\x1f" +
+                   variation + "\x1f" + to_string(time) + "\x1f" + (loadColumns ? "1" : "0");
+        auto cached = mAssignmentCache.find(cacheKey);
+        if (cached != mAssignmentCache.end()) {
+            isCached = true;
+            return cached->second;
         }
     }
 
-    Assignment* assigment;
+    Assignment* assignment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation, loadColumns);
 
-    if(time < 0) time = 0;
-
-    assigment = (mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation, loadColumns));
-
-    if(mIsCacheEnabled) {
-        cache[cache_key] = assigment;
+    if(useCache && assignment != nullptr) {
+        mAssignmentCache[cacheKey] = assignment;
+        isCached = true;
     }
 
-    return assigment;
+    return assignment;
 }
 
 
@@ -642,7 +679,8 @@ void Calibration::GetListOfNamepaths( vector<string> &namepaths )
     UpdateActivityTime();
 
     vector<ConstantsTypeTable*> tables;
-    std::lock_guard<std::mutex> lock(mReadMutex);
+    std::lock_guard<std::recursive_mutex> lock(mReadMutex);
+    CheckConnection();
     tables = mProvider->GetAllConstantsTypeTables(/*loadColumns*/ false);
 
     for (auto &table : tables) {

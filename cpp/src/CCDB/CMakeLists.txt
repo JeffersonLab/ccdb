@@ -14,6 +14,7 @@ add_library(ccdb SHARED
 
         #helper classes
         Helpers/StringUtils.cc
+        Helpers/EnvUtils.cc
         Helpers/PathUtils.cc
         Helpers/TimeProvider.cc
         Helpers/SQLite.h

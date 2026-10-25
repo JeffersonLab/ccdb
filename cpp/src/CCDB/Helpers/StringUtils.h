@@ -111,6 +111,17 @@ public:
     static std::vector<std::string> Split(const std::string &s, const std::string& delimiters = " ");
 
 
+    /**
+     * @brief Hides the password of a connection string for use in messages and logs
+     *
+     * "mysql://user:secret@host/db" => "mysql://user:***@host/db"
+     * Everything between the first ':' after "://" and the last '@' is masked,
+     * so a password that itself contains '@' is hidden completely.
+     * Strings without a password are returned unchanged.
+     */
+    static std::string MaskPassword(const std::string& connectionString);
+
+
 
     /**
      * @brief trims string from the both sides

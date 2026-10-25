@@ -18,6 +18,13 @@
 #define CCDB_DEFAULT_MYSQL_PORT 	 3306
 #define CCDB_DEFAULT_MYSQL_DATABASE	 "ccdb"
 
+/// Network timeouts in seconds. Env CCDB_MYSQL_CONNECT_TIMEOUT, CCDB_MYSQL_READ_TIMEOUT
+/// and CCDB_MYSQL_WRITE_TIMEOUT override them. Read/write timeouts are generous because
+/// a single constant set may be tens of MB.
+#define CCDB_DEFAULT_MYSQL_CONNECT_TIMEOUT 10
+#define CCDB_DEFAULT_MYSQL_READ_TIMEOUT    300
+#define CCDB_DEFAULT_MYSQL_WRITE_TIMEOUT   300
+
 ///We making this define to be sure if we switch to other library nothing will change
 #define MYSQL_ULONG my_ulonglong
 
@@ -289,7 +296,7 @@ namespace ccdb
         MYSQL_ULONG mReturnedAffectedRows;	//number of affected rows from last INSERT, DELETE, UPDATE queries
         MYSQL_ULONG mLastInsertedId;		//number of last id
         bool mIsConnected;					//indicates connection to db
-        static bool mMySqlIsInitialized;	//flag that mysql is initialized
+        MySQLConnectionInfo mConnectionInfo;	//parameters of the last successful connect, used to reconnect
 
         string mLastFullQuerry;   //full text of last full get assignment query
 

@@ -16,6 +16,7 @@ if (SQLite3_FOUND)
         target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLite3_INCLUDE_DIR})
         target_link_libraries(${PROJECT_NAME} ${SQLite3_LIBRARY})
         target_sources(${PROJECT_NAME} PRIVATE
+                "test_ConnectionLifecycle.cc"
                 "test_NoMySqlUserAPI.cc"
                 "test_SQLiteProvider_Assignments.cc"
                 "test_SQLiteProvider_Connection.cc"
@@ -35,6 +36,7 @@ if (MySQL_FOUND)
                 "test_MySqlUserAPI.cc"
                 "test_MySQLProvider_Assignments.cc"
                 "test_MySQLProvider_Connection.cc"
+                "test_MySQLProvider_NoServer.cc"
                 "test_MySQLProvider.cc"
                 "test_MySQLProvider_Directories.cc"
                 "test_MySQLProvider_Other.cc"

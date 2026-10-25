@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <set>
 
 
 #include "CCDB/Providers/DataProvider.h"
@@ -18,13 +19,27 @@ DataProvider::DataProvider()
 {
     //Constructor
     mConnectionString="";
+    mRootDir = nullptr;          // created by the derived providers
+    mDirsAreLoaded = false;
 }
 
 
 //______________________________________________________________________________
 DataProvider::~DataProvider()
 {
-	//Guess what is it?
+    // The provider owns the directory tree and the cached variations it handed out
+    if(mRootDir != nullptr) {
+        mRootDir->DisposeSubdirectories();
+        delete mRootDir;
+        mRootDir = nullptr;
+    }
+
+    std::set<Variation*> variations;
+    for(auto& item: mVariationsById) variations.insert(item.second);
+    for(auto& item: mVariationsByName) variations.insert(item.second);
+    for(auto variation: variations) delete variation;
+    mVariationsById.clear();
+    mVariationsByName.clear();
 }
 
 

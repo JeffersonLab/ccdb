@@ -154,6 +154,44 @@ The connection class is built around the usage assumption of an *intensive begin
 event processing*. At the start of work, analysis software has an initialization phase during which a
 lot of requests are made to the DB. During event processing, requests are rare or absent.
 
+`CalibrationGenerator` is thread safe. The caller may delete a `Calibration` returned by
+`MakeCalibration` at any time; the generator then forgets it. The generator does not delete
+Calibrations: its destructor closes the connections of those still alive, and they reconnect on the
+next request. To delete them together with the generator, call `DeleteCalibrations()` when nothing
+else deletes them.
+
+### Timeouts and reconnect
+
+To change how long CCDB waits for a MySQL server, set these environment variables:
+
+| Environment variable | Default | Meaning |
+|---|---|---|
+| `CCDB_MYSQL_CONNECT_TIMEOUT` | 10 | Seconds to wait for the server when connecting |
+| `CCDB_MYSQL_READ_TIMEOUT` | 300 | Seconds to wait for data from the server during a query |
+| `CCDB_MYSQL_WRITE_TIMEOUT` | 300 | Seconds to wait when sending data to the server |
+| `CCDB_SQLITE_BUSY_TIMEOUT` | 30000 | Milliseconds to wait while another process holds a write lock on the SQLite file |
+
+Values must be positive integers. An invalid value prints a warning, and CCDB uses the default.
+The read and write timeouts are large because one constant set can be tens of MB.
+
+When the server has closed the connection (`MySQL server has gone away` or `Lost connection to
+server`, for example after `wait_timeout` in a long job), CCDB reconnects once and repeats the query.
+If that fails too, CCDB throws the error, and the next request tries to reconnect again.
+
+Error messages mask the password: `mysql://user:***@host`.
+
+### SQLite files
+
+CCDB opens a SQLite file read-only and never creates it: a wrong path is an error that names the file.
+
+SQLite [URI file names](https://www.sqlite.org/uri.html) work. To read a snapshot on a network file
+system (NFS, Lustre) where file locking is slow or missing, open it as immutable. Immutable means no
+locking at all, so use it only when nothing modifies the file during the job:
+
+```
+sqlite:///file:/group/halld/ccdb/ccdb.sqlite?immutable=1
+```
+
 ## Performance profiling
 
 CCDB may be built with a performance profiling flag. The outputs of running CCDB can then be analyzed

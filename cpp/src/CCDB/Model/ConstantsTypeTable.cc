@@ -31,7 +31,9 @@ ConstantsTypeTable::ConstantsTypeTable()
 
 ConstantsTypeTable::~ConstantsTypeTable() 
 {
-	
+	// Columns are always created with new for (and owned by) this table
+	for(auto column: mColumns) delete column;
+	mColumns.clear();
 }
 
 

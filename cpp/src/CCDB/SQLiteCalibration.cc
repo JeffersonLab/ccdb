@@ -48,7 +48,7 @@ bool SQLiteCalibration::Connect( std::string connectionString )
 	 * @param connectionString the Connection String
 	 * @return true if connected
 	 */
-    std::lock_guard<std::mutex> lock(mReadMutex);
+    std::lock_guard<std::recursive_mutex> lock(mReadMutex);
 
     UpdateActivityTime();
 
@@ -111,7 +111,9 @@ void SQLiteCalibration::Disconnect()
         throw std::logic_error(ERRMSG_CONNECT_LOCKED); //TODO ERRMSG_DISCONECT_LOCKED
     }
 
-    mProvider->Disconnect();
+    // Must not close the connection while another thread runs a request on it
+    std::lock_guard<std::recursive_mutex> lock(mReadMutex);
+    if(mProvider != nullptr) mProvider->Disconnect();
 }
 
 
@@ -122,6 +124,7 @@ bool SQLiteCalibration::IsConnected()
 	 * 
 	 * @return true if  connection is open
 	 */
+    std::lock_guard<std::recursive_mutex> lock(mReadMutex);
     if(mProvider==NULL) return false;
     return mProvider->IsConnected();
 }

@@ -37,7 +37,7 @@ ccdb::Assignment::Assignment()
 
 //______________________________________________________________________________
 ccdb::Assignment::~Assignment() {
-	// TODO Auto-generated destructor stub
+	if(mOwnsTypeTable) delete mTypeTable;
 }
 
 //______________________________________________________________________________

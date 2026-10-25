@@ -120,7 +120,8 @@ class RunRange;
         std::string GetComment() const { return mComment;} ///Comment of assignment
         void SetComment(const std::string& val) { mComment = val;} ///Comment of assignment
 
-        void SetTypeTable(ConstantsTypeTable* typeTable) { this->mTypeTable = typeTable;}
+        /// @param ownsTypeTable - if true the type table is deleted together with this assignment
+        void SetTypeTable(ConstantsTypeTable* typeTable, bool ownsTypeTable=false) { this->mTypeTable = typeTable; this->mOwnsTypeTable = ownsTypeTable;}
         ConstantsTypeTable* GetTypeTable() const { return mTypeTable; }
 
         std::string GetValue(size_t columnIndex);
@@ -182,6 +183,7 @@ class RunRange;
         EventRange *mEventRange;			// Event range object, is NULL if not set
         Variation *mVariation;				// Variation object, is NULL if not set
         ConstantsTypeTable * mTypeTable;	// Constants table
+        bool mOwnsTypeTable = false;		// mTypeTable was created for this assignment only
 
         time_t mCreatedTime;				// time of creation
         time_t mModifiedTime;				// time of last modification

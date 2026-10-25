@@ -5,12 +5,24 @@
 #include <map>
 #include <stdexcept>
 #include <time.h>
+#include <mutex>
 
 #include "CCDB/Calibration.h"
 
 namespace ccdb
 {
+/** Creates and caches Calibration objects per connection string, run, variation and time.
+ *
+ * Ownership: the caller may delete a Calibration returned by MakeCalibration at any time;
+ * it then unregisters itself and a later MakeCalibration creates a new one.
+ * The generator does not delete Calibrations. On destruction it closes the database
+ * connections of the Calibrations that are still alive and detaches from them, so they
+ * stay valid objects (they reconnect on the next request) and can be deleted later.
+ *
+ * All methods are thread safe.
+ */
 class CalibrationGenerator {
+    friend class Calibration;
 public:
     
     /** @brief Creates @see Calibration by run number and desirable variation
@@ -47,7 +59,16 @@ public:
      * @parameter [in] time - default time of constants
      * @return Calibration*
      */
-    virtual Calibration* MakeCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time=0); 
+    virtual Calibration* MakeCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time=0);
+
+
+    /** @brief Deletes (and so disconnects) all Calibrations created by this generator that are still alive
+     *
+     * For users that leave the Calibrations to the generator. Must not be used if
+     * something else (e.g. a JANA calibration wrapper) deletes them as well.
+     * Pointers returned by MakeCalibration before this call become invalid.
+     */
+    void DeleteCalibrations();
 
 
     /** @brief gets string hash based on  connectionString, run, and variation
@@ -105,6 +126,11 @@ private:
     CalibrationGenerator(const CalibrationGenerator& rhs);
     CalibrationGenerator& operator=(const CalibrationGenerator& rhs);
     static string GetConnectionErrorMessage( Calibration * calib );
+
+    /// Called by ~Calibration so the generator never hands out a deleted object
+    void ForgetCalibration(Calibration* calib);
+
+    std::mutex mMutex;                                          ///Guards the containers and inactivity data below
     std::vector<Calibration *> mCalibrations;					///Created Calibrations
 	std::map<std::string, Calibration*> mCalibrationsByHash;    ///map of connection string => DCallibration
     

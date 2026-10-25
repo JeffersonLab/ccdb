@@ -74,4 +74,6 @@ TEST_CASE("CCDB/SQLiteDataProvider/Directories","Directories tests")
     REQUIRE(prov->DeleteDirectory("/test/testdir"));
     Log::SetErrorLevel(3); //suppress log messages
 	*/
+
+	delete prov;
 }

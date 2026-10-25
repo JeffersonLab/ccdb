@@ -1,10 +1,13 @@
 #include <iostream>
 #include <sstream>
+#include <memory>
+#include <algorithm>
 
 #include "CalibrationGenerator.h"
 #include "SQLiteCalibration.h"
 #include "Providers/SQLiteDataProvider.h"
 #include "Helpers/TimeProvider.h"
+#include "Helpers/StringUtils.h"
 #ifdef CCDB_MYSQL
 #include "CCDB/MySQLCalibration.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
@@ -34,7 +37,7 @@ namespace ccdb
             isMySql = true;  //It is mysql
 
             #ifndef CCDB_MYSQL
-            throw std::logic_error("Cannot be used with MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using with-mysql=true flag. The connection string: " + connectionString);
+            throw std::logic_error("Cannot be used with MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using with-mysql=true flag. The connection string: " + StringUtils::MaskPassword(connectionString));
             #endif //CCDB_MYSQL
         }
         else
@@ -43,21 +46,21 @@ namespace ccdb
             if(connectionString.find("sqlite://")!=0)
             {
                 //something wrong here!!!
-                throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now. The connection string: " + connectionString);
+                throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now. The connection string: " + StringUtils::MaskPassword(connectionString));
             }
         }
 
         //now we create calibration
-        Calibration * calib = CreateCalibration(isMySql, run, variation, time);
+        std::unique_ptr<Calibration> calib(CreateCalibration(isMySql, run, variation, time));
 
-        //Connect!
+        //Connect! (throws on failure, unique_ptr then deletes the object)
         if(!calib->Connect(connectionString))
         {
-            string message = GetConnectionErrorMessage(calib);
+            string message = GetConnectionErrorMessage(calib.get());
             throw std::logic_error(message);
         }
 
-        return calib;
+        return calib.release();
     }
 
     //______________________________________________________________________________
@@ -86,6 +89,49 @@ namespace ccdb
     //______________________________________________________________________________
     CalibrationGenerator::~CalibrationGenerator()
     {
+        // Calibrations may be owned and deleted by the users of MakeCalibration (e.g. JANA wrappers),
+        // so they are not deleted here. Only their connections are closed.
+        std::lock_guard<std::mutex> lock(mMutex);
+        for (auto calib : mCalibrations)
+        {
+            calib->mGenerator = nullptr;
+            try {
+                if(!calib->GetProviderIsLocked() && calib->IsConnected()) calib->Disconnect();
+            }
+            catch (const std::exception& ex) {
+                std::cerr << "CCDB warning: failed to disconnect calibration: " << ex.what() << std::endl;
+            }
+        }
+        mCalibrations.clear();
+        mCalibrationsByHash.clear();
+    }
+
+
+    //______________________________________________________________________________
+    void CalibrationGenerator::DeleteCalibrations()
+    {
+        std::vector<Calibration *> calibrations;
+        {
+            std::lock_guard<std::mutex> lock(mMutex);
+            calibrations.swap(mCalibrations);
+            mCalibrationsByHash.clear();
+            for (auto calib : calibrations) calib->mGenerator = nullptr;
+        }
+
+        for (auto calib : calibrations) delete calib;
+    }
+
+
+    //______________________________________________________________________________
+    void CalibrationGenerator::ForgetCalibration(Calibration* calib)
+    {
+        std::lock_guard<std::mutex> lock(mMutex);
+        mCalibrations.erase(std::remove(mCalibrations.begin(), mCalibrations.end(), calib), mCalibrations.end());
+        for (auto it = mCalibrationsByHash.begin(); it != mCalibrationsByHash.end(); )
+        {
+            if (it->second == calib) it = mCalibrationsByHash.erase(it);
+            else ++it;
+        }
     }
 
 
@@ -104,6 +150,10 @@ namespace ccdb
         //hash of requested variation
         string calibHash = GetCalibrationHash(connectionString, run, variation, time);
 
+        // Lookup, creation and registration must be atomic: concurrent callers would otherwise
+        // corrupt the containers or open duplicate connections for the same key
+        std::lock_guard<std::mutex> lock(mMutex);
+
         //first we look maybe we already have such a calibration
         if(mCalibrationsByHash.count(calibHash))
         {
@@ -117,7 +167,7 @@ namespace ccdb
             isMySql = true;  //It is mysql
 
             #ifndef CCDB_MYSQL
-            throw std::logic_error("Cannot be used with MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using with-mysql=true flag. The connection string: " + connectionString);
+            throw std::logic_error("Cannot be used with MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using with-mysql=true flag. The connection string: " + StringUtils::MaskPassword(connectionString));
             #endif //CCDB_MYSQL
         }
         else
@@ -126,21 +176,23 @@ namespace ccdb
             if(connectionString.find("sqlite://")!=0)
             {
                 //something wrong here!!!
-                throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now. The connection string: " + connectionString);
+                throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now. The connection string: " + StringUtils::MaskPassword(connectionString));
             }
         }
 
         //now we create calibration
-        Calibration * calib = CreateCalibration(isMySql, run, variation, time);
+        std::unique_ptr<Calibration> newCalib(CreateCalibration(isMySql, run, variation, time));
 
-        //Connect!
-        if(!calib->Connect(connectionString))
+        //Connect! (throws on failure, unique_ptr then deletes the object)
+        if(!newCalib->Connect(connectionString))
         {
-            string message = GetConnectionErrorMessage(calib);
+            string message = GetConnectionErrorMessage(newCalib.get());
             throw std::logic_error(message);
         }
 
         //add it to arrays
+        Calibration * calib = newCalib.release();
+        calib->mGenerator = this;
         mCalibrationsByHash[calibHash] = calib;
         mCalibrations.push_back(calib);
 
@@ -178,8 +230,11 @@ namespace ccdb
 
         //right now our hash will be just a summ of strings
 
+        // A separator that cannot appear in the parts keeps e.g. (run=12, variation="3x") and
+        // (run=123, variation="x") apart
+        const char separator = '\x1f';
         ostringstream strstrm;
-        strstrm<<connectionString<<run<<variation<<time;
+        strstrm<<connectionString<<separator<<run<<separator<<variation<<separator<<time;
         return strstrm.str();
     }
 
@@ -193,6 +248,8 @@ namespace ccdb
          *  If user would like to use his own timer (or event) to check for inactive connections
          *  He/she should set SetUseInactiveCheckTimer(false) and call UpdateInactivity manually
          */
+
+        std::lock_guard<std::mutex> lock(mMutex);
 
         if(mMaxInactiveTime==0) return;
 
