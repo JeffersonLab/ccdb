@@ -1,8 +1,8 @@
 """Database access for the web GUI: one SQLAlchemy engine per process, one session per request.
 
-The engine owns the connection pool. It is created on the first request, not when the app is built,
-for two reasons: `ccdb gui` sets the connection string after creating the app, and gunicorn forks
-workers after importing the app, and a pool created before the fork would be shared by every worker.
+The engine owns the connection pool. It is created on the first request, not when the app is built:
+gunicorn forks workers after importing the app, and a pool created before the fork would be shared
+by every worker. `ccdb gui` runs a server that does not fork and creates the engine before it starts.
 The schema version check runs once, when the engine is created.
 
 Each request gets an AlchemyProvider attached to the shared engine and a session from a

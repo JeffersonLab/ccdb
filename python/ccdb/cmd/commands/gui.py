@@ -5,12 +5,12 @@ import logging
 import os
 
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
-from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
+from ccdb.provider import hide_password
 
 
 # logger must be set to ccdb.cmd.commands.<command name>
-log = logging.getLogger("ccdb.cmd.commands.empty")
+log = logging.getLogger("ccdb.cmd.commands.gui")
 
 
 #*********************************************************************
@@ -25,7 +25,7 @@ class WebGui(CliCommandBase):
     command = "gui"
     name = "WebGui"
     short_descr = "Starts local web GUI"
-    uses_db = True
+    uses_db = False  # the web GUI opens its own engine; a CLI connection would sit idle for the server's lifetime
 
     def execute(self, args):
         """This is an entry point for each time the command is called"""
@@ -35,17 +35,19 @@ class WebGui(CliCommandBase):
             log.debug(LogFmt("{0}WebGui is in charge{0}\\".format(os.linesep)))
             log.debug(LogFmt(" |- arguments : '" + "' '".join(args)+"'"))
 
-        # get provider class which has functions for all CCDB database operation
         assert self.context
-        provider = self.context.provider
-        assert isinstance(provider, AlchemyProvider)
-
         parsed_args = self.process_arguments(args)
+        connection_string = self.context.connection_string
+        app = webgui.cerate_ccdb_flask_app(connection_string)
 
-        app = webgui.cerate_ccdb_flask_app()
-        app.config["CCDB_CONNECTION"] = self.context.connection_string
-        app.config["db"] = provider
-        app.config["cli_context"] = self.context
+        # Connect and check the schema before the server starts, so a wrong connection string fails here
+        # instead of at the first page. The dev server does not fork, so creating the engine now is safe.
+        try:
+            webgui.db.get_database(app).ensure_engine()
+        except Exception as ex:
+            log.critical("CCDB web GUI unable to connect to {0}. Exception details: {1}".format(
+                hide_password(connection_string), hide_password(str(ex), connection_string)))
+            return False
 
         if parsed_args.port:
             app.run(port=parsed_args.port)

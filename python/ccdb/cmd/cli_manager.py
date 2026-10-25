@@ -12,6 +12,8 @@ import ccdb.cmd.commands
 import ccdb.path_utils
 from ccdb.brace_log_message import BraceMessage as lfm
 from ccdb import AlchemyProvider
+from ccdb.provider import hide_password
+from sqlalchemy.engine import make_url
 from .cli_command import CliCommandBase
 from .cli_context import CliContext
 from . import themes
@@ -155,6 +157,7 @@ class CliManager:
         workargs = args[start_index:]
 
         # parse loop
+        ask_password = False
         i = 0
         while i < len(workargs):
             token = workargs[i]
@@ -198,14 +201,13 @@ class CliManager:
                         self.context.current_variation = workargs[i]
                     i += 1
 
-                # we have to ask mysql password
-                if "--mysql-pwd" in args[start_index:] and self.context.connection_string.startswith("mysql"):
-                    print("Enter MySql password: ")
-                    password = getpass.getpass()
-                    self.context.connection_string = self.context.connection_string.replace("@", ":" + password + "@")
-                    i += 1
+                # ask the MySQL password once, after -c had its chance to change the connection string
+                elif token == "--mysql-pwd":
+                    ask_password = True
             else:
                 # looks like is is a command
+                if ask_password:
+                    self.ask_mysql_password()
                 command = token
                 command_args = workargs[i:]
                 try:
@@ -217,8 +219,19 @@ class CliManager:
                     else:
                         raise
 
+        if ask_password:
+            self.ask_mysql_password()
         if self.context.is_interactive:
             self.interactive_loop()
+
+    def ask_mysql_password(self):
+        """Prompts for the MySQL password and puts it into the connection string, URL-escaped"""
+        if not self.context.connection_string.startswith("mysql"):
+            log.warning("(!) Warning. --mysql-pwd is ignored: the connection string is not a MySQL one")
+            return
+        password = getpass.getpass("Enter MySql password: ")
+        url = make_url(self.context.connection_string).set(password=password)
+        self.context.connection_string = url.render_as_string(hide_password=False)
 
     # --------------------------------
     #   executes text as command
@@ -343,14 +356,15 @@ class CliManager:
             log.debug(" |- check_connection(util){0} | \\".format(os.linesep))
             log.debug(" |  |- utility '{}' requires DB. CCDB not yet connected. Connecting.".format(util.name))
             log.debug(" |  |- connection string is: '{}{}{}'"
-                      .format(self.theme.Accent, self.context.connection_string, self.theme.Reset))
+                      .format(self.theme.Accent, hide_password(self.context.connection_string), self.theme.Reset))
 
         # connecting
         try:
             self._prov.connect(self.context.connection_string)
         except Exception as ex:
+            connection_string = self.context.connection_string
             log.critical("CCDB provider unable to connect to {0}. Aborting command. Exception details: {1}".format(
-                self.context.connection_string, ex))
+                hide_password(connection_string), hide_password(str(ex), connection_string)))
             return False
 
         # skip user for sqlite
@@ -363,7 +377,7 @@ class CliManager:
             if self.provider.connection_string.startswith("mysql+mysqlconnector://"):
                 log.debug(" |  |- no module MySQLdb. Fallback to mysql-connector used")
             log.debug(
-                " |  |- connection string used: '" + self.theme.Accent + self.provider.connection_string + self.theme.Reset + "'")
+                " |  |- connection string used: '" + self.theme.Accent + hide_password(self.provider.connection_string) + self.theme.Reset + "'")
             log.debug(" |  |- connection: " + self.theme.Success + " successful " + self.theme.Reset)
 
         return True
@@ -497,7 +511,7 @@ class CliManager:
 
     def print_info(self):
         log.info("Login as   : '" + self.context.user_name + "'")
-        log.info("Connect to : '" + self.context.connection_string + "'")
+        log.info("Connect to : '" + hide_password(self.context.connection_string) + "'")
         log.info("Variation  : '" + self.context.current_variation + "'")
         log.info("Default run: '" + str(self.context.current_run) + "'")
 

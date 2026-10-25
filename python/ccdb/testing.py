@@ -140,7 +140,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     if args.rmysql:
-        print("Recreate MySQL command. connection_string={}".format(mysql_test_connection_str))
+        print("Recreate MySQL command. connection_string={}".format(ccdb.provider.hide_password(mysql_test_connection_str)))
         recreate_mysql_db2(mysql_test_connection_str)
     else:
         print("# path to CCDB_HOME")

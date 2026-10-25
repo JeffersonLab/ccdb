@@ -31,6 +31,27 @@ import posixpath
 log = logging.getLogger("ccdb.provider")
 
 
+def hide_password(text, connection_string=None):
+    """
+    Masks a database password for logs and messages: 'mysql://user:secret@host/db' → 'mysql://user:***@host/db'
+
+    With one argument, text is a connection string. With connection_string given, text is any message
+    (an exception text, for example) and every copy of that connection string and its password in it is masked.
+    The mask reaches up to the last '@', so a password with an unescaped '@' is hidden whole.
+    """
+    pattern = re.compile(r"^([A-Za-z0-9+.\-]+://[^:/@]*:).*@")
+    if connection_string is None:
+        return pattern.sub(r"\1***@", text)
+    masked = text.replace(connection_string, hide_password(connection_string))
+    try:
+        password = sqlalchemy.engine.make_url(connection_string).password
+    except Exception:
+        password = None
+    if password:
+        masked = masked.replace(password, "***")
+    return masked
+
+
 class AlchemyProvider:
     """
     CCDB data provider that uses SQLAlchemy for accessing databases
@@ -56,6 +77,7 @@ class AlchemyProvider:
         self.logging_enabled = True
         self.engine = None  # is set after connect function
         self.session = None  # is set after connect function
+        self._owns_engine = False  # True when connect() created the engine, so disconnect() disposes it
         self._no_structure_message = "No database structure found. Possibly you are trying to connect " + \
                                      "to wrong SQLite file or to MySQL database without schema. " + \
                                      "Original SqlAlchemy error is: " + os.linesep + os.linesep + "{0}"
@@ -74,7 +96,10 @@ class AlchemyProvider:
         :param connection_string: connection string
         :param check_version: Instantly check the schema version
         :type connection_string: str
+        :raises RuntimeError: the provider is connected already; call disconnect() first
         """
+        if self._is_connected:
+            raise RuntimeError("connect() called on a provider that is connected already; call disconnect() first")
         try:
             engine = sqlalchemy.create_engine(connection_string)
         except ImportError as err:
@@ -91,9 +116,18 @@ class AlchemyProvider:
         session_type = sqlalchemy.orm.sessionmaker(bind=engine)
         session = session_type()
 
-        # connect() may be called on a connected provider to switch databases; attach() refuses that, so reset first
-        self._is_connected = False
-        self.attach(engine, session, check_version)
+        try:
+            self.attach(engine, session, check_version)
+        except Exception:
+            # nobody else holds this session and engine. The attach error is what the caller needs,
+            # so a failing cleanup is only logged: raising here would replace that error
+            for cleanup in (session.close, engine.dispose):
+                try:
+                    cleanup()
+                except Exception as cleanup_error:
+                    log.warning("Cleanup after a failed connect raised: %r", cleanup_error)
+            raise
+        self._owns_engine = True
         self._connection_string = connection_string
 
     # ------------------------------------------------
@@ -119,18 +153,16 @@ class AlchemyProvider:
         :raises DatabaseStructureError: the database has no CCDB schema or the wrong schema version
         """
         if not isinstance(engine, sqlalchemy.engine.Engine):
-            raise TypeError("attach() expects 'engine' to be a sqlalchemy.engine.Engine, got {0}"
-                            .format(type(engine).__name__))
+            raise TypeError(f"attach() expects 'engine' to be a sqlalchemy.engine.Engine, got {type(engine).__name__}")
         if not isinstance(session, (sqlalchemy.orm.Session, sqlalchemy.orm.scoped_session)):
-            raise TypeError("attach() expects 'session' to be a sqlalchemy.orm.Session or scoped_session, got {0}"
-                            .format(type(session).__name__))
+            raise TypeError(f"attach() expects 'session' to be a sqlalchemy.orm.Session or scoped_session, got {type(session).__name__}")
         try:
             bound_engine = session.get_bind()
         except sqlalchemy.exc.UnboundExecutionError:
             raise ValueError("attach() expects a session bound to the given engine, but the session has no bind")
         if bound_engine is not engine:
             raise ValueError("attach() expects the session to be bound to the given engine, "
-                             "but it is bound to {0}".format(bound_engine))
+                             f"but it is bound to {bound_engine}")
         if self._is_connected:
             raise RuntimeError("attach() called on a provider that is connected already; call disconnect() first")
         if check_version:
@@ -138,6 +170,7 @@ class AlchemyProvider:
 
         self.engine = engine
         self.session = session
+        self._owns_engine = False  # the caller owns the engine; connect() sets True for its own
         self._is_connected = True
         self._connection_string = engine.url.render_as_string(hide_password=False)
 
@@ -149,8 +182,8 @@ class AlchemyProvider:
         try:
             vers_rec = session.query(CcdbSchemaVersion).first()
             if vers_rec.version != 5:
-                message = "Version mismatch. The database schema version is '{0}'. " \
-                          "This CCDB version works with schema version 5".format(vers_rec.version)
+                message = f"Version mismatch. The database schema version is '{vers_rec.version}'. " \
+                          "This CCDB version works with schema version 5"
                 raise DatabaseStructureError(message)
         except OperationalError as err:
             if "no such table" in str(err):
@@ -162,10 +195,17 @@ class AlchemyProvider:
     # Closes connection to data
     # ------------------------------------------------
     def disconnect(self):
-        """Closes connection to database"""
-        # TODO close pool logic???
+        """
+        Closes the session. Disposes the engine (its connection pool) when connect() created it;
+        an engine given to attach() belongs to the caller and stays open.
+        Safe to call on a provider that never connected or whose connect() failed.
+        """
         self._is_connected = False
-        self.session.close()
+        if self.session is not None:
+            self.session.close()
+        if self._owns_engine and self.engine is not None:
+            self.engine.dispose()
+        self._owns_engine = False
 
     # -------------------------------------------------
     # indicates ether the connection is open or not

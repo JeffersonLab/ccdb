@@ -33,7 +33,7 @@ def get_ccdb_home_path():
 
 
 # import the other parts (basically forwards names to ccdb.xxx)
-from .provider import AlchemyProvider
+from .provider import AlchemyProvider, hide_password
 from .model import Variation, RunRange, Assignment, ConstantSet, Directory, TypeTable, TypeTableColumn, INFINITE_RUN
 from .table_file import TextFileDOM, read_ccdb_text_file, read_namevalue_text_file
 from .cmd.themes import NoColorTheme, ColoredTheme
@@ -126,12 +126,12 @@ def init_ccdb_console():
     # connection string
     if "CCDB_CONNECTION" in os.environ:
         context.connection_string = os.environ["CCDB_CONNECTION"]
-        logger.debug("Set connection string from $CCDB_CONNECTION :" + context.connection_string)
+        logger.debug("Set connection string from $CCDB_CONNECTION :" + hide_password(context.connection_string))
     else:
         # fallback to jana calib url
         if "JANA_CALIB_URL" in os.environ:
             jana_url = os.environ["JANA_CALIB_URL"]
-            logger.debug("$CCDB_CONNECTION was not found. Found JANA_CALIB_URL ('"+jana_url+"'). Try use it")
+            logger.debug("$CCDB_CONNECTION was not found. Found JANA_CALIB_URL ('" + hide_password(jana_url) + "'). Try use it")
 
             if jana_url.startswith("mysql://") or jana_url.startswith("sqlite://"):
                 context.connection_string = jana_url

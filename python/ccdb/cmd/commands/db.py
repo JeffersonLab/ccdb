@@ -3,7 +3,7 @@ import os
 
 import ccdb.model
 from ccdb.model import Assignment, CcdbSchemaVersion
-from ccdb.provider import AlchemyProvider
+from ccdb.provider import AlchemyProvider, hide_password
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import BraceMessage as LogFmt
 from ccdb.sql.mysql_schema import init_mysql_database
@@ -116,7 +116,7 @@ class Database(CliCommandBase):
             return self.db_base_info()
 
     def db_init(self):
-        log.debug(f" |- Initializing database : '{self.context.connection_string}'")
+        log.debug(f" |- Initializing database : '{hide_password(self.context.connection_string)}'")
         log.debug(f" |- This script path : '{ os.path.abspath(__file__) }'")
         provider = self.context.provider
         provider.connect(connection_string=self.context.connection_string, check_version=False)
@@ -128,7 +128,7 @@ class Database(CliCommandBase):
         return True
 
     def db_upgrade(self):
-        log.debug(f" |- Upgrading database : '{self.context.connection_string}'")
+        log.debug(f" |- Upgrading database : '{hide_password(self.context.connection_string)}'")
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
         provider.connect(connection_string=self.context.connection_string, check_version=False)
@@ -154,7 +154,7 @@ class Database(CliCommandBase):
         provider.connect(self.context.connection_string, False)
         version = provider.session.query(CcdbSchemaVersion).one()
         assert isinstance(version, CcdbSchemaVersion)
-        print(f"Connection to: {self.context.connection_string}")
+        print(f"Connection to: {hide_password(self.context.connection_string)}")
         print(f"Schema version: {version.version}")
         return True
 

@@ -1,6 +1,6 @@
 import sys
 from ccdb.model import User
-from ccdb.provider import AlchemyProvider
+from ccdb.provider import AlchemyProvider, hide_password
 from ccdb.errors import UserExistsError
 import shlex
 import sys
@@ -142,7 +142,7 @@ def main():
         print("No user names found. Script continues to delete somebody if --recreate flag is given...")
         exit(1)
 
-    print("Connecting to '" + connection_str + "'")
+    print("Connecting to '" + hide_password(connection_str) + "'")
 
     provider = get_provider(connection_str)
     provider.get_root_directory()   # this will load directories and ensure that ccdb structure is in place
