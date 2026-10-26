@@ -26,7 +26,7 @@
 {%- set section = {
       'directory_tree': 'tables', 'versions': 'tables', 'show_request': 'tables',
       'assignment_json': 'tables', 'assignment_text': 'tables',
-      'variations': 'variations', 'compare_variations': 'variations', 'test_request': 'request', 'log_records': 'logs', 'documentation': 'doc'
+      'variations': 'variations', 'compare_variations': 'variations', 'compare_assignments': 'compare', 'compare_json': 'compare', 'test_request': 'request', 'log_records': 'logs', 'log_record': 'logs', 'documentation': 'doc'
     }.get(request.endpoint, '') -%}
 <nav class="navbar navbar-expand bg-body-tertiary border-bottom sticky-top">
   <div class="container-fluid">
@@ -57,6 +57,7 @@
       <nav class="nav flex-column py-md-3">
         <a class="nav-link {{ 'active' if section == 'tables' }}" href="{{ url_for('directory_tree') }}"><svg class="ico me-2"><use href="#i-table"/></svg>Tables</a>
         <a class="nav-link {{ 'active' if section == 'variations' }}" href="{{ url_for('variations') }}"><svg class="ico me-2"><use href="#i-folder"/></svg>Variations</a>
+        <a class="nav-link {{ 'active' if section == 'compare' }}" href="{{ url_for('compare_assignments') }}"><svg class="ico me-2"><use href="#i-compare"/></svg>Compare</a>
         <a class="nav-link {{ 'active' if section == 'request' }}" href="{{ url_for('test_request') }}"><svg class="ico me-2"><use href="#i-search"/></svg>Request</a>
         <a class="nav-link {{ 'active' if section == 'logs' }}" href="{{ url_for('log_records') }}"><svg class="ico me-2"><use href="#i-info"/></svg>Logs</a>
         <a class="nav-link {{ 'active' if section == 'doc' }}" href="{{ url_for('documentation') }}"><svg class="ico me-2"><use href="#i-download"/></svg>Documentation</a>

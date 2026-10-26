@@ -53,8 +53,16 @@ if (form && target) {
   });
   target.addEventListener('click', event => {
     const link = event.target.closest('a.page-link, a.sort');
-    if (!link || !link.getAttribute('href')) return;
-    event.preventDefault();
-    load(link.getAttribute('href'));
+    if (link && link.getAttribute('href')) {
+      event.preventDefault();
+      load(link.getAttribute('href'));
+      return;
+    }
+    // A row marked data-href opens its record on a plain click outside links and buttons, unless the click ended a
+    // text selection. Ctrl/⌘ opens a new tab; the row's real link (the Created stamp) serves keyboards and middle clicks.
+    const row = event.target.closest('tr[data-href]');
+    if (!row || event.target.closest('a, button') || String(getSelection()).length) return;
+    if (event.ctrlKey || event.metaKey) window.open(row.dataset.href, '_blank');
+    else location.assign(row.dataset.href);
   });
 }

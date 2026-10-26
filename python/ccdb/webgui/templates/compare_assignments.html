@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Compare{% if table %} {{ table.path }}{% endif %} · CCDB{% endblock %}
+
+{% block page_header %}
+<h1 class="h3 mb-1">Compare assignments</h1>
+<p class="text-body-secondary small mb-3">Two sets of constants of one table side by side: two calibration passes, the same request at two times, a variation against its parent. Name each side by its request string <code>/path/table:run:variation[:date]</code> or its database id, or build it from the parts.</p>
+{% endblock %}
+
+{% block content %}
+{#- A plain GET form: the server composes the request strings and redirects to the canonical ?a=…&b=… URL, so every
+    comparison has a shareable address. Once both sides resolve, the form folds to leave the room to the result. -#}
+<details class="mb-3" {{ 'open' if not comparison }}>
+  <summary class="btn btn-outline-secondary btn-sm {{ 'd-none' if not comparison }}">Change the sides</summary>
+  <form id="compare-form" method="get" class="card mt-2" style="max-width: 60rem">
+    <div class="card-body row g-3">
+      <div class="col-12">
+        <label for="table" class="form-label">Table</label>
+        <input id="table" name="table" class="form-control cell-mono" list="table-paths" placeholder="/directory/table" autocomplete="off" spellcheck="false" value="{{ table_path }}">
+        <datalist id="table-paths">
+          {% for path in table_paths %}<option value="{{ path }}"></option>{% endfor %}
+        </datalist>
+        {% if errors.table %}<div class="alert alert-danger py-1 mt-2 mb-0" data-side="table">{{ errors.table }}</div>
+        {% else %}<div class="form-text">Start typing to pick from {{ table_paths | length }} tables; the variation lists follow the table.</div>{% endif %}
+      </div>
+      {% for side in ('a', 'b') %}
+      <div class="col-md-6">
+        <fieldset class="border rounded p-2 h-100">
+          <legend class="h6 w-auto px-1 mb-1">Side {{ side | upper }}</legend>
+          <label for="side-{{ side }}" class="form-label small mb-1 d-block">Request string or database id</label>
+          <input id="side-{{ side }}" name="{{ side }}" class="form-control form-control-sm cell-mono" value="{{ sides[side] }}" placeholder="/path/table:run:variation[:date] or id" autocomplete="off" spellcheck="false">
+          <div class="form-text mt-1 mb-1">or build it from the parts (run 0 and <code>default</code> when empty):</div>
+          <div class="row g-2">
+            <div class="col-5"><select name="{{ side }}_variation" class="form-select form-select-sm" aria-label="Variation of side {{ side | upper }}">
+              <option value="">variation…</option>
+              {% for name in variation_names %}<option value="{{ name }}">{{ name }}</option>{% endfor %}
+            </select></div>
+            <div class="col-3"><input name="{{ side }}_run" type="number" min="0" class="form-control form-control-sm" placeholder="Run" aria-label="Run of side {{ side | upper }}"></div>
+            <div class="col-4"><input name="{{ side }}_time" class="form-control form-control-sm cell-mono" placeholder="Date" pattern="\d{4}(-\d{2}(-\d{2}(_\d{2}(-\d{2}(-\d{2})?)?)?)?)?" aria-label="Date of side {{ side | upper }}" title="Constants as they were at that moment: 2020-01-04 or 2020-01-04_10-03-20; a partial date means its end"></div>
+          </div>
+          {% if errors[side] %}<div class="alert alert-danger py-1 mt-2 mb-0" data-side="{{ side }}">{{ errors[side] }}</div>
+          {% elif resolved[side] %}<div class="form-text mt-2 text-break">Resolved to <a href="{{ url_for('show_request', request=resolved[side].assignment.request) }}">{{ resolved[side].assignment.request }}</a></div>{% endif %}
+        </fieldset>
+      </div>
+      {% endfor %}
+      <div class="col-12"><button type="submit" class="btn btn-primary px-4">Compare</button></div>
+    </div>
+  </form>
+</details>
+
+{% if comparison %}
+{%- set a = resolved.a.assignment %}{% set b = resolved.b.assignment %}
+<div class="card mb-3" style="max-width: 60rem">
+  <div class="card-body py-2">
+    {#- The golden comparison reads this table: label, A, B; a differing pair carries data-changed. -#}
+    <table class="table table-sm mb-0 meta" id="compare-meta">
+      <thead><tr><th scope="col"></th><th scope="col">A</th><th scope="col">B</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Request</th>
+          {% for each in (a, b) %}<td class="cell-mono text-break"><a href="{{ url_for('show_request', request=each.request) }}" title="Open this assignment">{{ each.request }}</a></td>{% endfor %}</tr>
+        {% for label, value_a, value_b, changed in meta %}
+        <tr><th scope="row">{{ label }}</th><td {% if changed %}class="diff-changed" data-changed{% endif %} style="white-space: pre-line">{{ value_a }}</td><td {% if changed %}class="diff-changed" data-changed{% endif %} style="white-space: pre-line">{{ value_b }}</td></tr>
+        {% endfor %}
+        <tr><th scope="row">Database id</th><td>{{ a.id }}</td><td>{{ b.id }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+  <h2 class="h5 m-0">Data <span class="text-body-secondary fw-normal small">{{ comparison.rows | length }} row{{ "s" if comparison.rows | length != 1 }} × {{ comparison.columns | length }} column{{ "s" if comparison.columns | length != 1 }}</span></h2>
+  <p class="m-0 small" id="diff-summary" data-cells="{{ comparison.cells }}" data-changed-cells="{{ comparison.changed_cells }}" data-changed-rows="{{ comparison.changed_rows | length }}">
+    {%- if comparison.changed_cells %}<span class="diff-changed px-1 rounded">{{ comparison.changed_cells }} of {{ comparison.cells }} cells changed</span> in {{ comparison.changed_rows | length }} row{{ 's' if comparison.changed_rows | length != 1 }}{% else %}No cell differs.{% endif -%}
+  </p>
+</div>
+{#- Every switch is a link: the view stays shareable and works without JavaScript. -#}
+<div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+  <div class="btn-group btn-group-sm" role="group" aria-label="View">
+    {% for name, label in [('cells', 'Per cell'), ('columns', 'Per column'), ('tables', 'Table to table')] %}
+    <a class="btn btn-outline-secondary {{ 'active' if view == name }}" href="{{ switch_url(view=none if name == 'cells' else name) }}" {% if view == name %}aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </div>
+  <div class="btn-group btn-group-sm" role="group" aria-label="Data layout">
+    {% for name, label in [('auto', 'Auto'), ('horizontal', 'Horizontal'), ('vertical', 'Vertical')] %}
+    <a class="btn btn-outline-secondary {{ 'active' if layout == name }}" href="{{ switch_url(layout=none if name == 'auto' else name) }}" {% if layout == name %}aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </div>
+  <div class="btn-group btn-group-sm" role="group" aria-label="Rows">
+    <a class="btn btn-outline-secondary {{ 'active' if not changed_only }}" href="{{ switch_url(changed=0) }}" {% if not changed_only %}aria-current="page"{% endif %}>All rows</a>
+    <a class="btn btn-outline-secondary {{ 'active' if changed_only }}" href="{{ switch_url(changed=1) }}" {% if changed_only %}aria-current="page"{% endif %}>Changed rows</a>
+  </div>
+</div>
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+  <p class="text-body-secondary small m-0" data-total="{{ page.total }}" data-pages="{{ page.pages }}">
+    {% if page.total %}Rows {{ page.first_row - 1 }}–{{ page.last_row - 1 }} of {{ page.total }}{% if changed_only %} with a change{% endif %}, counted from 0{% else %}No row has a change.{% endif %}
+  </p>
+  {% include '_pagination.html' %}
+</div>
+{% include '_compare_data.html' %}
+{% endif %}
+{% endblock %}
+
+{% block page_scripts %}<script type="module" src="{{ url_for('static', filename='js/compare_assignments.js') }}"></script>{% endblock %}

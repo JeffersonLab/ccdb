@@ -1,16 +1,18 @@
-{#- Page navigation for a queries.Page. Expects `page` in the context; page_url() and page_window() come from views. -#}
+{#- Page navigation for a queries.Page. Expects `page` in the context; page_url() and page_window() come from views.
+    A page may set `page_href` (a callable taking the page number) to build its own links. -#}
+{% set href = page_href if page_href is defined else page_url %}
 {% if page.pages > 1 %}
 <nav aria-label="Pages">
   <ul class="pagination pagination-sm mb-0 flex-wrap">
-    <li class="page-item {{ 'disabled' if not page.has_prev }}"><a class="page-link" href="{{ page_url(page.page - 1) }}" aria-label="Previous">‹</a></li>
+    <li class="page-item {{ 'disabled' if not page.has_prev }}"><a class="page-link" href="{{ href(page.page - 1) }}" aria-label="Previous">‹</a></li>
     {% for number in page_window(page) %}
       {% if number is none %}
         <li class="page-item disabled"><span class="page-link">…</span></li>
       {% else %}
-        <li class="page-item {{ 'active' if number == page.page }}"><a class="page-link" href="{{ page_url(number) }}">{{ number }}</a></li>
+        <li class="page-item {{ 'active' if number == page.page }}"><a class="page-link" href="{{ href(number) }}">{{ number }}</a></li>
       {% endif %}
     {% endfor %}
-    <li class="page-item {{ 'disabled' if not page.has_next }}"><a class="page-link" href="{{ page_url(page.page + 1) }}" aria-label="Next">›</a></li>
+    <li class="page-item {{ 'disabled' if not page.has_next }}"><a class="page-link" href="{{ href(page.page + 1) }}" aria-label="Next">›</a></li>
   </ul>
 </nav>
 {% endif %}

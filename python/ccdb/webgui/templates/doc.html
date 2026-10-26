@@ -32,10 +32,16 @@
         <dd class="col-sm-9">A request for a variation that has no assignment for the table and run falls back to the variation it inherits from, down to <code>default</code>. See <a href="{{ url_for('variations') }}">Variations</a>.</dd>
         <dt class="col-sm-3">Compare variations</dt>
         <dd class="col-sm-9">The eye of a variation, or <a href="{{ url_for('compare_variations') }}">Compare variations</a>, lists the tables that take their constants from that variation instead of the ones it inherits from: every table with an assignment between the chosen parent and the variation. A run or a time narrows the assignments considered.</dd>
+        <dt class="col-sm-3">Compare assignments</dt>
+        <dd class="col-sm-9"><a href="{{ url_for('compare_assignments') }}">Compare</a>, the Compare button of a table and the buttons of an assignment page put two sets of constants of one table side by side: name each side by its request string or its database id, or build it from the parts. Changed cells are tinted green; a changed number shows its difference on hover. Per cell stacks the B value over the A value, Per column puts them side by side, Table to table shows the two tables one above the other. Changed rows hides the rows without a change (the default above 20 000 cells), and the rows come in pages of 200. The same comparison is served as JSON at <code>/compare/data.json?a=…&amp;b=…</code>.</dd>
         <dt class="col-sm-3">Finding a table</dt>
         <dd class="col-sm-9">The filter box of <a href="{{ url_for('directory_tree') }}">Tables</a> matches text anywhere in a path. With <code>*</code> (any text) or <code>?</code> (one character) the pattern must match a whole name, or a whole path when it contains <code>/</code>, as in <code>ccdb ls</code>. Sort A…Z and Sort by ID order the tree by name or by database id, the order things were created in; the choice stays, like the open directories. The info button of a table, and Show info on the table's own page, tell how many assignments it has and when the last one was added.</dd>
+        <dt class="col-sm-3">Data layout</dt>
+        <dd class="col-sm-9">On an assignment page and on the compare page, Vertical shows the data with one line per row and Horizontal with one line per column, the shape you see on a table with many rows. Auto picks Horizontal for a one-row table with more than two columns, the usual parameter table, and Vertical otherwise. <code>ccdb cat</code> uses the two words the other way round.</dd>
+        <dt class="col-sm-3">Logs</dt>
+        <dd class="col-sm-9">The <a href="{{ url_for('log_records') }}">Logs</a> list truncates long comments. A click on a row, or on its Created stamp, opens the record with the full comment and the objects it affected, linked to their pages while they exist: the assignment, the table, the directory or the variation.</dd>
         <dt class="col-sm-3">Data downloads</dt>
-        <dd class="col-sm-9">Each assignment offers its data as text in the <code>ccdb dump</code> layout and as JSON (columns and rows as strings).</dd>
+        <dd class="col-sm-9">The data table of an assignment comes in pages of 200 rows, every row with its index from 0. The downloads hold everything: the data as text in the <code>ccdb dump</code> layout and as JSON (columns and rows as strings).</dd>
       </dl>
     </div></div>
   </div>

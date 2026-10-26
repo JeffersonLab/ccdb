@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Log record {{ record.id }} · CCDB{% endblock %}
+
+{% block page_header %}
+<h1 class="h3 mb-1">Log record {{ record.id }}</h1>
+<p class="text-body-secondary small mb-3"><a href="{{ url_for('log_records') }}">All log records</a></p>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-body">
+        {#- The golden comparison reads this as the first table: two-cell rows labelled Created, Action, Author, Description, Affected, Database id. -#}
+        <table class="table table-sm mb-0 meta" id="log-meta">
+          <tbody>
+            <tr><th scope="row">Created</th><td>{{ record.created }}</td></tr>
+            <tr><th scope="row">Action</th><td><span class="badge text-bg-{{ {'create': 'success', 'update': 'warning', 'delete': 'danger'}.get(record.action, 'secondary') }}">{{ record.action }}</span></td></tr>
+            <tr><th scope="row">Author</th><td>{{ record.author }}</td></tr>
+            <tr><th scope="row">Description</th><td>{{ record.description }}</td></tr>
+            {#- Affected objects by path or name with a link to their page (views.affected_links); an object that no longer
+                exists keeps the record's words, `table 850`, without a link. -#}
+            <tr><th scope="row">Affected</th><td class="text-break">
+              {%- for label, url in affected %}
+              {%- if url %}<a href="{{ url }}">{{ label }}</a>{% else %}{{ label }}{% endif %}{{ ', ' if not loop.last }}
+              {%- else %}<span class="text-body-secondary">none</span>{% endfor %}
+            </td></tr>
+            <tr><th scope="row">Database id</th><td>{{ record.id }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h6 text-body-secondary">Comment</h2>
+        {#- Comments reach 65 535 characters and 500 lines of aligned program output on the production database:
+            a monospace block that wraps keeps the columns readable and the page inside a phone's width. -#}
+        {% if record.comment %}<pre class="log-comment mb-0">{{ record.comment }}</pre>{% else %}<p class="text-body-secondary mb-0">no comment</p>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

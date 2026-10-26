@@ -2,9 +2,11 @@
 :root {
   --ccdb-tree-line: var(--bs-border-color);
   --ccdb-muted-icon: 0.45;
+  --ccdb-diff-changed: var(--bs-success-bg-subtle);   /* a changed cell on the compare page */
 }
 [data-bs-theme="dark"] {
   --ccdb-tree-line: var(--bs-border-color);
+  --ccdb-diff-changed: var(--bs-success-bg-subtle);
 }
 
 /* inline SVG sprite icons follow the text size and colour */
@@ -51,5 +53,18 @@
 /* row index of the data table: a spreadsheet-like row header, set apart from the first value */
 .table .row-index { color: var(--bs-secondary-color); font-weight: normal; text-align: right; width: 1%; padding-right: .6rem; border-right: 1px solid var(--bs-border-color); }
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+/* a list row that opens its own page (the logs list) */
+tr[data-href] { cursor: pointer; }
+/* a log record's comment: program output with aligned columns, up to 65 535 characters; wraps instead of scrolling sideways */
+.log-comment { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .8125em; }
 /* a collapse trigger carries two labels and shows the one for its state; Bootstrap keeps aria-expanded current */
 [aria-expanded="true"] > .when-collapsed, [aria-expanded="false"] > .when-expanded { display: none; }
+
+/* compare page: a changed cell is tinted; in the per-cell view it stacks the B value over the A value */
+.table .diff-changed, .diff-changed { background-color: var(--ccdb-diff-changed) !important; }
+.diff-changed .diff-a { display: block; color: var(--bs-secondary-color); font-size: .85em; text-decoration: line-through; }
+.diff-changed .diff-b { display: block; }
+/* per-column view: the A cell of a pair sits against its B cell, the pair apart from the next column */
+.table .side-head { color: var(--bs-secondary-color); font-weight: normal; font-size: .8em; text-align: center; }
+.table .side-a { border-left: 1px solid var(--bs-border-color); }
+.table .side-b { border-right: 1px solid var(--bs-border-color); }

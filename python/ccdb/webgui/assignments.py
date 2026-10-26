@@ -69,15 +69,30 @@ def resolve_assignment(db, request_string=None, assignment_id=None):
     return Resolved(assignments[0], exact=exact)
 
 
-def vertical_layout(layout, row_count, column_count):
+def previous_assignment(db, assignment):
+    """The assignment the same request string resolved to before this one was added: the newest one of the same
+    table, run and variation created at least a second earlier; None when there is none.
+
+    Request strings carry seconds, so an assignment created in the same second as this one is not "previous":
+    the two are one to a request string, and this returns what came before both.
+    """
+    before = assignment.created - datetime.timedelta(seconds=1)
+    earlier = db.get_assignments(assignment.constant_set.type_table.path, assignment.run_range.min, assignment.variation.name, before)
+    return earlier[0] if earlier else None
+
+
+def column_lines(layout, row_count, column_count):
     """Whether the data table is shown with one line per column.
 
-    `auto` picks vertical for a single row with more than two columns, the shape of a key-value parameter
-    table, where a wide one-line table reads badly; everything else is horizontal, as `ccdb cat` does.
+    The switch names the forms by the shape the user sees on a many-row table: Vertical is one line per row,
+    Horizontal one line per column (the wide form). `ccdb cat -pv` prints one line per column, so the words
+    are the opposite of the CLI flags; a user decision of 2026-10-25. `auto` picks one line per column for a
+    single row with more than two columns, the shape of a key-value parameter table, where one wide line
+    reads badly; everything else is one line per row.
     """
     if layout == "auto":
         return row_count == 1 and column_count > 2
-    return layout == "vertical"
+    return layout == "horizontal"
 
 
 def run_range_text(assignment):

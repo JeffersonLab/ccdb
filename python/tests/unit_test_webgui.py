@@ -87,6 +87,20 @@ class WebGuiAppTest(unittest.TestCase):
             self.assertIn(label, html)
         self.assertNotIn("Expand all", html)
 
+    def test_log_record_page(self):
+        """every row of the logs list links to its record; the record page shows the full comment and the affected objects"""
+        client = self.make_app(self.connection_string).test_client()
+        html = client.get("/logs").get_data(as_text=True)
+        self.assertRegex(html, r'<tr data-href="/logs/\d+">\s*<td class="text-nowrap"><a class="link-body-emphasis" href="/logs/\d+"')
+        record = client.get("/logs/1")
+        self.assertEqual(record.status_code, 200)
+        page = record.get_data(as_text=True)
+        self.assertIn('id="log-meta"', page)
+        self.assertRegex(page, r"<th scope=\"row\">Affected</th><td class=\"text-break\">\s*user 1\s*</td>")  # the oldest records write `users_1`; users have no page
+        directory = client.get("/logs/2").get_data(as_text=True)  # names directory 5, which the standard content does not have: text, no link
+        self.assertRegex(directory, r'Affected</th><td class="text-break">\s*directory 5\s*</td>')
+        self.assertEqual(client.get("/logs/999999").status_code, 404)
+
     def test_versions_page_rolls_down_the_info_block(self):
         """The versions page carries the table's info rows in a collapsed block; the live-search fragment does not"""
         client = self.make_app(self.connection_string).test_client()

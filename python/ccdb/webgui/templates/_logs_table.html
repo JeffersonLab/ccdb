@@ -1,4 +1,6 @@
 {#- The log table with its row count and page navigation; also the live-search fragment.
+    Every row opens its record: `data-href` for the click handler in table.js, and the Created stamp is the real link
+    (keyboards, new tabs, pages without JavaScript). A button at the row end would sit off-screen on a phone.
     The golden comparison reads the first four cells of a row: created, action, description, author. -#}
 <div id="table-fragment">
   <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
@@ -21,8 +23,8 @@
       </thead>
       <tbody>
         {% for row in page.items %}
-        <tr>
-          <td class="text-nowrap">{{ row.created }}</td>
+        <tr data-href="{{ url_for('log_record', log_id=row.id) }}">
+          <td class="text-nowrap"><a class="link-body-emphasis" href="{{ url_for('log_record', log_id=row.id) }}" title="Open this log record">{{ row.created }}</a></td>
           <td><span class="badge text-bg-{{ {'create': 'success', 'update': 'warning', 'delete': 'danger'}.get(row.action, 'secondary') }}">{{ row.action }}</span></td>
           <td>{{ row.description }}</td>
           <td>{{ row.author }}</td>

@@ -11,19 +11,25 @@ import logging
 
 import ccdb
 from ccdb.errors import ObjectIsNotFoundInDbError
-from ccdb.model import User, TypeTable
+from ccdb.model import User, TypeTable, Variation
 from ccdb.path_utils import parse_time
 import json
+import math
 import re
 
 from flask import g, render_template, url_for, request, redirect, make_response, abort
 from sqlalchemy import select, text
+from werkzeug.exceptions import HTTPException
 
 from ccdb import ccdb_version
-from ccdb.webgui import assignments, queries
+from ccdb.webgui import assignments, diff, queries
 from ccdb.webgui.db import get_database
 
 log = logging.getLogger("ccdb.webgui")
+
+COMPARE_VIEWS = ("cells", "columns", "tables")
+DATA_PAGE_SIZE = 200      # rows per page of a data table (assignment page, comparison); the list pages keep queries.DEFAULT_PAGE_SIZE
+BIG_PAIR_CELLS = 20000    # a comparison above this many cells opens with the changed rows alone
 
 
 def author_name(db, author_id):
@@ -48,6 +54,14 @@ def page_url(page_number):
     """URL of the current view with the same arguments and another page number; for the page navigation."""
     args = {**link_args(), "page": page_number}
     return url_for(request.endpoint, **args)
+
+
+def switch_url(**changes):
+    """URL of the current view with some arguments changed; a None value drops the argument (back to its default).
+    Back to page 1, since a changed view or filter changes what the pages hold."""
+    args = {**link_args(), **changes}
+    args.pop("page", None)
+    return url_for(request.endpoint, **{name: value for name, value in args.items() if value is not None})
 
 
 def sort_url(column, current_sort, current_order):
@@ -106,6 +120,19 @@ def by_name(items):
     return sorted(items, key=lambda item: natural_key(item.name))
 
 
+def rows_page(rows):
+    """One page of a data table's rows as (row index, row) pairs, from the request's `page` and `per_page`.
+
+    The 12 largest production tables exceed 100 000 cells, so no data table is rendered whole. `per_page`
+    snaps to PAGE_SIZES and `page` is clamped to the last page, as on the list pages.
+    """
+    page_number = queries.integer_arg(request.args, "page", default=1, minimum=1)
+    wanted_size = queries.integer_arg(request.args, "per_page", default=DATA_PAGE_SIZE, minimum=1)
+    per_page = min(queries.PAGE_SIZES, key=lambda size: abs(size - wanted_size))
+    query = queries.PageQuery(page=min(page_number, max(1, math.ceil(len(rows) / per_page))), per_page=per_page)
+    return queries.Page(items=list(enumerate(rows))[query.offset:query.offset + per_page], query=query, total=len(rows))
+
+
 def page_window(page, width=2):
     """Page numbers to show around the current one; None marks a gap. Example: [1, None, 4, 5, 6, None, 72]."""
     numbers = sorted({1, page.pages} | {n for n in range(page.page - width, page.page + width + 1) if 1 <= n <= page.pages})
@@ -132,7 +159,7 @@ def table_page(page_template, fragment_template, **context):
 
 def register(app):
     """Adds every page view to the app with its original endpoint name."""
-    app.jinja_env.globals.update(page_url=page_url, sort_url=sort_url, page_window=page_window,
+    app.jinja_env.globals.update(page_url=page_url, sort_url=sort_url, switch_url=switch_url, page_window=page_window,
                                  page_sizes=queries.PAGE_SIZES, INFINITE_RUN=queries.INFINITE_RUN)
     app.jinja_env.filters["by_name"] = by_name
 
@@ -230,6 +257,47 @@ def register(app):
         page = queries.list_logs(db.session, query)
         return table_page("logs.html", "_logs_table.html", page=page, query=query)
 
+    def affected_links(db, record):
+        """The Affected row of a log record: (label, url or None) per object, named as users know it.
+
+        An assignment of a create or update record links by id without a lookup (a deleted one answers the 404
+        page). A table, directory or variation is looked up and shown by its path or name with a link to its page;
+        one that no longer exists keeps the record's own words (`table 850`). Users have no page. The directory
+        cache is loaded only when a table or directory is named: it costs a query over all directories.
+        """
+        if any(kind in ("typeTables", "directories") for kind, _ in record.affected):
+            db.get_root_directory()
+        links = []
+        for kind, object_id in record.affected:
+            label, url = "{0} {1}".format({"typeTables": "table", "assignments": "assignment", "directories": "directory", "variations": "variation", "users": "user"}[kind], object_id), None
+            if kind == "assignments" and record.action in ("create", "update"):
+                url = url_for("show_request", assignment_id=object_id)
+            elif kind == "typeTables":
+                table = db.session.get(TypeTable, object_id)
+                if table is not None and table.parent_dir_id in db.dirs_by_id:
+                    table.parent_dir = db.dirs_by_id[table.parent_dir_id]
+                    label, url = "table " + table.path, url_for("versions", table_path=table.path.lstrip("/"))
+            elif kind == "directories":
+                directory = db.dirs_by_id.get(object_id)
+                if directory is not None:
+                    label, url = "directory " + directory.path, url_for("directory_tree", filter=directory.path)
+            elif kind == "variations":
+                variation = db.session.get(Variation, object_id)
+                if variation is not None:
+                    label = "variation " + variation.name
+                    url = url_for("compare_variations", variation=variation.name) if variation.parent_id else url_for("variations")
+            links.append((label, url))
+        return links
+
+    @app.route('/logs/<int:log_id>')
+    def log_record(log_id):
+        """One log record in full: the list truncates comments, which reach 65 535 characters on the production database."""
+        db: ccdb.AlchemyProvider = g.db
+        record = queries.log_record(db.session, log_id)
+        if record is None:
+            abort(404, "No log record with id {0}".format(log_id))
+        return render_template("log_record.html", record=record, affected=affected_links(db, record))
+
     @app.route('/doc')
     def documentation():
         return render_template("doc.html")
@@ -274,6 +342,155 @@ def register(app):
         variations = db.get_variations()
         return render_template("request.html", variations=variations, table_paths=sorted(table.path for table in tables))
 
+    # ---------------------------------------------------------------- compare two assignments
+
+    def resolve_side(db, text):
+        """One side of a comparison: the Resolved assignment, or an (HTTP status, message) pair for the inline alert.
+
+        A value made of digits only is a database id: parse_request() reads `1234` as a table path, so the
+        choice is made here, before parsing. Anything else is a request string.
+        """
+        try:
+            if text.isdigit():
+                if int(text) > queries.INFINITE_RUN:  # the widest id the integer columns hold; wider ones raise in the driver
+                    return None, (400, "'{0}' is not a database id".format(text))
+                return assignments.resolve_assignment(db, assignment_id=int(text)), None
+            return assignments.resolve_assignment(db, text), None
+        except ObjectIsNotFoundInDbError as error:
+            return None, (404, str(error))
+        except HTTPException as error:  # resolve_assignment() aborts with 400 or 404
+            return None, (error.code, error.description)
+
+    def side_value(args, side, table_path):
+        """What the URL says for side `a` or `b`: the side's own value, or the request string composed from the form's
+        parts (`a_variation`, `a_run`, `a_time`) when at least one of them is filled."""
+        value = (args.get(side) or "").strip()
+        parts = {name: (args.get("{0}_{1}".format(side, name)) or "").strip() for name in ("variation", "run", "time")}
+        if not value and table_path and any(parts.values()):
+            value = assignments.compose_request({"path": table_path, **parts})
+        return value
+
+    @app.route('/compare')
+    def compare_assignments():
+        """The data of two assignments side by side.
+
+        `a` and `b` name the sides (a request string or a database id each); which assignment is which is the
+        user's choice, and the page never reorders them. The form sends `table` and the parts of each side; the
+        view composes the request strings and redirects to the canonical `?a=…&b=…` URL, as show_request does
+        with `path`. A side that does not resolve, or two sides from different tables, re-render the form with
+        an inline alert and the matching 4xx status, so what the user typed stays on the page.
+        """
+        db: ccdb.AlchemyProvider = g.db
+        args = request.args
+        table_path = (args.get("table") or "").strip()
+        sides = {side: side_value(args, side, table_path) for side in ("a", "b")}
+        if table_path and sides["a"] and sides["b"] and (args.get("a") != sides["a"] or args.get("b") != sides["b"]):
+            keep = {name: args[name] for name in ("view", "layout", "changed") if args.get(name)}
+            return redirect(url_for("compare_assignments", a=sides["a"], b=sides["b"], **keep))
+
+        errors, resolved, status = {}, {}, 200
+        for side, value in sides.items():
+            if not value:
+                continue
+            resolved[side], error = resolve_side(db, value)
+            if error:
+                errors[side] = error[1]
+                status = 400 if 400 in (status, error[0]) else error[0]  # a malformed side (400) outranks a missing one (404)
+                resolved.pop(side)
+        table = None
+        if table_path:
+            try:
+                table = db.get_type_table(table_path)
+            except (ObjectIsNotFoundInDbError, ValueError):
+                errors["table"] = "No table '{0}'".format(table_path)
+                status = 400 if status == 400 else 404
+        if len(resolved) == 2:
+            table_a, table_b = (resolved[side].assignment.constant_set.type_table for side in ("a", "b"))
+            if table_a.id != table_b.id:
+                errors["table"] = "The sides belong to different tables: {0} and {1}. Compare assignments of one table.".format(table_a.path, table_b.path)
+                status = 400
+                resolved = {}
+        if resolved and table is None and "table" not in errors:
+            table = next(iter(resolved.values())).assignment.constant_set.type_table
+
+        db.get_root_directory()  # loads directories, so every table path is complete
+        context = dict(table=table, table_path=table.path if table else table_path, sides=sides, errors=errors, resolved=resolved,
+                       table_paths=sorted(each.path for each in db.search_type_tables("*")),
+                       variation_names=queries.table_variation_names(db.session, table) if table else sorted(queries.variation_ids(db.session)),
+                       comparison=None)
+        if len(resolved) == 2:
+            context.update(comparison_context(resolved["a"].assignment, resolved["b"].assignment))
+        return render_template("compare_assignments.html", **context), status
+
+    @app.route('/compare/data.json')
+    def compare_json():
+        """The comparison as JSON: both sides' metadata, the columns, and the rows with the a and b value of every cell.
+        A side that does not resolve answers the error page, as the other data routes do; `changed=1` keeps the rows with a change."""
+        db: ccdb.AlchemyProvider = g.db
+        resolved = {}
+        for side in ("a", "b"):
+            value = (request.args.get(side) or "").strip()
+            if not value:
+                abort(400, "The '{0}' parameter is empty. Expected a request string or a database id".format(side))
+            resolved[side], error = resolve_side(db, value)
+            if error:
+                abort(error[0], error[1])
+        a, b = resolved["a"].assignment, resolved["b"].assignment
+        if a.constant_set.type_table.id != b.constant_set.type_table.id:
+            abort(400, "The sides belong to different tables: {0} and {1}".format(a.constant_set.type_table.path, b.constant_set.type_table.path))
+        context = comparison_context(a, b)
+        comparison = context["comparison"]
+        body = {
+            "table": a.constant_set.type_table.path,
+            "columns": comparison.columns,
+            "cells": comparison.cells,
+            "changed_cells": comparison.changed_cells,
+            "changed_rows": comparison.changed_rows,
+            "changed_only": context["changed_only"],
+            "rows": [{"row": row_i, "cells": [{"a": cell.a, "b": cell.b, "changed": cell.changed} for cell in cells]}
+                     for row_i, cells in diff.kept_rows(comparison, context["changed_only"])],
+        }
+        for side, each in (("a", a), ("b", b)):
+            body[side] = {key: value for key, value in assignments.assignment_dict(each).items() if key not in ("columns", "rows", "table")}
+        exact = resolved["a"].exact and resolved["b"].exact
+        headers = {"Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=86400" if exact else "no-cache"}
+        return json.dumps(body, ensure_ascii=False, sort_keys=True, indent=1), 200, headers
+
+    def comparison_context(a, b):
+        """The diff of two assignments plus the view, layout, changed-only and paging parameters of the request."""
+        table = a.constant_set.type_table
+        columns = [{"name": column.name, "type": column.type} for column in table.columns]
+        try:
+            comparison = diff.diff_tables(a.constant_set.data_table, b.constant_set.data_table, columns)
+        except ValueError as error:
+            abort(400, "Cannot compare: {0}".format(error))
+        view = request.args.get("view") or "cells"
+        if view not in COMPARE_VIEWS:
+            abort(400, "'view' must be one of {0}, got '{1}'".format(", ".join(COMPARE_VIEWS), view))
+        layout = request.args.get("layout") or "auto"
+        if layout not in assignments.LAYOUTS:
+            abort(400, "'layout' must be one of {0}, got '{1}'".format(", ".join(assignments.LAYOUTS), layout))
+        changed_arg = request.args.get("changed")
+        if changed_arg not in (None, "", "0", "1"):
+            abort(400, "'changed' must be 0 or 1, got '{0}'".format(changed_arg))
+        # A pair above the cell budget opens with the changed rows alone: two 176 000-row sets rendered in full are a 50 MB page.
+        changed_only = (comparison.cells > BIG_PAIR_CELLS) if changed_arg in (None, "") else changed_arg == "1"
+        kept = diff.kept_rows(comparison, changed_only)
+        page = rows_page([cells for _, cells in kept])
+        page.items = [kept[row_i] for row_i, _ in page.items]  # the kept rows keep their true row index
+        return dict(comparison=comparison, page=page, view=view, layout=layout, changed_only=changed_only,
+                    column_lines=assignments.column_lines(layout, len(comparison.rows), len(columns)),
+                    meta=side_meta(a, b), delta_text=diff.delta_text)
+
+    def side_meta(a, b):
+        """The metadata rows of the comparison: (label, value of a, value of b, changed)."""
+        rows = [("Variation", a.variation.name, b.variation.name),
+                ("Run range", assignments.run_range_text(a), assignments.run_range_text(b)),
+                ("Created", str(a.created), str(b.created)),
+                ("Author", a.author.name if a.author else "", b.author.name if b.author else ""),
+                ("Comment", a.comment, b.comment)]
+        return [(label, value_a, value_b, value_a != value_b) for label, value_a, value_b in rows]
+
     # ---------------------------------------------------------------- assignments: page, JSON, text
 
     def data_headers(resolved, content_type):
@@ -295,11 +512,18 @@ def register(app):
         resolved = assignments.resolve_assignment(db, request.args.get('request', ''), assignment_id)
         assignment = resolved.assignment
         data = assignment.constant_set.data_table
+        page = rows_page(data)
+        # Page links address the assignment by its request string on both address forms (the byte-identity rule);
+        # they keep the layout and page size only when the URL carries them.
+        kept = {name: request.args[name] for name in ("layout", "per_page") if request.args.get(name)}
         return render_template("assignment.html",
                                assignment=assignment,
+                               page=page,
+                               page_href=lambda number: url_for("show_request", request=assignment.request, page=number, **kept),
+                               previous=assignments.previous_assignment(db, assignment),
                                data=data,
                                layout=layout,
-                               vertical=assignments.vertical_layout(layout, len(data), len(assignment.constant_set.type_table.columns)),
+                               column_lines=assignments.column_lines(layout, len(data), len(assignment.constant_set.type_table.columns)),
                                variation=assignment.variation.name,
                                created=str(assignment.created),
                                author=assignment.author.name if assignment.author else "",

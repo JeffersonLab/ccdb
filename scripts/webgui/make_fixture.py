@@ -11,6 +11,8 @@ cases the web GUI checks need:
 - /bulk/dNN/tNNN: 1000 tables so the tree page can be sized up
 - /hostile: names and comments with <script>, quotes, &, newlines and non-ASCII text
 - a 4-level variation chain default -> test -> subtest -> subsubtest, plus calib and calib_v2
+- two comparison pairs: /calib/ccal/parms in default and calib (two cells differ), /calib/ccal/channels 600 rows x 4 columns with two default assignments (seven cells differ)
+- a log record with a 60-line comment of 135-character lines, then three records naming a table, a variation and a deleted table, for the log record page
 - 2400 log records from three authors
 
 Every timestamp and every random value comes from a fixed seed, so the SQLite file hashes the same
@@ -186,6 +188,34 @@ def build(session):
     parms = b.add_table("parms", ccal, [("threshold", "double"), ("n_crystals", "int"), ("scale", "double"), ("offset", "double"), ("use_fit", "bool"), ("label", "string")],
                         rows_count=1, comment="Key-value parameters: one row, six columns")
     b.add_assignment(parms, run_ranges[0], variations["default"], [["0.195", "144", "2.17828", "1.08421", "1", "pass1"]], "initial parameters")
+
+    # Two pairs for the comparison page, after everything else so no earlier timestamp moves.
+    # parms gets its second assignment in `calib`: a request without a timestamp resolves to the newest
+    # assignment, so a second `default` one would change what the parms pages show. Two of six values differ.
+    b.add_assignment(parms, run_ranges[0], variations["calib"], [["0.200", "144", "2.17828", "1.08421", "1", "pass2"]], "calibration pass values", "alice")
+    # channels: 600 rows, so the comparison pages have paging to show. Two default assignments; the second
+    # differs in seven cells spread over three pages of 200 rows: gains in rows 3, 199, 399, 599, the sigma
+    # in row 150, the status in rows 250 and 450.
+    channels = b.add_table("channels", ccal, [("channel", "int"), ("gain", "double"), ("sigma", "double"), ("status", "string")],
+                           rows_count=600, comment="Per-channel calibration: 600 rows, two passes")
+    first_pass = [[str(row_i), f"{rng.uniform(0.8, 1.2):.5f}", f"{rng.uniform(0.0, 0.05):.5f}", "ok"] for row_i in range(600)]
+    second_pass = [list(row) for row in first_pass]
+    for row_i in (3, 199, 399, 599):
+        second_pass[row_i][1] = f"{float(first_pass[row_i][1]) * 1.05:.5f}"
+    second_pass[150][2] = "0.09999"
+    second_pass[250][3] = "bad"
+    second_pass[450][3] = "noisy"
+    b.add_assignment(channels, run_ranges[0], variations["default"], first_pass, "first pass", "alice")
+    b.add_assignment(channels, run_ranges[0], variations["default"], second_pass, "second pass: four gains, one sigma, two statuses", "bob")
+
+    # The newest log record carries a long multi-line comment, as the material-map uploads on the production database do
+    # (comments of 65 535 characters, 500 lines of aligned program output), for the log record page. Appended last.
+    long_comment = "\n".join("line {0:3d} ".format(line_i) + ("x" * 10 + " ") * 11 + "end{0}".format(line_i) for line_i in range(60))
+    b.add_log("alice", "create", "assignments3610", "Created assignment '/calib/ccal/parms:0:default'", long_comment)
+    # Records naming a table, a variation and an object that no longer exists, for the links of the record page.
+    b.add_log("bob", "create", "typeTables{0}".format(channels.id), "Created table '/calib/ccal/channels'", "")
+    b.add_log("bob", "update", "variations{0}".format(variations["calib_v2"].id), "Updated variation 'calib_v2'", "")
+    b.add_log("bob", "delete", "typeTables999999", "Deleted table '/gone/table'", "a table that no longer exists")
     session.commit()
 
 

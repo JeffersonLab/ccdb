@@ -91,21 +91,31 @@ class AssignmentViewsTest(unittest.TestCase):
         self.assertIn(TABLE + ":0:default:2012-10-30_23-48-42", followed.get_data(as_text=True))
 
     def test_data_layout(self):
-        """auto is vertical for one row with more than two columns; the parameter forces either; both address forms carry it"""
+        """auto is one line per column for one row with more than two columns; Vertical forces one line per row,
+        Horizontal one line per column (the words name the shape seen on a many-row table); both address forms carry it"""
         wide_one_row = "/show_request?request=" + quote("/test/test_vars/test_table2:0:test")  # 1 row x 3 columns
         two_rows = "/show_request?request=" + quote(AMBIGUOUS)  # 2 rows x 3 columns
-        self.assertIn('data-layout="vertical"', self.get(wide_one_row).get_data(as_text=True))
-        self.assertIn('data-layout="horizontal"', self.get(two_rows).get_data(as_text=True))
-        self.assertIn('data-layout="horizontal"', self.get(wide_one_row + "&layout=horizontal").get_data(as_text=True))
-        vertical = self.get(two_rows + "&layout=vertical").get_data(as_text=True)
-        self.assertIn('data-layout="vertical"', vertical)
-        self.assertIn('<th scope="row" data-column="x">x</th><td class="col-type">double</td><td>2.2</td><td>2.5</td>', vertical)
+        self.assertIn('data-lines="columns"', self.get(wide_one_row).get_data(as_text=True))
+        self.assertIn('data-lines="rows"', self.get(two_rows).get_data(as_text=True))
+        self.assertIn('data-lines="rows"', self.get(wide_one_row + "&layout=vertical").get_data(as_text=True))
+        horizontal = self.get(two_rows + "&layout=horizontal").get_data(as_text=True)
+        self.assertIn('data-lines="columns"', horizontal)
+        self.assertIn('<th scope="row" data-column="x">x</th><td class="col-type">double</td><td>2.2</td><td>2.5</td>', horizontal)
         by_id = self.get("/assignments/4?layout=vertical").get_data(as_text=True)
-        self.assertIn('data-layout="vertical"', by_id)
+        self.assertIn('data-lines="rows"', by_id)
         # the switch links use the request string on both address forms, so the forms stay byte-identical
         self.assertRegex(by_id, r'href="/show_request\?request=[^"&]+" >Auto</a>')  # auto: no parameter
         self.assertRegex(by_id, r'href="/show_request\?request=[^"]+&amp;layout=vertical" aria-current="page">Vertical</a>')
         self.assertEqual(self.get(two_rows + "&layout=sideways").status_code, 400)
+
+    def test_data_table_paging(self):
+        # the standard table has two rows: one page; the page links address the assignment by request string
+        two_rows = "/show_request?request=" + quote(TABLE + ":0:default:2012-10-30_23-48-42")
+        html = self.get(two_rows + "&per_page=25").get_data(as_text=True)
+        self.assertIn('data-total="2" data-pages="1"', html)
+        self.assertEqual(self.get(two_rows + "&page=0").status_code, 400)
+        self.assertEqual(self.get(two_rows + "&page=99").status_code, 200)  # clamped to the last page
+        self.assertEqual(self.get("/assignments/4?page=99").get_data(), self.get(two_rows + "&page=99").get_data())
 
     def test_column_types_in_the_data_view(self):
         """the horizontal header names the type under each column; JSON is unchanged"""

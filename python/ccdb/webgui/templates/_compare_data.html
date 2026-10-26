@@ -1,0 +1,88 @@
+{#- The data of a comparison in the chosen view. `page.items` holds (row index, cells) pairs of the current page;
+    every row keeps its true index also when only the changed rows are shown. The golden comparison reads
+    data-view, data-lines (rows: one line per row, columns: one line per column), the row index cells and the data-changed cells; keep those. -#}
+{%- macro cell_attrs(cell) %}{% if cell.changed %} class="diff-changed" data-changed title="{{ delta_text(cell) }}"{% endif %}{% endmacro -%}
+{#- Per-cell view: one table, a changed cell stacks the B value over the A value. -#}
+{%- macro stacked(cell) %}{% if cell.changed %}<span class="diff-b">{{ cell.b }}</span>
+<span class="diff-a">{{ cell.a }}</span>{% else %}{{ cell.b }}{% endif %}{% endmacro -%}
+{#- Per-column view: the A cell and the B cell of one value; a changed pair tints both and carries the difference on B. -#}
+{%- macro pair(cell) %}<td class="side-a{{ ' diff-changed' if cell.changed }}" data-side="a"{% if cell.changed %} data-changed{% endif %}>{{ cell.a }}</td><td class="side-b{{ ' diff-changed' if cell.changed }}" data-side="b"{% if cell.changed %} data-changed title="{{ delta_text(cell) }}"{% endif %}>{{ cell.b }}</td>{% endmacro -%}
+{#- Table-to-table view: one side's value of a cell. -#}
+{%- macro single(cell, side) %}<td{{ cell_attrs(cell) }}>{{ cell.b if side == 'b' else cell.a }}</td>{% endmacro -%}
+{%- macro column_head(column) %}<th scope="col" data-column="{{ column.name }}" data-type="{{ column.type }}">{{ column.name }}<small class="col-type d-block">{{ column.type }}</small></th>{% endmacro -%}
+{%- macro row_head(row_i) %}<th scope="row" class="row-index">{{ row_i }}</th>{% endmacro -%}
+{%- macro vertical_head() %}<th scope="col" class="text-body-secondary fw-normal">column</th><th scope="col" class="text-body-secondary fw-normal">type</th>{% endmacro -%}
+{%- macro vertical_row_head(column) %}<th scope="row" data-column="{{ column.name }}">{{ column.name }}</th><td class="col-type">{{ column.type }}</td>{% endmacro -%}
+
+{% if view == 'cells' %}
+  {% if column_lines %}
+  <div class="table-responsive" style="max-height: 70vh"><table class="table table-sm table-striped table-sticky cell-mono mb-0" data-view="cells" data-lines="columns">
+    <thead><tr>{{ vertical_head() }}{% for row_i, cells in page.items %}<th scope="col" class="row-index" title="Row index, counted from 0">{{ row_i }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {% for column in comparison.columns %}{% set col_i = loop.index0 %}
+      <tr>{{ vertical_row_head(column) }}{% for row_i, cells in page.items %}<td{{ cell_attrs(cells[col_i]) }}>{{ stacked(cells[col_i]) }}</td>{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}
+  <div class="table-responsive" style="max-height: 70vh"><table class="table table-sm table-striped table-sticky cell-mono mb-0" data-view="cells" data-lines="rows">
+    <thead><tr><th scope="col" class="row-index" title="Row index, counted from 0">#</th>{% for column in comparison.columns %}{{ column_head(column) }}{% endfor %}</tr></thead>
+    <tbody>
+      {% for row_i, cells in page.items %}
+      <tr>{{ row_head(row_i) }}{% for cell in cells %}<td{{ cell_attrs(cell) }}>{{ stacked(cell) }}</td>{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table></div>
+  {% endif %}
+{% elif view == 'columns' %}
+{#- Per-column view: the A and B values of a column side by side under one header; both cells of a changed pair are tinted. -#}
+  {% if column_lines %}
+  <div class="table-responsive" style="max-height: 70vh"><table class="table table-sm table-striped table-sticky cell-mono mb-0" data-view="columns" data-lines="columns">
+    <thead>
+      <tr>{{ vertical_head() }}{% for row_i, cells in page.items %}<th scope="colgroup" colspan="2" class="row-index text-center" title="Row index, counted from 0">{{ row_i }}</th>{% endfor %}</tr>
+      <tr><th></th><th></th>{% for row_i, cells in page.items %}<th scope="col" class="side-head">A</th><th scope="col" class="side-head">B</th>{% endfor %}</tr>
+    </thead>
+    <tbody>
+      {% for column in comparison.columns %}{% set col_i = loop.index0 %}
+      <tr>{{ vertical_row_head(column) }}{% for row_i, cells in page.items %}{{ pair(cells[col_i]) }}{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}
+  <div class="table-responsive" style="max-height: 70vh"><table class="table table-sm table-striped table-sticky cell-mono mb-0" data-view="columns" data-lines="rows">
+    <thead>
+      <tr><th scope="col" class="row-index" title="Row index, counted from 0">#</th>{% for column in comparison.columns %}<th scope="colgroup" colspan="2" data-column="{{ column.name }}" data-type="{{ column.type }}">{{ column.name }}<small class="col-type d-block">{{ column.type }}</small></th>{% endfor %}</tr>
+      <tr><th></th>{% for column in comparison.columns %}<th scope="col" class="side-head">A</th><th scope="col" class="side-head">B</th>{% endfor %}</tr>
+    </thead>
+    <tbody>
+      {% for row_i, cells in page.items %}
+      <tr>{{ row_head(row_i) }}{% for cell in cells %}{{ pair(cell) }}{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table></div>
+  {% endif %}
+{% elif view == 'tables' %}
+{#- Table-to-table view: table B above table A, each as on the assignment page, the changed cells tinted in both. -#}
+  {% for side in ('b', 'a') %}
+  <h3 class="h6 {{ 'mt-3' if not loop.first }}">{{ side | upper }} <span class="cell-mono fw-normal small text-break">{{ resolved[side].assignment.request }}</span></h3>
+  {% if column_lines %}
+  <div class="table-responsive" style="max-height: 70vh"><table class="table table-sm table-striped table-sticky cell-mono mb-0" data-view="tables" data-lines="columns" data-side="{{ side }}">
+    <thead><tr>{{ vertical_head() }}{% for row_i, cells in page.items %}<th scope="col" class="row-index" title="Row index, counted from 0">{{ row_i }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      {% for column in comparison.columns %}{% set col_i = loop.index0 %}
+      <tr>{{ vertical_row_head(column) }}{% for row_i, cells in page.items %}{{ single(cells[col_i], side) }}{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}
+  <div class="table-responsive" style="max-height: 70vh"><table class="table table-sm table-striped table-sticky cell-mono mb-0" data-view="tables" data-lines="rows" data-side="{{ side }}">
+    <thead><tr><th scope="col" class="row-index" title="Row index, counted from 0">#</th>{% for column in comparison.columns %}{{ column_head(column) }}{% endfor %}</tr></thead>
+    <tbody>
+      {% for row_i, cells in page.items %}
+      <tr>{{ row_head(row_i) }}{% for cell in cells %}{{ single(cell, side) }}{% endfor %}</tr>
+      {% endfor %}
+    </tbody>
+  </table></div>
+  {% endif %}
+  {% endfor %}
+{% endif %}

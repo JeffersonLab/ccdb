@@ -35,6 +35,9 @@
         <a class="btn btn-sm btn-primary" href="{{ url_for('assignment_text', request=assignment.request) }}"><svg class="ico"><use href="#i-download"/></svg> Text (ccdb dump)</a>
         <a class="btn btn-sm btn-outline-primary" href="{{ url_for('assignment_json', request=assignment.request) }}">JSON</a>
         <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('show_request', assignment_id=assignment.id) }}" title="Short link by database id">Short link</a>
+        {#- Compare with previous: side A is what the same request returned before this assignment was added; hidden when nothing came before. -#}
+        {% if previous %}<a class="btn btn-sm btn-outline-secondary" href="{{ url_for('compare_assignments', a=previous.request, b=assignment.request) }}" title="Side A: {{ previous.request }}"><svg class="ico"><use href="#i-compare"/></svg> Compare with previous</a>{% endif %}
+        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('compare_assignments', a=assignment.request, table=table.path) }}" title="Open the compare form with this assignment as side A"><svg class="ico"><use href="#i-compare"/></svg> Compare with…</a>
       </div>
     </div>
   </div>
@@ -50,7 +53,7 @@
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
   <h2 class="h5 m-0">Data <span class="text-body-secondary fw-normal small">{{ table.rows_count }} rows × {{ table.columns | length }} columns</span></h2>
-  {#- The layout is a GET parameter, so a view stays shareable. Auto is vertical for one row with more than two columns.
+  {#- The layout is a GET parameter, so a view stays shareable. Auto is one line per column (Horizontal) for one row with more than two columns.
       The links address the assignment by its request string on both address forms, so the two forms stay byte-identical. -#}
   <div class="btn-group btn-group-sm" role="group" aria-label="Data layout">
     {% for name, label in [('auto', 'Auto'), ('horizontal', 'Horizontal'), ('vertical', 'Vertical')] %}
@@ -58,30 +61,36 @@
     {% endfor %}
   </div>
 </div>
+{#- The rows come in pages of 200 (the largest production tables exceed 100 000 cells); every row keeps its true index. -#}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+  <p class="text-body-secondary small m-0" data-total="{{ page.total }}" data-pages="{{ page.pages }}">Rows {{ page.first_row - 1 }}–{{ page.last_row - 1 }} of {{ page.total }}, counted from 0</p>
+  {% include '_pagination.html' %}
+</div>
 {#- Rows and columns are counted from 0, so a value can be named "column X, row N" the way the CLI and the APIs count.
-    Horizontal: the first cell of every row is the row index. Vertical: one line per column (name, type, the values),
-    the row indexes in the header. The golden comparison reads data-layout and data-column to compare either form. -#}
+    One line per row (data-lines="rows", the switch's Vertical): the first cell of every row is the row index. One line
+    per column (data-lines="columns", Horizontal): name, type, the values, the row indexes in the header. The golden
+    comparison reads data-lines and data-column to compare either form. -#}
 <div class="table-responsive" style="max-height: 70vh">
-{% if vertical %}
-  <table class="table table-sm table-striped table-sticky cell-mono mb-0" data-layout="vertical">
+{% if column_lines %}
+  <table class="table table-sm table-striped table-sticky cell-mono mb-0" data-lines="columns">
     <thead>
       <tr><th scope="col" class="text-body-secondary fw-normal">column</th><th scope="col" class="text-body-secondary fw-normal">type</th>
-        {%- for row in data %}<th scope="col" class="text-body-secondary fw-normal" title="Row index, counted from 0">{{ 'value' if data | length == 1 else loop.index0 }}</th>{% endfor %}</tr>
+        {%- for row_i, row in page.items %}<th scope="col" class="text-body-secondary fw-normal" title="Row index, counted from 0">{{ 'value' if data | length == 1 else row_i }}</th>{% endfor %}</tr>
     </thead>
     <tbody>
       {% for column in table.columns %}{% set column_i = loop.index0 %}
-      <tr><th scope="row" data-column="{{ column.name }}">{{ column.name }}</th><td class="col-type">{{ column.type }}</td>{% for row in data %}<td>{{ row[column_i] }}</td>{% endfor %}</tr>
+      <tr><th scope="row" data-column="{{ column.name }}">{{ column.name }}</th><td class="col-type">{{ column.type }}</td>{% for row_i, row in page.items %}<td>{{ row[column_i] }}</td>{% endfor %}</tr>
       {% endfor %}
     </tbody>
   </table>
 {% else %}
-  <table class="table table-sm table-striped table-sticky cell-mono mb-0" data-layout="horizontal">
+  <table class="table table-sm table-striped table-sticky cell-mono mb-0" data-lines="rows">
     <thead>
       <tr><th scope="col" class="row-index" title="Row index, counted from 0">#</th>{% for column in table.columns %}<th scope="col" data-column="{{ column.name }}" data-type="{{ column.type }}">{{ column.name }}<small class="col-type d-block">{{ column.type }}</small></th>{% endfor %}</tr>
     </thead>
     <tbody>
-      {% for row in data %}
-      <tr><th scope="row" class="row-index">{{ loop.index0 }}</th>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+      {% for row_i, row in page.items %}
+      <tr><th scope="row" class="row-index">{{ row_i }}</th>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
       {% endfor %}
     </tbody>
   </table>

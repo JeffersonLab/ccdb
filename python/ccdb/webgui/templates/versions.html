@@ -4,11 +4,14 @@
 {% block page_header %}
 <div class="mb-3">
   {%- set segments = table.path.strip('/').split('/') %}
-  <h1 class="h3 mb-1 text-break">
-    <svg class="ico me-1"><use href="#i-table"/></svg>
-    {%- set prefix = namespace(path='') %}
-    {%- for segment in segments[:-1] %}{% set prefix.path = prefix.path + '/' + segment %}/<a class="link-body-emphasis text-decoration-none" href="{{ url_for('directory_tree', filter=prefix.path) }}" title="Show {{ prefix.path }} in the tree">{{ segment }}</a>{% endfor %}/{{ segments[-1] }}
-  </h1>
+  <div class="toolbar mb-1">
+    <h1 class="h3 m-0 text-break">
+      <svg class="ico me-1"><use href="#i-table"/></svg>
+      {%- set prefix = namespace(path='') %}
+      {%- for segment in segments[:-1] %}{% set prefix.path = prefix.path + '/' + segment %}/<a class="link-body-emphasis text-decoration-none" href="{{ url_for('directory_tree', filter=prefix.path) }}" title="Show {{ prefix.path }} in the tree">{{ segment }}</a>{% endfor %}/{{ segments[-1] }}
+    </h1>
+    <a class="btn btn-primary" href="{{ url_for('compare_assignments', table=table.path) }}" title="Compare two assignments of this table"><svg class="ico"><use href="#i-compare"/></svg> Compare</a>
+  </div>
   <p class="text-body-secondary small mb-2">
     {{ table.rows_count }} rows × {{ table.columns | length }} columns:
     {% for column in table.columns %}<span class="cell-mono">{{ column.name }}</span>{{ ', ' if not loop.last }}{% endfor %}{% if table.comment %} — {{ table.comment }}{% endif %}

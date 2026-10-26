@@ -9,6 +9,7 @@ page does not have, is a 400; a `per_page` outside PAGE_SIZES snaps to the neare
 empty table, and no request turns into an OFFSET that walks the whole table.
 """
 import math
+import re
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -89,6 +90,18 @@ class LogRow:
     description: str
     comment: str
     author: str
+
+
+@dataclass
+class LogRecordDetail:
+    """One log record in full, for its own page; `affected` lists the (kind, id) pairs the record names."""
+    id: int
+    created: datetime
+    action: str
+    description: str
+    comment: str
+    author: str
+    affected: list
 
 
 @dataclass
@@ -290,6 +303,23 @@ def list_logs(session, query):
         count_statement = count_statement.where(condition)
     return run_page(session, statement, query, LOG_SORTS, LogRecord.id,
                     lambda row: LogRow(row[0], row[1], row[2], row[3] or "", row[4] or "", row[5] or ""), count_statement)
+
+
+AFFECTED_OBJECT = re.compile(r"(assignments|variations|typeTables|directories|users)_?(\d+)")
+
+
+def parse_affected(text):
+    """The (kind, id) pairs of a record's affectedIds column: `|assignments812174|` and the oldest records' `users_1`."""
+    return [(kind, int(number)) for kind, number in AFFECTED_OBJECT.findall(text or "")]
+
+
+def log_record(session, log_id):
+    """One log record with its author, or None: a primary-key read."""
+    row = session.execute(select(LogRecord.id, LogRecord.created, LogRecord.action, LogRecord.description, LogRecord.comment, User.name, LogRecord.affected_ids)
+                          .join(User, LogRecord.author_id == User.id, isouter=True).where(LogRecord.id == log_id)).first()
+    if row is None:
+        return None
+    return LogRecordDetail(row[0], row[1], row[2], row[3] or "", row[4] or "", row[5] or "", parse_affected(row[6]))
 
 
 # --------------------------------------------------------------------------- variations

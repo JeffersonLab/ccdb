@@ -15,10 +15,12 @@ attribute on tree items). When the templates change, update the readers; the gol
 import argparse
 import datetime
 import json
+import re
 import sqlite3
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import unquote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pages  # noqa: E402
@@ -42,8 +44,32 @@ SHOW_REQUESTS = {  # label in pages.py -> (table path, run, variation)
 SHOW_LAYOUTS = {  # pages that show one of the assignments above in another data layout -> its golden key
     "show_kv_horizontal": "show_kv",
     "show_big_vertical": "show_big",
+    "show_big_horizontal": "show_big",
     "assignment_by_id_vertical": "show_small",
 }
+DIFFS = {  # golden key -> (assignment id of side a, of side b); the diff is computed from the two vault blobs
+    "channels": (3612, 3613),   # 600 rows × 4 columns, seven cells differ
+    "parms": (3610, 3611),      # one row × six columns, two cells differ
+    "same": (3612, 3612),       # no cell differs
+}
+DIFF_PAGES = {  # label in pages.py -> (golden key, view, the lines the page renders (rows: one line per row, columns: one per column), changed rows only, page number)
+    "diff_channels": ("channels", "cells", "rows", False, 1),
+    "diff_by_id": ("channels", "cells", "rows", False, 1),
+    "diff_changed_only": ("channels", "cells", "rows", True, 1),
+    "diff_vertical": ("channels", "cells", "rows", True, 1),           # the switch's Vertical is one line per row
+    "diff_horizontal": ("channels", "cells", "columns", True, 1),      # Horizontal is one line per column
+    "diff_page3": ("channels", "cells", "rows", False, 3),
+    "diff_parms": ("parms", "cells", "columns", False, 1),             # one row, six columns: auto is one line per column
+    "diff_parms_mixed": ("parms", "cells", "columns", False, 1),
+    "diff_same": ("same", "cells", "rows", False, 1),
+    "diff_columns": ("channels", "columns", "rows", True, 1),
+    "diff_columns_vertical": ("parms", "columns", "columns", False, 1),
+    "diff_tables": ("channels", "tables", "rows", True, 1),
+    "diff_tables_vertical": ("parms", "tables", "columns", False, 1),
+}
+DIFF_PAGE_SIZE = 200
+LOG_RECORDS = {"log_record": 2414, "log_record_hostile": 14, "log_record_directory": 13, "log_record_table": 2415,
+               "log_record_variation": 2416, "log_record_deleted": 2417}   # label in pages.py -> log id
 VERSIONS = {"versions_big": pages.BIG_TABLE, "versions_small": pages.SMALL_TABLE, "versions_deep": pages.DEEP_TABLE,
             "versions_hostile": pages.HOSTILE_TABLE, "versions_unicode": pages.UNICODE_TABLE}
 COMPARES = {  # label in pages.py -> (variation, parent or None for the direct parent, run, time text as the page takes it)
@@ -130,7 +156,33 @@ def compute(space):
                                  "columns": columns, "types": types, "data": data, "candidates": len(match)}
 
     logs = db.execute("SELECT l.created, l.action, l.description, u.name AS author FROM logs l JOIN users u ON u.id = l.authorId ORDER BY l.id DESC").fetchall()
-    golden["logs"] = {"total": len(logs), "newest_first_1000": [{**dict(r), "created": shown_stamp(r["created"])} for r in logs[:1000]]}
+    golden["logs"] = {"total": len(logs), "newest_first_1000": [{**dict(r), "created": shown_stamp(r["created"])} for r in logs[:1000]],
+                      "newest_ids": [r[0] for r in db.execute("SELECT id FROM logs ORDER BY id DESC LIMIT 50")]}
+
+    # log record pages: the whole row, the comment unshortened, the affected objects as the page prints them
+    golden["log_record"] = {}
+    for label, log_id in LOG_RECORDS.items():
+        row = db.execute("SELECT l.id, l.created, l.action, l.description, l.comment, l.affectedIds, u.name AS author FROM logs l JOIN users u ON u.id = l.authorId WHERE l.id = ?", (log_id,)).fetchone()
+        # the page names the objects as users know them: a table or directory by path, a variation by name, the rest by id
+        variation_names = {v_id: name for v_id, name in db.execute("SELECT id, name FROM variations")}
+        words = []
+        for kind, number in re.findall(r"(assignments|variations|typeTables|directories|users)_?(\d+)", row["affectedIds"]):
+            number = int(number)
+            if kind == "typeTables" and number in tables:
+                words.append("table " + tables[number])
+            elif kind == "directories" and number in dirs:
+                words.append("directory " + dirs[number])
+            elif kind == "variations" and number in variation_names:
+                words.append("variation " + variation_names[number])
+            else:
+                words.append("{0} {1}".format({"typeTables": "table", "assignments": "assignment", "directories": "directory", "variations": "variation", "users": "user"}[kind], number))
+        affected = ", ".join(words)
+        golden["log_record"][label] = {"id": row["id"], "created": shown_stamp(row["created"]), "action": row["action"], "description": row["description"],
+                                       "comment": row["comment"] or "", "author": row["author"], "affected": affected or "none",
+                                       "object_links": [f"/versions{tables[int(n)]}" for n in re.findall(r"typeTables_?(\d+)", row["affectedIds"]) if int(n) in tables]
+                                                       + [f"/tree?filter={dirs[int(n)]}" for n in re.findall(r"directories_?(\d+)", row["affectedIds"]) if int(n) in dirs],
+                                       "variation_link": any(int(n) in variation_names for n in re.findall(r"variations_?(\d+)", row["affectedIds"])),
+                                       "assignment_link": "/assignments/{0}".format(re.search(r"assignments_?(\d+)", row["affectedIds"]).group(1)) if row["action"] in ("create", "update") and "assignments" in row["affectedIds"] else None}
 
     variations = db.execute("SELECT v.name, v.created, v.comment, p.name AS parent FROM variations v LEFT JOIN variations p ON p.id = v.parentId ORDER BY v.id").fetchall()
     golden["variations"] = [{**dict(r), "created": shown_stamp(r["created"])} for r in variations]
@@ -160,6 +212,22 @@ def compute(space):
             affected.setdefault(tables[row["table_id"]], {})[row["variation"]] = row["n"]
         golden["compare"][label] = {"segment": segment, "tables": affected}
 
+    # compare assignments: the cell-by-cell diff of two assignments straight from their vault blobs
+    golden["diff"] = {}
+    for key, (a_id, b_id) in DIFFS.items():
+        sides = [db.execute("SELECT c.vault, c.constantTypeId AS table_id FROM assignments a JOIN constantSets c ON c.id = a.constantSetId WHERE a.id = ?", (each,)).fetchone() for each in (a_id, b_id)]
+        column_rows = db.execute("SELECT name, columnType FROM columns WHERE typeId = ? ORDER BY \"order\"", (sides[0]["table_id"],)).fetchall()
+        width = len(column_rows)
+        a_cells, b_cells = sides[0]["vault"].split("|"), sides[1]["vault"].split("|")
+        rows = [[[a_cells[i], b_cells[i]] for i in range(row_i * width, (row_i + 1) * width)] for row_i in range(len(a_cells) // width)]
+        golden["diff"][key] = {"a": a_id, "b": b_id, "columns": [r["name"] for r in column_rows], "rows": rows,
+                               "changed_cells": sum(a != b for row in rows for a, b in row),
+                               "changed_rows": [row_i for row_i, row in enumerate(rows) if any(a != b for a, b in row)]}
+
+    # the paged data table of the 600-row assignment: its rows from the vault blob, by row index
+    channels = golden["diff"]["channels"]
+    golden["show_paged"] = {"id": channels["b"], "rows": [[b for _, b in row] for row in channels["rows"]]}
+
     table1 = db.execute("SELECT t.id, t.name, t.comment, u.name AS author FROM typeTables t JOIN users u ON u.id = t.authorId WHERE t.id = 1").fetchone()
     dir1 = db.execute("SELECT d.id, d.name, d.comment, u.name AS author FROM directories d JOIN users u ON u.id = d.authorId WHERE d.id = 1").fetchone()
 
@@ -185,7 +253,7 @@ class TableReader(HTMLParser):
     """Collects every <table> as a list of rows; each row is the list of its cell texts (th and td).
 
     `cell_attrs` mirrors `tables` with the attributes of every cell (the data table marks its columns with
-    data-column and data-type), and `table_attrs` holds each table's own attributes (data-layout).
+    data-column and data-type), and `table_attrs` holds each table's own attributes (data-lines).
     """
 
     def __init__(self):
@@ -235,6 +303,34 @@ class TreeReader(HTMLParser):
             self.badges.setdefault(self.paths[-1][0], {})[attrs["data-variation"]] = int(attrs["data-count"])
 
 
+class LogCommentReader(HTMLParser):
+    """The log record page shows the comment in <pre class="log-comment"> (absent when the comment is empty) and the
+    affected objects as links inside the table #log-meta; collects the comment text and those hrefs, percent-decoded."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.comment, self.hrefs, self.inside, self.in_meta = "", [], False, False
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "pre" and "log-comment" in (attrs.get("class") or ""):
+            self.inside = True
+        elif tag == "table" and attrs.get("id") == "log-meta":
+            self.in_meta = True
+        elif tag == "a" and attrs.get("href") and self.in_meta:
+            self.hrefs.append(unquote(attrs["href"]))
+
+    def handle_endtag(self, tag):
+        if tag == "pre":
+            self.inside = False
+        elif tag == "table":
+            self.in_meta = False
+
+    def handle_data(self, data):
+        if self.inside:
+            self.comment += data
+
+
 class PageInfoReader(HTMLParser):
     """The paginated pages carry <p data-total=".." data-pages=".."> under their table."""
 
@@ -246,6 +342,53 @@ class PageInfoReader(HTMLParser):
         attrs = dict(attrs)
         if "data-total" in attrs:
             self.total, self.pages = int(attrs["data-total"]), int(attrs["data-pages"])
+
+
+class DiffSummaryReader(HTMLParser):
+    """The compare page carries <p id="diff-summary" data-cells=".." data-changed-cells=".." data-changed-rows="..">."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.values = None
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if attrs.get("id") == "diff-summary":
+            self.values = {"cells": int(attrs["data-cells"]), "changed_cells": int(attrs["data-changed-cells"]), "changed_rows": int(attrs["data-changed-rows"])}
+
+
+def diff_grid(rows, attrs, lines, pair):
+    """{row index: [(text, changed), ...]} of one data table of the compare page, whichever form it is rendered in.
+
+    A body row starts with a <th scope="row">: the row index (one line per row) or the column name (one line per
+    column). One line per row: the cells follow, two per column (A then B) when `pair`. One line per column: the
+    first header row holds the row indexes after `column` and `type`, and a body line holds one column's values
+    in the same order.
+    """
+    body = [(r, a) for r, a in zip(rows, attrs) if a and a[0].get("scope") == "row"]
+
+    def cells(values, cell_attrs):
+        if pair:
+            return [(f"{values[i]} {values[i + 1]}", "data-changed" in cell_attrs[i]) for i in range(0, len(values), 2)]
+        return [(value, "data-changed" in cell_attr) for value, cell_attr in zip(values, cell_attrs)]
+
+    if lines == "rows":
+        return {r[0]: cells(r[1:], a[1:]) for r, a in body}
+    header = next(r for r, a in zip(rows, attrs) if a and a[0].get("scope") == "col")
+    lines = [cells(r[2:], a[2:]) for r, a in body]  # one line per column
+    return {index: [line[i] for line in lines] for i, index in enumerate(header[2:])}
+
+
+def expected_grid(expected, view, side, row_indexes):
+    """What diff_grid() must read for the golden diff: per cell view, a changed cell shows B then A; per column view,
+    A then B; table to table, the side's own value."""
+    def text(a, b):
+        if view == "cells":
+            return f"{b} {a}" if a != b else b
+        if view == "columns":
+            return f"{a} {b}"
+        return b if side == "b" else a
+    return {str(row_i): [(text(a, b), a != b) for a, b in expected["rows"][row_i]] for row_i in row_indexes}
 
 
 def main_table(reader):
@@ -285,8 +428,8 @@ def read_page(html):
 
 def shown_data_table(reader, index=1):
     """Columns, types and rows of the assignment data table, whichever layout the page rendered it in."""
-    rows, attrs, layout = reader.tables[index], reader.cell_attrs[index], reader.table_attrs[index].get("data-layout")
-    if layout == "vertical":  # one line per column: name, type, then the value of row 0, 1, ...; transpose it back
+    rows, attrs, lines = reader.tables[index], reader.cell_attrs[index], reader.table_attrs[index].get("data-lines")
+    if lines == "columns":  # one line per column: name, type, then the value of row 0, 1, ...; transpose it back
         body = rows[1:]
         values_per_column = [line[2:] for line in body]
         return [line[0] for line in body], [line[1] for line in body], [list(row) for row in zip(*values_per_column)]
@@ -383,6 +526,16 @@ def compare(space, phase, label, db_url):
             by_id = client.get(f"/assignments/{data['id']}/data.json")
             check(results, f"{label_}.json.same_by_id", by_request.get_data(as_text=True), by_id.get_data(as_text=True), sample="byte-identical bodies")
 
+    # the paged data table: page 3 of the 600-row assignment holds rows 400–599 with their true indexes; page size 50 and page 12 the last 50
+    expected = golden["show_paged"]
+    for label_, first, last in (("assignment_channels_page3", 400, 600), ("assignment_channels_per_page50", 550, 600), ("assignment_channels_page9999", 400, 600)):
+        status, html = get(label_)
+        page = read_page(html)
+        check(results, f"{label_}.status", 200, status)
+        _, _, data = shown_data_table(page) if len(page.tables) > 1 else (None, None, None)
+        check(results, f"{label_}.rows", expected["rows"][first:last], data, sample=f"rows {first}–{last - 1}")
+        check(results, f"{label_}.indexes", [str(i) for i in range(first, last)], [row[0] for row in page.tables[1][1:]] if len(page.tables) > 1 else None)
+
     # logs: the page shows the newest 1000, newest first
     status, rows, shown_total = walk_pages(get, urls["logs"], max_rows=1000)
     shown = [{"created": r[0], "action": r[1], "description": r[2], "author": r[3]} for r in rows if len(r) >= 4][:1000]
@@ -391,6 +544,25 @@ def compare(space, phase, label, db_url):
     check(results, "logs.total", golden["logs"]["total"], shown_total)
     check(results, "logs.rows", golden["logs"]["newest_first_1000"], shown, sample=f"expected first {golden['logs']['newest_first_1000'][:1]}, shown first {shown[:1]}")
     check(results, "logs.newest_first", [r["created"] for r in golden["logs"]["newest_first_1000"][:2]], [r["created"] for r in shown[:2]])
+
+    # log record pages against the database row; the list's rows link to the newest records
+    for label_, expected in golden["log_record"].items():
+        status, html = get(label_)
+        page = read_page(html)
+        meta = {row[0]: row[1] for row in (page.tables[0] if page.tables else []) if len(row) == 2}
+        reader = LogCommentReader()
+        reader.feed(html)
+        check(results, f"{label_}.status", 200, status)
+        for key, heading in (("created", "Created"), ("action", "Action"), ("author", "Author"), ("description", "Description"), ("affected", "Affected")):
+            check(results, f"{label_}.{key}", expected[key], meta.get(heading))
+        check(results, f"{label_}.id", str(expected["id"]), meta.get("Database id"))
+        check(results, f"{label_}.comment", expected["comment"], reader.comment, sample=f"{len(expected['comment'])} characters expected, {len(reader.comment)} shown")
+        check(results, f"{label_}.assignment_link", expected["assignment_link"] is not None, expected["assignment_link"] in reader.hrefs if expected["assignment_link"] else False)
+        # a table, directory or variation that exists links to its page; a deleted one has no link
+        check(results, f"{label_}.object_links", expected["object_links"], [h for h in reader.hrefs if h.startswith("/versions") or h.startswith("/tree?filter=")])
+        check(results, f"{label_}.variation_link", expected["variation_link"], any(h.startswith("/vars") for h in reader.hrefs))
+    status, html = get("logs")
+    check(results, "logs.row_links", [f"/logs/{log_id}" for log_id in golden["logs"]["newest_ids"]], re.findall(r'<tr data-href="([^"]+)"', html))
 
     # variations: names and comments; parents are not shown today
     status, html = get("variations")
@@ -412,6 +584,35 @@ def compare(space, phase, label, db_url):
         check(results, f"{label_}.tables", sorted(expected["tables"]), shown_tables)
         check(results, f"{label_}.badges", expected["tables"], {p: reader.badges.get(p, {}) for p in shown_tables})
         check(results, f"{label_}.directories", ancestors, shown_dirs)
+
+    # compare assignments: the summary and every data table of each view and layout against the diff of the vault blobs
+    for label_, (key, view, lines, changed_only, page_number) in DIFF_PAGES.items():
+        expected = golden["diff"][key]
+        status, html = get(label_)
+        check(results, f"{label_}.status", 200, status)
+        summary = DiffSummaryReader()
+        summary.feed(html)
+        check(results, f"{label_}.summary", {"cells": len(expected["rows"]) * len(expected["columns"]), "changed_cells": expected["changed_cells"], "changed_rows": len(expected["changed_rows"])}, summary.values)
+        kept = expected["changed_rows"] if changed_only else list(range(len(expected["rows"])))
+        shown_rows = kept[(page_number - 1) * DIFF_PAGE_SIZE:page_number * DIFF_PAGE_SIZE]
+        page = read_page(html)
+        data_tables = [(table, attrs, table_attrs) for table, attrs, table_attrs in zip(page.tables, page.cell_attrs, page.table_attrs) if "data-view" in table_attrs]
+        check(results, f"{label_}.tables", [(view, lines)] * (2 if view == "tables" else 1), [(t[2]["data-view"], t[2]["data-lines"]) for t in data_tables])
+        for table, attrs, table_attrs in data_tables:
+            side = table_attrs.get("data-side", "b")
+            wanted = expected_grid(expected, view, side, shown_rows)
+            shown = diff_grid(table, attrs, lines, pair=(view == "columns"))
+            check(results, f"{label_}.grid.{side}" if view == "tables" else f"{label_}.grid", wanted, shown,
+                  sample=f"{len(wanted)} rows expected, {len(shown)} shown; first expected {list(wanted.items())[:1]}, first shown {list(shown.items())[:1]}")
+
+    # the comparison as JSON: the changed rows of the channels pair, byte-identical through both addressing forms
+    expected = golden["diff"]["channels"]
+    by_id = client.get(urls["diff_json"])
+    check(results, "diff_json.status", 200, by_id.status_code)
+    body = json.loads(by_id.get_data(as_text=True)) if by_id.status_code == 200 else {}
+    check(results, "diff_json.changed_cells", expected["changed_cells"], body.get("changed_cells"))
+    check(results, "diff_json.rows", [{"row": row_i, "cells": [{"a": a, "b": b, "changed": a != b} for a, b in expected["rows"][row_i]]} for row_i in expected["changed_rows"]], body.get("rows"))
+    check(results, "diff_json.same_by_request", by_id.get_data(as_text=True), client.get(urls["diff_json_by_request"]).get_data(as_text=True), sample="byte-identical bodies")
 
     # info modals
     for label_, expected in (("table_info", golden["table_info"]), ("dir_info", golden["dir_info"])):

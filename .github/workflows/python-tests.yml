@@ -64,6 +64,7 @@ jobs:
           tests.unit_test_webgui_prefix
           tests.unit_test_webgui_queries
           tests.unit_test_webgui_compare
+          tests.unit_test_webgui_diff
 
       # SQLite integration tests create their own database
       # (via ccdb.testing.recreate_test_sqlite_db) - no fixture files needed

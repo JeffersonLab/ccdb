@@ -14,6 +14,8 @@ SMALL_TABLE = "/test/test_vars/test_table"      # standard test content, a handf
 DEEP_TABLE = "/deep/l1/l2/l3/l4/l5/l6/bottom"   # bottom of the 7-level directory chain
 HOSTILE_TABLE = "/hostile/x\"y'z&<script>alert(1)<b>"
 UNICODE_TABLE = "/hostile/unicode_Привет_✓"
+CHANNELS_TABLE = "/calib/ccal/channels"            # 600 rows × 4 columns, two default assignments (ids 3612, 3613) that differ in seven cells
+CHANNELS_FIRST = quote(CHANNELS_TABLE + ":0:default:2020-01-06_10-02-00")   # the first of the two by its exact request string
 
 PAGES = [
     ("tree", "/", "page"),
@@ -71,6 +73,7 @@ PAGES = [
     ("show_kv", "/show_request?request=" + quote(KV_TABLE + ":0:default"), "page"),
     ("show_kv_horizontal", "/show_request?request=" + quote(KV_TABLE + ":0:default") + "&layout=horizontal", "page"),
     ("show_big_vertical", "/show_request?request=" + quote(BIG_TABLE + ":1500:default") + "&layout=vertical", "page"),
+    ("show_big_horizontal", "/show_request?request=" + quote(BIG_TABLE + ":1500:default") + "&layout=horizontal", "page"),
     ("assignment_by_id_vertical", "/assignments/4?layout=vertical", "page"),
     ("show_bad_layout", "/show_request?request=" + quote(KV_TABLE + ":0:default") + "&layout=sideways", "edge"),
     # compare variations: the form, a chain segment of one and of two variations, the filters, the empty case,
@@ -86,6 +89,56 @@ PAGES = [
     ("compare_bad_parent", "/vars/compare?variation=calib_v2&parent=mc", "edge"),
     ("compare_bad_run", "/vars/compare?variation=calib_v2&run=abc", "edge"),
     ("compare_bad_time", "/vars/compare?variation=calib_v2&time=yesterday", "edge"),
+    # compare assignments: the form (alone, with a table, with one side), pairs by request string, by id and mixed,
+    # the parts form (redirects to the canonical URL), the same assignment twice, and the bad inputs
+    ("diff_form", "/compare", "page"),
+    ("diff_form_table", "/compare?table=" + CHANNELS_TABLE, "page"),
+    ("diff_form_one_side", "/compare?table=" + CHANNELS_TABLE + "&a=" + CHANNELS_FIRST, "page"),
+    ("diff_channels", "/compare?a=" + CHANNELS_FIRST + "&b=" + quote(CHANNELS_TABLE + ":0:default"), "page"),
+    ("diff_by_id", "/compare?a=3612&b=3613", "page"),
+    ("diff_parms_mixed", "/compare?a=3610&b=" + quote(KV_TABLE + ":0:calib"), "page"),
+    ("diff_same", "/compare?a=3612&b=3612", "page"),
+    # the per-cell view: changed rows only, the vertical layout, the third page, and the one-row pair (auto → vertical)
+    ("diff_changed_only", "/compare?a=3612&b=3613&changed=1", "page"),
+    ("diff_vertical", "/compare?a=3612&b=3613&layout=vertical&changed=1", "page"),
+    ("diff_horizontal", "/compare?a=3612&b=3613&layout=horizontal&changed=1", "page"),
+    ("diff_page3", "/compare?a=3612&b=3613&page=3", "page"),
+    ("diff_parms", "/compare?a=3610&b=3611", "page"),
+    # the per-column view, horizontal (changed rows) and vertical (the one-row pair)
+    ("diff_columns", "/compare?a=3612&b=3613&view=columns&changed=1", "page"),
+    ("diff_columns_vertical", "/compare?a=3610&b=3611&view=columns", "page"),
+    # the table-to-table view, horizontal (changed rows) and vertical (the one-row pair)
+    ("diff_tables", "/compare?a=3612&b=3613&view=tables&changed=1", "page"),
+    ("diff_tables_vertical", "/compare?a=3610&b=3611&view=tables", "page"),
+    # the assignment pages of the channels pair: the second has a previous assignment (Compare with previous), the first has none
+    ("assignment_channels_second", "/assignments/3613", "page"),
+    ("assignment_channels_first", "/assignments/3612", "page"),
+    # the paged data table of a 600-row assignment: the last page, a smaller page size, a page past the end (clamped), a bad page
+    ("assignment_channels_page3", "/assignments/3613?page=3", "page"),
+    ("assignment_channels_per_page50", "/assignments/3613?per_page=50&page=12", "page"),
+    ("assignment_channels_page9999", "/assignments/3613?page=9999", "page"),
+    ("assignment_channels_page0", "/assignments/3613?page=0", "edge"),
+    # log record pages: the newest record (a 60-line comment), a hostile comment, a missing id
+    ("log_record", "/logs/2414", "page"),
+    ("log_record_hostile", "/logs/14", "page"),
+    ("log_record_directory", "/logs/13", "page"),      # names directory 5
+    ("log_record_table", "/logs/2415", "page"),         # names the channels table
+    ("log_record_variation", "/logs/2416", "page"),     # names calib_v2
+    ("log_record_deleted", "/logs/2417", "page"),       # names a table that does not exist: text, no link
+    ("log_record_missing", "/logs/999999", "edge"),
+    # the comparison as JSON, and its bad inputs
+    ("diff_json", "/compare/data.json?a=3612&b=3613&changed=1", "data"),
+    ("diff_json_by_request", "/compare/data.json?a=" + CHANNELS_FIRST + "&b=" + quote(CHANNELS_TABLE + ":0:default") + "&changed=1", "data"),
+    ("diff_json_empty", "/compare/data.json", "edge"),
+    ("diff_json_two_tables", "/compare/data.json?a=3610&b=3613", "edge"),
+    ("diff_form_parts", "/compare?table=" + KV_TABLE + "&a_variation=default&b_variation=calib", "edge"),
+    ("diff_unknown_side", "/compare?a=" + quote("/no/such/table:0") + "&b=3613", "edge"),
+    ("diff_malformed_side", "/compare?a=garbage&b=3613", "edge"),
+    ("diff_huge_id", "/compare?a=99999999999999999999&b=3613", "edge"),
+    ("diff_two_tables", "/compare?a=3610&b=3613", "edge"),
+    ("diff_unknown_table", "/compare?table=/no/such/table", "edge"),
+    ("diff_bad_view", "/compare?a=3612&b=3613&view=sideways", "edge"),
+    ("diff_bad_changed", "/compare?a=3612&b=3613&changed=maybe", "edge"),
 ]
 
 # What a person opens in a browser: every page once (the tree alias duplicates the tree) plus one
