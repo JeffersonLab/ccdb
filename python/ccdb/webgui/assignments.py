@@ -13,6 +13,7 @@ from flask import abort
 
 import ccdb
 from ccdb.path_utils import parse_request, ParseRequestResult
+from ccdb.webgui import diff
 
 INFINITE_RUN = 2147483647
 EXAMPLE_REQUEST = "/test/test_vars/test_table:0:default"
@@ -126,13 +127,14 @@ def assignment_text(assignment):
     """The data in the `ccdb dump` text format: `#` comment lines, then one row per line with padded cells.
 
     Same layout as `ccdb cat --no-borders --no-header --comments --horizontal`: each cell is left-aligned in
-    a field at least 10 characters wide (wider when the column name is longer). The first line names the
-    request; `#` lines are comments to every CCDB text reader, so the file can go back in with `ccdb add`.
+    a field at least 10 characters wide (wider when the column name is longer), the row layout `diff.row_line`
+    shares with the unified diff download. The first line names the request; `#` lines are comments to every
+    CCDB text reader, so the file can go back in with `ccdb add`.
     """
     table = assignment.constant_set.type_table
-    widths = [max(10, len(column.name)) for column in table.columns]
+    widths = diff.column_widths(column.name for column in table.columns)
     lines = ["#request: " + assignment.request]
     lines += ["#" + line for line in assignment.comment.split("\n")]
     for row in assignment.constant_set.data_table:
-        lines.append("".join("  %-*s " % (width, cell) for width, cell in zip(widths, row)) + " ")
+        lines.append(diff.row_line(widths, row))
     return "\n".join(lines) + "\n"

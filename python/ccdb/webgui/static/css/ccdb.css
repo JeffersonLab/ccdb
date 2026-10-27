@@ -53,6 +53,9 @@
 /* row index of the data table: a spreadsheet-like row header, set apart from the first value */
 .table .row-index { color: var(--bs-secondary-color); font-weight: normal; text-align: right; width: 1%; padding-right: .6rem; border-right: 1px solid var(--bs-border-color); }
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+/* pick to compare (versions page): the checkbox column shows while the mode is on */
+.pick-cell { display: none; }
+body.picking .pick-cell { display: table-cell; }
 /* a list row that opens its own page (the logs list) */
 tr[data-href] { cursor: pointer; }
 /* a log record's comment: program output with aligned columns, up to 65 535 characters; wraps instead of scrolling sideways */

@@ -11,6 +11,8 @@
       {%- for segment in segments[:-1] %}{% set prefix.path = prefix.path + '/' + segment %}/<a class="link-body-emphasis text-decoration-none" href="{{ url_for('directory_tree', filter=prefix.path) }}" title="Show {{ prefix.path }} in the tree">{{ segment }}</a>{% endfor %}/{{ segments[-1] }}
     </h1>
     <a class="btn btn-primary" href="{{ url_for('compare_assignments', table=table.path) }}" title="Compare two assignments of this table"><svg class="ico"><use href="#i-compare"/></svg> Compare</a>
+    {#- Pick to compare needs JavaScript (pick.js unhides the button): a checkbox per row, the first two picks are A and B. -#}
+    <button type="button" class="btn btn-outline-secondary" id="pick-toggle" aria-pressed="false" title="Pick two assignments from the list and compare them" hidden>Pick to compare</button>
   </div>
   <p class="text-body-secondary small mb-2">
     {{ table.rows_count }} rows × {{ table.columns | length }} columns:
@@ -41,7 +43,17 @@
   <input type="hidden" name="order" value="{{ query.order }}">
   <button class="btn btn-outline-secondary" type="submit">Apply</button>
 </form>
+{#- The picked pair, kept across pages and reloads by pick.js; the Compare link is built from data-compare-url. -#}
+{#- No display utility on the hidden element itself: Bootstrap's .d-flex would beat the hidden attribute. -#}
+<div class="alert alert-secondary py-2 mb-3" id="pick-bar" data-table="{{ table.path }}" data-compare-url="{{ url_for('compare_assignments') }}" hidden>
+  <div class="d-flex flex-wrap align-items-center gap-2">
+    <span class="small"><strong>A:</strong> <span data-slot="a"></span></span>
+    <span class="small"><strong>B:</strong> <span data-slot="b"></span></span>
+    <a class="btn btn-sm btn-primary ms-auto disabled" data-compare aria-disabled="true"><svg class="ico"><use href="#i-compare"/></svg> Compare A and B</a>
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-clear>Clear</button>
+  </div>
+</div>
 {% include '_versions_table.html' %}
 {% endblock %}
 
-{% block page_scripts %}<script type="module" src="{{ url_for('static', filename='js/table.js') }}"></script>{% endblock %}
+{% block page_scripts %}<script type="module" src="{{ url_for('static', filename='js/table.js') }}"></script><script type="module" src="{{ url_for('static', filename='js/pick.js') }}"></script>{% endblock %}

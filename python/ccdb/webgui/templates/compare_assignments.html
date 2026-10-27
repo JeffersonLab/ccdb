@@ -88,6 +88,12 @@
     <a class="btn btn-outline-secondary {{ 'active' if not changed_only }}" href="{{ switch_url(changed=0) }}" {% if not changed_only %}aria-current="page"{% endif %}>All rows</a>
     <a class="btn btn-outline-secondary {{ 'active' if changed_only }}" href="{{ switch_url(changed=1) }}" {% if changed_only %}aria-current="page"{% endif %}>Changed rows</a>
   </div>
+  {#- The downloads cover the whole table, whatever the switches show. The diff is served as plain text (a browser
+      shows it); `download` saves it under a .diff name, which every diff viewer opens. -#}
+  <div class="btn-group btn-group-sm ms-md-auto" role="group" aria-label="Download">
+    <a class="btn btn-outline-secondary" href="{{ url_for('compare_diff', a=a.request, b=b.request) }}" download="{{ diff_file_name }}" title="Unified diff of the whole table, one line per row: the format of diff -u and git diff"><svg class="ico"><use href="#i-download"/></svg> Unified diff</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('compare_json', a=a.request, b=b.request) }}" title="Both sides and every cell as JSON">JSON</a>
+  </div>
 </div>
 
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">

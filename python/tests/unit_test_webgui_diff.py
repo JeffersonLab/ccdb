@@ -1,5 +1,7 @@
 """Tests the comparison of two assignments: the diff module (changed set, numeric difference, shape check) and the
-compare page and its JSON view on the standard test database (the form, the canonical redirect, the views, the inline alerts)."""
+compare page, its JSON view and its unified diff download on the standard test database (the form, the canonical
+redirect, the views, the inline alerts)."""
+import difflib
 import json
 import os
 import re
@@ -9,7 +11,7 @@ import unittest
 from ccdb.sql.sqlite_schema import create_sqlite_database
 from ccdb.webgui import cerate_ccdb_flask_app
 from ccdb.webgui.db import get_database
-from ccdb.webgui.diff import diff_tables, kept_rows, delta_text, numeric_delta
+from ccdb.webgui.diff import diff_tables, kept_rows, delta_text, numeric_delta, unified_diff, column_widths, row_line
 
 # The standard content: /test/test_vars/test_table (2 rows × 3 columns) has four assignments, two of them in default.
 TABLE = "/test/test_vars/test_table"
@@ -71,6 +73,21 @@ class DiffTablesTest(unittest.TestCase):
         diff = diff_tables(a, b, COLUMNS)
         self.assertEqual([row_i for row_i, _ in kept_rows(diff, changed_only=False)], [0, 1, 2])
         self.assertEqual([row_i for row_i, _ in kept_rows(diff, changed_only=True)], [1])
+
+    def test_unified_diff_matches_difflib(self):
+        a = [[str(i), str(i * 1.5), "a"] for i in range(30)]
+        widths = column_widths(column["name"] for column in COLUMNS)
+        for changed in ((0,), (29,), (3, 4, 12, 20), (5, 12), (5, 13), tuple(range(30))):  # 5 and 12 share a hunk, 5 and 13 do not
+            b = [list(row) for row in a]
+            for row_i in changed:
+                b[row_i][1] = "9"
+            expected = list(difflib.unified_diff([row_line(widths, row) for row in a], [row_line(widths, row) for row in b], "A-req", "B-req", "A", "B", lineterm=""))
+            self.assertEqual(unified_diff(diff_tables(a, b, COLUMNS), "A-req", "B-req"), expected, changed)
+        self.assertEqual(len([line for line in unified_diff(diff_tables(a, b, COLUMNS), "A-req", "B-req") if line.startswith("@@")]), 1)
+
+    def test_unified_diff_of_equal_sides_keeps_the_headers(self):
+        rows = [["0", "1.5", "a"]]
+        self.assertEqual(unified_diff(diff_tables(rows, rows, COLUMNS), "A-req", "B-req", "A, id 1", "B, id 2"), ["--- A-req\tA, id 1", "+++ B-req\tB, id 2"])
 
     def test_unequal_shapes_raise(self):
         with self.assertRaises(ValueError):
@@ -179,6 +196,31 @@ class ComparePageTest(unittest.TestCase):
         self.assertEqual(self.client.get("/compare/data.json?a={0}".format(self.newest)).status_code, 400)
         self.assertEqual(self.client.get("/compare/data.json?a=/no/such:0&b={0}".format(self.newest)).status_code, 404)
         self.assertEqual(self.client.get("/compare/data.json?a={0}&b={1}".format(self.newest, self.other)).status_code, 400)
+
+    def test_unified_diff_download(self):
+        response = self.client.get("/compare/data.diff?a={0}&b={1}".format(self.older, self.newest))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-Type"], "text/plain; charset=utf-8")
+        self.assertEqual(response.headers["Cache-Control"], "public, max-age=86400")  # two ids: exact
+        text = response.get_data(as_text=True)
+        lines = text.splitlines()
+        self.assertTrue(lines[0].startswith("--- {0}\tA, id {1}, created ".format(self.older_request, self.older)), lines[0])
+        self.assertTrue(lines[1].startswith("+++ {0}\tB, id {1}, created ".format(self.newest_request, self.newest)), lines[1])
+        changed_rows = self.summary(self.get("/compare?a={0}&b={1}".format(self.older, self.newest)))[2]
+        self.assertEqual(sum(1 for line in lines[2:] if line.startswith("-")), changed_rows)
+        self.assertEqual(sum(1 for line in lines[2:] if line.startswith("+")), changed_rows)
+        # the data lines are the lines of the two text downloads, so a diff of the downloads agrees hunk for hunk
+        older_rows = [line for line in self.get("/assignments/{0}/data.txt".format(self.older)).splitlines() if not line.startswith("#")]
+        newest_rows = [line for line in self.get("/assignments/{0}/data.txt".format(self.newest)).splitlines() if not line.startswith("#")]
+        self.assertEqual(lines[2:], list(difflib.unified_diff(older_rows, newest_rows, lineterm=""))[2:])
+        by_request = self.client.get("/compare/data.diff?a={0}&b={1}".format(self.older_request, self.newest_request))
+        self.assertEqual(by_request.get_data(), response.get_data())  # both address forms: byte-identical
+        self.assertEqual(self.client.get("/compare/data.diff?a={0}&b={0}".format(self.newest)).get_data(as_text=True).count("\n"), 2)  # equal sides: the headers alone
+        self.assertEqual(self.client.get("/compare/data.diff?a={0}".format(self.newest)).status_code, 400)
+        self.assertEqual(self.client.get("/compare/data.diff?a=/no/such:0&b={0}".format(self.newest)).status_code, 404)
+        self.assertEqual(self.client.get("/compare/data.diff?a={0}&b={1}".format(self.newest, self.other)).status_code, 400)
+        page = self.get("/compare?a={0}&b={1}".format(self.older, self.newest))
+        self.assertIn('href="/compare/data.diff?a={0}&amp;b={1}" download="test_table_{2}_{3}.diff"'.format(self.older_request, self.newest_request, self.older, self.newest), page)
 
     def test_assignment_page_links(self):
         newest = self.get("/assignments/{0}".format(self.newest))

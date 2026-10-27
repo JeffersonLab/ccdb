@@ -1,6 +1,6 @@
 {#- The versions table with its row count and page navigation. Rendered inside versions.html and alone
-    for live-search requests (X-Fragment). The first four cells of a row (run min, run max, created,
-    variation) are what the golden comparison reads; keep them first. -#}
+    for live-search requests (X-Fragment). The first five cells of a row after the pick cell (id, run min, run max,
+    created, variation) are what the golden comparison reads; its reader drops the pick cells by their class. -#}
 <div id="table-fragment">
   <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
     <p class="text-body-secondary small m-0" data-total="{{ page.total }}" data-pages="{{ page.pages }}">
@@ -12,7 +12,8 @@
     <table class="table table-sm table-hover table-sticky align-middle mb-2" id="versions-table">
       <thead>
         <tr>
-          {% for key, label in [('run_min', 'Run min'), ('run_max', 'Run max'), ('created', 'Created'), ('variation', 'Variation'), ('author', 'Author')] %}
+          <th scope="col" class="pick-cell"><span class="visually-hidden">Pick</span></th>
+          {% for key, label in [('id', 'ID'), ('run_min', 'Run min'), ('run_max', 'Run max'), ('created', 'Created'), ('variation', 'Variation'), ('author', 'Author')] %}
           <th scope="col" class="text-nowrap">
             <a class="sort link-body-emphasis text-decoration-none" href="{{ sort_url(key, query.sort, query.order) }}">{{ label }}{% if query.sort == key %} {{ '▲' if query.order == 'asc' else '▼' }}{% endif %}</a>
           </th>
@@ -23,7 +24,9 @@
       </thead>
       <tbody>
         {% for row in page.items %}
-        <tr>
+        <tr data-label="{{ row.created }} · {{ row.variation }} · run {{ row.run_min }}">
+          <td class="pick-cell"><input type="checkbox" class="form-check-input pick" value="{{ row.request }}" aria-label="Pick {{ row.request }}"></td>
+          <td class="cell-mono text-body-secondary" title="Database id; the short link is /assignments/{{ row.id }}">{{ row.id }}</td>
           <td class="cell-mono">{{ row.run_min }}</td>
           <td class="cell-mono">{{ '∞' if row.run_max == INFINITE_RUN else row.run_max }}</td>
           <td class="text-nowrap">{{ row.created }}</td>

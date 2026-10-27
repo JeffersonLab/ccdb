@@ -87,6 +87,14 @@ class WebGuiAppTest(unittest.TestCase):
             self.assertIn(label, html)
         self.assertNotIn("Expand all", html)
 
+    def test_versions_page_carries_the_pick_column(self):
+        """every row has a hidden pick checkbox valued by request string; the toggle and the bar are there for pick.js"""
+        client = self.make_app(self.connection_string).test_client()
+        html = client.get("/versions/test/test_vars/test_table").get_data(as_text=True)
+        self.assertIn('id="pick-toggle"', html)
+        self.assertIn('id="pick-bar" data-table="/test/test_vars/test_table" data-compare-url="/compare"', html)
+        self.assertEqual(html.count('<input type="checkbox" class="form-check-input pick" value="/test/test_vars/test_table:'), 4)
+
     def test_log_record_page(self):
         """every row of the logs list links to its record; the record page shows the full comment and the affected objects"""
         client = self.make_app(self.connection_string).test_client()

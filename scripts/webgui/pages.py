@@ -131,6 +131,13 @@ PAGES = [
     ("diff_json_by_request", "/compare/data.json?a=" + CHANNELS_FIRST + "&b=" + quote(CHANNELS_TABLE + ":0:default") + "&changed=1", "data"),
     ("diff_json_empty", "/compare/data.json", "edge"),
     ("diff_json_two_tables", "/compare/data.json?a=3610&b=3613", "edge"),
+    # the comparison as a unified diff, and its bad inputs
+    ("diff_text", "/compare/data.diff?a=3612&b=3613", "data"),
+    ("diff_text_by_request", "/compare/data.diff?a=" + CHANNELS_FIRST + "&b=" + quote(CHANNELS_TABLE + ":0:default"), "data"),
+    ("diff_text_parms", "/compare/data.diff?a=3610&b=3611", "data"),
+    ("diff_text_same", "/compare/data.diff?a=3612&b=3612", "data"),
+    ("diff_text_empty", "/compare/data.diff", "edge"),
+    ("diff_text_two_tables", "/compare/data.diff?a=3610&b=3613", "edge"),
     ("diff_form_parts", "/compare?table=" + KV_TABLE + "&a_variation=default&b_variation=calib", "edge"),
     ("diff_unknown_side", "/compare?a=" + quote("/no/such/table:0") + "&b=3613", "edge"),
     ("diff_malformed_side", "/compare?a=garbage&b=3613", "edge"),

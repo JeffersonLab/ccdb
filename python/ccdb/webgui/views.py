@@ -422,10 +422,10 @@ def register(app):
             context.update(comparison_context(resolved["a"].assignment, resolved["b"].assignment))
         return render_template("compare_assignments.html", **context), status
 
-    @app.route('/compare/data.json')
-    def compare_json():
-        """The comparison as JSON: both sides' metadata, the columns, and the rows with the a and b value of every cell.
-        A side that does not resolve answers the error page, as the other data routes do; `changed=1` keeps the rows with a change."""
+    def resolve_pair():
+        """The two sides of a data route (`a` and `b` of the query string) as Resolved assignments of one table. A side
+        that is empty, malformed or missing, and two sides from different tables, answer the error page with 400 or 404,
+        as the other data routes do."""
         db: ccdb.AlchemyProvider = g.db
         resolved = {}
         for side in ("a", "b"):
@@ -438,6 +438,19 @@ def register(app):
         a, b = resolved["a"].assignment, resolved["b"].assignment
         if a.constant_set.type_table.id != b.constant_set.type_table.id:
             abort(400, "The sides belong to different tables: {0} and {1}".format(a.constant_set.type_table.path, b.constant_set.type_table.path))
+        return resolved["a"], resolved["b"]
+
+    def pair_headers(resolved_a, resolved_b, content_type):
+        """A pair of exact addresses (ids, or requests with a timestamp) may be cached for a day, as one exact address may."""
+        exact = resolved_a.exact and resolved_b.exact
+        return {"Content-Type": content_type, "Cache-Control": "public, max-age=86400" if exact else "no-cache"}
+
+    @app.route('/compare/data.json')
+    def compare_json():
+        """The comparison as JSON: both sides' metadata, the columns, and the rows with the a and b value of every cell.
+        A side that does not resolve answers the error page, as the other data routes do; `changed=1` keeps the rows with a change."""
+        resolved_a, resolved_b = resolve_pair()
+        a, b = resolved_a.assignment, resolved_b.assignment
         context = comparison_context(a, b)
         comparison = context["comparison"]
         body = {
@@ -452,9 +465,26 @@ def register(app):
         }
         for side, each in (("a", a), ("b", b)):
             body[side] = {key: value for key, value in assignments.assignment_dict(each).items() if key not in ("columns", "rows", "table")}
-        exact = resolved["a"].exact and resolved["b"].exact
-        headers = {"Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=86400" if exact else "no-cache"}
-        return json.dumps(body, ensure_ascii=False, sort_keys=True, indent=1), 200, headers
+        return json.dumps(body, ensure_ascii=False, sort_keys=True, indent=1), 200, pair_headers(resolved_a, resolved_b, "application/json; charset=utf-8")
+
+    @app.route('/compare/data.diff')
+    def compare_diff():
+        """The comparison as a unified diff (`diff -u`), the file every diff viewer opens: one line per row in the layout
+        of the text download, so the diff of the two `data.txt` downloads and this file agree hunk for hunk. The headers
+        name the sides by the request string each resolved to, then A or B, the id and the creation time after a tab.
+        The whole table, whatever the page shows: `view`, `layout`, `changed` and `page` are ignored. Served as plain
+        text, so a browser shows it; the page's link saves it under a `.diff` name through its `download` attribute."""
+        resolved_a, resolved_b = resolve_pair()
+        a, b = resolved_a.assignment, resolved_b.assignment
+        table = a.constant_set.type_table
+        columns = [{"name": column.name, "type": column.type} for column in table.columns]
+        try:
+            comparison = diff.diff_tables(a.constant_set.data_table, b.constant_set.data_table, columns)
+        except ValueError as error:
+            abort(400, "Cannot compare: {0}".format(error))
+        labels = ["{0}, id {1}, created {2}".format(side, each.id, each.created) for side, each in (("A", a), ("B", b))]
+        lines = diff.unified_diff(comparison, a.request, b.request, *labels)
+        return "\n".join(lines) + "\n", 200, pair_headers(resolved_a, resolved_b, "text/plain; charset=utf-8")
 
     def comparison_context(a, b):
         """The diff of two assignments plus the view, layout, changed-only and paging parameters of the request."""
@@ -480,7 +510,8 @@ def register(app):
         page.items = [kept[row_i] for row_i, _ in page.items]  # the kept rows keep their true row index
         return dict(comparison=comparison, page=page, view=view, layout=layout, changed_only=changed_only,
                     column_lines=assignments.column_lines(layout, len(comparison.rows), len(columns)),
-                    meta=side_meta(a, b), delta_text=diff.delta_text)
+                    meta=side_meta(a, b), delta_text=diff.delta_text,
+                    diff_file_name="{0}_{1}_{2}.diff".format(table.name, a.id, b.id))
 
     def side_meta(a, b):
         """The metadata rows of the comparison: (label, value of a, value of b, changed)."""

@@ -137,7 +137,7 @@ def compute(space):
     for label, path in VERSIONS.items():
         rows = assignments_of(db, table_id_by_path[path])
         golden["versions"][label] = {"path": path, "count": len(rows), "rows": [
-            {"run_min": r["runMin"], "run_max": r["runMax"], "created": shown_stamp(r["created"]), "variation": r["variation"],
+            {"id": r["id"], "run_min": r["runMin"], "run_max": r["runMax"], "created": shown_stamp(r["created"]), "variation": r["variation"],
              "request": request_string(path, r["runMin"], r["variation"], parse_stamp(r["created"]))} for r in rows]}
 
     golden["show"] = {}
@@ -274,8 +274,9 @@ class TableReader(HTMLParser):
 
     def handle_endtag(self, tag):
         if tag in ("td", "th") and self.cell is not None:
-            self.row.append(" ".join("".join(self.cell).split()))
-            self.row_attrs.append(self.current_attrs)
+            if "pick-cell" not in (self.current_attrs.get("class") or ""):  # the versions list's checkbox column carries no data
+                self.row.append(" ".join("".join(self.cell).split()))
+                self.row_attrs.append(self.current_attrs)
             self.cell = None
         elif tag == "tr" and self.row is not None:
             self.tables[-1].append(self.row)
@@ -487,8 +488,8 @@ def compare(space, phase, label, db_url):
         check(results, f"{label_}.total", expected["count"], shown_total)
         def run_value(text):  # the versions page prints the open-ended run sentinel as ∞
             return INFINITE_RUN if text == "∞" else int(text) if text.isdigit() else text
-        shown = [{"run_min": run_value(r[0]), "run_max": run_value(r[1]), "created": r[2], "variation": r[3]} for r in rows if len(r) >= 4]
-        wanted = [{k: row[k] for k in ("run_min", "run_max", "created", "variation")} for row in expected["rows"]]
+        shown = [{"id": int(r[0]), "run_min": run_value(r[1]), "run_max": run_value(r[2]), "created": r[3], "variation": r[4]} for r in rows if len(r) >= 5]
+        wanted = [{k: row[k] for k in ("id", "run_min", "run_max", "created", "variation")} for row in expected["rows"]]
         check(results, f"{label_}.status", 200, status)
         check(results, f"{label_}.count", expected["count"], len(shown))
         key = lambda d: json.dumps(d, sort_keys=True)  # noqa: E731
@@ -613,6 +614,38 @@ def compare(space, phase, label, db_url):
     check(results, "diff_json.changed_cells", expected["changed_cells"], body.get("changed_cells"))
     check(results, "diff_json.rows", [{"row": row_i, "cells": [{"a": a, "b": b, "changed": a != b} for a, b in expected["rows"][row_i]]} for row_i in expected["changed_rows"]], body.get("rows"))
     check(results, "diff_json.same_by_request", by_id.get_data(as_text=True), client.get(urls["diff_json_by_request"]).get_data(as_text=True), sample="byte-identical bodies")
+
+    # the comparison as a unified diff: the headers name the resolved requests, the - and + lines are the A and B
+    # cells of the changed rows from the vault blobs, the hunks are the changed rows with three rows of context
+    # (two changes closer than seven rows share a hunk, as diff -u groups them), and both address forms give one file
+    for label_, key in (("diff_text", "channels"), ("diff_text_parms", "parms")):
+        expected = golden["diff"][key]
+        response = client.get(urls[label_])
+        check(results, f"{label_}.status", 200, response.status_code)
+        text = response.get_data(as_text=True)
+        lines = text.split("\n")[:-1] if text.endswith("\n") else text.split("\n")
+        requests_ = json.loads(client.get(urls[label_].replace("/data.diff?", "/data.json?")).get_data(as_text=True))
+        check(results, f"{label_}.headers", ["--- " + requests_["a"]["request"], "+++ " + requests_["b"]["request"]], [line.split("\t")[0] for line in lines[:2]])
+        check(results, f"{label_}.minus_rows", [[a for a, _ in expected["rows"][row_i]] for row_i in expected["changed_rows"]],
+              [line[1:].split() for line in lines[2:] if line.startswith("-")])
+        check(results, f"{label_}.plus_rows", [[b for _, b in expected["rows"][row_i]] for row_i in expected["changed_rows"]],
+              [line[1:].split() for line in lines[2:] if line.startswith("+")])
+        hunks, context = [], 3
+        for row_i in expected["changed_rows"]:
+            if hunks and row_i - context <= hunks[-1][1] + 1:
+                hunks[-1][1] = min(len(expected["rows"]) - 1, row_i + context)
+            else:
+                hunks.append([max(0, row_i - context), min(len(expected["rows"]) - 1, row_i + context)])
+        shown_hunks = []
+        for line in lines:
+            match = re.match(r"@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@$", line)
+            if match:
+                start, length = int(match.group(1)), int(match.group(2) or 1)
+                shown_hunks.append([start - 1, start - 1 + length - 1] if match.group(3) == match.group(1) and (match.group(4) or 1) == (match.group(2) or 1) else line)
+        check(results, f"{label_}.hunks", hunks, shown_hunks)
+    check(results, "diff_text.same_by_request", client.get(urls["diff_text"]).get_data(as_text=True), client.get(urls["diff_text_by_request"]).get_data(as_text=True), sample="byte-identical bodies")
+    same = client.get(urls["diff_text_same"]).get_data(as_text=True)
+    check(results, "diff_text_same.headers_only", ["--- ", "+++ "], [line[:4] for line in same.splitlines()])
 
     # info modals
     for label_, expected in (("table_info", golden["table_info"]), ("dir_info", golden["dir_info"])):
