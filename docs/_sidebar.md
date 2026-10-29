@@ -12,6 +12,7 @@
 - [Concepts illustrated](concepts/concepts.md)
 - [Connection strings](concepts/concepts.md#connection-strings)
 - [Database schema](concepts/database-schema.md)
+- [Streaming readout and runs](concepts/streaming-readout.md)
 
 **APIs**:
 - [Python](apis/python.md)
@@ -27,3 +28,4 @@
 - [CLI command coherence](development/cli-command-coherence.md)
 - [Utilities & scripts](utilities.md)
 - [Deploying the web GUI](deployment/webgui.md)
+- [Deploying for a new experiment](deployment/new-experiment.md)
