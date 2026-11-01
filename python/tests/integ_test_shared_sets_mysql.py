@@ -59,8 +59,8 @@ TEST_TABLE = "/test/test_vars/test_table"                     # seed table 1: 2 
 SEED_SET_4_ROWS = [["2.2", "2.3", "2.4"], ["2.5", "2.6", "2.7"]]
 EXISTING_RUN_RANGE = (0, 2000)                               # seed run range 3
 
-DEDUP = "db dedup --apply --backup-taken --no-transaction-check"
-UPGRADE = "db upgrade --upgrade-i-am-sure --backup-taken --no-transaction-check"
+DEDUP = "db dedup --dedup-i-am-sure --no-transaction-check"
+UPGRADE = "db upgrade --upgrade-i-am-sure --no-transaction-check"
 
 WEIGHT_TABLE = "t18_deadlock_weight"   # scratch table that makes the blocking session the heavier one
 
@@ -245,7 +245,7 @@ class SharedSetsMySQLTest(unittest.TestCase):
         with self.engine.begin() as connection:
             for statement in DUPLICATE_ROWS_V5:
                 connection.execute(text(statement))
-        self._cli_ok(UPGRADE)       # no prompt: --backup-taken is the confirmation (§14.1 "confirmation")
+        self._cli_ok(UPGRADE)       # no prompt: --upgrade-i-am-sure is the confirmation (§14.1 "confirmation")
         self.assertEqual(self._scalars("SELECT `schemaVersion` FROM `schemaVersions`"), [6])
         self.assertEqual(self._index("ix_constantSets_table_sha256"), [(1, "constantTypeId"), (1, "sha256")],
                          "an upgraded database with duplicates has the interim index (§2.3)")

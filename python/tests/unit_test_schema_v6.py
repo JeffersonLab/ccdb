@@ -57,7 +57,7 @@ def _load_compare():
 compare = _load_compare()
 
 INIT = "db init --init-i-am-sure"
-UPGRADE = "db upgrade --upgrade-i-am-sure --backup-taken"
+UPGRADE = "db upgrade --upgrade-i-am-sure"
 # ccdb_user has no PROCESS privilege, so the open-transaction check cannot run (section 6.2 item 3)
 UPGRADE_MYSQL = UPGRADE + " --no-transaction-check"
 
