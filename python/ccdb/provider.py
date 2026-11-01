@@ -213,7 +213,7 @@ class AlchemyProvider:
         """
         # A session given to attach() belongs to the caller and may hold pending changes: the query must not flush
         # them, and only a transaction the check itself began is ended. A scoped_session registry is asked for its
-        # current session, since SQLAlchemy 1.4 does not proxy in_transaction().
+        # current session, since scoped_session does not proxy in_transaction().
         if isinstance(session, sqlalchemy.orm.scoped_session):
             session = session()
         had_transaction = session.in_transaction()
