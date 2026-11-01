@@ -77,7 +77,7 @@ Rules for a table:
 - **One row per channel, fixed row count.** The row count is part of the table definition
   (`mktbl -r`), so the reading code can rely on it. A change in channel count is a new table.
 - **Typed, named columns.** Column names are the API that reconstruction code uses; choose them as you
-  would choose function names. Types are `int`, `double` or `string`.
+  would choose function names. Types are `int`, `uint`, `long`, `ulong`, `double`, `bool` or `string`.
 - **Units in the comment.** The table comment is the place to say that `offset` is in nanoseconds.
 
 ```
