@@ -199,7 +199,7 @@ def patched_vault_digest(replacement):
 
     The backfill calls vault_digest in Python (§4.1, Q35). A module that did `from ccdb.model import vault_digest`
     before the patch holds its own reference, so every ccdb module attribute that is the original is patched too;
-    a module imported inside the window picks up the patched ccdb.model attribute.
+    a module imported inside the window picks up the patched ccdb.model attribute, and gets the original back on exit.
     """
     import ccdb.model
     original = ccdb.model.vault_digest
@@ -217,6 +217,14 @@ def patched_vault_digest(replacement):
     finally:
         for patch in reversed(patches):
             patch.stop()
+        # A module first imported inside the window (the first CLI call imports the db command and its upgrade module)
+        # bound the replacement itself, and no patch above restores it
+        for name, module in list(sys.modules.items()):
+            if module is None or not (name == "ccdb" or name.startswith("ccdb.")):
+                continue
+            for attribute, value in list(vars(module).items()):
+                if value is replacement:
+                    setattr(module, attribute, original)
 
 
 # ---------------------------------------------------------------------------------------------------------------
