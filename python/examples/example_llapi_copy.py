@@ -14,10 +14,6 @@ in ccdb it is a little more complicated
 
 import os
 
-import datetime
-
-from ccdb.model import ConstantSet
-
 if __name__ == "__main__":
 
     source_dir = '/test/test_vars'                              # Directory to copy from
@@ -29,8 +25,6 @@ if __name__ == "__main__":
     # or sys.path.append(os.path.join(ccdb_home, "python"))
     import ccdb
     from ccdb import TypeTable, Assignment
-    from ccdb import path_utils
-    from sqlalchemy import desc
 
     # Connection string from environment. To create a demo sqlite DB run:
     #   ccdb -c sqlite:////full/path/to/ccdb.sqlite db init --init-i-am-sure
@@ -61,15 +55,14 @@ if __name__ == "__main__":
                                                new_columns,                 # Columns it should have
                                                source_table.comment)        # Comment
 
-        # now lets copy the data
-        for constant_set in source_table.constant_sets:
-            assignment = constant_set.assignments[0]
-
-            assert isinstance(constant_set, ConstantSet)
+        # now lets copy the data. A set of data can be shared by several assignments of a table, so the copy goes
+        # through the assignments, oldest first, so the copies are created in the same order as the originals.
+        # create_assignment stores equal data of the new table once, as it does for the source table
+        for assignment in sorted(provider.get_assignments(source_table), key=lambda a: a.id):
             assert isinstance(assignment, Assignment)
 
             # create new assignment for the data
-            new_assignment = provider.create_assignment(constant_set.data_table,      # Data
+            new_assignment = provider.create_assignment(assignment.constant_set.data_table,  # Data
                                                         new_table.path,               # Source table
                                                         assignment.run_range.min,     # Run range min run
                                                         assignment.run_range.max,     # Run range max run
@@ -82,10 +75,3 @@ if __name__ == "__main__":
 
             print("   copy assignment id={} to new (id={} created={})"
                   .format(assignment.id, new_assignment.id, new_assignment.created))
-
-
-
-
-
-
-
