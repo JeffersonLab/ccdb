@@ -41,7 +41,7 @@ class Versions(CliCommandBase):
         isinstance(provider, AlchemyProvider)
         
         # process arguments
-        (raw_table_path, variation, run) = self._process_arguments(args)
+        (raw_table_path, variation, run, extended) = self._process_arguments(args)
 
         if not raw_table_path:
             log.info("Table name (path) is required. See 'help vers'")
@@ -50,9 +50,11 @@ class Versions(CliCommandBase):
         # correct path
         table_path = self.context.prepare_path(raw_table_path)
 
-        # get and print assignments
-        assignments = provider.get_assignments(table_path, run, variation)
-        self.print_assignments(assignments, variation, run)
+        # get and print assignments. The listing shows no data, so the data text of the sets is not loaded
+        table = provider.get_type_table(table_path)
+        assignments = provider.get_assignments(table, run, variation, defer_vault=True)
+        sharer_counts = provider.get_constant_set_sharer_counts(table) if extended else None
+        self.print_assignments(assignments, variation, run, sharer_counts)
         return True
             
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -62,14 +64,21 @@ class Versions(CliCommandBase):
         parser.add_argument("raw_path", nargs='?', default="")
         parser.add_argument("-v", "--variation", default="")
         parser.add_argument("-r", "--run", type=int, default=-1)
-        
+        parser.add_argument("-l", "--extended", action="store_true")
+
         # parse
         result = parser.parse_args(args)
 
-        return result.raw_path, result.variation, result.run
+        return result.raw_path, result.variation, result.run, result.extended
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    def print_assignments(self, assignments, variation, run):
+    def print_assignments(self, assignments, variation, run, sharer_counts=None):
+        """
+        Prints the assignments as a table
+
+        :param sharer_counts: {constant set id: number of assignments using it}; when given (vers -l),
+                              two columns show the data hash prefix and that number
+        """
 
         # if user specifies run, show it!
         if run != -1:
@@ -80,7 +89,10 @@ class Versions(CliCommandBase):
             print("For variation: {}".format(variation))
 
         # table header... and table =)
-        print(self.theme.Directories + "(ID)     (created)              (user)           (variation)     (run range)      (comments)" + self.theme.Reset)
+        extended = sharer_counts is not None
+        data_header = "(data)        (shared)  " if extended else ""
+        print(self.theme.Directories + "(ID)     (created)              (user)           (variation)     (run range)      "
+              + data_header + "(comments)" + self.theme.Reset)
         for asgmnt in assignments:
             assert isinstance(asgmnt, ccdb.model.Assignment)
             assert isinstance(asgmnt.author, ccdb.model.User)
@@ -88,11 +100,18 @@ class Versions(CliCommandBase):
             max_str = repr(asgmnt.run_range.max)
             if asgmnt.run_range.max == ccdb.INFINITE_RUN:
                 max_str="inf"
+            # vers -l: the first 12 hex digits of the data hash, and how many assignments share that data
+            data_columns = ""
+            if extended:
+                constant_set = asgmnt.constant_set
+                data_columns = "%-13s " % constant_set.sha256[:12] + "%-9s " % sharer_counts.get(constant_set.id, 0)
+
             print(" %-6i "%asgmnt.id +\
                   " %-20s"%asgmnt.created.strftime("%Y-%m-%d %H-%M-%S   ") +\
                   " %-15s" % asgmnt.author.name + " " +\
                   " %-14s "%asgmnt.variation.name +\
                   " %-15s "%(repr(asgmnt.run_range.min) + "-" + max_str) +\
+                  data_columns +\
                   asgmnt.comment[0:20].replace("\n", " "))
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -104,6 +123,8 @@ class Versions(CliCommandBase):
 Flags:
     -v or --variation  - filters output by variation
     -r or --run        - filters output by run
+    -l or --extended   - also shows the first 12 hex digits of the data hash (data)
+                         and the number of assignments that share this data (shared)
 
 Remark: Current working variation which is set by 'var' command or '-v' ccdb flag
 is not propagated to 'vers' command.
@@ -112,4 +133,5 @@ Example:
     >> vers /test/test_vars/test_table   #get all data versions
     >> cd /test/test_vars                #navigate to directory
     >> vers -v default test_table        #shows only data versions in default variation
+    >> vers -l test_table                #shows which versions share the same data
     """)

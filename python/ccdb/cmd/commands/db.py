@@ -10,7 +10,7 @@ from ccdb.sql.mysql_schema import init_mysql_database
 from ccdb.sql.sqlite_schema import init_sqlite_database
 from ccdb.sql.update_v6 import upgrade_v6, UpgradeRefusedError
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -155,6 +155,14 @@ class Database(CliCommandBase):
         constant_set_count = provider.session.query(ccdb.ConstantSet).count()
         print(f"Num constant sets: {constant_set_count}")
 
+        # sets used by more than one assignment: equal data of one table is stored once and shared
+        shared_sets = select(Assignment.constant_set_id) \
+            .group_by(Assignment.constant_set_id) \
+            .having(func.count(Assignment.id) > 1) \
+            .subquery()
+        shared_set_count = provider.session.execute(select(func.count()).select_from(shared_sets)).scalar()
+        print(f"Num shared constant sets: {shared_set_count}")
+
         return True
 
     def db_base_info(self):
@@ -178,5 +186,5 @@ Provides information and management commands for used Database
 subcommands:
     init      - initialize the database
     upgrade   - upgrade the database from schema version 5 to 6 (add --upgrade-i-am-sure)
-    stats     - provide database statistics
+    stats     - provide database statistics: assignments, constant sets, sets shared by several assignments
 """)

@@ -14,14 +14,18 @@ from . import path_utils
 from datetime import datetime
 
 import sqlalchemy
-from sqlalchemy.exc import OperationalError, ProgrammingError
+from sqlalchemy import select, func, exists
+from sqlalchemy.exc import OperationalError, ProgrammingError, IntegrityError, DBAPIError
 import sqlalchemy.orm
 from sqlalchemy.orm import contains_eager
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.attributes import set_committed_value
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound, ObjectDeletedError
+from sqlalchemy.orm.util import identity_key
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
+from .model import vault_digest, list_to_blob, gen_flatten_data
 from .errors import ObjectIsNotFoundInDbError, AnonymousUserForbiddenError, DatabaseStructureError, UserNotFoundError, \
-    UserExistsError
+    UserExistsError, DataCollisionError, SessionHasPendingChangesError
 
 from .table_file import TextFileDOM
 from .authentication import Authentication
@@ -32,6 +36,23 @@ log = logging.getLogger("ccdb.provider")
 
 # The database schema version this CCDB version reads and writes, and nothing else
 SCHEMA_VERSION = 6
+
+# MySQL and MariaDB errors after which a write transaction is rolled back and run again from its start:
+# InnoDB chose it as the victim of a deadlock (1213), or a row lock did not come within innodb_lock_wait_timeout (1205).
+# Writers that share constant sets lock them, and two of them can wait for each other; the restarted call is correct
+RESTARTABLE_MYSQL_ERRORS = (1213, 1205)
+MAX_TRANSACTION_RESTARTS = 3
+
+# logs.description holds at most this many characters
+LOG_DESCRIPTION_LENGTH = 255
+
+
+class _ConstantSetIdChanged(Exception):
+    """A locking re-read found an assignment on another constant set than the plain read before it.
+
+    `ccdb db dedup` does that when it merges equal sets into the oldest one. The write transaction is rolled back and
+    restarted, so it locks the set the assignment uses now.
+    """
 
 
 def hide_password(text, connection_string=None):
@@ -446,8 +467,9 @@ class AlchemyProvider:
         except NoResultFound:
             raise ObjectIsNotFoundInDbError(TypeTable, "TypeTable with id='{0}' is not found in the DB".format(table_id))
 
-        # parent_dir comes from the directory cache: only there do directories carry their full paths
-        type_table.parent_dir = self.get_directory_by_id(type_table.parent_dir_id)
+        # parent_dir comes from the directory cache: only there do directories carry their full paths.
+        # Set as the committed value, so this read records no change the session would count as pending
+        set_committed_value(type_table, "parent_dir", self.get_directory_by_id(type_table.parent_dir_id))
         return type_table
 
     # @brief Updates directory
@@ -845,31 +867,68 @@ class AlchemyProvider:
         Deletes constant type table.
         The type table will not be deleted if any assignment for this table exists
         Used should delete assignments first and only than delete the type table.
+        Constant sets of the table that no assignment uses are deleted with it.
+
+        One transaction: the table's row is locked first (FOR UPDATE), so no create_assignment can add data to the
+        table while the assignments are counted and the sets and the table are deleted. On a deadlock or lock
+        timeout the transaction is restarted.
 
         :param type_table:   table table info
         :type type_table: TypeTable
+        :raises ValueError: the table has assignments
+        :raises ObjectIsNotFoundInDbError: the table is already gone
         """
         assert isinstance(type_table, TypeTable)
 
         # get user here to fail if no such user
         user = self.get_current_user()
+        table_id, table_path, table_comment = type_table.id, type_table.path, type_table.comment
 
-        data_count = self.session.query(ConstantSet).filter(ConstantSet.type_table_id == type_table.id).count()
-        if data_count > 0:
-            message = ("Can't delete type table that has data assigned to it."
-                       + "The type table '{0}' with id '{1}'. It has {2} data sets which reference it."
-                       + "Please, delete the data first").format(type_table.path, type_table.id, data_count)
-            raise ValueError(message)
+        def attempt():
+            self._begin_write_transaction()
+            self._lock_type_table(table_id, table_path, for_update=True)
 
-        self.session.delete(type_table)
-        self.session.commit()
+            # A locking read: it sees assignments committed while this call waited for the table lock
+            assignments_count = self.session.execute(
+                select(func.count(Assignment.id))
+                .join(ConstantSet, ConstantSet.id == Assignment.constant_set_id)
+                .where(ConstantSet.type_table_id == table_id)
+                .with_for_update(read=True)).scalar()
+            if assignments_count > 0:
+                message = ("Can't delete type table that has data assigned to it. "
+                           "The type table '{0}' with id '{1}' has {2} assignments. "
+                           "Please, delete the assignments first").format(table_path, table_id, assignments_count)
+                raise ValueError(message)
 
-        # Log
-        self.create_log_record(user=user,
-                               affected_ids=[type_table.__tablename__ + str(type_table.id)],
-                               action="delete",
-                               description="Deleted table with path '{0}'".format(type_table.path),
-                               comment=type_table.comment)
+            # The sets left are unused: rm -a deletes a set with its last assignment, older CCDB versions did not
+            sets_table, assignments_table = ConstantSet.__table__, Assignment.__table__
+            # Under the table lock with no assignment counted, every set of the table is unused; their ids are read
+            # only to take the deleted sets out of the session
+            unused_set_ids = self.session.execute(
+                select(sets_table.c.id).where(sets_table.c.constantTypeId == table_id)).scalars().all()
+            self.session.execute(
+                sets_table.delete()
+                .where(sets_table.c.constantTypeId == table_id)
+                .where(~exists().where(assignments_table.c.constantSetId == sets_table.c.id)))
+            for set_id in unused_set_ids:
+                self._forget_constant_set(set_id)
+
+            # Deleting the table through the ORM deletes its columns too (cascade). For TypeTable.constant_sets the
+            # ORM would set constantTypeId to NULL in every set the collection holds; expired, it is reloaded at the
+            # flush and is empty now
+            self.session.expire(type_table, ["constant_sets"])
+            self.session.delete(type_table)
+            self.session.flush()
+
+            self.create_log_record(user=user,
+                                   affected_ids=[TypeTable.__tablename__ + str(table_id)],
+                                   action="delete",
+                                   description="Deleted table with path '{0}'".format(table_path),
+                                   comment=table_comment,
+                                   commit=False)
+            self.session.commit()
+
+        self._run_write_transaction(attempt)
 
     # ----------------------------------------------------------------------------------------
     #   R U N   R A N G E S
@@ -903,8 +962,7 @@ class AlchemyProvider:
     # ------------------------------------------------
     # Gets run range from DB Or Creates RunRange in DB
     # ------------------------------------------------
-    # noinspection PyBroadException
-    def get_or_create_run_range(self, min_run, max_run, name="", comment=""):
+    def get_or_create_run_range(self, min_run, max_run, name="", comment="", commit=True):
         """
         Gets run range from DB Or Creates RunRange in DB
 
@@ -912,6 +970,8 @@ class AlchemyProvider:
         :param max_run: max run
         :param name: name
         :param comment: comment in case we will have to create a new run range
+        :param commit: False only flushes a new run range, so it belongs to the caller's transaction
+                       (create_assignment rolls it back when the assignment fails)
         :return: RunRange object
         :rtype: RunRange
         """
@@ -919,7 +979,9 @@ class AlchemyProvider:
         try:
             run_range = self.get_run_range(min_run, max_run, name)
             return run_range
-        except:
+        except (ObjectIsNotFoundInDbError, MultipleResultsFound):
+            # several equal run ranges exist on some old databases; as before, a new one is made then.
+            # A database error is not caught: inside a write transaction it must reach the restart rule
             pass
 
         # if we here we was unable to find a run range
@@ -930,7 +992,10 @@ class AlchemyProvider:
         run_range.comment = comment
 
         self.session.add(run_range)
-        self.session.commit()
+        if commit:
+            self.session.commit()
+        else:
+            self.session.flush()
         return run_range
 
     # ------------------------------------------------
@@ -1237,15 +1302,17 @@ class AlchemyProvider:
 
         # A directory knows its full path only inside the directory cache (see _load_dirs); the table reached
         # through assignment.constant_set.type_table is loaded plain, with a path-less directory, and
-        # assignment.request would then start with the bare table name. Point the table at the cached directory.
+        # assignment.request would then start with the bare table name. Point the table at the cached directory,
+        # as the committed value: a read must record no change that the session would count as pending.
         table = assignment.constant_set.type_table
-        table.parent_dir = self.get_directory_by_id(table.parent_dir_id)
+        set_committed_value(table, "parent_dir", self.get_directory_by_id(table.parent_dir_id))
         return assignment
 
     # ------------------------------------------------
     # get list of assignments
     # ------------------------------------------------
-    def get_assignments(self, path_or_table, run=-1, variation="", date_and_time=None, limit=0, offset=0):
+    def get_assignments(self, path_or_table, run=-1, variation="", date_and_time=None, limit=0, offset=0,
+                        defer_vault=False):
         """
         returns list of assignments
 
@@ -1264,6 +1331,8 @@ class AlchemyProvider:
         :param date_and_time:
         :param limit:
         :param offset:
+        :param defer_vault: True leaves the data text of the sets out of the query, for listings that show no data
+                            (`vers`); assignment.constant_set.vault then loads on first access
         :return:
         """
 
@@ -1277,9 +1346,12 @@ class AlchemyProvider:
 
         # build query; the joined rows also populate the relationships, so reading
         # assignment.run_range, .variation or .request afterwards runs no further queries
+        eager_set = contains_eager(Assignment.constant_set)
+        if defer_vault:
+            eager_set = eager_set.defer(ConstantSet._vault)    # a vault can be megabytes; a listing shows none
         query = self.session.query(Assignment) \
             .join(ConstantSet).join(TypeTable).join(RunRange).join(Variation) \
-            .options(contains_eager(Assignment.constant_set).contains_eager(ConstantSet.type_table),
+            .options(eager_set.contains_eager(ConstantSet.type_table),
                      contains_eager(Assignment.run_range),
                      contains_eager(Assignment.variation)) \
             .filter(TypeTable.id == table.id)
@@ -1357,16 +1429,49 @@ class AlchemyProvider:
             raise ObjectIsNotFoundInDbError(Assignment, message) from ex
 
     # ------------------------------------------------
+    # Counts the assignments that share each constant set
+    # ------------------------------------------------
+    def get_constant_set_sharer_counts(self, path_or_table):
+        """
+        Number of assignments that use each constant set of a table, as {constant set id: count}
+
+        Assignments of one table share a set when their data bytes are equal. One GROUP BY query counts them;
+        it reads no data text and loads no assignment. Sets without assignments are not in the result.
+
+        :param path_or_table: path of the table or TypeTable object
+        :rtype: dict
+        """
+        if isinstance(path_or_table, str):
+            table = self.get_type_table(path_or_table)
+        else:
+            assert isinstance(path_or_table, TypeTable)
+            table = path_or_table
+
+        # Counted over the sets of the table rather than over a list of set ids: a table can have tens of
+        # thousands of assignments, more than SQLite accepts as parameters of one statement
+        query = select(Assignment.constant_set_id, func.count(Assignment.id)) \
+            .join(ConstantSet, ConstantSet.id == Assignment.constant_set_id) \
+            .where(ConstantSet.type_table_id == table.id) \
+            .group_by(Assignment.constant_set_id)
+        return {set_id: count for set_id, count in self.session.execute(query)}
+
+    # ------------------------------------------------
     # Creates Assignment using related object
     # ------------------------------------------------
-
     def create_assignment(self, data, path, min_run, max_run, variation_name, comment):
         """
+            Creates an assignment of the data to a table, run range and variation
+
+            Data equal byte for byte to a stored constant set of the same table reuses that set, so the
+            assignments share it; other data gets a new set. All is written in one transaction: after any
+            error nothing is written and the provider stays usable.
+
             Validation:
             If no such run range found, the new will be created (with no name)
-            No assignment will be created (and NULL will be returned):
+            No assignment will be created:
             -- If no type table with such path exists
-            -- If data is inconsistent with columns number and rows number
+            -- If data is inconsistent with columns number and rows number (every row is checked)
+            -- If a value does not fit the type of its column
             -- If no variation with such name found
 
             @param data: tabled data or TextFileDom
@@ -1377,7 +1482,13 @@ class AlchemyProvider:
             @param comment:
             @return: created assignment
             @rtype: Assignment
+            @raise SessionHasPendingChangesError: the session holds uncommitted changes; commit or discard them first
+            @raise DataCollisionError: stored sets of the table have the sha256 of the data but other bytes
+            @raise ObjectIsNotFoundInDbError: no such table or variation, or the table was removed during the call
             """
+
+        # Pending changes are refused before any read: a query would autoflush them, and the commit below would keep them
+        self._refuse_pending_changes()
 
         # maybe it is a dom?
         if isinstance(data, TextFileDOM):
@@ -1392,7 +1503,6 @@ class AlchemyProvider:
 
         variation = self.get_variation(
             variation_name)  # TODO create variation_name_or_obj instead of variation_name
-        run_range = self.get_or_create_run_range(min_run, max_run)
 
         # validate data.. a little =)
         if len(rows) == 0:
@@ -1403,14 +1513,17 @@ class AlchemyProvider:
             # rows_count = len(data) / table._columns_count
             raise NotImplementedError()  # TODO check and implement this branch
 
-        # validate that the data rows and cols correspond to table rows and cols
+        # validate that the data rows and cols correspond to table rows and cols. Every row is checked:
+        # a short row further down would be stored and could not be read back
         data_rows_count = len(rows)
-        data_cols_count = len(rows[0])
-
-        if data_rows_count != table.rows_count or data_cols_count != table.columns_count:
+        bad_rows = [row_index for row_index, row in enumerate(rows) if len(row) != table.columns_count]
+        if data_rows_count != table.rows_count or bad_rows:
+            data_cols_count = len(rows[bad_rows[0]]) if bad_rows else len(rows[0])
             message = "Data rows or columns count is inconsistent with table declared rows or columns count. " \
                       "Data rows='{0}', columns='{1}'. Table declared rows='{2}', columns='{3}'" \
                       "".format(data_rows_count, data_cols_count, table.rows_count, table.columns_count)
+            if bad_rows:
+                message += ". Row {0} has {1} columns".format(bad_rows[0], data_cols_count)
             raise ValueError(message)
 
         # check for type
@@ -1425,35 +1538,133 @@ class AlchemyProvider:
         if user.name == 'anonymous':
             # anonymous user can't create assignments
             raise AnonymousUserForbiddenError
-        else:
-            with self.session.no_autoflush:
-                # construct assignment
-                assignment = Assignment()
-                self.session.add(assignment)
-                constant_set = ConstantSet()
-                self.session.add(constant_set)
-                assignment.constant_set = constant_set
-                assignment.constant_set.type_table_id = table.id
-                assignment.constant_set.type_table = table
-                assignment.run_range = run_range
-                assignment.run_range_id = run_range.id
-                assignment.variation = variation
-                assignment.variation_id = variation.id
-                assignment.constant_set.data_table = rows
-                assignment.comment = comment
-                assignment.author_id = user.id
-                self.session.commit()
 
-            # add log
+        # The data text as it will be stored, and its identity
+        vault = list_to_blob(list(gen_flatten_data(rows)))
+        sha256, _ = vault_digest(vault)
+
+        # The transaction starts by ending the read transaction, which expires every loaded object; these are taken now
+        table_id, table_path, variation_id, user_id = table.id, table.path, variation.id, user.id
+
+        def attempt():
+            # One write transaction, restarted on a deadlock. The table's row is locked FOR SHARE first, so the table
+            # stays while this call runs: rm -t locks the same row FOR UPDATE
+            self._begin_write_transaction()
+            self._lock_type_table(table_id, table_path, for_update=False)
+
+            # The run range is made inside this transaction, so a failure below takes a new run range back too
+            run_range = self.get_or_create_run_range(min_run, max_run, commit=False)
+
+            # A stored set of the table with equal bytes, or a new set
+            constant_set, is_reused = self._find_or_store_constant_set(table_id, table_path, vault, sha256)
+
+            assignment = Assignment()
+            assignment.constant_set = constant_set
+            assignment.run_range = run_range
+            assignment.variation_id = variation_id
+            assignment.comment = comment
+            assignment.author_id = user_id
+            self.session.add(assignment)
+            self.session.flush()
+
+            # The log record names the set and marks reuse. It is flushed here, so its failure comes before the commit
+            suffix = " (shared data)" if is_reused else ""
             self.create_log_record(user=user,
-                                   affected_ids=[assignment.__tablename__ + str(assignment.id)],
+                                   affected_ids=[Assignment.__tablename__ + str(assignment.id),
+                                                 ConstantSet.__tablename__ + str(constant_set.id)],
                                    action="create",
-                                   description="Created assignment '{0}'".format(assignment.request),
-                                   comment=assignment.comment)
+                                   description=self._log_description("Created assignment '{0}'", assignment.request, suffix),
+                                   comment=assignment.comment,
+                                   commit=False)
+
+            # One commit for the run range, the set, the assignment and the log record
+            self.session.commit()
             return assignment
+
+        return self._run_write_transaction(attempt)
+
+    def _find_or_store_constant_set(self, table_id, table_path, vault, sha256):
+        """
+        The stored set of the table with exactly these data bytes, to be reused by create_assignment; or, when
+        there is none, a new set.
+
+        Runs inside create_assignment's transaction, which holds the share lock of the table's row.
+
+        :return: (constant set, True when a stored set is reused)
+        :raises DataCollisionError: sets of the table have this sha256 but other bytes
+        """
+        # Candidates by hash, oldest first. Unused sets count too: the unique index covers every row, so a new set
+        # with their bytes would be refused; and the oldest set is the one `ccdb db dedup` keeps
+        candidates = self._constant_set_candidates(table_id, sha256, lock=False)
+        if candidates:
+            # Bytes are compared in Python: the column collation in SQL ignores case and trailing spaces
+            equal_sets = [candidate for candidate in candidates if candidate.vault == vault]
+            if not equal_sets:
+                raise self._data_collision(table_path, sha256, candidates)
+
+            # The oldest equal set, re-read as a locking read. rm -a, rm -t and db dedup delete sets, and a plain read
+            # could pick one that is deleted before this transaction commits; the share lock keeps the set until then
+            match = equal_sets[0]
+            locked = self.session.execute(
+                select(ConstantSet.id).where(ConstantSet.id == match.id).with_for_update(read=True)).first()
+            if locked is not None:
+                return match, True
+            # The set was deleted since the plain read: the data is stored anew. Before `ccdb db dedup` a table can
+            # hold more equal sets; they are not tried, and the next dedup merges the new set with them
+
+        # A new set, in a SAVEPOINT. A writer that stored the same bytes after this transaction's snapshot was taken
+        # wins the unique index; then only this insert is undone
+        constant_set = ConstantSet(vault=vault)
+        constant_set.type_table_id = table_id
+        try:
+            with self.session.begin_nested():
+                self.session.add(constant_set)
+                self.session.flush()
+        except IntegrityError:
+            # Under REPEATABLE READ a plain SELECT keeps returning this transaction's first snapshot, without the
+            # winner's row; a locking read returns committed rows. The error text differs by server and version,
+            # so the re-query tells the race from other errors
+            candidates = self._constant_set_candidates(table_id, sha256, lock=True)
+            if not candidates:
+                raise       # not the race on the unique index
+            for candidate in candidates:
+                if candidate.vault == vault:
+                    return candidate, True
+            raise self._data_collision(table_path, sha256, candidates)
+        return constant_set, False
+
+    def _constant_set_candidates(self, table_id, sha256, lock):
+        """Sets of the table with this sha256, by id; with lock, read as a locking read (FOR SHARE)"""
+        query = self.session.query(ConstantSet) \
+            .filter(ConstantSet.type_table_id == table_id, ConstantSet.sha256 == sha256) \
+            .order_by(ConstantSet.id)
+        if lock:
+            query = query.with_for_update(read=True)
+        return query.all()
+
+    @staticmethod
+    def _data_collision(table_path, sha256, candidates):
+        """The DataCollisionError of create_assignment, also logged as an error line: it means corrupt data or a broken hash"""
+        error = DataCollisionError(table_path, sha256, [candidate.id for candidate in candidates])
+        log.error(str(error))
+        return error
+
+    def _lock_type_table(self, table_id, table_path, for_update):
+        """
+        Locks the table's typeTables row until the transaction ends: FOR SHARE for writers that add data to the
+        table, FOR UPDATE for rm -t, which deletes it. On SQLite the clause is left out; BEGIN IMMEDIATE serializes writers.
+
+        :raises ObjectIsNotFoundInDbError: the table is gone
+        """
+        statement = select(TypeTable.id).where(TypeTable.id == table_id).with_for_update(read=not for_update)
+        if self.session.execute(statement).first() is None:
+            raise ObjectIsNotFoundInDbError(TypeTable, "The type table '{0}' was removed from the DB".format(table_path))
 
     def copy_assignment(self, source_assignment, new_run_range=None, new_variation=None, comment=''):
         """
+        Creates an assignment with the data of the source assignment, for another run range or variation.
+        The copy shares the source's constant set: no data is copied.
+
         Validation:
         If no such run range found, the new will be created (with no name)
         No assignment will be created (and NULL will be returned):
@@ -1462,12 +1673,17 @@ class AlchemyProvider:
         -- If no variation with such name found
         -- If no assignment is given
 
+        One transaction: the source's set is locked (FOR SHARE), then the source assignment, so neither rm -a nor
+        db dedup deletes the set before the copy is committed. When db dedup moved the source to another set
+        meanwhile, the transaction restarts on that set.
+
         @param new_run_range: run_range of assignment
         @param new_variation: variation of assignment
         @param comment: comment of assignment
         @param source_assignment: where the new assignment is being copied
         @return: created assignment
         @rtype: Assignment
+        @raise ObjectIsNotFoundInDbError: no such variation, or the source assignment was deleted
         """
 
         user = self.get_current_user()
@@ -1480,27 +1696,66 @@ class AlchemyProvider:
         assert isinstance(new_variation, Variation)
         if new_run_range is None:
             new_run_range = source_assignment.run_range
+        source_id, user_id = source_assignment.id, user.id
 
-        # construct assignment
-        dest_assignment = Assignment()
-        dest_assignment.constant_set = source_assignment.constant_set
-        dest_assignment.run_range = new_run_range
-        dest_assignment.variation = new_variation
-        dest_assignment.comment = comment
-        dest_assignment.author_id = user.id
-        self.session.add(dest_assignment)
-        self.session.commit()
-        self.create_log_record(user=user,
-                               affected_ids=[dest_assignment.__tablename__ + str(dest_assignment.id)],
-                               action="create",
-                               description="Created assignment '{0}'".format(dest_assignment.request),
-                               comment=comment)
-        return dest_assignment
+        def attempt():
+            self._begin_write_transaction()
+
+            # The set is locked before the assignment: every writer locks constantSets rows before assignments rows.
+            # No row is no error here; the re-check below tells what happened
+            set_id = self.session.execute(
+                select(Assignment.constant_set_id).where(Assignment.id == source_id)).scalar()
+            if set_id is None:
+                raise self._assignment_is_gone(source_id)
+            self.session.execute(select(ConstantSet.id).where(ConstantSet.id == set_id).with_for_update(read=True)).all()
+
+            # The re-check selects the column, never an Assignment entity: a locking query of an entity returns the
+            # object already in the session, with its old constant_set_id
+            locked_set_id = self.session.execute(
+                select(Assignment.constant_set_id).where(Assignment.id == source_id).with_for_update(read=True)).scalar()
+            if locked_set_id is None:
+                raise self._assignment_is_gone(source_id)        # rm -a deleted it
+            if locked_set_id != set_id:
+                raise _ConstantSetIdChanged()                     # db dedup moved it to the oldest equal set
+
+            # construct assignment
+            dest_assignment = Assignment()
+            dest_assignment.constant_set_id = locked_set_id
+            dest_assignment.run_range = new_run_range
+            dest_assignment.variation = new_variation
+            dest_assignment.comment = comment
+            dest_assignment.author_id = user_id
+            self.session.add(dest_assignment)
+            self.session.flush()
+
+            # a copy is a new assignment that reuses a set: its record names the set and marks the sharing
+            self.create_log_record(user=user,
+                                   affected_ids=[Assignment.__tablename__ + str(dest_assignment.id),
+                                                 ConstantSet.__tablename__ + str(locked_set_id)],
+                                   action="create",
+                                   description=self._log_description("Created assignment '{0}'",
+                                                                     dest_assignment.request, " (shared data)"),
+                                   comment=comment,
+                                   commit=False)
+            self.session.commit()
+            return dest_assignment
+
+        return self._run_write_transaction(attempt)
 
     # ------------------------------------------------
     # updates assignment comments
     # ------------------------------------------------
     def update_assignment(self, assignment):
+        """
+        Saves the changes of an assignment's comment, run range or variation
+
+        :raises ValueError: the assignment was given another constant set. Data changes by a new assignment; and a set
+                            attached here would not be locked, so a concurrent rm -a could delete it under the assignment
+        """
+        # Checked before any read: get_current_user() queries, and its autoflush would write the change
+        if self._is_constant_set_changed(assignment):
+            raise ValueError("An assignment cannot move to another constant set; nothing was written. "
+                             "Data changes by a new assignment ('ccdb add' or create_assignment)")
 
         # get user here to fail if no such user
         user = self.get_current_user()
@@ -1514,29 +1769,214 @@ class AlchemyProvider:
                                description="Updated assignment '{0}'".format(assignment.request),
                                comment=assignment.comment)
 
+    @staticmethod
+    def _is_constant_set_changed(assignment):
+        """
+        True when the assignment points at another constant set than its stored one, through the constant_set
+        relationship or the constant_set_id column. Reads only the session's change history, never the database.
+        """
+        attributes = sqlalchemy.inspect(assignment).attrs
+        column_history = attributes.constant_set_id.history
+        if column_history.added or column_history.deleted:
+            return True
+        relation_history = attributes.constant_set.history
+        if not relation_history.has_changes():
+            return False
+        # The relationship moves the column only at the flush: the new set is compared with the stored column value
+        new_set = relation_history.added[0] if relation_history.added else None
+        new_identity = sqlalchemy.inspect(new_set).identity if new_set is not None else None
+        stored_ids = list(column_history.unchanged)
+        return not (new_identity and stored_ids and new_identity[0] == stored_ids[0])
+
     # ------------------------------------------------
     # Deletes assignment
     # ------------------------------------------------
     def delete_assignment(self, assignment):
         """
-         Deletes assignment
+        Deletes assignment, and its constant set when no other assignment uses the set
+
+        One transaction: the set is locked (FOR UPDATE), then the assignment. A writer that attaches an assignment
+        to the set holds a share lock on it until it commits; this call then waits, sees that assignment and keeps
+        the set. When this call locks the set first, that writer finds the set gone and stores its data anew.
 
         :param assignment: assignment object to delete. Must have valid ID
+        :raises SessionHasPendingChangesError: the session holds uncommitted changes; commit or discard them first
+        :raises ObjectIsNotFoundInDbError: the assignment was deleted already
         """
+        # Pending changes are refused before any read: a query would autoflush them, and the commit below would keep them
+        self._refuse_pending_changes()
 
-        # save assignment parameters
+        # save assignment parameters now: once the set is gone, assignment.request cannot reach the table
         user = self.get_current_user()
-        affected_ids = [assignment.__tablename__ + str(assignment.id)]
-        action = "delete"
-        description = "Deleted assignment '{0}'".format(assignment.request)
-        comment = assignment.comment
+        try:
+            assignment_id = assignment.id
+            description = self._log_description("Deleted assignment '{0}'", assignment.request)
+            comment = assignment.comment
+        except ObjectDeletedError as ex:
+            raise ObjectIsNotFoundInDbError(Assignment, "The assignment is not found in the DB") from ex
 
-        # delete it
-        self.session.delete(assignment)
+        def attempt():
+            self._begin_write_transaction()
+
+            # The id reads select the column, never an Assignment entity: a locking query of an entity returns the
+            # object already in the session, with its old constant_set_id
+            set_id = self.session.execute(
+                select(Assignment.constant_set_id).where(Assignment.id == assignment_id)).scalar()
+            if set_id is None:
+                raise self._assignment_is_gone(assignment_id)
+
+            # Lock the set before the assignment, the order every writer keeps. No row is no error: the locking
+            # re-read of the assignment below tells what happened
+            self.session.execute(select(ConstantSet.id).where(ConstantSet.id == set_id).with_for_update()).all()
+
+            # Lock the assignment and re-check its set id: gone means another rm -a won, another id means db dedup moved it
+            locked_set_id = self.session.execute(
+                select(Assignment.constant_set_id).where(Assignment.id == assignment_id).with_for_update()).scalar()
+            if locked_set_id is None:
+                raise self._assignment_is_gone(assignment_id)    # another rm -a got there first
+            if locked_set_id != set_id:
+                raise _ConstantSetIdChanged()                     # db dedup moved it to the oldest equal set
+
+            # The delete goes through the ORM, so the caller's object ends detached with its loaded columns, as it always did.
+            # Assignment.constant_set has no cascade: this touches no set
+            self.session.delete(assignment)
+            self.session.flush()
+
+            # Is the set used by another assignment? A locking read: under REPEATABLE READ a plain one would return
+            # this transaction's first snapshot and miss an assignment another writer attached while the set lock waited
+            other_sharer = self.session.execute(
+                select(Assignment.id).where(Assignment.constant_set_id == set_id).limit(1).with_for_update(read=True)).first()
+            if other_sharer is None:
+                sets_table = ConstantSet.__table__
+                self.session.execute(sets_table.delete().where(sets_table.c.id == set_id))
+                self._forget_constant_set(set_id)
+
+            # The record names the assignment only, whether or not its set went with it
+            self.create_log_record(user=user,
+                                   affected_ids=[Assignment.__tablename__ + str(assignment_id)],
+                                   action="delete",
+                                   description=description,
+                                   comment=comment,
+                                   commit=False)
+            self.session.commit()
+
+        self._run_write_transaction(attempt)
+
+    def _forget_constant_set(self, set_id):
+        """
+        Takes a set that an SQL statement deleted out of the session, so the session does not try to reload it.
+        The commit that opened the write transaction expired the set's columns, and nothing reloads them: a caller
+        that still holds the set gets DetachedInstanceError when it reads it (left in the session, it would get
+        ObjectDeletedError).
+        """
+        deleted_set = self.session.identity_map.get(identity_key(ConstantSet, set_id))
+        if deleted_set is not None:
+            self.session.expunge(deleted_set)
+
+    @staticmethod
+    def _assignment_is_gone(assignment_id):
+        return ObjectIsNotFoundInDbError(Assignment, "Assignment with id='{0}' is not found in the DB; "
+                                                     "it was deleted".format(assignment_id))
+
+    @staticmethod
+    def _log_description(template, request, suffix=""):
+        """
+        template.format(request) + suffix, within the 255 characters of logs.description.
+        The request part is shortened when needed; the suffix stays whole.
+        """
+        description = template.format(request) + suffix
+        overflow = len(description) - LOG_DESCRIPTION_LENGTH
+        if overflow > 0:
+            description = template.format(request[:len(request) - overflow - 3] + "...") + suffix
+        return description
+
+    # ----------------------------------------------------------------------------------------
+    #   W R I T E   T R A N S A C T I O N S
+    # ----------------------------------------------------------------------------------------
+    def _refuse_pending_changes(self):
+        """
+        Raises SessionHasPendingChangesError when the session holds changes that are not written yet.
+
+        create_assignment and delete_assignment commit their own transaction, which would commit the caller's
+        changes with it, and their first query would autoflush them; so this runs before any read. Only net changes
+        count: new and deleted objects, and loaded objects whose columns or relationships differ from the stored ones.
+        """
+        session = self.session
+        if session.new or session.deleted or any(session.is_modified(obj) for obj in session.dirty):
+            raise SessionHasPendingChangesError()
+
+    def _begin_write_transaction(self):
+        """
+        Starts the transaction of a write method.
+
+        The reads before it left a transaction open, and on MySQL its REPEATABLE READ snapshot would hide what other
+        writers committed since; so it is ended first. Methods that refuse pending changes have nothing to commit
+        here; copy_assignment and delete_type_table commit what the caller left pending, as they always did.
+
+        SQLite: pysqlite sends no BEGIN before a SELECT, so a SAVEPOINT would open the transaction and its RELEASE
+        commit it. BEGIN IMMEDIATE makes the call one transaction, and a second writer waits here for the first.
+        """
         self.session.commit()
+        if self.engine.dialect.name == "sqlite":
+            self.session.connection().exec_driver_sql("BEGIN IMMEDIATE")
 
-        # Log
-        self.create_log_record(user, affected_ids, action, description, comment)
+    def _run_write_transaction(self, attempt):
+        """
+        Runs attempt(), a function that does one write transaction and commits it, with the restart rule.
+
+        On a MySQL deadlock (1213), a lock wait timeout (1205) or a constant set id that changed under a re-check,
+        the transaction is rolled back and attempt() runs again, at most MAX_TRANSACTION_RESTARTS times. On any other
+        error it is rolled back and the error is raised: nothing is written and the session stays usable.
+        attempt() builds its objects anew on every run, since the rollback expunged those of the failed run.
+        """
+        restarts = 0
+        while True:
+            try:
+                return attempt()
+            except BaseException as error:
+                self._rollback_quietly()
+                cause = self._restartable_cause(error)
+                if restarts < MAX_TRANSACTION_RESTARTS and cause is not None:
+                    restarts += 1
+                    # the reason only: the error text would carry the statement and its data parameters
+                    reason = "constant set changed" if isinstance(cause, _ConstantSetIdChanged) \
+                        else "MySQL error {0}".format(cause.orig.args[0])
+                    log.info("Write transaction rolled back and restarted ({0} of {1}): {2}".format(
+                        restarts, MAX_TRANSACTION_RESTARTS, reason))
+                    continue
+                if isinstance(error, _ConstantSetIdChanged):
+                    raise RuntimeError("The constant set of the assignment changed under this call {0} times "
+                                       "(is 'ccdb db dedup' running?). Nothing was written; try again"
+                                       .format(restarts + 1)) from error
+                raise
+
+    @staticmethod
+    def _restartable_cause(error):
+        """
+        The error, or the error it was raised from or while handling, after which a write transaction runs again
+        (see RESTARTABLE_MYSQL_ERRORS); None when there is none.
+
+        The chain is followed because a deadlock inside a SAVEPOINT does not surface itself: MySQL rolls back the
+        whole transaction, savepoint included, so SQLAlchemy's ROLLBACK TO SAVEPOINT fails with error 1305, and that
+        error replaces the deadlock, which stays only as its __context__.
+        """
+        seen = set()
+        while error is not None and id(error) not in seen:
+            seen.add(id(error))
+            if isinstance(error, _ConstantSetIdChanged):
+                return error
+            if isinstance(error, DBAPIError) and error.orig is not None and error.orig.args \
+                    and error.orig.args[0] in RESTARTABLE_MYSQL_ERRORS:
+                return error
+            error = error.__cause__ or error.__context__
+        return None
+
+    def _rollback_quietly(self):
+        """Rolls back after a failed write. A failing rollback is only logged: the write's error is what the caller needs"""
+        try:
+            self.session.rollback()
+        except Exception as rollback_error:
+            log.warning("Rollback after a failed write raised: %r", rollback_error)
 
     # ------------------------------------------------
     # validate value
@@ -1736,7 +2176,14 @@ class AlchemyProvider:
     # ----------------------------------------------------------------------------------------
     #   L O G G I N G
     # ----------------------------------------------------------------------------------------
-    def create_log_record(self, user, affected_ids, action, description, comment):
+    def create_log_record(self, user, affected_ids, action, description, comment, commit=True):
+        """
+        Writes a log record when logging is enabled
+
+        :param commit: False only flushes the record, inside the caller's transaction: the record and the change
+                       it describes are then committed together, and a failing record surfaces before that commit
+        :return: the LogRecord, or None when logging is disabled
+        """
         if not self.logging_enabled:
             return None
 
@@ -1753,7 +2200,10 @@ class AlchemyProvider:
         user.last_action_time = datetime.now()
 
         self.session.add(record)
-        self.session.commit()
+        if commit:
+            self.session.commit()
+        else:
+            self.session.flush()
         return record
 
     def get_log_records(self, limit=20, offset=0):
