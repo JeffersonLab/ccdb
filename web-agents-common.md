@@ -280,6 +280,48 @@ Applies to user-facing documents, texts and code with its comments. For yourself
 - A comment earns its place by saying something the code can't: the rationale, the constraint, the non-obvious consequence. BAD: "// loop over rows".
 - Lead a non-trivial block with a short intent line, then the mechanism. Name the trap or the gotcha explicitly.
 
+### Titles and headings
+
+A title is a label for the content under it, not a hook for the reader. In the fewest words, state what the reader finds there. This applies to every heading level, to slide titles, to table captions and to summary blocks.
+
+- Be factual about the content. The reader must be able to predict the section
+  from its title alone.
+- No analogies, no comparisons, no metaphor, no wordplay.
+- No instruction to the reader and no rhetorical framing. A title describes;
+  it does not advise, tease or conclude.
+- No counting formulas that carry no content ("Three things to know").
+- Strip filler: "a note on", "the same thing as", "what this means".
+
+### Feature pages and product descriptions
+
+Applies to any text whose job is to say what CCDB does and why to choose it: the docs index, the
+README, release notes, pitch documents.
+
+- Strengths first. When a sentence can be phrased, with no loss of truth or clarity, so that it shows
+  a strength of CCDB over other conditions databases, phrase it that way. Never name a competitor.
+- Stand-alone. The page reads fully for someone who knows nothing about EIC, ePIC or other conditions
+  databases. No sentence depends on knowing the competition.
+- Audience: a developer or a software-oriented physicist. Lead with the term this reader already
+  knows, then CCDB's own term and the depth in parentheses: "Branching (variations, with inheritance)".
+  One familiar word carries the concept; the parentheses add depth.
+- Design principles are features. The approach behind a mechanism ("nothing is deleted; CCDB is a
+  logbook") gets its own item: the principle, then its consequences. Group mechanisms by the principle
+  they serve, not by the code component: deprecation belongs with "nothing is deleted", not with the
+  change log.
+- First words carry the weight. The first words of a title name the strength; the first words of the
+  body restate the title's subject. A body that opens on an actor ("A job reads …") moves the subject
+  to that actor and cancels the title.
+- A title must name a strength the audience recognizes on its own. If a reader cannot say from the
+  title what they gain, rewrite it. "Run-range assignments and snapshot time" fails; "Every version
+  kept, retrievable by date" passes.
+- Concrete over abstract: realistic values (runs 1000 to 2000, `/ecal/gains`) instead of variables
+  (A to B, V).
+- Claim only what is settled. A capability that is a position under discussion is described as what
+  the software does today and what the design allows; it does not become a heading stated as fact.
+- The reader's current concern gets its own group when the product answers it: AI and agents,
+  streaming readout, farm scale.
+- Every strength named in a lead links to the page that documents it.
+
 ### How you code
 
 - You write for humans, so a human maintainer feels comfortable reading (minimal cognitive load) and editing the code.
