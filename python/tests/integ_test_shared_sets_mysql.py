@@ -15,7 +15,8 @@ The races are made deterministic with SQLAlchemy engine events on the provider u
 one side at a named statement until the other side has finished, or for PAUSE_SECONDS. An implementation
 that takes the locks of §5.1 and §5.2 holds them during that pause, so the other side waits for it; one
 that does not lets the other side finish inside the pause, and the stopped side then writes an
-assignment whose set or table is gone, which the orphan check reports.
+assignment whose set or table is gone, which the orphan check reports. The rm -a races also check that
+the other side did not finish inside the pause, and the order of the locking statements §14.1 names.
 
 `db upgrade` and `db dedup` get `--no-transaction-check`: the test user `ccdb_user` lacks PROCESS
 (T22), and in a race the other session's open transaction is the point of the test.
@@ -30,6 +31,7 @@ import unittest
 from io import StringIO
 
 from sqlalchemy import event, text
+from sqlalchemy.engine import Engine
 from sqlalchemy.exc import DBAPIError, OperationalError, PendingRollbackError
 
 import ccdb.cmd.themes
@@ -98,6 +100,35 @@ DELETE_TYPE_TABLE = _statement(r"\s*DELETE\s+FROM\s+`?typeTables`?[\s(]")
 SHARE_LOCK_TYPE_TABLE = _statement(r"\s*SELECT\b.*\bFROM\s+`?typeTables`?\s.*\b(FOR\s+SHARE|LOCK\s+IN\s+SHARE\s+MODE)\b")
 UPDATE_LOCK_TYPE_TABLE = _statement(r"\s*SELECT\b.*\bFROM\s+`?typeTables`?\s.*\bFOR\s+UPDATE\b")
 
+# Locking reads of rm -a and cp (§14.1 "rm -a locking", "cp locking"). The table is the one of the first
+# FROM, so a subquery on another table does not match. MariaDB 10.5 spells FOR SHARE as LOCK IN SHARE MODE
+_LOCKING_READ = r"\s*SELECT\b(?:(?!\bFROM\b).)*\bFROM\s+`?{0}`?\s.*\b{1}"
+_FOR_UPDATE = r"FOR\s+UPDATE\b"
+_FOR_SHARE = r"(FOR\s+SHARE|LOCK\s+IN\s+SHARE\s+MODE)\b"
+UPDATE_LOCK_SETS = _statement(_LOCKING_READ.format("constantSets", _FOR_UPDATE))
+SHARE_LOCK_SETS = _statement(_LOCKING_READ.format("constantSets", _FOR_SHARE))
+UPDATE_LOCK_ASSIGNMENTS = _statement(_LOCKING_READ.format("assignments", _FOR_UPDATE))
+SHARE_LOCK_ASSIGNMENTS = _statement(_LOCKING_READ.format("assignments", _FOR_SHARE))
+DELETE_ASSIGNMENT = _statement(r"\s*DELETE\s+FROM\s+`?assignments`?[\s(]")
+DELETE_SETS = _statement(r"\s*DELETE\s+FROM\s+`?constantSets`?[\s(]")
+REPOINT_ASSIGNMENTS = _statement(r"\s*UPDATE\s+`?assignments`?\s+SET\b")     # §7 step 4
+
+# §14.1 "rm -a locking": the set FOR UPDATE, then the assignment FOR UPDATE, then DELETE FROM assignments;
+# the check for other sharers is a locking read after the assignment's lock. Other statements may come
+# between, and a restarted transaction repeats them
+RM_A_LOCKS = [("SELECT ... FROM constantSets ... FOR UPDATE", UPDATE_LOCK_SETS),
+              ("SELECT ... FROM assignments ... FOR UPDATE", UPDATE_LOCK_ASSIGNMENTS),
+              ("DELETE FROM assignments", DELETE_ASSIGNMENT)]
+RM_A_SHARER_CHECK = [("SELECT ... FROM assignments ... FOR UPDATE", UPDATE_LOCK_ASSIGNMENTS),
+                     ("SELECT ... FROM assignments ... FOR SHARE (LOCK IN SHARE MODE)", SHARE_LOCK_ASSIGNMENTS)]
+RM_A_SET_DELETE = [("DELETE FROM constantSets", DELETE_SETS)]
+# §14.1 "cp locking": the source's set, then the source assignment, both FOR SHARE, before the copy's INSERT
+CP_LOCKS = [("SELECT ... FROM constantSets ... FOR SHARE (LOCK IN SHARE MODE)", SHARE_LOCK_SETS),
+            ("SELECT ... FROM assignments ... FOR SHARE (LOCK IN SHARE MODE)", SHARE_LOCK_ASSIGNMENTS),
+            ("INSERT INTO assignments", INSERT_ASSIGNMENT)]
+
+NEW_LOGS_SQL = "SELECT action, `affectedIds`, description FROM logs WHERE id > :id ORDER BY id"
+
 
 def _mysql_code(error):
     """MySQL error number of a DBAPI error, raw or wrapped by SQLAlchemy; None for anything else"""
@@ -124,6 +155,17 @@ def _on_first(engine, when, pattern, callback):
     event.listen(engine, when, listener)
 
 
+def _record(engine):
+    """The statements the engine runs from now on, in order; one the server fails is left out"""
+    statements = []
+
+    def listener(conn, cursor, statement, parameters, context, executemany):
+        statements.append(statement)
+
+    event.listen(engine, "after_cursor_execute", listener)
+    return statements
+
+
 def _break_statement(engine, pattern, table_name):
     """Points every matching statement at a missing table, so the server fails it with error 1146"""
     def listener(conn, cursor, statement, parameters, context, executemany):
@@ -135,11 +177,17 @@ def _break_statement(engine, pattern, table_name):
     return listener
 
 
-def _pause(reached, until):
-    """Hook action: tell the test the point is reached, then wait for the other side or the pause"""
+def _pause(reached, until, early=None):
+    """Hook action: tell the test the point is reached, then wait for the other side or the pause.
+
+    early, when given, receives True if the other side finished inside the pause, so it never waited
+    for the lock this side holds.
+    """
     def action():
         reached.set()
-        until.wait(PAUSE_SECONDS)
+        finished = until.wait(PAUSE_SECONDS)
+        if early is not None:
+            early.append(finished)
     return action
 
 
@@ -228,6 +276,11 @@ class SharedSetsMySQLTest(unittest.TestCase):
                          .format(command_line, result, self.output.getvalue()[-3000:]))
         return result
 
+    def _execute(self, sql, **params):
+        """One SQL text statement in a transaction of its own, committed"""
+        with self.engine.begin() as connection:
+            connection.execute(text(sql), params)
+
     def _drop_tables(self):
         with self.engine.begin() as connection:
             for name in CCDB_TABLES:
@@ -284,14 +337,19 @@ class SharedSetsMySQLTest(unittest.TestCase):
         return "/test/test_vars/" + name
 
     def _unused_set(self, provider, path, rows):
-        """Creates an assignment and removes it again; returns the id of the set that stays (§5.2)"""
+        """A set without assignments, like the 37 hallddb holds from its history; returns its id.
+
+        rm -a deletes a set with its last assignment (§5.2), so the set is made the way history made
+        them: an assignment created through the provider, then only its assignments row deleted with
+        SQL text, bypassing the provider.
+        """
         assignment = provider.create_assignment(rows, path, EXISTING_RUN_RANGE[0], EXISTING_RUN_RANGE[1],
-                                                "default", "removed again")
-        set_id = assignment.constant_set_id
-        provider.delete_assignment(assignment)
-        self.assertTrue(self._set_exists(set_id),
-                        "rm -a deleted constant set {0}; in schema 6 deleting an assignment never deletes "
-                        "its set (§5.2, Assignment.constant_set without cascade, §4.1)".format(set_id))
+                                                "default", "row deleted by SQL")
+        assignment_id, set_id = assignment.id, assignment.constant_set_id
+        self._execute("DELETE FROM assignments WHERE id = :id", id=assignment_id)
+        self.assertTrue(self._set_exists(set_id), "constant set {0} is gone after deleting only the row of "
+                                                  "assignment {1}".format(set_id, assignment_id))
+        self.assertEqual(self._assignments_of_set(set_id), [])
         return set_id
 
     # ------------------------------------------------------------------------------------------
@@ -331,6 +389,16 @@ class SharedSetsMySQLTest(unittest.TestCase):
 
     def _set_of(self, assignment_id):
         return self._scalars("SELECT `constantSetId` FROM assignments WHERE id = :id", id=assignment_id)[0]
+
+    def _assignments_of_set(self, set_id):
+        return self._scalars("SELECT id FROM assignments WHERE `constantSetId` = :id ORDER BY id", id=set_id)
+
+    def _assignment_exists(self, assignment_id):
+        return bool(self._scalars("SELECT COUNT(*) FROM assignments WHERE id = :id", id=assignment_id)[0])
+
+    def _last_id(self, table):
+        """The largest id of the table, 0 when it is empty"""
+        return self._scalars("SELECT COALESCE(MAX(id), 0) FROM `{0}`".format(table))[0]
 
     def _table_id(self, name):
         return self._scalars("SELECT id FROM `typeTables` WHERE name = :name", name=name)[0]
@@ -402,6 +470,23 @@ class SharedSetsMySQLTest(unittest.TestCase):
         if not isinstance(loser.error, refusal) or _mysql_code(loser.error) is not None:
             self.fail(self._error_text(loser))
 
+    def _assert_waited(self, early, first, second):
+        """The second side could not finish while the first held its lock of the set (_pause's early)"""
+        self.assertEqual(early, [False], "{0} finished while {1} held its lock of set S; it must wait for that "
+                                         "lock (§5 lock order, §5.2)".format(second.name, first.name))
+
+    def _assert_in_order(self, statements, steps, who):
+        """steps, (shape, pattern) pairs, match statements in this order; other statements may come between"""
+        position = 0
+        for number, (shape, pattern) in enumerate(steps):
+            while position < len(statements) and not pattern.match(statements[position]):
+                position += 1
+            if position == len(statements):
+                after = " after " + ", then ".join(earlier for earlier, _ in steps[:number]) if number else ""
+                self.fail("{0} ran no {1}{2} (§14.1). Its statements:\n{3}".format(
+                    who, shape, after, "\n".join(" ".join(statement.split()) for statement in statements)))
+            position += 1
+
     # ------------------------------------------------------------------------------------------
     #   T16: a failed create_assignment writes nothing (MySQL twin)
     # ------------------------------------------------------------------------------------------
@@ -462,7 +547,7 @@ class SharedSetsMySQLTest(unittest.TestCase):
         self.assertEqual(after["logs"], before["logs"] + 1)
 
     def test_pending_changes_refuse(self):
-        """T16 (§5.1 step 3.0): pending changes in the provider's session make create_assignment refuse and write nothing"""
+        """T16 (§5.1 step 1, §14.1): pending changes in the provider's session make create_assignment refuse and write nothing"""
         self._fresh_v6()
         try:
             from ccdb.errors import SessionHasPendingChangesError   # new in schema 6 (§4.1, §14.1)
@@ -628,21 +713,53 @@ class SharedSetsMySQLTest(unittest.TestCase):
                          [self._set_of(creator.result)])
 
     def test_dedup_race_copy_assignment(self):
-        """T18 (§5.2 copy_assignment, §7 step 4): ccdb cp of an assignment whose set db dedup merges leaves no orphan"""
+        """T18 (§5.2 copy_assignment, §7 steps 2-4): ccdb cp of an assignment whose set db dedup merges, in both orders, leaves no orphan
+
+        cp first: cp pauses at its INSERT, holding set 6, and dedup waits for it. Dedup first: dedup pauses
+        before its repoint, holding the group's sets; cp's lock of set 6 then returns no row once dedup
+        commits, its re-check of the source's constantSetId sees the survivor 4, and cp restarts and copies
+        onto 4 (§5.2 copy_assignment, §14.1 "cp locking").
+        """
+        for dedup_first in (False, True):
+            with self.subTest(first="db dedup" if dedup_first else "copy_assignment"):
+                self._dedup_race_copy_assignment(dedup_first)
+
+    def _dedup_race_copy_assignment(self, dedup_first):
         self._upgraded_with_duplicates()
         vault = self._vault(6)
-        reached, dedup_done = threading.Event(), threading.Event()
+        reached, early = threading.Event(), []
+        copier_done, dedup_done = threading.Event(), threading.Event()
+        statements = {}
 
         def copy(provider):
-            _on_first(provider.engine, "before_cursor_execute", INSERT_ASSIGNMENT, _pause(reached, dedup_done))
+            statements["copy_assignment"] = _record(provider.engine)
+            if not dedup_first:
+                _on_first(provider.engine, "before_cursor_execute", INSERT_ASSIGNMENT, _pause(reached, dedup_done))
             source = provider.get_assignment_by_id(6)
             return provider.copy_assignment(source, new_variation="test", comment="T18 cp races dedup").id
 
-        copier = _Worker("copy_assignment", self._worker_body(copy))
+        copier = _Worker("copy_assignment", self._worker_body(copy), done=copier_done)
         deduper = _Worker("db dedup", lambda: self._cli(DEDUP), done=dedup_done)
-        copier.start()
-        self._wait_for(reached, copier, "its INSERT INTO assignments")
-        deduper.start()
+        if dedup_first:
+            # db dedup builds its own provider inside the command, so its statements are watched on every
+            # engine and filtered by its thread. Its repoint (§7 step 4) comes after the group's lock (step 2)
+            pause = _pause(reached, copier_done, early)
+            fired = []
+
+            def at_repoint(conn, cursor, statement, parameters, context, executemany):
+                if threading.current_thread() is deduper and not fired and REPOINT_ASSIGNMENTS.match(statement):
+                    fired.append(statement)
+                    pause()
+
+            event.listen(Engine, "before_cursor_execute", at_repoint)
+            self.addCleanup(event.remove, Engine, "before_cursor_execute", at_repoint)
+            first, second = deduper, copier
+        else:
+            first, second = copier, deduper
+        first.start()
+        self._wait_for(reached, first, "its UPDATE assignments (§7 step 4), holding the group's sets" if dedup_first
+                       else "its INSERT INTO assignments")
+        second.start()
         self._join(copier, deduper)
         self._assert_succeeded(copier)
         self._assert_succeeded(deduper, cli=True)
@@ -650,6 +767,15 @@ class SharedSetsMySQLTest(unittest.TestCase):
         self._assert_no_orphans()
         for assignment_id in (6, copier.result):
             self.assertEqual(self._vault(self._set_of(assignment_id)), vault)
+        if dedup_first:
+            # cp waited for the group's lock; its lock of set 6 found no row, the column re-check saw 4, and the
+            # restart locked 4 and inserted the copy there (§5.2, §14.1 "cp locking")
+            self._assert_waited(early, deduper, copier)
+            self.assertFalse(self._set_exists(6), "dedup merges set 6 into set 4 (§7)")
+            self.assertEqual({self._set_of(6), self._set_of(copier.result)}, {4},
+                             "cp restarts after its re-check and copies onto the survivor (§5.2)")
+            self._assert_in_order(statements["copy_assignment"], CP_LOCKS[:2] + CP_LOCKS,
+                                  "copy_assignment (restarted after its re-check)")
 
         # whatever the race left, the next dedup merges it and creates the unique index (§2.3, §7); the
         # index swap checks first, so a run that finds the unique index present succeeds (§14.1)
@@ -733,7 +859,9 @@ class SharedSetsMySQLTest(unittest.TestCase):
         self._assert_no_orphans()
         if creator.error is None:
             self.assertEqual(self._scalars("SELECT COUNT(*) FROM `typeTables` WHERE id = :id", id=table_id), [1])
-            self.assertEqual(self._vault(self._set_of(creator.result)), vault)
+            self.assertEqual(self._set_of(creator.result), unused, "create_assignment reuses the table's unused set "
+                                                                   "of equal bytes (§5.1 'Unused sets are candidates')")
+            self.assertEqual(self._sets_of_table(table_id), [(unused, vault)])
         else:
             self.assertEqual(self._scalars("SELECT COUNT(*) FROM `typeTables` WHERE id = :id", id=table_id), [0])
             self.assertEqual(self._sets_of_table(table_id), [], "rm -t deletes the table's unused sets with it (Q39)")
@@ -745,6 +873,213 @@ class SharedSetsMySQLTest(unittest.TestCase):
     def test_create_assignment_race_rm_t_rm_t_first(self):
         """T18 (§5.1 step 0, §5.2): create_assignment while rm -t holds the table's FOR UPDATE lock fails cleanly and writes nothing"""
         self._race_create_and_rm_t("t18_rm_t_first", create_first=False)
+
+    # ------------------------------------------------------------------------------------------
+    #   T18: rm -a deleting a set with its last assignment, racing writers that share the set
+    # ------------------------------------------------------------------------------------------
+    def _set_of_one_assignment(self, table_name, rows):
+        """A fresh database and a table of its own whose only set S has one assignment, a1.
+
+        Returns (path, table id, a1, S, the vault of S).
+        """
+        self._fresh_v6()
+        setup = self._provider()
+        path = self._make_table(setup, table_name)
+        assignment = setup.create_assignment(rows, path, EXISTING_RUN_RANGE[0], EXISTING_RUN_RANGE[1],
+                                             "default", "T18 a1, the only assignment of its set")
+        a1, set_id = assignment.id, assignment.constant_set_id
+        setup.disconnect()
+        table_id = self._table_id(table_name)
+        vault = self._vault(set_id)
+        self.assertEqual(self._sets_of_table(table_id), [(set_id, vault)])
+        self.assertEqual(self._assignments_of_set(set_id), [a1])
+        return path, table_id, a1, set_id, vault
+
+    def _race_rm_a(self, a1, partner_name, partner_call, rm_a_first):
+        """rm -a of a1 against partner_call(provider), a writer that attaches an assignment to a1's set S.
+
+        The first side stops right after its lock of S, rm -a after SELECT ... FROM constantSets ... FOR UPDATE,
+        the partner after SELECT ... FROM constantSets ... FOR SHARE, until the second side finishes or
+        PAUSE_SECONDS pass. Returns the two workers, the statements each ran by name, and _pause's early.
+        """
+        reached = threading.Event()
+        early = []
+        remover_done, partner_done = threading.Event(), threading.Event()
+        statements = {}
+
+        def remove(provider):
+            statements["rm -a"] = _record(provider.engine)
+            if rm_a_first:
+                _on_first(provider.engine, "after_cursor_execute", UPDATE_LOCK_SETS,
+                          _pause(reached, partner_done, early))
+            provider.delete_assignment(provider.get_assignment_by_id(a1))
+            return True
+
+        def partner(provider):
+            statements[partner_name] = _record(provider.engine)
+            if not rm_a_first:
+                _on_first(provider.engine, "after_cursor_execute", SHARE_LOCK_SETS,
+                          _pause(reached, remover_done, early))
+            return partner_call(provider)
+
+        remover = _Worker("rm -a", self._worker_body(remove), done=remover_done)
+        other = _Worker(partner_name, self._worker_body(partner), done=partner_done)
+        first, second = (remover, other) if rm_a_first else (other, remover)
+        first.start()
+        self._wait_for(reached, first, "its FOR UPDATE lock of set S (§5.2, §14.1 'rm -a locking')" if rm_a_first
+                       else "its FOR SHARE lock of set S (§5.1 c, §5.2)")
+        second.start()
+        self._join(remover, other)
+        return remover, other, statements, early
+
+    def test_rm_a_race_create_assignment_reuse(self):
+        """T18 (§5.1 c, §5.2 delete_assignment): rm -a of the last assignment of a set racing create_assignment reusing that set leaves no orphan and no unused set"""
+        rows = [["5.5", "6.5"]]
+        for rm_a_first in (False, True):
+            with self.subTest(first="rm -a" if rm_a_first else "create_assignment"):
+                path, table_id, a1, set_id, vault = self._set_of_one_assignment("t18_rm_a_create", rows)
+
+                def create(provider):
+                    assignment = provider.create_assignment(rows, path, EXISTING_RUN_RANGE[0], EXISTING_RUN_RANGE[1],
+                                                            "default", "T18 create races rm -a")
+                    return assignment.id
+
+                remover, creator, statements, early = self._race_rm_a(a1, "create_assignment", create, rm_a_first)
+                self._assert_succeeded(remover)     # a deadlock restart inside either call is allowed
+                self._assert_succeeded(creator)
+                if rm_a_first:
+                    self._assert_waited(early, remover, creator)
+                else:
+                    self._assert_waited(early, creator, remover)
+                self._assert_no_orphans()
+                self.assertFalse(self._assignment_exists(a1))
+                self._assert_in_order(statements["rm -a"], RM_A_LOCKS, "rm -a")
+                self._assert_in_order(statements["rm -a"], RM_A_SHARER_CHECK, "rm -a")
+
+                new_set = self._set_of(creator.result)
+                if rm_a_first:
+                    # rm -a deleted S with a1, its last assignment; the locking re-read of create_assignment
+                    # then found S gone and stored the bytes as a new set (§5.1 c "gone -> no match")
+                    self._assert_in_order(statements["rm -a"], RM_A_LOCKS + RM_A_SET_DELETE, "rm -a")
+                    self._assert_in_order(statements["rm -a"], RM_A_SHARER_CHECK + RM_A_SET_DELETE, "rm -a")
+                    self.assertFalse(self._set_exists(set_id), "rm -a of the last assignment of set {0} kept the "
+                                                               "set (§5.2)".format(set_id))
+                    self.assertNotEqual(new_set, set_id)
+                    self.assertEqual(self._sets_of_table(table_id), [(new_set, vault)],
+                                     "the table holds the new assignment's set and no unused set")
+                else:
+                    # create_assignment attached its assignment to S first; rm -a waited, saw it and kept S
+                    self.assertEqual(new_set, set_id, "equal bytes reuse the existing set (§5.1 c)")
+                    self.assertEqual(self._sets_of_table(table_id), [(set_id, vault)],
+                                     "the table holds S, used by the new assignment, and no unused set")
+
+    def test_rm_a_race_copy_assignment(self):
+        """T18 (§5.2 copy_assignment and delete_assignment): ccdb cp racing rm -a of its source, the last assignment of its set; the copy keeps the set, or cp writes nothing"""
+        rows = [["7.5", "8.5"]]
+        for rm_a_first in (False, True):
+            with self.subTest(first="rm -a" if rm_a_first else "copy_assignment"):
+                path, table_id, a1, set_id, vault = self._set_of_one_assignment("t18_rm_a_cp", rows)
+                last_assignment, last_log = self._last_id("assignments"), self._last_id("logs")
+
+                def copy(provider):
+                    source = provider.get_assignment_by_id(a1)
+                    return provider.copy_assignment(source, new_variation="test", comment="T18 cp races rm -a").id
+
+                remover, copier, statements, early = self._race_rm_a(a1, "copy_assignment", copy, rm_a_first)
+                self._assert_succeeded(remover)
+                if rm_a_first:
+                    # cp waited for S, then found its source gone (§14.1 "assignment removed under rm -a or cp")
+                    if copier.error is None:
+                        self.fail("copy_assignment returned assignment {0} although rm -a removed its source and its "
+                                  "set; it raises ObjectIsNotFoundInDbError (§5.2, §14.1)".format(copier.result))
+                    if not isinstance(copier.error, ObjectIsNotFoundInDbError) or _mysql_code(copier.error) is not None:
+                        self.fail(self._error_text(copier))
+                    self._assert_waited(early, remover, copier)
+                    self.assertFalse(self._set_exists(set_id), "rm -a of the last assignment of set {0} kept the "
+                                                               "set (§5.2)".format(set_id))
+                    self.assertEqual(self._sets_of_table(table_id), [])
+                    self.assertEqual(self._scalars("SELECT id FROM assignments WHERE id > :id", id=last_assignment), [],
+                                     "copy_assignment wrote an assignment although it raised")
+                    self.assertEqual([row[:2] for row in self._rows(NEW_LOGS_SQL, id=last_log)],
+                                     [("delete", "|assignments{0}|".format(a1))],
+                                     "the one new log record is rm -a's; copy_assignment writes none when it raises")
+                else:
+                    # cp attached its copy to S first; rm -a waited, saw the copy and kept S
+                    self._assert_succeeded(copier)
+                    self._assert_waited(early, copier, remover)
+                    self._assert_in_order(statements["copy_assignment"], CP_LOCKS, "copy_assignment")
+                    self._assert_in_order(statements["rm -a"], RM_A_LOCKS, "rm -a")
+                    self._assert_in_order(statements["rm -a"], RM_A_SHARER_CHECK, "rm -a")
+                    self.assertEqual(self._assignments_of_set(set_id), [copier.result])
+                    self.assertEqual(self._sets_of_table(table_id), [(set_id, vault)])
+                self.assertFalse(self._assignment_exists(a1))
+                self._assert_no_orphans()
+
+    def test_rm_a_two_sharers_at_once(self):
+        """T18 (§5.2 delete_assignment): rm -a of the two sharers of a set at the same moment; both succeed and the set goes with the last one"""
+        self._fresh_v6()
+        setup = self._provider()
+        path = self._make_table(setup, "t18_rm_a_two")
+        sharers = []
+        for round_no in range(3):
+            rows = [["{0}.125".format(round_no), "{0}.375".format(round_no)]]
+            first = setup.create_assignment(rows, path, EXISTING_RUN_RANGE[0], EXISTING_RUN_RANGE[1],
+                                            "default", "T18 first sharer")
+            second = setup.copy_assignment(setup.get_assignment_by_id(first.id), new_variation="test",
+                                           comment="T18 second sharer")
+            sharers.append((first.id, second.id, first.constant_set_id))
+        setup.disconnect()
+        table_id = self._table_id("t18_rm_a_two")
+        for a1, a2, set_id in sharers:
+            self.assertEqual(self._assignments_of_set(set_id), [a1, a2], "ccdb cp shares the source's set (§5.2)")
+
+        for round_no, (a1, a2, set_id) in enumerate(sharers):
+            last_log = self._last_id("logs")
+            start = threading.Barrier(2, timeout=30)
+            at_lock = threading.Barrier(2, timeout=10)   # both are about to lock S before either holds it
+            arrived, broken = [], []
+
+            def remove(provider, assignment_id, start=start, at_lock=at_lock, arrived=arrived, broken=broken):
+                wait_at_lock = _wait_quietly(at_lock, broken)
+
+                def at_set_lock():
+                    arrived.append(threading.current_thread().name)
+                    wait_at_lock()
+
+                _on_first(provider.engine, "before_cursor_execute", UPDATE_LOCK_SETS, at_set_lock)
+                assignment = provider.get_assignment_by_id(assignment_id)
+                start.wait()
+                provider.delete_assignment(assignment)
+                return assignment_id
+
+            workers = [_Worker("rm -a of sharer {0}".format(assignment_id), self._worker_body(
+                lambda provider, assignment_id=assignment_id: remove(provider, assignment_id)))
+                for assignment_id in (a1, a2)]
+            for worker in workers:
+                worker.start()
+            self._join(*workers)
+            self.assertEqual(sorted(arrived), sorted(worker.name for worker in workers),
+                             "round {0}: each rm -a locks set S with SELECT ... FROM constantSets ... FOR UPDATE "
+                             "(§5.2, §14.1 'rm -a locking').\n{1}".format(
+                                 round_no, "".join(self._error_text(worker) for worker in workers if worker.error)))
+            for worker in workers:
+                self._assert_succeeded(worker)          # a deadlock restart inside the call is allowed
+            self.assertEqual(broken, [], "round {0}: the two rm -a did not both reach the lock of set S "
+                                         "together".format(round_no))
+
+            self.assertFalse(self._assignment_exists(a1))
+            self.assertFalse(self._assignment_exists(a2))
+            self.assertFalse(self._set_exists(set_id), "round {0}: set {1} outlived its last assignment; rm -a "
+                                                       "deletes it with the last one (§5.2)".format(round_no, set_id))
+            self._assert_no_orphans()
+            records = self._rows(NEW_LOGS_SQL, id=last_log)
+            self.assertEqual(sorted(row[:2] for row in records),
+                             sorted([("delete", "|assignments{0}|".format(a1)), ("delete", "|assignments{0}|".format(a2))]),
+                             "round {0}: one record per rm -a, as in 2.4, even after a restart (§14.1 'rm -a "
+                             "record')".format(round_no))
+            for _, _, description in records:
+                self.assertTrue(description.startswith("Deleted assignment '"), description)
+        self.assertEqual(self._sets_of_table(table_id), [], "rm -a leaves no unused set")
 
 
 if __name__ == "__main__":
