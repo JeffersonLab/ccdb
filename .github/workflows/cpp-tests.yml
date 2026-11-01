@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CCDB_TEST_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/cpp_test.sqlite"
+      # The schema 6 fixture test (shared sets, 1.0 against 1.00) fails under CI without it
+      CCDB_TEST_FIXTURE_CONNECTION: "sqlite:///${{ github.workspace }}/ccdb_fixture.sqlite"
 
     steps:
       - uses: actions/checkout@v7
@@ -30,6 +32,10 @@ jobs:
 
       - name: Create test database (ccdb db init)
         run: ccdb -c "$CCDB_TEST_SQLITE_CONNECTION" db init --init-i-am-sure
+
+      # The file the web GUI checks use; its schema 6 values are the literals the C++ test expects
+      - name: Build the fixture database
+        run: python scripts/webgui/make_fixture.py --out "$GITHUB_WORKSPACE/ccdb_fixture.sqlite"
 
       - name: Configure
         run: cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release

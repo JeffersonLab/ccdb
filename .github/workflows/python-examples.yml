@@ -58,9 +58,19 @@ jobs:
           ccdb mktbl /test/test_vars/custom_data -r 1 xml_data=string "#Store xml in ccdb"
           python examples/example_llapi_add_custom_data.py
 
+      # Last on purpose: it changes assignment 1 of /test/test_vars/test_table (its run range and
+      # comment) and adds a newer assignment, which the examples above would then read.
+      # The example catches the refusal to change a stored constant set and goes on, so its exit code
+      # alone would not show that the refusal happened; its message does.
+      - name: example_llapi_edit_assignment
+        working-directory: python
+        run: |
+          output=$(python examples/example_llapi_edit_assignment.py)
+          echo "$output"
+          echo "$output" | grep "Refused as expected: Constant set" > /dev/null
+
       # SKIPPED examples (cannot run in CI):
       #   example_halld_connect.py        - connects to the JLab HallD MySQL server (network/VPN)
-      #   example_llapi_edit_assignment.py - snippet with hardcoded /home/user paths, not runnable as-is
       #   example_run_period_to_pandas.py  - needs HallD run-period data absent from the standard test DB
       - name: List skipped examples
-        run: echo "Skipped (need JLab MySQL or HallD data) - example_halld_connect, example_llapi_edit_assignment, example_run_period_to_pandas"
+        run: echo "Skipped (need JLab MySQL or HallD data) - example_halld_connect, example_run_period_to_pandas"
