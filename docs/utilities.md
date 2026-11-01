@@ -2,28 +2,18 @@
 
 ## Creating a SQLite database
 
-There is a script to create a SQLite database from MySQL:
-[scripts/mysql2sqlite/mysql2sqlite.sh](https://github.com/JeffersonLab/ccdb/blob/v2-main/scripts/mysql2sqlite/mysql2sqlite.sh).
-
-It accepts the same arguments as `mysqldump`. The common use (in terms of CCDB):
-
-```bash
-./mysql2sqlite.sh -u <user> -h <host> <dbname> | sqlite3 database.sqlite
-```
-
-So if you have the CCDB connection string:
-
-```
-mysql://ccdb_user@mysqlhost/ccdb
-```
-
-you run the script as:
+To create a SQLite database from a MySQL one, dump the MySQL database and convert the dump with
+[scripts/mysql2sqlite/mysql2sqlite](https://github.com/JeffersonLab/ccdb/blob/v2-main/scripts/mysql2sqlite/mysql2sqlite),
+which rewrites MySQL-flavored SQL for SQLite. For the CCDB connection string
+`mysql://ccdb_user@mysqlhost/ccdb`:
 
 ```bash
-./mysql2sqlite.sh -u ccdb_user -h mysqlhost ccdb | sqlite3 database.sqlite
+mysqldump --skip-tz-utc -u ccdb_user -h mysqlhost ccdb > dump.mysql.sql
+./mysql2sqlite dump.mysql.sql | sqlite3 database.sqlite
 ```
 
-Don't forget the `-p` flag if a password is used for the CCDB MySQL DB.
+Add `-p` to `mysqldump` when the account has a password. `--skip-tz-utc` keeps the times as MySQL
+stores them.
 
 > See also [Development → Convert MySQL to SQLite](development/development.md#convert-mysql-to-sqlite)
 > for an alternative approach and notes on time-zone handling.

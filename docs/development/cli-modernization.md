@@ -1,7 +1,7 @@
 # CLI modernization: framework options, interactive mode, theming
 
 Status: analysis / decision document, 2026-07. No implementation yet.
-Companion: [cli-command-coherence.md](cli-command-coherence.md) (what the
+Companion: [cli-command-coherence.md](development/cli-command-coherence.md) (what the
 command surface should look like). This note answers: what framework (if any)
 to move to, what a full click switch would take — especially interactive
 mode — and how to finally do colors correctly.
@@ -158,7 +158,7 @@ options:
 The stateful commands (`cd`, `pwd`, `run`, `var`, `user`) become operations
 on `ctx.obj` and are registered only with the shell's command set, fixing the
 "shell state leaks into one-shot mode" incoherence documented in
-[cli-command-coherence.md](cli-command-coherence.md).
+[cli-command-coherence.md](development/cli-command-coherence.md).
 
 Tab-completion of DB paths under click would be custom work in every variant
 — explicitly out of scope per the stated priorities.

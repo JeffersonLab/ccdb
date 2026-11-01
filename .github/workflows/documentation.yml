@@ -26,6 +26,11 @@ jobs:
           echo "--- ls ./docs/"
           ls ./docs/
 
+      - name: Check links and anchors
+        run: |
+          python3 -m unittest discover -s scripts/docs -p 'test_*.py'
+          python3 scripts/docs/check_links.py docs
+
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Upload artifact

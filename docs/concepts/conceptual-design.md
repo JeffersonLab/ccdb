@@ -1,6 +1,6 @@
 # Conceptual design
 
-The [database tables](database-schema.md) express objects and relations among components in the
+The [database tables](concepts/database-schema.md) express objects and relations among components in the
 problem space being addressed: that of developing, applying, and modifying calibration constants for
 the various detector components.
 
@@ -63,5 +63,5 @@ small number of constant set assignments. If runs or constant types are requeste
 are not assigned within that variation, then the parent variation is queried, recursively, until a
 valid constant set assignment is found.
 
-> Continue with [Concepts illustrated](concepts.md) for a hands-on tour of namepaths, table types,
+> Continue with [Concepts illustrated](concepts/concepts.md) for a hands-on tour of namepaths, table types,
 > assignments, and requests.

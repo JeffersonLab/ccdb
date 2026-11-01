@@ -153,9 +153,8 @@ Assuming you are in interactive mode, the commands can be categorized:
 
 **Deleting objects**
 
-CCDB discourages deleting anything. Instead, one can **deprecate** tables, directories, or variations
-that are old and not used anymore. Deprecation removes tables/directories from listings (e.g. the `ls`
-command), but if old code requests the constants, they are still available.
+CCDB discourages deleting anything: treat it as a calibration logbook, where a new assignment
+supersedes the old one and the old one stays.
 
 There are still cases when removing something might be required:
 
@@ -170,3 +169,59 @@ table, variation, or assignment.
 
 > A directory/table/variation must be empty to be removed. This means you have to first delete all
 > assignments from a table to remove the table, remove all tables to remove a directory, etc.
+
+Assignments of one table with the same data share one constant set. `rm -a` deletes the set together
+with the last assignment that uses it, and removing a table removes its unused sets; see
+[Constant sets and their hashes](concepts/constant-sets.md#deleting-assignments-and-tables).
+
+### Versions of a table
+
+`vers` lists the assignments of a table, newest first. `vers -l` adds `(data)`, the first 12 hex digits
+of the SHA-256 of the assignment's data, and `(shared)`, the number of assignments that use the same
+constant set:
+
+```
+$ ccdb vers -l /test/test_vars/test_table
+(ID)     (created)              (user)           (variation)     (run range)      (data)        (shared)  (comments)
+ 6       2026-11-01 14-44-26    test_user        default         100-200         55d35b501c1a  2         Same values as assig
+ 5       2012-10-30 23-48-43    test_user        subtest         0-inf           b2ceb52d6aa9  1         Test assignment for
+ 4       2012-10-30 23-48-42    test_user        default         0-inf           55d35b501c1a  2         Test assignment for
+ 2       2012-08-30 23-48-42    test_user        test            500-3000        9c6697ea9cda  1         Test assignment for
+ 1       2012-07-30 23-48-42    test_user        default         0-inf           b62adcd1b563  1         Test assignment for
+```
+
+Assignments 4 and 6 hold the same data. [Constant sets and their hashes](concepts/constant-sets.md)
+explains when data is shared.
+
+### Database management
+
+`ccdb db` without a subcommand prints the connection and the schema version:
+
+```
+$ ccdb db
+Connection to: sqlite:///ccdb.sqlite
+Schema version: 6
+```
+
+| subcommand | what it does | flags |
+|---|---|---|
+| `db init` | drops every CCDB table and creates the schema with its standard content; all data is lost | `--init-i-am-sure` |
+| `db stats` | counts assignments, constant sets and the sets shared by several assignments | |
+| `db upgrade` | upgrades the database from schema version 5 to 6 | `--dry-run`, `--duplicates none\|sample\|all`, `--upgrade-i-am-sure`, `--skip-privilege-check`, `--no-transaction-check`, `--in-place` |
+| `db dedup` | reports byte-identical and unused constant sets; with its flag merges and removes them and creates the unique index | `--table PATH`, `--dedup-i-am-sure`, `--no-transaction-check` |
+| `db rehash` | recomputes the SHA-256 and size of every constant set and compares them with the stored values | `--sample N`, `--server`, `--rehash-i-am-sure` |
+| `db rollback-v6` | returns the database from schema version 6 to 5, for CCDB 2.4 | `--rollback-i-am-sure`, `--drop-v6-data`, `--allow-non-strict`, `--in-place`, `--skip-privilege-check`, `--no-transaction-check` |
+
+```
+$ ccdb db stats
+Num assignments: 6
+Num constant sets: 5
+Num shared constant sets: 1
+```
+
+A subcommand that changes data acts only with its own flag, `--<verb>-i-am-sure`. Without it, `init`,
+`upgrade` and `rollback-v6` print a warning, change nothing and exit with 1; `dedup` prints its report and
+`rehash` verifies. `db upgrade --dry-run` writes nothing. The commands exit with 1 on a refusal, a
+collision or a hash mismatch. [Upgrading to CCDB 2.5](deployment/upgrade-2.5.md) describes every flag
+and its output.
+

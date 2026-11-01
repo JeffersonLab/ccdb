@@ -29,7 +29,7 @@ provider.authentication.current_user_name = "anonymous"
 ## Connecting
 
 `connect(connection_string, check_version=True)` opens the database: it creates a SQLAlchemy engine
-(a connection pool) and a session, and checks that the database has CCDB schema version 5. This is
+(a connection pool) and a session, and checks that the database has CCDB schema version 6. This is
 the right call for scripts and for the CLI, where one provider lives for the whole program.
 
 `attach(engine, session, check_version=True)` uses an engine and a session that you created. Use it
