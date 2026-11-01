@@ -11,6 +11,8 @@ jobs:
     env:
       CCDB_CONNECTION: "sqlite:///${{ github.workspace }}/cli_smoke.sqlite"
       CCDB_USER: test_user
+      # A schema 5 file as CCDB 2.4 makes it, for the upgrade, dedup, rehash and rollback steps
+      V5_FILE: "${{ github.workspace }}/cli_smoke_v5.sqlite"
 
     steps:
       - uses: actions/checkout@v7
@@ -114,3 +116,115 @@ jobs:
             fi
           done
           test $failures -eq 0
+
+      # Exit codes of the schema 6 db commands: 0 on success,
+      # 1 on a refusal or a mismatch. A command that must act only with its --<verb>-i-am-sure flag
+      # changes nothing without it and exits 1; the steps that expect 1 check the code exactly.
+
+      - name: ccdb vers -l (sharing column)
+        run: |
+          ccdb vers -l /test/test_vars/test_table
+          ccdb vers -l /test/test_vars/test_table | grep "(shared)" > /dev/null
+
+      - name: ccdb db stats
+        run: |
+          ccdb db stats
+          ccdb db stats | grep "Num shared constant sets" > /dev/null
+
+      - name: ccdb db upgrade refuses a schema 6 database (exit 1)
+        run: |
+          set +e
+          output=$(ccdb db upgrade --upgrade-i-am-sure 2>&1)
+          code=$?
+          set -e
+          echo "$output"
+          test $code -eq 1 || { echo "expected exit code 1, got $code"; exit 1; }
+          if echo "$output" | grep -q "Traceback"; then echo "CLI leaked a python traceback"; exit 1; fi
+
+      # The frozen copy of CCDB 2.4's schema 5 that the upgrade tests start from. Its seed has no equal
+      # sets; a second copy of one set, with its assignment moved onto the copy, gives dedup a merge.
+      - name: Create a schema 5 database
+        run: |
+          python - "sqlite:///$V5_FILE" <<'EOF'
+          import sys
+          sys.path[:0] = ["python/tests", "scripts/schema"]
+          from sqlalchemy import text
+          from compare import engine_for
+          from schema_v5_base import create_v5_sqlite
+          engine = engine_for(sys.argv[1])
+          create_v5_sqlite(engine)
+          with engine.begin() as connection:
+              connection.execute(text("INSERT INTO constantSets (vault, constantTypeId) SELECT vault, constantTypeId "
+                                      "FROM constantSets WHERE id = (SELECT constantSetId FROM assignments WHERE id = 4)"))
+              connection.execute(text("UPDATE assignments SET constantSetId = (SELECT MAX(id) FROM constantSets) WHERE id = 4"))
+          EOF
+          ccdb -c "sqlite:///$V5_FILE" db | grep "Schema version: 5" > /dev/null
+
+      - name: ccdb db upgrade --dry-run
+        run: |
+          ccdb -c "sqlite:///$V5_FILE" db upgrade --dry-run
+          ccdb -c "sqlite:///$V5_FILE" db | grep "Schema version: 5" > /dev/null
+
+      - name: ccdb db upgrade without its flag changes nothing (exit 1)
+        run: |
+          set +e
+          output=$(ccdb -c "sqlite:///$V5_FILE" db upgrade 2>&1)
+          code=$?
+          set -e
+          echo "$output"
+          test $code -eq 1 || { echo "expected exit code 1, got $code"; exit 1; }
+          echo "$output" | grep -- "--upgrade-i-am-sure" > /dev/null
+          ccdb -c "sqlite:///$V5_FILE" db | grep "Schema version: 5" > /dev/null
+
+      - name: ccdb db upgrade --upgrade-i-am-sure
+        run: |
+          ccdb -c "sqlite:///$V5_FILE" db upgrade --upgrade-i-am-sure
+          ccdb -c "sqlite:///$V5_FILE" db | grep "Schema version: 6" > /dev/null
+          test -f "$V5_FILE.v5"
+
+      - name: ccdb db dedup (report only)
+        run: |
+          ccdb -c "sqlite:///$V5_FILE" db dedup
+          ccdb -c "sqlite:///$V5_FILE" db dedup | grep "1 assignments would move" > /dev/null
+
+      # The second run finds nothing left to merge
+      - name: ccdb db dedup --dedup-i-am-sure
+        run: |
+          output=$(ccdb -c "sqlite:///$V5_FILE" db dedup --dedup-i-am-sure)
+          echo "$output"
+          echo "$output" | grep "merged 1 constant sets into 1" > /dev/null
+          # Captured, not piped: without pipefail a pipe would check only grep's exit code
+          output=$(ccdb -c "sqlite:///$V5_FILE" db dedup --dedup-i-am-sure)
+          echo "$output"
+          echo "$output" | grep "merged 0 constant sets" > /dev/null
+
+      - name: ccdb db rehash
+        run: ccdb -c "sqlite:///$V5_FILE" db rehash
+
+      # A stored hash that no longer matches its data, as a vault changed by SQL would leave it
+      - name: ccdb db rehash finds a mismatch (exit 1) and --rehash-i-am-sure repairs it
+        run: |
+          python -c "import sqlite3, sys; c = sqlite3.connect(sys.argv[1]); c.execute('UPDATE constantSets SET sha256 = ? WHERE id = 1', ('0' * 64,)); c.commit()" "$V5_FILE"
+          set +e
+          ccdb -c "sqlite:///$V5_FILE" db rehash
+          code=$?
+          set -e
+          test $code -eq 1 || { echo "expected exit code 1, got $code"; exit 1; }
+          ccdb -c "sqlite:///$V5_FILE" db rehash --rehash-i-am-sure
+          ccdb -c "sqlite:///$V5_FILE" db rehash
+
+      - name: ccdb db rollback-v6 without its flag changes nothing (exit 1)
+        run: |
+          set +e
+          output=$(ccdb -c "sqlite:///$V5_FILE" db rollback-v6 2>&1)
+          code=$?
+          set -e
+          echo "$output"
+          test $code -eq 1 || { echo "expected exit code 1, got $code"; exit 1; }
+          echo "$output" | grep -- "--rollback-i-am-sure" > /dev/null
+          ccdb -c "sqlite:///$V5_FILE" db | grep "Schema version: 6" > /dev/null
+
+      - name: ccdb db rollback-v6 --rollback-i-am-sure
+        run: |
+          ccdb -c "sqlite:///$V5_FILE" db rollback-v6 --rollback-i-am-sure
+          ccdb -c "sqlite:///$V5_FILE" db | grep "Schema version: 5" > /dev/null

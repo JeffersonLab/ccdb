@@ -65,6 +65,14 @@ jobs:
           tests.unit_test_webgui_queries
           tests.unit_test_webgui_compare
           tests.unit_test_webgui_diff
+          tests.unit_test_schema_v6
+          tests.unit_test_version_v6
+          tests.unit_test_model_v6
+          tests.unit_test_provider_shared_sets
+          tests.unit_test_upgrade_v6
+          tests.unit_test_dedup
+          tests.unit_test_rehash
+          tests.unit_test_fixture_v6
 
       # SQLite integration tests create their own database
       # (via ccdb.testing.recreate_test_sqlite_db) - no fixture files needed
@@ -74,6 +82,26 @@ jobs:
           python -m unittest
           tests.integ_test_provider_sqlite
           tests.integ_test_cli_manager
+
+      # A fresh schema 6 file and a schema 5 file upgraded by `ccdb db upgrade` must have the same
+      # structure; on AlmaLinux 9 this checks the upgrade's table rebuilds on SQLite 3.34.
+      # The schema 5 base is the frozen copy of CCDB 2.4's schema the upgrade tests use.
+      # Both link-table names are left out: schema 6 keeps whichever one a database has.
+      # $RUNNER_TEMP, not the runner.temp context: in the container that context is the host path.
+      - name: Schema equality (fresh schema 6 against upgraded schema 5)
+        run: |
+          FRESH="sqlite:///$RUNNER_TEMP/schema_fresh.sqlite"
+          UPGRADED="sqlite:///$RUNNER_TEMP/schema_upgraded.sqlite"
+          ccdb -c "$FRESH" db init --init-i-am-sure
+          python - "$UPGRADED" <<'EOF'
+          import sys
+          sys.path[:0] = ["python/tests", "scripts/schema"]
+          from compare import engine_for
+          from schema_v5_base import create_v5_sqlite
+          create_v5_sqlite(engine_for(sys.argv[1]))
+          EOF
+          ccdb -c "$UPGRADED" db upgrade --upgrade-i-am-sure
+          python scripts/schema/compare.py diff "$FRESH" "$UPGRADED" --ignore-table variationsToTags --ignore-table variations_has_tags
 
       # Builds its own small SQLite databases in a temporary directory
       - name: Run shallow copy script tests
