@@ -1,0 +1,35 @@
+# Throwaway MySQL 8.3 and MariaDB 10.5 servers for the CCDB MySQL test suite on a host.
+# CI runs the same servers as services (.github/workflows/mysql-tests.yml); MariaDB 10.5 is the
+# server version of the Hall D production database.
+#
+#   docker compose -f scripts/schema/compose.yml up -d --wait
+#   CCDB_TEST_MYSQL_CONNECTION=mysql://ccdb_user@127.0.0.1:33083/ccdb_test   (MySQL 8.3)
+#   CCDB_TEST_MYSQL_CONNECTION=mysql://ccdb_user@127.0.0.1:33105/ccdb_test   (MariaDB 10.5)
+#   docker compose -f scripts/schema/compose.yml down
+#
+# The data lives in tmpfs: every `up` starts empty. The root password is the CI test value.
+services:
+  mysql83:
+    image: mysql:8.3
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ccdb_test
+    ports: ["127.0.0.1:33083:3306"]
+    tmpfs: [/var/lib/mysql]
+    volumes: ["./test_users.sql:/docker-entrypoint-initdb.d/test_users.sql:ro"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 3s
+      retries: 40
+  mariadb105:
+    image: mariadb:10.5
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: ccdb_test
+    ports: ["127.0.0.1:33105:3306"]
+    tmpfs: [/var/lib/mysql]
+    volumes: ["./test_users.sql:/docker-entrypoint-initdb.d/test_users.sql:ro"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 3s
+      retries: 40
