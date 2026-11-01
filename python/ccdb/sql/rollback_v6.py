@@ -32,7 +32,7 @@ import sqlite3
 from sqlalchemy import text
 
 from ccdb.sql.update_v6 import (MySqlMaintenance, UpgradeRefusedError, UPGRADE_PRIVILEGES, UNIQUE_INDEX, INTERIM_INDEX,
-                                SOURCE_VERSION, check_version_rows, maintenance_connection, replace_with_changed_copy,
+                                SOURCE_VERSION, check_version_rows, replace_with_changed_copy,
                                 split_create_table, renamed_head, sqlite_file_or_refuse, sqlite_read_only,
                                 sqlite_tables, sqlite_columns)
 
@@ -108,7 +108,7 @@ class MySqlRollback(MySqlMaintenance):
         self.allow_non_strict = allow_non_strict
 
     def run(self):
-        with maintenance_connection(self.engine) as conn:
+        with self.engine.connect() as conn:
             self.conn = conn
             self.read_server()
             log.info(f"Server: {self.server_version}")

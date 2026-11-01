@@ -36,7 +36,7 @@ requires-python = ">=3.9"
 dependencies = [
     # [rsa] extra pulls `cryptography`, needed for MySQL 8 caching_sha2_password auth
     "pymysql[rsa]>=1.0",
-    "sqlalchemy>=1.4",
+    "sqlalchemy>=2.0",
     "rich",
 ]
 

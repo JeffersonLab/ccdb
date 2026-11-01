@@ -23,8 +23,7 @@ from ccdb.errors import DataCollisionError, ObjectIsNotFoundInDbError
 from ccdb.model import Assignment, ConstantSet, vault_digest
 from ccdb.sql import sqlite_schema
 from ccdb.sql.update_v6 import (MySqlMaintenance, UPGRADE_SQL_MODE, LOCK_WAIT_TIMEOUT, UNIQUE_INDEX, INTERIM_INDEX,
-                                DUPLICATES_ADVICE, ROW_IDS_SHOWN, describe_rows, format_bytes, maintenance_connection,
-                                unhashed_condition)
+                                DUPLICATES_ADVICE, ROW_IDS_SHOWN, describe_rows, format_bytes, unhashed_condition)
 
 log = logging.getLogger("ccdb.sql.shared_sets")
 
@@ -170,7 +169,7 @@ class Dedup:
     def transaction_preflight(self):
         """The open-transaction check of the upgrade: dedup locks sets and changes an index"""
         maintenance = MySqlMaintenance(self.provider.engine, transaction_check=self.transaction_check)
-        with maintenance_connection(self.provider.engine) as conn:
+        with self.provider.engine.connect() as conn:
             maintenance.conn = conn
             problems = maintenance.transaction_problems()
         if problems:
@@ -310,7 +309,7 @@ class Dedup:
             log.warning(DUPLICATES_ADVICE)
             return True
         maintenance = MySqlMaintenance(self.provider.engine)
-        with maintenance_connection(self.provider.engine) as conn:
+        with self.provider.engine.connect() as conn:
             maintenance.conn = conn
             maintenance.read_server()
             maintenance.set_session()
