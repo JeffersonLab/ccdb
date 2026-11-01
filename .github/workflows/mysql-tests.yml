@@ -1,5 +1,12 @@
 name: MySQL tests
 
+# Both jobs run once per server: MySQL 8.3 and MariaDB 10.5, the server of the Hall D production
+# database (hallddb). Both images ship mysqladmin, so one health check serves both; it pings over
+# TCP, which the image's temporary init server (socket only) does not answer, so the service is
+# healthy only once the real server listens. That comes after the whole first start (initialize,
+# temporary server, restart), slower on a runner's disk, so the check allows two minutes.
+# The runner's MySQL client talks to both servers.
+
 on:
   push:
   pull_request:
@@ -7,16 +14,29 @@ on:
 
 jobs:
   mysql-tests:
+    name: mysql-tests (${{ matrix.image }})
     runs-on: ubuntu-latest
+    # A test that leaves a provider connected makes a later DROP TABLE wait a year for its lock; fail instead
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["mysql:8.3", "mariadb:10.5"]
     services:
       mysql:
-        image: mysql:8.3
+        image: ${{ matrix.image }}
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: ccdb_test
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+        options: --health-cmd="mysqladmin ping -h 127.0.0.1" --health-interval=5s --health-timeout=5s --health-retries=24
+    env:
+      CCDB_TEST_MYSQL_CONNECTION: mysql://ccdb_user@127.0.0.1:3306/ccdb_test
+      # The schema 6 tests also connect as the SELECT-only ccdb_reader (a dry run writes nothing) and as
+      # root (PROCESS and the global sql_mode); tests that need one of these skip without it
+      CCDB_TEST_MYSQL_READER_CONNECTION: mysql://ccdb_reader@127.0.0.1:3306/ccdb_test
+      CCDB_TEST_MYSQL_ROOT_CONNECTION: mysql://root:root@127.0.0.1:3306/ccdb_test
 
     steps:
       - uses: actions/checkout@v7
@@ -35,29 +55,30 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mysql-client
 
-      - name: Create MySQL test user and schema
-        run: |
-          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE USER `ccdb_user`@`%`;'
-          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE SCHEMA IF NOT EXISTS `ccdb_test`;'
-          mysql -h 127.0.0.1 -u root --password=root -e 'GRANT ALL PRIVILEGES ON ccdb_test.* TO `ccdb_user`@`%`;'
+      # The same users as a developer's servers from scripts/schema/compose.yml: ccdb_user with all
+      # rights on ccdb_test*, ccdb_reader with SELECT only
+      - name: Create the MySQL test users
+        run: mysql -h 127.0.0.1 -u root --password=root < scripts/schema/test_users.sql
 
       # Full python suite: unit tests, SQLite integration (tests create their own
       # SQLite DB) and the MySQL provider integration tests against the service
       # container. The MySQL schema+data are created by the suite via `ccdb db init`.
+      # The schema 6 modules rebuild ccdb_test and leave it as `db init` makes it.
       - name: Run full test suite including MySQL
         working-directory: python
-        env:
-          CCDB_TEST_MYSQL_CONNECTION: mysql://ccdb_user@127.0.0.1:3306/ccdb_test
         run: >
           python -m unittest
           tests.unit_test_authentication
           tests.unit_test_cli_context
+          tests.unit_test_cli_gui
+          tests.unit_test_connection_secrets
           tests.unit_test_dump_comments
           tests.unit_test_exceptions
           tests.unit_test_path_utils
           tests.unit_test_utility_argument_parse
           tests.unit_test_version
           tests.unit_test_provider_attach
+          tests.unit_test_provider_disconnect
           tests.unit_test_provider_lookups
           tests.unit_test_webgui
           tests.unit_test_webgui_assignments
@@ -67,25 +88,74 @@ jobs:
           tests.unit_test_webgui_queries
           tests.unit_test_webgui_compare
           tests.unit_test_webgui_diff
+          tests.unit_test_schema_v6
+          tests.unit_test_version_v6
+          tests.unit_test_model_v6
+          tests.unit_test_provider_shared_sets
+          tests.unit_test_upgrade_v6
+          tests.unit_test_dedup
+          tests.unit_test_rehash
+          tests.unit_test_fixture_v6
           tests.integ_test_provider_sqlite
           tests.integ_test_cli_manager
           tests.integ_test_provider_mysql
 
+      # A process of its own: integ_test_provider_mysql leaves providers connected, whose open read
+      # transactions hold metadata locks, so the DROP TABLE these tests start with would wait forever
+      # in the same process (MySQL's lock_wait_timeout is a year)
+      - name: Run the shared constant set tests on the server (failures and races)
+        working-directory: python
+        run: python -m unittest tests.integ_test_shared_sets_mysql
+
+      # A fresh schema 6 and a schema 5 database upgraded by `ccdb db upgrade` must have the same
+      # structure. The schema 5 base is the frozen copy of CCDB 2.4's schema the upgrade tests use.
+      # Both link-table names are left out: schema 6 keeps whichever one a database has.
+      # ccdb_user lacks PROCESS, so the upgrade cannot see other sessions' open transactions;
+      # nothing else uses this database, hence --no-transaction-check.
+      - name: Schema equality (fresh schema 6 against upgraded schema 5)
+        env:
+          FRESH: mysql://ccdb_user@127.0.0.1:3306/ccdb_test_fresh
+          UPGRADED: mysql://ccdb_user@127.0.0.1:3306/ccdb_test_upgraded
+        run: |
+          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE DATABASE ccdb_test_fresh; CREATE DATABASE ccdb_test_upgraded;'
+          ccdb -c "$FRESH" db init --init-i-am-sure
+          python - "$UPGRADED" <<'EOF'
+          import sys
+          sys.path[:0] = ["python/tests", "scripts/schema"]
+          from compare import engine_for
+          from schema_v5_base import create_v5_mysql
+          create_v5_mysql(engine_for(sys.argv[1]))
+          EOF
+          ccdb -c "$UPGRADED" db upgrade --upgrade-i-am-sure --no-transaction-check
+          python scripts/schema/compare.py diff "$FRESH" "$UPGRADED" --ignore-table variationsToTags --ignore-table variations_has_tags
+
   cpp-mysql:
+    name: cpp-mysql (${{ matrix.image }})
     runs-on: ubuntu-latest
+    # A test that leaves a provider connected makes a later DROP TABLE wait a year for its lock; fail instead
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["mysql:8.3", "mariadb:10.5"]
     services:
       mysql:
-        image: mysql:8.3
+        image: ${{ matrix.image }}
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: ccdb_test
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+        options: --health-cmd="mysqladmin ping -h 127.0.0.1" --health-interval=5s --health-timeout=5s --health-retries=24
     env:
       CCDB_TEST_MYSQL_CONNECTION: mysql://ccdb_user@127.0.0.1:3306/ccdb_test
       # SQLite cases in the same binary also run; give them a database too
       CCDB_TEST_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/cpp_test.sqlite"
+      # The schema 6 fixture test (shared sets, 1.0 against 1.00) fails under CI without it
+      CCDB_TEST_FIXTURE_CONNECTION: "sqlite:///${{ github.workspace }}/ccdb_fixture.sqlite"
+      # Schema 5 databases, upgraded and then deduplicated, for the later runs of the suite
+      UPGRADED_MYSQL_CONNECTION: mysql://ccdb_user@127.0.0.1:3306/ccdb_test_upgraded
+      UPGRADED_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/cpp_test_upgraded.sqlite"
 
     steps:
       - uses: actions/checkout@v7
@@ -103,16 +173,17 @@ jobs:
       - name: Install ccdb python package
         run: pip install .
 
-      - name: Create MySQL test user and schema
-        run: |
-          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE USER `ccdb_user`@`%`;'
-          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE SCHEMA IF NOT EXISTS `ccdb_test`;'
-          mysql -h 127.0.0.1 -u root --password=root -e 'GRANT ALL PRIVILEGES ON ccdb_test.* TO `ccdb_user`@`%`;'
+      - name: Create the MySQL test users
+        run: mysql -h 127.0.0.1 -u root --password=root < scripts/schema/test_users.sql
 
       - name: Create test databases (ccdb db init)
         run: |
           ccdb -c "$CCDB_TEST_MYSQL_CONNECTION" db init --init-i-am-sure
           ccdb -c "$CCDB_TEST_SQLITE_CONNECTION" db init --init-i-am-sure
+
+      # The file the web GUI checks use; its schema 6 values are the literals the C++ test expects
+      - name: Build the fixture database
+        run: python scripts/webgui/make_fixture.py --out "$GITHUB_WORKSPACE/ccdb_fixture.sqlite"
 
       - name: Configure
         run: cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release
@@ -123,4 +194,50 @@ jobs:
       # Full C++ suite: the [mysql]-tagged cases (excluded from the cpp-tests
       # workflow) AND the SQLite cases - both env vars point at seeded databases
       - name: Run full C++ test suite
+        run: ./cpp/build/src/tests/ccdb_tests
+
+      # C++ has no schema version check and reads named columns, so a database that CCDB 2.4 made must
+      # read the same after 2.5's upgrade, and again after dedup. Both states are run: between
+      # the two commands is what 2.4 jobs read on hallddb. The frozen schema 5 base holds 2.4's seed, which
+      # has no equal sets; a second copy of one set, with its assignment moved onto the copy, gives the
+      # upgrade a duplicate (interim index) and dedup a merge (assignment moved back, unique index
+      # created), while every assignment keeps its data.
+      # ccdb_user lacks PROCESS and nothing else uses these databases, hence --no-transaction-check.
+      - name: Upgrade schema 5 databases
+        run: |
+          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE DATABASE ccdb_test_upgraded;'
+          python - "$UPGRADED_MYSQL_CONNECTION" "$UPGRADED_SQLITE_CONNECTION" <<'EOF'
+          import sys
+          sys.path[:0] = ["python/tests", "scripts/schema"]
+          from sqlalchemy import text
+          from compare import engine_for
+          from schema_v5_base import create_v5_mysql, create_v5_sqlite
+          for url, create_v5 in ((sys.argv[1], create_v5_mysql), (sys.argv[2], create_v5_sqlite)):
+              engine = engine_for(url)
+              create_v5(engine)
+              with engine.begin() as connection:
+                  connection.execute(text("INSERT INTO constantSets (vault, constantTypeId) SELECT vault, constantTypeId "
+                                          "FROM constantSets WHERE id = (SELECT constantSetId FROM assignments WHERE id = 4)"))
+                  connection.execute(text("UPDATE assignments SET constantSetId = (SELECT MAX(id) FROM constantSets) WHERE id = 4"))
+          EOF
+          for connection in "$UPGRADED_MYSQL_CONNECTION" "$UPGRADED_SQLITE_CONNECTION"; do
+            ccdb -c "$connection" db upgrade --upgrade-i-am-sure --no-transaction-check
+          done
+
+      - name: Run full C++ test suite on the upgraded databases
+        env:
+          CCDB_TEST_MYSQL_CONNECTION: ${{ env.UPGRADED_MYSQL_CONNECTION }}
+          CCDB_TEST_SQLITE_CONNECTION: ${{ env.UPGRADED_SQLITE_CONNECTION }}
+        run: ./cpp/build/src/tests/ccdb_tests
+
+      - name: Deduplicate the upgraded databases
+        run: |
+          for connection in "$UPGRADED_MYSQL_CONNECTION" "$UPGRADED_SQLITE_CONNECTION"; do
+            ccdb -c "$connection" db dedup --dedup-i-am-sure --no-transaction-check
+          done
+
+      - name: Run full C++ test suite on the upgraded and deduplicated databases
+        env:
+          CCDB_TEST_MYSQL_CONNECTION: ${{ env.UPGRADED_MYSQL_CONNECTION }}
+          CCDB_TEST_SQLITE_CONNECTION: ${{ env.UPGRADED_SQLITE_CONNECTION }}
         run: ./cpp/build/src/tests/ccdb_tests
