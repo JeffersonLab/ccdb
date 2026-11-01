@@ -16,6 +16,9 @@ HOSTILE_TABLE = "/hostile/x\"y'z&<script>alert(1)<b>"
 UNICODE_TABLE = "/hostile/unicode_Привет_✓"
 CHANNELS_TABLE = "/calib/ccal/channels"            # 600 rows × 4 columns, two default assignments (ids 3612, 3613) that differ in seven cells
 CHANNELS_FIRST = quote(CHANNELS_TABLE + ":0:default:2020-01-06_10-02-00")   # the first of the two by its exact request string
+SHARED_TABLE = "/schema6/shared"                # two assignments (ids 3614, 3615) that share one constant set
+NUMERIC_TABLE = "/schema6/numeric"              # 1.0 (id 3616) and 1.00 (id 3617): two constant sets
+RETIRED_TABLE = "/schema6/retired_table"        # a deprecated table
 
 PAGES = [
     ("tree", "/", "page"),
@@ -118,7 +121,7 @@ PAGES = [
     ("assignment_channels_per_page50", "/assignments/3613?per_page=50&page=12", "page"),
     ("assignment_channels_page9999", "/assignments/3613?page=9999", "page"),
     ("assignment_channels_page0", "/assignments/3613?page=0", "edge"),
-    # log record pages: the newest record (a 60-line comment), a hostile comment, a missing id
+    # log record pages: the record with a 60-line comment, a hostile comment, a missing id
     ("log_record", "/logs/2414", "page"),
     ("log_record_hostile", "/logs/14", "page"),
     ("log_record_directory", "/logs/13", "page"),      # names directory 5
@@ -146,6 +149,15 @@ PAGES = [
     ("diff_unknown_table", "/compare?table=/no/such/table", "edge"),
     ("diff_bad_view", "/compare?a=3612&b=3613&view=sideways", "edge"),
     ("diff_bad_changed", "/compare?a=3612&b=3613&changed=maybe", "edge"),
+    # schema 6 cases: two assignments of one constant set, the 1.0 / 1.00 pair, a deprecated table, and the log record
+    # of an assignment that reused a set
+    ("versions_shared", "/versions" + SHARED_TABLE, "page"),
+    ("assignment_shared_first", "/assignments/3614", "page"),
+    ("assignment_shared_second", "/assignments/3615", "page"),
+    ("show_shared", "/show_request?request=" + quote(SHARED_TABLE + ":1500:default"), "page"),
+    ("diff_numeric", "/compare?a=3616&b=3617", "page"),
+    ("versions_retired", "/versions" + RETIRED_TABLE, "page"),
+    ("log_record_shared", "/logs/2419", "page"),
 ]
 
 # What a person opens in a browser: every page once (the tree alias duplicates the tree) plus one
