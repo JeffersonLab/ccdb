@@ -2,11 +2,13 @@ import collections.abc
 import datetime
 import hashlib
 import posixpath
-from sqlalchemy import text
+from sqlalchemy import inspect, text
 
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.types import Integer, String, Text, DateTime, Enum, Boolean
 from sqlalchemy.orm import declarative_base, reconstructor, relationship, backref
+
+from .errors import ConstantSetIsImmutableError
 
 Base = declarative_base()
 
@@ -58,6 +60,12 @@ class Directory(Base):
     parent_id = Column('parentId', Integer, nullable=False, index=True, server_default=text("'0'"))
     author_id = Column('authorId', Integer, default=1, nullable=False, server_default=text("'1'"))
 
+    # Deprecation, mapped since schema 6. Nothing reads these yet; a new row gets isDeprecated = 0
+    is_deprecated = Column('isDeprecated', Boolean, nullable=False, default=False)
+    deprecated_by_user_id = Column('deprecatedByUserId', Integer)
+    deprecated_time = Column('deprecatedTime', DateTime)
+    deprecation_comment = Column('deprecationComment', Text)
+
     def __init__(self):
         self.path = ""
         self.parent_dir = None
@@ -94,6 +102,12 @@ class TypeTable(Base):
     rows_count = Column('nRows', Integer, nullable=False, server_default=text("'1'"))
     _columns_count = Column('nColumns', Integer, nullable=False)
     author_id = Column('authorId', Integer, default=1, nullable=False)
+
+    # Deprecation, mapped since schema 6. Nothing reads these yet; a new row gets isDeprecated = 0
+    is_deprecated = Column('isDeprecated', Boolean, nullable=False, default=False)
+    deprecated_by_user_id = Column('deprecatedByUserId', Integer)
+    deprecated_time = Column('deprecatedTime', DateTime)
+    deprecation_comment = Column('deprecationComment', Text)
 
     @property
     def columns_count(self):
@@ -132,6 +146,7 @@ class TypeTableColumn(Base):
     order = Column(Integer, nullable=False)
     type = Column('columnType', Enum('int', 'uint', 'long', 'ulong', 'double', 'string', 'bool'))
     type_table_id = Column('typeId', Integer, ForeignKey('typeTables.id'), nullable=False, index=True)
+    units = Column(String(64))      # schema 6; stored only, nothing reads it yet
 
     # TODO remove this comments!
     # @property
@@ -155,8 +170,8 @@ class ConstantSet(Base):
     type_table_id = Column('constantTypeId', Integer, ForeignKey('typeTables.id'), nullable=False, index=True)
     sha256 = Column(String(64), nullable=False)    # hex SHA-256 of the vault's UTF-8 bytes, see vault_digest
     size = Column(Integer, nullable=False)         # number of those bytes
+    # Every assignment that uses this set. Assignments of one table share a set when their data bytes are equal
     assignments = relationship("Assignment", uselist=True, back_populates="constant_set")
-   
 
     @property
     def vault(self):
@@ -171,6 +186,15 @@ class ConstantSet(Base):
     def vault(self, vault_text):
         # Every write of the data goes through here, so sha256 and size always describe the stored text.
         # SQLAlchemy loads _vault directly: loading a set never calls this setter.
+        # A set is stored once it has a database identity. A set flushed in a transaction that then rolled back
+        # has none, though it keeps its id attribute: it was never stored and may still take other data.
+        if inspect(self).has_identity:
+            # A stored set may be shared by several assignments: changing it would change all of them.
+            # Data changes by a new assignment. The same text again is no change; the stored hash stays
+            # as it is, since only `ccdb db rehash` rewrites a stored hash.
+            if vault_text != self._vault:
+                raise ConstantSetIsImmutableError(self.id)
+            return
         self._vault = vault_text
         self.sha256, self.size = vault_digest(vault_text)
 
@@ -210,12 +234,12 @@ class Assignment(Base):
                       onupdate=datetime.datetime.now,
                       server_default=text("'2007-01-01 00:00:00'"))
     constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'), nullable=False)
+    # Many assignments to one set, with no cascade: the ORM never deletes a set, not even with its last
+    # assignment, since other assignments may share it. provider.delete_assignment decides about the set.
     constant_set = relationship("ConstantSet",
                                 uselist=False,
-                                back_populates="assignments",
-                                cascade="all, delete, delete-orphan",
-                                single_parent=True)
-    
+                                back_populates="assignments")
+
     run_range_id = Column('runRangeId', Integer, ForeignKey('runRanges.id'), index=True)
     run_range = relationship("RunRange", backref=backref('assignments'))
     variation_id = Column('variationId', Integer, ForeignKey('variations.id'), nullable=False, index=True)
@@ -325,6 +349,12 @@ class Variation(Base):
     is_locked = Column('isLocked', Boolean, nullable=False, default=True)
     lock_time = Column('lockTime', DateTime, default=datetime.datetime.now, nullable=False)
 
+    # Deprecation, mapped since schema 6. Nothing reads these yet; a new row gets isDeprecated = 0
+    is_deprecated = Column('isDeprecated', Boolean, nullable=False, default=False)
+    deprecated_by_user_id = Column('deprecatedByUserId', Integer)
+    deprecated_time = Column('deprecatedTime', DateTime)
+    deprecation_comment = Column('deprecationComment', Text)
+
     _description = Column("description", String(255))   # (!) Deprecated! Is here for C++ compatibility with 1.06.1
 
     def __repr__(self):
@@ -363,6 +393,70 @@ class User(Base):
             self._roles_str = ""
         else:
             self._roles_str = ",".join(value)
+
+
+# --------------------------------------------
+# class Tag
+# --------------------------------------------
+# noinspection PyClassHasNoInit
+class Tag(Base):
+    """
+    Snapshot tag (schema 6): a name for the state of a variation at one moment.
+    Stored only; nothing reads or writes tags yet.
+    """
+    __tablename__ = 'tags'
+    id = Column(Integer, primary_key=True, unique=True)
+    name = Column(String(100), nullable=False)
+    variation_id = Column('variationId', Integer, ForeignKey('variations.id'), nullable=False, index=True)
+    snapshot_time = Column('snapshotTime', DateTime, nullable=False)     # a UTC instant, unlike the other times
+    comment = Column(Text)
+    author_id = Column('authorId', Integer, default=1, nullable=False, server_default=text("'1'"))
+    created = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))     # the server clock fills it
+
+    def __repr__(self):
+        return "<Tag {0} '{1}'>".format(self.id, self.name)
+
+
+# --------------------------------------------
+# class TimeRange
+# --------------------------------------------
+# noinspection PyClassHasNoInit
+class TimeRange(Base):
+    """
+    Validity time range (schema 6). Reserved: the table exists, but nothing writes or reads it.
+    """
+    __tablename__ = 'timeRanges'
+    id = Column(Integer, primary_key=True)
+    time_from = Column('timeFrom', DateTime, nullable=False)
+    time_to = Column('timeTo', DateTime)        # None: open end
+    comment = Column(Text)
+
+    def __repr__(self):
+        return "<TimeRange {0} {1} - {2}>".format(self.id, self.time_from, self.time_to)
+
+
+# --------------------------------------------
+# class Property
+# --------------------------------------------
+# noinspection PyClassHasNoInit
+class Property(Base):
+    """
+    A named value attached to the instance or to an object (schema 6). Stored only; nothing reads them yet.
+
+    owner_type is 'instance', 'directory', 'table', 'variation' or 'column', and owner_id is that object's id
+    (0 for the instance). A name is unique per owner.
+    """
+    __tablename__ = 'properties'
+    id = Column(Integer, primary_key=True)
+    owner_type = Column('ownerType', String(16), nullable=False)
+    owner_id = Column('ownerId', Integer, nullable=False)
+    name = Column(String(64), nullable=False)
+    value = Column(Text, nullable=False)
+    author_id = Column('authorId', Integer, default=1, nullable=False, server_default=text("'1'"))
+    modified = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))    # the server clock fills it on insert
+
+    def __repr__(self):
+        return "<Property {0} {1}:{2} '{3}'>".format(self.id, self.owner_type, self.owner_id, self.name)
 
 
 #--------------------------------------------
