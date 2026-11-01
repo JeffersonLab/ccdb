@@ -8,7 +8,7 @@ from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb import BraceMessage as LogFmt
 from ccdb.sql.mysql_schema import init_mysql_database
 from ccdb.sql.sqlite_schema import init_sqlite_database
-from ccdb.sql.update_v5 import update_v5
+from ccdb.sql.update_v6 import upgrade_v6, UpgradeRefusedError
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -89,6 +89,8 @@ class Database(CliCommandBase):
         parser.add_argument("sub_command", nargs='?', default="")
         parser.add_argument("--init-i-am-sure",  action="store_true")
         parser.add_argument("--upgrade-i-am-sure",  action="store_true")
+        # accepted now, so scripts can pass it; the open-transaction check it skips comes with PHASE0 item 5
+        parser.add_argument("--no-transaction-check",  action="store_true")
         result = parser.parse_args(args)
 
 
@@ -106,6 +108,7 @@ class Database(CliCommandBase):
                 log.info("(!!!) DO NOT PERFORM ON PRODUCTION DATABASE WITHOUT PROPER BACKUP (!!!)")
                 log.info("This command tries to upgrade DB structure to current version")
                 log.info("Add --upgrade-i-am-sure flag to this command to really execute")
+                return False  # nothing changed: exit code 1
             else:
                 return self.db_upgrade()
         elif result.sub_command == 'stats':
@@ -120,6 +123,7 @@ class Database(CliCommandBase):
         log.debug(f" |- This script path : '{ os.path.abspath(__file__) }'")
         provider = self.context.provider
         provider.connect(connection_string=self.context.connection_string, check_version=False)
+        # both functions commit at the end and raise on the first error, which makes the command exit non-zero
         if provider.engine.dialect.name == "sqlite":
             init_sqlite_database(provider.engine)
         else:
@@ -132,7 +136,12 @@ class Database(CliCommandBase):
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
         provider.connect(connection_string=self.context.connection_string, check_version=False)
-        update_v5(provider.engine)
+        # upgrade_v6 checks the version first: any version other than 5 is refused, naming it, and nothing changes
+        try:
+            upgrade_v6(provider.engine)
+        except UpgradeRefusedError as refusal:
+            log.error(str(refusal))
+            return False  # a refusal changed nothing: exit code 1
         log.debug(" |- Done DB upgrade")
         return True
 
@@ -168,6 +177,6 @@ Provides information and management commands for used Database
 
 subcommands:
     init      - initialize the database
-    upgrade   - upgrade the database to current version
+    upgrade   - upgrade the database from schema version 5 to 6 (add --upgrade-i-am-sure)
     stats     - provide database statistics
 """)

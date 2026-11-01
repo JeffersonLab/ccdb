@@ -1,5 +1,6 @@
 import collections.abc
 import datetime
+import hashlib
 import posixpath
 from sqlalchemy import text
 
@@ -152,6 +153,8 @@ class ConstantSet(Base):
     created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
     type_table_id = Column('constantTypeId', Integer, ForeignKey('typeTables.id'), nullable=False, index=True)
+    sha256 = Column(String(64), nullable=False)    # hex SHA-256 of the vault's UTF-8 bytes, see vault_digest
+    size = Column(Integer, nullable=False)         # number of those bytes
     assignments = relationship("Assignment", uselist=True, back_populates="constant_set")
    
 
@@ -164,13 +167,20 @@ class ConstantSet(Base):
         """
         return self._vault
 
+    @vault.setter
+    def vault(self, vault_text):
+        # Every write of the data goes through here, so sha256 and size always describe the stored text.
+        # SQLAlchemy loads _vault directly: loading a set never calls this setter.
+        self._vault = vault_text
+        self.sha256, self.size = vault_digest(vault_text)
+
     @property
     def data_list(self):
         return blob_to_list(self._vault)
 
     @data_list.setter
     def data_list(self, data_list):
-        self._vault = list_to_blob(data_list)
+        self.vault = list_to_blob(data_list)
 
     @property
     def data_table(self):
@@ -499,6 +509,19 @@ def flatten_data(data):
 
     """
     return list(gen_flatten_data(data))
+
+
+# --------------------------------------------
+#   Identity of a vault: its hash and size
+# --------------------------------------------
+def vault_digest(vault_text):
+    """sha256 hex and byte size of a vault: the identity of a constant set's data.
+
+    The one function every stored hash comes from: the ConstantSet.vault setter, the schema 6 upgrade backfill
+    and `ccdb db rehash` all call it, so their hashes cannot disagree.
+    """
+    data = vault_text.encode("utf-8")
+    return hashlib.sha256(data).hexdigest(), len(data)
 
 
 # --------------------------------------------

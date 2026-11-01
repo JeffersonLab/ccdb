@@ -99,7 +99,7 @@ def get_script_path(func, follow_symlinks=True):
 
 
 def recreate_test_sqlite_db():
-    """Creates a fresh SQLite test database (schema v5 + standard test data)
+    """Creates a fresh SQLite test database (schema v6 + standard test data)
 
     Uses sqlite_test_connection_str, so CCDB_TEST_SQLITE_CONNECTION env var
     can redirect where the database is created. Any existing data is erased.

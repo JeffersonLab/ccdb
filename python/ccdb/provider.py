@@ -14,7 +14,7 @@ from . import path_utils
 from datetime import datetime
 
 import sqlalchemy
-from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import OperationalError, ProgrammingError
 import sqlalchemy.orm
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm.exc import NoResultFound
@@ -29,6 +29,9 @@ from .authentication import Authentication
 import posixpath
 
 log = logging.getLogger("ccdb.provider")
+
+# The database schema version this CCDB version reads and writes, and nothing else
+SCHEMA_VERSION = 6
 
 
 def hide_password(text, connection_string=None):
@@ -100,8 +103,12 @@ class AlchemyProvider:
         """
         if self._is_connected:
             raise RuntimeError("connect() called on a provider that is connected already; call disconnect() first")
+
+        # Schema 6 text is utf8mb4. PyMySQL uses it by default, but mysqlclient, which
+        # 'mysql://' tries first, would use its library default; so the charset is pinned for both drivers.
+        engine_options = {"connect_args": {"charset": "utf8mb4"}} if connection_string.startswith("mysql") else {}
         try:
-            engine = sqlalchemy.create_engine(connection_string)
+            engine = sqlalchemy.create_engine(connection_string, **engine_options)
         except ImportError as err:
             # sql alchemy uses MySQLdb by default. But it might not be installed in the system
             # in such case we fallback to mysqlconnector which is included in CCDB
@@ -109,7 +116,7 @@ class AlchemyProvider:
                     and "No module named" in repr(err) \
                     and "MySQLdb" in repr(err):
                 connection_string = connection_string.replace("mysql://", "mysql+pymysql://")
-                engine = sqlalchemy.create_engine(connection_string)
+                engine = sqlalchemy.create_engine(connection_string, **engine_options)
             else:
                 raise
 
@@ -178,18 +185,43 @@ class AlchemyProvider:
         self._are_dirs_loaded = False
 
     def _check_schema_version(self, session):
-        """Raises DatabaseStructureError unless the database behind the session has CCDB schema version 5"""
+        """Raises DatabaseStructureError unless the database behind the session has CCDB schema version 6.
+
+        schemaVersions must hold exactly one row. An empty table, two rows or no table at all mean the database
+        has no CCDB structure this version can trust, and get the 'No database structure found' message.
+        """
+        # A session given to attach() belongs to the caller and may hold pending changes: the query must not flush
+        # them, and only a transaction the check itself began is ended. A scoped_session registry is asked for its
+        # current session, since SQLAlchemy 1.4 does not proxy in_transaction().
+        if isinstance(session, sqlalchemy.orm.scoped_session):
+            session = session()
+        had_transaction = session.in_transaction()
         try:
-            vers_rec = session.query(CcdbSchemaVersion).first()
-            if vers_rec.version != 5:
-                message = f"Version mismatch. The database schema version is '{vers_rec.version}'. " \
-                          "This CCDB version works with schema version 5"
-                raise DatabaseStructureError(message)
-        except OperationalError as err:
-            if "no such table" in str(err):
+            with session.no_autoflush:
+                versions = [record.version for record in session.query(CcdbSchemaVersion).all()]
+        except (OperationalError, ProgrammingError) as err:
+            # SQLite: 'no such table' (OperationalError); MySQL and MariaDB: error 1146 (ProgrammingError)
+            error_code = err.orig.args[0] if err.orig is not None and err.orig.args else None
+            if "no such table" in str(err) or error_code == 1146:
                 raise DatabaseStructureError(self._no_structure_message.format(err))
-            else:
-                raise
+            raise
+        finally:
+            # the check must not leave a transaction open: on MySQL it would hold a metadata lock on schemaVersions
+            if not had_transaction:
+                session.rollback()
+
+        if len(versions) != 1:
+            raise DatabaseStructureError(self._no_structure_message.format(
+                f"The schemaVersions table holds {len(versions)} rows; exactly one is expected"))
+        version = versions[0]
+        if version == 5:
+            raise DatabaseStructureError(
+                f"The database schema version is 5. This CCDB version works with schema version {SCHEMA_VERSION}. "
+                "Upgrade with 'ccdb db upgrade' (docs/deployment/upgrade-2.5.md)")
+        if version != SCHEMA_VERSION:
+            raise DatabaseStructureError(
+                f"Version mismatch. The database schema version is '{version}'. "
+                f"This CCDB version works with schema version {SCHEMA_VERSION}")
 
     # ------------------------------------------------
     # Closes connection to data
