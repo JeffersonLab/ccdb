@@ -114,6 +114,27 @@ class SharedSetsTestBase(unittest.TestCase):
         rows = self.query(path, 'SELECT "constantSetId" FROM assignments WHERE id = ?', (assignment_id,))
         return rows[0][0] if rows else None
 
+    def set_ids_of_other_tables(self, path, table_id):
+        return [row[0] for row in self.query(
+            path, 'SELECT id FROM "constantSets" WHERE "constantTypeId" != ? ORDER BY id', (table_id,))]
+
+    # an unused set as history left them
+    def delete_assignment_row(self, provider, path, assignment_id):
+        """Deletes one assignments row with SQL, bypassing the provider, so its set stays unused.
+
+        rm -a deletes a set with its last assignment (section 5.2); hallddb still holds unused sets from
+        its history, and this is how a test makes one. The provider's session has no pending changes here;
+        its rollback ends the read transaction it may hold, which would lock this write out on SQLite.
+        """
+        provider.session.rollback()
+        connection = sqlite3.connect(path)
+        try:
+            with connection:        # commits
+                deleted = connection.execute("DELETE FROM assignments WHERE id = ?", (assignment_id,)).rowcount
+        finally:
+            connection.close()
+        self.assertEqual(deleted, 1)
+
     def add_mapper_hook(self, cls, event_name, fn):
         event.listen(cls, event_name, fn)
         self.addCleanup(event.remove, cls, event_name, fn)
@@ -174,9 +195,11 @@ class SharedSetsTest(SharedSetsTestBase):
         with self.subTest("an unused set is a candidate"):
             path, provider = self.fresh()
             first = provider.create_assignment(rows_of(vault), TABLE, 0, 1000, "default", "first")
-            set_id = first.constant_set_id
-            provider.delete_assignment(first)
+            set_id, first_id = first.constant_set_id, first.id
+            self.delete_assignment_row(provider, path, first_id)    # rm -a would delete the set with it
             self.assertTrue(self.set_exists(path, set_id))
+            self.assertEqual(self.query(path, 'SELECT COUNT(*) FROM assignments WHERE "constantSetId" = ?',
+                                        (set_id,)), [(0,)])
             # other bytes in between, so a reused rowid cannot pass for a reused set
             provider.create_assignment(rows_of("9.1|9.2|9.3|9.4|9.5|9.6"), TABLE, 0, 1000, "default", "other")
             again = provider.create_assignment(rows_of(vault), TABLE, 0, 1000, "default", "again")
@@ -332,7 +355,7 @@ class SharedSetsTest(SharedSetsTestBase):
 
         with self.subTest("a read that changes nothing is not a pending change"):
             # get_assignment_by_id points the table at the cached directory: on a fresh provider TypeTable 1
-            # lands in session.dirty with session.is_modified() False. Sections 5.1 step 3.0 and 14.1 refuse
+            # lands in session.dirty with session.is_modified() False. Sections 5.1 step 1 and 14.1 refuse
             # pending changes, and this read made none, so the call must not refuse.
             path, provider = self.fresh()
             before = self.row_counts(path)
@@ -353,8 +376,141 @@ class SharedSetsTest(SharedSetsTestBase):
         reader = self.new_provider(path)
         self.assertEqual(reader.get_assignment_by_id(newer.id).constant_set.vault, SEED_SET_4_VAULT)
 
+    def test_rm_a_of_last_assignment_deletes_set(self):
+        """T17, section 5.2: rm -a deletes a set with its last assignment, keeps it while another shares it, logs as 2.4."""
+        path, provider = self.fresh(logging_enabled=True)
+        table = provider.create_type_table("rm_a_table", "/test/test_vars", 2,
+                                           [("x", "double"), ("y", "double"), ("z", "double")], "rm -a of sharers")
+        table_id, table_path = table.id, table.path
+        shared = "12.1|12.2|12.3|12.4|12.5|12.6"
+        alone_id = provider.create_assignment(rows_of("11.1|11.2|11.3|11.4|11.5|11.6"), table_path, 0, 1000,
+                                              "default", "alone").id
+        first_id = provider.create_assignment(rows_of(shared), table_path, 0, 1000, "default", "first sharer").id
+        second_id = provider.create_assignment(rows_of(shared), table_path, 0, 1000, "test", "second sharer").id
+        alone_set, shared_set = self.set_id_of_assignment(path, alone_id), self.set_id_of_assignment(path, first_id)
+        self.assertEqual(self.set_id_of_assignment(path, second_id), shared_set)
+        self.assertEqual(self.set_ids_of_table(path, table_id), sorted([alone_set, shared_set]))
+        other_sets = self.set_ids_of_other_tables(path, table_id)
+
+        def counts_of_other_tables():
+            return {name: count for name, count in self.row_counts(path).items()
+                    if name not in ("assignments", "constantSets", "logs")}
+
+        other_counts = counts_of_other_tables()
+
+        def rm_a(assignment_id):
+            """rm -a through the provider; checks its one log record, shaped as 2.4's; returns the sets it deleted"""
+            assignment = provider.get_assignment_by_id(assignment_id)
+            request = assignment.request
+            before = self.row_counts(path)
+            provider.delete_assignment(assignment)
+            self.assertIsNone(self.set_id_of_assignment(path, assignment_id))
+            after = self.row_counts(path)
+            self.assertEqual(after["assignments"], before["assignments"] - 1)
+            self.assertEqual(after["logs"], before["logs"] + 1)
+            action, affected_ids, description = self.query(
+                path, 'SELECT action, "affectedIds", description FROM logs ORDER BY id DESC LIMIT 1')[0]
+            self.assertEqual(action, "delete")
+            self.assertIn("|assignments{}|".format(assignment_id), affected_ids)
+            self.assertEqual(description, "Deleted assignment '{}'".format(request))
+            return before["constantSets"] - after["constantSets"]
+
+        # an unshared set goes with its assignment
+        self.assertEqual(rm_a(alone_id), 1)
+        self.assertFalse(self.set_exists(path, alone_set))
+        self.assertTrue(self.set_exists(path, shared_set))
+
+        # a shared set stays while another assignment uses it
+        self.assertEqual(rm_a(first_id), 0)
+        self.assertTrue(self.set_exists(path, shared_set))
+        self.assertEqual(self.set_id_of_assignment(path, second_id), shared_set)
+        reader = self.new_provider(path)
+        self.assertEqual(reader.get_assignment_by_id(second_id).constant_set.vault, shared)
+        reader.disconnect()     # its read ends before the next write
+
+        # the log record is written inside the transaction: its failure deletes neither the assignment nor the set
+        def fail(mapper, connection, target):
+            raise InjectedFailure("injected by the test")
+
+        before = self.row_counts(path)
+        event.listen(LogRecord, "before_insert", fail)
+        try:
+            with self.assertRaises(InjectedFailure):
+                provider.delete_assignment(provider.get_assignment_by_id(second_id))
+        finally:
+            event.remove(LogRecord, "before_insert", fail)
+        self.assertEqual(self.row_counts(path), before)
+        self.assertEqual(self.set_id_of_assignment(path, second_id), shared_set)
+
+        # the last sharer takes the set with it; the provider is usable without a manual rollback
+        self.assertEqual(rm_a(second_id), 1)
+        self.assertFalse(self.set_exists(path, shared_set))
+        self.assertEqual(self.set_ids_of_table(path, table_id), [])
+
+        self.assertEqual(self.set_ids_of_other_tables(path, table_id), other_sets)
+        self.assertEqual(counts_of_other_tables(), other_counts)
+
+    def test_delete_assignment_pending_changes(self):
+        """T17, sections 5.2 and 14.1: rm -a refuses net pending session changes and deletes nothing; a read is not one."""
+        seed_comment_of_1 = [("Test assignment for software tests",)]
+
+        def make_dirty(provider):
+            provider.get_assignment_by_id(1).comment = "pending edit"      # another loaded assignment
+
+        def make_new(provider):
+            run_range = RunRange()
+            run_range.min, run_range.max, run_range.name, run_range.comment = 5, 6, "", "pending"
+            provider.session.add(run_range)
+
+        def make_deleted(provider):
+            provider.session.delete(provider.get_run_range(0, 2000))
+
+        # section 14.1: delete_assignment checks pending changes first, as create_assignment does, and raises
+        # SessionHasPendingChangesError; the caller's change stays uncommitted. Seed assignment 4 is the only
+        # user of seed set 4, so a call that went through would delete both.
+        for kind, make_pending in (("dirty", make_dirty), ("new", make_new), ("deleted", make_deleted)):
+            with self.subTest("pending " + kind + " object makes rm -a refuse"):
+                from ccdb.errors import SessionHasPendingChangesError
+
+                path, provider = self.fresh()
+                target = provider.get_assignment_by_id(4)       # every read before the change: autoflush would write it
+                before = self.row_counts(path)
+                make_pending(provider)
+                with self.assertRaises(SessionHasPendingChangesError):
+                    provider.delete_assignment(target)
+                self.assertEqual(self.row_counts(path), before)
+                self.assertEqual(self.set_id_of_assignment(path, 4), 4)
+                self.assertTrue(self.set_exists(path, 4))
+                self.assertEqual(self.query(path, "SELECT comment FROM assignments WHERE id = 1"), seed_comment_of_1)
+                provider.session.rollback()     # the caller discards its changes, then the call works
+                provider.delete_assignment(provider.get_assignment_by_id(4))
+                self.assertIsNone(self.set_id_of_assignment(path, 4))
+                self.assertFalse(self.set_exists(path, 4))
+                self.assertEqual(self.query(path, "SELECT comment FROM assignments WHERE id = 1"), seed_comment_of_1)
+
+        with self.subTest("a read that changes nothing is not a pending change"):
+            # get_assignment_by_id leaves TypeTable 1 in session.dirty with session.is_modified() False
+            path, provider = self.fresh()
+            provider.get_assignment_by_id(1)
+            provider.delete_assignment(provider.get_assignment_by_id(4))
+            self.assertIsNone(self.set_id_of_assignment(path, 4))
+
+        with self.subTest("a read after a commit is not a pending change either"):
+            # After a commit has expired TypeTable 1, get_assignment_by_id re-points its parent_dir at the cached
+            # directory and session.is_modified() turns True, though no column changes (probed on 2.4,
+            # 2026-11-01). The interactive shell's `add` then `rm -a <id>` runs this sequence; it is no net change.
+            # Section 14.1: the reads set parent_dir with set_committed_value, so they record no history.
+            path, provider = self.fresh()
+            provider.get_assignment_by_id(1)
+            provider.session.commit()
+            provider.delete_assignment(provider.get_assignment_by_id(4))
+            self.assertIsNone(self.set_id_of_assignment(path, 4))
+
     def test_copy_then_delete_either_sharer(self):
-        """T17, section 5.2: after cp, rm -a of the copy or of the source works and the other keeps the data."""
+        """T17, section 5.2: after cp, rm -a of the copy or of the source works and the other keeps the data.
+
+        rm -a of the other one then deletes the set with it.
+        """
         for deleted in ("copy", "source"):
             with self.subTest("delete the " + deleted):
                 path, provider = self.fresh()
@@ -374,9 +530,19 @@ class SharedSetsTest(SharedSetsTestBase):
                 self.assertTrue(self.set_exists(path, 4))
                 reader = self.new_provider(path)
                 self.assertEqual(reader.get_assignment_by_id(kept_id).constant_set.vault, SEED_SET_4_VAULT)
+                reader.disconnect()     # its read ends before the next write
+
+                # the other sharer is the last: rm -a deletes the set with it
+                provider.delete_assignment(provider.get_assignment_by_id(kept_id))
+                self.assertIsNone(self.set_id_of_assignment(path, kept_id))
+                self.assertFalse(self.set_exists(path, 4))
+                self.assertEqual(self.row_counts(path)["constantSets"], before["constantSets"] - 1)
 
     def test_rm_t_after_rm_a_of_all(self):
-        """T17, section 5.2 (Q39): rm -t refuses while assignments exist; after rm -a of all it deletes the table and its unused sets."""
+        """T17, section 5.2 (Q39): rm -t refuses while assignments exist, then deletes the table and its unused sets.
+
+        rm -a of all leaves no set of the table; the unused set rm -t deletes is one that history left.
+        """
         path, provider = self.fresh()
         table = provider.create_type_table("doomed_table", "/test/test_vars", 2,
                                            [("x", "double"), ("y", "double"), ("z", "double")], "to be removed")
@@ -387,7 +553,7 @@ class SharedSetsTest(SharedSetsTestBase):
                        provider.create_assignment(rows_of(other), table_path, 0, 1000, "default", "c")]
         assignment_ids = [assignment.id for assignment in assignments]
         self.assertEqual(len(self.set_ids_of_table(path, table_id)), 2)
-        sets_of_other_tables = self.row_counts(path)["constantSets"] - 2
+        other_sets = self.set_ids_of_other_tables(path, table_id)
 
         with self.assertRaises(ValueError):     # section 14.1: rm -t of a table with assignments, as in 2.4
             provider.delete_type_table(provider.get_type_table(table_path))
@@ -395,13 +561,56 @@ class SharedSetsTest(SharedSetsTestBase):
 
         for assignment_id in assignment_ids:
             provider.delete_assignment(provider.get_assignment_by_id(assignment_id))
-        self.assertEqual(len(self.set_ids_of_table(path, table_id)), 2)     # rm -a keeps the sets
+        self.assertEqual(self.set_ids_of_table(path, table_id), [])     # each set went with its last assignment
+
+        # an unused set as history left them: rm -t deletes it with the table
+        historical = provider.create_assignment(rows_of(other), table_path, 0, 1000, "default", "d")
+        historical_id, historical_set = historical.id, historical.constant_set_id
+        self.delete_assignment_row(provider, path, historical_id)
+        self.assertEqual(self.set_ids_of_table(path, table_id), [historical_set])
 
         provider.delete_type_table(provider.get_type_table(table_path))
         self.assertEqual(self.set_ids_of_table(path, table_id), [])
         self.assertEqual(self.query(path, 'SELECT id FROM "typeTables" WHERE id = ?', (table_id,)), [])
         self.assertEqual(self.query(path, 'SELECT id FROM columns WHERE "typeId" = ?', (table_id,)), [])
-        self.assertEqual(self.row_counts(path)["constantSets"], sets_of_other_tables)
+        self.assertEqual(self.set_ids_of_other_tables(path, table_id), other_sets)
+
+    def test_update_assignment_refuses_set_change(self):
+        """T13, section 5.2: update_assignment refuses a change of the assignment's set and writes nothing.
+
+        The new set would not be locked, so a concurrent rm -a could delete it under the assignment. Data
+        changes by a new assignment.
+        """
+        def by_relationship(assignment, other):
+            assignment.constant_set = other.constant_set
+
+        def by_column(assignment, other):
+            assignment.constant_set_id = other.constant_set_id
+
+        for how, repoint in (("constant_set", by_relationship), ("constant_set_id", by_column)):
+            with self.subTest("set changed through " + how):
+                path, provider = self.fresh(logging_enabled=True)
+                other_set = self.set_id_of_assignment(path, 1)
+                self.assertNotEqual(other_set, 4)
+                self.assertEqual(self.query(path, 'SELECT "constantTypeId" FROM "constantSets" WHERE id IN (?, 4)',
+                                            (other_set,)), [(1,), (1,)])     # another set of the same table
+                before = self.row_counts(path)
+                target = provider.get_assignment_by_id(4)
+                other = provider.get_assignment_by_id(1)     # every read before the change: autoflush would write it
+                repoint(target, other)
+                with self.assertRaises(ValueError):
+                    provider.update_assignment(target)
+                self.assertEqual(self.row_counts(path), before)
+                self.assertEqual(self.set_id_of_assignment(path, 4), 4)
+                self.assertTrue(self.set_exists(path, 4))
+
+                provider.session.rollback()     # the caller discards the change; then the session works
+                again = provider.get_assignment_by_id(4)
+                self.assertEqual(again.constant_set_id, 4)
+                again.comment = "edited after the refusal"
+                provider.update_assignment(again)
+                self.assertEqual(self.query(path, 'SELECT comment, "constantSetId" FROM assignments WHERE id = 4'),
+                                 [("edited after the refusal", 4)])
 
     def test_sqlite_writers_wait(self):
         """T18, section 5.1 (SQLite): a second writer waits for the first and then reuses its set."""
