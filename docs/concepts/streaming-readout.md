@@ -8,7 +8,7 @@ configuration, the run registry defines these intervals, and CCDB never needs to
 
 ## Two times, and neither is a validity interval
 
-The [conceptual design](conceptual-design.md) separates two times: the time the data were taken, and
+The [conceptual design](concepts/conceptual-design.md) separates two times: the time the data were taken, and
 the time a declaration was made about which constants to use for a given set of data. CCDB stores only
 the second one. An assignment says "for runs *A* to *B*, in variation *V*, use these constants", and
 records when that declaration was made (`assignment.created`). A later assignment for the same runs
@@ -85,7 +85,7 @@ does not do is interpolate; that is the client's job, and the sampling is the ex
 A production campaign fixes two things in its context: the variation, and the snapshot time at which the
 campaign started. Every job of the campaign then resolves the same constants for the same run, however
 many new assignments calibrators add meanwhile. Later campaigns move the snapshot time forward. This is
-the mechanism described in [Concepts illustrated](concepts.md#requests), and it is the same for
+the mechanism described in [Concepts illustrated](concepts/concepts.md#requests), and it is the same for
 streaming and triggered data.
 
 ## Simulation
@@ -101,7 +101,7 @@ Streaming computing models process many jobs at once, and every job reads its co
 at every run change, so the load on the calibration database is a burst, not a steady stream. The same
 run period means the same constants for thousands of jobs, which is what makes snapshots work: a SQLite
 copy of the database, or a shallow copy holding one run period, serves a farm with no database server
-in the loop. [Deploying CCDB for a new experiment](../deployment/new-experiment.md#serving-constants-to-jobs)
+in the loop. [Deploying CCDB for a new experiment](deployment/new-experiment.md#serving-constants-to-jobs)
 describes the options.
 
 ## CCDB and RCDB
@@ -120,7 +120,7 @@ None of the following is in CCDB 2.4.0. It is listed so that the direction is cl
   request accepts a validity timestamp; resolution picks by time when no run is given. Existing data
   stay valid under an implicit "all time" range, and the request string keeps its shape. The schema
   already has an `eventRanges` table for finer-than-run validity that no API uses yet
-  (see [database schema](database-schema.md#eventranges)); the time range follows the same pattern.
+  (see [database schema](concepts/database-schema.md#eventranges)); the time range follows the same pattern.
 - **Snapshot tags.** A name for a variation plus a snapshot time, so that a campaign pins its constants by
   name. The schema has unused `tags` tables for this.
 - **HTTP access.** A read-only HTTP API with immutable URLs for exact assignments, and a bundle per run

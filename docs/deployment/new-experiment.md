@@ -2,8 +2,8 @@
 
 This page is for the person who sets up CCDB for an experiment: the database server, the accounts, the
 layout of the constants, the rules the collaboration follows, and the way jobs read constants. It
-collects what has worked at GlueX since 2012. [Installation](../get-started/installation.md) covers
-installing the software; [Deploying the web GUI](webgui.md) covers the web interface.
+collects what has worked at GlueX since 2012. [Installation](get-started/installation.md) covers
+installing the software; [Deploying the web GUI](deployment/webgui.md) covers the web interface.
 
 ## Topology
 
@@ -51,10 +51,12 @@ ccdb db init      # asks for the init-i-am-sure flag before touching anything
 A read-only account without a password is deliberate: constants are not secret, and a job that only
 needs a connection string with no secret in it can run anywhere. Keep the writing accounts off the farm.
 
-Two server settings matter. Raise `max_allowed_packet` (32M is enough for large tables) in the
+Three server settings matter. Raise `max_allowed_packet` (32M is enough for large tables) in the
 `[mysqld]` section, or large constant sets fail to load. Size `max_connections` for the jobs that will
-connect directly; the default of 151 is not a farm. Give the web GUI its own read-only account with a
-statement timeout, as [Deploying the web GUI](webgui.md#exposing-the-gui) describes.
+connect directly; the default of 151 is not a farm. On a large installation, size the InnoDB buffer pool
+(`innodb_buffer_pool_size`) to hold the constant sets that jobs read: `constantSets` is most of the
+database, 4.9 GB of the 5.3 GB of data and indexes at GlueX. Give the web GUI its own read-only account with a
+statement timeout, as [Deploying the web GUI](deployment/webgui.md#exposing-the-gui) describes.
 
 CCDB records the author of every change. The name comes from the `CCDB_USER` environment variable, or
 the login name when it is not set, and must exist in the database: `ccdb user --create <name>`. Create
@@ -133,15 +135,15 @@ Three rules keep the history useful:
 The text format `ccdb add` reads is a table of numbers with `#` comments, the same format `ccdb dump`
 writes, so a calibration script produces files and a second step adds them. Keep the files in a git
 repository: a pull request is then the review step, and a script applies accepted files with `ccdb add`.
-Scripts that add many tables use the [Python API](../apis/python.md) directly, with the same account as
+Scripts that add many tables use the [Python API](apis/python.md) directly, with the same account as
 the CLI, and get exceptions instead of exit codes.
 
 ## Serving constants to jobs
 
 | how jobs read | when | notes |
 |---|---|---|
-| MySQL directly, `mysql://ccdb_user@dbhost/ccdb` | interactive work and small numbers of jobs on the lab network | one connection per job; the C++ client has connect, read and write timeouts (`CCDB_MYSQL_*_TIMEOUT`, see [C++ API](../apis/cpp.md#timeouts-and-reconnect)) and reconnects once after a dropped connection |
-| SQLite snapshot of the whole database | farms, containers, any place with a shared file system | made with [mysql2sqlite](../utilities.md#creating-a-sqlite-database) from a dump; publish it on CVMFS or a shared file system; open it as `sqlite:///file:/path/ccdb.sqlite?immutable=1` on network file systems |
+| MySQL directly, `mysql://ccdb_user@dbhost/ccdb` | interactive work and small numbers of jobs on the lab network | one connection per job; the C++ client has connect, read and write timeouts (`CCDB_MYSQL_*_TIMEOUT`, see [C++ API](apis/cpp.md#timeouts-and-reconnect)) and reconnects once after a dropped connection |
+| SQLite snapshot of the whole database | farms, containers, any place with a shared file system | made with [mysql2sqlite](utilities.md#creating-a-sqlite-database) from a dump; publish it on CVMFS or a shared file system; open it as `sqlite:///file:/path/ccdb.sqlite?immutable=1` on network file systems |
 | SQLite shallow copy of one run period | offsite jobs, containers that ship their constants | made with [ccdb_shallow_copy.py](https://github.com/JeffersonLab/ccdb/tree/v2-main/scripts/shallow_copy): the constants one run range, one snapshot time and chosen variations need, a few megabytes |
 
 The same program reads all three; only the connection string changes, through `CCDB_CONNECTION` or
@@ -157,7 +159,7 @@ constants, whatever calibrators add while it runs, and the campaign can be repea
 ## Web GUI and monitoring
 
 Deploy the web GUI early; it is how calibrators check their work and how everyone else finds out what a
-table contains. [Deploying the web GUI](webgui.md) has the steps and the hardening list. Its `/health`
+table contains. [Deploying the web GUI](deployment/webgui.md) has the steps and the hardening list. Its `/health`
 endpoint answers with the database state and the CCDB version, and is meant for the monitoring system.
 
 ## Backups
@@ -172,7 +174,7 @@ it. That is the audit trail; keep it.
 ## Streaming readout
 
 A streaming DAQ changes none of the above. What a run means for a streaming experiment, and how a time
-frame finds its constants, is on [Streaming readout and runs](../concepts/streaming-readout.md).
+frame finds its constants, is on [Streaming readout and runs](concepts/streaming-readout.md).
 
 ## Checklist
 

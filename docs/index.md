@@ -36,13 +36,14 @@ connects you to that database read-only.
   GUI.
 - **Named snapshots (tags).** A tag names a branch plus a date, so a production campaign pins its
   constants by one name and the name resolves to the same constants forever.
-- **Content hashes.** Every constant set carries its SHA-256, so identical sets are stored once and
-  any copy can be verified against the source.
+- **[Content hashes (shared constant sets)](concepts/constant-sets.md).** Every constant set carries
+  the SHA-256 of its data, so identical data in a table is stored once and any copy can be verified
+  against the source.
 
 ### Central database, local copies and farm scale
 
 - **[Central database with native clients](deployment/new-experiment.md#serving-constants-to-jobs).**
-  MySQL or Postgres holds the master copy; the C++, Python and Java APIs read it directly, with
+  MySQL or MariaDB holds the master copy; the C++, Python and Java APIs read it directly, with
   connect, read and write [timeouts](apis/cpp.md#timeouts-and-reconnect) and automatic reconnect.
 - **[SQLite snapshots](deployment/new-experiment.md#serving-constants-to-jobs).** The whole database
   exports to one file for CVMFS, shared file systems, containers and laptops. A farm reads the snapshot

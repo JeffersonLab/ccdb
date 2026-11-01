@@ -11,6 +11,7 @@
 - [Conceptual design](concepts/conceptual-design.md)
 - [Concepts illustrated](concepts/concepts.md)
 - [Connection strings](concepts/concepts.md#connection-strings)
+- [Constant sets and their hashes](concepts/constant-sets.md)
 - [Database schema](concepts/database-schema.md)
 - [Streaming readout and runs](concepts/streaming-readout.md)
 
@@ -29,3 +30,4 @@
 - [Utilities & scripts](utilities.md)
 - [Deploying the web GUI](deployment/webgui.md)
 - [Deploying for a new experiment](deployment/new-experiment.md)
+- [Upgrading to CCDB 2.5](deployment/upgrade-2.5.md)
