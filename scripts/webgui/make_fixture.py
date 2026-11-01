@@ -2,7 +2,7 @@
 
 Usage: python make_fixture.py --space DIR [--out PATH] [--verify]
 
-The result is CCDB schema v5 with the standard test content (ccdb.sql.sqlite_schema) plus the
+The result is CCDB schema 6 with the standard test content (ccdb.sql.sqlite_schema) plus the
 cases the web GUI checks need:
 
 - /calib/fcal/gains: 3600 assignments over 6 variations and run ranges that end at 2147483647
@@ -14,11 +14,19 @@ cases the web GUI checks need:
 - two comparison pairs: /calib/ccal/parms in default and calib (two cells differ), /calib/ccal/channels 600 rows x 4 columns with two default assignments (seven cells differ)
 - a log record with a 60-line comment of 135-character lines, then three records naming a table, a variation and a deleted table, for the log record page
 - 2400 log records from three authors
+- /schema6, the schema 6 cases, added last: /schema6/shared with two assignments that share one constant set
+  (vers -l shows 2) and units on two of its three columns; /schema6/numeric with 1.0 and 1.00, two sets with two
+  hashes; a deprecated directory /schema6/retired, a deprecated table /schema6/retired_table and a deprecated
+  variation retired; the tags fixture_newest (at the creation time of the newest assignment) and fixture_past;
+  an instance property and a property of /schema6/shared; a log record per new assignment
 
 Every timestamp and every random value comes from a fixed seed, so the SQLite file hashes the same
-on each build. Trap: the provider's create_* methods stamp datetime.now() and write log records,
-so this script inserts ORM objects directly and never calls them. pages.py refers to the paths
-above; change both files together.
+on each build. The timestamps are naive values with no zone; tags.snapshotTime is defined as a UTC
+instant, so the fixture's tags line up with its assignment times when those are read as UTC too.
+Trap: the provider's create_* methods stamp datetime.now() and write log records,
+so this script inserts ORM objects directly and never calls them. The same holds for the columns that
+only the server clock fills (tags.created, properties.modified): set them here. pages.py refers to the
+paths and ids above; change both files together.
 """
 import argparse
 import datetime
@@ -34,7 +42,7 @@ import workspace  # noqa: E402
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
-from ccdb.model import Assignment, ConstantSet, Directory, LogRecord, RunRange, TypeTable, TypeTableColumn, User, Variation
+from ccdb.model import Assignment, ConstantSet, Directory, LogRecord, Property, RunRange, Tag, TypeTable, TypeTableColumn, User, Variation
 from ccdb.sql.sqlite_schema import init_sqlite_database
 
 INFINITE_RUN = 2147483647
@@ -86,14 +94,18 @@ class Builder:
         self.session.flush()
         return directory
 
-    def add_table(self, name, directory, columns, rows_count=1, comment="", author="test_user"):
-        """columns: list of (name, type)."""
+    def add_table(self, name, directory, columns, rows_count=1, comment="", author="test_user", units=None):
+        """columns: list of (name, type). units: column name -> units text, for the columns that have units."""
         stamp = self.tick()
+        units = units or {}
+        unknown = set(units) - {column_name for column_name, _ in columns}
+        if unknown:  # a misspelt key would silently give a table without units
+            raise ValueError("units for unknown columns of {0}: {1}".format(name, sorted(unknown)))
         table = new(TypeTable, name=name, comment=comment, parent_dir_id=directory.id, rows_count=rows_count, _columns_count=len(columns), created=stamp, modified=stamp, author_id=self.user_id(author))
         self.session.add(table)
         self.session.flush()
         for order, (column_name, column_type) in enumerate(columns):
-            self.session.add(new(TypeTableColumn, name=column_name, type=column_type, order=order, type_table_id=table.id, created=stamp, modified=stamp))
+            self.session.add(new(TypeTableColumn, name=column_name, type=column_type, order=order, type_table_id=table.id, created=stamp, modified=stamp, units=units.get(column_name)))
         self.session.flush()
         return table
 
@@ -119,6 +131,33 @@ class Builder:
         self.session.add(constant_set)
         self.session.add(assignment)
         return assignment
+
+    def add_sharing_assignment(self, constant_set, run_range, variation, comment, author="test_user"):
+        """A second assignment of a stored set, as create_assignment makes it for data equal byte for byte to that set."""
+        stamp = self.tick()
+        assignment = new(Assignment, constant_set=constant_set, run_range_id=run_range.id, variation_id=variation.id, _comment=comment, author_id=self.user_id(author), created=stamp, modified=stamp)
+        self.session.add(assignment)
+        return assignment
+
+    def deprecate(self, obj, author, comment):
+        """Sets the four deprecation columns of a directory, table or variation."""
+        obj.is_deprecated = True
+        obj.deprecated_by_user_id = self.user_id(author)
+        obj.deprecated_time = self.tick()
+        obj.deprecation_comment = comment
+        # The change moves modified to the deprecation time; for directories and tables this also stops onupdate
+        # from stamping datetime.now(), which would break the fixed-seed build.
+        obj.modified = obj.deprecated_time
+
+    def add_tag(self, name, variation, snapshot_time, comment, author="test_user"):
+        tag = new(Tag, name=name, variation_id=variation.id, snapshot_time=snapshot_time, comment=comment, author_id=self.user_id(author), created=self.tick())
+        self.session.add(tag)
+        return tag
+
+    def add_property(self, owner_type, owner_id, name, value, author="test_user"):
+        prop = new(Property, owner_type=owner_type, owner_id=owner_id, name=name, value=value, author_id=self.user_id(author), modified=self.tick())
+        self.session.add(prop)
+        return prop
 
     def add_log(self, author, action, affected, description, comment):
         self.session.add(new(LogRecord, created=self.tick(), affected_ids="|" + affected + "|", action=action, description=description, comment=comment, author_id=self.user_id(author)))
@@ -208,15 +247,77 @@ def build(session):
     b.add_assignment(channels, run_ranges[0], variations["default"], first_pass, "first pass", "alice")
     b.add_assignment(channels, run_ranges[0], variations["default"], second_pass, "second pass: four gains, one sigma, two statuses", "bob")
 
-    # The newest log record carries a long multi-line comment, as the material-map uploads on the production database do
-    # (comments of 65 535 characters, 500 lines of aligned program output), for the log record page. Appended last.
+    # A log record with a long multi-line comment, as the material-map uploads on the production database have
+    # (comments of 65 535 characters, 500 lines of aligned program output), for the log record page.
     long_comment = "\n".join("line {0:3d} ".format(line_i) + ("x" * 10 + " ") * 11 + "end{0}".format(line_i) for line_i in range(60))
     b.add_log("alice", "create", "assignments3610", "Created assignment '/calib/ccal/parms:0:default'", long_comment)
     # Records naming a table, a variation and an object that no longer exists, for the links of the record page.
     b.add_log("bob", "create", "typeTables{0}".format(channels.id), "Created table '/calib/ccal/channels'", "")
     b.add_log("bob", "update", "variations{0}".format(variations["calib_v2"].id), "Updated variation 'calib_v2'", "")
     b.add_log("bob", "delete", "typeTables999999", "Deleted table '/gone/table'", "a table that no longer exists")
+    session.flush()
+    add_schema6_cases(b, variations, run_ranges)
     session.commit()
+
+
+def add_schema6_cases(b, variations, run_ranges):
+    """The schema 6 objects, in their own directory /schema6 and after everything else, so no earlier id or timestamp
+    moves and only the pages that list every directory, table, variation or log record see them.
+
+    Literal values that tests compare with, from a build of this script (sha256 of the vault's UTF-8 bytes):
+      assignments 3614 and 3615: /schema6/shared, runs 0-999 and 1000-1999, both constant set 3614,
+        vault "0|1.25|100.5|1|1.5|101.0|2|0.75|99.5", sha256 c4c90edd40236d79a696db3f2999ae5c8fe02a21de3b88d058dae1a370a5f907
+      assignment 3616: /schema6/numeric, runs 0-999, set 3615, vault "1.0", sha256 d0ff5974b6aa52cf562bea5921840c032a860a91a3512f7fe8f768f6bbe005f6
+      assignment 3617: /schema6/numeric, runs 1000-1999, set 3616, vault "1.00", sha256 cf9dcf6da8a82be1335c398a4005def7ee3a53d4698c59dbc6b2b14e72d1263c
+      assignment 3618: /schema6/retired_table, set 3617
+    """
+    default = variations["default"]
+    schema6 = b.add_directory("schema6", None, "Schema 6 cases: shared constant sets, deprecation, tags, units, properties")
+
+    # One constant set given to two assignments: the data of runs 0-999 were found valid for runs 1000-1999 too, so the
+    # second upload stored no new set. vers -l counts 2 sharers for both.
+    shared = b.add_table("shared", schema6, [("channel", "int"), ("gain", "double"), ("pedestal", "double")], rows_count=3,
+                         comment="Two assignments, one constant set; units on gain and pedestal", units={"gain": "MeV/count", "pedestal": "count"})
+    first = b.add_assignment(shared, run_ranges[0], default, [["0", "1.25", "100.5"], ["1", "1.5", "101.0"], ["2", "0.75", "99.5"]], "first upload")
+    b.session.flush()
+    second = b.add_sharing_assignment(first.constant_set, run_ranges[1], default, "the same file for the next run range", "alice")
+
+    # Numerically equal, textually different: the identity of a set is its bytes, so these are two sets with two hashes.
+    numeric = b.add_table("numeric", schema6, [("value", "double")], comment="1.0 and 1.00: equal numbers, two constant sets")
+    one = b.add_assignment(numeric, run_ranges[0], default, [["1.0"]], "written as 1.0")
+    one_again = b.add_assignment(numeric, run_ranges[1], default, [["1.00"]], "written as 1.00", "bob")
+
+    # One deprecated object of each kind, with all four deprecation columns set.
+    retired_dir = b.add_directory("retired", schema6, "A deprecated directory")
+    retired_table = b.add_table("retired_table", schema6, [("v", "double")], comment="A deprecated table")
+    retired_assignment = b.add_assignment(retired_table, run_ranges[0], default, [["2.5"]], "data of a deprecated table")
+    retired_variation = b.add_variation("retired", default, "A deprecated variation")
+    b.session.flush()
+    b.deprecate(retired_dir, "bob", "Moved to /schema6")
+    b.deprecate(retired_table, "bob", "Replaced by /schema6/shared")
+    b.deprecate(retired_variation, "alice", "Calibration pass abandoned")
+
+    # Assignment log records as the provider writes them; the reused set is marked as shared data. The request is
+    # assembled here because Assignment.request reads TypeTable.path, which only the provider fills in.
+    for assignment, table, run_range, author, suffix in ((first, shared, run_ranges[0], "test_user", ""),
+                                                         (second, shared, run_ranges[1], "alice", " (shared data)"),
+                                                         (one, numeric, run_ranges[0], "test_user", ""),
+                                                         (one_again, numeric, run_ranges[1], "bob", ""),
+                                                         (retired_assignment, retired_table, run_ranges[0], "test_user", "")):
+        request = "/schema6/{0}:{1}:default:{2}".format(table.name, run_range.min, assignment.created.strftime("%Y-%m-%d_%H-%M-%S"))
+        b.add_log(author, "create", "assignments{0}|constantSets{1}".format(assignment.id, assignment.constant_set.id),
+                  "Created assignment '{0}'{1}".format(request, suffix), assignment.comment)
+
+    # Tags: one at the creation time of the newest assignment of the fixture, one in the past. snapshotTime is a UTC
+    # instant while assignments.created has no zone: fixture_newest sits exactly at assignment 3618 only when the
+    # reader takes created as UTC, so a test that resolves tags against this fixture pins its time zone to UTC.
+    newest = max((first, second, one, one_again, retired_assignment), key=lambda each: each.created)
+    b.add_tag("fixture_newest", default, newest.created, "At the creation time of the newest assignment")
+    b.add_tag("fixture_past", default, at(24 * 60), "A moment inside the fixture's history: 2020-01-02 12:00", "alice")
+
+    # One property of the instance (owner id 0) and one of a table.
+    b.add_property("instance", 0, "experiment", "CCDB web GUI fixture")
+    b.add_property("table", shared.id, "procedure", "Gains from the LED pulser runs", "alice")
 
 
 def sha256_of(path):
