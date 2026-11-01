@@ -14,13 +14,20 @@ What the copy holds:
   - variations: the listed ones and all their parents.
   - assignments: for every table, listed variation and run of the period, the one that
     AlchemyProvider.get_assignment returns: the highest assignment id created at or before --time,
-    falling back to the parent variation while a variation has none. Their constant sets are copied whole.
+    falling back to the parent variation while a variation has none. Their constant sets are copied whole,
+    each once: in CCDB schema 6 assignments of one table may share a set.
   - run ranges: clipped to the period. A range that lies inside the period keeps its row; any other
     range gets a new clipped row, so lookups outside the period find nothing.
   - one log record with the copy parameters. Logs, tags and event ranges are not copied.
   - every column of the source; a column the target schema lacks is added to it.
 
---full copies every row of every table instead (users' passwords are still blanked by default).
+--full copies every row of every table instead (users' passwords are still blanked by default). The schema 5
+link table (variationsToTags, or variations_has_tags on SQLite and hallddb) is copied only when the source and the
+target have it; a fresh schema 6 target does not.
+
+Source and target are CCDB schema 6. The target gets the unique index of constantSets (constantTypeId, sha256)
+after the rows are in; a source upgraded from schema 5 that still holds duplicate sets gives the target the
+interim index ix_constantSets_table_sha256 instead, as `ccdb db upgrade` does.
 --per-run selects assignments with one get_assignment call per table, variation and run: the
 reference method, slow on real databases, used to check the default one.
 
@@ -47,17 +54,21 @@ from ccdb.path_utils import parse_time
 from ccdb.provider import AlchemyProvider
 from ccdb.sql.mysql_schema import mysql_tables
 from ccdb.sql.sqlite_schema import _iter_statements, sqlite_init_script
+# The unique index of constantSets, created after the copy (finish_target), and the interim index used instead
+# while the copied sets hold duplicates; the names `ccdb db upgrade` gives them
+from ccdb.sql.update_v6 import UNIQUE_INDEX, INTERIM_INDEX
 
 log = logging.getLogger("ccdb_shallow_copy")
 
-SUPPORTED_SCHEMA_VERSION = 5
+SUPPORTED_SCHEMA_VERSION = 6
 
 # Tables copied by every mode, in an order that keeps references valid
 METADATA_TABLES = ["schemaVersions", "users", "directories", "typeTables", "columns"]
 
-# Every CCDB table; --full copies all of them in this order
+# Every CCDB table; --full copies all of them in this order. The link tables of schema 5 are copied only when
+# both databases have them.
 ALL_TABLES = METADATA_TABLES + ["variations", "runRanges", "eventRanges", "constantSets", "assignments",
-                                "logs", "tags", "variations_has_tags"]
+                                "logs", "tags", "timeRanges", "properties", "variations_has_tags", "variationsToTags"]
 
 # Rows per INSERT batch and ids per "IN (...)" list
 CHUNK_SIZE = 500
@@ -272,24 +283,32 @@ def prepare_target(target_connection_string, overwrite):
             raise CopyError("Target database already has CCDB tables ({0}). Use an empty database; "
                             "--overwrite works with SQLite files only.".format(", ".join(sorted(existing))))
 
+    # The schema without the unique index of constantSets: finish_target creates it once the rows are in
     with engine.begin() as connection:
         if is_sqlite(engine):
             for statement in _iter_statements(sqlite_init_script):
-                if not statement.lstrip().upper().startswith("INSERT"):
+                if not statement.lstrip().upper().startswith("INSERT") and UNIQUE_INDEX not in statement:
                     connection.execute(text(statement))
         else:
             for table in mysql_tables.values():
                 if "create" in table:
                     connection.execute(text(table["create"]))
+            connection.execute(text("ALTER TABLE `constantSets` DROP INDEX `{0}`".format(UNIQUE_INDEX)))
     return engine
 
 
 def finish_target(engine):
-    """ANALYZE gives the SQLite query planner real row counts"""
-    if not is_sqlite(engine):
-        return
+    """The index (constantTypeId, sha256) of constantSets: unique, or the interim one while a table holds equal
+    sets. ANALYZE gives the SQLite query planner real row counts."""
+    quote = engine.dialect.identifier_preparer.quote
     with engine.begin() as connection:
-        connection.execute(text("ANALYZE"))
+        duplicates = connection.execute(text("SELECT 1 FROM constantSets GROUP BY constantTypeId, sha256 "
+                                             "HAVING COUNT(*) > 1 LIMIT 1")).first()
+        name = INTERIM_INDEX if duplicates else UNIQUE_INDEX
+        connection.execute(text("CREATE {0}INDEX {1} ON constantSets (constantTypeId, sha256)".format(
+            "" if duplicates else "UNIQUE ", quote(name))))
+        if is_sqlite(engine):
+            connection.execute(text("ANALYZE"))
 
 
 # --------------------------------------------------------------------------------------------------
@@ -645,8 +664,9 @@ def full_copy(source_url, target_url, overwrite=False, copy_passwords=False):
     copier = RowCopier(source, target)
     report = {"source": hide_password(source_url), "target": hide_password(target_url), "method": "full",
               "added_columns": copier.extend_target_columns(), "rows": {}, "seconds": {}}
+    target_tables = set(inspect(target).get_table_names())
     for table in ALL_TABLES:
-        if table not in copier.source_tables:
+        if table not in copier.source_tables or table not in target_tables:
             continue
         table_started = time.monotonic()
         hook = (lambda row: row.update(password=None)) if table == "users" and not copy_passwords else None

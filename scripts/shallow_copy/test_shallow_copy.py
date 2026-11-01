@@ -26,7 +26,7 @@ import ccdb_shallow_copy as shallow  # noqa: E402
 import verify_shallow_copy  # noqa: E402
 
 from ccdb.errors import ObjectIsNotFoundInDbError  # noqa: E402
-from ccdb.model import INFINITE_RUN, TypeTable  # noqa: E402
+from ccdb.model import INFINITE_RUN, TypeTable, vault_digest  # noqa: E402
 from ccdb.provider import AlchemyProvider  # noqa: E402
 
 BASE_TIME = datetime.datetime(2020, 1, 1, 12, 0, 0)
@@ -54,7 +54,7 @@ class SourceBuilder:
         self.path = path
         shallow.prepare_target("sqlite:///" + path, overwrite=True).dispose()
         self.connection = sqlite3.connect(path)
-        self.execute("INSERT INTO schemaVersions VALUES (1, 5)")
+        self.execute("INSERT INTO schemaVersions VALUES (1, 6)")
         self.execute("INSERT INTO users (id, created, lastActionTime, name, password, roles, info, isDeleted) "
                      "VALUES (1, '2014-01-01 00:00:00', '2014-01-01 00:00:00', 'anonymous', NULL, '', 'default user', 0)")
         self.execute("INSERT INTO users (id, created, lastActionTime, name, password, roles, info, isDeleted) "
@@ -83,14 +83,18 @@ class SourceBuilder:
         self.execute("INSERT INTO runRanges (id, name, runMin, runMax, comment) VALUES (?, ?, ?, ?, 'range')", range_id, name, run_min, run_max)
         return range_id
 
-    def add_assignment(self, table_id, variation_id, range_id, created, vault=None, assignment_id=None):
+    def add_assignment(self, table_id, variation_id, range_id, created, vault=None, assignment_id=None, constant_set_id=None):
+        """An assignment with its own constant set (id = assignment id), or sharing constant_set_id"""
         assignment_id = assignment_id or self.next_assignment_id
         self.next_assignment_id = max(self.next_assignment_id, assignment_id) + 1
-        vault = vault if vault is not None else "{0}|{1}".format(assignment_id, assignment_id * 1.5)
-        self.execute("INSERT INTO constantSets (id, created, modified, vault, constantTypeId) VALUES (?, ?, ?, ?, ?)",
-                     assignment_id, stamp(created), stamp(created), vault, table_id)
+        if constant_set_id is None:
+            constant_set_id = assignment_id
+            vault = vault if vault is not None else "{0}|{1}".format(assignment_id, assignment_id * 1.5)
+            sha256, size = vault_digest(vault)
+            self.execute("INSERT INTO constantSets (id, created, modified, vault, constantTypeId, sha256, size) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                         constant_set_id, stamp(created), stamp(created), vault, table_id, sha256, size)
         self.execute("INSERT INTO assignments (id, created, modified, variationId, runRangeId, constantSetId, authorId, comment) "
-                     "VALUES (?, ?, ?, ?, ?, ?, 1, 'assignment')", assignment_id, stamp(created), stamp(created), variation_id, range_id, assignment_id)
+                     "VALUES (?, ?, ?, ?, ?, ?, 1, 'assignment')", assignment_id, stamp(created), stamp(created), variation_id, range_id, constant_set_id)
         return assignment_id
 
     def close(self):
@@ -290,7 +294,7 @@ class TestHandPickedCases(ShallowCopyTestBase):
         report = self.copy(100, 200, ["mc"], self.copy_time)
         self.assertEqual(rows(self.target_path, "SELECT vault FROM constantSets WHERE id = {0}".format(self.hostile)), [(HOSTILE_VAULT,)])
         self.assertEqual(rows(self.target_path, "SELECT name, password FROM users ORDER BY id"), [("anonymous", None), ("expert", None)])
-        self.assertEqual(rows(self.target_path, "SELECT schemaVersion FROM schemaVersions"), [(5,)])
+        self.assertEqual(rows(self.target_path, "SELECT schemaVersion FROM schemaVersions"), [(6,)])
         self.assertEqual(rows(self.target_path, "SELECT comment FROM directories WHERE id = 1"), [("dir <b>&</b>",)])
         self.assertEqual(rows(self.target_path, "SELECT created FROM assignments WHERE id = {0}".format(self.old_wide)), [(stamp(BASE_TIME),)])
         log_rows = rows(self.target_path, "SELECT description, comment FROM logs")
@@ -360,6 +364,7 @@ class TestHandPickedCases(ShallowCopyTestBase):
                              rows(self.target_path, "SELECT * FROM {0} ORDER BY 1".format(table)), table)
         self.assertEqual(rows(self.target_path, "SELECT password FROM users WHERE id = 2"), [(None,)])
         self.assertEqual(report["rows"]["assignments"], 9)
+        self.assertNotIn("variations_has_tags", report["rows"])    # a fresh schema 6 target has no link table
 
     def test_command_line(self):
         report_path = os.path.join(self.tmp.name, "report.json")
@@ -370,6 +375,45 @@ class TestHandPickedCases(ShallowCopyTestBase):
         self.assertEqual(shallow.main([source, target, "--run-min", "100"]), 2)          # target exists
         self.assertEqual(shallow.main([source, target, "--run-min", "1", "--overwrite", "--per-run", "--run-max", "100000",
                                        "--time-limit", "0.1"]), 3)
+
+
+class TestSharedConstantSets(ShallowCopyTestBase):
+    """Schema 6 sources whose assignments share constant sets"""
+
+    def test_shared_constant_sets(self):
+        """Schema 6: assignments of one table share a set; each set is copied once, and the target has the unique index"""
+        builder = SourceBuilder(self.source_path)
+        wide = builder.add_range(0, INFINITE_RUN, "all runs")
+        first = builder.add_assignment(1, 1, wide, BASE_TIME, vault="7|7.5")
+        sharer = builder.add_assignment(1, 2, wide, BASE_TIME + datetime.timedelta(days=1), constant_set_id=first)
+        builder.close()
+
+        report = self.copy(100, 200, ["default", "mc"])
+        self.assertEqual((report["assignments"], report["constant_sets"]), (2, 1))
+        self.assertEqual(rows(self.target_path, "SELECT id, constantSetId FROM assignments ORDER BY id"), [(first, first), (sharer, first)])
+        self.assertEqual(rows(self.target_path, "SELECT id, vault, sha256, size FROM constantSets"),
+                         [(first, "7|7.5") + vault_digest("7|7.5")])
+        indexes = {row[0]: row[1] for row in rows(self.target_path, "SELECT name, sql FROM sqlite_master WHERE type = 'index'")}
+        self.assertIn("CREATE UNIQUE INDEX", indexes.get(shallow.UNIQUE_INDEX, ""))
+        self.assert_copy_matches_source(100, 200, ["default", "mc"], None)
+
+        full_target = os.path.join(self.tmp.name, "full.sqlite")
+        report = shallow.full_copy("sqlite:///" + self.source_path, "sqlite:///" + full_target)
+        self.assertEqual(report["rows"]["constantSets"], 1)
+        self.assertEqual(rows(full_target, "SELECT id, constantSetId FROM assignments ORDER BY id"), [(first, first), (sharer, first)])
+
+    def test_source_with_duplicate_sets_gets_the_interim_index(self):
+        """An upgraded source before `db dedup` may hold equal sets in one table: the full copy keeps them and the
+        target gets the interim index, as the upgrade gives the source"""
+        builder = SourceBuilder(self.source_path)
+        wide = builder.add_range(0, INFINITE_RUN, "all runs")
+        builder.add_assignment(1, 1, wide, BASE_TIME, vault="7|7.5")
+        builder.add_assignment(1, 2, wide, BASE_TIME, vault="7|7.5")
+        builder.close()
+        shallow.full_copy("sqlite:///" + self.source_path, "sqlite:///" + self.target_path)
+        indexes = {row[0] for row in rows(self.target_path, "SELECT name FROM sqlite_master WHERE type = 'index'")}
+        self.assertIn(shallow.INTERIM_INDEX, indexes)
+        self.assertNotIn(shallow.UNIQUE_INDEX, indexes)
 
 
 class TestVerify(ShallowCopyTestBase):
