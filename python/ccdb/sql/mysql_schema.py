@@ -1,6 +1,25 @@
-from sqlalchemy import text
-from sqlalchemy.exc import SQLAlchemyError
+"""MySQL and MariaDB schema and standard content for CCDB (schema version 6).
 
+`mysql_tables` holds, per table, the statement that drops it, the one that creates it and the seed rows.
+It is the MySQL twin of sqlite_schema.py, and `sql/ccdb.mysql.sql` of the repository is generated from it by
+generate_mysql_sql_file(); edit this module, then regenerate the file from the repository root:
+
+    python -m ccdb.sql.mysql_schema sql/ccdb.mysql.sql
+
+The file must hold no semicolon outside statement ends: ccdb.testing.recreate_mysql_db2 splits it at every one.
+
+Schema 6:
+- every table is InnoDB with utf8mb4_general_ci as its default, and every character column names its charset and
+  collation, since on MySQL 8 a column that names only `CHARACTER SET utf8mb4` gets utf8mb4_0900_ai_ci;
+- constantSets.sha256 (ascii_bin: a compact, case-sensitive key) and .size, with the unique index
+  (constantTypeId, sha256);
+- assignments.timeRangeId, columns.units, deprecatedTime and deprecationComment on directories, typeTables and
+  variations; `tags` in its new shape, and the new tables timeRanges and properties;
+- the link table variationsToTags is no longer created; `db init` still drops it.
+"""
+import textwrap
+
+from sqlalchemy import text
 
 mysql_tables = {
 
@@ -12,19 +31,22 @@ mysql_tables = {
                 `id` INT NOT NULL AUTO_INCREMENT,
                 `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                `vault` LONGTEXT NOT NULL,
+                `vault` LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
                 `constantTypeId` INT NOT NULL,
+                `sha256` CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+                `size` INT UNSIGNED NOT NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-                INDEX `fk_constantSets_constantTypes1_idx` (`constantTypeId` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+                INDEX `fk_constantSets_constantTypes1_idx` (`constantTypeId` ASC),
+                UNIQUE INDEX `uq_constantSets_table_sha256` (`constantTypeId` ASC, `sha256` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
-            "INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (1, '2012-07-30 23:48:42', '2012-07-30 23:48:42', '1.11|1.991211|10.002|2.001|2.9912|20.111', 1);",
-            "INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (2, '2012-08-30 23:48:42', '2012-08-30 23:48:42', '1.0|2.0|3.0|4.0|5.0|6.0', 1);",
-            "INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (3, '2012-09-30 23:48:42', '2012-09-30 23:48:42', '10|20|30', 2);",
-            "INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (4, '2012-10-30 23:48:42', '2012-10-30 23:48:42', '2.2|2.3|2.4|2.5|2.6|2.7', 1);",
-            "INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`) VALUES (5, '2012-11-30 23:48:43', '2012-11-30 23:48:43', '10|11|12|13|14|15', 1);",
+            "INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`, `sha256`, `size`) VALUES (1, '2012-07-30 23:48:42', '2012-07-30 23:48:42', '1.11|1.991211|10.002|2.001|2.9912|20.111', 1, 'b62adcd1b5639b6967455ac6a6c3cd7c3783b255f668f90d72ba6bba8d38cfb6', 40);",
+            "INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`, `sha256`, `size`) VALUES (2, '2012-08-30 23:48:42', '2012-08-30 23:48:42', '1.0|2.0|3.0|4.0|5.0|6.0', 1, '9c6697ea9cdaa6f51daa65dc4c2308c157519b563962342dc2d19205f52e4785', 23);",
+            "INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`, `sha256`, `size`) VALUES (3, '2012-09-30 23:48:42', '2012-09-30 23:48:42', '10|20|30', 2, '460cfda750b2e85b51d5ee6d7b8f390635a61c25763daca5a2592ba7849340ce', 8);",
+            "INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`, `sha256`, `size`) VALUES (4, '2012-10-30 23:48:42', '2012-10-30 23:48:42', '2.2|2.3|2.4|2.5|2.6|2.7', 1, '55d35b501c1a5775b00fe77c00e7195ebe4d0b1b513ec0948d60df9cba239346', 23);",
+            "INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeId`, `sha256`, `size`) VALUES (5, '2012-11-30 23:48:43', '2012-11-30 23:48:43', '10|11|12|13|14|15', 1, 'b2ceb52d6aa9cc8b4957a0d1d5f72da10b12652a97755a83fa8119aee7a24903', 17);",
 
         ]
     },
@@ -41,16 +63,18 @@ mysql_tables = {
                 `runRangeId` INT NULL,
                 `eventRangeId` INT NULL,
                 `authorId` INT NOT NULL DEFAULT 1,
-                `comment` TEXT NULL,
+                `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
                 `constantSetId` INT NOT NULL,
+                `timeRangeId` INT NULL DEFAULT NULL,
                 PRIMARY KEY (`id`),
-                INDEX `fk_assignments_variations1_idx` (`variationId` ASC) VISIBLE,
-                INDEX `fk_assignments_runRanges1_idx` (`runRangeId` ASC) VISIBLE,
-                INDEX `fk_assignments_eventRanges1_idx` (`eventRangeId` ASC) VISIBLE,
-                UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-                INDEX `date_sort_index` USING BTREE (`created`) VISIBLE,
-                INDEX `fk_assignments_constantSets1_idx` (`constantSetId` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                INDEX `fk_assignments_variations1_idx` (`variationId` ASC),
+                INDEX `fk_assignments_runRanges1_idx` (`runRangeId` ASC),
+                INDEX `fk_assignments_eventRanges1_idx` (`eventRangeId` ASC),
+                UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+                INDEX `date_sort_index` USING BTREE (`created`),
+                INDEX `fk_assignments_constantSets1_idx` (`constantSetId` ASC),
+                INDEX `fk_assignments_timeRanges1_idx` (`timeRangeId` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
             "INSERT INTO `assignments` (`id`, `created`, `modified`, `variationId`, `runRangeId`, `eventRangeId`, `authorId`, `comment`, `constantSetId`) VALUES (1, '2012-07-30 23:48:42', '2012-07-30 23:48:42', 1, 1, NULL, 2, 'Test assignment for software tests', 1);",
@@ -67,14 +91,14 @@ mysql_tables = {
                 `id` INT NOT NULL AUTO_INCREMENT,
                 `created` TIMESTAMP NOT NULL DEFAULT 20070101000000,
                 `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `name` VARCHAR(45) NULL DEFAULT '',
+                `name` VARCHAR(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '',
                 `runMin` INT NOT NULL,
                 `runMax` INT NOT NULL,
-                `comment` TEXT NULL DEFAULT NULL,
+                `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-                INDEX `run search` (`runMin` ASC, `runMax` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+                INDEX `run search` (`runMin` ASC, `runMax` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
             "INSERT INTO `runRanges` (`id`, `created`, `modified`, `name`, `runMin`, `runMax`, `comment`) VALUES (1, DEFAULT, DEFAULT, 'all', 0, 2147483647, 'Default runrange that covers all runs');",
@@ -92,10 +116,10 @@ mysql_tables = {
                 `runNumber` INT NOT NULL,
                 `eventMin` INT NOT NULL,
                 `eventMax` INT NOT NULL,
-                `comment` TEXT NULL DEFAULT NULL,
+                `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE INDEX `ideventRanges_UNIQUE` (`id` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                UNIQUE INDEX `ideventRanges_UNIQUE` (`id` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
             "INSERT INTO `eventRanges` (`id`, `created`, `modified`, `runNumber`, `eventMin`, `eventMax`, `comment`) VALUES (1, DEFAULT, DEFAULT, 1, 0, 1000, 'test');"
@@ -109,10 +133,10 @@ mysql_tables = {
                 `id` INT NOT NULL AUTO_INCREMENT,
                 `created` TIMESTAMP NOT NULL DEFAULT 20070101000000,
                 `modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `name` VARCHAR(100) NOT NULL DEFAULT 'default',
-                `description` VARCHAR(255) NULL,
+                `name` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'default',
+                `description` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
                 `authorId` INT NOT NULL DEFAULT 1,
-                `comment` TEXT NULL DEFAULT NULL,
+                `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
                 `parentId` INT NOT NULL DEFAULT 1,
                 `isLocked` TINYINT(1) NOT NULL DEFAULT 0,
                 `lockTime` TIMESTAMP NULL DEFAULT NULL,
@@ -121,11 +145,13 @@ mysql_tables = {
                 `goBackTime` TIMESTAMP NULL DEFAULT NULL,
                 `isDeprecated` TINYINT(1) NOT NULL DEFAULT 0,
                 `deprecatedByUserId` INT NULL DEFAULT NULL,
+                `deprecatedTime` DATETIME NULL DEFAULT NULL,
+                `deprecationComment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-                INDEX `name_search` USING HASH (`name`) VISIBLE,
-                INDEX `fk_variations_variations1_idx` (`parentId` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+                INDEX `name_search` USING HASH (`name`),
+                INDEX `fk_variations_variations1_idx` (`parentId` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
             "INSERT INTO `variations` (`id`, `created`, `modified`, `name`, `description`, `authorId`, `comment`, `parentId`, `isLocked`, `lockTime`, `lockedByUserId`, `goBackBehavior`, `goBackTime`, `isDeprecated`, `deprecatedByUserId`) VALUES (1, DEFAULT, DEFAULT, 'default', 'Default variation', 2, 'Default variation', 0, DEFAULT, NULL, NULL, DEFAULT, NULL, DEFAULT, NULL);",
@@ -142,18 +168,20 @@ mysql_tables = {
                 `id` INT NOT NULL AUTO_INCREMENT,
                 `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                `name` VARCHAR(255) NOT NULL DEFAULT '',
+                `name` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
                 `parentId` INT NOT NULL DEFAULT 0,
                 `authorId` INT NOT NULL DEFAULT 1,
-                `comment` TEXT NULL DEFAULT NULL,
+                `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
                 `isDeprecated` TINYINT(1) NOT NULL DEFAULT 0,
                 `deprecatedByUserId` INT NULL DEFAULT NULL,
                 `isLocked` TINYINT(1) NOT NULL DEFAULT 0,
                 `lockedByUserId` INT NULL,
+                `deprecatedTime` DATETIME NULL DEFAULT NULL,
+                `deprecationComment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
                 PRIMARY KEY (`id`),
-                INDEX `fk_directories_directories1_idx` (`parentId` ASC) VISIBLE,
-                UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                INDEX `fk_directories_directories1_idx` (`parentId` ASC),
+                UNIQUE INDEX `id_UNIQUE` (`id` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
             "INSERT INTO `directories` (`id`, `created`, `modified`, `name`, `parentId`, `authorId`, `comment`, `isDeprecated`, `deprecatedByUserId`, `isLocked`, `lockedByUserId`) VALUES (1, DEFAULT, DEFAULT, 'test', 0, 2, 'Soft test directory', DEFAULT, NULL, DEFAULT, NULL);",
@@ -169,21 +197,23 @@ mysql_tables = {
                 `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
                 `directoryId` INT NOT NULL,
-                `name` VARCHAR(255) NOT NULL,
+                `name` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
                 `nRows` INT NOT NULL DEFAULT 1,
                 `nColumns` INT NOT NULL,
                 `nAssignments` INT NOT NULL DEFAULT 0,
                 `authorId` INT NOT NULL DEFAULT 1,
-                `comment` TEXT NULL DEFAULT NULL,
+                `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
                 `isDeprecated` TINYINT(1) NOT NULL DEFAULT 0,
                 `deprecatedByUserId` INT NULL DEFAULT NULL,
                 `isLocked` TINYINT(1) NOT NULL DEFAULT 0,
                 `lockedByUserId` INT NULL DEFAULT NULL,
                 `lockTime` TIMESTAMP NULL DEFAULT NULL,
+                `deprecatedTime` DATETIME NULL DEFAULT NULL,
+                `deprecationComment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-                INDEX `fk_constantTypes_directories1_idx` (`directoryId` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+                INDEX `fk_constantTypes_directories1_idx` (`directoryId` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
             "INSERT INTO `typeTables` (`id`, `created`, `modified`, `directoryId`, `name`, `nRows`, `nColumns`, `nAssignments`, `authorId`, `comment`, `isDeprecated`, `deprecatedByUserId`, `isLocked`, `lockedByUserId`, `lockTime`) VALUES (1, DEFAULT, DEFAULT, 3, 'test_table', 2, 3, 2, 2, 'Test type', DEFAULT, NULL, DEFAULT, NULL, NULL);",
@@ -197,15 +227,16 @@ mysql_tables = {
                 `id` INT NOT NULL AUTO_INCREMENT,
                 `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
-                `name` VARCHAR(45) NOT NULL,
+                `name` VARCHAR(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
                 `typeId` INT NOT NULL,
-                `columnType` ENUM('int', 'uint','long','ulong','double','string','bool') NULL,
+                `columnType` ENUM('int', 'uint','long','ulong','double','string','bool') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
                 `order` INT NOT NULL,
-                `comment` TEXT NULL DEFAULT NULL,
+                `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+                `units` VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-                INDEX `fk_columns_constantTypes1_idx` (`typeId` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+                INDEX `fk_columns_constantTypes1_idx` (`typeId` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
             "INSERT INTO `columns` (`id`, `created`, `modified`, `name`, `typeId`, `columnType`, `order`, `comment`) VALUES (DEFAULT, DEFAULT, DEFAULT, 'x', 1, 'double', 0, NULL);",
@@ -217,29 +248,62 @@ mysql_tables = {
         ]
     },
 
+    # Snapshot tags (D27): a name that resolves to a variation at a UTC instant. Read by nothing in PHASE0.
     "tags": {
         "drop": "DROP TABLE IF EXISTS `tags` ;",
         "create": """
             CREATE TABLE IF NOT EXISTS `tags` (
                 `id` INT NOT NULL AUTO_INCREMENT,
-                `name` VARCHAR(45) NOT NULL,
+                `name` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                `variationId` INT NOT NULL,
+                `snapshotTime` DATETIME NOT NULL,
+                `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+                `authorId` INT NOT NULL DEFAULT 1,
+                `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
-                UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+                UNIQUE INDEX `uq_tags_name` (`name` ASC),
+                INDEX `fk_tags_variations1_idx` (`variationId` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
 
         ]
     },
-    "variationsToTags": {
-        "drop": "DROP TABLE IF EXISTS `variationsToTags` ;",
+
+    # Reserved validity-time axis (D31): written and read by nothing in 2.5. timeTo NULL is an open end.
+    "timeRanges": {
+        "drop": "DROP TABLE IF EXISTS `timeRanges` ;",
         "create": """
-            CREATE TABLE IF NOT EXISTS `variationsToTags` (
-                `variations_id` INT NOT NULL,
-                `tags_id` INT NOT NULL,
-                PRIMARY KEY (`variations_id`, `tags_id`),
-                INDEX `fk_variations_has_tags_tags1_idx` (`tags_id` ASC) VISIBLE)
-                ENGINE = MyISAM;
+            CREATE TABLE IF NOT EXISTS `timeRanges` (
+                `id` INT NOT NULL AUTO_INCREMENT,
+                `timeFrom` DATETIME NOT NULL,
+                `timeTo` DATETIME NULL DEFAULT NULL,
+                `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+                PRIMARY KEY (`id`))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
+        """,
+        "data": [
+
+        ]
+    },
+
+    # Instance and object metadata (D29). ownerType: instance | directory | table | variation | column, as free text
+    # so a new kind needs no migration; ownerId is 0 for the instance.
+    "properties": {
+        "drop": "DROP TABLE IF EXISTS `properties` ;",
+        "create": """
+            CREATE TABLE IF NOT EXISTS `properties` (
+                `id` INT NOT NULL AUTO_INCREMENT,
+                `ownerType` VARCHAR(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                `ownerId` INT NOT NULL,
+                `name` VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                `value` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                `authorId` INT NOT NULL DEFAULT 1,
+                `modified` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (`id`),
+                UNIQUE INDEX `uq_properties_owner_name` (`ownerType` ASC, `ownerId` ASC, `name` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
 
@@ -254,14 +318,14 @@ mysql_tables = {
                 `id` INT NOT NULL AUTO_INCREMENT,
                 `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `lastActionTime` TIMESTAMP NOT NULL DEFAULT 00010101000000,
-                `name` VARCHAR(100) NOT NULL,
-                `password` VARCHAR(100) NULL,
-                `roles` TEXT NOT NULL,
-                `info` VARCHAR(125) NOT NULL,
+                `name` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                `password` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+                `roles` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                `info` VARCHAR(125) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
                 `isDeleted` TINYINT(1) NOT NULL DEFAULT 0,
                 PRIMARY KEY (`id`),
-                UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                UNIQUE INDEX `id_UNIQUE` (`id` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
             "INSERT INTO `users` (`id`, `created`, `lastActionTime`, `name`, `password`, `roles`, `info`, `isDeleted`) VALUES (1, DEFAULT, DEFAULT, 'anonymous', NULL, '', 'User anonymous is a default user for CCDB. It has no modify privilegies', 0);",
@@ -275,15 +339,15 @@ mysql_tables = {
             CREATE TABLE IF NOT EXISTS `logs` (
                 `id` INT NOT NULL AUTO_INCREMENT,
                 `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `affectedIds` TEXT NOT NULL,
-                `action` VARCHAR(7) NOT NULL,
-                `description` VARCHAR(255) NOT NULL,
-                `comment` TEXT NULL,
+                `affectedIds` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                `action` VARCHAR(7) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                `description` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+                `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
                 `authorId` INT NOT NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-                INDEX `fk_logs_users1_idx` (`authorId` ASC) VISIBLE)
-                ENGINE = MyISAM;
+                UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+                INDEX `fk_logs_users1_idx` (`authorId` ASC))
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
             "INSERT INTO `logs` (`id`, `created`, `affectedIds`, `action`, `description`, `comment`, `authorId`) VALUES (1, DEFAULT, 'users_1', 'create', 'Created user anonymous', 'User anonymous is a default user for CCDB. It has no modify privilegies', 1);"
@@ -296,10 +360,10 @@ mysql_tables = {
                 `id` INT NOT NULL,
                 `schemaVersion` INT NOT NULL DEFAULT 1,
                 PRIMARY KEY (`id`))
-                ENGINE = MyISAM;
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
         """,
         "data": [
-            "INSERT INTO `schemaVersions` (`id`, `schemaVersion`) VALUES (1, 5);"
+            "INSERT INTO `schemaVersions` (`id`, `schemaVersion`) VALUES (1, 6);"
         ]
     },
     "assignmentsMaterializedView": {
@@ -316,7 +380,7 @@ mysql_tables = {
                 `runMax` INT NOT NULL,
                 `assignmentTime` TIMESTAMP NOT NULL,
                 PRIMARY KEY (`id`))
-                ENGINE = MyISAM;
+                ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci;
     """,
         "data": [
 
@@ -325,63 +389,79 @@ mysql_tables = {
 }
 
 
+# Tables of schema 5 that schema 6 no longer creates; `db init` drops them so a re-initialized database is fresh
+mysql_obsolete_tables = ["variationsToTags"]
+
+
+def mysql_init_statements(tables_dict=None):
+    """Every statement of a fresh initialization, in order: drops, creates and seed rows, table by table"""
+    if tables_dict is None:
+        tables_dict = mysql_tables
+    # the database default as the upgrade sets it, so a table created later without its own charset is utf8mb4 too
+    yield "ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;"
+    for table_name in mysql_obsolete_tables:
+        yield f"DROP TABLE IF EXISTS `{table_name}` ;"
+    for commands in tables_dict.values():
+        if 'drop' in commands:
+            yield commands['drop']
+        if 'create' in commands:
+            yield commands['create']
+        for insert_query in commands.get('data', []):
+            yield insert_query
+
+
 def init_mysql_database(engine, tables_dict=None):
     """
-    Setup a database schema and fill it with data based on the provided dictionary.
+    Drops and recreates the CCDB tables and fills them with the standard content. ALL DATA IS LOST.
 
-    :param engine: SQLAlchemy engine or connection to the database.
-    :param tables_dict: A dictionary containing the SQL commands to drop, create tables, and insert data.
+    Each DDL statement commits implicitly on MySQL, so a failure leaves the tables processed before it in place;
+    the final commit makes the last seed rows durable, and the first error is raised so a half-initialized database
+    cannot pass for a fresh one.
+
+    :param engine: SQLAlchemy engine of the database.
+    :param tables_dict: table definitions in the shape of mysql_tables; mysql_tables when None.
+    """
+    with engine.begin() as connection:
+        for statement in mysql_init_statements(tables_dict):
+            connection.execute(text(statement))
+
+
+def generate_mysql_sql_file(file_path, tables_dict=None):
+    """
+    Writes the statements of init_mysql_database as an SQL file for the `mysql` client, such as
+    sql/ccdb.mysql.sql of the repository, which docker images load into an empty database.
+
+    :param file_path: path of the .sql file to write.
+    :param tables_dict: table definitions in the shape of mysql_tables; mysql_tables when None.
     """
     if tables_dict is None:
         tables_dict = mysql_tables
-
-    with engine.connect() as connection:
-        for table_name, commands in tables_dict.items():
-            try:
-                # Drop the existing table if it exists
-                if 'drop' in commands:
-                    connection.execute(text(commands['drop']))
-
-                # Create the table
-                if 'create' in commands:
-                    connection.execute(text(commands['create']))
-
-                # Insert data into the table
-                if 'data' in commands:
-                    for insert_query in commands['data']:
-                        connection.execute(text(insert_query))
-
-                print(f"Table {table_name} processed successfully.")
-            except SQLAlchemyError as e:
-                print(f"Error processing table '{table_name}': {str(e)}")
-
-
-def generate_mysql_sql_file(tables_dict, file_path='mysql_setup.sql'):
-    """
-    Generate a MySQL .sql file with drop, create, and insert commands
-    based on the provided dictionary.
-
-    :param tables_dict: Dictionary with table definitions and operations.
-    :param file_path: Path to the .sql file to be generated.
-    """
     with open(file_path, 'w') as sql_file:
+        sql_file.write("-- CCDB schema version 6 with the standard content.\n"
+                       "-- Generated by ccdb.sql.mysql_schema.generate_mysql_sql_file from python/ccdb/sql/mysql_schema.py:\n"
+                       "-- Edit that module and regenerate, never this file, from the repository root with\n"
+                       "--   python -m ccdb.sql.mysql_schema sql/ccdb.mysql.sql\n\n"
+                       "SET NAMES utf8mb4;\n\n"
+                       "-- The database default as the upgrade sets it\n"
+                       "ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci ;\n\n")
+        for table_name in mysql_obsolete_tables:
+            sql_file.write(f"-- Schema 5 link table, no longer part of the schema\n"
+                           f"DROP TABLE IF EXISTS `{table_name}` ;\n\n")
         for table_name, commands in tables_dict.items():
-            sql_file.write(f"-- Processing table: {table_name}\n")
-
-            # Drop the existing table if it exists
+            sql_file.write(f"-- Table `{table_name}`\n")
             if 'drop' in commands:
-                sql_file.write(f"{commands['drop']}\n")
-
-            # Create the table
+                sql_file.write(commands['drop'] + "\n")
             if 'create' in commands:
-                sql_file.write(f"{commands['create']}\n")
+                # the definitions are indented for this module; the file gets them flush left
+                lines = textwrap.dedent(commands['create'].strip("\n")).splitlines()
+                sql_file.write("\n".join(line for line in lines if line.strip()) + "\n")
+            for insert_query in commands.get('data', []):
+                sql_file.write(insert_query + "\n")
+            sql_file.write("\n")
 
-            # Insert data into the table
-            if 'data' in commands:
-                for insert_query in commands['data']:
-                    sql_file.write(f"{insert_query}\n")
 
-            # Add a separator for readability
-            sql_file.write("\n\n")
-
-    print(f"SQL file '{file_path}' has been generated successfully.")
+if __name__ == "__main__":
+    import sys
+    path = sys.argv[1] if len(sys.argv) > 1 else "ccdb.mysql.sql"
+    generate_mysql_sql_file(path)
+    print(f"Generated {path}")

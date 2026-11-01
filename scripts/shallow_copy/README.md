@@ -48,12 +48,20 @@ win at `--time`.
 - The listed variations and their parents.
 - For every table, listed variation and run: the assignment `get_assignment` returns, which is the
   highest assignment id created at or before `--time`, with fallback to the parent variation.
-  Each such assignment comes with its constant set.
+  Each such assignment comes with its constant set; a set that several copied assignments share
+  (CCDB schema 6) is copied once.
 - Run ranges clipped to the period. A range inside the period keeps its row. A wider range gets a
   new row, with an id above the source maximum and a comment naming the original.
 - `typeTables.nAssignments` recounted for the copy.
 - One log record with the copy parameters. Source logs, tags and event ranges are not copied.
 - Every column of the source. A column the target schema lacks is added to the target.
+- The index `(constantTypeId, sha256)` of `constantSets`, created after the rows are in: unique, or the
+  interim `ix_constantSets_table_sha256` when the source still holds equal sets in one table (a database
+  upgraded to schema 6 before `ccdb db dedup`).
+
+Source and target are CCDB schema 6. `--full` copies the schema 5 link table (`variationsToTags`, or
+`variations_has_tags` on SQLite and hallddb) only when the source and the target have it; a target the
+script creates does not.
 
 ## How the selection works
 
