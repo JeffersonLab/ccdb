@@ -14,7 +14,7 @@ The reader and root variables are the test connections of §14.1: tests needing 
 (item 8). The helpers of this module are shared with unit_test_dedup and unit_test_rehash.
 
 Contracts of §14.1 these tests rely on: `db upgrade`, `db dedup`, `db rollback-v6` and `db rehash` exit 0 on success
-and 1 on a refusal, a collision or a mismatch (`rehash --apply` 0 when it repaired every mismatch); no command prompts;
+and 1 on a refusal, a collision or a mismatch (`rehash --rehash-i-am-sure` 0 when it repaired every mismatch); no command prompts;
 the upgrade and the rollback write no `logs` row; an SQLite upgrade refuses while `<file>.v5` exists.
 """
 import hashlib
@@ -53,8 +53,8 @@ except ImportError:
 ENV_MYSQL_READER = "CCDB_TEST_MYSQL_READER_CONNECTION"
 ENV_MYSQL_ROOT = "CCDB_TEST_MYSQL_ROOT_CONNECTION"
 
-UPGRADE = "db upgrade --upgrade-i-am-sure --backup-taken"
-ROLLBACK = "db rollback-v6 --i-am-sure"
+UPGRADE = "db upgrade --upgrade-i-am-sure"
+ROLLBACK = "db rollback-v6 --rollback-i-am-sure"
 BACKFILL_BATCH = 500        # §6.3 step 2 and §6.4 step 2: LIMIT 500, one commit per batch
 
 
@@ -674,6 +674,28 @@ class SQLiteUpgradeV6Test(RollbackCases, unittest.TestCase):
         for statement in SQLITE_PARTIAL:
             self.db.execute(statement)
         self.assertEqual(self.db.version(), 5)
+
+    def test_confirmation_flags(self):
+        """§10, §14.1 "confirmation": without its --<verb>-i-am-sure flag the upgrade and the rollback change nothing,
+        name the flag and exit 1; the upgrade warns about the backup, as 2.4 does, and no command makes one"""
+        db = self.db
+        db.build_v5()
+        original_hash = file_sha256(db.path)
+        run = run_ccdb(db.url, "db upgrade")
+        self.assertFalse(run.ok, "a missing --upgrade-i-am-sure is a refusal\n" + run.text())
+        self.assertIn("--upgrade-i-am-sure", run.said())
+        self.assertIn("BACKUP", run.said().upper(), "the upgrade without its flag warns about the backup")
+        self.assertNotIn("--backup-taken", run.said())
+        self.assertEqual(file_sha256(db.path), original_hash, "the upgrade without its flag changed the file")
+        self.assertEqual(db.version(), 5)
+
+        self.upgrade()
+        upgraded = db.structure(with_charset=True)
+        run = run_ccdb(db.url, "db rollback-v6")
+        self.assertFalse(run.ok, "a missing --rollback-i-am-sure is a refusal\n" + run.text())
+        self.assertIn("--rollback-i-am-sure", run.said())
+        self.assertEqual(db.version(), 6)
+        self.assertEqual(db.structure(with_charset=True), upgraded)
 
     def test_sqlite_upgrade_copy(self):
         """T21 (§6.4): an interrupted SQLite upgrade leaves the file unchanged; the rerun replaces it atomically, keeps .v5"""

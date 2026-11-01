@@ -4,7 +4,7 @@ The database is the frozen schema 5 base (schema_v5_base.py) plus one non-ASCII 
 a second non-ASCII set is written after the upgrade through create_assignment, so the backfill, the setter and
 rehash all meet. SQLite runs always; MySQL and MariaDB run on the database of CCDB_TEST_MYSQL_CONNECTION when it is
 set, where --server is compared too (see unit_test_upgrade_v6 for the variables). §14.1: `db rehash` exits 1 on a
-mismatch and `rehash --apply` exits 0 when it repaired every mismatch.
+mismatch and `rehash --rehash-i-am-sure` exits 0 when it repaired every mismatch.
 """
 import tempfile
 import unittest
@@ -77,12 +77,12 @@ class RehashCases(object):
         self.check_server_flag(expect_ok=False)
 
         last_log = db.max_log_id()
-        run = v6.run_ccdb(db.url, "db rehash --apply")
-        self.assertTrue(run.ok, "§14.1: rehash --apply exits 0 when it repaired every mismatch\n" + run.text())
+        run = v6.run_ccdb(db.url, "db rehash --rehash-i-am-sure")
+        self.assertTrue(run.ok, "§14.1: rehash --rehash-i-am-sure exits 0 when it repaired every mismatch\n" + run.text())
         sha256, size = db.query("SELECT `sha256`, `size` FROM `constantSets` WHERE `id` = :id", {"id": LATIN_SET})[0]
         self.assertEqual((sha256, size), v6.digest(CHANGED_VAULT))
         records = db.logs_after(last_log)
-        self.assertEqual(len(records), 1, "--apply writes one log record")
+        self.assertEqual(len(records), 1, "--rehash-i-am-sure writes one log record")
         self.assertRegex(records[0][1] + " " + records[0][3], r"\b%d\b|constantSets%d\b" % (LATIN_SET, LATIN_SET),
                          "the record lists the set ids")
         run = v6.run_ccdb(db.url, "db rehash")

@@ -4,9 +4,9 @@ The history is built on the frozen schema 5 base (schema_v5_base.py) with schema
 `ccdb db upgrade`, then deduplicated through the CLI in-process. SQLite runs always; MySQL and MariaDB run on the
 database of CCDB_TEST_MYSQL_CONNECTION when it is set (see unit_test_upgrade_v6 for the variables).
 
-§14.1 contracts used here: `dedup --apply` refuses the whole run before any change while a sha256 is not lowercase hex
-and points to `db rehash --apply`; `rehash --apply` exits 0 when it repaired every mismatch; without PROCESS
-`dedup --apply` needs --no-transaction-check, while `dedup` without --apply runs no preflight beyond the version.
+§14.1 contracts used here: `dedup --dedup-i-am-sure` refuses the whole run before any change while a sha256 is not lowercase hex
+and points to `db rehash --rehash-i-am-sure`; `rehash --rehash-i-am-sure` exits 0 when it repaired every mismatch; without PROCESS
+`dedup --dedup-i-am-sure` needs --no-transaction-check, while `dedup` without it runs no preflight beyond the version.
 """
 import os
 import re
@@ -91,8 +91,8 @@ class DedupCases(object):
         self.assertEqual(db.version(), 6)
 
     def dedup(self, flags=""):
-        """--no-transaction-check only with --apply: §14.1, the report runs no open-transaction check"""
-        no_tx_check = self.db.no_tx_check if "--apply" in flags else ""
+        """--no-transaction-check only with --dedup-i-am-sure: §14.1, the report runs no open-transaction check"""
+        no_tx_check = self.db.no_tx_check if "--dedup-i-am-sure" in flags else ""
         return v6.run_ccdb(self.db.url, "db dedup" + flags + no_tx_check)
 
     def test_dedup(self):
@@ -105,19 +105,19 @@ class DedupCases(object):
         self.assertNotIn(UNIQUE_INDEX, indexes)
 
         # a sha256 that is not 64 lowercase hex characters stops dedup until rehashed: §14.1, the whole run refuses
-        # before any change, table 2 included, and points to `db rehash --apply`
+        # before any change, table 2 included, and points to `db rehash --rehash-i-am-sure`
         db.execute("UPDATE `constantSets` SET `sha256` = '' WHERE `id` = 104")
         before = snapshot(db)
-        run = self.dedup(" --apply --backup-taken")
+        run = self.dedup(" --dedup-i-am-sure")
         self.assertFalse(run.ok, run.text())
         self.assertEqual(snapshot(db), before, "a non-hex sha256 refuses the whole run before any change")
-        self.assertIn("rehash --apply", run.said(), "the refusal points to `db rehash --apply`")
-        run = v6.run_ccdb(db.url, "db rehash --apply")
-        self.assertTrue(run.ok, "§14.1: rehash --apply exits 0 when it repaired every mismatch\n" + run.text())
+        self.assertIn("rehash --rehash-i-am-sure", run.said(), "the refusal points to `db rehash --rehash-i-am-sure`")
+        run = v6.run_ccdb(db.url, "db rehash --rehash-i-am-sure")
+        self.assertTrue(run.ok, "§14.1: rehash --rehash-i-am-sure exits 0 when it repaired every mismatch\n" + run.text())
         sha256, size, vault = db.query("SELECT `sha256`, `size`, `vault` FROM `constantSets` WHERE `id` = 104")[0]
         self.assertEqual((sha256, size), v6.digest(vault))
 
-        # without --apply: a report per table, nothing changed; on MySQL as ccdb_user, who lacks PROCESS, without
+        # without --dedup-i-am-sure: a report per table, nothing changed; on MySQL as ccdb_user, who lacks PROCESS, without
         # --no-transaction-check (§14.1)
         before = snapshot(db)
         resolved_before = resolved_vaults(db)
@@ -126,12 +126,12 @@ class DedupCases(object):
         self.assertIn("test_table", run.output)
         self.assertEqual(snapshot(db), before)
 
-        # --apply needs --backup-taken
+        # --apply is not a flag: only --dedup-i-am-sure changes data (§10)
         run = v6.run_ccdb(db.url, "db dedup --apply" + db.no_tx_check, allow_parse_error=True)
         self.assertFalse(run.ok, run.text())
         self.assertEqual(snapshot(db), before)
 
-        run = self.dedup(" --apply --backup-taken")
+        run = self.dedup(" --dedup-i-am-sure")
         self.assertTrue(run.ok, run.text())
         after = snapshot(db)
         self.assertEqual([row[0] for row in after["sets"]], EXPECTED_SETS)
@@ -157,9 +157,9 @@ class DedupCases(object):
         self.assertNotIn(INTERIM_INDEX, indexes)
 
         settled = snapshot(db)
-        run = self.dedup(" --apply --backup-taken")
+        run = self.dedup(" --dedup-i-am-sure")
         self.assertTrue(run.ok, run.text())
-        self.assertEqual(snapshot(db), settled, "a second --apply changes nothing")
+        self.assertEqual(snapshot(db), settled, "a second --dedup-i-am-sure run changes nothing")
 
 
 class SQLiteDedupTest(DedupCases, unittest.TestCase):
@@ -211,7 +211,7 @@ class SQLiteDedupTest(DedupCases, unittest.TestCase):
 
         event.listen(Engine, "before_cursor_execute", on_statement)
         try:
-            run = v6.run_ccdb(db.url, "db dedup --apply --backup-taken")
+            run = v6.run_ccdb(db.url, "db dedup --dedup-i-am-sure")
         finally:
             event.remove(Engine, "before_cursor_execute", on_statement)
         self.assertTrue(run.ok, run.text())
