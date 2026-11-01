@@ -30,7 +30,6 @@ import re
 import shutil
 import sqlite3
 
-import sqlalchemy
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError, OperationalError
 
@@ -227,15 +226,6 @@ def format_bytes(count):
 # ----------------------------------------------------------------------------------------------------------------
 #  MySQL and MariaDB: one connection with the checks every maintenance command shares
 # ----------------------------------------------------------------------------------------------------------------
-
-def maintenance_connection(engine):
-    """A connection that commits and rolls back by itself, as the maintenance commands need. SQLAlchemy 2.0
-    connections do; 1.4 ones only in its future mode, which the provider's engine does not use, so on 1.4 a future
-    engine is made over the provider's connection pool."""
-    if sqlalchemy.__version__.startswith("1."):
-        engine = sqlalchemy.create_engine(engine.url, future=True, pool=engine.pool)
-    return engine.connect()
-
 
 class MySqlMaintenance:
     """One connection to a CCDB database on MySQL or MariaDB for the `db` maintenance commands: the reads of the
@@ -530,7 +520,7 @@ class MySqlUpgrade(MySqlMaintenance):
     """The upgrade on MySQL or MariaDB"""
 
     def run(self):
-        with maintenance_connection(self.engine) as conn:
+        with self.engine.connect() as conn:
             self.conn = conn
             self.read_server()
             log.info(f"Server: {self.server_version}")
@@ -830,7 +820,7 @@ class MySqlUpgrade(MySqlMaintenance):
     def dry_run(self, duplicates):
         """Prints what the upgrade would do and what its preflight would find, writing nothing. With duplicates "none"
         no statement reads a vault, so it is safe on a production server; it needs only SELECT."""
-        with maintenance_connection(self.engine) as conn:
+        with self.engine.connect() as conn:
             self.conn = conn
             self.read_server()
             tables = self.tables()
