@@ -5,7 +5,7 @@ The CCDB CLI is written in Python, so there are at least two ways to interact wi
 1. Using the **CLI-like API**, which resembles using the `ccdb` command.
 2. Using the so-called **low-level API**.
 
-> Install the library with `pip install ccdb` (see [Installation](../get-started/installation.md)), or
+> Install the library with `pip install ccdb` (see [Installation](get-started/installation.md)), or
 > add `$CCDB_HOME/python` to your `PYTHONPATH` when working from a source checkout.
 
 ## CLI-like API
@@ -33,7 +33,7 @@ Why use it? — If you ever wanted to create ccdb CLI commands programmatically 
 - You don't get results as Python objects (so, for example, you can't read table names and iterate
   over them).
 
-See [CLI-like API](python-cli-like.md) for a full example.
+See [CLI-like API](apis/python-cli-like.md) for a full example.
 
 ## Low-level API
 
@@ -65,7 +65,7 @@ change or delete data, and so on.
   and examples, and make backups!).
 - More complex.
 
-See [low-level API](python-low-level.md) for examples.
+See [low-level API](apis/python-low-level.md) for examples.
 
 ## Where things live
 
@@ -79,4 +79,4 @@ More examples of using the API are in
 [python/tests/provider_fixture.py](https://github.com/JeffersonLab/ccdb/blob/v2-main/python/tests/provider_fixture.py)
 and the [python/examples/](https://github.com/JeffersonLab/ccdb/tree/v2-main/python/examples) folder.
 
-Read next: [CLI-like API](python-cli-like.md) | [Low-level API](python-low-level.md)
+Read next: [CLI-like API](apis/python-cli-like.md) | [Low-level API](apis/python-low-level.md)

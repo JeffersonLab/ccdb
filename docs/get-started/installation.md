@@ -44,8 +44,8 @@ ccdb -i          # interactive ccdb shell
 ccdb ls /        # list the root directory
 ```
 
-> See [Command line interface](../cli.md) for the full `ccdb` command reference and
-> [connection strings](../concepts/concepts.md#connection-strings) for the connection string format.
+> See [Command line interface](cli.md) for the full `ccdb` command reference and
+> [connection strings](concepts/concepts.md#connection-strings) for the connection string format.
 
 ## From source
 
@@ -103,7 +103,7 @@ cmake --build build
 ```
 
 > Older versions of CCDB used SCons. CMake is now the supported build system. See the
-> [C++ API](../apis/cpp.md) page for details.
+> [C++ API](apis/cpp.md) page for details.
 
 ## MySQL
 
@@ -140,10 +140,10 @@ max_allowed_packet=32M
 More on the MySQL database:
 
 - How to make a copy of a MySQL database to your local server is in the
-  [Development](../development/development.md) section.
-- A [MySQL Workbench](https://www.mysql.com/products/workbench/) project with the correct schema,
-  [ccdb_eer_diagram.mwb](https://github.com/JeffersonLab/ccdb/blob/v2-main/sql/ccdb_eer_diagram.mwb),
-  is located in `sql/`.
+  [Development](development/development.md) section.
+- The schema is defined in `python/ccdb/sql/` and documented on
+  [Database schema](concepts/database-schema.md); `sql/ccdb.mysql.sql` is generated from it. The
+  MySQL Workbench model `sql/ccdb_eer_diagram.mwb` does not show schema version 6.
 
 ## Test the installation
 

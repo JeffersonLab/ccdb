@@ -18,7 +18,7 @@ The CCDB C++ implementation consists of separate levels (see the figure above):
 
 - **JANA API** — This level integrates CCDB and the [JANA framework](https://www.jlab.org/JANA/about.php).
   The JANA API is now shipped with the JANA framework. Architecturally it is based on the C++ User API.
-  See [JANA API](jana.md).
+  See [JANA API](apis/jana.md).
 
 - **Internal C++ Library** — This level is considered internal and should only be of interest for
   those contributing to further development of CCDB. Application developers should not use classes from
@@ -28,7 +28,7 @@ The CCDB C++ implementation consists of separate levels (see the figure above):
   general, changes in this library will not affect code that uses the higher-level APIs. That is why
   the internal library should be kept separate and used only inside the higher CCDB levels.
 
-> See [Installation → C++ API](../get-started/installation.md#c-api) for how to build the library.
+> See [Installation → C++ API](get-started/installation.md#c-api) for how to build the library.
 
 ## User API in a nutshell
 
@@ -56,15 +56,15 @@ calib = generator.MakeCalibration("<SAME connection string>");  // Problem: dele
 
 ## Connection to the database
 
-The [ccdb::Calibration](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/include/CCDB/Calibration.h)
+The [ccdb::Calibration](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/src/CCDB/Calibration.h)
 class is responsible for holding a connection with the DB.
 
-- [ccdb::MySQLCalibration](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/include/CCDB/MySQLCalibration.h) and
-- [ccdb::SQLiteCalibration](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/include/CCDB/SQLiteCalibration.h)
+- [ccdb::MySQLCalibration](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/src/CCDB/MySQLCalibration.h) and
+- [ccdb::SQLiteCalibration](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/src/CCDB/SQLiteCalibration.h)
 
 inherit from `Calibration` to provide concrete implementations for MySQL and SQLite.
 
-[ccdb::CalibrationGenerator](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/include/CCDB/CalibrationGenerator.h)
+[ccdb::CalibrationGenerator](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/src/CCDB/CalibrationGenerator.h)
 can be used to automatically instantiate the right `Calibration` type according to the connection
 parameter:
 

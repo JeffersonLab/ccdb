@@ -78,15 +78,20 @@ ccdb db init
 
 ## MySQL and SQLite databases
 
-- The authoritative source of the MySQL schema is the
-  [MySQL Workbench](https://www.mysql.com/products/workbench/) project
-  [ccdb_eer_diagram.mwb](https://github.com/JeffersonLab/ccdb/blob/v2-main/sql/ccdb_eer_diagram.mwb).
-  Every change to the database layout is made here first, then propagated to scripts and SQLite.
-- The Python `ccdb` library has SQL scripts embedded in
-  [python/ccdb/sql](https://github.com/JeffersonLab/ccdb/tree/v2-main/python/ccdb/sql). After a
-  `ccdb_eer_diagram.mwb` change they must be synchronized there too.
-- There are SQL scripts in the `sql` directory, but they are obsolete and will be removed in future
-  versions.
+- The schema is defined in Python:
+  [python/ccdb/sql/mysql_schema.py](https://github.com/JeffersonLab/ccdb/blob/v2-main/python/ccdb/sql/mysql_schema.py)
+  for MySQL and MariaDB and
+  [python/ccdb/sql/sqlite_schema.py](https://github.com/JeffersonLab/ccdb/blob/v2-main/python/ccdb/sql/sqlite_schema.py)
+  for SQLite. `ccdb db init` creates a database from them. A change to the layout is made in both files,
+  with an upgrade step in `python/ccdb/sql/` for existing databases.
+- `sql/ccdb.mysql.sql` is generated from `mysql_schema.py`. To regenerate it, run from the repository
+  root:
+  ```bash
+  python -m ccdb.sql.mysql_schema sql/ccdb.mysql.sql
+  ```
+- The MySQL Workbench model `sql/ccdb_eer_diagram.mwb` is kept as it was; it does not show schema
+  version 6. The other SQL files in `sql/` are older scripts and examples; `ccdb db init` and
+  `ccdb db upgrade` do not use them.
 
 ### Upgrade the CCDB database schema
 
@@ -100,18 +105,19 @@ ccdb db
 ccdb -c mysql://ccdb_user@hallddb.jlab.org/ccdb db
 ```
 
-To update (**NEVER DO THIS ON A PRODUCTION SERVER WITHOUT PRIOR PROPER CHECKS**):
+To upgrade a database to the schema of the installed CCDB, follow
+[Upgrading to CCDB 2.5](deployment/upgrade-2.5.md): it starts with a backup and a dry run, which
+writes nothing:
 
 ```bash
-ccdb db update
-# follow the prompt
+ccdb db upgrade --dry-run
 ```
 
 ### Copy MySQL to a local machine
 
 If you have a local running MySQL and would like to copy a running experiment's CCDB to your local
 machine (if local MySQL is not yet created, follow the
-[MySQL installation instructions](../get-started/installation.md#mysql)):
+[MySQL installation instructions](get-started/installation.md#mysql)):
 
 ```bash
 # 1. Make a dump of the production MySQL database:

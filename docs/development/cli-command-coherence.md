@@ -1,7 +1,7 @@
 # CLI command coherence audit (proposal)
 
 Status: analysis / proposal only, 2026-07. No command changes implemented.
-Companion to [cli-modernization.md](cli-modernization.md); both
+Companion to [cli-modernization.md](development/cli-modernization.md); both
 land naturally with the eventual click port.
 
 ## Current command surface
