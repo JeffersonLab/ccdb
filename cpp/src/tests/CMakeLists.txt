@@ -21,6 +21,7 @@ if (SQLite3_FOUND)
                 "test_SQLiteProvider_Assignments.cc"
                 "test_SQLiteProvider_Connection.cc"
                 "test_SQLiteProvider_Directories.cc"
+                "test_SQLiteProvider_SharedSets.cc"
                 "test_SQLiteProvider_TypeTables.cc"
                 "test_SQLiteProvider_Variations.cc"
                 "test_TimeProvider.cc"
