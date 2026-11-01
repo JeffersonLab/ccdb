@@ -196,7 +196,11 @@ class ModelV6Test(unittest.TestCase):
     # -- T13 -------------------------------------------------------------------------------------
 
     def test_set_survives_deleting_one_sharer(self):
-        """T13, §4.1: deleting one of two sharers keeps the set and the other's link; deleting both keeps it too."""
+        """T13, §4.1: the ORM never deletes a set (no cascade), not even with its last sharer.
+
+        Deleting one of two sharers keeps the set and the other's link; deleting the last keeps the set too.
+        provider.delete_assignment deletes a set with its last assignment by an explicit statement (§5.2).
+        """
         table, variation, run_range, user = self._seed_objects()
 
         constant_set = ConstantSet()
@@ -226,7 +230,8 @@ class ModelV6Test(unittest.TestCase):
             self.assertEqual([a.id for a in survivor.assignments], [second_id])
             self.assertEqual(session.get(Assignment, second_id).constant_set.vault, "7|8|9|10|11|12")
 
-        # deleting the last sharer leaves an unused set; only rm -t or db dedup remove those (§5.2, §7)
+        # deleting the last sharer through the ORM leaves an unused set; provider.delete_assignment would delete it
+        # by an explicit statement (§5.2), and db dedup and rm -t remove unused sets (§5.2, §7)
         self.session.delete(self.session.get(Assignment, second_id))
         self.session.commit()
         self.assertEqual(self._count_sets(), sets_before)
