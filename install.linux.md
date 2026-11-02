@@ -1,169 +1,68 @@
-  S T E P   1   -   E N V I R O N M E N T
-=========================================
+# Installing CCDB on Linux
 
-One must have CCDB_HOME variable pointitng to the root of CCDB package. 
-You can run script located at root of CCDB:
+The full guide, with every option, is the documentation page
+[Installation](https://jeffersonlab.github.io/ccdb/#/get-started/installation); its source is
+`docs/get-started/installation.md` in this repository. This file is the short form.
 
-##RUN CODE:
+## Python library and the `ccdb` command
 
-     source environment.bash
+```bash
+python -m pip install ccdb            # add the web GUI with "ccdb[web]"
+```
 
-The script will determine it's path and set all needed directories to run and link ccdb.
+Or, from this repository without installing: `source environment.bash`. It sets `CCDB_HOME`
+and adds `$CCDB_HOME/bin` to `PATH`, `$CCDB_HOME/python` to `PYTHONPATH` and `$CCDB_HOME/lib` to
+`LD_LIBRARY_PATH`.
 
-Or you can setup environment manually
+To log changes under your name, set `CCDB_USER` when your login differs from `$USER`.
 
-##CODE FOR .bashrc:
+## C++ library
 
-    #set CCDB environment
-    export CCDB_HOME=/path/to/ccdb/home/directory
+Requirements: CMake 3.16 or newer, a C++ compiler, the SQLite 3 development package; for MySQL
+connections the MySQL or MariaDB client development package.
 
-    export LD_LIBRARY_PATH="$CCDB_HOME/lib":$LD_LIBRARY_PATH
-    export PYTHONPATH="$CCDB_HOME/python":$PYTHONPATH
-    export PATH="$CCDB_HOME/bin":$
+```bash
+# Debian, Ubuntu
+apt-get install cmake g++ libsqlite3-dev libmysqlclient-dev
+# Fedora, RHEL, AlmaLinux
+dnf install cmake gcc-c++ sqlite-devel mysql-devel
+```
 
+To build and install the library into `$CCDB_HOME` (`lib`, `include`, `bin`), run:
 
+```bash
+cd $CCDB_HOME
+cmake -S cpp -B build -DCMAKE_INSTALL_PREFIX=$CCDB_HOME
+cmake --build build -j8
+cmake --install build
+```
 
-  S T E P   2   -  M A K E
-==========================
+Without the MySQL client package, or with `-DCMAKE_DISABLE_FIND_PACKAGE_MySQL=ON`, the library reads
+SQLite only. Other projects use it with `find_package(ccdb 2.5 CONFIG REQUIRED)` and the target
+`ccdb::ccdb`; `cpp/README.md` has the details.
 
- make ccdb library for your system. 
- There two options of building CCDB:
- 1. With SQLite and MySQL support (default)
- 2. With SQLite support only. 
- 
- Since MySql is supposed to be a main central database, MySQL+SQLite is used by default. 
- However compiling SQLite only version, doesn't require any dependencies except pthread.
- 
- 1. To compile CCDB by default:
+## MySQL database
 
-##RUN CODE:
+Skip this section unless you run your own CCDB server. Create the database and a user, then create
+the CCDB tables with the `ccdb` command:
 
-    cd $CCDB_HOME
-    scons
-    
-    
- 2. To compile CCDB with no MySQL dependencies and SQLite support only
+```sql
+CREATE DATABASE ccdb;
+CREATE USER 'ccdb_user'@'localhost';
+GRANT ALL PRIVILEGES ON ccdb.* TO 'ccdb_user'@'localhost';
+```
 
-##RUN CODE:
+```bash
+ccdb -c mysql://ccdb_user@localhost/ccdb db init --init-i-am-sure
+```
 
-    cd $CCDB_HOME
-    scons mysql=no
-    
- 3. To compile with clang, one can use 'clang=yes' flag
- 
-##RUN CODE:
-    cd $CCDB_HOME
-    scons clang=yes
+Large tables need a larger `max_allowed_packet`, for example `max_allowed_packet=32M` in the `[mysqld]`
+section of `/etc/my.cnf`.
 
- 
+## Check the installation
 
-  S T E P   3   -   M Y S Q L
-=============================
- 
- (!) SKIP this step if you are NOT going to install and develop MySQL CCDB 
-     database on Your computer. 
-    
- (!) One should definately skip this step if one compiled CCDB with only SQLite support
- 
-
- If You would like to install database on the local machine, you need to create
- a database (by default it is ment to be called ccdb). 
- mysql script $CCDB_HOME/sql/ccdb.mysql.sql generates schema for you. 
- MySQL-Workbench project with mysql schema is located in the same directory. 
-
-##RUN CODE:
-
-      mysql -u root -p <$CCDB_HOME/sql/ccdb.mysql.sql
- 
- By default CCDB tries to connect by using 'ccdb_user' user name with no password 
- So one might whant to create such user. 
- 
- To create the user for development purposes use sql command like this
-
-##RUN CODE:
-
-     mysql -u root -p 
-     CREATE USER 'ccdb_user'@'localhost';
-     GRANT ALL PRIVILEGES ON ccdb.* TO 'ccdb_user'@'localhost';
-     exit;
-
-
- Adjust mysql configuration *max_allowed_packet* for bigger value i.e 32M in order
- to be able to get large data tables from the CCDB, set   
-   max_allowed_packet=32M 
-  to [mysqld] section of /etc/my.cnf
-  
-  if you don't have /etc/my.cnf in your system yet, create one and add [mysqld] in the 
-  beginning.
-
-
-	 
-  A F T E R   I N S T A L L
-===========================
- To test the CCDB installed correctly one might run CCDB unit tests
-
-##RUN CODE:
-
-     . $CCDB_HOME/bin/test_ccdb_lib
-     . $CCDB_HOME/bin/test_ccdb_python
-
-You should see ccdb unit test running and successfully complete.
-
-
-To test python is working you may run ccdbcmd 
-
-#RUN CODE:
-
-     ccdb -i
-
-interactive ccdb shell should be started
-
- In order to log changes it is HIGHLY desirable to let CCDB know yout CUE user
- name. If your CUE user is not the same as $USER variable, please define
- CCDB_USER environment variable as your CUE username.
- 
-##INCERT INTO .bashrc:
- 
-     export CCDB_USER=<your CUE login>
-
- 
-Instructions of building website is in $CCDB_HOME/web/install.txt
-
-
-
-  F E D O R A   D E P E N D E N C I E S
-=======================================
-The packages needed to compile CCDB for Fedora:
-(Tested on Fedora 14, Fedora 15, RHEL 6)
-
-##RUN CODE:
-
-     yum install scons mysql-server mysql-devel python-devel
-
-If you haven't configured mysql server:
-
-##RUN CODE:
-
-     service mysqld start
-     mysqladmin -u root -h password 'your-password'
-
-
-
-   U B U N T U   D E P E N D E N C I E S
-=====================================
-
-The packages needed to compile CCDB for Ubuntu:
-(tested on ubuntu 11.10, mint 12)
-
-##RUN CODE:
-	 apt-get install mysql-server scons libmysqlclient-dev
-
-
- 
-  C O N T A C T S
-===================
-Any questions, suggestions or discussions:
-
-Dmitry romanov
-JLab id: romanov
-757-269-6931
+```bash
+ccdb -c sqlite:///$HOME/ccdb_test.sqlite db init --init-i-am-sure
+ccdb -c sqlite:///$HOME/ccdb_test.sqlite ls /test/test_vars
+CCDB_TEST_SQLITE_CONNECTION=sqlite:///$HOME/ccdb_test.sqlite $CCDB_HOME/bin/ccdb_tests "~[mysql]"
+```
