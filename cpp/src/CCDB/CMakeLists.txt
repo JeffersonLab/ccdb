@@ -28,7 +28,14 @@ add_library(ccdb SHARED
         Providers/DataProvider.cc
         )
 
-target_include_directories(ccdb PUBLIC "${PROJECT_SOURCE_DIR}/..")
+# The name consumers use, also inside a build that adds this directory with add_subdirectory
+add_library(ccdb::ccdb ALIAS ccdb)
+
+# Sources and consumers include headers as <CCDB/...>: from the source tree while building, from
+# <prefix>/include once installed (the headers go to <prefix>/include/CCDB below)
+target_include_directories(ccdb PUBLIC
+        "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/..>"
+        "$<INSTALL_INTERFACE:include>")
 set_target_properties(ccdb PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 option(CCDB_CACHE_ON "Enable CCDB cache support" OFF)
@@ -48,8 +55,8 @@ if (SQLite3_FOUND)
     message(STATUS "SQLite3_LIBRARY     = ${SQLite3_LIBRARY}")
     message(STATUS "SQLite3_VERSION     = ${SQLite3_VERSION}")
 
-    target_include_directories(ccdb SYSTEM PRIVATE ${SQLite3_INCLUDE_DIR})
-    target_link_libraries(ccdb PUBLIC ${SQLite3_LIBRARY})
+    # The imported target keeps the installed package relocatable: ccdbConfig.cmake finds SQLite3 again
+    target_link_libraries(ccdb PUBLIC SQLite::SQLite3)
     target_sources(ccdb PRIVATE
             SQLiteCalibration.cc
             Providers/SQLiteDataProvider.cc
@@ -136,6 +143,11 @@ install(DIRECTORY "${PROJECT_SOURCE_DIR}/" # source directory
         FILES_MATCHING # install only matched files
         PATTERN "*.h" # select header files
 )
-install(TARGETS ccdb DESTINATION lib)
+# lib, not GNUInstallDirs' lib64 on RHEL: the 2.4 layout that build scripts expect. The export set is
+# written out as ccdbTargets.cmake by the top-level CMakeLists.txt.
+install(TARGETS ccdb EXPORT ccdbTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin)
 #
 #message(STATUS "===END OF CCDB CMAKE====")

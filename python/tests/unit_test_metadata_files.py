@@ -1,8 +1,10 @@
-"""The repository's license and citation files (PHASE3 item 1; plan D14).
+"""The repository's license and citation files (PHASE3 item 1; plan D14) and the C++ package version (item 2).
 
 `LICENSE` carries the GPL version 2 text, `CITATION.cff` and `.zenodo.json` describe the software for GitHub's
 "Cite this repository" and for Zenodo. The license they state must be the one `pyproject.toml` declares, and the
 version in `CITATION.cff` must be `ccdb.version.version`, so a release that bumps one without the other fails here.
+The C++ library's CMake package (`find_package(ccdb 2.5 CONFIG)`) takes its version from `project(... VERSION)` in
+`cpp/CMakeLists.txt`, which must be the release `ccdb.version.version_tuple` names.
 The files live at the repository root, two levels above this directory; the tests run from a checkout.
 """
 import json
@@ -57,6 +59,11 @@ class MetadataFilesTest(unittest.TestCase):
         self.assertEqual(zenodo["license"], citation["license"])
         self.assertEqual([creator["name"] for creator in zenodo["creators"]],
                          ["{0}, {1}".format(author["family-names"], author["given-names"]) for author in citation["authors"]])
+
+    def test_cpp_package_version(self):
+        match = re.search(r"^project\(ccdb_main\s+VERSION\s+(\d+)\.(\d+)\.(\d+)\)", read_text("cpp/CMakeLists.txt"), re.MULTILINE)
+        self.assertIsNotNone(match, "cpp/CMakeLists.txt names no project version")
+        self.assertEqual(tuple(int(part) for part in match.groups()), ccdb.version.version_tuple)
 
 
 if __name__ == '__main__':

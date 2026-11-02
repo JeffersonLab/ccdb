@@ -48,3 +48,47 @@ jobs:
       # server and CCDB_TEST_MYSQL_CONNECTION, provided by the mysql-tests workflow
       - name: Run tests (SQLite only, MySQL cases excluded by tag)
         run: ./cpp/build/src/tests/ccdb_tests "~[mysql]"
+
+  # A project outside the tree finds the installed library with find_package(ccdb 2.5 CONFIG REQUIRED)
+  # (cpp/examples/consumer) and reads a table through it
+  cpp-consumer:
+    runs-on: ubuntu-latest
+    env:
+      CCDB_TEST_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/consumer_test.sqlite"
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ libsqlite3-dev
+
+      - name: Install ccdb python package
+        run: pip install .
+
+      - name: Create test database (ccdb db init)
+        run: ccdb -c "$CCDB_TEST_SQLITE_CONNECTION" db init --init-i-am-sure
+
+      - name: Build and install CCDB to a prefix
+        run: |
+          cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release -DCCDB_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$RUNNER_TEMP/ccdb"
+          cmake --build cpp/build -j"$(nproc)"
+          cmake --install cpp/build
+          ls -R "$RUNNER_TEMP/ccdb/lib/cmake"
+
+      - name: Build the consumer against the installed package
+        run: |
+          cmake -S cpp/examples/consumer -B consumer-build -DCMAKE_PREFIX_PATH="$RUNNER_TEMP/ccdb"
+          cmake --build consumer-build
+
+      - name: Read a table through the consumer
+        run: |
+          consumer-build/ccdb_consumer "$CCDB_TEST_SQLITE_CONNECTION" /test/test_vars/test_table | tee consumer.out
+          grep -q "^/test/test_vars/test_table: 2 rows, 3 columns$" consumer.out
+          grep -q "^2.2 2.3 2.4$" consumer.out
