@@ -12,6 +12,8 @@
 - [Concepts illustrated](concepts/concepts.md)
 - [Connection strings](concepts/concepts.md#connection-strings)
 - [Constant sets and their hashes](concepts/constant-sets.md)
+- [Tags](concepts/tags.md)
+- [Deprecation](concepts/deprecation.md)
 - [Database schema](concepts/database-schema.md)
 - [Streaming readout and runs](concepts/streaming-readout.md)
 
