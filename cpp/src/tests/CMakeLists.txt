@@ -22,6 +22,7 @@ if (SQLite3_FOUND)
                 "test_SQLiteProvider_Connection.cc"
                 "test_SQLiteProvider_Directories.cc"
                 "test_SQLiteProvider_SharedSets.cc"
+                "test_SQLiteProvider_Tags.cc"
                 "test_SQLiteProvider_TypeTables.cc"
                 "test_SQLiteProvider_Variations.cc"
                 "test_TimeProvider.cc"
@@ -42,6 +43,7 @@ if (MySQL_FOUND)
                 "test_MySQLProvider_Directories.cc"
                 "test_MySQLProvider_Other.cc"
                 "test_MySQLProvider_RunRanges.cc"
+                "test_MySQLProvider_Tags.cc"
                 "test_MySQLProvider_TypeTables.cc"
                 "test_MySQLProvider_Variations.cc"
         )

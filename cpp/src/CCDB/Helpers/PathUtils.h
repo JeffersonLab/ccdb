@@ -47,6 +47,8 @@ struct RequestParseResult
 	time_t Time;               /// Time stampt
 	bool   WasParsedTime;      /// true if time stampt was not empty
     std::string TimeString;         /// Original string with time
+    std::string Tag;                /// Tag name, the part after '@' (CCDB 2.5)
+    bool   WasParsedTag;       /// true if the request names a tag. Variation is then "@" + Tag
 };
 
 /** @brief represents parse result of JANA context
@@ -122,9 +124,16 @@ public:
      * /path/to/data - just path to date, no run, variation and timestamp specified
      * /path/to/data::mc - no run or date specified.
      * /path/to/data:::2029 - only path and date
+     * /path/to/data@mytag, /path/to/data:1000@mytag - a tag (CCDB 2.5)
+     *
+     * A tag replaces both variation and time. The parsed result then has
+     * WasParsedTag=true, Tag="mytag" and also Variation="@mytag" with WasParsedVariation=true,
+     * so that callers which pass the variation to DataProvider::GetAssignmentShort
+     * carry the tag to the provider unchanged.
      *
 	 * @parameter [in] requestStr - user request
 	 * @return structure that represent user result
+	 * @throw std::invalid_argument if a tag is combined with a variation or a time, or its name is empty
 	 */
 	static RequestParseResult ParseRequest(const std::string& requestStr);
 
