@@ -149,10 +149,11 @@ class WebGuiAppTest(unittest.TestCase):
 
         event.listen(Engine, "before_cursor_execute", count)
         try:
+            # The not-found page needs no data; /doc did too until it showed the instance properties.
             client = app.test_client()
-            client.get("/doc")
+            client.get("/no/such/page")
             first = len(counted)
-            client.get("/doc")
+            client.get("/no/such/page")
             self.assertEqual(first, 1, "the first request runs the schema check and nothing else")
             self.assertEqual(len(counted), 1, "a view that needs no data runs no query")
         finally:
