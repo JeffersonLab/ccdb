@@ -116,6 +116,10 @@ another set of their table only in how the numbers are written, and they stay se
 Text from `ccdb add` is stored as the file writes it. The Python API stores a Python number as Python
 prints it, so the float `1.00` becomes `1.0`.
 
+## Shared data in the web GUI
+
+An assignment page shows the SHA-256 and the size of its data and links the other assignments that use the same constant set under **Same data as**. A table's list of assignments marks a row whose data is shared with ×N, the number of assignments that use it.
+
 ## Hash collisions
 
 Two different texts with the same SHA-256 have never been found. If a table holds a set with the
