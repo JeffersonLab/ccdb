@@ -1,4 +1,5 @@
-{#- The variations table; also the live-search fragment. The golden comparison reads cells 0 (name) and 2 (comment). -#}
+{#- The variations table; also the live-search fragment. The golden comparison reads cells 0 (name) and 2 (comment).
+    A deprecated variation (shown with deprecated=all) is muted, its name badged, its comment followed by the deprecation line. -#}
 <div id="table-fragment">
   <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
     <p class="text-body-secondary small m-0" data-total="{{ page.total }}" data-pages="{{ page.pages }}">
@@ -21,10 +22,10 @@
       </thead>
       <tbody>
         {% for row in page.items %}
-        <tr>
-          <td class="fw-medium">{{ row.name }}</td>
+        <tr{% if row.is_deprecated %} class="deprecated"{% endif %}>
+          <td class="fw-medium">{{ row.name }}{% if row.is_deprecated %} <span class="badge rounded-pill text-bg-secondary deprecated-badge">deprecated</span>{% endif %}</td>
           <td class="text-nowrap">{{ row.created }}</td>
-          <td>{{ row.comment }}</td>
+          <td>{{ row.comment }}{% if row.is_deprecated %} <span class="d-block small">Deprecated {{ row.deprecated_time.strftime('%Y-%m-%d %H:%M:%S') if row.deprecated_time }}{{ ' by ' ~ row.deprecated_by if row.deprecated_by }}{% if row.deprecation_comment %}: {{ row.deprecation_comment }}{% endif %}</span>{% endif %}</td>
           {#- Long chains collapse to root › … › last two; the ellipsis is a <details> summary that expands the full chain in place. -#}
           {%- set levels = chains.get(row.name, []) %}
           <td class="text-body-secondary chain">
@@ -38,7 +39,7 @@
           </td>
           <td>{{ row.author }}</td>
           {#- The eye opens the comparison with the parent; the root has no parent and no eye. Last column, so the golden reader's cell indexes hold. -#}
-          <td class="text-end">{% if row.parent %}<a class="btn btn-sm btn-outline-secondary py-0" href="{{ url_for('compare_variations', variation=row.name) }}" title="Tables with assignments in {{ row.name }}, compared with {{ row.parent }}" aria-label="Compare {{ row.name }} with {{ row.parent }}"><svg class="ico"><use href="#i-eye"/></svg></a>{% endif %}</td>
+          <td class="text-end">{% if row.parent %}<a class="btn btn-sm btn-outline-secondary py-0" href="{{ url_for('compare_variations', variation=row.name, **deprecated_args()) }}" title="Tables with assignments in {{ row.name }}, compared with {{ row.parent }}" aria-label="Compare {{ row.name }} with {{ row.parent }}"><svg class="ico"><use href="#i-eye"/></svg></a>{% endif %}</td>
         </tr>
         {% endfor %}
       </tbody>

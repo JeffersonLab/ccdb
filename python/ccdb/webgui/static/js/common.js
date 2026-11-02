@@ -67,4 +67,22 @@ if (button) {
   });
 }
 
+// "Show deprecated" lives in the URL (deprecated=all), so every view stays shareable. The choice is remembered and
+// applied again when a list view with the switch opens without the argument.
+const DEPRECATED_KEY = 'ccdb-deprecated';
+const deprecatedSwitch = document.querySelector('[data-deprecated-switch]');
+if (deprecatedSwitch) {
+  const shown = deprecatedSwitch.dataset.deprecatedSwitch === 'all';
+  deprecatedSwitch.addEventListener('click', () => {
+    try { shown ? localStorage.removeItem(DEPRECATED_KEY) : localStorage.setItem(DEPRECATED_KEY, 'all'); } catch (e) { /* storage blocked */ }
+  });
+  let remembered = false;
+  try { remembered = localStorage.getItem(DEPRECATED_KEY) === 'all'; } catch (e) { /* storage blocked */ }
+  const url = new URL(location.href);
+  if (remembered && !shown && !url.searchParams.has('deprecated')) {
+    url.searchParams.set('deprecated', 'all');
+    location.replace(url);
+  }
+}
+
 initTheme();

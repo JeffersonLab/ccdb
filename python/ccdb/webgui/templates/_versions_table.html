@@ -24,13 +24,13 @@
       </thead>
       <tbody>
         {% for row in page.items %}
-        <tr data-label="{{ row.created }} · {{ row.variation }} · run {{ row.run_min }}">
+        <tr data-label="{{ row.created }} · {{ row.variation }} · run {{ row.run_min }}"{% if row.variation_deprecated %} class="deprecated"{% endif %}>
           <td class="pick-cell"><input type="checkbox" class="form-check-input pick" value="{{ row.request }}" aria-label="Pick {{ row.request }}"></td>
           <td class="cell-mono text-body-secondary" title="Database id; the short link is /assignments/{{ row.id }}">{{ row.id }}</td>
           <td class="cell-mono">{{ row.run_min }}</td>
           <td class="cell-mono">{{ '∞' if row.run_max == INFINITE_RUN else row.run_max }}</td>
           <td class="text-nowrap">{{ row.created }}</td>
-          <td>{{ row.variation }}</td>
+          <td>{{ row.variation }}{% if row.variation_deprecated %} <span class="badge rounded-pill text-bg-secondary deprecated-badge" title="Deprecated variation">deprecated</span>{% endif %}</td>
           <td>{{ row.author }}</td>
           <td class="text-truncate" style="max-width: 24rem" title="{{ row.comment }}">{{ row.comment }}</td>
           <td class="text-end text-nowrap">

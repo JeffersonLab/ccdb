@@ -1,0 +1,32 @@
+{#- Deprecation marks of directories, tables and variations (`ccdb deprecate`). List views hide deprecated
+    objects unless the URL carries deprecated=all, the "Show deprecated" switch; shown, they are muted and badged.
+    A direct link to a deprecated object (versions page, request string) always works. -#}
+
+{#- The switch is a link to the same view with deprecated=all added or removed, so it works without JavaScript;
+    common.js remembers the choice. -#}
+{% macro switch() -%}
+{%- set shown = show_deprecated() -%}
+<a class="form-check form-switch m-0 link-body-emphasis text-decoration-none deprecated-switch" role="switch" aria-checked="{{ 'true' if shown else 'false' }}"
+   href="{{ switch_url(deprecated=None if shown else 'all') }}" data-deprecated-switch="{{ 'all' if shown else 'hidden' }}">
+  <input class="form-check-input" type="checkbox" tabindex="-1" aria-hidden="true"{% if shown %} checked{% endif %}>
+  <span class="form-check-label">Show deprecated</span>
+</a>
+{%- endmacro %}
+
+{% macro badge(item) -%}
+{%- if item.is_deprecated %}<span class="badge rounded-pill text-bg-secondary deprecated-badge" title="Deprecated{{ item.deprecated_time.strftime(' %Y-%m-%d') if item.deprecated_time }}: {{ item.deprecation_comment or '' }}">deprecated</span>{% endif -%}
+{%- endmacro %}
+
+{#- The notice at the top of a deprecated object's own page. -#}
+{% macro notice(item, deprecated_by) -%}
+{%- if item.is_deprecated %}
+<div class="alert alert-warning py-2" id="deprecation-notice" role="note"><strong>Deprecated</strong> {{ item.deprecated_time.strftime('%Y-%m-%d %H:%M:%S') if item.deprecated_time }}{{ ' by ' ~ deprecated_by if deprecated_by }}{% if item.deprecation_comment %}: {{ item.deprecation_comment }}{% endif %}</div>
+{%- endif %}
+{%- endmacro %}
+
+{#- One info-panel row: when, by whom and why. deprecated_by is the user name behind deprecated_by_user_id. -#}
+{% macro info_row(item, deprecated_by) -%}
+{%- if item.is_deprecated %}
+<tr class="deprecation"><th scope="row">Deprecated</th><td>{{ item.deprecated_time.strftime('%Y-%m-%d %H:%M:%S') if item.deprecated_time else 'yes' }}{{ ' by ' ~ deprecated_by if deprecated_by }}{% if item.deprecation_comment %}: {{ item.deprecation_comment }}{% endif %}</td></tr>
+{%- endif %}
+{%- endmacro %}

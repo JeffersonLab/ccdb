@@ -14,6 +14,7 @@ attribute on tree items). When the templates change, update the readers; the gol
 """
 import argparse
 import datetime
+import html as html_module
 import json
 import re
 import sqlite3
@@ -75,6 +76,7 @@ DIFF_PAGES = {  # label in pages.py -> (golden key, view, the lines the page ren
 DIFF_PAGE_SIZE = 200
 LOG_RECORDS = {"log_record": 2414, "log_record_hostile": 14, "log_record_directory": 13, "log_record_table": 2415,
                "log_record_variation": 2416, "log_record_deleted": 2417}   # label in pages.py -> log id
+DEPRECATED_INFO = {"dir_info_retired": 42, "table_info_retired": 1012}   # label in pages.py -> id of the deprecated object
 VERSIONS = {"versions_big": pages.BIG_TABLE, "versions_small": pages.SMALL_TABLE, "versions_deep": pages.DEEP_TABLE,
             "versions_hostile": pages.HOSTILE_TABLE, "versions_unicode": pages.UNICODE_TABLE, "versions_shared": pages.SHARED_TABLE}
 COMPARES = {  # label in pages.py -> (variation, parent or None for the direct parent, run, time text as the page takes it)
@@ -124,7 +126,7 @@ def shown_stamp(text):
 
 def assignments_of(db, table_id):
     sql = """SELECT a.id, a.created, a.comment, r.runMin, r.runMax, v.name AS variation, u.name AS author, c.vault,
-                    a.constantSetId, c.sha256, c.size
+                    a.constantSetId, c.sha256, c.size, v.isDeprecated AS variationDeprecated
              FROM assignments a JOIN constantSets c ON c.id = a.constantSetId JOIN runRanges r ON r.id = a.runRangeId
              JOIN variations v ON v.id = a.variationId JOIN users u ON u.id = a.authorId
              WHERE c.constantTypeId = ? ORDER BY a.id DESC"""
@@ -137,14 +139,22 @@ def compute(space):
     dirs = directory_paths(db)
     tables = table_paths(db, dirs)
     table_id_by_path = {path: table_id for table_id, path in tables.items()}
-    golden = {"tree": {"directories": sorted(dirs.values()), "tables": sorted(tables.values())}}
+    # deprecated directories and tables, and what the tree hides by default: those and everything inside a hidden directory
+    deprecated_dirs = {dirs[row[0]] for row in db.execute("SELECT id FROM directories WHERE isDeprecated")}
+    deprecated_tables = {tables[row[0]] for row in db.execute("SELECT id FROM typeTables WHERE isDeprecated")}
+    def hidden(path):
+        return any(path == d or path.startswith(d + "/") for d in deprecated_dirs)
+    golden = {"tree": {"directories": sorted(p for p in dirs.values() if not hidden(p)),
+                       "tables": sorted(p for p in tables.values() if p not in deprecated_tables and not hidden(p)),
+                       "all_directories": sorted(dirs.values()), "all_tables": sorted(tables.values()),
+                       "deprecated": sorted(deprecated_dirs | deprecated_tables)}}
 
     # how many assignments use each constant set: more than one is shared data
     sharers = dict(db.execute("SELECT constantSetId, COUNT(*) FROM assignments GROUP BY constantSetId").fetchall())
 
     golden["versions"] = {}
     for label, path in VERSIONS.items():
-        rows = assignments_of(db, table_id_by_path[path])
+        rows = [r for r in assignments_of(db, table_id_by_path[path]) if not r["variationDeprecated"]]  # hidden by default
         golden["versions"][label] = {"path": path, "count": len(rows), "rows": [
             {"id": r["id"], "run_min": r["runMin"], "run_max": r["runMax"], "created": shown_stamp(r["created"]), "variation": r["variation"],
              "request": request_string(path, r["runMin"], r["variation"], parse_stamp(r["created"])),
@@ -199,8 +209,13 @@ def compute(space):
                                        "variation_link": any(int(n) in variation_names for n in re.findall(r"variations_?(\d+)", row["affectedIds"])),
                                        "assignment_link": "/assignments/{0}".format(re.search(r"assignments_?(\d+)", row["affectedIds"]).group(1)) if row["action"] in ("create", "update") and "assignments" in row["affectedIds"] else None}
 
-    variations = db.execute("SELECT v.name, v.created, v.comment, p.name AS parent FROM variations v LEFT JOIN variations p ON p.id = v.parentId ORDER BY v.id").fetchall()
-    golden["variations"] = [{**dict(r), "created": shown_stamp(r["created"])} for r in variations]
+    variations = db.execute("SELECT v.name, v.created, v.comment, p.name AS parent, v.isDeprecated, v.deprecatedTime, v.deprecationComment, u.name AS deprecatedBy "
+                            "FROM variations v LEFT JOIN variations p ON p.id = v.parentId LEFT JOIN users u ON u.id = v.deprecatedByUserId ORDER BY v.id").fetchall()
+    # the list hides deprecated variations by default; with deprecated=all the name carries the badge text and the comment the deprecation line
+    golden["variations"] = [{"name": r["name"], "comment": r["comment"], "created": shown_stamp(r["created"])} for r in variations if not r["isDeprecated"]]
+    golden["variations_deprecated"] = [{"name": r["name"] + (" deprecated" if r["isDeprecated"] else ""), "created": shown_stamp(r["created"]),
+                                        "comment": " ".join(((r["comment"] or "") + (f" Deprecated {shown_stamp(r['deprecatedTime'])} by {r['deprecatedBy']}: {r['deprecationComment']}"
+                                                                                      if r["isDeprecated"] else "")).split())} for r in variations]
 
     # compare variations: the chain segment from SQL on parentId links, then the grouped assignment counts
     parents = {r["name"]: r["parent"] for r in db.execute("SELECT v.name, p.name AS parent FROM variations v LEFT JOIN variations p ON p.id = v.parentId")}
@@ -224,7 +239,9 @@ def compute(space):
             params.append(time_text + " 23:59:59")
         affected = {}
         for row in db.execute(sql + " GROUP BY c.constantTypeId, v.name", params):
-            affected.setdefault(tables[row["table_id"]], {})[row["variation"]] = row["n"]
+            path = tables[row["table_id"]]
+            if path not in deprecated_tables and not hidden(path):  # the page hides deprecated tables by default
+                affected.setdefault(path, {})[row["variation"]] = row["n"]
         golden["compare"][label] = {"segment": segment, "tables": affected}
 
     # compare assignments: the cell-by-cell diff of two assignments straight from their vault blobs
@@ -257,6 +274,18 @@ def compute(space):
     tables_under_dir1 = [table_id for table_id, path in tables.items() if path.startswith(dirs[1] + "/")]
     golden["table_info"] = {**dict(table1), "path": tables[1], **activity([1])}
     golden["dir_info"] = {**dict(dir1), "path": dirs[1], "tables": len(tables_under_dir1), **activity(tables_under_dir1)}
+
+    # the notice on the versions page of a deprecated table: "Deprecated <time> by <user>: <comment>"
+    row = db.execute("SELECT t.deprecatedTime, t.deprecationComment, u.name FROM typeTables t LEFT JOIN users u ON u.id = t.deprecatedByUserId "
+                     "WHERE t.id = ?", (DEPRECATED_INFO["table_info_retired"],)).fetchone()
+    golden["versions_notice"] = {"versions_retired": f"Deprecated {shown_stamp(row[0])} by {row[2]}: {row[1]}", "versions_small": None}
+
+    # the Deprecated row of an info panel: "<time> by <user>: <comment>", for every deprecated object, keyed by its info page
+    golden["deprecation_rows"] = {}
+    for label, kind, table in (("dir_info_retired", "directory", "directories"), ("table_info_retired", "table", "typeTables")):
+        row = db.execute(f"SELECT o.deprecatedTime, o.deprecationComment, u.name FROM {table} o LEFT JOIN users u ON u.id = o.deprecatedByUserId "
+                         f"WHERE o.id = ?", (DEPRECATED_INFO[label],)).fetchone()
+        golden["deprecation_rows"][label] = f"{shown_stamp(row[0])} by {row[2]}: {row[1]}"
     golden_path(space).write_text(json.dumps(golden, indent=1, ensure_ascii=False))
     print(f"{golden_path(space)}: {len(dirs)} directories, {len(tables)} tables, logs {golden['logs']['total']}, "
           f"versions rows {[v['count'] for v in golden['versions'].values()]}")
@@ -309,12 +338,14 @@ class TreeReader(HTMLParser):
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.paths, self.badges = [], {}
+        self.paths, self.badges, self.deprecated = [], {}, []
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == "li" and "data-path" in attrs:
             self.paths.append((attrs["data-path"], attrs.get("data-kind") == "dir"))
+            if "data-deprecated" in attrs:
+                self.deprecated.append(attrs["data-path"])
         elif tag == "a" and "data-variation" in attrs and self.paths:
             self.badges.setdefault(self.paths[-1][0], {})[attrs["data-variation"]] = int(attrs["data-count"])
 
@@ -496,6 +527,16 @@ def compare(space, phase, label, db_url):
         siblings.setdefault(parent, []).append((0 if is_dir else 1, natural_key(name)))
     unsorted = sorted(parent or "/" for parent, keys in siblings.items() if keys != sorted(keys))
     check(results, "tree.order", [], unsorted[:5])
+    check(results, "tree.deprecated_marks", [], reader.deprecated)
+
+    # tree with deprecated=all: every directory and table, the deprecated ones marked
+    status, html = get("tree_deprecated")
+    reader = TreeReader()
+    reader.feed(html)
+    check(results, "tree_deprecated.status", 200, status)
+    check(results, "tree_deprecated.directories", golden["tree"]["all_directories"], sorted(p for p, is_dir in reader.paths if is_dir))
+    check(results, "tree_deprecated.tables", golden["tree"]["all_tables"], sorted(p for p, is_dir in reader.paths if not is_dir))
+    check(results, "tree_deprecated.marks", golden["tree"]["deprecated"], sorted(reader.deprecated))
 
     # versions: row set, count and newest-first order
     for label_, expected in golden["versions"].items():
@@ -512,6 +553,13 @@ def compare(space, phase, label, db_url):
         key = lambda d: json.dumps(d, sort_keys=True)  # noqa: E731
         check(results, f"{label_}.rows", sorted(map(key, wanted)), sorted(map(key, shown)), sample=f"first expected {wanted[:1]}, first shown {shown[:1]}")
         check(results, f"{label_}.newest_first", [w["created"] for w in wanted[:3]], [s["created"] for s in shown[:3]])
+
+    # the deprecation notice above a deprecated table's versions, and none above another table
+    for label_, expected in golden["versions_notice"].items():
+        status, html = get(label_)
+        found = re.search(r'id="deprecation-notice"[^>]*>(.*?)</div>', html, re.S)
+        shown = " ".join(html_module.unescape(re.sub(r"<[^>]+>", "", found.group(1))).split()) if found else None
+        check(results, f"{label_}.deprecation_notice", expected, shown)
 
     # show_request: metadata and data, in every layout the page offers
     for label_, golden_key in [(key, key) for key in golden["show"]] + list(SHOW_LAYOUTS.items()):
@@ -586,12 +634,13 @@ def compare(space, phase, label, db_url):
     check(results, "logs.row_links", [f"/logs/{log_id}" for log_id in golden["logs"]["newest_ids"]], re.findall(r'<tr data-href="([^"]+)"', html))
 
     # variations: names and comments; parents are not shown today
-    status, html = get("variations")
-    tables = read_tables(html)
-    rows = data_rows(tables[0]) if tables else []
-    check(results, "variations.status", 200, status)
-    check(results, "variations.names", [v["name"] for v in golden["variations"]], [r[0] for r in rows])
-    check(results, "variations.comments", [" ".join((v["comment"] or "").split()) for v in golden["variations"]], [r[2] for r in rows if len(r) > 2])
+    for label_ in ("variations", "variations_deprecated"):
+        status, html = get(label_)
+        tables = read_tables(html)
+        rows = data_rows(tables[0]) if tables else []
+        check(results, f"{label_}.status", 200, status)
+        check(results, f"{label_}.names", [v["name"] for v in golden[label_]], [r[0] for r in rows])
+        check(results, f"{label_}.comments", [" ".join((v["comment"] or "").split()) for v in golden[label_]], [r[2] for r in rows if len(r) > 2])
 
     # compare variations: the affected tables with their badges, and only their ancestor directories
     for label_, expected in golden["compare"].items():
@@ -679,6 +728,13 @@ def compare(space, phase, label, db_url):
         check(results, f"{label_}.assignments", str(expected["assignments"]), meta.get("Assignments"))
         check(results, f"{label_}.last_assignment", expected["last"], meta.get("Last assignment"))
     check(results, "dir_info.tables", str(golden["dir_info"]["tables"]), meta.get("Tables"))
+    check(results, "dir_info.not_deprecated", None, meta.get("Deprecated"))
+    for label_, expected in golden["deprecation_rows"].items():
+        status, html = get(label_)
+        tables = read_tables(html)
+        meta = {row[0]: row[1] for row in (tables[0] if tables else []) if len(row) == 2}
+        check(results, f"{label_}.status", 200, status)
+        check(results, f"{label_}.deprecated", expected, meta.get("Deprecated"))
 
     out = space / "reports" / workspace.report_name("golden_compare", phase, label)
     passed = sum(1 for r in results if r["pass"])
