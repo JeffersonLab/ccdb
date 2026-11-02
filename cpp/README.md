@@ -14,7 +14,8 @@ cmake --install <build dir>
 The install directory receives `lib/libccdb.so`, the headers in `include/CCDB/`, the CMake package in
 `lib/cmake/ccdb/` and the test program `bin/ccdb_tests`. Options: `-DCCDB_BUILD_TESTS=OFF` skips the
 test program, `-DCMAKE_DISABLE_FIND_PACKAGE_MySQL=ON` builds without MySQL support,
-`-DCCDB_CACHE_ON=ON` starts every `Calibration` with its assignment cache on.
+`-DCCDB_CACHE_ON=ON` starts every `Calibration` with its assignment cache on, `-DCCDB_BUILD_JANA2=ON`
+builds the JANA2 service in `../jana2` (needs JANA2; see `docs/apis/jana.md`).
 
 ## Use from a CMake project
 

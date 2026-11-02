@@ -1,6 +1,6 @@
 """The build instructions in the install documents agree with the CMake tree.
 
-Checks docs/get-started/installation.md, install.linux.md and cpp/README.md: every `cmake -S DIR` that builds CCDB
+Checks docs/get-started/installation.md, install.linux.md, cpp/README.md and docs/apis/jana.md: every `cmake -S DIR` that builds CCDB
 names a directory with a CMakeLists.txt, every `-DCCDB_...` option exists as an option() of the CMake project, every
 `find_package(ccdb X.Y ...)` asks for a version the project's version satisfies, and every `$CCDB_HOME/...` path
 exists in the repository or is something `cmake --install` puts there. Commands that configure the reader's own
@@ -15,7 +15,7 @@ import re
 import unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DOCUMENTS = ("docs/get-started/installation.md", "install.linux.md", "cpp/README.md")
+DOCUMENTS = ("docs/get-started/installation.md", "install.linux.md", "cpp/README.md", "docs/apis/jana.md")
 
 # What `cmake --install` with -DCMAKE_INSTALL_PREFIX=$CCDB_HOME adds to the repository directory
 INSTALL_PRODUCTS = ("lib", "include", "bin/ccdb_tests")

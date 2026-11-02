@@ -147,13 +147,13 @@ the CLI, and get exceptions instead of exit codes.
 | SQLite shallow copy of one run period | offsite jobs, containers that ship their constants | made with [ccdb_shallow_copy.py](https://github.com/JeffersonLab/ccdb/tree/v2-main/scripts/shallow_copy): the constants one run range, one snapshot time and chosen variations need, a few megabytes |
 
 The same program reads all three; only the connection string changes, through `CCDB_CONNECTION` or
-the framework's own setting (`JANA_CALIB_URL` for JANA). A snapshot is as old as its export, so publish
+the framework's own setting (`-Pccdb:url` for the [JANA2 service](apis/jana.md)). A snapshot is as old as its export, so publish
 a nightly snapshot and say so: a calibrator who adds constants in the afternoon should know when the
 farm will see them.
 
-For production, fix the context: the variation and the snapshot time. In JANA this is the
-`JANA_CALIB_CONTEXT` variable (`variation=default calibtime=2027-03-01`); in your own code it is the
-time passed when the `Calibration` object is created. Every job of the campaign then resolves the same
+For production, fix the context: the variation and the snapshot time. A [tag](concepts/tags.md) names
+both; the JANA2 service takes it as `-Pccdb:tag=calib_2027_pass1`, or the two as `-Pccdb:variation` and
+`-Pccdb:time`; in your own code it is the time passed when the `Calibration` object is created. Every job of the campaign then resolves the same
 constants, whatever calibrators add while it runs, and the campaign can be repeated later.
 
 ## Web GUI and monitoring
