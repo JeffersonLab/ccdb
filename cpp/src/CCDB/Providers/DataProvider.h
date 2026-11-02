@@ -130,6 +130,7 @@ namespace ccdb
 
 
 
+
         //----------------------------------------------------------------------------------------
         //  E N D   O F   I N T E R F A C E
         //----------------------------------------------------------------------------------------
@@ -190,6 +191,34 @@ namespace ccdb
          * @return   bool
          */
         bool ValidateName(const std::string& name);
+
+        //----------------------------------------------------------------------------------------
+        //  T A G S   (CCDB 2.5)
+        //----------------------------------------------------------------------------------------
+
+        /** @brief true if the variation argument of a request names a tag: "@NAME"
+         * @see PathUtils::ParseRequest */
+        static bool IsTagRequest(const std::string& variation);
+
+        /** @brief Converts a UTC 'YYYY-MM-DD hh:mm:ss[.ffffff]' to unix time (timegm, not mktime)
+         * @return unix time or -1 if the string can't be parsed */
+        static time_t UtcDateTimeToUnixTime(const std::string& utcDateTime);
+
+        /** @brief Validated tag name of a tag request "@NAME"
+         *
+         * A provider's GetAssignmentShort, given the variation "@NAME", reads the tag's
+         * variation and snapshot time in one query and resolves the request with that
+         * variation and the time UtcDateTimeToUnixTime gives. Each provider's time filter
+         * converts the UTC instant: MySQL compares UNIX_TIMESTAMP(assignments.created),
+         * SQLite converts it to the local time the writing client stored in assignments.created.
+         *
+         * @throw std::runtime_error if the name is empty or has symbols other than a-zA-Z0-9_-
+         */
+        std::string GetTagName(const std::string& tagRequest);
+
+        /** @brief Unix time of a tag's snapshotTime column
+         * @throw std::runtime_error if the time can't be parsed */
+        static time_t GetTagUnixTime(const std::string& tagName, const std::string& snapshotTime);
 
 
     protected:

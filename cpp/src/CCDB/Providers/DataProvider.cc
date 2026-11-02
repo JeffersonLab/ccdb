@@ -1,5 +1,12 @@
 #include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <stdexcept>
 #include <set>
+
+#ifdef WIN32
+#define timegm _mkgmtime
+#endif
 
 
 #include "CCDB/Providers/DataProvider.h"
@@ -44,6 +51,53 @@ DataProvider::~DataProvider()
 
 
 //______________________________________________________________________________
+bool DataProvider::IsTagRequest(const string& variation)
+{
+    return !variation.empty() && variation[0] == '@';
+}
+
+
+time_t DataProvider::UtcDateTimeToUnixTime(const string& utcDateTime)
+{
+    struct tm timeInfo;
+    memset(&timeInfo, 0, sizeof(timeInfo));
+    int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0;
+    if(sscanf(utcDateTime.c_str(), "%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &minute, &second) != 6)
+    {
+        return -1;
+    }
+    timeInfo.tm_year = year - 1900;
+    timeInfo.tm_mon = month - 1;
+    timeInfo.tm_mday = day;
+    timeInfo.tm_hour = hour;
+    timeInfo.tm_min = minute;
+    timeInfo.tm_sec = second;
+    return timegm(&timeInfo);   // the string is UTC, so not mktime
+}
+
+
+string DataProvider::GetTagName(const string& tagRequest)
+{
+    string tagName = IsTagRequest(tagRequest) ? tagRequest.substr(1) : tagRequest;
+    if(tagName.empty() || !ValidateName(tagName))
+    {
+        throw std::runtime_error("DataProvider::GetTagName => Invalid tag name '" + tagName + "'");
+    }
+    return tagName;
+}
+
+
+time_t DataProvider::GetTagUnixTime(const string& tagName, const string& snapshotTime)
+{
+    time_t time = UtcDateTimeToUnixTime(snapshotTime);
+    if(time <= 0)
+    {
+        throw std::runtime_error("DataProvider::GetTagUnixTime => Tag '" + tagName + "' has a bad snapshot time '" + snapshotTime + "'");
+    }
+    return time;
+}
+
+
 bool DataProvider::ValidateName(const string& name )
 {
 	//Validates that name has a-zA-Z0-9_- symbols

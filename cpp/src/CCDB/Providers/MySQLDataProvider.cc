@@ -689,6 +689,33 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
         throw runtime_error(thisFuncName+" => Not connected to DB");
     }
 
+    // A tag "@NAME" replaces variation and time: one query for the tag's variation and snapshot time,
+    // then the normal resolution. snapshotTime is UTC; its unix time (timegm) is compared below
+    // with UNIX_TIMESTAMP(assignments.created)
+    if(IsTagRequest(variationName))
+    {
+        string tagName = GetTagName(variationName);    // validated: a-zA-Z0-9_- only
+        string tagQuery =
+            "SELECT `variations`.`name`, `tags`.`snapshotTime` "
+            "FROM `tags` "
+            "INNER JOIN `variations` ON `tags`.`variationId` = `variations`.`id` "
+            "WHERE `tags`.`name` = '" + tagName + "' "
+            "LIMIT 1 ";
+        if(!QuerySelect(tagQuery))
+        {
+            throw runtime_error(thisFuncName+" => Error selecting tag '"+tagName+"'");
+        }
+        if(!FetchRow())
+        {
+            FreeMySQLResult();
+            throw runtime_error(thisFuncName+" => No tag '"+tagName+"' was found");
+        }
+        string tagVariation = ReadString(0);
+        string tagSnapshotTime = ReadString(1);
+        FreeMySQLResult();
+        return GetAssignmentShort(run, path, GetTagUnixTime(tagName, tagSnapshotTime), tagVariation, loadColumns);
+    }
+
     //Get directory. Directories should be cached. So this doesn't make a database request
     
     ConstantsTypeTable *table = ccdb::DataProvider::GetConstantsTypeTable(path, loadColumns);

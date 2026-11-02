@@ -6,6 +6,7 @@
 
 #include "CCDB/Helpers/PathUtils.h"
 
+#include <stdexcept>
 #include <vector>
 #include <string>
 #include <time.h>
@@ -52,6 +53,59 @@ TEST_CASE("CCDB/PathUtils", "Request parse")
     REQUIRE(result.Variation == "mc");
     REQUIRE(result.WasParsedVariation);
     REQUIRE(!result.WasParsedTime);
+}
+
+
+TEST_CASE("CCDB/PathUtils/Tag", "Request parse with a tag")
+{
+    // * * * path and tag * * *
+    RequestParseResult result = PathUtils::ParseRequest("/a/b/table@mytag");
+    REQUIRE(result.Path == "/a/b/table");
+    REQUIRE(result.WasParsedPath);
+    REQUIRE(!result.WasParsedRunNumber);
+    REQUIRE(result.WasParsedTag);
+    REQUIRE(result.Tag == "mytag");
+    REQUIRE(!result.WasParsedTime);
+
+    // The tag travels to the provider as the variation "@NAME"
+    REQUIRE(result.WasParsedVariation);
+    REQUIRE(result.Variation == "@mytag");
+
+    // * * * path, run and tag * * *
+    result = PathUtils::ParseRequest("/a/b/table:1000@mytag");
+    REQUIRE(result.Path == "/a/b/table");
+    REQUIRE(result.WasParsedRunNumber);
+    REQUIRE(result.RunNumber == 1000);
+    REQUIRE(!result.IsInvalidRunNumber);
+    REQUIRE(result.WasParsedTag);
+    REQUIRE(result.Tag == "mytag");
+    REQUIRE(result.Variation == "@mytag");
+    REQUIRE(!result.WasParsedTime);
+
+    // * * * no tag * * *
+    result = PathUtils::ParseRequest("/a/b/table:1000:mc:2029");
+    REQUIRE(!result.WasParsedTag);
+    REQUIRE(result.Tag.empty());
+    REQUIRE(result.Variation == "mc");
+
+    // * * * a tag with a variation or a time is an error, the same error both ways * * *
+    string variationError;
+    string timeError;
+    try { PathUtils::ParseRequest("/a/b/table:1000:mc@mytag"); }
+    catch (std::invalid_argument& ex) { variationError = ex.what(); }
+    try { PathUtils::ParseRequest("/a/b/table:1000::2029@mytag"); }
+    catch (std::invalid_argument& ex) { timeError = ex.what(); }
+    REQUIRE(variationError.find("may not be combined with a variation or a time") != string::npos);
+    REQUIRE(timeError.find("may not be combined with a variation or a time") != string::npos);
+
+    REQUIRE_THROWS_AS(PathUtils::ParseRequest("/a/b/table@mytag:mc"), std::invalid_argument);
+    REQUIRE_THROWS_AS(PathUtils::ParseRequest("/a/b/table:1000@mytag:mc"), std::invalid_argument);
+    REQUIRE_THROWS_AS(PathUtils::ParseRequest("/a/b/table:1000@mytag::2029"), std::invalid_argument);
+    REQUIRE_THROWS_AS(PathUtils::ParseRequest("/a/b/table:1000:mc:2029@mytag"), std::invalid_argument);
+
+    // * * * empty tag name * * *
+    REQUIRE_THROWS_AS(PathUtils::ParseRequest("/a/b/table@"), std::invalid_argument);
+    REQUIRE_THROWS_AS(PathUtils::ParseRequest("/a/b/table:1000@"), std::invalid_argument);
 }
 
 
