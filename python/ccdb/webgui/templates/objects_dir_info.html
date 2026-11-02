@@ -1,3 +1,4 @@
+{% from '_deprecation.html' import info_row %}
 <div class="modal-header">
   <h5 class="modal-title"><svg class="ico me-1"><use href="#i-folder"/></svg>{{ directory.name }}</h5>
   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -37,6 +38,7 @@
           <th scope="row">Comment</th>
           <td>{{ directory.comment }}</td>
         </tr>
+        {{ info_row(directory, deprecated_by) }}
       </tbody>
     </table>
   </div>

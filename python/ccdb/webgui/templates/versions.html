@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}{{ table.path }} · CCDB{% endblock %}
 
+{% from '_deprecation.html' import switch, notice with context %}
 {% block page_header %}
 <div class="mb-3">
   {%- set segments = table.path.strip('/').split('/') %}
@@ -21,6 +22,7 @@
   {#- Show info rolls down the rows the tree's info button shows in a modal (_table_info_rows.html); Bootstrap's
       collapse keeps aria-expanded current, and the stylesheet shows one of the two labels from it. -#}
   <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#table-info" aria-expanded="false" aria-controls="table-info"><svg class="ico"><use href="#i-info"/></svg> <span class="when-collapsed">Show info</span><span class="when-expanded">Hide info</span></button>
+  {{ notice(table, deprecated_by) }}
   <div class="collapse" id="table-info">
     <div class="card mt-2" style="max-width: 40rem"><div class="card-body py-2">{% include '_table_info_rows.html' %}</div></div>
   </div>
@@ -41,7 +43,9 @@
   </select>
   <input type="hidden" name="sort" value="{{ query.sort }}">
   <input type="hidden" name="order" value="{{ query.order }}">
+  {% if show_deprecated() %}<input type="hidden" name="deprecated" value="all">{% endif %}
   <button class="btn btn-outline-secondary" type="submit">Apply</button>
+  {{ switch() }}
 </form>
 {#- The picked pair, kept across pages and reloads by pick.js; the Compare link is built from data-compare-url. -#}
 {#- No display utility on the hidden element itself: Bootstrap's .d-flex would beat the hidden attribute. -#}

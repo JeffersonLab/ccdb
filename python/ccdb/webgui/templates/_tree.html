@@ -3,14 +3,15 @@
     Each <li> carries data-path, data-kind and data-id for tree.js and for the golden comparison.
     Directories come before tables, each kind in natural name order (the by_name filter, views.natural_key);
     tree.js reorders by database id when that choice is remembered.
-    keep_dirs: directory ids to render, None for all. annotate: a macro called with each table; its output
+    keep_dirs: directory ids to render, None for all. A deprecated directory or table gets data-deprecated and a badge. annotate: a macro called with each table; its output
     goes after the table name. open: render every folder open. remember: let tree.js store the open state. -#}
+{% from '_deprecation.html' import badge %}
 {% macro node(directory, tables_of, keep_dirs=None, annotate=None, open=False) -%}
-<li data-path="{{ directory.path }}" data-kind="dir" data-id="{{ directory.id }}">
+<li data-path="{{ directory.path }}" data-kind="dir" data-id="{{ directory.id }}"{% if directory.is_deprecated %} data-deprecated="1"{% endif %}>
   <details data-path="{{ directory.path }}"{% if open %} open{% endif %}>
     <summary>
       <svg class="ico closed"><use href="#i-folder"/></svg><svg class="ico opened"><use href="#i-folder-open"/></svg>
-      <span>{{ directory.name }}</span>
+      <span>{{ directory.name }}</span>{{ badge(directory) }}
       <button class="info" type="button" data-url="{{ url_for('get_dir_info', dir_id=directory.id) }}" aria-label="About {{ directory.name }}"><svg class="ico"><use href="#i-info"/></svg></button>
     </summary>
     <ul>
@@ -22,10 +23,10 @@
 {%- endmacro %}
 
 {% macro leaf(table, annotate=None) -%}
-<li data-path="{{ table.path }}" data-kind="table" data-id="{{ table.id }}">
+<li data-path="{{ table.path }}" data-kind="table" data-id="{{ table.id }}"{% if table.is_deprecated %} data-deprecated="1"{% endif %}>
   <span class="leaf">
     <svg class="ico"><use href="#i-table"/></svg>
-    <a href="{{ url_for('versions', table_path=table.path.lstrip('/')) }}">{{ table.name }}</a>
+    <a href="{{ url_for('versions', table_path=table.path.lstrip('/'), **deprecated_args()) }}">{{ table.name }}</a>{{ badge(table) }}
     <button class="info" type="button" data-url="{{ url_for('get_table_info', table_id=table.id) }}" aria-label="About {{ table.name }}"><svg class="ico"><use href="#i-info"/></svg></button>
     {% if annotate %}{{ annotate(table) }}{% endif %}
   </span>

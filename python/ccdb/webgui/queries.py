@@ -17,7 +17,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import aliased
 from werkzeug.exceptions import BadRequest
 
-from ccdb.model import Assignment, ConstantSet, LogRecord, RunRange, User, Variation
+from ccdb.model import Assignment, ConstantSet, LogRecord, RunRange, TypeTable, User, Variation
 
 PAGE_SIZES = (25, 50, 100, 200)
 DEFAULT_PAGE_SIZE = 50
@@ -81,6 +81,7 @@ class AssignmentRow:
     comment: str
     request: str  # the CCDB request string, identical to Assignment.request
     constant_set_id: int
+    variation_deprecated: bool
     shared: int = 1  # how many assignments use this row's constant set; more than 1 is shared data
 
 
@@ -114,6 +115,10 @@ class VariationRow:
     comment: str
     parent: str
     author: str
+    is_deprecated: bool = False
+    deprecated_time: datetime = None
+    deprecation_comment: str = ""
+    deprecated_by: str = ""
 
 
 @dataclass
@@ -206,6 +211,10 @@ def contains_text(columns, text):
     return or_(*[column.like(pattern, escape="\\") for column in columns])
 
 
+def table_count(session):
+    return session.execute(select(func.count()).select_from(TypeTable)).scalar_one()
+
+
 # --------------------------------------------------------------------------- versions
 
 ASSIGNMENT_SORTS = {
@@ -219,14 +228,15 @@ def request_string(path, run_min, variation, created):
     return "{0}:{1}:{2}:{3}".format(path, run_min, variation, created.strftime("%Y-%m-%d_%H-%M-%S"))
 
 
-def list_assignments(session, table, query, variation=None, run=None, run_min=None, run_max=None):
+def list_assignments(session, table, query, variation=None, run=None, run_min=None, run_max=None, include_deprecated=True):
     """A page of a table's assignments, newest first by default.
 
     Filters: `variation` by exact name; `run` keeps the run ranges that contain it;
-    `run_min`/`run_max` keep the run ranges that overlap that window.
+    `run_min`/`run_max` keep the run ranges that overlap that window; without `include_deprecated`,
+    the assignments of deprecated variations are left out.
     """
     statement = (select(Assignment.id, RunRange.min, RunRange.max, Assignment.created, Variation.name, User.name, Assignment._comment,
-                        Assignment.constant_set_id)
+                        Assignment.constant_set_id, Variation.is_deprecated)
                  .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
                  .join(RunRange, Assignment.run_range_id == RunRange.id)
                  .join(Variation, Assignment.variation_id == Variation.id)
@@ -234,6 +244,8 @@ def list_assignments(session, table, query, variation=None, run=None, run_min=No
                  .where(ConstantSet.type_table_id == table.id))
     if variation:
         statement = statement.where(Variation.name == variation)
+    if not include_deprecated:
+        statement = statement.where(Variation.is_deprecated == False)  # noqa: E712 (SQL comparison)
     if run is not None:
         statement = statement.where(RunRange.min <= run, RunRange.max >= run)
     if run_min is not None:
@@ -244,9 +256,9 @@ def list_assignments(session, table, query, variation=None, run=None, run_min=No
         statement = statement.where(contains_text([Assignment._comment, User.name], query.search))
 
     def row_factory(row):
-        assignment_id, low, high, created, variation_name, author, comment, constant_set_id = row
+        assignment_id, low, high, created, variation_name, author, comment, constant_set_id, variation_deprecated = row
         return AssignmentRow(assignment_id, low, high, created, variation_name, author or "", comment or "",
-                             request_string(table.path, low, variation_name, created), constant_set_id)
+                             request_string(table.path, low, variation_name, created), constant_set_id, bool(variation_deprecated))
 
     page = run_page(session, statement, query, ASSIGNMENT_SORTS, Assignment.id, row_factory)
     counts = shared_counts(session, [row.constant_set_id for row in page.items])
@@ -320,12 +332,14 @@ def assignment_activity(session, table_ids):
     return Activity(count, newest[0], newest[1] or "")
 
 
-def table_variation_names(session, table):
+def table_variation_names(session, table, include_deprecated=True):
     """Names of the variations that have at least one assignment on the table, for the filter select."""
     statement = (select(Variation.name).distinct()
                  .join(Assignment, Assignment.variation_id == Variation.id)
                  .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
                  .where(ConstantSet.type_table_id == table.id).order_by(Variation.name))
+    if not include_deprecated:
+        statement = statement.where(Variation.is_deprecated == False)  # noqa: E712 (SQL comparison)
     return [row[0] for row in session.execute(statement)]
 
 
@@ -375,16 +389,22 @@ def log_record(session, log_id):
 VARIATION_SORTS = {"id": Variation.id, "name": Variation.name, "created": Variation.created}
 
 
-def list_variations(session, query):
-    """A page of variations with their parent's name; search matches name and comment."""
+def list_variations(session, query, include_deprecated=True):
+    """A page of variations with their parent's name and the deprecation fields; search matches name and comment."""
     parent = aliased(Variation)
-    statement = (select(Variation.id, Variation.name, Variation.created, Variation.comment, parent.name, User.name)
+    deprecated_by = aliased(User)
+    statement = (select(Variation.id, Variation.name, Variation.created, Variation.comment, parent.name, User.name,
+                        Variation.is_deprecated, Variation.deprecated_time, Variation.deprecation_comment, deprecated_by.name)
                  .join(parent, Variation.parent_id == parent.id, isouter=True)
-                 .join(User, Variation.author_id == User.id, isouter=True))
+                 .join(User, Variation.author_id == User.id, isouter=True)
+                 .join(deprecated_by, Variation.deprecated_by_user_id == deprecated_by.id, isouter=True))
+    if not include_deprecated:
+        statement = statement.where(Variation.is_deprecated == False)  # noqa: E712 (SQL comparison)
     if query.search:
         statement = statement.where(contains_text([Variation.name, Variation.comment], query.search))
     return run_page(session, statement, query, VARIATION_SORTS, Variation.id,
-                    lambda row: VariationRow(row[0], row[1], row[2], row[3] or "", row[4] or "", row[5] or ""))
+                    lambda row: VariationRow(row[0], row[1], row[2], row[3] or "", row[4] or "", row[5] or "",
+                                             bool(row[6]), row[7], row[8] or "", row[9] or ""))
 
 
 def variation_ids(session):
@@ -411,6 +431,10 @@ def affected_tables(session, variation_ids, run=None, before=None):
     for variation_id, table_id, count, newest in session.execute(statement.group_by(Assignment.variation_id, ConstantSet.type_table_id)):
         grouped.setdefault(table_id, {})[variation_id] = (count, newest)
     return grouped
+
+
+def deprecated_variation_names(session):
+    return set(session.execute(select(Variation.name).where(Variation.is_deprecated == True)).scalars())  # noqa: E712 (SQL comparison)
 
 
 def variation_chains(session):

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% from '_tree.html' import tree, tree_buttons with context %}
+{% from '_deprecation.html' import switch with context %}
 {% block title %}Tables · CCDB{% endblock %}
 
 {% block page_header %}
@@ -7,13 +8,14 @@
   <h1 class="h3 m-0">Tables</h1>
   <input id="tree-filter" class="form-control" style="max-width: 24rem" type="search" placeholder="Filter: text, or a pattern with * and ?" autocomplete="off" aria-label="Filter the tree" value="{{ request.args.get('filter', '') }}">
   {{ tree_buttons() }}
-  <span class="text-body-secondary small">{{ directory_count }} directories · {{ table_count }} tables</span>
+  {{ switch() }}
+  <span class="text-body-secondary small">{{ directory_count }} directories · {{ table_count }} tables{% if hidden_count %} · {{ hidden_count }} deprecated hidden{% endif %}</span>
 </div>
 <p class="text-body-secondary small mb-3">Text matches anywhere in a path. With <code>*</code> (any text) or <code>?</code> (one character) the pattern must match a whole name, or a whole path when it contains <code>/</code>.</p>
 {% endblock %}
 
 {% block content %}
-{{ tree(root, tables_of) }}
+{{ tree(root, tables_of, keep_dirs) }}
 {% endblock %}
 
 {% block page_scripts %}<script type="module" src="{{ url_for('static', filename='js/tree.js') }}"></script>{% endblock %}

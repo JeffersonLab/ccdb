@@ -23,9 +23,12 @@ RETIRED_TABLE = "/schema6/retired_table"        # a deprecated table
 PAGES = [
     ("tree", "/", "page"),
     ("tree_alias", "/tree", "page"),
+    ("tree_deprecated", "/tree?deprecated=all", "page"),
+    ("tree_deprecated_bad", "/tree?deprecated=yes", "edge"),
     ("dirs_debug", "/dirs", "edge"),             # retired route: answers 404
     ("hello", "/hello", "edge"),                 # retired route: answers 404
     ("variations", "/vars", "page"),
+    ("variations_deprecated", "/vars?deprecated=all", "page"),
     ("logs", "/logs", "page"),
     ("doc", "/doc", "page"),
     ("request_form", "/test_request", "page"),
@@ -39,6 +42,8 @@ PAGES = [
     ("dir_info_missing", "/get-dir-info/999999", "edge"),
     ("table_info", "/get-table-info/1", "fragment"),
     ("table_info_missing", "/get-table-info/999999", "edge"),
+    ("dir_info_retired", "/get-dir-info/42", "fragment"),       # the deprecated directory /schema6/retired
+    ("table_info_retired", "/get-table-info/1012", "fragment"), # the deprecated table /schema6/retired_table
     ("show_small", "/show_request?request=" + quote(SMALL_TABLE + ":0:default"), "page"),
     ("show_big", "/show_request?request=" + quote(BIG_TABLE + ":1500:default"), "page"),
     ("show_big_mc", "/show_request?request=" + quote(BIG_TABLE + ":1500:mc"), "page"),
@@ -159,6 +164,9 @@ PAGES = [
     ("show_numeric", "/show_request?request=" + quote(NUMERIC_TABLE + ":0:default"), "page"),
     ("diff_numeric", "/compare?a=3616&b=3617", "page"),
     ("versions_retired", "/versions" + RETIRED_TABLE, "page"),
+    ("versions_retired_all", "/versions" + RETIRED_TABLE + "?deprecated=all", "page"),
+    ("compare_deprecated", "/vars/compare?variation=calib_v2&deprecated=all", "page"),
+    ("compare_retired", "/vars/compare?variation=retired", "page"),   # a deprecated variation named in the URL
     ("log_record_shared", "/logs/2419", "page"),
 ]
 

@@ -37,6 +37,10 @@
 .tree .info { border: 0; background: none; padding: 0 .25rem; color: inherit; opacity: var(--ccdb-muted-icon); line-height: 1; }
 .tree .info:hover, .tree .info:focus-visible { opacity: 1; }
 .tree li[hidden] { display: none; }
+/* deprecated objects, shown with deprecated=all: muted, with a badge */
+.tree li[data-deprecated] > details > summary > span, .tree li[data-deprecated] > .leaf > a, tr.deprecated > td { color: var(--bs-secondary-color); }
+.deprecated-badge { font-weight: normal; }
+.deprecated-switch .form-check-input { pointer-events: none; }
 
 /* long identifiers (request strings, chains) must wrap on phones instead of widening the page */
 #request-string, .meta td { overflow-wrap: anywhere; }
