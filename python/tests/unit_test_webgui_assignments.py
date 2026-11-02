@@ -37,6 +37,14 @@ class AssignmentViewsTest(unittest.TestCase):
         self.assertEqual(data["rows"], [["2.2", "2.3", "2.4"], ["2.5", "2.6", "2.7"]])
         self.assertEqual((data["run_min"], data["run_max"], data["author"], data["variation"]), (0, 2147483647, "test_user", "default"))
 
+    def test_request_resolves_as_ccdb_cat(self):
+        """No variation means default; a variation without an assignment for the run falls back to its parent."""
+        def resolved_id(request_string):
+            return json.loads(self.get("/assignments/data.json?request=" + quote(request_string)).get_data(as_text=True))["id"]
+        self.assertEqual(resolved_id(TABLE + ":0"), 4)          # default, although subtest's assignment 5 is newer
+        self.assertEqual(resolved_id(TABLE + ":0:mc"), 4)       # mc has no assignment: its parent default
+        self.assertEqual(resolved_id(TABLE + ":0:subtest"), 5)
+
     def test_both_address_forms_give_identical_responses(self):
         exact = TABLE + ":0:default:2012-10-30_23-48-42"
         for by_request, by_id in (("/show_request?request=" + quote(exact), "/assignments/4"),

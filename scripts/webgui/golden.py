@@ -44,6 +44,8 @@ SHOW_REQUESTS = {  # label in pages.py -> (table path, run, variation)
     "show_shared": (pages.SHARED_TABLE, 1500, "default"),
     "show_shared_first": (pages.SHARED_TABLE, 0, "default"),
     "show_numeric": (pages.NUMERIC_TABLE, 0, "default"),
+    "show_no_variation": (pages.BIG_TABLE, 1500, None),        # no variation: default, as in `ccdb cat`
+    "show_fallback": (pages.BIG_TABLE, 1500, "subsubtest"),    # nothing in subsubtest for run 1500: its parent subtest
 }
 SHOW_LAYOUTS = {  # pages that show one of the assignments above in another data layout -> its golden key
     "show_kv_horizontal": "show_kv",
@@ -162,15 +164,23 @@ def compute(space):
              "request": request_string(path, r["runMin"], r["variation"], parse_stamp(r["created"])),
              "shared": sharers[r["constantSetId"]]} for r in rows]}
 
+    # A request resolves as `ccdb cat` and the C++ library resolve it: no variation means default; a variation without an
+    # assignment for the run falls back to its parent, up to default; in the first one that has a match, the newest by id.
+    parent_of = {r["name"]: r["parent"] for r in db.execute("SELECT v.name, p.name AS parent FROM variations v LEFT JOIN variations p ON p.id = v.parentId")}
     golden["show"] = {}
-    for label, (path, run, variation) in SHOW_REQUESTS.items():
+    for label, (path, run, asked_variation) in SHOW_REQUESTS.items():
         table_id = table_id_by_path[path]
         column_rows = db.execute("SELECT name, columnType, units FROM columns WHERE typeId = ? ORDER BY \"order\"", (table_id,)).fetchall()
         columns, types = [r["name"] for r in column_rows], [r["columnType"] for r in column_rows]
         units = [r["units"] or "" for r in column_rows]
         rows_count = db.execute("SELECT nRows FROM typeTables WHERE id = ?", (table_id,)).fetchone()[0]
-        match = [r for r in assignments_of(db, table_id) if r["variation"] == variation and r["runMin"] <= run <= r["runMax"]]
-        newest = match[0]  # assignments_of is newest first; the CLI picks the newest too
+        variation = asked_variation or "default"
+        while True:
+            match = [r for r in assignments_of(db, table_id) if r["variation"] == variation and r["runMin"] <= run <= r["runMax"]]
+            if match or variation == "default":
+                break
+            variation = parent_of[variation]
+        newest = match[0]  # assignments_of is newest first (by id), as the provider orders them
         cells = newest["vault"].split("|")
         data = [cells[i * len(columns):(i + 1) * len(columns)] for i in range(rows_count)]
         golden["show"][label] = {"path": path, "variation": variation, "created": shown_stamp(newest["created"]), "author": newest["author"],

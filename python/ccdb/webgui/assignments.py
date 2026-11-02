@@ -72,12 +72,15 @@ def resolve_assignment(db, request_string=None, assignment_id=None):
         except NoResultFound:
             abort(404, "No assignment matches the request '{0}:{1}@{2}'".format(parsed.path, parsed.run, parsed.tag))
     time = parsed.time if parsed.time_is_parsed else None
+    # As `ccdb cat` and the C++ library: no variation means `default`, and a variation without an assignment for the
+    # run falls back to the variation it inherits from.
+    variation = parsed.variation if parsed.variation_is_parsed else "default"
     try:
-        assignments = db.get_assignments(parsed.path, parsed.run, parsed.variation, time)
+        assignments = [db.get_assignment(parsed.path, parsed.run, variation, time)]
     except ValueError as error:  # the provider rejects a path without a directory part, such as "garbage"
         abort(400, "Bad request string: {0}".format(error))
-    if not assignments:
-        abort(404, "No assignment matches the request '{0}:{1}:{2}'".format(parsed.path, parsed.run, parsed.variation))
+    except NoResultFound:
+        abort(404, "No assignment matches the request '{0}:{1}:{2}'".format(parsed.path, parsed.run, variation))
     # A timestamp in the past pins the answer; a future or unparseable one (parse_request turns "notadate"
     # into the year 2137) still resolves to the newest assignment, so it must not be cached as exact.
     exact = parsed.time_is_parsed and parsed.time <= datetime.datetime.now()

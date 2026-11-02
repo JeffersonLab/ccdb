@@ -163,6 +163,8 @@ PAGES = [
     ("show_shared", "/show_request?request=" + quote(SHARED_TABLE + ":1500:default"), "page"),
     ("show_shared_first", "/show_request?request=" + quote(SHARED_TABLE + ":0:default"), "page"),
     ("show_numeric", "/show_request?request=" + quote(NUMERIC_TABLE + ":0:default"), "page"),
+    ("show_no_variation", "/show_request?request=" + quote(BIG_TABLE + ":1500"), "page"),
+    ("show_fallback", "/show_request?request=" + quote(BIG_TABLE + ":1500:subsubtest"), "page"),
     ("diff_numeric", "/compare?a=3616&b=3617", "page"),
     ("versions_retired", "/versions" + RETIRED_TABLE, "page"),
     ("versions_retired_all", "/versions" + RETIRED_TABLE + "?deprecated=all", "page"),
