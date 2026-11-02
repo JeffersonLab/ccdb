@@ -54,6 +54,20 @@ delete calib;  // <== DON'T DO THIS
 calib = generator.MakeCalibration("<SAME connection string>");  // Problem: deleted pointer.
 ```
 
+### Requests with a tag
+
+To read constants frozen by a [tag](concepts/tags.md), add `@NAME` to the request:
+
+```cpp
+std::vector<std::vector<double>> values;
+calib->GetCalib(values, "/test/test_vars/test_table:1500@Run2026");
+```
+
+The request uses the tag's variation and only the assignments created at or before the tag's time. The
+run is optional, as in any request: `/test/test_vars/test_table@Run2026`. A request with a tag and a
+variation (`/path:1500:mc@Run2026`) or a tag and a time (`/path:1500::2026@Run2026`) is an error, as
+in Python.
+
 ## Connection to the database
 
 The [ccdb::Calibration](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/src/CCDB/Calibration.h)
