@@ -3,6 +3,8 @@ import os
 
 from ccdb import Directory, TypeTable, Variation, read_ccdb_text_file, TextFileDOM
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
+from ccdb.path_utils import parse_request
+from ccdb.cmd.commands.tag import print_tag
 from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
 
@@ -38,6 +40,14 @@ class Info(CliCommandBase):
 
         #process arguments
         obj_name, obj_type = self._process_arguments(args)
+
+        # a table request with a tag: the table, then the tag
+        tag = None
+        if obj_type == InfoTypes.type_table and '@' in obj_name:
+            request = parse_request(obj_name)
+            tag = provider.get_tag(request.tag)
+            obj_name = request.path
+
         path = self.context.prepare_path(obj_name)  # more likely obj_name is path to dir or table
 
         if not obj_name:
@@ -64,6 +74,9 @@ class Info(CliCommandBase):
         #it is a file!!!
         if obj_type == InfoTypes.file:
             self.print_file(obj_name)
+
+        if tag is not None:
+            print_tag(self.theme, tag, provider.get_tag_variation(tag))
 
         #everything is fine!
         return True
