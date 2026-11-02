@@ -38,6 +38,30 @@ def author_name(db, author_id):
     return user.name if user else ""
 
 
+def tables_by_directory(db, root_dir):
+    """{directory id: its tables} for every table, in one query; root-level tables under 0.
+
+    Reading directory.type_tables per directory would lazy-load 65 times on hallddb (F30). The tables get
+    parent_dir from the provider's directory cache, so table.path is complete.
+    """
+    tables_of = {}
+    for table in db.session.execute(select(TypeTable).order_by(TypeTable.name)).scalars():
+        table.parent_dir = db.dirs_by_id.get(table.parent_dir_id, root_dir)
+        tables_of.setdefault(table.parent_dir_id, []).append(table)
+    return tables_of
+
+
+def visible_directory_ids(root_dir):
+    """Ids of the directories a list view shows by default: not deprecated and not inside a deprecated one."""
+    visible, pending = set(), list(root_dir.sub_dirs)
+    while pending:
+        directory = pending.pop()
+        if not directory.is_deprecated:
+            visible.add(directory.id)
+            pending.extend(directory.sub_dirs)
+    return visible
+
+
 def link_args():
     """The current view's path and query arguments, ready to merge into a url_for() call.
 
@@ -74,6 +98,27 @@ def sort_url(column, current_sort, current_order):
     return url_for(request.endpoint, **args)
 
 
+def show_deprecated():
+    """Whether list views include deprecated directories, tables and variations: `?deprecated=all`.
+
+    Hidden by default, as `ccdb ls` hides them. Any other value is a 400 in a view; templates call this too, for the
+    switch and the sidebar links, where a bad value counts as hidden and the view itself reports it.
+    """
+    return request.args.get("deprecated") == "all"
+
+
+def deprecated_arg_or_400():
+    value = request.args.get("deprecated")
+    if value not in (None, "", "all"):
+        abort(400, "'deprecated' must be 'all' or absent, got '{0}'".format(value))
+    return value == "all"
+
+
+def deprecated_args():
+    """{'deprecated': 'all'} while deprecated objects are shown, for links to other list views; otherwise {}."""
+    return {"deprecated": "all"} if show_deprecated() else {}
+
+
 TIME_ARGUMENT = re.compile(r"^\d{4}(-\d{2}(-\d{2}(_\d{2}(-\d{2}(-\d{2})?)?)?)?)?$")
 
 
@@ -88,11 +133,16 @@ def time_arg_or_400(text):
     return parse_time(text)
 
 
-def affected_tree(db, grouped, variation_names):
+def affected_tree(db, grouped, variation_names, include_deprecated=True):
     """The affected tables as a pruned directory tree: the root, the tables per directory id, the directory ids to
-    keep (every ancestor of an affected table), and per table id the (variation, count, newest) badges in chain order."""
+    keep (every ancestor of an affected table), and per table id the (variation, count, newest) badges in chain order.
+    Without `include_deprecated`, deprecated tables and the tables inside a deprecated directory are left out and
+    counted in `hidden`."""
     root = db.get_root_directory()
     tables = db.session.execute(select(TypeTable).where(TypeTable.id.in_(list(grouped)))).scalars().all() if grouped else []
+    if not include_deprecated:
+        visible_dirs = visible_directory_ids(root)
+        tables = [table for table in tables if not table.is_deprecated and (table.parent_dir_id == 0 or table.parent_dir_id in visible_dirs)]
     tables_of, keep_dirs, badges = {}, set(), {}
     for table in sorted(tables, key=lambda each: each.name):
         table.parent_dir = db.dirs_by_id.get(table.parent_dir_id, root)
@@ -102,7 +152,7 @@ def affected_tree(db, grouped, variation_names):
             keep_dirs.add(directory.id)
             directory = db.dirs_by_id.get(directory.parent_id)
         badges[table.id] = [(name, *grouped[table.id][variation_id]) for variation_id, name in variation_names.items() if variation_id in grouped[table.id]]
-    return dict(root=root, tables_of=tables_of, keep_dirs=keep_dirs, affected=badges)
+    return dict(root=root, tables_of=tables_of, keep_dirs=keep_dirs, affected=badges, hidden=len(grouped) - len(badges))
 
 
 def natural_key(name):
@@ -160,6 +210,7 @@ def table_page(page_template, fragment_template, **context):
 def register(app):
     """Adds every page view to the app with its original endpoint name."""
     app.jinja_env.globals.update(page_url=page_url, sort_url=sort_url, switch_url=switch_url, page_window=page_window,
+                                 show_deprecated=show_deprecated, deprecated_args=deprecated_args,
                                  page_sizes=queries.PAGE_SIZES, INFINITE_RUN=queries.INFINITE_RUN)
     app.jinja_env.filters["by_name"] = by_name
 
@@ -167,16 +218,18 @@ def register(app):
     @app.route('/tree')
     def directory_tree():
         db: ccdb.AlchemyProvider = g.db
+        show_all = deprecated_arg_or_400()
         root_dir = db.get_root_directory()  # loads every directory in one query and builds the paths
-        # One query for every table. Reading directory.type_tables per directory would lazy-load 65 times
-        # on hallddb (F30). The tables get parent_dir from the cache so table.path is complete.
-        tables_of = {}
-        for table in db.session.execute(select(TypeTable).order_by(TypeTable.name)).scalars():
-            table.parent_dir = db.dirs_by_id.get(table.parent_dir_id, root_dir)
-            tables_of.setdefault(table.parent_dir_id, []).append(table)
-        directory_count = len(db.dirs_by_id)
+        tables_of = tables_by_directory(db, root_dir)
+        keep_dirs = None if show_all else visible_directory_ids(root_dir)
+        if not show_all:
+            tables_of = {dir_id: [table for table in tables if not table.is_deprecated]
+                         for dir_id, tables in tables_of.items() if dir_id in keep_dirs or dir_id == 0}
+        directory_count = len(db.dirs_by_id) if show_all else len(keep_dirs)
         table_count = sum(len(tables) for tables in tables_of.values())
-        return render_template("tree.html", root=root_dir, tables_of=tables_of, directory_count=directory_count, table_count=table_count)
+        hidden_count = 0 if show_all else len(db.dirs_by_id) - directory_count + queries.table_count(db.session) - table_count
+        return render_template("tree.html", root=root_dir, tables_of=tables_of, keep_dirs=keep_dirs,
+                               directory_count=directory_count, table_count=table_count, hidden_count=hidden_count)
 
     @app.route('/get-dir-info/<int:dir_id>')
     def get_dir_info(dir_id):
@@ -194,6 +247,7 @@ def register(app):
             pending.extend(current.sub_dirs)
         table_ids = db.session.execute(select(TypeTable.id).where(TypeTable.parent_dir_id.in_(directory_ids))).scalars().all()
         return render_template('objects_dir_info.html', directory=directory, author_name=author_name(db, directory.author_id),
+                               deprecated_by=author_name(db, directory.deprecated_by_user_id),
                                table_count=len(table_ids), activity=queries.assignment_activity(db.session, table_ids))
 
     @app.route('/get-table-info/<int:table_id>')
@@ -204,13 +258,15 @@ def register(app):
         except ObjectIsNotFoundInDbError as error:
             return str(error), 404, {"Content-Type": "text/plain; charset=utf-8"}
         return render_template('objects_table_info.html', table=table, author_name=author_name(db, table.author_id),
+                               deprecated_by=author_name(db, table.deprecated_by_user_id),
                                activity=queries.assignment_activity(db.session, [table.id]))
 
     @app.route('/vars')
     def variations():
         db: ccdb.AlchemyProvider = g.db
+        show_all = deprecated_arg_or_400()
         query = queries.parse_page_query(request.args, queries.VARIATION_SORTS, default_sort="id", default_order="asc")
-        page = queries.list_variations(db.session, query)
+        page = queries.list_variations(db.session, query, include_deprecated=show_all)
         return table_page("variations.html", "_variations_table.html", page=page, query=query, chains=queries.variation_chains(db.session))
 
     @app.route('/vars/compare')
@@ -224,13 +280,16 @@ def register(app):
         that is slow on a production database.
         """
         db: ccdb.AlchemyProvider = g.db
+        show_all = deprecated_arg_or_400()
         chains = queries.variation_chains(db.session)
         name = request.args.get("variation") or ""
         run = queries.run_arg(request.args, "run")
         time_text = (request.args.get("time") or "").strip()
         before = time_arg_or_400(time_text)
-        context = dict(names=sorted(chains), name=name, run=run, time_text=time_text,
-                       chain=[], ancestors=[], parent="", segment=[], affected=None, root=None, tables_of={}, keep_dirs=set())
+        # The variation menu leaves out deprecated variations unless they are shown, but keeps the one in the URL.
+        deprecated = set() if show_all else queries.deprecated_variation_names(db.session) - {name}
+        context = dict(names=sorted(set(chains) - deprecated), name=name, run=run, time_text=time_text,
+                       chain=[], ancestors=[], parent="", segment=[], affected=None, root=None, tables_of={}, keep_dirs=set(), hidden=0)
         if name:
             if name not in chains:
                 abort(404, "No variation named '{0}'".format(name))
@@ -245,7 +304,7 @@ def register(app):
                 ids = queries.variation_ids(db.session)
                 variation_names = {ids[level]: level for level in segment}  # chain order, for the badges
                 grouped = queries.affected_tables(db.session, variation_names, run=run, before=before)
-                context.update(affected_tree(db, grouped, variation_names))
+                context.update(affected_tree(db, grouped, variation_names, include_deprecated=show_all))
         return render_template("compare.html", **context)
 
     @app.route('/logs')
@@ -321,18 +380,20 @@ def register(app):
     def versions(table_path):
         db: ccdb.AlchemyProvider = g.db
         table = db.get_type_table("/" + table_path)  # unknown path → ObjectIsNotFoundInDbError → 404 page
+        show_all = deprecated_arg_or_400()
         query = queries.parse_page_query(request.args, queries.ASSIGNMENT_SORTS, default_sort="created")
         filters = dict(variation=request.args.get("variation") or None,
                        run=queries.run_arg(request.args, "run"),
                        run_min=queries.run_arg(request.args, "run_min"),
                        run_max=queries.run_arg(request.args, "run_max"))
-        page = queries.list_assignments(db.session, table, query, **filters)
+        page = queries.list_assignments(db.session, table, query, include_deprecated=show_all, **filters)
         # The full page carries the table's info block (the rows of the tree's info modal) behind a Show info button;
-        # the live-search fragment does not, so its two queries are skipped there.
+        # the live-search fragment does not, so its queries are skipped there.
         info = {} if wants_fragment() else dict(activity=queries.assignment_activity(db.session, [table.id]),
-                                                author_name=author_name(db, table.author_id))
-        return table_page("versions.html", "_versions_table.html", page=page, query=query, table=table, filters=filters,
-                          variation_names=queries.table_variation_names(db.session, table), **info)
+                                                author_name=author_name(db, table.author_id),
+                                                deprecated_by=author_name(db, table.deprecated_by_user_id),
+                                                variation_names=queries.table_variation_names(db.session, table, include_deprecated=show_all))
+        return table_page("versions.html", "_versions_table.html", page=page, query=query, table=table, filters=filters, **info)
 
     @app.route('/test_request')
     def test_request():

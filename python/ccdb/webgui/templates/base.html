@@ -55,8 +55,8 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Close"></button>
       </div>
       <nav class="nav flex-column py-md-3">
-        <a class="nav-link {{ 'active' if section == 'tables' }}" href="{{ url_for('directory_tree') }}"><svg class="ico me-2"><use href="#i-table"/></svg>Tables</a>
-        <a class="nav-link {{ 'active' if section == 'variations' }}" href="{{ url_for('variations') }}"><svg class="ico me-2"><use href="#i-folder"/></svg>Variations</a>
+        <a class="nav-link {{ 'active' if section == 'tables' }}" href="{{ url_for('directory_tree', **deprecated_args()) }}"><svg class="ico me-2"><use href="#i-table"/></svg>Tables</a>
+        <a class="nav-link {{ 'active' if section == 'variations' }}" href="{{ url_for('variations', **deprecated_args()) }}"><svg class="ico me-2"><use href="#i-folder"/></svg>Variations</a>
         <a class="nav-link {{ 'active' if section == 'compare' }}" href="{{ url_for('compare_assignments') }}"><svg class="ico me-2"><use href="#i-compare"/></svg>Compare</a>
         <a class="nav-link {{ 'active' if section == 'request' }}" href="{{ url_for('test_request') }}"><svg class="ico me-2"><use href="#i-search"/></svg>Request</a>
         <a class="nav-link {{ 'active' if section == 'logs' }}" href="{{ url_for('log_records') }}"><svg class="ico me-2"><use href="#i-info"/></svg>Logs</a>

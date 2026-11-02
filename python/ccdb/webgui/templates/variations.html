@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}Variations · CCDB{% endblock %}
 
+{% from '_deprecation.html' import switch with context %}
 {% block page_header %}
 <div class="toolbar mb-1">
   <h1 class="h3 m-0">Variations</h1>
-  <a class="btn btn-primary" href="{{ url_for('compare_variations') }}"><svg class="ico"><use href="#i-eye"/></svg> Compare variations</a>
+  <a class="btn btn-primary" href="{{ url_for('compare_variations', **deprecated_args()) }}"><svg class="ico"><use href="#i-eye"/></svg> Compare variations</a>
 </div>
 <p class="text-body-secondary small mb-3">A request for a variation without an assignment falls back to the variation it inherits from, down to <code>default</code>. The eye of a row shows the tables that get their constants from that variation.</p>
 {% endblock %}
@@ -17,7 +18,9 @@
   </select>
   <input type="hidden" name="sort" value="{{ query.sort }}">
   <input type="hidden" name="order" value="{{ query.order }}">
+  {% if show_deprecated() %}<input type="hidden" name="deprecated" value="all">{% endif %}
   <button class="btn btn-outline-secondary" type="submit">Apply</button>
+  {{ switch() }}
 </form>
 {% include '_variations_table.html' %}
 {% endblock %}
