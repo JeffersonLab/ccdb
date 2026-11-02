@@ -5,7 +5,8 @@ feature, so you can install only what you need:
 
 - [**Python** (library + `ccdb` command line tool)](#python) — the main client and management tool
 - [**From source** (git clone + environment script)](#from-source)
-- [**C++ API**](#c-api)
+- [**C++ API**](#c-api) — build with CMake, [use from a CMake project](#use-the-library-from-a-cmake-project),
+  or [install with spack](#install-with-spack)
 - [**MySQL** server setup](#mysql)
 - [**Test the installation**](#test-the-installation)
 
@@ -64,7 +65,8 @@ ccdb -i
 
 - `CCDB_HOME` — set to where `environment.bash` is located
 - `PATH` — adds `$CCDB_HOME/bin`
-- `LD_LIBRARY_PATH` — adds `$CCDB_HOME/lib`
+- `LD_LIBRARY_PATH` — adds `$CCDB_HOME/lib`, where the C++ library lands when you install it with
+  `-DCMAKE_INSTALL_PREFIX=$CCDB_HOME` (see [C++ API](#c-api))
 - `PYTHONPATH` — adds `$CCDB_HOME/python`
 
 ### Manual environment setup
@@ -89,21 +91,81 @@ export CCDB_USER=<your login>
 
 ## C++ API
 
-The C++ API is provided by the ccdb library. There are two configurations to choose from:
+The C++ API is the `ccdb` shared library. It always reads SQLite files; it also reads MySQL and
+MariaDB servers when CMake finds the MySQL or MariaDB client library at configure time.
 
-1. With SQLite **and** MySQL support (default)
-2. With SQLite support **only** (no external dependencies except pthread)
+Requirements:
 
-The C++ API is built with CMake:
+- CMake 3.16 or newer and a C++ compiler
+- the SQLite 3 development package (`libsqlite3-dev`, `sqlite-devel`)
+- optional: the MySQL or MariaDB client development package (`libmysqlclient-dev` or `libmariadb-dev`,
+  `mysql-devel` or `mariadb-connector-c-devel`) for `mysql://` connections
+
+To build the library and install it under a prefix, run from the repository root:
 
 ```bash
-cd $CCDB_HOME
-cmake -S . -B build
-cmake --build build
+cmake -S cpp -B build -DCMAKE_INSTALL_PREFIX=$HOME/ccdb
+cmake --build build -j8
+cmake --install build
 ```
 
-> Older versions of CCDB used SCons. CMake is now the supported build system. See the
-> [C++ API](apis/cpp.md) page for details.
+The prefix receives `lib/libccdb.so`, the headers in `include/CCDB/`, the CMake package in
+`lib/cmake/ccdb/` and the test program `bin/ccdb_tests`. With `-DCMAKE_INSTALL_PREFIX=$CCDB_HOME`,
+the library lands in `$CCDB_HOME/lib`, which `environment.bash` puts on `LD_LIBRARY_PATH`.
+
+CMake options:
+
+| option | default | effect |
+|---|---|---|
+| `CCDB_BUILD_TESTS` | `ON` | builds the Catch2 test program `ccdb_tests` and installs it to `bin` |
+| `CCDB_CACHE_ON` | `OFF` | every `Calibration` starts with its in-memory cache of read assignments on; `EnableCache()` switches it at run time |
+| `CMAKE_DISABLE_FIND_PACKAGE_MySQL` | `OFF` | `ON` builds without MySQL support even when the client library is installed |
+
+### Use the library from a CMake project
+
+The installed library is a CMake package. To use it, find the package and link the `ccdb::ccdb`
+target; the target carries the include directory and the libraries CCDB links:
+
+```cmake
+find_package(ccdb 2.5 CONFIG REQUIRED)
+target_link_libraries(myapp PRIVATE ccdb::ccdb)
+```
+
+```cpp
+#include <CCDB/Calibration.h>
+#include <CCDB/CalibrationGenerator.h>
+```
+
+Point CMake at the prefix when you configure your project:
+
+```bash
+cmake -S . -B build -DCMAKE_PREFIX_PATH=$HOME/ccdb
+```
+
+`ccdb_WITH_MYSQL` is `TRUE` after `find_package` when the library was built with MySQL support. A
+project that builds CCDB as part of its own tree uses the same target name:
+
+```cmake
+set(CCDB_BUILD_TESTS OFF)
+add_subdirectory(path/to/ccdb/cpp ccdb)
+target_link_libraries(myapp PRIVATE ccdb::ccdb)
+```
+
+`cpp/examples/consumer` is a complete project of this kind; it reads one table and prints it.
+
+### Install with spack
+
+The repository carries a [spack](https://spack.io) package repository with the `ccdb` recipe for
+the C++ library. To install it, add the repository and install the package:
+
+```bash
+spack repo add $CCDB_HOME/spack/spack_repo/ccdb
+spack install ccdb          # with MySQL support
+spack install ccdb~mysql    # SQLite only
+```
+
+The recipe needs spack 1.0 or newer. `spack/check_recipe.sh` installs the checkout with it and
+builds `cpp/examples/consumer` against the result.
 
 ## MySQL
 
@@ -147,16 +209,20 @@ More on the MySQL database:
 
 ## Test the installation
 
-To test that CCDB is installed correctly, run the unit tests:
+To check the `ccdb` command, create a test SQLite database and list it:
 
 ```bash
-. $CCDB_HOME/bin/test_ccdb_lib
-. $CCDB_HOME/bin/test_ccdb_python3
+ccdb -c sqlite:///$HOME/ccdb_test.sqlite db init --init-i-am-sure
+ccdb -c sqlite:///$HOME/ccdb_test.sqlite ls /test/test_vars
 ```
 
-You should see the CCDB unit tests run and complete successfully.
+To run the C++ test program on that database (MySQL cases excluded):
 
-To check that the Python CLI works, start the interactive shell:
+```bash
+CCDB_TEST_SQLITE_CONNECTION=sqlite:///$HOME/ccdb_test.sqlite $HOME/ccdb/bin/ccdb_tests "~[mysql]"
+```
+
+To start the interactive shell:
 
 ```bash
 ccdb -i
@@ -167,7 +233,7 @@ ccdb -i
 ### Fedora / RHEL
 
 ```bash
-yum install cmake mysql-server mysql-devel python3-devel
+dnf install cmake gcc-c++ sqlite-devel mysql-devel python3-devel   # mysql-server for a local server
 ```
 
 If you haven't configured the MySQL server:
@@ -180,5 +246,5 @@ mysqladmin -u root -h <host> password 'your-password'
 ### Ubuntu / Debian
 
 ```bash
-apt-get install mysql-server cmake libmysqlclient-dev
+apt-get install cmake g++ libsqlite3-dev libmysqlclient-dev   # mysql-server for a local server
 ```

@@ -1,17 +1,43 @@
 
 ## Compilation
 
-```bash
+Requirements: CMake 3.16 or newer, a C++ compiler, the SQLite 3 development package
+(`libsqlite3-dev`); for `mysql://` connections the MySQL or MariaDB client development package
+(`libmysqlclient-dev` or `libmariadb-dev`), used when CMake finds it.
 
-cd <compilation dir>
-cmake -DCMAKE_INSTALL_PREFIX=<install dir> $CCDB_HOME/cpp
-cmake --build <compilation dir> --target all -- -j 16
+```bash
+cmake -S $CCDB_HOME/cpp -B <build dir> -DCMAKE_INSTALL_PREFIX=<install dir>
+cmake --build <build dir> -j 16
+cmake --install <build dir>
 ```
 
-### Ubuntu:
-libsqlite3-dev
+The install directory receives `lib/libccdb.so`, the headers in `include/CCDB/`, the CMake package in
+`lib/cmake/ccdb/` and the test program `bin/ccdb_tests`. Options: `-DCCDB_BUILD_TESTS=OFF` skips the
+test program, `-DCMAKE_DISABLE_FIND_PACKAGE_MySQL=ON` builds without MySQL support,
+`-DCCDB_CACHE_ON=ON` starts every `Calibration` with its assignment cache on.
 
+## Use from a CMake project
 
+```cmake
+find_package(ccdb 2.5 CONFIG REQUIRED)        # configure with -DCMAKE_PREFIX_PATH=<install dir>
+target_link_libraries(myapp PRIVATE ccdb::ccdb)
+```
+
+Or, with the CCDB sources inside the project: `add_subdirectory(<ccdb>/cpp ccdb)` and the same
+`ccdb::ccdb` target. `examples/consumer` is a complete project; the spack recipe is in
+`$CCDB_HOME/spack/spack_repo/ccdb`.
+
+## Tests
+
+The Catch2 suite reads a database created by the Python CLI:
+
+```bash
+ccdb -c sqlite:///$HOME/ccdb_test.sqlite db init --init-i-am-sure
+CCDB_TEST_SQLITE_CONNECTION=sqlite:///$HOME/ccdb_test.sqlite <build dir>/src/tests/ccdb_tests "~[mysql]"
+```
+
+The `[mysql]` cases need `CCDB_TEST_MYSQL_CONNECTION` pointing to a MySQL database initialized the
+same way.
 
 ## Connection settings
 

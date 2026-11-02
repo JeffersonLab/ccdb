@@ -35,7 +35,8 @@ source ccdb/environment.bash
 ccdb -i
 ```
 
-Instructions how to build CCDB for different programming languages and other info are [in the wiki](https://github.com/JeffersonLab/ccdb/wiki/Installation)
+The [Installation](https://jeffersonlab.github.io/ccdb/#/get-started/installation) page covers pip, the C++
+library with CMake (`find_package(ccdb)`), spack and a MySQL server.
 
 ## Citation
 
