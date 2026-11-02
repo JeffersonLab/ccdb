@@ -109,7 +109,7 @@ This table is printed when you execute `ccdb help`:
 | info      | Info            | Prints extended information about an object     |
 | vers      | Versions        | Show versions of data for the specified table  |
 | run       | CurrentRun      | Gets or sets current working run               |
-| dump      | Dump            | Dumps data table to a file                      |
+| dump      | Dump            | Dumps data table                               |
 | show      | Show            | Shows type table data                          |
 | mkdir     | MakeDirectory   | Create directory                               |
 | pwd       | PrintWorkDir    | Prints working directory                       |
@@ -117,8 +117,11 @@ This table is printed when you execute `ccdb help`:
 | mktbl     | MakeTable       | Create constants type table                    |
 | cat       | Cat             | Show assignment data by ID                     |
 | ls        | List            | List objects in a given directory              |
-| log       | Log             | Get CCDB changes log                           |
-| db        | DataBase        | Database management commands                    |
+| log       | ShowLog         | Shows log records                              |
+| db        | Database        | Database information and management            |
+| deprecate | Deprecate       | Marks a table, a directory or a variation as deprecated |
+| tag       | Tag             | Creates, lists, shows or removes snapshot tags |
+| prop      | Prop            | Sets, gets and lists properties of the instance, tables, directories and variations |
 
 Assuming you are in interactive mode, the commands can be categorized:
 
@@ -144,12 +147,17 @@ Assuming you are in interactive mode, the commands can be categorized:
 - `cat` — displays values
 - `dump` — same as `cat` but dumps files to disk
 - `log` — see logs information
+- `tag` — lists and shows tags
+- `prop get`, `prop ls` — read properties
 
 **Manage objects**
 
 - `mkdir` — creates a directory
 - `mktbl` — creates a data table
 - `add` — adds data from a text file to a table (variation and run ranges are created automatically)
+- `deprecate` — hides a directory, table or variation from listings
+- `tag` — creates and removes tags
+- `prop set` — sets a property
 
 **Deleting objects**
 
@@ -174,6 +182,10 @@ Assignments of one table with the same data share one constant set. `rm -a` dele
 with the last assignment that uses it, and removing a table removes its unused sets; see
 [Constant sets and their hashes](concepts/constant-sets.md#deleting-assignments-and-tables).
 
+`rm -a` refuses to delete an assignment that a tag pins, unless you add `--force`; see
+[Tags](concepts/tags.md#no-deletion-of-tagged-history). To retire an object without deleting it, use
+[`deprecate`](#deprecation).
+
 ### Versions of a table
 
 `vers` lists the assignments of a table, newest first. `vers -l` adds `(data)`, the first 12 hex digits
@@ -192,6 +204,202 @@ $ ccdb vers -l /test/test_vars/test_table
 
 Assignments 4 and 6 hold the same data. [Constant sets and their hashes](concepts/constant-sets.md)
 explains when data is shared.
+
+### Deprecation
+
+To hide a directory, a table or a variation from listings without deleting it, use `deprecate`:
+
+```
+ccdb deprecate [-t|-d|-v] NAME -c COMMENT
+ccdb deprecate --undo [-t|-d|-v] NAME
+```
+
+| flag | meaning |
+|---|---|
+| `-t` | NAME is a table |
+| `-d` | NAME is a directory |
+| `-v` | NAME is a variation |
+| `-c COMMENT` | why the object is deprecated and what to use instead; required |
+| `--undo` | clears the deprecation |
+
+Without `-t`, `-d` or `-v`, NAME is tried as a table, then as a directory.
+
+```
+$ ccdb deprecate /TOF/params -c "Replaced by /TOF/params_v2"
+Table '/TOF/params' deprecated
+$ ccdb deprecate -d /TOF/old -c "Superseded by /TOF"
+Directory '/TOF/old' deprecated
+$ ccdb deprecate -v mc_2019 -c "Use mc_2024"
+Variation 'mc_2019' deprecated
+$ ccdb ls -a -l /TOF
+old (deprecated) 2026-11-01 18:31:41 Superseded by /TOF
+params (deprecated) 2026-11-01 18:31:40 Replaced by /TOF/params_v2
+params_v2
+$ ccdb deprecate --undo /TOF/params
+Table '/TOF/params' is no longer deprecated
+```
+
+Deprecated objects:
+
+- are hidden from `ls` and `ls -l`; `ls -a` shows them marked, and `ls -a -l` adds the date and the
+  comment;
+- appear in `info` with a `Deprecated` line that holds the date and the comment;
+- stay unchanged for requests, `cat`, `vers` and `dump`.
+
+Each deprecation and each undo writes a log record. [Deprecation](concepts/deprecation.md) describes
+what is hidden and what is not.
+
+### Tags
+
+A tag names a snapshot of one variation at one moment; see [Tags](concepts/tags.md).
+
+```
+ccdb tag NAME [-v VARIATION] [-t TIME] -c COMMENT     # create
+ccdb tag                                              # list
+ccdb tag NAME                                         # show
+ccdb tag rm NAME                                      # remove
+```
+
+| flag | meaning |
+|---|---|
+| `-v VARIATION` | the variation the tag freezes; `default` if omitted |
+| `-t TIME` | the moment the tag freezes, in local time and the request time format; the current time if omitted; a future time is refused |
+| `-c COMMENT` | what the tag is for; required to create a tag |
+
+A tag name consists of `A-Z`, `a-z`, `0-9` and `_`, at most 100 characters.
+
+```
+$ ccdb tag Run2026 -c "Calibration of the 2026 production"
+Tag 'Run2026' is created
+$ ccdb tag mc_2025_10 -v mc -t 2025:10:31-23:59:59 -c "MC constants as of October 2025"
+Tag 'mc_2025_10' is created
+$ ccdb tag
+(name)                (variation)      (time UTC)            (comment)
+ Run2026               default          2026-11-01 23:35:54   Calibration of the 2026 production
+ mc_2025_10            mc               2025-11-01 03:59:59   MC constants as of October 2025
+$ ccdb tag Run2026
+...
+$ ccdb tag rm Run2026
+Tag 'Run2026' is removed
+```
+
+The tag stores the time as a UTC instant. `ccdb tag rm` writes a log record and leaves the constants
+in place. `rm -a` refuses to delete an assignment that a tag may resolve to; `rm -a ID -f` skips the
+prompt and deletes it anyway.
+
+### Tags in requests
+
+The [request](concepts/concepts.md#requests) part `@NAME` reads constants through a tag:
+
+```
+</path/to/data>[:<run>]@<tag>
+```
+
+The request uses the tag's variation and sees only assignments created at or before the tag's time.
+The run is optional, as in any request.
+
+```
+$ ccdb cat /test/test_vars/test_table:1500@Run2026
+$ ccdb dump /test/test_vars/test_table:1500@Run2026 > test_table.txt
+```
+
+`cat`, `dump`, `vers` and `info` accept a request with a tag. A tag already sets the variation and the
+time, so a request with a tag and a variation (`/path:1500:mc@Run2026`) or a tag and a time
+(`/path:1500::2026@Run2026`) is an error:
+
+```
+$ ccdb cat /test/test_vars/test_table:1500:mc@Run2026
+A request with a tag can have neither a variation nor a time: '/test/test_vars/test_table:1500:mc@Run2026'
+```
+
+### Properties
+
+Properties are name and value pairs that describe the CCDB instance or an object in it: a contact, a
+description, a license.
+
+```
+ccdb prop set [--instance | [-t|-d|-v] NAME] KEY VALUE
+ccdb prop get [--instance | [-t|-d|-v] NAME] KEY
+ccdb prop ls  [--instance | [-t|-d|-v] NAME]
+ccdb prop rm  [--instance | [-t|-d|-v] NAME] KEY
+```
+
+| flag | meaning |
+|---|---|
+| `--instance` | the property belongs to the CCDB instance |
+| `-t` | NAME is a table; the default |
+| `-d` | NAME is a directory |
+| `-v` | NAME is a variation |
+
+Standard names:
+
+| owner | names |
+|---|---|
+| instance | `experiment`, `description`, `license`, `citation`, `contact`, `url` |
+| directory, table, variation | `description`, `contact`, `keywords`, `source_url`, `doc_url`, `license`, `citation` |
+
+Any other name is allowed. One owner holds one value per name; `prop set` on an existing name
+replaces the value.
+
+```
+$ ccdb prop set --instance experiment GlueX
+Property 'experiment' of the instance is set
+$ ccdb prop set /TOF/params_v2 contact "tof-calib@example.org"
+Property 'contact' of table '/TOF/params_v2' is set
+$ ccdb prop get /TOF/params_v2 contact
+tof-calib@example.org
+$ ccdb prop ls /TOF/params_v2
+contact = tof-calib@example.org
+description = TOF timing offsets per paddle
+$ ccdb prop rm /TOF/params_v2 contact
+Deleted property 'contact' of table '/TOF/params_v2'
+```
+
+Each change writes a log record. `info` lists the properties of the object at the end of its output:
+
+```
+$ ccdb info /TOF/params_v2
+...
+Properties: 
+ contact     :  tof-calib@example.org
+ description :  TOF timing offsets per paddle
+```
+
+### Column units
+
+To give a column units, add them after the type in `mktbl`:
+
+```
+name=type:units
+```
+
+```
+$ ccdb mktbl /calib/gains -r 2 channel=int gain=double:MeV offset=double:ns time=:ns "#Gains per channel"
+```
+
+The units part is optional, and `name=type` stays valid. An empty type keeps the default `double`:
+`time=:ns` is a `double` column in `ns`. `info` shows the units in brackets:
+
+```
+$ ccdb info /calib/gains
+...
+Columns info 
+ N.   (type)    : (name) [units]
+ 0    int       : channel
+ 1    double    : gain [MeV]
+ 2    double    : offset [ns]
+ 3    double    : time [ns]
+```
+
+`dump` writes a `#meta units:` line after the comment lines when a table has units:
+
+```
+$ ccdb dump /calib/gains:100
+#
+#meta units: gain=MeV offset=ns time=ns
+  1            1.5          0.1          3
+  2            1.6          0.2          4
+```
 
 ### Database management
 
