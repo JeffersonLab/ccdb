@@ -15,7 +15,7 @@ authors:
     email: romanov@jlab.org
     affiliation: Thomas Jefferson National Accelerator Facility
 version: 2.5.0.dev0
-license: GPL-2.0-or-later
+license: LGPL-3.0-or-later
 repository-code: "https://github.com/JeffersonLab/ccdb"
 url: "https://jeffersonlab.github.io/ccdb"
 keywords:

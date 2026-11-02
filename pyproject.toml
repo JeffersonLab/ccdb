@@ -12,7 +12,7 @@ description = "CCDB - Calibration Constants DataBase"
 readme = "README.md"
 # Version is read dynamically from ccdb.version.version (see [tool.setuptools.dynamic])
 dynamic = ["version"]
-license = "GPL-2.0-or-later"
+license = "LGPL-3.0-or-later"
 authors = [
     { name = "Dmitry Romanov", email = "romanov@jlab.org" },
 ]
