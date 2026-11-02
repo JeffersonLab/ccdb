@@ -167,6 +167,30 @@ class TagsTest(TimeZonePinned):
         self.add_assignment("default")
         self.assertEqual(self.provider.get_assignment_by_request(TABLE + ":{}@sub".format(RUN)).id, expected.id)
 
+    def test_vers_with_tag_lists_the_parent_variations_as_cat_resolves(self):
+        # 'leaf' has no data of its own: a request with the tag resolves in its parent, default
+        self.provider.create_variation("leaf", "no data of its own", "default")
+        self.provider.create_tag("on_leaf", "leaf", comment="tag of a variation without data")
+        resolved = self.provider.get_assignment_by_request(TABLE + ":{}@on_leaf".format(RUN))
+        self.assertEqual(resolved.variation.name, "default")
+        default_ids = [a.id for a in self.provider.get_assignments(TABLE, variation="default")]
+
+        listed = self.provider.get_assignments(TABLE, tag="on_leaf")
+        self.assertEqual(sorted(a.id for a in listed), sorted(default_ids))
+        output = self.run_cli("vers {}@on_leaf".format(TABLE))
+        self.assertIn(" {} ".format(resolved.id), output)
+        self.assertIn("leaf -> default", output)
+        # the tag time still applies
+        newer = self.add_assignment("default")
+        self.assertNotIn(newer.id, [a.id for a in self.provider.get_assignments(TABLE, tag="on_leaf")])
+
+    def test_vers_with_tag_on_a_second_level_variation_lists_the_whole_tree(self):
+        self.provider.create_tag("sub", "subtest", comment="subtest")
+        names = {a.variation.name for a in self.provider.get_assignments(TABLE, tag="sub")}
+        expected = {a.variation.name for a in self.provider.get_assignments(TABLE)} & {"subtest", "test", "default"}
+        self.assertEqual(names, expected)
+        self.assertIn("subtest -> test -> default", self.run_cli("vers {}@sub".format(TABLE)))
+
     def test_request_with_tag_and_variation_or_time_is_an_error(self):
         self.provider.create_tag("t", "default", comment="t")
         with self.assertRaises(ValueError):
@@ -238,6 +262,13 @@ class TagsTest(TimeZonePinned):
             self.provider.create_tag("future", snapshot_time=utc_now() + timedelta(days=1), comment="x")
         with self.assertRaises(ValueError):
             self.run_cli('tag future -t 2137 -c "far away"')
+        self.assertEqual(self.provider.session.query(Tag).count(), 0)
+
+    def test_partial_date_of_today_is_refused_as_its_last_second(self):
+        today = datetime.now().strftime("%Y-%m-%d")        # TZ is UTC
+        with self.assertRaises(ValueError) as context:
+            self.run_cli('tag today -t {} -c "today"'.format(today))
+        self.assertIn("-t {0} means {0} 23:59:59".format(today), str(context.exception))
         self.assertEqual(self.provider.session.query(Tag).count(), 0)
 
     def test_aware_time_is_stored_as_utc(self):

@@ -48,7 +48,8 @@ class Versions(CliCommandBase):
             log.info("Table name (path) is required. See 'help vers'")
             return True
 
-        # a request with a tag lists the versions the tag sees: its variation, created at or before its time
+        # a request with a tag lists the versions the tag sees: created at or before its time, in its variation and
+        # in the parents of it, where the request resolves as cat does
         tag = None
         if '@' in raw_table_path:
             request = parse_request(raw_table_path)
@@ -66,7 +67,8 @@ class Versions(CliCommandBase):
         table = provider.get_type_table(table_path)
         assignments = provider.get_assignments(table, run, variation, defer_vault=True, tag=tag)
         if tag is not None:
-            variation = "{0} (tag '{1}' at {2} UTC)".format(provider.get_tag_variation(tag).name, tag.name,
+            tree = [v.name for v in provider.get_variation_tree_up(provider.get_tag_variation(tag))]
+            variation = "{0} (tag '{1}' at {2} UTC)".format(" -> ".join(tree), tag.name,
                                                              tag.snapshot_time.strftime("%Y-%m-%d %H:%M:%S"))
         sharer_counts = provider.get_constant_set_sharer_counts(table) if extended else None
         self.print_assignments(assignments, variation, run, sharer_counts)
@@ -148,6 +150,7 @@ Example:
     >> vers /test/test_vars/test_table   #get all data versions
     >> cd /test/test_vars                #navigate to directory
     >> vers -v default test_table        #shows only data versions in default variation
-    >> vers test_table@mytag             #versions that tag 'mytag' sees: its variation, up to its time
+    >> vers test_table@mytag             #versions that tag 'mytag' sees, up to its time: its variation
+                                         #and its parents up to default, as 'cat test_table@mytag' resolves
     >> vers -l test_table                #shows which versions share the same data
     """)
