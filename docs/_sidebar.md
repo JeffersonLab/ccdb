@@ -22,7 +22,7 @@
 - [Python CLI-like API](apis/python-cli-like.md)
 - [Python low-level API](apis/python-low-level.md)
 - [C++ API](apis/cpp.md)
-- [JANA API](apis/jana.md)
+- [JANA2 service](apis/jana.md)
 - [Java API](apis/java.md)
 
 **Advanced**:
