@@ -45,15 +45,21 @@ class Info(CliCommandBase):
 
         #it is a type table
         if obj_type == InfoTypes.type_table:
-            self.print_type_table(provider.get_type_table(path))
+            table = provider.get_type_table(path)
+            self.print_type_table(table)
+            self.print_properties(provider, "table", table.id)
 
         #it is a directory
         if obj_type == InfoTypes.directory:
-            self.print_directory(provider.get_directory(path))
+            directory = provider.get_directory(path)
+            self.print_directory(directory)
+            self.print_properties(provider, "directory", directory.id)
 
         #it is a variation
         if obj_type == InfoTypes.variation:
-            self.print_variation(provider.get_variation(obj_name))
+            variation = provider.get_variation(obj_name)
+            self.print_variation(variation)
+            self.print_properties(provider, "variation", variation.id)
 
         #it is a file!!!
         if obj_type == InfoTypes.file:
@@ -177,6 +183,20 @@ class Info(CliCommandBase):
             return
         date = obj.deprecated_time.strftime("%Y-%m-%d %H-%M-%S") if obj.deprecated_time else "--"
         print(label + self.theme.Fail + "yes" + self.theme.Reset + ", " + date + ": " + (obj.deprecation_comment or ""))
+
+    #----------------------------------------
+    #   print_properties
+    #----------------------------------------
+    def print_properties(self, provider, owner_type, owner_id):
+        # nothing is printed without properties, so the output of objects that have none stays as it was
+        properties = provider.get_properties(owner_type, owner_id)
+        if not properties:
+            return
+        print("Properties: ")
+        width = max(len(prop.name) for prop in properties)
+        for prop in properties:
+            print(" " + self.theme.Accent + prop.name.ljust(width) + self.theme.Reset + " :  " + prop.value)
+        print()
 
     #----------------------------------------
     #   print_help

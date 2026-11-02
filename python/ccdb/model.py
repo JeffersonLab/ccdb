@@ -441,7 +441,7 @@ class TimeRange(Base):
 # noinspection PyClassHasNoInit
 class Property(Base):
     """
-    A named value attached to the instance or to an object (schema 6). Stored only; nothing reads them yet.
+    A named value attached to the instance or to an object (schema 6), set by 'ccdb prop' and shown by 'ccdb info'.
 
     owner_type is 'instance', 'directory', 'table', 'variation' or 'column', and owner_id is that object's id
     (0 for the instance). A name is unique per owner.
