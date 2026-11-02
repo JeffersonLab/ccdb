@@ -26,7 +26,6 @@
 
 #include <CCDB/Calibration.h>
 #include <CCDB/CalibrationGenerator.h>
-#include <CCDB/Helpers/StringUtils.h>
 
 #include <ctime>
 #include <map>
@@ -124,15 +123,3 @@ private:
     std::map<std::string, std::string> m_verified_resources;  ///< sha256 -> path checked by this service
 };
 
-
-// Calibration::GetCalib(double&) and GetCalib(int&) fill the value but return false (CCDB up to 2.5.0, finding
-// F25), so a single number is read as text and converted the way those two functions convert it
-template <>
-inline double CCDB_service::GetConstants<double>(int run, const std::string& request) {
-    return ccdb::StringUtils::ParseDouble(GetConstants<std::string>(run, request));
-}
-
-template <>
-inline int CCDB_service::GetConstants<int>(int run, const std::string& request) {
-    return ccdb::StringUtils::ParseInt(GetConstants<std::string>(run, request));
-}
