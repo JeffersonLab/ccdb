@@ -54,6 +54,7 @@
 .cell-mono { font-family: var(--bs-font-monospace); font-size: .875em; }
 /* column types in the data view, under the name (horizontal) or in their own column (vertical) */
 .col-type { color: var(--bs-secondary-color); font-weight: normal; font-size: .8em; }
+.col-units { color: var(--bs-secondary-color); font-weight: normal; }
 /* row index of the data table: a spreadsheet-like row header, set apart from the first value */
 .table .row-index { color: var(--bs-secondary-color); font-weight: normal; text-align: right; width: 1%; padding-right: .6rem; border-right: 1px solid var(--bs-border-color); }
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }

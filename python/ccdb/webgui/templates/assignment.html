@@ -95,14 +95,14 @@
     </thead>
     <tbody>
       {% for column in table.columns %}{% set column_i = loop.index0 %}
-      <tr><th scope="row" data-column="{{ column.name }}">{{ column.name }}</th><td class="col-type">{{ column.type }}</td>{% for row_i, row in page.items %}<td>{{ row[column_i] }}</td>{% endfor %}</tr>
+      <tr><th scope="row" data-column="{{ column.name }}">{{ column.name }}</th><td class="col-type" data-type="{{ column.type }}"{% if column.units %} data-units="{{ column.units }}"{% endif %}>{{ column.type }}{% if column.units %}<span class="col-units"> · {{ column.units }}</span>{% endif %}</td>{% for row_i, row in page.items %}<td>{{ row[column_i] }}</td>{% endfor %}</tr>
       {% endfor %}
     </tbody>
   </table>
 {% else %}
   <table class="table table-sm table-striped table-sticky cell-mono mb-0" data-lines="rows">
     <thead>
-      <tr><th scope="col" class="row-index" title="Row index, counted from 0">#</th>{% for column in table.columns %}<th scope="col" data-column="{{ column.name }}" data-type="{{ column.type }}">{{ column.name }}<small class="col-type d-block">{{ column.type }}</small></th>{% endfor %}</tr>
+      <tr><th scope="col" class="row-index" title="Row index, counted from 0">#</th>{% for column in table.columns %}<th scope="col" data-column="{{ column.name }}" data-type="{{ column.type }}"{% if column.units %} data-units="{{ column.units }}"{% endif %}>{{ column.name }}<small class="col-type d-block">{{ column.type }}{% if column.units %}<span class="col-units"> · {{ column.units }}</span>{% endif %}</small></th>{% endfor %}</tr>
     </thead>
     <tbody>
       {% for row_i, row in page.items %}

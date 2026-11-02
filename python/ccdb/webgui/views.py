@@ -257,6 +257,7 @@ def register(app):
         table_ids = db.session.execute(select(TypeTable.id).where(TypeTable.parent_dir_id.in_(directory_ids))).scalars().all()
         return render_template('objects_dir_info.html', directory=directory, author_name=author_name(db, directory.author_id),
                                deprecated_by=author_name(db, directory.deprecated_by_user_id),
+                               properties=queries.properties_of(db.session, "directory", [directory.id]).get(directory.id, []),
                                table_count=len(table_ids), activity=queries.assignment_activity(db.session, table_ids))
 
     @app.route('/get-table-info/<int:table_id>')
@@ -268,6 +269,7 @@ def register(app):
             return str(error), 404, {"Content-Type": "text/plain; charset=utf-8"}
         return render_template('objects_table_info.html', table=table, author_name=author_name(db, table.author_id),
                                deprecated_by=author_name(db, table.deprecated_by_user_id),
+                               properties=queries.properties_of(db.session, "table", [table.id]).get(table.id, []),
                                activity=queries.assignment_activity(db.session, [table.id]))
 
     @app.route('/vars')
@@ -276,7 +278,9 @@ def register(app):
         show_all = deprecated_arg_or_400()
         query = queries.parse_page_query(request.args, queries.VARIATION_SORTS, default_sort="id", default_order="asc")
         page = queries.list_variations(db.session, query, include_deprecated=show_all)
-        return table_page("variations.html", "_variations_table.html", page=page, query=query, chains=queries.variation_chains(db.session))
+        properties = queries.properties_of(db.session, "variation", [row.id for row in page.items])
+        return table_page("variations.html", "_variations_table.html", page=page, query=query, chains=queries.variation_chains(db.session),
+                          properties=properties)
 
     @app.route('/vars/compare')
     def compare_variations():
@@ -396,7 +400,8 @@ def register(app):
 
     @app.route('/doc')
     def documentation():
-        return render_template("doc.html")
+        db: ccdb.AlchemyProvider = g.db
+        return render_template("doc.html", instance_properties=queries.properties_of(db.session, "instance", [0]).get(0, []))
 
     @app.route('/health')
     def health():
@@ -429,6 +434,7 @@ def register(app):
         info = {} if wants_fragment() else dict(activity=queries.assignment_activity(db.session, [table.id]),
                                                 author_name=author_name(db, table.author_id),
                                                 deprecated_by=author_name(db, table.deprecated_by_user_id),
+                                                properties=queries.properties_of(db.session, "table", [table.id]).get(table.id, []),
                                                 variation_names=queries.table_variation_names(db.session, table, include_deprecated=show_all))
         return table_page("versions.html", "_versions_table.html", page=page, query=query, table=table, filters=filters, **info)
 
