@@ -28,6 +28,12 @@ endif ()
 #add_subdirectory(src/fmt)
 add_subdirectory(src/CCDB)
 
+# The JANA2 service (library ccdb_jana2 and plugin CCDB_service) lives in ../jana2 and needs JANA2
+option(CCDB_BUILD_JANA2 "Build the JANA2 service CCDB_service (needs JANA2)" OFF)
+if(CCDB_BUILD_JANA2)
+    add_subdirectory("${PROJECT_SOURCE_DIR}/../jana2" "${PROJECT_BINARY_DIR}/jana2")
+endif()
+
 # The Catch2 suite; a package build may switch it off. When on, ccdb_tests is installed to <prefix>/bin as in 2.4.
 option(CCDB_BUILD_TESTS "Build the Catch2 test suite ccdb_tests" ON)
 if(CCDB_BUILD_TESTS)
