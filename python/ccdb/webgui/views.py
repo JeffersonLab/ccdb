@@ -552,6 +552,7 @@ def register(app):
                                page=page,
                                page_href=lambda number: url_for("show_request", request=assignment.request, page=number, **kept),
                                previous=assignments.previous_assignment(db, assignment),
+                               same_data=queries.same_data(db.session, assignment, assignment.constant_set.type_table.path),
                                data=data,
                                layout=layout,
                                column_lines=assignments.column_lines(layout, len(data), len(assignment.constant_set.type_table.columns)),
