@@ -132,6 +132,12 @@ class ColumnUnitsTests(unittest.TestCase):
         # dict iteration used to unpack the key string itself, so any '#meta' line raised here
         self.run_cmd("info -f " + path)
 
+    def test_units_with_line_breaks_are_refused(self):
+        """A line break in units would split the #meta units line of a dump"""
+        for units in ("Me\nV", "Me\rV"):
+            with self.assertRaises(ValueError):
+                self.provider.create_type_table("t_units_break", "/test", 1, [("x", "double", units)], "c")
+
 
 if __name__ == '__main__':
     unittest.main()

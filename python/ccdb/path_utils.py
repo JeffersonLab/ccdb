@@ -221,7 +221,7 @@ def parse_request(request_str=""):
     # neither paths, nor runs, nor variations, nor times contain '@', so the first one starts the tag
     if '@' in request_str:
         request_str, tag = request_str.split('@', 1)
-        if not validate_name(tag):
+        if not validate_tag_name(tag):
             raise ValueError("Tag name '{0}' in request '{1}' is invalid. "
                              "It should consist of A-Z, a-z, 0-9, _".format(tag, result.original_str))
         result.tag = tag
@@ -285,6 +285,15 @@ def validate_name(name):
     if re.match(r"^[\w]+$", name):
         return True  # No match
     return False
+
+
+def validate_tag_name(name):
+    """ Checks if name is a valid tag name: ASCII letters, digits and '_' only
+    :return: True if name is correct
+    :rtype: bool
+    """
+    import re
+    return re.fullmatch(r"[A-Za-z0-9_]+", name) is not None
 
 
 def make_absolute(path=""):

@@ -100,7 +100,7 @@ class Deprecate(CliCommandBase):
         print("""Marks a table, a directory or a variation as deprecated
 
 A deprecated object works as before: requests, cat, vers, dump and info are unchanged.
-ls hides deprecated entries; ls -a shows them marked, ls -l adds the comment and the date.
+ls hides deprecated entries; ls -a shows them marked, ls -a -l adds the comment and the date.
 
     deprecate <name> -c <comment>         - deprecates a table, or a directory if there is no such table
     deprecate <name> -t -c <comment>      - deprecates a table

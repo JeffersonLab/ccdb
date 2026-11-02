@@ -12,6 +12,7 @@ import ccdb.cmd.themes
 from ccdb import AlchemyProvider
 from ccdb import testing as helper
 from ccdb.cmd.cli_manager import CliManager, CCDB_EXCEPTIONS_THROW
+from ccdb.errors import AnonymousUserForbiddenError
 from ccdb.model import LogRecord
 
 
@@ -142,6 +143,19 @@ class ProviderDeprecationTests(DeprecationTestBase):
         assignment = self.provider.get_assignment(TABLE, 100, "default")
         self.assertIsNotNone(assignment)
         self.assertTrue(assignment.constant_set.data_table)
+
+
+    def test_anonymous_user_is_refused(self):
+        table = self.provider.get_type_table(TABLE)
+        self.provider.authentication.current_user_name = "anonymous"
+        with self.assertRaises(AnonymousUserForbiddenError):
+            self.provider.deprecate(table, COMMENT)
+        with self.assertRaises(AnonymousUserForbiddenError):
+            self.provider.undeprecate(table)
+
+    def test_root_directory_is_refused(self):
+        with self.assertRaises(ValueError):
+            self.provider.deprecate(self.provider.get_root_directory(), COMMENT)
 
 
 class CliDeprecationTests(DeprecationTestBase):
