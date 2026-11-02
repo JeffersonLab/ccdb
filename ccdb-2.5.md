@@ -132,7 +132,7 @@ recommendation.
 | D10 | C++ HTTP provider | Connection string `http://host/api/v1` or `https://…`. The provider downloads the run bundle for the requested run and variation and time or tag into `CCDB_HTTP_CACHE_DIR` (default `$HOME/.cache/ccdb`), verifies the `sha256` the API sends, and delegates every call to the existing SQLite provider on that file. libcurl, behind `-DCCDB_WITH_HTTP=ON` (default ON when libcurl is found). A per-table fallback is out of scope. |
 | D11 | load-test data | A synthetic database shaped like hallddb: table count, rows and columns per table, blob sizes and assignments per table drawn from the read-only size survey of hallddb done in PHASE0 Step 0 (`COUNT`, `LENGTH(vault)` aggregates; no dump, no blob transfer). The survey script lives in `{scripts}/schema/survey.py` and its numbers in the PHASE0 report. |
 | D12 | DD4hep pieces | Two plugins in one library `ccdb_dd4hep`: `CCDB_ConditionsLoader`, a `ConditionsDataLoader` that maps a CCDB table to conditions with a run IOV, alignment deltas (dx, dy, dz, rotations per detector element) as the worked example; and `CCDB_Constants`, a geometry plugin that defines compact XML constants from a one-row CCDB table at parse time. Built with `-DCCDB_BUILD_DD4HEP=ON`, off by default. |
-| D13 | spack | A `package.py` under `{repo}/spack/packages/ccdb/`, tested by `spack install` from that local repo in CI (a `spack` container job). Submitting it upstream and to `eic-spack` is the user's action; the plan prepares the files and the text. |
+| D13 | spack | None in this repository: spack packaging is EIC's (eic-spack), not CCDB's (user, 2026-11-02). The recipe PHASE3 item 3 added is removed; no phase writes spack files, spack CI or upstream spack texts. |
 | D14 | license and citation | `LICENSE` with GPL-2.0-or-later, as `pyproject.toml` already declares; `CITATION.cff` with the authors of `pyproject.toml`; Zenodo is a user action, the plan prepares `.zenodo.json`. |
 | D15 | version during the program | `ccdb.version.version` becomes `2.5.0.dev0` in PHASE0 (its first product change) and `2.5.0` in PHASE12; `version.py` learns to read the PEP 440 suffix, `version_tuple` stays `(2, 5, 0)` (decided 2026-10-31, Q37). |
 | D16 | demo | A compose file under `{repo}/docker/demo/` with MySQL holding ePIC-shaped tables, the API, nginx with the shipped cache configuration and the GUI; plus a standalone JANA2 application in `eic-shell` that reads one table through `CCDB_service` against that stack, once by variation and time and once by a campaign tag. A patch for an EICRecon branch with one factory using the service lives in `{space}/notes/epic/` for the demo day; EICRecon itself is not built in this repository's CI. |
@@ -283,7 +283,7 @@ tested in `eic-shell`.
   2. Example factory `{jana2}/examples/` in the EICRecon factory layout: `ChangeRun()` fetches a table through the service and pushes the values into the algorithm configuration; `Process()` uses them. A test runs the factory over a dummy event source across two runs with different constants and asserts the switch.
   3. Resource helper `CCDB_service::GetResource(run, table)` (the resources decision): reads a one-row table with `url`, `sha256`, `size` columns, fetches the file into `ccdb:cache_dir` once, verifies the hash, returns the path. Test with a `file://` URL and a wrong hash.
   4. Retire `{cpp}/jana_plugin`: delete it; `{docs}/apis/jana.md` rewritten for JANA2 with the parameters, the factory example and the EICRecon integration steps (`add_subdirectory`, `find_package(ccdb)`); the CLI docs mention `JANA_CALIB_URL` compatibility in the service only.
-  5. CI: `cpp-tests.yml` gains a job in the `eic-shell` image that configures with `-DCCDB_BUILD_JANA2=ON` and runs the `[jana2]` tests. The spack recipe's `+jana2` variant builds the same.
+  5. CI: `cpp-tests.yml` gains a job in the `eic-shell` image that configures with `-DCCDB_BUILD_JANA2=ON` and runs the `[jana2]` tests.
 - Gate: Python suite, C++ suite plus `[jana2]` in `eic-shell`, consumer job, GUI smoke bytes equal to Step 0, docs link check, pyflakes.
 - Done: `phase4_jana2.md` with the counts, the service API as a table, the output of the two-run factory test, the question sweep.
 - Extra rows: the image's JANA2 lacks an API the service needs → PARK with the JANA2 version where it appears and the alternative. A change in `{cpp}/src/CCDB` seems needed beyond D1 → core-patch route.
@@ -347,7 +347,7 @@ and the SQLite provider serves it.
 - Work items:
   1. `HTTPDataProvider` (D10): URL parsing, bundle request with the explicit-time redirect followed, the tag form, download to the cache directory with the `sha256` verified, delegation to `SQLiteDataProvider` for every read, a clear error when the server or the cache directory is unavailable, timeouts through `CCDB_HTTP_TIMEOUT`. The one hook in `CalibrationGenerator.cc`. Catch2 `[http]` tests: the test harness starts `ccdb api` on the test SQLite on a free port (a Python helper under `{cpp}/src/tests/`), then reads constants through the provider and compares with the SQLite provider on the same file, by time and by tag; a second run with the server stopped reads from the cache; a wrong hash is rejected.
   2. `JANA_CALIB_URL=http://…` and `ccdb:url=http://…` work in the JANA2 service through the generator; the PHASE6 demo application runs against the compose stack through HTTP; the `[jana2]` test gains the HTTP case.
-  3. CI: `cpp-tests.yml` gains the `[http]` job; the spack recipe's `+http` variant.
+  3. CI: `cpp-tests.yml` gains the `[http]` job.
   4. Docs: `{docs}/apis/cpp.md` gains the HTTP connection string, the cache directory and the environment variables; `new-experiment.md`'s table of the ways jobs read constants gains the row.
 - Gate: PHASE7 gate plus `[http]` tests, demo check over HTTP.
 - Done: `phase8_http_provider.md`, question sweep.
@@ -376,7 +376,7 @@ Task: the two plugins of D12 in `{dd4hep}`, built and tested in `eic-shell`.
 - Work items:
   1. `CCDB_Constants` geometry plugin: `<plugin name="CCDB_Constants" table="/epic/geometry/ecal_dims" run="1"/>` defines one constant per column, with the column's units in the constant's documentation string; test loads a compact XML in a `dd4hep::Detector` against a test SQLite and asserts `detector.constant<double>(name)`.
   2. `CCDB_ConditionsLoader`: a `ConditionsDataLoader` that, for a detector element and a run IOV, loads a CCDB table's rows into conditions (one row per element, columns as values), alignment deltas as the example with `DDAlign` applying them; test loads conditions for two runs and asserts the values and the IOV; a second test applies a delta and reads the element's placement back.
-  3. CMake option, the `eic-shell` CI job, the spack variant.
+  3. CMake option, the `eic-shell` CI job.
   4. Docs: `{docs}/apis/dd4hep.md` with the XML snippets, the table shapes, and the simulation workflow (which run numbers, the `mc` variation, a tag per production); linked from `streaming-readout.md`'s Simulation section.
 - Gate: PHASE9 gate plus the DD4hep tests in `eic-shell`.
 - Done: `phase10_dd4hep.md`, question sweep.
@@ -405,7 +405,7 @@ Task: release 2.5.0 and the material for the ePIC decision.
 - Work items:
   1. Version `2.5.0`; release notes `{space}/reports/release-2.5.0.md` in the 2.4.0 notes' shape, with an Upgrading section that states schema 6, the same-day rule for Python clients, the dry run and the rollback; `{docs}/index.md` and README updated under the feature-page rules; the docs sidebar complete; every docs page link-checked.
   2. `{space}/reports/comparison.md` (D19) and `{space}/reports/pitch-outline.md`: the technical fit first (EICRecon service, tags as campaign snapshots, streaming model, scaling numbers), then stewardship and FAIR, then the roadmap.
-  3. The upstream texts: the spack pull request, the eic-spack request, the Zenodo steps, ready for the user.
+  3. The Zenodo steps, ready for the user.
 - Gate: every suite and ruler of the program green on the final tree.
 - Done: `phase12_release.md`; the final checkpoint is what the user reviews, commits and tags.
 

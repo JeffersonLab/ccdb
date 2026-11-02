@@ -36,7 +36,7 @@ ccdb -i
 ```
 
 The [Installation](https://jeffersonlab.github.io/ccdb/#/get-started/installation) page covers pip, the C++
-library with CMake (`find_package(ccdb)`), spack and a MySQL server.
+library with CMake (`find_package(ccdb)`) and a MySQL server.
 
 ## Citation
 
