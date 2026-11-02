@@ -9,7 +9,13 @@
 #include <CCDB/Helpers/PathUtils.h>
 #include <CCDB/Helpers/StringUtils.h>
 
+#include "Sha256.h"
+
 #include <cstdlib>
+#include <filesystem>
+#include <map>
+#include <unistd.h>
+#include <vector>
 
 namespace {
 
@@ -130,4 +136,98 @@ ccdb::Calibration* CCDB_service::GetCalibrationForRun(int run) {
 std::string CCDB_service::ApplyTag(const std::string& request) const {
     if (m_tag.empty() || request.find('@') != std::string::npos) return request;
     return request + "@" + m_tag;
+}
+
+
+std::string CCDB_service::GetResource(int run, const std::string& table) {
+    auto rows = GetConstants<std::vector<std::map<std::string, std::string>>>(run, table);
+    if (rows.size() != 1) {
+        throw JException("CCDB_service: resources table '%s' has %d rows for run %d; it must have one",
+                         table.c_str(), (int)rows.size(), run);
+    }
+    const auto& row = rows[0];
+    for (const char* column: {"url", "sha256", "size"}) {
+        if (row.find(column) == row.end()) {
+            throw JException("CCDB_service: resources table '%s' has no column '%s' (it needs url, sha256, size)", table.c_str(), column);
+        }
+    }
+    const std::string& url = row.at("url");
+    const std::string& expected_sha256 = row.at("sha256");
+    bool size_parsed = false;
+    long long expected_size = -1;
+    try {
+        size_t parsed_chars = 0;
+        expected_size = std::stoll(row.at("size"), &parsed_chars);
+        size_parsed = parsed_chars == row.at("size").size() && expected_size >= 0;
+    } catch (std::exception&) {}
+    if (!size_parsed) {
+        throw JException("CCDB_service: resources table '%s': size '%s' is not a byte count", table.c_str(), row.at("size").c_str());
+    }
+    if (expected_sha256.size() != 64 || expected_sha256.find_first_not_of("0123456789abcdef") != std::string::npos) {
+        throw JException("CCDB_service: resources table '%s': sha256 '%s' is not 64 lower-case hex characters",
+                         table.c_str(), expected_sha256.c_str());
+    }
+
+    // Where the file comes from: file:///path or /path
+    std::string source_path;
+    if (url.rfind("file://", 0) == 0) {
+        source_path = url.substr(7);
+    } else if (!url.empty() && url[0] == '/') {
+        source_path = url;
+    } else {
+        throw JException("CCDB_service: resource '%s' of table '%s': only file:// URLs and absolute paths are "
+                         "supported so far", url.c_str(), table.c_str());
+    }
+
+    namespace fs = std::filesystem;
+    std::string file_name = fs::path(source_path).filename().string();
+    if (file_name.empty()) file_name = "resource";
+    fs::path target = fs::path(m_cache_dir) / expected_sha256 / file_name;
+
+    std::lock_guard<std::mutex> lock(m_resources_mutex);
+    auto verified = m_verified_resources.find(expected_sha256);
+    if (verified != m_verified_resources.end() && fs::exists(verified->second)) return verified->second;
+
+    auto& log = GetLogger();
+    std::error_code error;
+    if (fs::exists(target, error)) {
+        if ((long long)fs::file_size(target, error) == expected_size && ccdb_jana2::Sha256::OfFile(target.string()) == expected_sha256) {
+            m_verified_resources[expected_sha256] = target.string();
+            return target.string();
+        }
+        LOG_WARN(log) << "CCDB_service: cached " << target.string() << " does not match its sha256; fetching it again" << LOG_END;
+        fs::remove(target, error);
+    }
+
+    // Copy next to the target under a temporary name, check, then rename: a reader never sees half a file
+    fs::create_directories(target.parent_path(), error);
+    if (error) {
+        throw JException("CCDB_service: can't create the cache directory '%s': %s", target.parent_path().string().c_str(), error.message().c_str());
+    }
+    fs::path partial = target;
+    partial += ".part." + std::to_string(::getpid());
+    fs::copy_file(source_path, partial, fs::copy_options::overwrite_existing, error);
+    if (error) {
+        fs::remove(partial, error);
+        throw JException("CCDB_service: can't fetch resource '%s' of table '%s' for run %d: %s",
+                         url.c_str(), table.c_str(), run, error.message().c_str());
+    }
+
+    long long actual_size = (long long)fs::file_size(partial, error);
+    std::string actual_sha256 = ccdb_jana2::Sha256::OfFile(partial.string());
+    if (actual_sha256 != expected_sha256 || actual_size != expected_size) {
+        fs::remove(partial, error);
+        throw JException("CCDB_service: resource '%s' of table '%s' does not match the table: sha256 %s, %lld bytes; "
+                         "the table says sha256 %s, %lld bytes. The file is not kept",
+                         url.c_str(), table.c_str(), actual_sha256.c_str(), actual_size, expected_sha256.c_str(), expected_size);
+    }
+    fs::rename(partial, target, error);
+    if (error) {
+        fs::remove(partial, error);
+        throw JException("CCDB_service: can't move the fetched resource to '%s'", target.string().c_str());
+    }
+
+    LOG_INFO(log) << "CCDB_service: fetched " << url << " into " << target.string() << LOG_END;
+    m_verified_resources[expected_sha256] = target.string();
+    return target.string();
 }

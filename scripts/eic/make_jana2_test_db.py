@@ -17,11 +17,20 @@ parameter and of the tag do not depend on the clock:
 The tag jana2_campaign points at variation default at 2022-01-01, so under it the gains are "old".
 The child variation has no gains of its own: it inherits them from default.
 
+Resources tables (columns url, sha256, size) for CCDB_service::GetResource point at a file the script writes
+next to the database, <database>.resource/weights.bin:
+
+    /test/jana2/model             the file with its true sha256 and size
+    /test/jana2/model_bad_hash    the same file with the sha256 of other bytes
+    /test/jana2/model_missing     a file:// URL to a file that does not exist
+    /test/jana2/model_http        an https:// URL
+
 The CLI runs from this checkout (PYTHONPATH=<repo>/python), so the script needs only the ccdb package's
 dependencies, which the eic-shell image has.
 """
 
 import argparse
+import hashlib
 import os
 import sqlite3
 import subprocess
@@ -50,6 +59,15 @@ def run_ccdb(connection, *args):
         sys.exit("ccdb {} failed with exit code {}:\n{}".format(" ".join(args), result.returncode, result.stdout))
 
 
+def write_resource_file(directory):
+    """A file of several SHA-256 blocks for the resources tables; the same bytes on every run"""
+    os.makedirs(directory, exist_ok=True)
+    resource_path = os.path.join(directory, "weights.bin")
+    with open(resource_path, "wb") as f:
+        f.write(b"".join(b"CCDB_service resource test line %d\n" % line_i for line_i in range(1000)))
+    return resource_path
+
+
 def main():
     parser = argparse.ArgumentParser(description="Create the SQLite database of the [jana2] C++ tests")
     parser.add_argument("path", help="SQLite file to create; an existing file is replaced")
@@ -66,7 +84,26 @@ def main():
     run_ccdb(connection, "mktbl", "/test/jana2/gains", "-r", "2", "gain=double", "offset=double", "channel=int", "#gains of the jana2 tests")
     run_ccdb(connection, "mktbl", "/test/jana2/pedestal", "-r", "1", "value=double", "#pedestal of the jana2 tests")
 
+    resource_path = write_resource_file(path + ".resource")
+    with open(resource_path, "rb") as f:
+        resource_bytes = f.read()
+    resource_sha256 = hashlib.sha256(resource_bytes).hexdigest()
+    other_sha256 = hashlib.sha256(b"other bytes").hexdigest()
+    resources = [
+        ("/test/jana2/model", "file://" + resource_path, resource_sha256),
+        ("/test/jana2/model_bad_hash", "file://" + resource_path, other_sha256),
+        ("/test/jana2/model_missing", "file://" + resource_path + ".missing", resource_sha256),
+        ("/test/jana2/model_http", "https://example.org/ccdb/weights.bin", resource_sha256),
+    ]
+
     with tempfile.TemporaryDirectory() as tmp_dir:
+        for table, url, sha256 in resources:
+            run_ccdb(connection, "mktbl", table, "-r", "1", "url=string", "sha256=string", "size=int", "#resource of the jana2 tests")
+            data_file = os.path.join(tmp_dir, "resource.txt")
+            with open(data_file, "w") as f:
+                f.write("{} {} {}\n".format(url, sha256, len(resource_bytes)))
+            run_ccdb(connection, "add", table, "-r", "0-999", data_file)
+
         for marker, table, variation, runs, rows, _ in ASSIGNMENTS:
             data_file = os.path.join(tmp_dir, marker.replace(":", "_") + ".txt")
             with open(data_file, "w") as f:

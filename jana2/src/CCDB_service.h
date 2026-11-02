@@ -29,6 +29,7 @@
 #include <CCDB/Helpers/StringUtils.h>
 
 #include <ctime>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -71,6 +72,16 @@ public:
     /// would silently read the newest constants of the default variation. Use GetConstants then.
     ccdb::Calibration* GetCalibration(int run);
 
+    /// A file that a resources table points to, fetched into ccdb:cache_dir and verified, as a local path.
+    ///
+    /// The table has one row with the columns url, sha256 (64 hex characters) and size (bytes); CCDB holds
+    /// these, not the file itself (model weights, field maps). The file is fetched once: the path is
+    /// <cache_dir>/<sha256>/<file name of the url>, so jobs that share a cache directory share the file, and a
+    /// file already there is checked against the hash once per service and fetched again when it differs.
+    /// A fetched file with another hash or size is removed and is an error. URLs: file:///path and plain
+    /// absolute paths; http(s) is not supported yet (ccdb-2.5 Q52).
+    std::string GetResource(int run, const std::string& table);
+
     /// The values of the service's parameters after JANA applied the user's settings
     const std::string& GetUrl() const { return m_url; }
     const std::string& GetVariation() const { return m_variation; }
@@ -108,6 +119,9 @@ private:
     JParameter* m_time_param = nullptr;
 
     std::unique_ptr<ccdb::CalibrationGenerator> m_generator;
+
+    std::mutex m_resources_mutex;                         ///< one fetch at a time per service
+    std::map<std::string, std::string> m_verified_resources;  ///< sha256 -> path checked by this service
 };
 
 

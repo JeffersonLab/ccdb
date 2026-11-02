@@ -7,7 +7,7 @@
 find_package(JANA REQUIRED)
 message(STATUS "CCDB JANA2 service: JANA ${JANA_VERSION} from ${JANA_DIR}")
 
-add_library(ccdb_jana2 SHARED src/CCDB_service.cc)
+add_library(ccdb_jana2 SHARED src/CCDB_service.cc src/Sha256.cc)
 add_library(ccdb::ccdb_jana2 ALIAS ccdb_jana2)
 target_include_directories(ccdb_jana2 PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
