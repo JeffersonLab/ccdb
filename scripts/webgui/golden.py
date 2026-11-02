@@ -284,7 +284,6 @@ def compute(space):
     tag_rows = db.execute("SELECT t.name, v.name AS variation, t.snapshotTime, t.comment FROM tags t JOIN variations v ON v.id = t.variationId ORDER BY t.name").fetchall()
     golden["tags"] = [[r["name"], r["variation"], shown_stamp(r["snapshotTime"]).split(".")[0], r["comment"] or ""] for r in tag_rows]
     variation_rows = {r["id"]: r for r in db.execute("SELECT id, name, parentId FROM variations")}
-    variation_by_name = {r["name"]: r for r in variation_rows.values()}
 
     def tag_answers(tag_name, run, table_ids=None):
         tag = db.execute("SELECT t.snapshotTime, t.variationId FROM tags t WHERE t.name = ?", (tag_name,)).fetchone()
