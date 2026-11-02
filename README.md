@@ -45,5 +45,6 @@ GitHub shows it as "Cite this repository" in the sidebar of the repository page,
 
 ## License
 
-CCDB is free software under the GNU General Public License, version 2 or (at your option) any later version
-(`GPL-2.0-or-later`). The license text is in [`LICENSE`](LICENSE).
+CCDB is free software under the GNU Lesser General Public License, version 3 or (at your option) any later
+version (`LGPL-3.0-or-later`). The LGPL adds permissions to the GNU General Public License version 3, so the
+repository carries both texts: the LGPL in [`COPYING.LESSER`](COPYING.LESSER) and the GPL in [`COPYING`](COPYING).

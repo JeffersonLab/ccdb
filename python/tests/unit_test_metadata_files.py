@@ -1,6 +1,6 @@
 """The repository's license and citation files (PHASE3 item 1; plan D14) and the C++ package version (item 2).
 
-`LICENSE` carries the GPL version 2 text, `CITATION.cff` and `.zenodo.json` describe the software for GitHub's
+`COPYING.LESSER` carries the LGPL version 3 text and `COPYING` the GPL version 3 text it supplements; `CITATION.cff` and `.zenodo.json` describe the software for GitHub's
 "Cite this repository" and for Zenodo. The license they state must be the one `pyproject.toml` declares, and the
 version in `CITATION.cff` must be `ccdb.version.version`, so a release that bumps one without the other fails here.
 The C++ library's CMake package (`find_package(ccdb 2.5 CONFIG)`) takes its version from `project(... VERSION)` in
@@ -32,13 +32,15 @@ def pyproject_license():
 class MetadataFilesTest(unittest.TestCase):
 
     def test_files_exist(self):
-        for name in ("LICENSE", "CITATION.cff", ".zenodo.json"):
+        for name in ("COPYING", "COPYING.LESSER", "CITATION.cff", ".zenodo.json"):
             self.assertTrue(os.path.isfile(os.path.join(ROOT, name)), name)
 
-    def test_license_is_gpl_2(self):
-        head = read_text("LICENSE")[:200].split()
-        self.assertEqual(head[:7], ["GNU", "GENERAL", "PUBLIC", "LICENSE", "Version", "2,", "June"])
-        self.assertEqual(pyproject_license(), "GPL-2.0-or-later")
+    def test_license_is_lgpl_3(self):
+        head = read_text("COPYING.LESSER")[:200].split()
+        self.assertEqual(head[:8], ["GNU", "LESSER", "GENERAL", "PUBLIC", "LICENSE", "Version", "3,", "29"])
+        head = read_text("COPYING")[:200].split()
+        self.assertEqual(head[:7], ["GNU", "GENERAL", "PUBLIC", "LICENSE", "Version", "3,", "29"])
+        self.assertEqual(pyproject_license(), "LGPL-3.0-or-later")
 
     def test_citation_parses_and_agrees(self):
         citation = yaml.safe_load(read_text("CITATION.cff"))
