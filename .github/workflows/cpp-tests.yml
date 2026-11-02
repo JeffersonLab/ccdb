@@ -96,8 +96,10 @@ jobs:
   # The JANA2 service (jana2/) and its [jana2] tests, in the ePIC software image: the JANA2 that EICrecon uses.
   # The image comes from CVMFS, as in EICrecon's CI; on a host with docker the same script runs through
   # scripts/eic/run_in_eic_shell.sh, whose default image is the same release.
+  # Ubuntu 24.04 as in EICrecon's CI: the action installs an apptainer package that needs libfuse3-3, which
+  # ubuntu-latest (26.04) does not have.
   cpp-jana2:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
