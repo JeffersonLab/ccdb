@@ -28,6 +28,19 @@
             <tr><th scope="row">Author</th><td>{{ author }}</td></tr>
             <tr><th scope="row">Exact ID</th><td class="cell-mono">{{ assignment.request }}</td></tr>
             <tr><th scope="row">Database id</th><td>{{ assignment.id }}</td></tr>
+            {#- The identity of the data: SHA-256 of the stored text and its size in bytes. Assignments with equal bytes in one table share one constant set. -#}
+            <tr><th scope="row" class="text-nowrap">SHA-256</th><td class="cell-mono small text-break user-select-all">{{ assignment.constant_set.sha256 }}</td></tr>
+            <tr><th scope="row">Size</th><td>{{ assignment.constant_set.size }} bytes</td></tr>
+            {%- if same_data.total %}
+            <tr><th scope="row" class="text-nowrap">Same data as</th><td id="same-data" data-total="{{ same_data.total }}">
+              {%- for other_request, other_id in same_data.items %}
+              <a class="d-block cell-mono text-break" href="{{ url_for('show_request', request=other_request) }}" title="Database id {{ other_id }}">{{ other_request }}</a>
+              {%- endfor %}
+              {%- if same_data.total > same_data.items | length %}
+              <span class="text-body-secondary small">and {{ same_data.total - same_data.items | length }} more</span>
+              {%- endif -%}
+            </td></tr>
+            {%- endif %}
           </tbody>
         </table>
       </div>

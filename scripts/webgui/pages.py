@@ -155,6 +155,8 @@ PAGES = [
     ("assignment_shared_first", "/assignments/3614", "page"),
     ("assignment_shared_second", "/assignments/3615", "page"),
     ("show_shared", "/show_request?request=" + quote(SHARED_TABLE + ":1500:default"), "page"),
+    ("show_shared_first", "/show_request?request=" + quote(SHARED_TABLE + ":0:default"), "page"),
+    ("show_numeric", "/show_request?request=" + quote(NUMERIC_TABLE + ":0:default"), "page"),
     ("diff_numeric", "/compare?a=3616&b=3617", "page"),
     ("versions_retired", "/versions" + RETIRED_TABLE, "page"),
     ("log_record_shared", "/logs/2419", "page"),

@@ -80,6 +80,8 @@ class AssignmentRow:
     author: str
     comment: str
     request: str  # the CCDB request string, identical to Assignment.request
+    constant_set_id: int
+    shared: int = 1  # how many assignments use this row's constant set; more than 1 is shared data
 
 
 @dataclass
@@ -223,7 +225,8 @@ def list_assignments(session, table, query, variation=None, run=None, run_min=No
     Filters: `variation` by exact name; `run` keeps the run ranges that contain it;
     `run_min`/`run_max` keep the run ranges that overlap that window.
     """
-    statement = (select(Assignment.id, RunRange.min, RunRange.max, Assignment.created, Variation.name, User.name, Assignment._comment)
+    statement = (select(Assignment.id, RunRange.min, RunRange.max, Assignment.created, Variation.name, User.name, Assignment._comment,
+                        Assignment.constant_set_id)
                  .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
                  .join(RunRange, Assignment.run_range_id == RunRange.id)
                  .join(Variation, Assignment.variation_id == Variation.id)
@@ -241,11 +244,56 @@ def list_assignments(session, table, query, variation=None, run=None, run_min=No
         statement = statement.where(contains_text([Assignment._comment, User.name], query.search))
 
     def row_factory(row):
-        assignment_id, low, high, created, variation_name, author, comment = row
+        assignment_id, low, high, created, variation_name, author, comment, constant_set_id = row
         return AssignmentRow(assignment_id, low, high, created, variation_name, author or "", comment or "",
-                             request_string(table.path, low, variation_name, created))
+                             request_string(table.path, low, variation_name, created), constant_set_id)
 
-    return run_page(session, statement, query, ASSIGNMENT_SORTS, Assignment.id, row_factory)
+    page = run_page(session, statement, query, ASSIGNMENT_SORTS, Assignment.id, row_factory)
+    counts = shared_counts(session, [row.constant_set_id for row in page.items])
+    for row in page.items:
+        row.shared = counts.get(row.constant_set_id, 1)
+    return page
+
+
+def shared_counts(session, constant_set_ids):
+    """{constant set id: number of assignments using it} for the given sets that more than one assignment uses.
+
+    One query over the sets of one page, through the index on assignments.constantSetId. A count inside the page
+    query would be a correlated subquery that MySQL may evaluate for every row of the table before the LIMIT.
+    """
+    if not constant_set_ids:
+        return {}
+    statement = (select(Assignment.constant_set_id, func.count())
+                 .where(Assignment.constant_set_id.in_(sorted(set(constant_set_ids))))
+                 .group_by(Assignment.constant_set_id)
+                 .having(func.count() > 1))
+    return dict(session.execute(statement).all())
+
+
+SAME_DATA_LIMIT = 50  # links listed on the assignment page; a set shared more widely shows the total and the first ones
+
+
+@dataclass
+class SameData:
+    """The other assignments that use an assignment's constant set, oldest first: (request string, id) pairs."""
+    total: int  # other assignments, all of them
+    items: list
+
+
+def same_data(session, assignment, table_path):
+    """The other assignments of the same constant set; two small indexed queries, the second only for shared data."""
+    total = session.execute(select(func.count()).where(Assignment.constant_set_id == assignment.constant_set_id,
+                                                       Assignment.id != assignment.id)).scalar_one()
+    if not total:
+        return SameData(0, [])
+    rows = session.execute(select(Assignment.id, RunRange.min, Variation.name, Assignment.created)
+                           .join(RunRange, Assignment.run_range_id == RunRange.id)
+                           .join(Variation, Assignment.variation_id == Variation.id)
+                           .where(Assignment.constant_set_id == assignment.constant_set_id, Assignment.id != assignment.id)
+                           .order_by(Assignment.created, Assignment.id)
+                           .limit(SAME_DATA_LIMIT)).all()
+    return SameData(total, [(request_string(table_path, low, variation_name, created), assignment_id)
+                            for assignment_id, low, variation_name, created in rows])
 
 
 def assignment_activity(session, table_ids):

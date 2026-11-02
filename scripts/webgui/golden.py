@@ -40,12 +40,17 @@ SHOW_REQUESTS = {  # label in pages.py -> (table path, run, variation)
     "show_big_mc": (pages.BIG_TABLE, 1500, "mc"),
     "show_hostile": (pages.HOSTILE_TABLE, 0, "default"),
     "show_kv": (pages.KV_TABLE, 0, "default"),
+    "show_shared": (pages.SHARED_TABLE, 1500, "default"),
+    "show_shared_first": (pages.SHARED_TABLE, 0, "default"),
+    "show_numeric": (pages.NUMERIC_TABLE, 0, "default"),
 }
 SHOW_LAYOUTS = {  # pages that show one of the assignments above in another data layout -> its golden key
     "show_kv_horizontal": "show_kv",
     "show_big_vertical": "show_big",
     "show_big_horizontal": "show_big",
     "assignment_by_id_vertical": "show_small",
+    "assignment_shared_first": "show_shared_first",
+    "assignment_shared_second": "show_shared",
 }
 DIFFS = {  # golden key -> (assignment id of side a, of side b); the diff is computed from the two vault blobs
     "channels": (3612, 3613),   # 600 rows × 4 columns, seven cells differ
@@ -71,7 +76,7 @@ DIFF_PAGE_SIZE = 200
 LOG_RECORDS = {"log_record": 2414, "log_record_hostile": 14, "log_record_directory": 13, "log_record_table": 2415,
                "log_record_variation": 2416, "log_record_deleted": 2417}   # label in pages.py -> log id
 VERSIONS = {"versions_big": pages.BIG_TABLE, "versions_small": pages.SMALL_TABLE, "versions_deep": pages.DEEP_TABLE,
-            "versions_hostile": pages.HOSTILE_TABLE, "versions_unicode": pages.UNICODE_TABLE}
+            "versions_hostile": pages.HOSTILE_TABLE, "versions_unicode": pages.UNICODE_TABLE, "versions_shared": pages.SHARED_TABLE}
 COMPARES = {  # label in pages.py -> (variation, parent or None for the direct parent, run, time text as the page takes it)
     "compare_calib_v2": ("calib_v2", None, None, None),
     "compare_calib_v2_default": ("calib_v2", "default", None, None),
@@ -118,7 +123,8 @@ def shown_stamp(text):
 
 
 def assignments_of(db, table_id):
-    sql = """SELECT a.id, a.created, a.comment, r.runMin, r.runMax, v.name AS variation, u.name AS author, c.vault
+    sql = """SELECT a.id, a.created, a.comment, r.runMin, r.runMax, v.name AS variation, u.name AS author, c.vault,
+                    a.constantSetId, c.sha256, c.size
              FROM assignments a JOIN constantSets c ON c.id = a.constantSetId JOIN runRanges r ON r.id = a.runRangeId
              JOIN variations v ON v.id = a.variationId JOIN users u ON u.id = a.authorId
              WHERE c.constantTypeId = ? ORDER BY a.id DESC"""
@@ -133,12 +139,16 @@ def compute(space):
     table_id_by_path = {path: table_id for table_id, path in tables.items()}
     golden = {"tree": {"directories": sorted(dirs.values()), "tables": sorted(tables.values())}}
 
+    # how many assignments use each constant set: more than one is shared data
+    sharers = dict(db.execute("SELECT constantSetId, COUNT(*) FROM assignments GROUP BY constantSetId").fetchall())
+
     golden["versions"] = {}
     for label, path in VERSIONS.items():
         rows = assignments_of(db, table_id_by_path[path])
         golden["versions"][label] = {"path": path, "count": len(rows), "rows": [
             {"id": r["id"], "run_min": r["runMin"], "run_max": r["runMax"], "created": shown_stamp(r["created"]), "variation": r["variation"],
-             "request": request_string(path, r["runMin"], r["variation"], parse_stamp(r["created"]))} for r in rows]}
+             "request": request_string(path, r["runMin"], r["variation"], parse_stamp(r["created"])),
+             "shared": sharers[r["constantSetId"]]} for r in rows]}
 
     golden["show"] = {}
     for label, (path, run, variation) in SHOW_REQUESTS.items():
@@ -153,7 +163,12 @@ def compute(space):
         golden["show"][label] = {"path": path, "variation": variation, "created": shown_stamp(newest["created"]), "author": newest["author"],
                                  "run_min": newest["runMin"], "run_max": newest["runMax"], "comment": newest["comment"],
                                  "request": request_string(path, newest["runMin"], variation, parse_stamp(newest["created"])),
-                                 "columns": columns, "types": types, "data": data, "candidates": len(match)}
+                                 "columns": columns, "types": types, "data": data, "candidates": len(match),
+                                 "sha256": newest["sha256"], "size": newest["size"],
+                                 # the other assignments of the same constant set, oldest first, by request string
+                                 "same_data": [request_string(path, r["runMin"], r["variation"], parse_stamp(r["created"]))
+                                               for r in sorted(assignments_of(db, table_id), key=lambda r: (r["created"], r["id"]))
+                                               if r["constantSetId"] == newest["constantSetId"] and r["id"] != newest["id"]]}
 
     logs = db.execute("SELECT l.created, l.action, l.description, u.name AS author FROM logs l JOIN users u ON u.id = l.authorId ORDER BY l.id DESC").fetchall()
     golden["logs"] = {"total": len(logs), "newest_first_1000": [{**dict(r), "created": shown_stamp(r["created"])} for r in logs[:1000]],
@@ -488,8 +503,10 @@ def compare(space, phase, label, db_url):
         check(results, f"{label_}.total", expected["count"], shown_total)
         def run_value(text):  # the versions page prints the open-ended run sentinel as ∞
             return INFINITE_RUN if text == "∞" else int(text) if text.isdigit() else text
-        shown = [{"id": int(r[0]), "run_min": run_value(r[1]), "run_max": run_value(r[2]), "created": r[3], "variation": r[4]} for r in rows if len(r) >= 5]
-        wanted = [{k: row[k] for k in ("id", "run_min", "run_max", "created", "variation")} for row in expected["rows"]]
+        # the last cell carries "×N" before the View button when N assignments share the row's constant set
+        shown = [{"id": int(r[0]), "run_min": run_value(r[1]), "run_max": run_value(r[2]), "created": r[3], "variation": r[4],
+                  "shared": int(re.match(r"×(\d+)", r[-1]).group(1)) if r[-1].startswith("×") else 1} for r in rows if len(r) >= 5]
+        wanted = [{k: row[k] for k in ("id", "run_min", "run_max", "created", "variation", "shared")} for row in expected["rows"]]
         check(results, f"{label_}.status", 200, status)
         check(results, f"{label_}.count", expected["count"], len(shown))
         key = lambda d: json.dumps(d, sort_keys=True)  # noqa: E731
@@ -510,6 +527,9 @@ def compare(space, phase, label, db_url):
         run_max = "inf." if expected["run_max"] == INFINITE_RUN else str(expected["run_max"])
         check(results, f"{label_}.run_range", f"{expected['run_min']} - {run_max}", meta.get("Run Range"))
         check(results, f"{label_}.request", expected["request"], meta.get("Exact ID"))
+        check(results, f"{label_}.sha256", expected["sha256"], meta.get("SHA-256"))
+        check(results, f"{label_}.size", f"{expected['size']} bytes", meta.get("Size"))
+        check(results, f"{label_}.same_data", " ".join(expected["same_data"]) or None, meta.get("Same data as"))
         columns, types, data = shown_data_table(page) if len(tables) > 1 else (None, None, None)
         check(results, f"{label_}.columns", expected["columns"], columns)
         check(results, f"{label_}.types", expected["types"], types)
