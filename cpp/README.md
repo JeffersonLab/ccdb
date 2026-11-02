@@ -24,8 +24,7 @@ target_link_libraries(myapp PRIVATE ccdb::ccdb)
 ```
 
 Or, with the CCDB sources inside the project: `add_subdirectory(<ccdb>/cpp ccdb)` and the same
-`ccdb::ccdb` target. `examples/consumer` is a complete project; the spack recipe is in
-`$CCDB_HOME/spack/spack_repo/ccdb`.
+`ccdb::ccdb` target. `examples/consumer` is a complete project.
 
 ## Tests
 

@@ -5,8 +5,7 @@ feature, so you can install only what you need:
 
 - [**Python** (library + `ccdb` command line tool)](#python) — the main client and management tool
 - [**From source** (git clone + environment script)](#from-source)
-- [**C++ API**](#c-api) — build with CMake, [use from a CMake project](#use-the-library-from-a-cmake-project),
-  or [install with spack](#install-with-spack)
+- [**C++ API**](#c-api) — build with CMake or [use from a CMake project](#use-the-library-from-a-cmake-project)
 - [**MySQL** server setup](#mysql)
 - [**Test the installation**](#test-the-installation)
 
@@ -152,20 +151,6 @@ target_link_libraries(myapp PRIVATE ccdb::ccdb)
 ```
 
 `cpp/examples/consumer` is a complete project of this kind; it reads one table and prints it.
-
-### Install with spack
-
-The repository carries a [spack](https://spack.io) package repository with the `ccdb` recipe for
-the C++ library. To install it, add the repository and install the package:
-
-```bash
-spack repo add $CCDB_HOME/spack/spack_repo/ccdb
-spack install ccdb          # with MySQL support
-spack install ccdb~mysql    # SQLite only
-```
-
-The recipe needs spack 1.0 or newer. `spack/check_recipe.sh` installs the checkout with it and
-builds `cpp/examples/consumer` against the result.
 
 ## MySQL
 
