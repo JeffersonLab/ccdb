@@ -223,10 +223,10 @@ class MakeTable(CliCommandBase):
                             pass
 
                     for i in range(start_index, start_index + parse_result["quantity"]):
-                        columns.append((parse_result["name"] + repr(i), parse_result["type"]))
+                        columns.append((parse_result["name"] + repr(i), parse_result["type"], parse_result["units"]))
 
                 else:
-                    columns.append((parse_result["name"], parse_result["type"]))
+                    columns.append((parse_result["name"], parse_result["type"], parse_result["units"]))
         return columns
 
 
@@ -236,10 +236,12 @@ class MakeTable(CliCommandBase):
     def parse_column(self, value):
         """parse each column argument record"""
 
-        result = {"type": "double", "name": "", "quantity": 1, "no_columns_quantity": self.no_columns_quantity}
+        result = {"type": "double", "name": "", "quantity": 1, "units": None,
+                  "no_columns_quantity": self.no_columns_quantity}
 
         # regular expression that matches strings like this
         # <quantity><name>(<type>) or <quantity>(<pretype>)<name>
+        # the type group also takes the optional ':<units>' part, which is split off below
 
         preg = "(?P<quantity>^[0-9]*)(?P<name>[0-9a-zA-Z_]+)*(=(?P<type>.*))*"
         if self.no_columns_quantity:
@@ -255,11 +257,16 @@ class MakeTable(CliCommandBase):
                 pass
 
         if m.group("type"):
-            column_type = m.group("type")
+            # units go after the first ':' and may contain anything else, e.g. 'gain=double:MeV/c^2'
+            column_type, _, units = m.group("type").partition(":")
+            result["units"] = units or None
+
+            # 'name=:units' keeps the default type
+            column_type = column_type or "double"
             if column_type not in ['int', 'double', 'string']:
                 raise ValueError(f"Column type is not supported. Provided: '{column_type}'. "
                                  f"Allowed: 'int', 'double', 'string'")
-            result["type"] = m.group("type")
+            result["type"] = column_type
 
         if result["type"] is None:
             result["type"] = "double"
@@ -330,17 +337,19 @@ columns format:
       <name1> <name2> ... <nameN>   -   create N columns, with names name1 ... nameN of type double (by default)
 
     full format for each column:
-       <quantity><name><start_index>=<type> 
+       <quantity><name><start_index>=<type>:<units>
 
     where: 
        quantity - number of columns with such name
        type     - type of the column (int, double, string)
+       units    - optional free text units of the column, e.g. MeV (at most 64 characters)
        name     - name of the column - the only required part
        start_index - if quantity is defined set start index for auto-naming
 
     It is simple! Just look at examples:
     1) 'x  y  z'   -   create 3 columns with names "x", "y", "z". The type is considered to be 'double' by default
     2) 'index=int digit=double descr=string' - create 3 columns: 'index', 'digit' and 'descr' of types int, double and string
+    2a) 'gain=double:MeV time=:ns' - 'gain' of type double in MeV and 'time' of the default type (double) in ns
     
     Imagine, one needs to create 50 columns for 50 channels?
     3) '50channel'        -  create 50 columns channel0,channel1, ..., channel49. The type is 'double' by default
@@ -395,9 +404,10 @@ keys:
         # columns info
         print()
         print("Columns: ")
-        print("   (type)    : (name)")
-        for (colname, coltype) in self.columns:
-            print("   " + self.theme.Type + "%-10s" % coltype + self.theme.Reset + ": " + colname)
+        print("   (type)    : (name) [units]")
+        for (colname, coltype, units) in self.columns:
+            units_str = " [" + units + "]" if units else ""
+            print("   " + self.theme.Type + "%-10s" % coltype + self.theme.Reset + ": " + colname + units_str)
         print()
 
         # comment

@@ -123,6 +123,21 @@ def read_ccdb_text_file(file_name):
 
 
 # ----------------------------------------
+#   parse_units_meta
+# ----------------------------------------
+def parse_units_meta(value):
+    """Parses the value of a '#meta units:' line, as 'dump' writes it, to {column name: units}
+
+    :param value: dom.metas["units"], e.g. "gain=MeV 'width=counts per s'"
+    """
+    result = {}
+    for pair in shlex.split(value):
+        name, _, units = pair.partition("=")
+        result[name] = units
+    return result
+
+
+# ----------------------------------------
 #   read_namevalue_text_file
 # ----------------------------------------
 def read_namevalue_text_file(file_name, replace_c_comments=False):
