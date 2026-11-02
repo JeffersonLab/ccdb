@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 // Copyright (C) 2026, Jefferson Science Associates, LLC.
 //
 // The example of a factory that takes its constants from CCDB, in the EICrecon factory layout:
