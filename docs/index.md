@@ -163,6 +163,6 @@ ccdb -i              # start the interactive shell
 
 Continue with:
 
-- [Installation](get-started/installation.md) — all installation options (pip/uv, source, C++ with CMake or spack, MySQL)
+- [Installation](get-started/installation.md) — all installation options (pip/uv, source, C++ with CMake, MySQL)
 - [Command line interface](cli.md) — the `ccdb` tool
 - [Concepts illustrated](concepts/concepts.md) — namepaths, table types, assignments, requests
