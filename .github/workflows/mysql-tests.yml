@@ -64,8 +64,11 @@ jobs:
       # SQLite DB) and the MySQL provider integration tests against the service
       # container. The MySQL schema+data are created by the suite via `ccdb db init`.
       # The schema 6 modules rebuild ccdb_test and leave it as `db init` makes it.
+      # The client runs in New York time and the server in UTC, so every test sees two time zones.
       - name: Run full test suite including MySQL
         working-directory: python
+        env:
+          TZ: America/New_York
         run: >
           python -m unittest
           tests.unit_test_authentication
@@ -101,6 +104,7 @@ jobs:
           tests.unit_test_properties
           tests.unit_test_units
           tests.unit_test_tags_mysql
+          tests.unit_test_time_zone_mysql
           tests.integ_test_provider_sqlite
           tests.integ_test_cli_manager
           tests.integ_test_provider_mysql

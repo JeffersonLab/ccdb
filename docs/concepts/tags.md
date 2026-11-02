@@ -54,9 +54,12 @@ You still give the table, and the run as in any request. A request with a tag re
   (`YYYY:MM:DD-hh:mm:ss`, see [Requests](concepts/concepts.md#requests)). CCDB converts it to UTC.
 - A time in the future is refused. A tag describes history that already exists.
 
-The tag stores a UTC instant. A client in another time zone than the database server stores
-assignment creation times shifted by the zone difference, so a request with a tag and the `rm -a`
-pin check are exact only when the clients and the server share one time zone.
+The tag stores a UTC instant. On MySQL and MariaDB, CCDB sets each connection's time zone to the
+client's own UTC offset, so assignment creation times are true instants wherever the client runs, and
+a request with a tag or a time and the `rm -a` pin check are exact. Creation times written by CCDB 2.4
+or earlier from a client in another time zone than the server keep that zone difference.
+A SQLite file stores the local time of the client that wrote it, so there these checks are exact
+when the clients share one time zone.
 
 ## Tags in requests
 
