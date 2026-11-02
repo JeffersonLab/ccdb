@@ -5,6 +5,7 @@
 #include <time.h>
 #include <string.h>
 #include <limits.h>
+#include <ctype.h>
 
 #include "CCDB/Globals.h"
 #include "CCDB/Helpers/StringUtils.h"
@@ -387,15 +388,25 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& 
 
         // snapshotTime is a UTC instant, while assignments.created holds the local naive time of the client
         // that wrote it. So the instant is converted to local time, as the time filter below does with
-        // 'localtime'. assignments.created may carry microseconds ('2020-01-06 10:17:00.000000'), which
-        // compare as text after '2020-01-06 10:17:00', so the limit is the end of the tag's second
+        // 'localtime'. Both columns carry microseconds as text ('2020-01-06 10:17:00.000000'), so the limit
+        // keeps the tag's own fraction: an assignment added later in the tag's second must not count,
+        // which is how Python compares the exact instant
         time_t tagTime = GetTagUnixTime(tagName, tagSnapshotTime);
+        string fraction = "000000";
+        size_t dotPos = tagSnapshotTime.find('.');
+        if(dotPos != string::npos)
+        {
+            for(size_t i = 0; i < 6 && dotPos + 1 + i < tagSnapshotTime.size() && isdigit((unsigned char)tagSnapshotTime[dotPos + 1 + i]); i++)
+            {
+                fraction[i] = tagSnapshotTime[dotPos + 1 + i];
+            }
+        }
         struct tm localTagTime;
         memset(&localTagTime, 0, sizeof(localTagTime));
         localtime_r(&tagTime, &localTagTime);
         char tagTimeBuf[40];
-        strftime(tagTimeBuf, sizeof(tagTimeBuf), "%Y-%m-%d %H:%M:%S.999999", &localTagTime);
-        return SelectAssignmentShortByTimeLimit(this, mDatabase, run, path, string(tagTimeBuf), tagVariation, loadColumns);
+        strftime(tagTimeBuf, sizeof(tagTimeBuf), "%Y-%m-%d %H:%M:%S", &localTagTime);
+        return SelectAssignmentShortByTimeLimit(this, mDatabase, run, path, string(tagTimeBuf) + "." + fraction, tagVariation, loadColumns);
     }
 
     //Get type table
