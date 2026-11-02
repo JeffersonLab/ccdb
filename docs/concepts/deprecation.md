@@ -90,3 +90,7 @@ $ ccdb info /TOF/params
 ```
 
 See [Command line (CLI)](cli.md#deprecation) for the options of `ccdb deprecate`.
+
+## Deprecation in the web GUI
+
+The lists hide deprecated objects, as `ccdb ls` does: the table tree, the variations, the assignments of deprecated variations on a table's page, and the variation comparison. The **Show deprecated** switch shows them muted and marked with a badge; the choice is part of the URL (`deprecated=all`), and the browser remembers it. The info panel of a deprecated directory or table, and the page of a deprecated table, show when, by whom and why. Links and requests to deprecated objects keep working.

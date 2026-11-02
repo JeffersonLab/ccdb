@@ -193,3 +193,10 @@ Tag 'Run2026' is removed
 ```
 
 See [Command line (CLI)](cli.md#tags) for the options of `ccdb tag`.
+
+## Tags in the web GUI
+
+- **Tags** in the sidebar lists every tag with its variation, time (UTC) and comment.
+- A tag's page takes a run number and shows, for every table, what `table:run@NAME` returns: the variation the constants come from and when they were added, as a link to them.
+- The Request page has a tag selector that builds `/path/table:run@NAME`.
+- An assignment page opened with `@NAME` in its request string shows the assignment the tag gives and the request it was resolved from.
