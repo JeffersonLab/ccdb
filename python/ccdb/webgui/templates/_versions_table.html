@@ -33,7 +33,9 @@
           <td>{{ row.variation }}</td>
           <td>{{ row.author }}</td>
           <td class="text-truncate" style="max-width: 24rem" title="{{ row.comment }}">{{ row.comment }}</td>
-          <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('show_request', request=row.request) }}">View</a></td>
+          <td class="text-end text-nowrap">
+            {%- if row.shared > 1 %}<span class="badge rounded-pill bg-body-secondary text-body-emphasis border me-1 shared-badge" title="Shared data: {{ row.shared }} assignments use this constant set">×{{ row.shared }}</span>{% endif -%}
+            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('show_request', request=row.request) }}">View</a></td>
         </tr>
         {% endfor %}
       </tbody>
