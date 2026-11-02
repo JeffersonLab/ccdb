@@ -53,7 +53,7 @@ endif (MySQL_FOUND)
 
 # The [jana2] tests of the JANA2 service; they read the database of scripts/eic/make_jana2_test_db.py
 if(CCDB_BUILD_JANA2)
-        target_sources(${PROJECT_NAME} PRIVATE "test_JANA2_Service.cc" "test_JANA2_Factory.cc")
+        target_sources(${PROJECT_NAME} PRIVATE "test_JANA2_Service.cc" "test_JANA2_Factory.cc" "test_JANA2_Resource.cc")
         target_link_libraries(${PROJECT_NAME} ccdb_jana2)
         # the example factory is header only; C++20 as JANA2's factory generator needs it
         target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/../jana2/examples")
