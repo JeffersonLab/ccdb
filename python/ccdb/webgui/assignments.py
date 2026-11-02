@@ -15,7 +15,7 @@ from sqlalchemy.exc import NoResultFound
 import ccdb
 from ccdb.cmd.commands.cat import units_meta_line
 from ccdb.path_utils import parse_request, ParseRequestResult
-from ccdb.webgui import diff
+from ccdb.webgui import diff, queries
 
 INFINITE_RUN = 2147483647
 EXAMPLE_REQUEST = "/test/test_vars/test_table:0:default"
@@ -92,8 +92,7 @@ def previous_assignment(db, assignment):
     the two are one to a request string, and this returns what came before both.
     """
     before = assignment.created - datetime.timedelta(seconds=1)
-    earlier = db.get_assignments(assignment.constant_set.type_table.path, assignment.run_range.min, assignment.variation.name, before)
-    return earlier[0] if earlier else None
+    return queries.newest_before(db.session, assignment.constant_set.type_table, assignment.run_range.min, assignment.variation_id, before)
 
 
 def column_lines(layout, row_count, column_count):

@@ -267,6 +267,33 @@ def list_assignments(session, table, query, variation=None, run=None, run_min=No
     return page
 
 
+@dataclass
+class Found:
+    id: int
+    request: str
+
+
+def newest_before(session, table, run, variation_id, before):
+    """The newest assignment (by id) of the table, run and variation created at or before `before`, or None.
+
+    MAX(id) first, then that row: written as ORDER BY id DESC LIMIT 1 (AlchemyProvider.get_assignments), MariaDB walks
+    the primary key back from the newest of all assignments until one matches, 0.55 s for /FCAL/gains on the Hall D
+    database when the match is old; the aggregate goes through the table's sets and takes 7 ms.
+    """
+    newest_id = session.execute(select(func.max(Assignment.id))
+                                .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
+                                .join(RunRange, Assignment.run_range_id == RunRange.id)
+                                .where(ConstantSet.type_table_id == table.id, Assignment.variation_id == variation_id,
+                                       RunRange.min <= run, RunRange.max >= run, Assignment.created <= before)).scalar_one()
+    if newest_id is None:
+        return None
+    low, variation_name, created = session.execute(select(RunRange.min, Variation.name, Assignment.created)
+                                                   .join(RunRange, Assignment.run_range_id == RunRange.id)
+                                                   .join(Variation, Assignment.variation_id == Variation.id)
+                                                   .where(Assignment.id == newest_id)).one()
+    return Found(newest_id, request_string(table.path, low, variation_name, created))
+
+
 def shared_counts(session, constant_set_ids):
     """{constant set id: number of assignments using it} for the given sets that more than one assignment uses.
 
