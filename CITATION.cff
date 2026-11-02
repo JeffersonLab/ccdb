@@ -1,0 +1,26 @@
+# Citation metadata for CCDB (https://citation-file-format.github.io). GitHub shows it as "Cite this repository".
+# The version follows ccdb.version.version; python/tests/unit_test_metadata_files.py checks that they agree.
+cff-version: 1.2.0
+message: "If you use CCDB in your work, please cite it using the metadata below."
+type: software
+title: "CCDB: Calibration Constants Database"
+abstract: >-
+  CCDB stores and manages the calibration constants of nuclear and high energy physics experiments.
+  Constants are looked up by run number in a tree of tables, with variations for alternative sets,
+  the complete history of every change, and named snapshot tags. CCDB provides C++, Python and Java
+  APIs, a command line tool and a web interface over MySQL and SQLite databases.
+authors:
+  - family-names: Romanov
+    given-names: Dmitry
+    email: romanov@jlab.org
+    affiliation: Thomas Jefferson National Accelerator Facility
+version: 2.5.0.dev0
+license: GPL-2.0-or-later
+repository-code: "https://github.com/JeffersonLab/ccdb"
+url: "https://jeffersonlab.github.io/ccdb"
+keywords:
+  - calibration
+  - conditions database
+  - nuclear physics
+  - high energy physics
+  - Jefferson Lab

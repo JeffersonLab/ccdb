@@ -46,7 +46,8 @@ web = ["flask>=2.0"]
 # Extras used by python/examples
 examples = ["jsonpickle", "pandas"]
 # Tests use stdlib unittest; pytest is intentionally NOT a dependency
-dev = ["pyflakes>=3"]
+# pyflakes for the lint; PyYAML reads CITATION.cff in unit_test_metadata_files
+dev = ["pyflakes>=3", "pyyaml"]
 
 [project.urls]
 Repository = "https://github.com/JeffersonLab/ccdb"
