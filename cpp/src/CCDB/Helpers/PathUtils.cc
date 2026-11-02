@@ -1,5 +1,6 @@
 #include <cstdlib>
 
+#include <stdexcept>
 #include "CCDB/Helpers/PathUtils.h"
 
 using namespace std;
@@ -274,12 +275,34 @@ ccdb::RequestParseResult ccdb::PathUtils::ParseRequest( const string& requestStr
     result.Time=0;                    // Time stamp
     result.WasParsedTime=false;       // true if time stamp was not empty
     result.TimeString="";             // Original string with time
+    result.Tag="";                    // Tag name
+    result.WasParsedTag=false;        // true if the request names a tag
+
+    // A tag is the part after '@': /path/to/data@tag or /path/to/data:run@tag
+    // It replaces variation and time, so neither may be given with it
+    string request = requestStr;
+    size_t tagPos = requestStr.find('@');
+    if(tagPos != string::npos)
+    {
+        result.Tag = requestStr.substr(tagPos + 1);
+        result.WasParsedTag = true;
+        request = requestStr.substr(0, tagPos);
+
+        if(result.Tag.find(':') != string::npos || request.find(':') != request.rfind(':'))
+        {
+            throw std::invalid_argument("Request '" + requestStr + "': a tag (@NAME) may not be combined with a variation or a time");
+        }
+        if(result.Tag.empty())
+        {
+            throw std::invalid_argument("Request '" + requestStr + "': the tag name after '@' is empty");
+        }
+    }
 
     int colonCount=0;
     string runStr ="";
-    for (size_t i=0; i<requestStr.size(); i++)
+    for (size_t i=0; i<request.size(); i++)
     {
-        char symbol = requestStr[i];
+        char symbol = request[i];
         if(symbol!=':')
         {
             //it is not a colon so we add this symbol somewhere
@@ -328,6 +351,13 @@ ccdb::RequestParseResult ccdb::PathUtils::ParseRequest( const string& requestStr
     {
         bool success=true;
         result.Time = ParseTime(result.TimeString, &success);
+    }
+
+    // The tag travels as the variation "@NAME" to DataProvider::GetAssignmentShort
+    if(result.WasParsedTag)
+    {
+        result.Variation = "@" + result.Tag;
+        result.WasParsedVariation = true;
     }
     return result;
 }

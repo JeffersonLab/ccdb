@@ -293,8 +293,111 @@ Variation* ccdb::SQLiteDataProvider::SelectVariation(SQLiteStatement& query)
 }
 
 
+/** @brief The resolution of a tag request on SQLite (CCDB 2.5)
+ *
+ * The same query as GetAssignmentShort, with the time limit given as the local naive time that
+ * assignments.created is compared with as text, and the same fallback to the parent variations
+ */
+static Assignment* SelectAssignmentShortByTimeLimit(SQLiteDataProvider* provider, sqlite3* database, int run, const string& path, const string& timeLimit, const string& variationName, bool loadColumns)
+{
+    ConstantsTypeTable *table = provider->DataProvider::GetConstantsTypeTable(path, loadColumns);
+    if(!table) {
+        string error(std::string(__PRETTY_FUNCTION__ ) + " => Type table was not found: '" + path + "'" );
+        throw std::runtime_error(error);
+    }
+
+    Variation* variation = provider->GetVariation(variationName);
+    if(!variation) {
+        delete table;
+        string error("SQLiteDataProvider::GetAssignmentShort => No variation '"+variationName+"' was found");
+        throw std::runtime_error(error);
+    }
+
+    SQLiteStatement query(database);
+    query.Prepare(
+        "SELECT `assignments`.`id` AS `asId`, "
+        "`constantSets`.`vault` AS `blob` "
+        "FROM  `assignments` "
+        "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
+        "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
+        "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
+        "WHERE  `runRanges`.`runMin` <= ?1 "
+        "AND `runRanges`.`runMax` >= ?1 "
+        "AND `assignments`.`variationId`= ?2 "
+        "AND  `constantSets`.`constantTypeId` =?3 "
+        "AND  `assignments`.`created` <= ?4 "
+        "ORDER BY `assignments`.`id` DESC "
+        "LIMIT 1 ");
+
+    query.BindInt32(1, run);
+    query.BindInt32(2, variation->GetId());
+    query.BindInt32(3, table->GetId());
+    query.BindString(4, timeLimit);
+
+    Assignment *assignment = nullptr;
+    auto selectedRows = query.Execute([&assignment, &query, run](uint64_t rowIndex) {
+        assignment = new Assignment();
+        assignment->SetId( query.ReadUInt64(0) );
+        assignment->SetRawData(query.ReadString(1));
+        assignment->SetRequestedRun(run);
+    });
+
+    // The type table was created for this request only
+    if(assignment == nullptr) delete table;
+
+    //If We have not found data for this variation, getting data for parent variation
+    if((assignment == nullptr && selectedRows==0) && variation->GetParentDbId()!=0)
+    {
+        return SelectAssignmentShortByTimeLimit(provider, database, run, path, timeLimit, variation->GetParent()->GetName(), loadColumns);
+    }
+
+    if(assignment != nullptr)
+    {
+        assignment->SetTypeTable(table, /*ownsTypeTable*/ true);
+        assignment->SetVariation(variation);
+    }
+
+    return assignment;
+}
+
+
 Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variationName, bool loadColumns /*=false*/)
 {
+    // A tag "@NAME" replaces variation and time: one query for the tag's variation and snapshot time,
+    // then the resolution with that variation and time limit
+    if(IsTagRequest(variationName)) {
+        string tagName = GetTagName(variationName);
+        string tagVariation;
+        string tagSnapshotTime;
+        SQLiteStatement tagQuery(mDatabase);
+        tagQuery.Prepare(
+            "SELECT `variations`.`name`, `tags`.`snapshotTime` "
+            "FROM `tags` "
+            "INNER JOIN `variations` ON `tags`.`variationId` = `variations`.`id` "
+            "WHERE `tags`.`name` = ?1 "
+            "LIMIT 1 ");
+        tagQuery.BindString(1, tagName);
+        auto tagRows = tagQuery.Execute([&tagVariation, &tagSnapshotTime, &tagQuery](uint64_t rowIndex) {
+            tagVariation = tagQuery.ReadString(0);
+            tagSnapshotTime = tagQuery.ReadString(1);
+        });
+        if(tagRows == 0) {
+            throw std::runtime_error("SQLiteDataProvider::GetAssignmentShort => No tag '" + tagName + "' was found");
+        }
+
+        // snapshotTime is a UTC instant, while assignments.created holds the local naive time of the client
+        // that wrote it. So the instant is converted to local time, as the time filter below does with
+        // 'localtime'. assignments.created may carry microseconds ('2020-01-06 10:17:00.000000'), which
+        // compare as text after '2020-01-06 10:17:00', so the limit is the end of the tag's second
+        time_t tagTime = GetTagUnixTime(tagName, tagSnapshotTime);
+        struct tm localTagTime;
+        memset(&localTagTime, 0, sizeof(localTagTime));
+        localtime_r(&tagTime, &localTagTime);
+        char tagTimeBuf[40];
+        strftime(tagTimeBuf, sizeof(tagTimeBuf), "%Y-%m-%d %H:%M:%S.999999", &localTagTime);
+        return SelectAssignmentShortByTimeLimit(this, mDatabase, run, path, string(tagTimeBuf), tagVariation, loadColumns);
+    }
+
     //Get type table
     ConstantsTypeTable *table = DataProvider::GetConstantsTypeTable(path, loadColumns);
     if(!table) {
