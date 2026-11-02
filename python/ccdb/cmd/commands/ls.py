@@ -31,6 +31,7 @@ class List(CliCommandBase):
         self.parent_dir = None  # @type parent_dir DDirectory
         self.pattern = ""  # pattern on the end of parent path like file?*
         self.is_extended = False
+        self.show_all = False  # show deprecated entries too
 
     def reset(self):
         """Resets variables for each 'process'"""
@@ -39,6 +40,7 @@ class List(CliCommandBase):
         self.parent_dir = None  # @type parent_dir DDirectory
         self.pattern = ""  # pattern on the end of parent path like file?*
         self.is_extended = False
+        self.show_all = False
 
     def execute(self, args):
         if log.isEnabledFor(logging.DEBUG):
@@ -55,7 +57,9 @@ class List(CliCommandBase):
 
         # PARSE ARGUMENTS
         # -------------------------------
-        raw_path, task, is_extended = self._process_arguments(args)
+        raw_path, task, is_extended, show_all = self._process_arguments(args)
+        self.show_all = show_all
+        self.is_extended = is_extended
 
         # dump as tree
         if task == ListTasks.directory_tree:
@@ -112,10 +116,10 @@ class List(CliCommandBase):
             return "vers " + table.path
 
         for directory in dirs:
-            log.info(self.theme.Directories + directory.name + self.theme.Reset)
+            log.info(self.theme.Directories + directory.name + self.theme.Reset + self.deprecation_mark(directory))
 
         for table in tables:
-            log.info(table.name)
+            log.info(table.name + self.deprecation_mark(table))
 
         # The CLI treats a None result as failure (exit code 1), so report success
         return True
@@ -132,6 +136,7 @@ class List(CliCommandBase):
         parser.add_argument("-t", "--tables", action="store_true")
         parser.add_argument("-v", "--variations", action="store_true")
         parser.add_argument("-l", "--extended", action="store_true")
+        parser.add_argument("-a", "--all", action="store_true")
 
         result = parser.parse_args(args)
 
@@ -148,13 +153,15 @@ class List(CliCommandBase):
 
         log.debug(LogFmt(" |- parsed as (obj: '{0}', type: '{1}')", result.raw_path, task))
 
-        return result.raw_path, task, result.extended
+        return result.raw_path, task, result.extended, result.all
 
     def get_name_pathes(self, path):
         assert self.context is not None
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
+        show_all, is_extended = self.show_all, self.is_extended
         self.reset()
+        self.show_all, self.is_extended = show_all, is_extended
 
         #prepare path
         log.debug(" |  |- ls.get_name_pathes")
@@ -197,12 +204,18 @@ class List(CliCommandBase):
         if self.pattern:
             log.debug(" |  |  |- pattern: " + self.pattern)
 
+        # Deprecated entries are hidden unless -a is given; an exact name is always shown,
+        # so 'ls <deprecated table>' still works as an alias of vers
+        is_exact_name = self.pattern != "" and "*" not in self.pattern and "?" not in self.pattern
+        include_deprecated = self.show_all or is_exact_name
+
         # part 1 directories for this path
         if self.pattern == "":
-            sub_dirs = self.parent_dir.sub_dirs
+            sub_dirs = provider.get_directories(self.parent_dir, include_deprecated=include_deprecated)
             log.debug(" |  |  |- simply taking sub directories ")
         else:
-            sub_dirs = provider.search_directories(self.pattern, self.parent_path)
+            sub_dirs = provider.search_directories(self.pattern, self.parent_path,
+                                                   include_deprecated=include_deprecated)
             log.debug(" |  |  |- use database search for directories ")
 
         # fill list of directory names
@@ -213,9 +226,10 @@ class List(CliCommandBase):
         log.debug(" |  |  |- searching tables ")
         # part 2 is tables for this path
         if self.pattern == "":
-            tables = self.context.provider.get_type_tables(self.parent_dir)
+            tables = self.context.provider.get_type_tables(self.parent_dir, include_deprecated=include_deprecated)
         else:
-            tables = self.context.provider.search_type_tables(self.pattern, self.parent_path)
+            tables = self.context.provider.search_type_tables(self.pattern, self.parent_path,
+                                                              include_deprecated=include_deprecated)
 
         return sub_dirs, tables
 
@@ -249,12 +263,12 @@ class List(CliCommandBase):
 
         # print this directory
         if not printFullPath:
-            print("".join(["   " for i in range(0, level)]) + directory.name)
+            print("".join(["   " for i in range(0, level)]) + directory.name + self.deprecation_mark(directory))
         else:
-            print(directory.path)
+            print(directory.path + self.deprecation_mark(directory))
 
-        # print subdirectories recursively
-        sub_dirs = directory.sub_dirs
+        # print subdirectories recursively; a hidden deprecated directory hides its subtree too
+        sub_dirs = self.context.provider.get_directories(directory, include_deprecated=self.show_all)
         if len(sub_dirs) > 0:
             for subDir in sub_dirs:
                 self.print_directory_tree(subDir, printFullPath, level + 1)
@@ -264,19 +278,31 @@ class List(CliCommandBase):
         print( self._get_variation_tree_str(default_variation) )
 
     def _get_variation_tree_str(self, variation, level=0):
-        ret = "  "*level + str(variation.name)+"\n"
+        ret = "  "*level + str(variation.name) + self.deprecation_mark(variation) + "\n"
         for child in variation.children:
+            if child.is_deprecated and not self.show_all:
+                continue
             ret += self._get_variation_tree_str(child, level+1)
         return ret
 
     def print_tables(self):
-        tables = self.context.provider.search_type_tables("*")
+        tables = self.context.provider.search_type_tables("*", include_deprecated=self.show_all)
         for table in tables:
             assert (isinstance(table, TypeTable))
-            print(table.path)
+            print(table.path + self.deprecation_mark(table))
 
     def table_info(self, table, is_extended):
-        log.info(table.path)
+        log.info(table.path + self.deprecation_mark(table))
+
+    def deprecation_mark(self, obj):
+        """' (deprecated)' after a deprecated entry; with -l also the date and the comment"""
+        if not obj.is_deprecated:
+            return ""
+        mark = " " + self.theme.Accent + "(deprecated)" + self.theme.Reset
+        if self.is_extended:
+            date = obj.deprecated_time.strftime("%Y-%m-%d %H:%M:%S") if obj.deprecated_time else "--"
+            mark += " " + date + " " + (obj.deprecation_comment or "")
+        return mark
 
     def print_help(self):
         """Prints help of the command"""
@@ -295,7 +321,9 @@ keys:
     -d or --directories  - prints all directories
     -x or --dtree        - draws directory tree
 
-    -l or --extended     - shows extended info when is used on table
+    -l or --extended     - shows extended info when is used on table,
+                           the date and the comment of deprecated entries
+    -a or --all          - shows deprecated entries too, marked (deprecated)
 """)
 
 

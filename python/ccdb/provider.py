@@ -14,7 +14,7 @@ from . import path_utils
 from datetime import datetime
 
 import sqlalchemy
-from sqlalchemy import select, func, exists
+from sqlalchemy import select, func, exists, or_
 from sqlalchemy.exc import OperationalError, ProgrammingError, IntegrityError, DBAPIError
 import sqlalchemy.orm
 from sqlalchemy.orm import contains_eager
@@ -330,9 +330,37 @@ class AlchemyProvider:
         return self.root_dir
 
     # ------------------------------------------------
+    # Gets subdirectories of a directory
+    # ------------------------------------------------
+    def get_directories(self, dir_obj_or_path="/", include_deprecated=True):
+        """
+        Gets the subdirectories of a directory, as the directory tree holds them
+
+        :param dir_obj_or_path: parent Directory object or its full path
+        :type dir_obj_or_path: str or Directory
+
+        :param include_deprecated: False leaves deprecated directories out
+        :type include_deprecated: bool
+
+        :return: subdirectories of the directory
+        :rtype: [] of Directory
+        """
+        self._ensure_dirs_loaded()
+
+        if isinstance(dir_obj_or_path, str):
+            parent_dir = self.get_directory(dir_obj_or_path)
+        else:
+            assert isinstance(dir_obj_or_path, Directory)
+            parent_dir = dir_obj_or_path
+
+        if include_deprecated:
+            return list(parent_dir.sub_dirs)
+        return [sub_dir for sub_dir in parent_dir.sub_dirs if not sub_dir.is_deprecated]
+
+    # ------------------------------------------------
     # Searches directories that matches the pattern
     # ------------------------------------------------
-    def search_directories(self, searchPattern, parentPath="", limit=0, offset=0):
+    def search_directories(self, searchPattern, parentPath="", limit=0, offset=0, include_deprecated=True):
         """
         Searches directories that matches the pattern
         inside parent directory with path parentPath
@@ -353,6 +381,9 @@ class AlchemyProvider:
         :param offset: record number to start with
         :type offset: int
 
+        :param include_deprecated: False leaves deprecated directories out
+        :type include_deprecated: bool
+
         :return: Directories to find
         :rtype: [] of Directory
         """
@@ -366,6 +397,9 @@ class AlchemyProvider:
         if parentPath != "":
             parent_dir = self.dirs_by_path[parentPath]
             query = query.filter(Directory.parent_id == parent_dir.id)
+
+        if not include_deprecated:
+            query = query.filter(_not_deprecated(Directory))
 
         if limit != 0:
             query = query.limit(limit)
@@ -656,12 +690,14 @@ class AlchemyProvider:
     # ------------------------------------------------
     # Get all tables in the directory
     # ------------------------------------------------
-    def get_type_tables(self, dir_obj_or_path):
+    def get_type_tables(self, dir_obj_or_path, include_deprecated=True):
         """
         Get all tables in the directory
 
         :param dir_obj_or_path: directory or path to directory where to look
         :type dir_obj_or_path: str or Directory
+        :param include_deprecated: False leaves deprecated tables out
+        :type include_deprecated: bool
         :return: [] of TypeTables for the directory
         :rtype: [] of TypeTable
         """
@@ -673,12 +709,15 @@ class AlchemyProvider:
             assert isinstance(dir_obj_or_path, Directory)
             parent_dir = dir_obj_or_path
 
-        return self.session.query(TypeTable).filter(TypeTable.parent_dir_id == parent_dir.id).all()
+        query = self.session.query(TypeTable).filter(TypeTable.parent_dir_id == parent_dir.id)
+        if not include_deprecated:
+            query = query.filter(_not_deprecated(TypeTable))
+        return query.all()
 
     # ------------------------------------------------
     # Searches for type tables that matches the patten
     # ------------------------------------------------
-    def search_type_tables(self, pattern, dir_obj_or_path=None, limit=0, offset=0):
+    def search_type_tables(self, pattern, dir_obj_or_path=None, limit=0, offset=0, include_deprecated=True):
         """
         Searches for type tables that matches the patten
 
@@ -699,6 +738,9 @@ class AlchemyProvider:
 
         :param offset: record number to start with
         :type offset: int
+
+        :param include_deprecated: False leaves deprecated tables out
+        :type include_deprecated: bool
 
         :return: found TypeTables
         :rtype: []
@@ -726,6 +768,9 @@ class AlchemyProvider:
         # add parent directory to query
         if parent_dir is not None:
             query = query.filter(TypeTable.parent_dir_id == parent_dir.id)
+
+        if not include_deprecated:
+            query = query.filter(_not_deprecated(TypeTable))
 
         # add limits to query
         if limit != 0: query = query.limit(limit)
@@ -1057,10 +1102,12 @@ class AlchemyProvider:
     # Searches all variations associated with this type table
     # -------------------------------------------------------
     # noinspection PyUnresolvedReferences
-    def get_variations(self, pattern=""):
+    def get_variations(self, pattern="", include_deprecated=True):
         """
         Returns all variations associated with this type table
 
+        :param include_deprecated: False leaves deprecated variations out
+        :type include_deprecated: bool
         :return: list of variations
         :rtype: [Variation]
         """
@@ -1072,6 +1119,9 @@ class AlchemyProvider:
             # prepare search pattern for SQL
             pattern = pattern.replace("_", "\\_").replace("*", "%").replace("?", "_")
             query = query.filter(Variation.name.like(pattern, escape="\\"))
+
+        if not include_deprecated:
+            query = query.filter(_not_deprecated(Variation))
 
         return query.all()
 
@@ -1214,6 +1264,86 @@ class AlchemyProvider:
                                action="delete",
                                description="Deleted variation '{0}'".format(variation.name),
                                comment=variation.comment)
+
+    # ----------------------------------------------------------------------------------------
+    #   D E P R E C A T I O N
+    # ----------------------------------------------------------------------------------------
+    def deprecate(self, obj, comment):
+        """
+        Marks a directory, a type table or a variation as deprecated.
+
+        The object stays fully usable: requests, cat, vers and info work as before;
+        listings may leave it out (include_deprecated=False)
+
+        :param obj: object to deprecate
+        :type obj: Directory or TypeTable or Variation
+        :param comment: why the object is deprecated and what to use instead. Required
+        :type comment: str
+        """
+        description = self._deprecation_subject(obj)
+        if comment is None or not str(comment).strip():
+            raise ValueError("A comment is required to deprecate {0}".format(description))
+
+        # get user here to fail if no such user
+        user = self.get_current_user()
+
+        try:
+            obj.is_deprecated = True
+            obj.deprecated_by_user_id = user.id
+            obj.deprecated_time = datetime.now()
+            obj.deprecation_comment = comment
+
+            # 'update' as the action: the log action column holds 7 characters
+            self.create_log_record(user=user,
+                                   affected_ids=[obj.__tablename__ + str(obj.id)],
+                                   action="update",
+                                   description="Deprecated {0}".format(description),
+                                   comment=comment,
+                                   commit=False)
+            self.session.commit()
+        except Exception:
+            self._rollback_quietly()
+            raise
+
+    def undeprecate(self, obj):
+        """
+        Clears the deprecation of a directory, a type table or a variation
+
+        :param obj: object to undeprecate
+        :type obj: Directory or TypeTable or Variation
+        """
+        description = self._deprecation_subject(obj)
+
+        # get user here to fail if no such user
+        user = self.get_current_user()
+
+        try:
+            obj.is_deprecated = False
+            obj.deprecated_by_user_id = None
+            obj.deprecated_time = None
+            obj.deprecation_comment = None
+
+            self.create_log_record(user=user,
+                                   affected_ids=[obj.__tablename__ + str(obj.id)],
+                                   action="update",
+                                   description="Undeprecated {0}".format(description),
+                                   comment="",
+                                   commit=False)
+            self.session.commit()
+        except Exception:
+            self._rollback_quietly()
+            raise
+
+    @staticmethod
+    def _deprecation_subject(obj):
+        if isinstance(obj, Directory):
+            return "directory '{0}'".format(obj.path)
+        if isinstance(obj, TypeTable):
+            return "table '{0}'".format(obj.path)
+        if isinstance(obj, Variation):
+            return "variation '{0}'".format(obj.name)
+        raise TypeError("Only a directory, a type table or a variation can be deprecated, got {0}".format(
+            type(obj).__name__))
 
     # ----------------------------------------------------------------------------------------
     #   A S S I G N M E N T S
@@ -2235,3 +2365,8 @@ class AlchemyProvider:
 
         # execute and return
         return query.all()
+
+
+def _not_deprecated(model_class):
+    """SQL condition for rows that are not deprecated; NULL counts as not deprecated, as before the column"""
+    return or_(model_class.is_deprecated == False, model_class.is_deprecated.is_(None))  # noqa: E712
