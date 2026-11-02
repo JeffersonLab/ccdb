@@ -114,6 +114,7 @@ bool Calibration::GetCalib( vector< map<string, string> > &values, const string 
      * /path/to/data - just path to date, no run, variation and timestamp specified
      * /path/to/data::mc - no run or date specified.
      * /path/to/data:::2029 - only path and date
+     * /path/to/data@mytag, /path/to/data:run@mytag - a tag, it replaces the variation and the time
      * 
      * 
 	 * @parameter [out] values - vector of rows, each row is a map<header_name, string_cell_value>
@@ -649,6 +650,11 @@ Assignment* Calibration::GetAssignmentInternal(const string& namepath, bool load
     {
         cacheKey = GetConnectionString() + "\x1f" + result.Path + "\x1f" + to_string(run) + "\x1f" +
                    variation + "\x1f" + to_string(time) + "\x1f" + (loadColumns ? "1" : "0");
+
+        // A tag replaces variation and time. Its field comes after all the fields of an untagged key,
+        // so a tag request never shares an entry with an untagged one, whatever the default variation is
+        if(result.WasParsedTag) cacheKey += "\x1f@" + result.Tag;
+
         auto cached = mAssignmentCache.find(cacheKey);
         if (cached != mAssignmentCache.end()) {
             isCached = true;
@@ -656,7 +662,9 @@ Assignment* Calibration::GetAssignmentInternal(const string& namepath, bool load
         }
     }
 
-    Assignment* assignment = mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation, loadColumns);
+    Assignment* assignment = result.WasParsedTag ?
+        mProvider->GetAssignmentShortByTag(run, PathUtils::MakeAbsolute(result.Path), result.Tag, loadColumns) :
+        mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation, loadColumns);
 
     if(useCache && assignment != nullptr) {
         mAssignmentCache[cacheKey] = assignment;

@@ -247,6 +247,11 @@ namespace ccdb
          */
         virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns=false);
 
+        /** @brief Get the assignment that a tag gives: the tag's variation at its snapshot time
+         * @see DataProvider::GetAssignmentShortByTag
+         */
+        Assignment* GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns) override;
+
 
 
     protected:

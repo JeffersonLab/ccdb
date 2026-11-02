@@ -12,6 +12,10 @@
 #include "CCDB/Model/Assignment.h"
 #include "CCDB/Model/Variation.h"
 
+#if defined(_WIN32) || defined(WIN32)
+#define timegm _mkgmtime
+#endif
+
 using namespace std;
 using namespace ccdb;
 
@@ -103,6 +107,22 @@ TEST_CASE("CCDB/SQLiteDataProvider/Tags", "[fixture] Schema 6 fixture: tags")
 		REQUIRE(pastWithRun->GetId() == 1380);
 		if(!calib->IsCacheEnabled()) delete pastWithRun;
 
+		// Empty variation and time parts are allowed with a tag
+		Assignment* pastEmptyVariation = calib->GetAssignment("/calib/fcal/gains:500:@fixture_past");
+		REQUIRE(pastEmptyVariation != NULL);
+		REQUIRE(pastEmptyVariation->GetId() == 1380);
+		if(!calib->IsCacheEnabled()) delete pastEmptyVariation;
+
+		Assignment* pastEmptyRun = calib->GetAssignment("/calib/fcal/gains::@fixture_past");
+		REQUIRE(pastEmptyRun != NULL);
+		REQUIRE(pastEmptyRun->GetId() == 1380);
+		if(!calib->IsCacheEnabled()) delete pastEmptyRun;
+
+		Assignment* pastEmptyTime = calib->GetAssignment("/calib/fcal/gains:500::@fixture_past");
+		REQUIRE(pastEmptyTime != NULL);
+		REQUIRE(pastEmptyTime->GetId() == 1380);
+		if(!calib->IsCacheEnabled()) delete pastEmptyTime;
+
 		// Without a tag the same request gives the newest
 		Assignment* untagged = calib->GetAssignment("/calib/fcal/gains:500");
 		REQUIRE(untagged != NULL);
@@ -136,19 +156,18 @@ TEST_CASE("CCDB/SQLiteDataProvider/Tags", "[fixture] Schema 6 fixture: tags")
 		if(!calib->IsCacheEnabled()) delete shared;
 	}
 
-	SECTION("Tag requests through the data provider", "GetAssignmentShort with the variation \"@NAME\"")
+	SECTION("Tag requests through the data provider", "GetAssignmentShortByTag")
 	{
 		DataProvider *prov = new SQLiteDataProvider();
 		prov->Connect(connectionString);
 
-		Assignment* past = prov->GetAssignmentShort(run, "/calib/fcal/gains", 0, "@fixture_past", false);
+		Assignment* past = prov->GetAssignmentShortByTag(run, "/calib/fcal/gains", "fixture_past", false);
 		REQUIRE(past != NULL);
 		REQUIRE(past->GetId() == 1380);
 		REQUIRE(past->GetVariation()->GetName() == "default");
 		delete past;
 
-		// The time argument is ignored under a tag
-		Assignment* newest = prov->GetAssignmentShort(run, "/calib/fcal/gains", 1, "@fixture_newest", false);
+		Assignment* newest = prov->GetAssignmentShortByTag(run, "/calib/fcal/gains", "fixture_newest", false);
 		REQUIRE(newest != NULL);
 		REQUIRE(newest->GetId() == 3582);
 		delete newest;
@@ -163,12 +182,16 @@ TEST_CASE("CCDB/SQLiteDataProvider/Tags", "[fixture] Schema 6 fixture: tags")
 		delete explicitPast;
 
 		// /schema6/shared was created after the past tag
-		Assignment* none = prov->GetAssignmentShort(run, "/schema6/shared", 0, "@fixture_past", false);
+		Assignment* none = prov->GetAssignmentShortByTag(run, "/schema6/shared", "fixture_past", false);
 		REQUIRE(none == NULL);
 
-		REQUIRE_THROWS(prov->GetAssignmentShort(run, "/schema6/shared", 0, "@no_such_tag", false));
-		REQUIRE_THROWS(prov->GetAssignmentShort(run, "/schema6/shared", 0, "@", false));
-		REQUIRE_THROWS(prov->GetAssignmentShort(run, "/schema6/shared", 0, "@bad\"name", false));
+		REQUIRE_THROWS(prov->GetAssignmentShortByTag(run, "/schema6/shared", "no_such_tag", false));
+		REQUIRE_THROWS(prov->GetAssignmentShortByTag(run, "/schema6/shared", "", false));
+		REQUIRE_THROWS(prov->GetAssignmentShortByTag(run, "/schema6/shared", "bad\"name", false));
+		REQUIRE_THROWS(prov->GetAssignmentShortByTag(run, "/schema6/shared", "fixture-past", false));
+
+		// A variation is only a variation: "@NAME" is not read as a tag
+		REQUIRE_THROWS(prov->GetAssignmentShort(run, "/calib/fcal/gains", 0, "@fixture_past", false));
 
 		REQUIRE(DataProvider::UtcDateTimeToUnixTime("2020-01-06 10:17:00.000000") == 1578305820);
 		REQUIRE(DataProvider::UtcDateTimeToUnixTime("2020-01-02 12:00:00") == 1577966400);

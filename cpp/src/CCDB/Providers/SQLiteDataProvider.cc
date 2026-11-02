@@ -16,6 +16,14 @@
 #include "CCDB/Model/ConstantsTypeTable.h"
 #include "CCDB/Model/RunRange.h"
 
+#if defined(_WIN32) || defined(WIN32)
+// MSVC has localtime_s instead, with the arguments swapped and an error code returned
+static inline struct tm* localtime_r(const time_t* timep, struct tm* result)
+{
+    return localtime_s(result, timep) == 0 ? result : nullptr;
+}
+#endif
+
 
 using namespace ccdb;
 
@@ -362,53 +370,55 @@ static Assignment* SelectAssignmentShortByTimeLimit(SQLiteDataProvider* provider
 }
 
 
-Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variationName, bool loadColumns /*=false*/)
+Assignment* ccdb::SQLiteDataProvider::GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns)
 {
-    // A tag "@NAME" replaces variation and time: one query for the tag's variation and snapshot time,
-    // then the resolution with that variation and time limit
-    if(IsTagRequest(variationName)) {
-        string tagName = GetTagName(variationName);
-        string tagVariation;
-        string tagSnapshotTime;
-        SQLiteStatement tagQuery(mDatabase);
-        tagQuery.Prepare(
-            "SELECT `variations`.`name`, `tags`.`snapshotTime` "
-            "FROM `tags` "
-            "INNER JOIN `variations` ON `tags`.`variationId` = `variations`.`id` "
-            "WHERE `tags`.`name` = ?1 "
-            "LIMIT 1 ");
-        tagQuery.BindString(1, tagName);
-        auto tagRows = tagQuery.Execute([&tagVariation, &tagSnapshotTime, &tagQuery](uint64_t rowIndex) {
-            tagVariation = tagQuery.ReadString(0);
-            tagSnapshotTime = tagQuery.ReadString(1);
-        });
-        if(tagRows == 0) {
-            throw std::runtime_error("SQLiteDataProvider::GetAssignmentShort => No tag '" + tagName + "' was found");
-        }
+    CheckTagName(tagName);
 
-        // snapshotTime is a UTC instant, while assignments.created holds the local naive time of the client
-        // that wrote it. So the instant is converted to local time, as the time filter below does with
-        // 'localtime'. Both columns carry microseconds as text ('2020-01-06 10:17:00.000000'), so the limit
-        // keeps the tag's own fraction: an assignment added later in the tag's second must not count,
-        // which is how Python compares the exact instant
-        time_t tagTime = GetTagUnixTime(tagName, tagSnapshotTime);
-        string fraction = "000000";
-        size_t dotPos = tagSnapshotTime.find('.');
-        if(dotPos != string::npos)
-        {
-            for(size_t i = 0; i < 6 && dotPos + 1 + i < tagSnapshotTime.size() && isdigit((unsigned char)tagSnapshotTime[dotPos + 1 + i]); i++)
-            {
-                fraction[i] = tagSnapshotTime[dotPos + 1 + i];
-            }
-        }
-        struct tm localTagTime;
-        memset(&localTagTime, 0, sizeof(localTagTime));
-        localtime_r(&tagTime, &localTagTime);
-        char tagTimeBuf[40];
-        strftime(tagTimeBuf, sizeof(tagTimeBuf), "%Y-%m-%d %H:%M:%S", &localTagTime);
-        return SelectAssignmentShortByTimeLimit(this, mDatabase, run, path, string(tagTimeBuf) + "." + fraction, tagVariation, loadColumns);
+    // One query for the tag's variation and snapshot time, then the resolution with that variation and time limit
+    string tagVariation;
+    string tagSnapshotTime;
+    SQLiteStatement tagQuery(mDatabase);
+    tagQuery.Prepare(
+        "SELECT `variations`.`name`, `tags`.`snapshotTime` "
+        "FROM `tags` "
+        "INNER JOIN `variations` ON `tags`.`variationId` = `variations`.`id` "
+        "WHERE `tags`.`name` = ?1 "
+        "LIMIT 1 ");
+    tagQuery.BindString(1, tagName);
+    auto tagRows = tagQuery.Execute([&tagVariation, &tagSnapshotTime, &tagQuery](uint64_t rowIndex) {
+        tagVariation = tagQuery.ReadString(0);
+        tagSnapshotTime = tagQuery.ReadString(1);
+    });
+    if(tagRows == 0) {
+        throw std::runtime_error("SQLiteDataProvider::GetAssignmentShortByTag => No tag '" + tagName + "' was found");
     }
 
+    // snapshotTime is a UTC instant, while assignments.created holds the local naive time of the client
+    // that wrote it. So the instant is converted to local time, as the time filter of GetAssignmentShort does
+    // with 'localtime'. Both columns carry microseconds as text ('2020-01-06 10:17:00.000000'), so the limit
+    // keeps the tag's own fraction: an assignment added later in the tag's second must not count,
+    // which is how Python compares the exact instant
+    time_t tagTime = GetTagUnixTime(tagName, tagSnapshotTime);
+    string fraction = "000000";
+    size_t dotPos = tagSnapshotTime.find('.');
+    if(dotPos != string::npos)
+    {
+        for(size_t i = 0; i < 6 && dotPos + 1 + i < tagSnapshotTime.size() && isdigit((unsigned char)tagSnapshotTime[dotPos + 1 + i]); i++)
+        {
+            fraction[i] = tagSnapshotTime[dotPos + 1 + i];
+        }
+    }
+    struct tm localTagTime;
+    memset(&localTagTime, 0, sizeof(localTagTime));
+    localtime_r(&tagTime, &localTagTime);
+    char tagTimeBuf[40];
+    strftime(tagTimeBuf, sizeof(tagTimeBuf), "%Y-%m-%d %H:%M:%S", &localTagTime);
+    return SelectAssignmentShortByTimeLimit(this, mDatabase, run, path, string(tagTimeBuf) + "." + fraction, tagVariation, loadColumns);
+}
+
+
+Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variationName, bool loadColumns /*=false*/)
+{
     //Get type table
     ConstantsTypeTable *table = DataProvider::GetConstantsTypeTable(path, loadColumns);
     if(!table) {

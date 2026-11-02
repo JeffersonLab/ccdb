@@ -279,7 +279,7 @@ ccdb::RequestParseResult ccdb::PathUtils::ParseRequest( const string& requestStr
     result.WasParsedTag=false;        // true if the request names a tag
 
     // A tag is the part after '@': /path/to/data@tag or /path/to/data:run@tag
-    // It replaces variation and time, so neither may be given with it
+    // Neither paths, nor runs, nor variations, nor times contain '@', so the first one starts the tag
     string request = requestStr;
     size_t tagPos = requestStr.find('@');
     if(tagPos != string::npos)
@@ -288,13 +288,10 @@ ccdb::RequestParseResult ccdb::PathUtils::ParseRequest( const string& requestStr
         result.WasParsedTag = true;
         request = requestStr.substr(0, tagPos);
 
-        if(result.Tag.find(':') != string::npos || request.find(':') != request.rfind(':'))
+        if(!IsValidTagName(result.Tag))
         {
-            throw std::invalid_argument("Request '" + requestStr + "': a tag (@NAME) may not be combined with a variation or a time");
-        }
-        if(result.Tag.empty())
-        {
-            throw std::invalid_argument("Request '" + requestStr + "': the tag name after '@' is empty");
+            throw std::invalid_argument("Request '" + requestStr + "': tag name '" + result.Tag +
+                                        "' is invalid. It should consist of A-Z, a-z, 0-9, _");
         }
     }
 
@@ -346,6 +343,12 @@ ccdb::RequestParseResult ccdb::PathUtils::ParseRequest( const string& requestStr
         result.IsInvalidRunNumber = !success || result.RunNumber<0;
     }
 
+    // A tag replaces variation and time. Empty parts (/path:run:@tag) are fine, as in Python
+    if(result.WasParsedTag && (result.WasParsedVariation || result.WasParsedTime))
+    {
+        throw std::invalid_argument("Request '" + requestStr + "': a tag (@NAME) may not be combined with a variation or a time");
+    }
+
     //parse time
     if(result.WasParsedTime)
     {
@@ -353,13 +356,23 @@ ccdb::RequestParseResult ccdb::PathUtils::ParseRequest( const string& requestStr
         result.Time = ParseTime(result.TimeString, &success);
     }
 
-    // The tag travels as the variation "@NAME" to DataProvider::GetAssignmentShort
-    if(result.WasParsedTag)
-    {
-        result.Variation = "@" + result.Tag;
-        result.WasParsedVariation = true;
-    }
     return result;
+}
+
+
+//______________________________________________________________________________
+bool ccdb::PathUtils::IsValidTagName( const string& name )
+{
+    if(name.empty()) return false;
+    for(char letter: name)
+    {
+        bool isValid = (letter >= 'a' && letter <= 'z') ||
+                       (letter >= 'A' && letter <= 'Z') ||
+                       (letter >= '0' && letter <= '9') ||
+                       letter == '_';
+        if(!isValid) return false;
+    }
+    return true;
 }
 
 
@@ -417,6 +430,14 @@ ccdb::ContextParseResult ccdb::PathUtils::ParseContext( const string& context )
 		{
 			result.VariationIsParsed = true;
 			result.Variation = StringUtils::Replace("variation=","",token);
+
+			// A tag is named only in a request (/path@NAME). Variation names have no '@', so a context
+			// with one is someone trying to set a default tag: say so now, not as an unknown variation later
+			if(result.Variation.find('@') != string::npos)
+			{
+				throw std::invalid_argument("Context '" + context + "': variation '" + result.Variation +
+				                            "' is invalid. A tag (@NAME) can't be a default variation, put it in the request: /path/to/data@NAME");
+			}
 			continue;
 		}
 

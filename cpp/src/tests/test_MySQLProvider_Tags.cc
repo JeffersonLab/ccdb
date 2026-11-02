@@ -65,32 +65,40 @@ TEST_CASE("CCDB/MySQLDataProvider/Tags", "[mysql] tags")
     prov->Connect(connectionString);
     REQUIRE(prov->IsConnected());
 
-    SECTION("Data provider", "GetAssignmentShort with the variation \"@NAME\"")
+    SECTION("Data provider", "GetAssignmentShortByTag")
     {
-        Assignment* between = prov->GetAssignmentShort(100, "/test/test_vars/test_table", 0, "@cpp_tag_between", false);
+        Assignment* between = prov->GetAssignmentShortByTag(100, "/test/test_vars/test_table", "cpp_tag_between", false);
         REQUIRE(between != NULL);
         REQUIRE(between->GetId() == 1);
         delete between;
 
-        // The time argument is ignored under a tag
-        Assignment* after = prov->GetAssignmentShort(100, "/test/test_vars/test_table", 1, "@cpp_tag_after", false);
+        Assignment* after = prov->GetAssignmentShortByTag(100, "/test/test_vars/test_table", "cpp_tag_after", false);
         REQUIRE(after != NULL);
         REQUIRE(after->GetId() == 4);
         delete after;
 
-        Assignment* subtest = prov->GetAssignmentShort(100, "/test/test_vars/test_table", 0, "@cpp_tag_subtest", false);
+        Assignment* subtest = prov->GetAssignmentShortByTag(100, "/test/test_vars/test_table", "cpp_tag_subtest", false);
         REQUIRE(subtest != NULL);
         REQUIRE(subtest->GetId() == 5);
         delete subtest;
 
         // subtest -> test -> default: only assignment 1 of default existed then
-        Assignment* subtestOld = prov->GetAssignmentShort(1000, "/test/test_vars/test_table", 0, "@cpp_tag_subtest_old", false);
+        Assignment* subtestOld = prov->GetAssignmentShortByTag(1000, "/test/test_vars/test_table", "cpp_tag_subtest_old", false);
         REQUIRE(subtestOld != NULL);
         REQUIRE(subtestOld->GetId() == 1);
         delete subtestOld;
 
-        REQUIRE_THROWS(prov->GetAssignmentShort(100, "/test/test_vars/test_table", 0, "@cpp_tag_none", false));
-        REQUIRE_THROWS(prov->GetAssignmentShort(100, "/test/test_vars/test_table", 0, "@bad\"name", false));
+        REQUIRE_THROWS(prov->GetAssignmentShortByTag(100, "/test/test_vars/test_table", "cpp_tag_none", false));
+        REQUIRE_THROWS(prov->GetAssignmentShortByTag(100, "/test/test_vars/test_table", "", false));
+        REQUIRE_THROWS(prov->GetAssignmentShortByTag(100, "/test/test_vars/test_table", "bad\"name", false));
+        REQUIRE_THROWS(prov->GetAssignmentShortByTag(100, "/test/test_vars/test_table", "bad' OR '1'='1", false));
+        REQUIRE_THROWS(prov->GetAssignmentShortByTag(100, "/test/test_vars/test_table", "cpp-tag-after", false));
+
+        // A variation is only a variation: "@NAME" is not read as a tag
+        REQUIRE_THROWS(prov->GetAssignmentShort(100, "/test/test_vars/test_table", 0, "@cpp_tag_between", false));
+
+        // No assignment and no parent variation: still an error (the type table is freed before it)
+        REQUIRE_THROWS(prov->GetAssignmentShort(100, "/test/test_vars/test_table", 1, "default", false));
     }
 
     SECTION("Calibration", "Request strings with a tag")
@@ -108,6 +116,18 @@ TEST_CASE("CCDB/MySQLDataProvider/Tags", "[mysql] tags")
         REQUIRE(subtest != NULL);
         REQUIRE(subtest->GetId() == 5);
         if(!calib->IsCacheEnabled()) delete subtest;
+
+        // Empty variation and time parts are allowed with a tag
+        Assignment* emptyParts = calib->GetAssignment("/test/test_vars/test_table:100::@cpp_tag_between");
+        REQUIRE(emptyParts != NULL);
+        REQUIRE(emptyParts->GetId() == 1);
+        if(!calib->IsCacheEnabled()) delete emptyParts;
+
+        // Untagged, the same request gives the newest of default
+        Assignment* untagged = calib->GetAssignment("/test/test_vars/test_table:100");
+        REQUIRE(untagged != NULL);
+        REQUIRE(untagged->GetId() == 4);
+        if(!calib->IsCacheEnabled()) delete untagged;
 
         REQUIRE_THROWS(calib->GetAssignment("/test/test_vars/test_table:100:default@cpp_tag_after"));
         REQUIRE_THROWS(calib->GetAssignment("/test/test_vars/test_table@cpp_tag_after::2013"));
