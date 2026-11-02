@@ -46,9 +46,9 @@ jobs:
         with:
           python-version: "3.12"
 
-      # The web extra (Flask) is needed by the web GUI unit tests
+      # The web extra (Flask) is needed by the web GUI unit tests, the dev extra (PyYAML) by unit_test_metadata_files
       - name: Install ccdb
-        run: pip install ".[web]"
+        run: pip install ".[web,dev]"
 
       - name: Install MySQL client
         run: |
@@ -105,6 +105,7 @@ jobs:
           tests.unit_test_units
           tests.unit_test_tags_mysql
           tests.unit_test_time_zone_mysql
+          tests.unit_test_metadata_files
           tests.integ_test_provider_sqlite
           tests.integ_test_cli_manager
           tests.integ_test_provider_mysql

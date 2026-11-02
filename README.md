@@ -36,3 +36,13 @@ ccdb -i
 ```
 
 Instructions how to build CCDB for different programming languages and other info are [in the wiki](https://github.com/JeffersonLab/ccdb/wiki/Installation)
+
+## Citation
+
+If you use CCDB in your work, please cite it. The citation metadata is in [`CITATION.cff`](CITATION.cff);
+GitHub shows it as "Cite this repository" in the sidebar of the repository page, with APA and BibTeX forms.
+
+## License
+
+CCDB is free software under the GNU General Public License, version 2 or (at your option) any later version
+(`GPL-2.0-or-later`). The license text is in [`LICENSE`](LICENSE).
