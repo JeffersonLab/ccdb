@@ -228,3 +228,88 @@ jobs:
         run: |
           ccdb -c "sqlite:///$V5_FILE" db rollback-v6 --rollback-i-am-sure
           ccdb -c "sqlite:///$V5_FILE" db | grep "Schema version: 5" > /dev/null
+
+      # The CCDB 2.5 commands, back on the schema 6 database of the steps before the upgrade ones.
+      # Outputs are captured, not piped, where a check must see a line missing.
+
+      - name: ccdb deprecate
+        run: ccdb deprecate /test/test_vars/test_table -c "smoke"
+
+      - name: ccdb ls hides a deprecated table
+        run: |
+          output=$(ccdb ls /test/test_vars)
+          echo "$output"
+          # 'test_table' or '/test/test_vars/test_table' at a line start, not test_table2
+          if echo "$output" | grep -E "(^|/)test_table( |$)" > /dev/null; then echo "ls shows a deprecated table"; exit 1; fi
+
+      - name: ccdb ls -a shows a deprecated table marked
+        run: |
+          output=$(ccdb ls -a /test/test_vars)
+          echo "$output"
+          echo "$output" | grep "test_table (deprecated)" > /dev/null
+
+      - name: ccdb info shows the deprecation
+        run: |
+          output=$(ccdb info /test/test_vars/test_table)
+          echo "$output"
+          echo "$output" | grep "Deprecated" | grep "smoke" > /dev/null
+
+      - name: ccdb deprecate --undo
+        run: |
+          ccdb deprecate --undo /test/test_vars/test_table
+          output=$(ccdb ls /test/test_vars)
+          echo "$output"
+          echo "$output" | grep -x "test_table" > /dev/null
+          output=$(ccdb info /test/test_vars/test_table)
+          if echo "$output" | grep "Deprecated" > /dev/null; then echo "info still shows the deprecation"; exit 1; fi
+
+      - name: ccdb tag (create, list, show)
+        run: |
+          ccdb tag smoke_tag -c "smoke"
+          output=$(ccdb tag)
+          echo "$output"
+          echo "$output" | grep "smoke_tag" > /dev/null
+          output=$(ccdb tag smoke_tag)
+          echo "$output"
+          echo "$output" | grep "smoke" > /dev/null
+
+      # The tag holds the default variation as it is now: run 0 is constant set 4 (values 2.2 ... 2.7)
+      - name: ccdb cat with a tag
+        run: |
+          output=$(ccdb cat /test/test_vars/test_table:0@smoke_tag)
+          echo "$output"
+          echo "$output" | grep "2.2" > /dev/null
+
+      - name: ccdb cat with a tag and a variation fails (exit non-zero)
+        run: |
+          set +e
+          output=$(ccdb cat /test/test_vars/test_table:0:default@smoke_tag 2>&1)
+          code=$?
+          set -e
+          echo "$output"
+          test $code -ne 0 || { echo "expected non-zero exit code"; exit 1; }
+          if echo "$output" | grep "Traceback" > /dev/null; then echo "CLI leaked a python traceback"; exit 1; fi
+
+      - name: ccdb tag rm
+        run: |
+          ccdb tag rm smoke_tag
+          output=$(ccdb tag)
+          echo "$output"
+          if echo "$output" | grep "smoke_tag" > /dev/null; then echo "tag rm left the tag"; exit 1; fi
+
+      - name: ccdb prop (instance)
+        run: |
+          ccdb prop set --instance experiment SMOKE
+          output=$(ccdb prop get --instance experiment)
+          echo "$output"
+          test "$output" = "SMOKE" || { echo "expected SMOKE, got '$output'"; exit 1; }
+          output=$(ccdb prop ls --instance)
+          echo "$output"
+          echo "$output" | grep -x "experiment = SMOKE" > /dev/null
+
+      - name: ccdb mktbl with units + info
+        run: |
+          ccdb mktbl /test/smoke_dir/units_table -r 1 gain=double:MeV
+          output=$(ccdb info /test/smoke_dir/units_table)
+          echo "$output"
+          echo "$output" | grep "gain \[MeV\]" > /dev/null

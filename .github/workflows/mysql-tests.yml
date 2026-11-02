@@ -96,6 +96,11 @@ jobs:
           tests.unit_test_dedup
           tests.unit_test_rehash
           tests.unit_test_fixture_v6
+          tests.unit_test_tags
+          tests.unit_test_deprecation
+          tests.unit_test_properties
+          tests.unit_test_units
+          tests.unit_test_tags_mysql
           tests.integ_test_provider_sqlite
           tests.integ_test_cli_manager
           tests.integ_test_provider_mysql
