@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% from '_tree.html' import tree, tree_buttons with context %}
+{% from '_deprecation.html' import switch with context %}
+{% block title %}@{{ tag.name }} · CCDB{% endblock %}
+
+{#- The assignment a request with the tag returns for the table; the golden comparison reads data-assignment. -#}
+{% macro answer(table) -%}
+  {%- set found = resolved[table.id] %}
+  {%- set found_request = table.path ~ ':' ~ found.run_min ~ ':' ~ found.variation ~ ':' ~ found.created.strftime('%Y-%m-%d_%H-%M-%S') %}
+  <a class="badge rounded-pill text-bg-secondary text-decoration-none" href="{{ url_for('show_request', request=found_request) }}" data-assignment="{{ found.assignment_id }}" title="{{ found_request }}">{{ found.variation }} · {{ found.created.strftime('%Y-%m-%d %H:%M') }}</a>
+{%- endmacro %}
+
+{% block page_header %}
+<h1 class="h3 mb-1"><svg class="ico me-1"><use href="#i-tag"/></svg>@{{ tag.name }}</h1>
+<table class="table table-sm mb-3 meta" style="max-width: 44rem" id="tag-meta">
+  <tbody>
+    <tr><th scope="row">Variation</th><td>{{ chain | join(' › ') }}</td></tr>
+    <tr><th scope="row">Time (UTC)</th><td>{{ tag.snapshot_time.strftime('%Y-%m-%d %H:%M:%S') }}</td></tr>
+    <tr><th scope="row">Comment</th><td>{{ tag.comment or '' }}</td></tr>
+    <tr><th scope="row">Author</th><td>{{ author }}</td></tr>
+    <tr><th scope="row">Created</th><td>{{ tag.created.strftime('%Y-%m-%d %H:%M:%S') }}</td></tr>
+  </tbody>
+</table>
+{% endblock %}
+
+{% block content %}
+{#- A plain GET form: the run is part of the URL, so every view can be shared. -#}
+<form class="toolbar mb-3" method="get">
+  <label class="text-body-secondary" for="tag-run">Constants of every table for run</label>
+  <input class="form-control" style="max-width: 10rem" type="number" min="0" name="run" id="tag-run" value="{{ run if run is not none }}" placeholder="Run" required>
+  {% if show_deprecated() %}<input type="hidden" name="deprecated" value="all">{% endif %}
+  <button class="btn btn-outline-secondary" type="submit">Show</button>
+  {{ switch() }}
+</form>
+{% if resolved is not none %}
+{%- set shown = resolved | length - hidden %}
+<p class="text-body-secondary small mb-2">{{ shown }} table{{ 's' if shown != 1 }} with constants for run {{ run }} at @{{ tag.name }}{% if hidden %} · {{ hidden }} deprecated hidden{% endif %}. A badge names the variation the constants come from and when they were added; it opens them.</p>
+{% if shown %}
+<div class="mb-2">{{ tree_buttons() }}</div>
+{{ tree(root, tables_of, keep_dirs=keep_dirs, annotate=answer, open=False, remember=False) }}
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block page_scripts %}<script type="module" src="{{ url_for('static', filename='js/tree.js') }}"></script>{% endblock %}

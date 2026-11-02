@@ -138,12 +138,22 @@ def affected_tree(db, grouped, variation_names, include_deprecated=True):
     keep (every ancestor of an affected table), and per table id the (variation, count, newest) badges in chain order.
     Without `include_deprecated`, deprecated tables and the tables inside a deprecated directory are left out and
     counted in `hidden`."""
+    tree = pruned_tree(db, grouped, include_deprecated)
+    badges = {table.id: [(name, *grouped[table.id][variation_id]) for variation_id, name in variation_names.items() if variation_id in grouped[table.id]]
+              for tables in tree["tables_of"].values() for table in tables}
+    return dict(tree, affected=badges, hidden=len(grouped) - len(badges))
+
+
+def pruned_tree(db, table_ids, include_deprecated=True):
+    """The tables with these ids as a directory tree for the _tree.html macros: the root, the tables per directory
+    id, and the directory ids to keep (every ancestor of a shown table). Without `include_deprecated`, deprecated
+    tables and the tables inside a deprecated directory are left out."""
     root = db.get_root_directory()
-    tables = db.session.execute(select(TypeTable).where(TypeTable.id.in_(list(grouped)))).scalars().all() if grouped else []
+    tables = db.session.execute(select(TypeTable).where(TypeTable.id.in_(list(table_ids)))).scalars().all() if table_ids else []
     if not include_deprecated:
         visible_dirs = visible_directory_ids(root)
         tables = [table for table in tables if not table.is_deprecated and (table.parent_dir_id == 0 or table.parent_dir_id in visible_dirs)]
-    tables_of, keep_dirs, badges = {}, set(), {}
+    tables_of, keep_dirs = {}, set()
     for table in sorted(tables, key=lambda each: each.name):
         table.parent_dir = db.dirs_by_id.get(table.parent_dir_id, root)
         tables_of.setdefault(table.parent_dir_id, []).append(table)
@@ -151,8 +161,7 @@ def affected_tree(db, grouped, variation_names, include_deprecated=True):
         while directory is not None and directory.id not in keep_dirs:
             keep_dirs.add(directory.id)
             directory = db.dirs_by_id.get(directory.parent_id)
-        badges[table.id] = [(name, *grouped[table.id][variation_id]) for variation_id, name in variation_names.items() if variation_id in grouped[table.id]]
-    return dict(root=root, tables_of=tables_of, keep_dirs=keep_dirs, affected=badges, hidden=len(grouped) - len(badges))
+    return dict(root=root, tables_of=tables_of, keep_dirs=keep_dirs)
 
 
 def natural_key(name):
@@ -307,6 +316,34 @@ def register(app):
                 context.update(affected_tree(db, grouped, variation_names, include_deprecated=show_all))
         return render_template("compare.html", **context)
 
+    @app.route('/tags')
+    def tags():
+        db: ccdb.AlchemyProvider = g.db
+        return render_template("tags.html", tags=queries.list_tags(db.session))
+
+    @app.route('/tags/<name>')
+    def tag_page(name):
+        """A tag and, for the run in the URL, the assignment that `table:run@tag` gives for every table.
+
+        The tag fixes a variation and a moment; a table without an assignment in the variation falls back to its
+        parents, as a request does. Built like the variation comparison: one query, then a pruned tree.
+        """
+        db: ccdb.AlchemyProvider = g.db
+        tag = db.get_tag(name)  # unknown → ObjectIsNotFoundInDbError → 404 page
+        show_all = deprecated_arg_or_400()
+        run = queries.run_arg(request.args, "run")
+        variations = db.get_variation_tree_up(db.get_tag_variation(tag))  # nearest first, as a request tries them
+        context = dict(tag=tag, run=run, chain=[variation.name for variation in reversed(variations)],
+                       author=author_name(db, tag.author_id), resolved=None, hidden=0)
+        if run is not None:
+            # The time limit comes from the provider, which converts the tag's UTC instant for each database kind.
+            created_condition = db._created_at_or_before(tag.snapshot_time)
+            resolved = queries.tag_resolution(db.session, [variation.id for variation in variations], run, created_condition)
+            tree = pruned_tree(db, resolved, include_deprecated=show_all)
+            shown = {table.id for tables in tree["tables_of"].values() for table in tables}
+            context.update(tree, resolved=resolved, hidden=len(resolved) - len(shown))
+        return render_template("tag.html", **context)
+
     @app.route('/logs')
     def log_records():
         db: ccdb.AlchemyProvider = g.db
@@ -401,7 +438,8 @@ def register(app):
         db.get_root_directory()  # Loads directories
         tables = db.search_type_tables("*")
         variations = db.get_variations()
-        return render_template("request.html", variations=variations, table_paths=sorted(table.path for table in tables))
+        return render_template("request.html", variations=variations, table_paths=sorted(table.path for table in tables),
+                               tags=queries.list_tags(db.session))
 
     # ---------------------------------------------------------------- compare two assignments
 
@@ -622,7 +660,8 @@ def register(app):
                                author=assignment.author.name if assignment.author else "",
                                run_range=assignments.run_range_text(assignment),
                                comment=assignment.comment,
-                               user_request_str=assignment.request)
+                               user_request_str=assignment.request,
+                               via_tag=request.args.get('request', '') if '@' in request.args.get('request', '') else "")
 
     @app.route('/assignments/data.json')
     @app.route('/assignments/<int:assignment_id>/data.json')

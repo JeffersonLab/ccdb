@@ -10,6 +10,7 @@ import datetime
 from dataclasses import dataclass
 
 from flask import abort
+from sqlalchemy.exc import NoResultFound
 
 import ccdb
 from ccdb.path_utils import parse_request, ParseRequestResult
@@ -44,9 +45,13 @@ def parse_request_or_400(text):
 
 
 def compose_request(args):
-    """The request string from the request form's parts: path, run (default 0), variation (default `default`), time."""
+    """The request string from the request form's parts: path, run (default 0), variation (default `default`), time,
+    tag. A tag replaces the variation and the time, as `@NAME` does in a request string."""
     path = args.get("path", "").strip()
     run = args.get("run", "").strip() or "0"
+    tag = args.get("tag", "").strip()
+    if tag:
+        return "{0}:{1}@{2}".format(path, run, tag)
     variation = args.get("variation", "").strip() or "default"
     time = args.get("time", "").strip()
     return "{0}:{1}:{2}".format(path, run, variation) + (":" + time if time else "")
@@ -57,6 +62,14 @@ def resolve_assignment(db, request_string=None, assignment_id=None):
     if assignment_id is not None:
         return Resolved(db.get_assignment_by_id(assignment_id), exact=True)  # not found → ObjectIsNotFoundInDbError → 404
     parsed = parse_request_or_400(request_string)
+    if parsed.tag_is_parsed:
+        # A tag can be removed and made again with another time, so its answer is never cached as exact.
+        try:
+            return Resolved(db.get_assignment(parsed.path, parsed.run, "", tag=parsed.tag), exact=False)
+        except ValueError as error:  # a path without a directory part, as for a request without a tag
+            abort(400, "Bad request string: {0}".format(error))
+        except NoResultFound:
+            abort(404, "No assignment matches the request '{0}:{1}@{2}'".format(parsed.path, parsed.run, parsed.tag))
     time = parsed.time if parsed.time_is_parsed else None
     try:
         assignments = db.get_assignments(parsed.path, parsed.run, parsed.variation, time)

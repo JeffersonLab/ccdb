@@ -27,6 +27,14 @@
     <input id="run" name="run" type="number" min="0" class="form-control" value="0" required>
   </div>
   <div class="col-12">
+    <label for="tag" class="form-label">Tag <span class="text-body-secondary fw-normal">(optional)</span></label>
+    <select id="tag" name="tag" class="form-select" aria-describedby="tag-help">
+      <option value="">none</option>
+      {% for tag in tags %}<option value="{{ tag.name }}">{{ tag.name }} — {{ tag.variation }}, {{ tag.snapshot_time.strftime('%Y-%m-%d %H:%M:%S') }} UTC</option>{% endfor %}
+    </select>
+    <div class="form-text" id="tag-help">A tag sets the variation and the moment: the request becomes <code>/path/table:run@TAG</code>, and Variation and Date are not used.</div>
+  </div>
+  <div class="col-12">
     <label for="time" class="form-label">Date <span class="text-body-secondary fw-normal">(optional)</span></label>
     <input id="time" name="time" class="form-control cell-mono" placeholder="YYYY-MM-DD or YYYY-MM-DD_hh-mm-ss" pattern="\d{4}(-\d{2}(-\d{2}(_\d{2}(-\d{2}(-\d{2})?)?)?)?)?" title="A date, and optionally a time: 2020-01-04 or 2020-01-04_10-03-20; a partial date means its end">
     <div class="form-text">Shows the constants as they were at that moment: the newest assignment created on or before it.</div>

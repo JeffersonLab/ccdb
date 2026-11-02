@@ -168,6 +168,22 @@ PAGES = [
     ("compare_deprecated", "/vars/compare?variation=calib_v2&deprecated=all", "page"),
     ("compare_retired", "/vars/compare?variation=retired", "page"),   # a deprecated variation named in the URL
     ("log_record_shared", "/logs/2419", "page"),
+    # tags: the fixture has fixture_newest (at the newest assignment's creation time, read as UTC) and fixture_past
+    # (2020-01-02 12:00 UTC). On SQLite a tag's UTC instant is compared in the reader's local time, so which assignment
+    # a tag gives depends on the time zone; these URLs answer 200 in any zone and golden.py computes the answer in its own.
+    ("tags", "/tags", "page"),
+    ("tag_newest", "/tags/fixture_newest", "page"),
+    ("tag_newest_run", "/tags/fixture_newest?run=1500", "page"),
+    ("tag_past_run", "/tags/fixture_past?run=1500", "page"),
+    ("tag_past_run_all", "/tags/fixture_past?run=1500&deprecated=all", "page"),
+    ("tag_missing", "/tags/no_such_tag", "edge"),
+    ("tag_bad_run", "/tags/fixture_past?run=x", "edge"),
+    ("show_tag_past", "/show_request?request=" + quote(BIG_TABLE + ":1500@fixture_past"), "page"),
+    ("show_tag_small", "/show_request?request=" + quote(SMALL_TABLE + ":0@fixture_newest"), "page"),
+    ("show_tag_with_variation", "/show_request?request=" + quote(BIG_TABLE + ":1500:mc@fixture_past"), "edge"),
+    ("show_tag_missing", "/show_request?request=" + quote(BIG_TABLE + ":1500@no_such_tag"), "edge"),
+    ("request_form_tag", "/show_request?path=" + quote(BIG_TABLE) + "&run=1500&variation=mc&tag=fixture_past", "edge"),  # 302 to @fixture_past
+    ("dump_tag", "/assignments/data.txt?request=" + quote(SMALL_TABLE + ":0@fixture_newest"), "data"),
 ]
 
 # What a person opens in a browser: every page once (the tree alias duplicates the tree) plus one
