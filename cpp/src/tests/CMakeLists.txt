@@ -16,6 +16,7 @@ if (SQLite3_FOUND)
         target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLite3_INCLUDE_DIR})
         target_link_libraries(${PROJECT_NAME} ${SQLite3_LIBRARY})
         target_sources(${PROJECT_NAME} PRIVATE
+                "test_Calibration_Tags.cc"
                 "test_ConnectionLifecycle.cc"
                 "test_NoMySqlUserAPI.cc"
                 "test_SQLiteProvider_Assignments.cc"

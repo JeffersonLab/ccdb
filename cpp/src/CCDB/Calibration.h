@@ -118,6 +118,7 @@ namespace ccdb
          * /path/to/data - just path to date, no run, variation and timestamp specified
          * /path/to/data::mc - no run or date specified.
          * /path/to/data:::2029 - only path and date
+         * /path/to/data@mytag, /path/to/data:run@mytag - a tag, it replaces the variation and the time
          *
          *
          * @parameter [out] values - vector of rows, each row is a map<header_name, string_cell_value>

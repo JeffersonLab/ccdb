@@ -689,33 +689,6 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
         throw runtime_error(thisFuncName+" => Not connected to DB");
     }
 
-    // A tag "@NAME" replaces variation and time: one query for the tag's variation and snapshot time,
-    // then the normal resolution. snapshotTime is UTC; its unix time (timegm) is compared below
-    // with UNIX_TIMESTAMP(assignments.created)
-    if(IsTagRequest(variationName))
-    {
-        string tagName = GetTagName(variationName);    // validated: a-zA-Z0-9_- only
-        string tagQuery =
-            "SELECT `variations`.`name`, `tags`.`snapshotTime` "
-            "FROM `tags` "
-            "INNER JOIN `variations` ON `tags`.`variationId` = `variations`.`id` "
-            "WHERE `tags`.`name` = '" + tagName + "' "
-            "LIMIT 1 ";
-        if(!QuerySelect(tagQuery))
-        {
-            throw runtime_error(thisFuncName+" => Error selecting tag '"+tagName+"'");
-        }
-        if(!FetchRow())
-        {
-            FreeMySQLResult();
-            throw runtime_error(thisFuncName+" => No tag '"+tagName+"' was found");
-        }
-        string tagVariation = ReadString(0);
-        string tagSnapshotTime = ReadString(1);
-        FreeMySQLResult();
-        return GetAssignmentShort(run, path, GetTagUnixTime(tagName, tagSnapshotTime), tagVariation, loadColumns);
-    }
-
     //Get directory. Directories should be cached. So this doesn't make a database request
     
     ConstantsTypeTable *table = ccdb::DataProvider::GetConstantsTypeTable(path, loadColumns);
@@ -778,6 +751,9 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
     //Ok! We queried our run range! lets catch it!
     if(!FetchRow())
     {
+        // No assignment and no parent variation to fall back to. The type table was created for this request only
+        delete table;
+        FreeMySQLResult();
         Error(CCDB_ERROR_NO_ASSIGMENT, "MySQLDataProvider::GetAssignmentShort(int, const string&, time_t, const string&)", "Error fetching assignment");
     }
 
@@ -800,6 +776,41 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
 
     FreeMySQLResult();
     return result;
+}
+
+
+ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns)
+{
+    string thisFuncName("ccdb::MySQLDataProvider::GetAssignmentShortByTag");
+
+    if(!IsConnected()) {
+        throw runtime_error(thisFuncName+" => Not connected to DB");
+    }
+
+    // The name goes into the query text, so only a-zA-Z0-9_ may pass
+    CheckTagName(tagName);
+
+    // One query for the tag's variation and snapshot time, then the normal resolution.
+    // snapshotTime is UTC; its unix time (timegm) is compared with UNIX_TIMESTAMP(assignments.created)
+    string tagQuery =
+        "SELECT `variations`.`name`, `tags`.`snapshotTime` "
+        "FROM `tags` "
+        "INNER JOIN `variations` ON `tags`.`variationId` = `variations`.`id` "
+        "WHERE `tags`.`name` = '" + tagName + "' "
+        "LIMIT 1 ";
+    if(!QuerySelect(tagQuery))
+    {
+        throw runtime_error(thisFuncName+" => Error selecting tag '"+tagName+"'");
+    }
+    if(!FetchRow())
+    {
+        FreeMySQLResult();
+        throw runtime_error(thisFuncName+" => No tag '"+tagName+"' was found");
+    }
+    string tagVariation = ReadString(0);
+    string tagSnapshotTime = ReadString(1);
+    FreeMySQLResult();
+    return GetAssignmentShort(run, path, GetTagUnixTime(tagName, tagSnapshotTime), tagVariation, loadColumns);
 }
 
 

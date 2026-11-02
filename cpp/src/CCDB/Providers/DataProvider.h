@@ -127,6 +127,23 @@ namespace ccdb
         */
         virtual Assignment* GetAssignmentShort(int run, const std::string& path, time_t time, const std::string& variation, bool loadColumns)=0;
 
+        /** @brief Get the assignment that a tag gives (CCDB 2.5): the tag replaces variation and time
+        *
+        * The provider reads the tag's variation and snapshot time in one query and resolves the request
+        * as GetAssignmentShort does with that variation and that time. snapshotTime is a UTC instant
+        * (@see UtcDateTimeToUnixTime). Each provider's time filter converts it: MySQL compares
+        * UNIX_TIMESTAMP(assignments.created), SQLite converts it to the local time the writing client
+        * stored in assignments.created.
+        *
+        * @param [in] run - run number
+        * @param [in] path - object path
+        * @param [in] tagName - tag name, without '@'
+        * @param [in] loadColumns - do we need to load table columns information (for column names and types) or not
+        * @return Assignment object or NULL if no assignment is found
+        * @throw std::runtime_error if the tag name is invalid or there is no such tag
+        */
+        virtual Assignment* GetAssignmentShortByTag(int run, const std::string& path, const std::string& tagName, bool loadColumns)=0;
+
 
 
 
@@ -196,25 +213,17 @@ namespace ccdb
         //  T A G S   (CCDB 2.5)
         //----------------------------------------------------------------------------------------
 
-        /** @brief true if the variation argument of a request names a tag: "@NAME"
-         * @see PathUtils::ParseRequest */
-        static bool IsTagRequest(const std::string& variation);
-
         /** @brief Converts a UTC 'YYYY-MM-DD hh:mm:ss[.ffffff]' to unix time (timegm, not mktime)
          * @return unix time or -1 if the string can't be parsed */
         static time_t UtcDateTimeToUnixTime(const std::string& utcDateTime);
 
-        /** @brief Validated tag name of a tag request "@NAME"
+        /** @brief Throws if the tag name is not valid (@see PathUtils::IsValidTagName)
          *
-         * A provider's GetAssignmentShort, given the variation "@NAME", reads the tag's
-         * variation and snapshot time in one query and resolves the request with that
-         * variation and the time UtcDateTimeToUnixTime gives. Each provider's time filter
-         * converts the UTC instant: MySQL compares UNIX_TIMESTAMP(assignments.created),
-         * SQLite converts it to the local time the writing client stored in assignments.created.
-         *
-         * @throw std::runtime_error if the name is empty or has symbols other than a-zA-Z0-9_-
+         * Providers check the name themselves, since GetAssignmentShortByTag is public API
+         * and is not only called with names that went through PathUtils::ParseRequest
+         * @throw std::runtime_error if the name is empty or has symbols other than a-zA-Z0-9_
          */
-        std::string GetTagName(const std::string& tagRequest);
+        static void CheckTagName(const std::string& tagName);
 
         /** @brief Unix time of a tag's snapshotTime column
          * @throw std::runtime_error if the time can't be parsed */

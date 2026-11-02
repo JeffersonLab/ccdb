@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <set>
 
-#ifdef WIN32
+#if defined(_WIN32) || defined(WIN32)
 #define timegm _mkgmtime
 #endif
 
@@ -51,12 +51,6 @@ DataProvider::~DataProvider()
 
 
 //______________________________________________________________________________
-bool DataProvider::IsTagRequest(const string& variation)
-{
-    return !variation.empty() && variation[0] == '@';
-}
-
-
 time_t DataProvider::UtcDateTimeToUnixTime(const string& utcDateTime)
 {
     struct tm timeInfo;
@@ -76,14 +70,12 @@ time_t DataProvider::UtcDateTimeToUnixTime(const string& utcDateTime)
 }
 
 
-string DataProvider::GetTagName(const string& tagRequest)
+void DataProvider::CheckTagName(const string& tagName)
 {
-    string tagName = IsTagRequest(tagRequest) ? tagRequest.substr(1) : tagRequest;
-    if(tagName.empty() || !ValidateName(tagName))
+    if(!PathUtils::IsValidTagName(tagName))
     {
-        throw std::runtime_error("DataProvider::GetTagName => Invalid tag name '" + tagName + "'");
+        throw std::runtime_error("DataProvider::CheckTagName => Invalid tag name '" + tagName + "'. It should consist of A-Z, a-z, 0-9, _");
     }
-    return tagName;
 }
 
 
