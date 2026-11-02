@@ -1,5 +1,6 @@
 import logging
 import posixpath
+import shlex
 import sys
 import os
 
@@ -10,6 +11,20 @@ from ccdb.path_utils import ParseRequestResult, parse_request, parse_time
 from ccdb import BraceMessage as Lfm   # lfm is aka log format message. See BraceMessage desc about
 
 log = logging.getLogger("ccdb.cmd.commands.cat")
+
+
+def units_meta_line(table):
+    """Returns '#meta units: name=units ...' for the columns of the table that have units, or '' if none has
+
+    The line goes with the comment lines of a dump. Text file readers put '#meta' lines aside from comments
+    and data, so 'add' of a dumped file neither stores the line in the assignment comment nor sees it as data,
+    and readers that know nothing of units skip it. Tables without units print no line at all, so their dumps
+    stay byte-identical to what older versions produced. Each pair is shell quoted, units may contain spaces.
+    """
+    pairs = [shlex.quote(column.name + "=" + column.units) for column in table.columns if column.units]
+    if not pairs:
+        return ""
+    return "#meta units: " + " ".join(pairs)
 
 
 # *********************************************************************
@@ -226,6 +241,10 @@ class Cat(CliCommandBase):
 
             sharped_lines = "#" + str(comment_str).replace(os.linesep, os.linesep + "#")
             print(sharped_lines)
+
+            units_line = units_meta_line(table)
+            if units_line:
+                print(units_line)
 
         column_names = [column.name for column in table.columns]
         column_types = [column.type for column in table.columns]

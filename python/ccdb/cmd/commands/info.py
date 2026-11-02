@@ -144,10 +144,11 @@ class Info(CliCommandBase):
         #columns info 
         print()
         print("Columns info ")
-        print(" N.   (type)    : (name)")
+        print(" N.   (type)    : (name) [units]")
         for column in table.columns:
+            units_str = " [" + column.units + "]" if column.units else ""
             print(" " + repr(int(column.order)).ljust(4) \
-                  + " " + self.theme.Type + "%-10s" % column.type + self.theme.Reset + ": " + column.name)
+                  + " " + self.theme.Type + "%-10s" % column.type + self.theme.Reset + ": " + column.name + units_str)
 
         print()
         print("+------------------------------------------+")
@@ -249,7 +250,7 @@ class Info(CliCommandBase):
         #meta data
         if dom.metas:
             log.info("Meta data:")
-            log.info((os.linesep + "    ").join([key + " = " + val for key, val in dom.metas]))
+            log.info((os.linesep + "    ").join([key + " = " + val for key, val in dom.metas.items()]))
 
         #comments
         if dom.comment_lines:
