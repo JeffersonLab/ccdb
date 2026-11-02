@@ -5,6 +5,7 @@ from datetime import timezone
 from ccdb import AlchemyProvider
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
 from ccdb.path_utils import parse_time
+from ccdb.errors import ObjectIsNotFoundInDbError
 from ccdb.brace_log_message import BraceMessage as LogFmt
 
 log = logging.getLogger("ccdb.cmd.commands.tag")
@@ -104,7 +105,10 @@ class TagCommand(CliCommandBase):
               + self.theme.Reset)
         for tag in tags:
             if tag.variation_id not in variation_names:
-                variation_names[tag.variation_id] = provider.get_tag_variation(tag).name
+                try:
+                    variation_names[tag.variation_id] = provider.get_tag_variation(tag).name
+                except ObjectIsNotFoundInDbError:
+                    variation_names[tag.variation_id] = "<deleted>"
             print(" %-20s " % tag.name +
                   " %-15s " % variation_names[tag.variation_id] +
                   " %-20s " % tag.snapshot_time.strftime("%Y-%m-%d %H:%M:%S") +

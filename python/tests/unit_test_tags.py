@@ -89,6 +89,8 @@ class ParseRequestTagTest(unittest.TestCase):
             parse_request("/a/b/table@")
         with self.assertRaises(ValueError):
             parse_request("/a/b/table@my-tag")
+        with self.assertRaises(ValueError):
+            parse_request("/a/b/table@t\u00e4g")
 
 
 class TagsTest(TimeZonePinned):
@@ -276,6 +278,31 @@ class TagsTest(TimeZonePinned):
             self.run_cli("rm -a {}".format(assignment.id))
         with self.assertRaises(ObjectIsNotFoundInDbError):
             self.provider.get_assignment_by_id(assignment.id)
+
+
+    def test_non_ascii_tag_name_is_refused(self):
+        with self.assertRaises(ValueError):
+            self.provider.create_tag("t\u00e4g", comment="y")
+
+    def test_failed_log_record_rolls_back_the_tag(self):
+        with mock.patch.object(self.provider, "create_log_record", side_effect=RuntimeError("log failed")):
+            with self.assertRaises(RuntimeError):
+                self.provider.create_tag("v1", comment="x")
+        self.assertEqual(self.provider.session.query(Tag).count(), 0)
+
+    def test_delete_variation_with_tags_is_refused(self):
+        variation = self.provider.create_variation("tagged", "for the tag", "default")
+        self.provider.create_tag("v1", variation, comment="x")
+        with self.assertRaises(ValueError) as context:
+            self.provider.delete_variation(variation)
+        self.assertIn("v1", str(context.exception))
+
+    def test_tag_list_with_a_missing_variation(self):
+        self.provider.create_tag("v1", comment="x")
+        with mock.patch.object(self.provider, "get_tag_variation",
+                               side_effect=ObjectIsNotFoundInDbError(ccdb.model.Variation, "gone")):
+            output = self.run_cli("tag")
+        self.assertIn("<deleted>", output)
 
 
 if __name__ == '__main__':

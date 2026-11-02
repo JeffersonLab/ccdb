@@ -6,11 +6,12 @@ import logging
 import sys
 import unittest
 from io import StringIO
+from unittest import mock
 
 import ccdb.cmd.themes
 from ccdb import testing as helper
 from ccdb.cmd.cli_manager import CliManager, CCDB_EXCEPTIONS_THROW
-from ccdb.errors import ObjectIsNotFoundInDbError
+from ccdb.errors import AnonymousUserForbiddenError, ObjectIsNotFoundInDbError
 from ccdb.model import LogRecord, Property
 
 
@@ -115,6 +116,20 @@ class PropertiesTests(unittest.TestCase):
     def test_provider_rejects_unknown_owner_type(self):
         self.assertRaises(ValueError, self.provider.set_property, "assignment", 1, "description", "x")
         self.assertRaises(ValueError, self.provider.get_properties, "", 0)
+
+    def test_provider_failed_log_record_rolls_back_the_property(self):
+        with mock.patch.object(self.provider, "create_log_record", side_effect=RuntimeError("log failed")):
+            self.assertRaises(RuntimeError, self.provider.set_property, "instance", 0, "experiment", "GlueX")
+        self.assertIsNone(self.provider.get_property("instance", 0, "experiment"))
+
+    def test_provider_anonymous_user_is_refused(self):
+        self.provider.set_property("instance", 0, "experiment", "GlueX")
+        self.provider.authentication.current_user_name = "anonymous"
+        self.assertRaises(AnonymousUserForbiddenError, self.provider.set_property, "instance", 0, "url", "x")
+        self.assertRaises(AnonymousUserForbiddenError, self.provider.delete_property, "instance", 0, "experiment")
+
+    def test_provider_root_directory_is_refused(self):
+        self.assertRaises(ValueError, self.provider.set_property, "directory", 0, "description", "x")
 
     # prop command
     def test_cli_instance_set_get_ls(self):

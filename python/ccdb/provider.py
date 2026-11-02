@@ -841,6 +841,9 @@ class AlchemyProvider:
             if len(column_def) > 2 and column_def[2] and len(column_def[2]) > 64:
                 raise ValueError("Units of column '{0}' are longer than 64 characters: '{1}'"
                                  .format(column_def[0], column_def[2]))
+            if len(column_def) > 2 and column_def[2] and ('\r' in column_def[2] or '\n' in column_def[2]):
+                raise ValueError("Units of column '{0}' can not contain line breaks: {1!r}"
+                                 .format(column_def[0], column_def[2]))
 
         self._ensure_dirs_loaded()
 
@@ -1269,6 +1272,14 @@ class AlchemyProvider:
                        "Please, delete the data first").format(variation.name, variation.id, data_count)
             raise ValueError(message)
 
+        tag_names = [tag.name for tag in
+                     self.session.query(Tag).filter(Tag.variation_id == variation.id).order_by(Tag.name).all()]
+        if tag_names:
+            message = ("Can't delete variation that has tags referencing it. "
+                       "The variation '{0}' with id '{1}' is referenced by tags: {2}. "
+                       "Please, delete the tags first").format(variation.name, variation.id, ", ".join(tag_names))
+            raise ValueError(message)
+
         self.session.delete(variation)
         self.session.commit()
         # Log
@@ -1294,11 +1305,15 @@ class AlchemyProvider:
         :type comment: str
         """
         description = self._deprecation_subject(obj)
+        if isinstance(obj, Directory) and obj.id == 0:
+            raise ValueError("The root directory can not be deprecated")
         if comment is None or not str(comment).strip():
             raise ValueError("A comment is required to deprecate {0}".format(description))
 
         # get user here to fail if no such user
         user = self.get_current_user()
+        if user.name == 'anonymous':
+            raise AnonymousUserForbiddenError
 
         try:
             obj.is_deprecated = True
@@ -1329,6 +1344,8 @@ class AlchemyProvider:
 
         # get user here to fail if no such user
         user = self.get_current_user()
+        if user.name == 'anonymous':
+            raise AnonymousUserForbiddenError
 
         try:
             obj.is_deprecated = False
@@ -1411,7 +1428,11 @@ class AlchemyProvider:
         """
         # get user here to fail if no such user
         user = self.get_current_user()
+        if user.name == 'anonymous':
+            raise AnonymousUserForbiddenError
 
+        if owner_type == "directory" and owner_id == 0:
+            raise ValueError("The root directory can not have properties")
         if not name or len(name) > 64:
             raise ValueError("Property name should be 1 to 64 characters long, got '{0}'".format(name))
         if value is None:
@@ -1419,22 +1440,28 @@ class AlchemyProvider:
 
         prop = self._property_query(owner_type, owner_id, name).first()
         action = "update" if prop else "create"
-        if not prop:
-            prop = Property(owner_type=owner_type, owner_id=owner_id, name=name)
-            self.session.add(prop)
-        prop.value = value
-        prop.author_id = user.id
-        # the server default fills 'modified' only on insert
-        prop.modified = datetime.now()
-        self.session.commit()
+        try:
+            if not prop:
+                prop = Property(owner_type=owner_type, owner_id=owner_id, name=name)
+                self.session.add(prop)
+            prop.value = value
+            prop.author_id = user.id
+            # the server default fills 'modified' only on insert
+            prop.modified = datetime.now()
+            self.session.flush()
 
-        description = "{0} property '{1}' of {2} {3}".format("Created" if action == "create" else "Updated",
-                                                             name, owner_type, owner_id)
-        self.create_log_record(user=user,
-                               affected_ids=self._property_log_ids(prop),
-                               action=action,
-                               description=description[:255],
-                               comment=value)
+            description = "{0} property '{1}' of {2} {3}".format("Created" if action == "create" else "Updated",
+                                                                 name, owner_type, owner_id)
+            self.create_log_record(user=user,
+                                   affected_ids=self._property_log_ids(prop),
+                                   action=action,
+                                   description=description[:255],
+                                   comment=value,
+                                   commit=False)
+            self.session.commit()
+        except Exception:
+            self._rollback_quietly()
+            raise
         return prop
 
     def delete_property(self, owner_type, owner_id, name):
@@ -1445,6 +1472,8 @@ class AlchemyProvider:
         """
         # get user here to fail if no such user
         user = self.get_current_user()
+        if user.name == 'anonymous':
+            raise AnonymousUserForbiddenError
 
         prop = self._property_query(owner_type, owner_id, name).first()
         if not prop:
@@ -1452,15 +1481,21 @@ class AlchemyProvider:
 
         affected_ids = self._property_log_ids(prop)
         value = prop.value
-        self.session.delete(prop)
-        self.session.commit()
+        try:
+            self.session.delete(prop)
+            self.session.flush()
 
-        description = "Deleted property '{0}' of {1} {2}".format(name, owner_type, owner_id)
-        self.create_log_record(user=user,
-                               affected_ids=affected_ids,
-                               action="delete",
-                               description=description[:255],
-                               comment=value)
+            description = "Deleted property '{0}' of {1} {2}".format(name, owner_type, owner_id)
+            self.create_log_record(user=user,
+                                   affected_ids=affected_ids,
+                                   action="delete",
+                                   description=description[:255],
+                                   comment=value,
+                                   commit=False)
+            self.session.commit()
+        except Exception:
+            self._rollback_quietly()
+            raise
 
     # ----------------------------------------------------------------------------------------
     #   T A G S
@@ -1490,7 +1525,7 @@ class AlchemyProvider:
         """
         Creates a tag: a name for the state of a variation at one moment
 
-        :param name: tag name; the variation name rules apply
+        :param name: tag name: ASCII letters, digits and '_', at most 100 characters
         :param variation: variation name or Variation object
         :param snapshot_time: the moment as a UTC instant: a naive datetime in UTC, or an aware datetime.
                               None means now. A future moment is refused: the data of the future is unknown yet,
@@ -1503,7 +1538,7 @@ class AlchemyProvider:
         if user.name == 'anonymous':
             raise AnonymousUserForbiddenError
 
-        if not path_utils.validate_name(name) or len(name) > 100:
+        if not path_utils.validate_tag_name(name) or len(name) > 100:
             raise ValueError("Tag name '{0}' is invalid. It should consist of A-Z, a-z, 0-9, _ "
                              "and be at most 100 characters long".format(name))
 
@@ -1532,15 +1567,22 @@ class AlchemyProvider:
         tag.snapshot_time = snapshot_time
         tag.comment = comment
         tag.author_id = user.id
-        self.session.add(tag)
-        self.session.commit()
+        try:
+            self.session.add(tag)
+            # flush to get tag.id for the log record
+            self.session.flush()
 
-        self.create_log_record(user=user,
-                               affected_ids=[tag.__tablename__ + str(tag.id)],
-                               action="create",
-                               description="Created tag '{0}' of variation '{1}' at {2} UTC".format(
-                                   tag.name, variation_obj.name, tag.snapshot_time),
-                               comment=comment)
+            self.create_log_record(user=user,
+                                   affected_ids=[tag.__tablename__ + str(tag.id)],
+                                   action="create",
+                                   description="Created tag '{0}' of variation '{1}' at {2} UTC".format(
+                                       tag.name, variation_obj.name, tag.snapshot_time),
+                                   comment=comment,
+                                   commit=False)
+            self.session.commit()
+        except Exception:
+            self._rollback_quietly()
+            raise
         return tag
 
     def delete_tag(self, tag_or_name):
@@ -1557,13 +1599,19 @@ class AlchemyProvider:
         assert isinstance(tag, Tag)
         tag_id, name, comment = tag.id, tag.name, tag.comment
 
-        self.session.delete(tag)
-        self.session.commit()
-        self.create_log_record(user=user,
-                               affected_ids=[Tag.__tablename__ + str(tag_id)],
-                               action="delete",
-                               description="Deleted tag '{0}'".format(name),
-                               comment=comment)
+        try:
+            self.session.delete(tag)
+            self.session.flush()
+            self.create_log_record(user=user,
+                                   affected_ids=[Tag.__tablename__ + str(tag_id)],
+                                   action="delete",
+                                   description="Deleted tag '{0}'".format(name),
+                                   comment=comment,
+                                   commit=False)
+            self.session.commit()
+        except Exception:
+            self._rollback_quietly()
+            raise
 
     def get_tag_variation(self, tag):
         """
