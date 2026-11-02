@@ -3,6 +3,11 @@
 #     target_link_libraries(myapp PRIVATE ccdb::ccdb)
 # The target carries the include directory (#include <CCDB/Calibration.h>), the link libraries and the
 # CCDB_MYSQL definition when the library was built with MySQL support (ccdb_WITH_MYSQL is then TRUE).
+#
+# The JANA2 service is a component, so that only its users need JANA2:
+#     find_package(ccdb 2.5 CONFIG REQUIRED COMPONENTS jana2)
+#     target_link_libraries(myplugin PRIVATE ccdb::ccdb_jana2)
+# It is there when the library was built with -DCCDB_BUILD_JANA2=ON (ccdb_jana2_FOUND is then TRUE).
 
 @PACKAGE_INIT@
 
@@ -18,5 +23,16 @@ else()
     set(ccdb_WITH_MYSQL FALSE)
 endif()
 unset(_ccdb_definitions)
+
+foreach(_ccdb_component ${ccdb_FIND_COMPONENTS})
+    if(_ccdb_component STREQUAL "jana2" AND EXISTS "${CMAKE_CURRENT_LIST_DIR}/ccdbJana2Targets.cmake")
+        find_dependency(JANA)
+        include("${CMAKE_CURRENT_LIST_DIR}/ccdbJana2Targets.cmake")
+        set(ccdb_jana2_FOUND TRUE)
+    else()
+        set(ccdb_${_ccdb_component}_FOUND FALSE)
+    endif()
+endforeach()
+unset(_ccdb_component)
 
 check_required_components(ccdb)

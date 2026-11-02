@@ -51,6 +51,14 @@ if (MySQL_FOUND)
         target_compile_definitions(${PROJECT_NAME} PUBLIC "CCDB_MYSQL=1")
 endif (MySQL_FOUND)
 
+# The [jana2] tests of the JANA2 service; they read the database of scripts/eic/make_jana2_test_db.py
+if(CCDB_BUILD_JANA2)
+        target_sources(${PROJECT_NAME} PRIVATE "test_JANA2_Service.cc")
+        target_link_libraries(${PROJECT_NAME} ccdb_jana2)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE "CCDB_JANA2_PLUGIN_DIR=\"$<TARGET_FILE_DIR:CCDB_service>\"")
+        add_dependencies(${PROJECT_NAME} CCDB_service)
+endif()
+
 target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ccdb)
 
 get_filename_component(TESTS_PARENT_DIR ${PROJECT_SOURCE_DIR} DIRECTORY)
