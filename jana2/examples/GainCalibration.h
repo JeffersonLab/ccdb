@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 // Copyright (C) 2026, Jefferson Science Associates, LLC.
 //
 // The algorithm of the CCDB_service example: energy = gain * adc + offset per channel. Like an EICrecon
