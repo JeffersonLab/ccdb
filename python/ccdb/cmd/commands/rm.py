@@ -75,7 +75,8 @@ class Remove(CliCommandBase):
         # it is assignment
         if object_type == "assignment":
             assignment = provider.get_assignment_by_id(int(raw_entry))
-            provider.delete_assignment(assignment)
+            # --force also deletes an assignment that a tag may resolve to
+            provider.delete_assignment(assignment, force=not ask_confirm)
             return assignment
 
         # everything is fine!
@@ -147,6 +148,7 @@ lead to even more severe hard-to-diagnose errors.
 
  Flags:
 
-   -f or --force - removes object without question
+   -f or --force - removes object without question. For an assignment, also when
+                   a tag may resolve to it (see 'help tag')
     
     """)

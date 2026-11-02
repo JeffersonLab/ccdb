@@ -11,7 +11,7 @@ import logging
 from ccdb.path_utils import parse_request, ParseRequestResult
 from .model import CcdbSchemaVersion
 from . import path_utils
-from datetime import datetime
+from datetime import datetime, timezone
 
 import sqlalchemy
 from sqlalchemy import select, func, exists, or_
@@ -23,7 +23,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound, ObjectDelete
 from sqlalchemy.orm.util import identity_key
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
-from .model import Property
+from .model import Property, Tag
 from .model import vault_digest, list_to_blob, gen_flatten_data
 from .errors import ObjectIsNotFoundInDbError, AnonymousUserForbiddenError, DatabaseStructureError, UserNotFoundError, \
     UserExistsError, DataCollisionError, SessionHasPendingChangesError
@@ -1463,12 +1463,176 @@ class AlchemyProvider:
                                comment=value)
 
     # ----------------------------------------------------------------------------------------
+    #   T A G S
+    # ----------------------------------------------------------------------------------------
+    def get_tag(self, name):
+        """
+        Get tag by name
+
+        :param name: Tag name
+        :return: Tag object
+        :rtype: Tag
+        """
+        try:
+            return self.session.query(Tag).filter(Tag.name == name).one()
+        except NoResultFound:
+            message = "No tag found with name: '{0}'".format(name)
+            raise ObjectIsNotFoundInDbError(Tag, message)
+
+    def get_tags(self):
+        """
+        :return: all tags sorted by name
+        :rtype: list[Tag]
+        """
+        return self.session.query(Tag).order_by(Tag.name).all()
+
+    def create_tag(self, name, variation="default", snapshot_time=None, comment=""):
+        """
+        Creates a tag: a name for the state of a variation at one moment
+
+        :param name: tag name; the variation name rules apply
+        :param variation: variation name or Variation object
+        :param snapshot_time: the moment as a UTC instant: a naive datetime in UTC, or an aware datetime.
+                              None means now. A future moment is refused: the data of the future is unknown yet,
+                              so such a tag would change what it resolves to
+        :param comment: comment of the tag
+        :return: new created tag
+        :rtype: Tag
+        """
+        user = self.get_current_user()
+        if user.name == 'anonymous':
+            raise AnonymousUserForbiddenError
+
+        if not path_utils.validate_name(name) or len(name) > 100:
+            raise ValueError("Tag name '{0}' is invalid. It should consist of A-Z, a-z, 0-9, _ "
+                             "and be at most 100 characters long".format(name))
+
+        if isinstance(variation, Variation):
+            variation_obj = variation
+        else:
+            variation_obj = self.get_variation(variation)
+
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        if snapshot_time is None:
+            snapshot_time = now
+        else:
+            if snapshot_time.tzinfo is not None:
+                snapshot_time = snapshot_time.astimezone(timezone.utc).replace(tzinfo=None)
+            if snapshot_time > now:
+                raise ValueError("Cannot create tag '{0}' at {1} UTC: the time is in the future"
+                                 .format(name, snapshot_time))
+
+        if self.session.query(Tag).filter(Tag.name == name).count() > 0:
+            raise ValueError("Cannot create a new tag with name {0}. "
+                             "Tag with that name already exists".format(name))
+
+        tag = Tag()
+        tag.name = name
+        tag.variation_id = variation_obj.id
+        tag.snapshot_time = snapshot_time
+        tag.comment = comment
+        tag.author_id = user.id
+        self.session.add(tag)
+        self.session.commit()
+
+        self.create_log_record(user=user,
+                               affected_ids=[tag.__tablename__ + str(tag.id)],
+                               action="create",
+                               description="Created tag '{0}' of variation '{1}' at {2} UTC".format(
+                                   tag.name, variation_obj.name, tag.snapshot_time),
+                               comment=comment)
+        return tag
+
+    def delete_tag(self, tag_or_name):
+        """
+        Deletes a tag. Assignments are not touched
+
+        :param tag_or_name: Tag object or tag name
+        """
+        user = self.get_current_user()
+        if user.name == 'anonymous':
+            raise AnonymousUserForbiddenError
+
+        tag = self.get_tag(tag_or_name) if isinstance(tag_or_name, str) else tag_or_name
+        assert isinstance(tag, Tag)
+        tag_id, name, comment = tag.id, tag.name, tag.comment
+
+        self.session.delete(tag)
+        self.session.commit()
+        self.create_log_record(user=user,
+                               affected_ids=[Tag.__tablename__ + str(tag_id)],
+                               action="delete",
+                               description="Deleted tag '{0}'".format(name),
+                               comment=comment)
+
+    def get_tag_variation(self, tag):
+        """
+        :return: the variation the tag names
+        :rtype: Variation
+        """
+        variation = self.session.get(Variation, tag.variation_id)
+        if variation is None:
+            raise ObjectIsNotFoundInDbError(Variation, "The variation with id '{0}' of tag '{1}' is not found"
+                                            .format(tag.variation_id, tag.name))
+        return variation
+
+    def _created_at_or_before(self, utc_instant):
+        """
+        SQL condition: the assignment was created at or before the UTC instant
+
+        assignments.created holds a naive local time, so the instant is brought to it per provider.
+        MySQL and MariaDB: UNIX_TIMESTAMP reads created in the session time zone, the zone that wrote it.
+        SQLite has no time zones: created holds the writing client's local time, compared to the instant in the
+        reader's local time, as a request time is compared.
+        """
+        aware = utc_instant.replace(tzinfo=timezone.utc)
+        if self.engine is not None and self.engine.dialect.name == "sqlite":
+            return Assignment.created <= aware.astimezone().replace(tzinfo=None)
+        return func.unix_timestamp(Assignment.created) <= aware.timestamp()
+
+    def get_pinning_tags(self, assignment):
+        """
+        Tags that may resolve to the assignment: the tag variation is, or inherits from, the assignment variation,
+        and the tag time is at or after the assignment creation
+
+        :param assignment: Assignment object
+        :return: list of tags
+        :rtype: list[Tag]
+        """
+        assignment_id = assignment.id
+        variation_id = assignment.variation_id
+        result = []
+        for tag in self.get_tags():
+            if not self._variation_inherits_from(tag.variation_id, variation_id):
+                continue
+            pinned = self.session.query(Assignment.id) \
+                .filter(Assignment.id == assignment_id) \
+                .filter(self._created_at_or_before(tag.snapshot_time)).count()
+            if pinned:
+                result.append(tag)
+        return result
+
+    def _variation_inherits_from(self, variation_id, ancestor_id):
+        """True when the variation is the ancestor or one of its descendants"""
+        seen = set()
+        current_id = variation_id
+        while current_id is not None and current_id not in seen:
+            if current_id == ancestor_id:
+                return True
+            seen.add(current_id)
+            variation = self.session.get(Variation, current_id)
+            if variation is None:
+                return False
+            current_id = variation.parent_id
+        return False
+
+    # ----------------------------------------------------------------------------------------
     #   A S S I G N M E N T S
     # ----------------------------------------------------------------------------------------
     # ------------------------------------------------
     # Get last Assignment that matches parameters
     # ------------------------------------------------
-    def get_assignment(self, path_or_table, run, variation, date_and_time=None, use_variation_tree=True):
+    def get_assignment(self, path_or_table, run, variation, date_and_time=None, use_variation_tree=True, tag=None):
         """
         Gets the latest assignment that matches the parameters
 
@@ -1477,6 +1641,8 @@ class AlchemyProvider:
         @param variation: name of the variation or variation object
         @param date_and_time: Constants should be of this or later date
         @param use_variation_tree:
+        @param tag: Tag object or tag name. The tag gives the variation and the time limit: the latest assignment
+                    created at or before the tag time. variation and date_and_time must then be empty
 
         @return: latest assignment that matches the parameters
         @rtype: Assignment
@@ -1491,6 +1657,29 @@ class AlchemyProvider:
             assert isinstance(path_or_table, TypeTable)
             table = path_or_table
 
+        if tag is not None:
+            if variation or date_and_time:
+                raise ValueError("A request with a tag can have neither a variation nor a time")
+            if isinstance(tag, str):
+                tag = self.get_tag(tag)
+            assert isinstance(tag, Tag)
+            created_condition = self._created_at_or_before(tag.snapshot_time)
+            return self._get_assignment(table, run, self.get_tag_variation(tag), created_condition,
+                                        use_variation_tree)
+
+        # filter by date and time
+        created_condition = None
+        if date_and_time:
+            if isinstance(date_and_time, str):
+                date_and_time = path_utils.parse_time(date_and_time)
+
+            assert isinstance(date_and_time, datetime)
+            created_condition = Assignment.created <= date_and_time
+
+        return self._get_assignment(table, run, variation, created_condition, use_variation_tree)
+
+    def _get_assignment(self, table, run, variation, created_condition, use_variation_tree):
+        """ get_assignment with the time filter as an SQL condition (None: no time filter) """
         if isinstance(variation, str):
             variation_name = variation
         else:
@@ -1503,13 +1692,8 @@ class AlchemyProvider:
             .filter(TypeTable.id == table.id) \
             .filter(RunRange.min <= run).filter(RunRange.max >= run)
 
-        # filter by date and time
-        if date_and_time:
-            if isinstance(date_and_time, str):
-                date_and_time = path_utils.parse_time(date_and_time)
-
-            assert isinstance(date_and_time, datetime)
-            query = query.filter(Assignment.created <= date_and_time)
+        if created_condition is not None:
+            query = query.filter(created_condition)
 
         query = query.order_by(desc(Assignment.id))
 
@@ -1528,7 +1712,7 @@ class AlchemyProvider:
                 parent_variation = self.get_variation(variation_name).parent
 
             # try do it with parent variation
-            return self.get_assignment(path_or_table, run, parent_variation, date_and_time, use_variation_tree)
+            return self._get_assignment(table, run, parent_variation, created_condition, use_variation_tree)
 
     # ------------------------------------------------
     # get list of assignments
@@ -1559,7 +1743,7 @@ class AlchemyProvider:
     # get list of assignments
     # ------------------------------------------------
     def get_assignments(self, path_or_table, run=-1, variation="", date_and_time=None, limit=0, offset=0,
-                        defer_vault=False):
+                        defer_vault=False, tag=None):
         """
         returns list of assignments
 
@@ -1580,8 +1764,18 @@ class AlchemyProvider:
         :param offset:
         :param defer_vault: True leaves the data text of the sets out of the query, for listings that show no data
                             (`vers`); assignment.constant_set.vault then loads on first access
+        :param tag: Tag object or tag name: the assignments of the tag variation created at or before the tag time.
+                    variation and date_and_time must then be empty
         :return:
         """
+        created_condition = None
+        if tag is not None:
+            if variation or date_and_time is not None:
+                raise ValueError("A request with a tag can have neither a variation nor a time")
+            if isinstance(tag, str):
+                tag = self.get_tag(tag)
+            variation = self.get_tag_variation(tag)
+            created_condition = self._created_at_or_before(tag.snapshot_time)
 
         isstring = isinstance(path_or_table, ("".__class__, u"".__class__))
 
@@ -1621,6 +1815,8 @@ class AlchemyProvider:
         if date_and_time is not None:
             assert isinstance(date_and_time, datetime)
             query = query.filter(Assignment.created <= date_and_time)
+        if created_condition is not None:
+            query = query.filter(created_condition)
 
         # sort query
         query = query.order_by(desc(Assignment.id))
@@ -1645,6 +1841,9 @@ class AlchemyProvider:
             raise ValueError("allow_defaults is not set to true but other fields are")
         if allow_defaults and not (default_time or default_run or default_variation):
             raise ValueError("allow_defaults is true and default_time or default_run or default_variation is missing")
+
+        if request.tag_is_parsed:
+            return self._get_assignment_by_tag_request(request, allow_defaults, default_run)
         if default_variation == '' and request.variation == '':
             request.variation = "default"
 
@@ -1673,6 +1872,23 @@ class AlchemyProvider:
             if request.time_is_parsed:
                 message += " on {}".format(request.time_str)
             message += ". Use 'vers {}' to list existing data".format(request.path)
+            raise ObjectIsNotFoundInDbError(Assignment, message) from ex
+
+    def _get_assignment_by_tag_request(self, request, allow_defaults, default_run):
+        """ get_assignment_by_request for a request with a tag: the tag gives the variation and the time """
+        if request.variation_is_parsed or request.time_is_parsed:
+            raise ValueError("A request with a tag can have neither a variation nor a time: '{0}'"
+                             .format(request.original_str or request.path))
+        if not request.run_is_parsed and allow_defaults and default_run:
+            request.run = default_run
+
+        tag = self.get_tag(request.tag)
+        type_table = self.get_type_table(request.path)
+        try:
+            return self.get_assignment(type_table, request.run, "", tag=tag)
+        except (ObjectIsNotFoundInDbError, NoResultFound) as ex:
+            message = "There is no data for table {}, run {}, tag '{}'. Use 'vers {}' to list existing data" \
+                .format(request.path, request.run, request.tag, request.path)
             raise ObjectIsNotFoundInDbError(Assignment, message) from ex
 
     # ------------------------------------------------
@@ -2038,7 +2254,7 @@ class AlchemyProvider:
     # ------------------------------------------------
     # Deletes assignment
     # ------------------------------------------------
-    def delete_assignment(self, assignment):
+    def delete_assignment(self, assignment, force=False):
         """
         Deletes assignment, and its constant set when no other assignment uses the set
 
@@ -2047,11 +2263,23 @@ class AlchemyProvider:
         the set. When this call locks the set first, that writer finds the set gone and stores its data anew.
 
         :param assignment: assignment object to delete. Must have valid ID
+        :param force: True deletes the assignment even when a tag may resolve to it
         :raises SessionHasPendingChangesError: the session holds uncommitted changes; commit or discard them first
         :raises ObjectIsNotFoundInDbError: the assignment was deleted already
+        :raises ValueError: a tag may resolve to the assignment and force is False
         """
         # Pending changes are refused before any read: a query would autoflush them, and the commit below would keep them
         self._refuse_pending_changes()
+
+        # A tag promises the same data later; deleting an assignment it may resolve to breaks that promise
+        if not force:
+            try:
+                pinning_tags = self.get_pinning_tags(assignment)
+            except ObjectDeletedError as ex:
+                raise ObjectIsNotFoundInDbError(Assignment, "The assignment is not found in the DB") from ex
+            if pinning_tags:
+                raise ValueError("Assignment {0} may be the data of tag(s) {1}. Use force to delete it anyway"
+                                 .format(assignment.id, ", ".join("'" + t.name + "'" for t in pinning_tags)))
 
         # save assignment parameters now: once the set is gone, assignment.request cannot reach the table
         user = self.get_current_user()

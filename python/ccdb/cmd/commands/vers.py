@@ -5,6 +5,7 @@ import os
 from ccdb import AlchemyProvider
 import ccdb
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
+from ccdb.path_utils import parse_request
 from ccdb.brace_log_message import BraceMessage as LogFmt
 
 
@@ -47,12 +48,26 @@ class Versions(CliCommandBase):
             log.info("Table name (path) is required. See 'help vers'")
             return True
 
+        # a request with a tag lists the versions the tag sees: its variation, created at or before its time
+        tag = None
+        if '@' in raw_table_path:
+            request = parse_request(raw_table_path)
+            if variation:
+                raise ValueError("A request with a tag can have neither a variation nor a time; remove -v/--variation")
+            raw_table_path = request.path
+            tag = provider.get_tag(request.tag)
+            if request.run_is_parsed:
+                run = request.run
+
         # correct path
         table_path = self.context.prepare_path(raw_table_path)
 
         # get and print assignments. The listing shows no data, so the data text of the sets is not loaded
         table = provider.get_type_table(table_path)
-        assignments = provider.get_assignments(table, run, variation, defer_vault=True)
+        assignments = provider.get_assignments(table, run, variation, defer_vault=True, tag=tag)
+        if tag is not None:
+            variation = "{0} (tag '{1}' at {2} UTC)".format(provider.get_tag_variation(tag).name, tag.name,
+                                                             tag.snapshot_time.strftime("%Y-%m-%d %H:%M:%S"))
         sharer_counts = provider.get_constant_set_sharer_counts(table) if extended else None
         self.print_assignments(assignments, variation, run, sharer_counts)
         return True
@@ -133,5 +148,6 @@ Example:
     >> vers /test/test_vars/test_table   #get all data versions
     >> cd /test/test_vars                #navigate to directory
     >> vers -v default test_table        #shows only data versions in default variation
+    >> vers test_table@mytag             #versions that tag 'mytag' sees: its variation, up to its time
     >> vers -l test_table                #shows which versions share the same data
     """)

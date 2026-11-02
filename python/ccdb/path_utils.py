@@ -40,6 +40,9 @@ class ParseRequestResult:
         self.time = datetime.datetime.now()  # Time stamp
         self.time_str = ""  # Original string with time
         self.time_is_parsed = False  # true if time stamp was not empty
+        self.tag = ""  # Tag name, the part after '@'
+        self.tag_is_parsed = False  # true if tag was not empty
+        self.original_str = ""  # The request string as given
 
 
 # ______________________________________________________________________________
@@ -190,6 +193,10 @@ def parse_request(request_str=""):
     /path/to/data::mc - no run or date specified.
     /path/to/data:::2029 - only path and date
 
+    A tag ends the request after '@' and replaces the variation and the time:
+    /path/to/data@mytag or /path/to/data:run@mytag
+    A request with a tag and a variation or a time is an error.
+
     @parameter [in] requestStr - user request
     :return: structure that represent user result
     :rtype: ParseRequestResult
@@ -207,6 +214,18 @@ def parse_request(request_str=""):
     result.time = 0                     # Time stamp
     result.time_is_parsed = False       # true if time stamp was not empty
     result.time_str = ""                # Original string with time
+    result.tag = ""                     # Tag name
+    result.tag_is_parsed = False        # true if tag was not empty
+    result.original_str = request_str   # The request string as given
+
+    # neither paths, nor runs, nor variations, nor times contain '@', so the first one starts the tag
+    if '@' in request_str:
+        request_str, tag = request_str.split('@', 1)
+        if not validate_name(tag):
+            raise ValueError("Tag name '{0}' in request '{1}' is invalid. "
+                             "It should consist of A-Z, a-z, 0-9, _".format(tag, result.original_str))
+        result.tag = tag
+        result.tag_is_parsed = True
 
     colon_count = 0
     run_str = ""
@@ -245,6 +264,10 @@ def parse_request(request_str=""):
     if result.run_is_parsed:
         result.run = int(run_str)
         result.run_is_invalid = False
+
+    if result.tag_is_parsed and (result.variation_is_parsed or result.time_is_parsed):
+        raise ValueError("A request with a tag can have neither a variation nor a time: '{0}'"
+                         .format(result.original_str))
 
     # parse time
     if result.time_is_parsed:

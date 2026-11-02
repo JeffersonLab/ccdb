@@ -170,13 +170,19 @@ class Cat(CliCommandBase):
         # Parse ccdb request
         result.request = parse_request(result.obj_name) if result.obj_name else ParseRequestResult()
 
+        # A tag gives the variation and the time; the working variation does not apply to it
+        if result.request.tag_is_parsed and (result.variation or result.time):
+            raise ValueError("A request with a tag can have neither a variation nor a time; "
+                             "remove -v/--variation and -t/--time")
+
         # Check if user set the variation
         if not result.request.variation_is_parsed and result.variation:
             result.request.variation = result.variation
             result.request.variation_is_parsed = True
 
         # Check if user set the default variation
-        if not result.request.variation_is_parsed and self.context.current_variation:
+        if not result.request.variation_is_parsed and not result.request.tag_is_parsed \
+                and self.context.current_variation:
             result.request.variation = self.context.current_variation
             result.request.variation_is_parsed = True
 
@@ -477,6 +483,7 @@ Examples:
     > cat /test/test_vars/test_table               #print latest data for test_table
     > cat /test/test_vars/test_table::subtest      #print latest data in subtest variation
     > cat /test/test_vars/test_table:::2012-08     #print data latest for august 2012
+    > cat /test/test_vars/test_table:100@mytag     #print data of tag 'mytag' (its variation and time), run 100
 
 See also 'dump' command which is 'cat' formatted to save data to files. 'help dump'
 
