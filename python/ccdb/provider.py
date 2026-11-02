@@ -38,6 +38,30 @@ log = logging.getLogger("ccdb.provider")
 # The database schema version this CCDB version reads and writes, and nothing else
 SCHEMA_VERSION = 6
 
+
+def client_utc_offset():
+    """The current UTC offset of this process's local time zone as MySQL time_zone text, such as '-05:00'"""
+    minutes = int(datetime.now().astimezone().utcoffset().total_seconds() // 60)
+    sign = "-" if minutes < 0 else "+"
+    return "{}{:02d}:{:02d}".format(sign, abs(minutes) // 60, abs(minutes) % 60)
+
+
+def _set_session_time_zone(dbapi_connection, connection_record, connection_proxy):
+    """
+    Pool checkout listener: the MySQL session time zone is the client's own UTC offset.
+
+    created and modified hold the client's naive local time (datetime.now) and MySQL TIMESTAMP columns read a
+    naive value in the session time zone, so with the client's offset they store the true instant, whatever the
+    server's zone; a time in a request is read the same way. The offset is taken at every checkout, so a
+    long-running process follows daylight saving time.
+    """
+    cursor = dbapi_connection.cursor()
+    try:
+        cursor.execute("SET time_zone = %s", (client_utc_offset(),))
+    finally:
+        cursor.close()
+
+
 # MySQL and MariaDB errors after which a write transaction is rolled back and run again from its start:
 # InnoDB chose it as the victim of a deadlock (1213), or a row lock did not come within innodb_lock_wait_timeout (1205).
 # Writers that share constant sets lock them, and two of them can wait for each other; the restarted call is correct
@@ -110,7 +134,7 @@ class AlchemyProvider:
     # ------------------------------------------------
     #  Connects to database using connection string
     # ------------------------------------------------
-    def connect(self, connection_string="", check_version=True):
+    def connect(self, connection_string="", check_version=True, client_time_zone=True):
         """
         Connects to database using connection string
 
@@ -120,6 +144,7 @@ class AlchemyProvider:
 
         :param connection_string: connection string
         :param check_version: Instantly check the schema version
+        :param client_time_zone: MySQL and MariaDB: the session time zone is the client's UTC offset (see attach)
         :type connection_string: str
         :raises RuntimeError: the provider is connected already; call disconnect() first
         """
@@ -146,7 +171,7 @@ class AlchemyProvider:
         session = session_type()
 
         try:
-            self.attach(engine, session, check_version)
+            self.attach(engine, session, check_version, client_time_zone)
         except Exception:
             # nobody else holds this session and engine. The attach error is what the caller needs,
             # so a failing cleanup is only logged: raising here would replace that error
@@ -162,7 +187,7 @@ class AlchemyProvider:
     # ------------------------------------------------
     #  Attaches to an existing engine and session
     # ------------------------------------------------
-    def attach(self, engine, session, check_version=True):
+    def attach(self, engine, session, check_version=True, client_time_zone=True):
         """
         Uses an existing SQLAlchemy engine and session instead of opening a new connection.
 
@@ -176,6 +201,10 @@ class AlchemyProvider:
         :param session: session bound to that engine; a scoped_session registry is accepted
         :type session: sqlalchemy.orm.Session | sqlalchemy.orm.scoped_session
         :param check_version: Instantly check the schema version
+        :param client_time_zone: MySQL and MariaDB: every connection the engine hands out gets the client's UTC
+            offset as its session time zone, so the creation times the provider writes are true instants. The
+            schema commands (db init, upgrade, rollback-v6) pass False: their DDL keeps the server's zone, in
+            which TIMESTAMP column defaults of existing databases were written
         :raises TypeError: engine or session has the wrong type
         :raises ValueError: the session has no bind or is bound to another engine
         :raises RuntimeError: the provider is connected already; call disconnect() first
@@ -194,6 +223,9 @@ class AlchemyProvider:
                              f"but it is bound to {bound_engine}")
         if self._is_connected:
             raise RuntimeError("attach() called on a provider that is connected already; call disconnect() first")
+        if client_time_zone and engine.dialect.name in ("mysql", "mariadb") \
+                and not sqlalchemy.event.contains(engine, "checkout", _set_session_time_zone):
+            sqlalchemy.event.listen(engine, "checkout", _set_session_time_zone)
         if check_version:
             self._check_schema_version(session)  # before any state changes: a failed attach leaves the provider untouched
 
@@ -1675,7 +1707,8 @@ class AlchemyProvider:
         SQL condition: the assignment was created at or before the UTC instant
 
         assignments.created holds a naive local time, so the instant is brought to it per provider.
-        MySQL and MariaDB: UNIX_TIMESTAMP reads created in the session time zone, the zone that wrote it.
+        MySQL and MariaDB: created is a TIMESTAMP, an instant (the session time zone is the client's, see
+        _set_session_time_zone), and UNIX_TIMESTAMP gives it as an epoch, as the C++ library reads it.
         SQLite has no time zones: created holds the writing client's local time, compared to the instant in the
         reader's local time, as a request time is compared.
         """
