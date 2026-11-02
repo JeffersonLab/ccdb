@@ -34,10 +34,18 @@ def utc_now():
 @unittest.skipUnless(helper.ENV_TEST_MYSQL in os.environ, "{} is not set".format(helper.ENV_TEST_MYSQL))
 class MySqlTagsTest(unittest.TestCase):
 
+    @staticmethod
+    def restore_database(connection_str):
+        with contextlib.redirect_stdout(io.StringIO()):
+            helper.recreate_mysql_db(connection_str)
+
     def setUp(self):
         connection_str = os.environ[helper.ENV_TEST_MYSQL]
         with contextlib.redirect_stdout(io.StringIO()):
             helper.recreate_mysql_db(connection_str)
+        # Modules that run later in the same process (CI runs the list in one) read the db init content, so the
+        # tags and assignments added here are removed. Registered first, so it runs after the provider disconnects.
+        self.addCleanup(self.restore_database, connection_str)
 
         self.cli = CliManager()
         self.cli.exception_handling = CCDB_EXCEPTIONS_THROW
