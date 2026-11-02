@@ -98,6 +98,11 @@ public:
     */
     Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation, bool loadColumns) override;
 
+    /** @brief Get the assignment that a tag gives: the tag's variation at its snapshot time
+     * @see DataProvider::GetAssignmentShortByTag
+     */
+    Assignment* GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns) override;
+
 
     //----------------------------------------------------------------------------------------
     //  E N D   I M P L E M E N T   I N T E R F A C E

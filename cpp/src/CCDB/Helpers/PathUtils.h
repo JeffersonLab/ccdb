@@ -48,7 +48,7 @@ struct RequestParseResult
 	bool   WasParsedTime;      /// true if time stampt was not empty
     std::string TimeString;         /// Original string with time
     std::string Tag;                /// Tag name, the part after '@' (CCDB 2.5)
-    bool   WasParsedTag;       /// true if the request names a tag. Variation is then "@" + Tag
+    bool   WasParsedTag;       /// true if the request names a tag. Variation and time are then not parsed
 };
 
 /** @brief represents parse result of JANA context
@@ -127,15 +127,20 @@ public:
      * /path/to/data@mytag, /path/to/data:1000@mytag - a tag (CCDB 2.5)
      *
      * A tag replaces both variation and time. The parsed result then has
-     * WasParsedTag=true, Tag="mytag" and also Variation="@mytag" with WasParsedVariation=true,
-     * so that callers which pass the variation to DataProvider::GetAssignmentShort
-     * carry the tag to the provider unchanged.
+     * WasParsedTag=true and Tag="mytag", while WasParsedVariation and WasParsedTime stay false.
+     * Empty variation and time parts are allowed with a tag: /path:1000:@mytag, /path::@mytag, /path:1000::@mytag
      *
 	 * @parameter [in] requestStr - user request
 	 * @return structure that represent user result
-	 * @throw std::invalid_argument if a tag is combined with a variation or a time, or its name is empty
+	 * @throw std::invalid_argument if a tag is combined with a variation or a time, or its name is invalid
 	 */
 	static RequestParseResult ParseRequest(const std::string& requestStr);
+
+    /** @brief true if the name is a valid tag name: ASCII letters, digits and '_', at least one symbol
+     *
+     * Tag names are stricter than other names (no '-'), the same rule as Python's validate_tag_name
+     */
+    static bool IsValidTagName(const std::string& name);
 
     /** @brief ParseTime
      * parses time as any part of
@@ -174,6 +179,8 @@ public:
 	 * example of context string:
 	 * 'variation=default calibtime=2012'
 	 * parameters and values are separated by '=' (!) WITH NO SPACES
+	 *
+	 * @throw std::invalid_argument if the variation has '@': a tag can't be a default variation
 	 */
 	static ContextParseResult ParseContext(const std::string& context);
 };
