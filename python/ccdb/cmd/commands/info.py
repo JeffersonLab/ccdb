@@ -108,6 +108,7 @@ class Info(CliCommandBase):
             print(" Modified  :  " + directory.modified.strftime("%Y-%m-%d %H-%M-%S"))
         except Exception as ex:
             log.warning("Directory modify time getting error: " + str(ex))
+        self.print_deprecation(directory, " Deprecated:  ")
 
         #comment
         print(" Comment: ")
@@ -130,6 +131,7 @@ class Info(CliCommandBase):
         print(" Created    :  " + table.created.strftime("%Y-%m-%d %H-%M-%S"))
         print(" Modified   :  " + table.modified.strftime("%Y-%m-%d %H-%M-%S"))
         print(" DB Id      :  " + repr(int(table.id)))
+        self.print_deprecation(table, " Deprecated :  ")
         print("+------------------------------------------+")
         print("| Columns info                             |")
         print("+------------------------------------------+")
@@ -161,9 +163,20 @@ class Info(CliCommandBase):
         print(" Created    :  " + variation.created.strftime("%Y-%m-%d %H-%M-%S"))
         print(" DB Id      :  " + repr(int(variation.id)))
         print(" Parent     :  " + (variation.parent.name if variation.parent else "--"))
+        self.print_deprecation(variation, " Deprecated :  ")
         print(" Comment:  ")
         print(variation.comment)
         print()
+
+    #----------------------------------------
+    #   print_deprecation
+    #----------------------------------------
+    def print_deprecation(self, obj, label):
+        """Prints the deprecation line with the date and the comment, for a deprecated object only"""
+        if not obj.is_deprecated:
+            return
+        date = obj.deprecated_time.strftime("%Y-%m-%d %H-%M-%S") if obj.deprecated_time else "--"
+        print(label + self.theme.Fail + "yes" + self.theme.Reset + ", " + date + ": " + (obj.deprecation_comment or ""))
 
     #----------------------------------------
     #   print_help
