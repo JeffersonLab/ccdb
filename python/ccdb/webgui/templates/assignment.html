@@ -8,6 +8,9 @@
   <code class="user-select-all" id="request-string">{{ assignment.request }}</code>
   <button class="btn btn-sm btn-outline-secondary ms-1" type="button" id="copy-request" data-text="{{ assignment.request }}" title="Copy the request string"><svg class="ico"><use href="#i-copy"/></svg> Copy</button>
 </p>
+{%- if via_tag %}
+<p class="small text-body-secondary mt-n2 mb-3" id="via-tag">Resolved from <code>{{ via_tag }}</code></p>
+{%- endif %}
 {% endblock %}
 
 {% block content %}

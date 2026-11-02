@@ -13,11 +13,11 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 
-from sqlalchemy import func, or_, select
+from sqlalchemy import case, func, or_, select
 from sqlalchemy.orm import aliased
 from werkzeug.exceptions import BadRequest
 
-from ccdb.model import Assignment, ConstantSet, LogRecord, RunRange, TypeTable, User, Variation
+from ccdb.model import Assignment, ConstantSet, LogRecord, RunRange, Tag, TypeTable, User, Variation
 
 PAGE_SIZES = (25, 50, 100, 200)
 DEFAULT_PAGE_SIZE = 50
@@ -435,6 +435,58 @@ def affected_tables(session, variation_ids, run=None, before=None):
 
 def deprecated_variation_names(session):
     return set(session.execute(select(Variation.name).where(Variation.is_deprecated == True)).scalars())  # noqa: E712 (SQL comparison)
+
+
+# --------------------------------------------------------------------------- tags
+
+@dataclass
+class TagRow:
+    name: str
+    variation: str
+    snapshot_time: datetime  # a UTC instant
+    comment: str
+    author: str
+    created: datetime
+
+
+def list_tags(session):
+    """Every tag by name; tags are few (a handful per run period), so the list has no pages."""
+    statement = (select(Tag.name, Variation.name, Tag.snapshot_time, Tag.comment, User.name, Tag.created)
+                 .join(Variation, Tag.variation_id == Variation.id)
+                 .join(User, Tag.author_id == User.id, isouter=True)
+                 .order_by(Tag.name))
+    return [TagRow(name, variation, snapshot, comment or "", author or "", created)
+            for name, variation, snapshot, comment, author, created in session.execute(statement)]
+
+
+@dataclass
+class Resolved:
+    """What a request `table:run@tag` returns for one table."""
+    assignment_id: int
+    run_min: int
+    variation: str
+    created: datetime
+
+
+def tag_resolution(session, variation_ids, run, created_condition):
+    """{table id: Resolved} for every table that a request with the tag answers for `run`.
+
+    `variation_ids` is the tag's variation and its parents, nearest first; `created_condition` the tag's time limit as
+    the provider builds it. Per table, the nearest variation with an assignment wins, and in it the newest by id: the
+    rule of AlchemyProvider.get_assignment, in one query over every table (ROW_NUMBER, MySQL 8, MariaDB 10.2, SQLite 3.25).
+    """
+    depth = case({variation_id: level for level, variation_id in enumerate(variation_ids)}, value=Assignment.variation_id)
+    ranked = (select(ConstantSet.type_table_id.label("table_id"), Assignment.id.label("assignment_id"), RunRange.min.label("run_min"),
+                     Variation.name.label("variation"), Assignment.created.label("created"),
+                     func.row_number().over(partition_by=ConstantSet.type_table_id, order_by=(depth, Assignment.id.desc())).label("rank"))
+              .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
+              .join(RunRange, Assignment.run_range_id == RunRange.id)
+              .join(Variation, Assignment.variation_id == Variation.id)
+              .where(Assignment.variation_id.in_(variation_ids), RunRange.min <= run, RunRange.max >= run, created_condition)
+              .subquery())
+    rows = session.execute(select(ranked.c.table_id, ranked.c.assignment_id, ranked.c.run_min, ranked.c.variation, ranked.c.created)
+                           .where(ranked.c.rank == 1))
+    return {table_id: Resolved(assignment_id, run_min, variation, created) for table_id, assignment_id, run_min, variation, created in rows}
 
 
 def variation_chains(session):
