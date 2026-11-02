@@ -146,7 +146,7 @@ class TypeTableColumn(Base):
     order = Column(Integer, nullable=False)
     type = Column('columnType', Enum('int', 'uint', 'long', 'ulong', 'double', 'string', 'bool'))
     type_table_id = Column('typeId', Integer, ForeignKey('typeTables.id'), nullable=False, index=True)
-    units = Column(String(64))      # schema 6; stored only, nothing reads it yet
+    units = Column(String(64))      # schema 6; free text such as 'MeV', None when the column has no units
 
     # TODO remove this comments!
     # @property

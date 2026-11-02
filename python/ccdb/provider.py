@@ -813,7 +813,7 @@ class AlchemyProvider:
              Creates  constants type table in database and returns reference to
              created table if operation is succeeded (NULL otherwise)
 
-             The map "columns" should contains [("name1", "type"), ("name2", "type"),...] string pairs where:
+             The map "columns" should contains [("name1", "type"), ("name2", "type", "units"),...] tuples where:
               -- "name" is the name of the column.
                   Should have the same naming conventions
                   as names of directories and type tables  @see ValidateName()
@@ -822,17 +822,25 @@ class AlchemyProvider:
                  other values will lead to "double" type to be used.
                  @see ccdb::ConstantsTypeColumn::StringToType
                  Thus <"px", "">, <"py", ""> will create two double typed columns
+              -- "units" is optional, free text of at most 64 characters, e.g. "MeV".
+                 A pair without it, None or "" leave the column without units
 
              @param [in] name:              name of the new constants type table
              @param [in] dir_obj_or_path:   parent directory path or ccdb.model.Directory
              @param [in] rows_num:          Number of rows
-             @param [in] columns:           a map fo "name", "type" pairs [("name1", "type"), ("name2", "type"),...]
+             @param [in] columns:           a list of (name, type) or (name, type, units) tuples
              @param [in] comment:           description for this type table
              @return: NULL if failed, pointer to created object otherwise
         """
 
         assert len(columns) > 0
         assert rows_num > 0
+
+        # The units column is VARCHAR(64); MySQL in non-strict mode would silently truncate a longer string
+        for column_def in columns:
+            if len(column_def) > 2 and column_def[2] and len(column_def[2]) > 64:
+                raise ValueError("Units of column '{0}' are longer than 64 characters: '{1}'"
+                                 .format(column_def[0], column_def[2]))
 
         self._ensure_dirs_loaded()
 
@@ -864,12 +872,16 @@ class AlchemyProvider:
             table.parent_dir_id = parent_dir.id
             table.author_id = user.id
 
-            for i, (name, col_type) in enumerate(columns):
+            for i, column_def in enumerate(columns):
+                # (name, type) pairs stay valid, so callers written before units existed keep working
+                name, col_type = column_def[0], column_def[1]
+                units = column_def[2] if len(column_def) > 2 else None
                 column = TypeTableColumn()
                 column.name = name
                 column.order = i
                 col_type = col_type or 'double'
                 column.type = col_type
+                column.units = units or None
                 table.columns.append(column)
 
             table._columns_count = len(columns)
