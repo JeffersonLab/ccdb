@@ -23,6 +23,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound, ObjectDelete
 from sqlalchemy.orm.util import identity_key
 from sqlalchemy.sql.expression import desc
 from .model import Directory, TypeTable, TypeTableColumn, ConstantSet, Assignment, RunRange, Variation, User, LogRecord
+from .model import Property
 from .model import vault_digest, list_to_blob, gen_flatten_data
 from .errors import ObjectIsNotFoundInDbError, AnonymousUserForbiddenError, DatabaseStructureError, UserNotFoundError, \
     UserExistsError, DataCollisionError, SessionHasPendingChangesError
@@ -1344,6 +1345,110 @@ class AlchemyProvider:
             return "variation '{0}'".format(obj.name)
         raise TypeError("Only a directory, a type table or a variation can be deprecated, got {0}".format(
             type(obj).__name__))
+
+    # ----------------------------------------------------------------------------------------
+    #   P R O P E R T I E S
+    # ----------------------------------------------------------------------------------------
+    PROPERTY_OWNER_TYPES = ("instance", "directory", "table", "variation", "column")
+
+    # log records name an object by its table name and id
+    _PROPERTY_OWNER_TABLES = {"directory": Directory.__tablename__, "table": TypeTable.__tablename__,
+                              "variation": Variation.__tablename__, "column": TypeTableColumn.__tablename__}
+
+    def _property_query(self, owner_type, owner_id, name=None):
+        if owner_type not in self.PROPERTY_OWNER_TYPES:
+            raise ValueError("Property owner type '{0}' is not one of: {1}"
+                             .format(owner_type, ", ".join(self.PROPERTY_OWNER_TYPES)))
+        query = self.session.query(Property).filter(Property.owner_type == owner_type,
+                                                    Property.owner_id == owner_id)
+        if name is not None:
+            query = query.filter(Property.name == name)
+        return query
+
+    @staticmethod
+    def _property_log_ids(prop):
+        # the owner is in the ids too, so a search by an object's id finds the changes of its properties
+        ids = [Property.__tablename__ + str(prop.id)]
+        if prop.owner_type in AlchemyProvider._PROPERTY_OWNER_TABLES:
+            ids.append(AlchemyProvider._PROPERTY_OWNER_TABLES[prop.owner_type] + str(prop.owner_id))
+        return ids
+
+    def get_property(self, owner_type, owner_id, name):
+        """
+        Gets one property of the instance (owner_type 'instance', owner_id 0) or of an object
+
+        :return: Property or None if there is no property with that name
+        :rtype: Property
+        """
+        return self._property_query(owner_type, owner_id, name).first()
+
+    def get_properties(self, owner_type, owner_id):
+        """
+        Gets the properties of the instance (owner_type 'instance', owner_id 0) or of an object, sorted by name
+
+        :rtype: list[Property]
+        """
+        return self._property_query(owner_type, owner_id).order_by(Property.name).all()
+
+    def set_property(self, owner_type, owner_id, name, value):
+        """
+        Sets a property: creates it, or updates the value when the owner already has a property with that name
+
+        :return: the Property
+        :rtype: Property
+        """
+        # get user here to fail if no such user
+        user = self.get_current_user()
+
+        if not name or len(name) > 64:
+            raise ValueError("Property name should be 1 to 64 characters long, got '{0}'".format(name))
+        if value is None:
+            raise ValueError("Property value can not be None. Use delete_property to remove it")
+
+        prop = self._property_query(owner_type, owner_id, name).first()
+        action = "update" if prop else "create"
+        if not prop:
+            prop = Property(owner_type=owner_type, owner_id=owner_id, name=name)
+            self.session.add(prop)
+        prop.value = value
+        prop.author_id = user.id
+        # the server default fills 'modified' only on insert
+        prop.modified = datetime.now()
+        self.session.commit()
+
+        description = "{0} property '{1}' of {2} {3}".format("Created" if action == "create" else "Updated",
+                                                             name, owner_type, owner_id)
+        self.create_log_record(user=user,
+                               affected_ids=self._property_log_ids(prop),
+                               action=action,
+                               description=description[:255],
+                               comment=value)
+        return prop
+
+    def delete_property(self, owner_type, owner_id, name):
+        """
+        Deletes a property of the instance or of an object
+
+        :raises ObjectIsNotFoundInDbError: if the owner has no property with that name
+        """
+        # get user here to fail if no such user
+        user = self.get_current_user()
+
+        prop = self._property_query(owner_type, owner_id, name).first()
+        if not prop:
+            raise ObjectIsNotFoundInDbError(Property, "{0} {1} has no property '{2}'".format(owner_type, owner_id, name))
+
+        affected_ids = self._property_log_ids(prop)
+        value = prop.value
+        self.session.delete(prop)
+        self.session.commit()
+
+        description = "Deleted property '{0}' of {1} {2}".format(name, owner_type, owner_id)
+        self.create_log_record(user=user,
+                               affected_ids=affected_ids,
+                               action="delete",
+                               description=description[:255],
+                               comment=value)
 
     # ----------------------------------------------------------------------------------------
     #   A S S I G N M E N T S
