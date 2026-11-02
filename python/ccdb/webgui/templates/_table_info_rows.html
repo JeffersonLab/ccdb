@@ -1,6 +1,7 @@
 {#- The info rows of a table: shown in the tree's info modal (objects_table_info.html) and rolled down by
     Show info on the versions page. Needs table, author_name and activity (queries.assignment_activity). -#}
 {% from '_deprecation.html' import info_row %}
+{% from '_properties.html' import rows as property_rows %}
 <table class="table table-sm mb-0">
   <tbody>
     <tr><th scope="row">DB ID</th><td>{{ table.id }}</td></tr>
@@ -11,5 +12,6 @@
     <tr><th scope="row">Author</th><td>{{ author_name }}</td></tr>
     <tr><th scope="row">Comment</th><td>{{ table.comment }}</td></tr>
     {{ info_row(table, deprecated_by) }}
+    {{ property_rows(properties) }}
   </tbody>
 </table>

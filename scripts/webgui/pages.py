@@ -44,6 +44,7 @@ PAGES = [
     ("table_info_missing", "/get-table-info/999999", "edge"),
     ("dir_info_retired", "/get-dir-info/42", "fragment"),       # the deprecated directory /schema6/retired
     ("table_info_retired", "/get-table-info/1012", "fragment"), # the deprecated table /schema6/retired_table
+    ("table_info_shared", "/get-table-info/1010", "fragment"),  # /schema6/shared, which has a property
     ("show_small", "/show_request?request=" + quote(SMALL_TABLE + ":0:default"), "page"),
     ("show_big", "/show_request?request=" + quote(BIG_TABLE + ":1500:default"), "page"),
     ("show_big_mc", "/show_request?request=" + quote(BIG_TABLE + ":1500:mc"), "page"),

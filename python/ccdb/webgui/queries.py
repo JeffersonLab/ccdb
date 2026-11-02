@@ -17,7 +17,7 @@ from sqlalchemy import case, func, or_, select
 from sqlalchemy.orm import aliased
 from werkzeug.exceptions import BadRequest
 
-from ccdb.model import Assignment, ConstantSet, LogRecord, RunRange, Tag, TypeTable, User, Variation
+from ccdb.model import Assignment, ConstantSet, LogRecord, Property, RunRange, Tag, TypeTable, User, Variation
 
 PAGE_SIZES = (25, 50, 100, 200)
 DEFAULT_PAGE_SIZE = 50
@@ -435,6 +435,22 @@ def affected_tables(session, variation_ids, run=None, before=None):
 
 def deprecated_variation_names(session):
     return set(session.execute(select(Variation.name).where(Variation.is_deprecated == True)).scalars())  # noqa: E712 (SQL comparison)
+
+
+# --------------------------------------------------------------------------- properties
+
+def properties_of(session, owner_type, owner_ids):
+    """{owner id: [(name, value), ...] by name} for the owners of one kind (`ccdb prop`); owners without properties are absent.
+    The instance's own properties have owner type 'instance' and owner id 0."""
+    if not owner_ids:
+        return {}
+    statement = (select(Property.owner_id, Property.name, Property.value)
+                 .where(Property.owner_type == owner_type, Property.owner_id.in_(sorted(set(owner_ids))))
+                 .order_by(Property.owner_id, Property.name))
+    found = {}
+    for owner_id, name, value in session.execute(statement):
+        found.setdefault(owner_id, []).append((name, value))
+    return found
 
 
 # --------------------------------------------------------------------------- tags

@@ -1,4 +1,5 @@
 {% from '_deprecation.html' import info_row %}
+{% from '_properties.html' import rows as property_rows %}
 <div class="modal-header">
   <h5 class="modal-title"><svg class="ico me-1"><use href="#i-folder"/></svg>{{ directory.name }}</h5>
   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -39,6 +40,7 @@
           <td>{{ directory.comment }}</td>
         </tr>
         {{ info_row(directory, deprecated_by) }}
+        {{ property_rows(properties) }}
       </tbody>
     </table>
   </div>
