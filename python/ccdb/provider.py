@@ -567,18 +567,26 @@ class AlchemyProvider:
             err_message = err_message.format(directory.path, len(directory.sub_dirs), len(directory.type_tables))
             raise ValueError(err_message)
 
-        self.session.delete(directory)
-        self.session.commit()
+        # the properties of the directory are deleted with it, in one transaction
+        directory_id, directory_path, directory_comment = directory.id, directory.path, directory.comment
+        try:
+            properties_count = self._delete_properties_of("directory", [directory_id])
+            self.session.delete(directory)
+            self.session.commit()
+        except Exception:
+            self._rollback_quietly()
+            raise
 
         # refresh directory structure
         self._load_dirs()
 
         # Log
         self.create_log_record(user,
-                               affected_ids=[directory.__tablename__ + str(directory.id)],
+                               affected_ids=[Directory.__tablename__ + str(directory_id)],
                                action="delete",
-                               description="Deleted directory '{0}'".format(directory.path),
-                               comment=directory.comment)
+                               description=self._with_properties_note(
+                                   "Deleted directory '{0}'".format(directory_path), properties_count),
+                               comment=directory_comment)
 
     # ------------------------------------------------
     # Load all directories
@@ -974,6 +982,13 @@ class AlchemyProvider:
             for set_id in unused_set_ids:
                 self._forget_constant_set(set_id)
 
+            # The properties of the table and of its columns go with them. The column ids are read before the
+            # cascade below deletes the columns
+            column_ids = self.session.execute(
+                select(TypeTableColumn.id).where(TypeTableColumn.type_table_id == table_id)).scalars().all()
+            properties_count = self._delete_properties_of("table", [table_id]) \
+                + self._delete_properties_of("column", column_ids)
+
             # Deleting the table through the ORM deletes its columns too (cascade). For TypeTable.constant_sets the
             # ORM would set constantTypeId to NULL in every set the collection holds; expired, it is reloaded at the
             # flush and is empty now
@@ -984,7 +999,8 @@ class AlchemyProvider:
             self.create_log_record(user=user,
                                    affected_ids=[TypeTable.__tablename__ + str(table_id)],
                                    action="delete",
-                                   description="Deleted table with path '{0}'".format(table_path),
+                                   description=self._with_properties_note(
+                                       "Deleted table with path '{0}'".format(table_path), properties_count),
                                    comment=table_comment,
                                    commit=False)
             self.session.commit()
@@ -1280,14 +1296,22 @@ class AlchemyProvider:
                        "Please, delete the tags first").format(variation.name, variation.id, ", ".join(tag_names))
             raise ValueError(message)
 
-        self.session.delete(variation)
-        self.session.commit()
+        # the properties of the variation are deleted with it, in one transaction
+        variation_id, variation_name, variation_comment = variation.id, variation.name, variation.comment
+        try:
+            properties_count = self._delete_properties_of("variation", [variation_id])
+            self.session.delete(variation)
+            self.session.commit()
+        except Exception:
+            self._rollback_quietly()
+            raise
         # Log
         self.create_log_record(user=user,
-                               affected_ids=[variation.__tablename__ + str(variation.id)],
+                               affected_ids=[Variation.__tablename__ + str(variation_id)],
                                action="delete",
-                               description="Deleted variation '{0}'".format(variation.name),
-                               comment=variation.comment)
+                               description=self._with_properties_note(
+                                   "Deleted variation '{0}'".format(variation_name), properties_count),
+                               comment=variation_comment)
 
     # ----------------------------------------------------------------------------------------
     #   D E P R E C A T I O N
@@ -1393,6 +1417,28 @@ class AlchemyProvider:
         if name is not None:
             query = query.filter(Property.name == name)
         return query
+
+    def _delete_properties_of(self, owner_type, owner_ids):
+        """
+        Deletes the properties of objects that are being deleted, inside the caller's transaction: the caller
+        commits, or rolls back, them together with the objects
+
+        :param owner_ids: ids of the owners, all of owner_type
+        :return: the number of deleted properties
+        """
+        if not owner_ids:
+            return 0
+        return self.session.query(Property) \
+            .filter(Property.owner_type == owner_type, Property.owner_id.in_(list(owner_ids))) \
+            .delete(synchronize_session="fetch")
+
+    @staticmethod
+    def _with_properties_note(description, properties_count):
+        """The description of an object's delete log record, naming the properties deleted with it"""
+        if properties_count:
+            description += " with {0} {1}".format(properties_count,
+                                                  "property" if properties_count == 1 else "properties")
+        return description[:255]
 
     @staticmethod
     def _property_log_ids(prop):
@@ -1674,6 +1720,25 @@ class AlchemyProvider:
             current_id = variation.parent_id
         return False
 
+    def get_variation_tree_up(self, variation):
+        """
+        The variation and its parents up to 'default': the variations a request for this variation resolves in,
+        in the order the resolution tries them (see _get_assignment)
+
+        :param variation: Variation object
+        :rtype: list[Variation]
+        """
+        assert isinstance(variation, Variation)
+        result = []
+        seen = set()
+        while variation is not None and variation.id not in seen:
+            result.append(variation)
+            seen.add(variation.id)
+            if variation.name == "default":
+                break
+            variation = variation.parent
+        return result
+
     # ----------------------------------------------------------------------------------------
     #   A S S I G N M E N T S
     # ----------------------------------------------------------------------------------------
@@ -1812,17 +1877,19 @@ class AlchemyProvider:
         :param offset:
         :param defer_vault: True leaves the data text of the sets out of the query, for listings that show no data
                             (`vers`); assignment.constant_set.vault then loads on first access
-        :param tag: Tag object or tag name: the assignments of the tag variation created at or before the tag time.
-                    variation and date_and_time must then be empty
+        :param tag: Tag object or tag name: the assignments created at or before the tag time in the tag variation
+                    and in its parents up to 'default', the variations where a request with the tag resolves
+                    (see get_variation_tree_up). variation and date_and_time must then be empty
         :return:
         """
         created_condition = None
+        tag_variation_ids = None
         if tag is not None:
             if variation or date_and_time is not None:
                 raise ValueError("A request with a tag can have neither a variation nor a time")
             if isinstance(tag, str):
                 tag = self.get_tag(tag)
-            variation = self.get_tag_variation(tag)
+            tag_variation_ids = [v.id for v in self.get_variation_tree_up(self.get_tag_variation(tag))]
             created_condition = self._created_at_or_before(tag.snapshot_time)
 
         isstring = isinstance(path_or_table, ("".__class__, u"".__class__))
@@ -1846,7 +1913,9 @@ class AlchemyProvider:
             .filter(TypeTable.id == table.id)
 
         # filter variation
-        if isinstance(variation, str):
+        if tag_variation_ids is not None:
+            query = query.filter(Variation.id.in_(tag_variation_ids))
+        elif isinstance(variation, str):
             if variation != "":
                 query = query.filter(Variation.name == variation)
         else:

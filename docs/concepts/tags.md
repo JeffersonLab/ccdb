@@ -82,7 +82,7 @@ A request with a tag can have neither a variation nor a time: '/test/test_vars/t
 
 The error prevents a request that looks pinned from returning something the tag does not describe.
 
-`cat`, `dump`, `vers` and `info` accept a request with a tag.
+`cat`, `dump`, `vers` and `info` accept a request with a tag. `vers` with a tag lists the versions the tag sees: those of the tag's variation and of its parents up to `default`, created at or before the tag's time.
 
 ## No deletion of tagged history
 

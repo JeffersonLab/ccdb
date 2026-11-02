@@ -131,6 +131,106 @@ class PropertiesTests(unittest.TestCase):
     def test_provider_root_directory_is_refused(self):
         self.assertRaises(ValueError, self.provider.set_property, "directory", 0, "description", "x")
 
+    # properties are deleted with their object
+    def owner_rows(self, owner_type, owner_id):
+        return self.provider.session.query(Property).filter(Property.owner_type == owner_type,
+                                                            Property.owner_id == owner_id).count()
+
+    def failing_commit(self):
+        """A session commit that writes the pending changes and then fails, as a lost connection would"""
+        session = self.provider.session
+        real_flush = session.flush
+
+        def commit():
+            real_flush()
+            raise RuntimeError("commit failed")
+        return mock.patch.object(session, "commit", side_effect=commit)
+
+    def make_table_with_properties(self):
+        table = self.provider.create_type_table("prop_table", "/test/test_vars", 1, [("a", "double"), ("b", "int")])
+        column_ids = [column.id for column in table.columns]
+        self.provider.set_property("table", table.id, "contact", "Jane Doe")
+        self.provider.set_property("table", table.id, "license", "MIT")
+        for column_id in column_ids:
+            self.provider.set_property("column", column_id, "description", "a column")
+        return table, column_ids
+
+    def test_delete_table_deletes_its_properties_and_of_its_columns(self):
+        table, column_ids = self.make_table_with_properties()
+        table_id = table.id
+        self.provider.set_property("table", self.provider.get_type_table(TABLE).id, "contact", "Somebody Else")
+
+        self.provider.delete_type_table(table)
+
+        self.assertEqual(self.owner_rows("table", table_id), 0)
+        for column_id in column_ids:
+            self.assertEqual(self.owner_rows("column", column_id), 0)
+        self.assertEqual(self.owner_rows("table", self.provider.get_type_table(TABLE).id), 1)  # others stay
+        record = self.provider.get_log_records(limit=1)[0]
+        self.assertEqual(record.action, "delete")
+        self.assertIn("with 4 properties", record.description)
+
+    def test_delete_directory_deletes_its_properties(self):
+        directory = self.provider.create_directory("prop_dir", "/test")
+        directory_id = directory.id
+        self.provider.set_property("directory", directory_id, "contact", "Jane Doe")
+
+        self.provider.delete_directory(directory)
+
+        self.assertEqual(self.owner_rows("directory", directory_id), 0)
+        self.assertIn("with 1 property", self.provider.get_log_records(limit=1)[0].description)
+
+    def test_delete_variation_deletes_its_properties(self):
+        variation = self.provider.create_variation("prop_var", "for properties", "default")
+        variation_id = variation.id
+        self.provider.set_property("variation", variation_id, "contact", "Jane Doe")
+        self.provider.set_property("variation", variation_id, "purpose", "tests")
+
+        self.provider.delete_variation(variation)
+
+        self.assertEqual(self.owner_rows("variation", variation_id), 0)
+        self.assertIn("with 2 properties", self.provider.get_log_records(limit=1)[0].description)
+
+    def test_delete_without_properties_logs_as_before(self):
+        directory = self.provider.create_directory("plain_dir", "/test")
+        self.provider.delete_directory(directory)
+        self.assertEqual(self.provider.get_log_records(limit=1)[0].description, "Deleted directory '/test/plain_dir'")
+
+    def test_failed_table_delete_keeps_the_table_and_its_properties(self):
+        table, column_ids = self.make_table_with_properties()
+        table_id = table.id
+
+        with mock.patch.object(self.provider, "create_log_record", side_effect=RuntimeError("log failed")):
+            self.assertRaises(RuntimeError, self.provider.delete_type_table, table)
+
+        self.assertEqual(self.provider.get_type_table("/test/test_vars/prop_table").id, table_id)
+        self.assertEqual(self.owner_rows("table", table_id), 2)
+        for column_id in column_ids:
+            self.assertEqual(self.owner_rows("column", column_id), 1)
+
+    def test_failed_directory_delete_keeps_the_directory_and_its_properties(self):
+        directory = self.provider.create_directory("prop_dir", "/test")
+        directory_id = directory.id
+        self.provider.set_property("directory", directory_id, "contact", "Jane Doe")
+
+        with self.failing_commit():
+            self.assertRaises(RuntimeError, self.provider.delete_directory, directory)
+
+        self.provider._load_dirs()
+        self.assertEqual(self.provider.get_directory("/test/prop_dir").id, directory_id)
+        self.assertEqual(self.owner_rows("directory", directory_id), 1)
+
+    def test_failed_variation_delete_keeps_the_variation_and_its_properties(self):
+        variation = self.provider.create_variation("prop_var", "for properties", "default")
+        variation_id = variation.id
+        self.provider.set_property("variation", variation_id, "contact", "Jane Doe")
+
+        with self.failing_commit():
+            self.assertRaises(RuntimeError, self.provider.delete_variation, variation)
+
+        self.assertEqual(self.provider.get_variation("prop_var").id, variation_id)
+        self.assertEqual(self.owner_rows("variation", variation_id), 1)
+
     # prop command
     def test_cli_instance_set_get_ls(self):
         before = self.log_count()

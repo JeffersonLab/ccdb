@@ -1,6 +1,7 @@
 import logging
 import os
-from datetime import timezone
+import re
+from datetime import datetime, timezone
 
 from ccdb import AlchemyProvider
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
@@ -82,6 +83,15 @@ class TagCommand(CliCommandBase):
             # a user gives local time; the tag stores the UTC instant
             snapshot_time = local_time.astimezone(timezone.utc).replace(tzinfo=None)
 
+            # A partial date is the last second of what it names, so today's date is a time in the future. The
+            # provider refuses any future time; this says why the date given lands there
+            is_partial = len(re.findall(r"\d+", parsed.time)) < 6
+            if is_partial and snapshot_time > datetime.now(timezone.utc).replace(tzinfo=None):
+                raise ValueError("Cannot create tag '{0}': the time is in the future. A partial date means its "
+                                 "last second: -t {1} means {2} local time. Give a full past time "
+                                 "(YYYY-MM-DD-hh-mm-ss), or leave -t out for now"
+                                 .format(parsed.name, parsed.time, local_time.strftime("%Y-%m-%d %H:%M:%S")))
+
         tag = provider.create_tag(parsed.name, parsed.variation or "default", snapshot_time, parsed.comment)
         log.info(LogFmt("Tag '{0}' is created", tag.name))
         return tag
@@ -129,7 +139,8 @@ of the tag variation that existed at the tag time:
 
  Flags:
     -v or --variation - the variation of the tag, 'default' if not given
-    -t or --time      - the moment of the tag, local time, now if not given. A future time is refused
+    -t or --time      - the moment of the tag, local time, now if not given. A future time is refused.
+                        A partial date means its last second: -t 2025-04-01 is 2025-04-01 23:59:59
     -c or --comment   - the comment of the tag, required to create one
 
 A request with a tag can have neither a variation nor a time: /test/table::mc@mytag is an error.
