@@ -95,7 +95,7 @@
     </thead>
     <tbody>
       {% for column in table.columns %}{% set column_i = loop.index0 %}
-      <tr><th scope="row" data-column="{{ column.name }}">{{ column.name }}</th><td class="col-type" data-type="{{ column.type }}"{% if column.units %} data-units="{{ column.units }}"{% endif %}>{{ column.type }}{% if column.units %}<span class="col-units"> · {{ column.units }}</span>{% endif %}</td>{% for row_i, row in page.items %}<td>{{ row[column_i] }}</td>{% endfor %}</tr>
+      <tr><th scope="row" data-column="{{ column.name }}">{{ column.name }}</th><td class="col-type"{% if column.units %} data-type="{{ column.type }}" data-units="{{ column.units }}"{% endif %}>{{ column.type }}{% if column.units %}<span class="col-units"> · {{ column.units }}</span>{% endif %}</td>{% for row_i, row in page.items %}<td>{{ row[column_i] }}</td>{% endfor %}</tr>
       {% endfor %}
     </tbody>
   </table>
