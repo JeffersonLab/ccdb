@@ -1,9 +1,9 @@
 # C++ API
 
 ```
- +------------------+      +------------------+
- |   C++ User API   |  --  |     JANA API     |
- +------------------+      +------------------+
+ +------------------+      +--------------------+
+ |   C++ User API   |  --  |   JANA2 service    |
+ +------------------+      +--------------------+
            |
 +----------------------+
 | Internal C++ Library |
@@ -16,9 +16,9 @@ The CCDB C++ implementation consists of separate levels (see the figure above):
   The API provides simple functionality to get constants. It automates the number of connections,
   multi-threading, data source selection, etc.
 
-- **JANA API** — This level integrates CCDB and the [JANA framework](https://www.jlab.org/JANA/about.php).
-  The JANA API is now shipped with the JANA framework. Architecturally it is based on the C++ User API.
-  See [JANA API](apis/jana.md).
+- **JANA2 service** — `CCDB_service` gives JANA2 factories the constants of the run they process, with
+  the database, variation, time or tag set by job parameters. It is built on the C++ User API.
+  See [JANA2 service](apis/jana.md).
 
 - **Internal C++ Library** — This level is considered internal and should only be of interest for
   those contributing to further development of CCDB. Application developers should not use classes from

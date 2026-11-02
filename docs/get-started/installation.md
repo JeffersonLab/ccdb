@@ -119,6 +119,7 @@ CMake options:
 |---|---|---|
 | `CCDB_BUILD_TESTS` | `ON` | builds the Catch2 test program `ccdb_tests` and installs it to `bin` |
 | `CCDB_CACHE_ON` | `OFF` | every `Calibration` starts with its in-memory cache of read assignments on; `EnableCache()` switches it at run time |
+| `CCDB_BUILD_JANA2` | `OFF` | builds the [JANA2 service](apis/jana.md) `CCDB_service`; needs JANA2 |
 | `CMAKE_DISABLE_FIND_PACKAGE_MySQL` | `OFF` | `ON` builds without MySQL support even when the client library is installed |
 
 ### Use the library from a CMake project
