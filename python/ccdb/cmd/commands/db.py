@@ -186,7 +186,9 @@ class Database(CliCommandBase):
         log.debug(f" |- Initializing database : '{hide_password(self.context.connection_string)}'")
         log.debug(f" |- This script path : '{ os.path.abspath(__file__) }'")
         provider = self.context.provider
-        provider.connect(connection_string=self.context.connection_string, check_version=False)
+        # the DDL keeps the server's time zone (see AlchemyProvider.attach)
+        provider.connect(connection_string=self.context.connection_string, check_version=False,
+                         client_time_zone=False)
         # both functions commit at the end and raise on the first error, which makes the command exit non-zero
         if provider.engine.dialect.name == "sqlite":
             init_sqlite_database(provider.engine)
@@ -195,15 +197,16 @@ class Database(CliCommandBase):
         log.debug(" |- Done DB init")
         return True
 
-    def connected_provider(self, check_version):
+    def connected_provider(self, check_version, client_time_zone=True):
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
-        provider.connect(connection_string=self.context.connection_string, check_version=check_version)
+        provider.connect(connection_string=self.context.connection_string, check_version=check_version,
+                         client_time_zone=client_time_zone)
         return provider
 
     def db_upgrade(self, options):
         log.debug(f" |- Upgrading database : '{hide_password(self.context.connection_string)}'")
-        provider = self.connected_provider(check_version=False)
+        provider = self.connected_provider(check_version=False, client_time_zone=False)
         # upgrade_v6 checks the version first: any version other than 5 is refused, naming it, and nothing changes
         try:
             upgrade_v6(provider.engine, dry_run=options.dry_run, duplicates=options.duplicates,
@@ -217,7 +220,7 @@ class Database(CliCommandBase):
 
     def db_rollback(self, options):
         log.debug(f" |- Rolling back database : '{hide_password(self.context.connection_string)}'")
-        provider = self.connected_provider(check_version=False)
+        provider = self.connected_provider(check_version=False, client_time_zone=False)
         try:
             rollback_v6(provider.engine, drop_v6_data=options.drop_v6_data, allow_non_strict=options.allow_non_strict,
                         in_place=options.in_place, skip_privilege_check=options.skip_privilege_check,
