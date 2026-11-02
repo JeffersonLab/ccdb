@@ -1,0 +1,15 @@
+{#- Properties of a directory, table, variation or the instance (`ccdb prop`): free key-value text. A value that is
+    an http(s) address becomes a link; everything else is escaped text like any other database string. -#}
+{% macro value(text) -%}
+{%- if text.startswith('https://') or text.startswith('http://') %}<a href="{{ text }}" rel="noopener">{{ text }}</a>{% else %}{{ text }}{% endif -%}
+{%- endmacro %}
+
+{#- Info-panel rows: a heading row, then one row per property; the golden comparison reads the two-cell rows by name. -#}
+{% macro rows(properties) -%}
+{%- if properties %}
+<tr class="properties-head"><th scope="rowgroup" colspan="2" class="pt-3">Properties</th></tr>
+{%- for name, text in properties %}
+<tr class="property"><th scope="row" class="fw-normal cell-mono">{{ name }}</th><td class="text-break">{{ value(text) }}</td></tr>
+{%- endfor %}
+{%- endif %}
+{%- endmacro %}

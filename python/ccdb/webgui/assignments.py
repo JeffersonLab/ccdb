@@ -13,6 +13,7 @@ from flask import abort
 from sqlalchemy.exc import NoResultFound
 
 import ccdb
+from ccdb.cmd.commands.cat import units_meta_line
 from ccdb.path_utils import parse_request, ParseRequestResult
 from ccdb.webgui import diff
 
@@ -131,7 +132,8 @@ def assignment_dict(assignment):
         "created": str(assignment.created),
         "author": assignment.author.name if assignment.author else "",
         "comment": assignment.comment,
-        "columns": [{"name": column.name, "type": column.type} for column in table.columns],
+        # "units" only where a column has them, so the JSON of tables without units stays as it was
+        "columns": [dict(name=column.name, type=column.type, **({"units": column.units} if column.units else {})) for column in table.columns],
         "rows": assignment.constant_set.data_table,
     }
 
@@ -148,6 +150,9 @@ def assignment_text(assignment):
     widths = diff.column_widths(column.name for column in table.columns)
     lines = ["#request: " + assignment.request]
     lines += ["#" + line for line in assignment.comment.split("\n")]
+    units_line = units_meta_line(table)  # '' for a table without units, so its dump stays byte-identical
+    if units_line:
+        lines.append(units_line)
     for row in assignment.constant_set.data_table:
         lines.append(diff.row_line(widths, row))
     return "\n".join(lines) + "\n"

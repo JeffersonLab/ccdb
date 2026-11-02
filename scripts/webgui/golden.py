@@ -165,8 +165,9 @@ def compute(space):
     golden["show"] = {}
     for label, (path, run, variation) in SHOW_REQUESTS.items():
         table_id = table_id_by_path[path]
-        column_rows = db.execute("SELECT name, columnType FROM columns WHERE typeId = ? ORDER BY \"order\"", (table_id,)).fetchall()
+        column_rows = db.execute("SELECT name, columnType, units FROM columns WHERE typeId = ? ORDER BY \"order\"", (table_id,)).fetchall()
         columns, types = [r["name"] for r in column_rows], [r["columnType"] for r in column_rows]
+        units = [r["units"] or "" for r in column_rows]
         rows_count = db.execute("SELECT nRows FROM typeTables WHERE id = ?", (table_id,)).fetchone()[0]
         match = [r for r in assignments_of(db, table_id) if r["variation"] == variation and r["runMin"] <= run <= r["runMax"]]
         newest = match[0]  # assignments_of is newest first; the CLI picks the newest too
@@ -175,7 +176,7 @@ def compute(space):
         golden["show"][label] = {"path": path, "variation": variation, "created": shown_stamp(newest["created"]), "author": newest["author"],
                                  "run_min": newest["runMin"], "run_max": newest["runMax"], "comment": newest["comment"],
                                  "request": request_string(path, newest["runMin"], variation, parse_stamp(newest["created"])),
-                                 "columns": columns, "types": types, "data": data, "candidates": len(match),
+                                 "columns": columns, "types": types, "units": units, "data": data, "candidates": len(match),
                                  "sha256": newest["sha256"], "size": newest["size"],
                                  # the other assignments of the same constant set, oldest first, by request string
                                  "same_data": [request_string(path, r["runMin"], r["variation"], parse_stamp(r["created"]))
@@ -312,6 +313,13 @@ def compute(space):
             answers = {path: a_id for path, a_id in answers.items() if path not in deprecated_tables and not hidden(path)}
         golden["tag_pages"][label] = answers
     golden["show_tags"] = {label: tag_answers(tag_name, run, {table_id_by_path[path]})[path] for label, (path, run, tag_name) in SHOW_TAGS.items()}
+
+    # properties: the instance's on the documentation page, a table's in its info panel, as name -> value
+    golden["properties"] = {
+        "doc": dict(db.execute("SELECT name, value FROM properties WHERE ownerType = 'instance' AND ownerId = 0").fetchall()),
+        "table_info_shared": dict(db.execute("SELECT name, value FROM properties WHERE ownerType = 'table' AND ownerId = 1010").fetchall()),
+        "table_info": dict(db.execute("SELECT name, value FROM properties WHERE ownerType = 'table' AND ownerId = 1").fetchall()),
+    }
 
     # the notice on the versions page of a deprecated table: "Deprecated <time> by <user>: <comment>"
     row = db.execute("SELECT t.deprecatedTime, t.deprecationComment, u.name FROM typeTables t LEFT JOIN users u ON u.id = t.deprecatedByUserId "
@@ -517,11 +525,19 @@ def shown_data_table(reader, index=1):
     if lines == "columns":  # one line per column: name, type, then the value of row 0, 1, ...; transpose it back
         body = rows[1:]
         values_per_column = [line[2:] for line in body]
-        return [line[0] for line in body], [line[1] for line in body], [list(row) for row in zip(*values_per_column)]
+        return [line[0] for line in body], [cells[1].get("data-type", line[1]) for line, cells in zip(body, attrs[1:])], [list(row) for row in zip(*values_per_column)]
     header = attrs[0]
     columns = [cell["data-column"] for cell in header if "data-column" in cell]
     types = [cell["data-type"] for cell in header if "data-type" in cell]
     return columns, types, [row[1:] for row in rows[1:]]  # the first cell of a body row is the row index
+
+
+def shown_units(reader, index=1):
+    """Units per column of the assignment data table (data-units), '' for a column without, in either layout."""
+    attrs, lines = reader.cell_attrs[index], reader.table_attrs[index].get("data-lines")
+    if lines == "columns":
+        return [cells[1].get("data-units", "") for cells in attrs[1:]]
+    return [cell.get("data-units", "") for cell in attrs[0] if "data-column" in cell]
 
 
 def data_rows(table):
@@ -592,6 +608,18 @@ def compare(space, phase, label, db_url):
         check(results, f"{label_}.rows", sorted(map(key, wanted)), sorted(map(key, shown)), sample=f"first expected {wanted[:1]}, first shown {shown[:1]}")
         check(results, f"{label_}.newest_first", [w["created"] for w in wanted[:3]], [s["created"] for s in shown[:3]])
 
+    # properties: every name -> value row of the page, and nothing else that looks like one
+    for label_, expected in golden["properties"].items():
+        status, html = get(label_)
+        if label_ == "doc":
+            found = re.search(r'<table[^>]*id="instance-properties".*?</table>', html, re.S)
+            rows = data_rows([[]] + read_tables(found.group(0))[0]) if found else []
+        else:
+            body = html.split('class="properties-head"', 1)[1] if 'class="properties-head"' in html else ""
+            rows = [row for row in read_tables("<table><tr>" + body)[0] if len(row) == 2] if body else []
+        check(results, f"{label_}.status", 200, status)
+        check(results, f"{label_}.properties", expected, dict(rows))
+
     # tags: the list, the table each tag page shows with the assignment the tag gives, and a tag in a request string
     status, html = get("tags")
     rows = data_rows(read_tables(html)[0]) if status == 200 else []
@@ -638,6 +666,7 @@ def compare(space, phase, label, db_url):
         check(results, f"{label_}.columns", expected["columns"], columns)
         check(results, f"{label_}.types", expected["types"], types)
         check(results, f"{label_}.data", expected["data"], data)
+        check(results, f"{label_}.units", expected["units"], shown_units(page) if len(tables) > 1 else None)
 
     # assignment JSON through both addressing forms, against the same golden values as the page
     for label_, expected in golden["show"].items():

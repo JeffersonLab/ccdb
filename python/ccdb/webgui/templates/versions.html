@@ -17,7 +17,7 @@
   </div>
   <p class="text-body-secondary small mb-2">
     {{ table.rows_count }} rows × {{ table.columns | length }} columns:
-    {% for column in table.columns %}<span class="cell-mono">{{ column.name }}</span>{{ ', ' if not loop.last }}{% endfor %}{% if table.comment %} — {{ table.comment }}{% endif %}
+    {% for column in table.columns %}<span class="cell-mono">{{ column.name }}</span>{% if column.units %} <span class="col-units">[{{ column.units }}]</span>{% endif %}{{ ', ' if not loop.last }}{% endfor %}{% if table.comment %} — {{ table.comment }}{% endif %}
   </p>
   {#- Show info rolls down the rows the tree's info button shows in a modal (_table_info_rows.html); Bootstrap's
       collapse keeps aria-expanded current, and the stylesheet shows one of the two labels from it. -#}
