@@ -1,0 +1,22 @@
+# CMake package of the CCDB C++ library. Use:
+#     find_package(ccdb 2.5 CONFIG REQUIRED)
+#     target_link_libraries(myapp PRIVATE ccdb::ccdb)
+# The target carries the include directory (#include <CCDB/Calibration.h>), the link libraries and the
+# CCDB_MYSQL definition when the library was built with MySQL support (ccdb_WITH_MYSQL is then TRUE).
+
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(SQLite3)
+
+include("${CMAKE_CURRENT_LIST_DIR}/ccdbTargets.cmake")
+
+get_target_property(_ccdb_definitions ccdb::ccdb INTERFACE_COMPILE_DEFINITIONS)
+if(_ccdb_definitions AND "CCDB_MYSQL=1" IN_LIST _ccdb_definitions)
+    set(ccdb_WITH_MYSQL TRUE)
+else()
+    set(ccdb_WITH_MYSQL FALSE)
+endif()
+unset(_ccdb_definitions)
+
+check_required_components(ccdb)
