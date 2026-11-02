@@ -76,6 +76,8 @@ DIFF_PAGES = {  # label in pages.py -> (golden key, view, the lines the page ren
 DIFF_PAGE_SIZE = 200
 LOG_RECORDS = {"log_record": 2414, "log_record_hostile": 14, "log_record_directory": 13, "log_record_table": 2415,
                "log_record_variation": 2416, "log_record_deleted": 2417}   # label in pages.py -> log id
+TAG_PAGES = {"tag_newest_run": ("fixture_newest", 1500), "tag_past_run": ("fixture_past", 1500), "tag_past_run_all": ("fixture_past", 1500)}
+SHOW_TAGS = {"show_tag_past": (pages.BIG_TABLE, 1500, "fixture_past"), "show_tag_small": (pages.SMALL_TABLE, 0, "fixture_newest")}
 DEPRECATED_INFO = {"dir_info_retired": 42, "table_info_retired": 1012}   # label in pages.py -> id of the deprecated object
 VERSIONS = {"versions_big": pages.BIG_TABLE, "versions_small": pages.SMALL_TABLE, "versions_deep": pages.DEEP_TABLE,
             "versions_hostile": pages.HOSTILE_TABLE, "versions_unicode": pages.UNICODE_TABLE, "versions_shared": pages.SHARED_TABLE}
@@ -274,6 +276,43 @@ def compute(space):
     tables_under_dir1 = [table_id for table_id, path in tables.items() if path.startswith(dirs[1] + "/")]
     golden["table_info"] = {**dict(table1), "path": tables[1], **activity([1])}
     golden["dir_info"] = {**dict(dir1), "path": dirs[1], "tables": len(tables_under_dir1), **activity(tables_under_dir1)}
+
+    # tags: the list, then what a request with a tag returns. The resolution follows AlchemyProvider.get_assignment: the
+    # tag's variation, then its parents up to default; in the nearest variation with a match, the newest assignment by id
+    # among those created at or before the tag time. On SQLite that UTC instant is compared in the local time of the
+    # process, the same process that runs the pages in compare().
+    tag_rows = db.execute("SELECT t.name, v.name AS variation, t.snapshotTime, t.comment FROM tags t JOIN variations v ON v.id = t.variationId ORDER BY t.name").fetchall()
+    golden["tags"] = [[r["name"], r["variation"], shown_stamp(r["snapshotTime"]).split(".")[0], r["comment"] or ""] for r in tag_rows]
+    variation_rows = {r["id"]: r for r in db.execute("SELECT id, name, parentId FROM variations")}
+    variation_by_name = {r["name"]: r for r in variation_rows.values()}
+
+    def tag_answers(tag_name, run, table_ids=None):
+        tag = db.execute("SELECT t.snapshotTime, t.variationId FROM tags t WHERE t.name = ?", (tag_name,)).fetchone()
+        limit = parse_stamp(tag[0]).replace(tzinfo=datetime.timezone.utc).astimezone().replace(tzinfo=None)
+        chain, current = [], variation_rows[tag[1]]
+        while True:
+            chain.append(current["id"])
+            if current["name"] == "default" or current["parentId"] not in variation_rows:
+                break
+            current = variation_rows[current["parentId"]]
+        rows = db.execute("SELECT a.id, a.created, a.variationId, c.constantTypeId AS table_id FROM assignments a JOIN constantSets c ON c.id = a.constantSetId "
+                          "JOIN runRanges r ON r.id = a.runRangeId WHERE r.runMin <= ? AND r.runMax >= ?", (run, run)).fetchall()
+        best = {}
+        for r in rows:
+            if r["variationId"] not in chain or parse_stamp(r["created"]) > limit or (table_ids and r["table_id"] not in table_ids):
+                continue
+            key = (chain.index(r["variationId"]), -r["id"])
+            if r["table_id"] not in best or key < best[r["table_id"]][0]:
+                best[r["table_id"]] = (key, r["id"])
+        return {tables[table_id]: assignment_id for table_id, (_, assignment_id) in best.items()}
+
+    golden["tag_pages"] = {}
+    for label, (tag_name, run) in TAG_PAGES.items():
+        answers = tag_answers(tag_name, run)
+        if not label.endswith("_all"):  # the page hides deprecated tables by default
+            answers = {path: a_id for path, a_id in answers.items() if path not in deprecated_tables and not hidden(path)}
+        golden["tag_pages"][label] = answers
+    golden["show_tags"] = {label: tag_answers(tag_name, run, {table_id_by_path[path]})[path] for label, (path, run, tag_name) in SHOW_TAGS.items()}
 
     # the notice on the versions page of a deprecated table: "Deprecated <time> by <user>: <comment>"
     row = db.execute("SELECT t.deprecatedTime, t.deprecationComment, u.name FROM typeTables t LEFT JOIN users u ON u.id = t.deprecatedByUserId "
@@ -553,6 +592,24 @@ def compare(space, phase, label, db_url):
         key = lambda d: json.dumps(d, sort_keys=True)  # noqa: E731
         check(results, f"{label_}.rows", sorted(map(key, wanted)), sorted(map(key, shown)), sample=f"first expected {wanted[:1]}, first shown {shown[:1]}")
         check(results, f"{label_}.newest_first", [w["created"] for w in wanted[:3]], [s["created"] for s in shown[:3]])
+
+    # tags: the list, the table each tag page shows with the assignment the tag gives, and a tag in a request string
+    status, html = get("tags")
+    rows = data_rows(read_tables(html)[0]) if status == 200 else []
+    check(results, "tags.status", 200, status)
+    check(results, "tags.rows", golden["tags"], [r[:4] for r in rows])
+    for label_, expected in golden["tag_pages"].items():
+        status, html = get(label_)
+        found = dict(re.findall(r'<li data-path="([^"]+)" data-kind="table"[^>]*>.*?data-assignment="(\d+)"', html, re.S))
+        check(results, f"{label_}.status", 200, status)
+        check(results, f"{label_}.answers", {path: str(a_id) for path, a_id in expected.items()}, {html_module.unescape(path): a_id for path, a_id in found.items()},
+              sample=f"{len(expected)} expected, {len(found)} shown")
+    for label_, expected in golden["show_tags"].items():
+        status, html = get(label_)
+        tables = read_tables(html)
+        meta = {row[0]: row[1] for row in (tables[0] if tables else []) if len(row) == 2}
+        check(results, f"{label_}.status", 200, status)
+        check(results, f"{label_}.id", str(expected), meta.get("Database id"))
 
     # the deprecation notice above a deprecated table's versions, and none above another table
     for label_, expected in golden["versions_notice"].items():
