@@ -8,6 +8,7 @@
 #include "CCDB/Providers/SQLiteDataProvider.h"
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/CalibrationGenerator.h"
+#include "CCDB/Helpers/StringUtils.h"
 
 
 using namespace std;
@@ -202,4 +203,25 @@ TEST_CASE("CCDB/UserAPI/SQLite_CalibrationGenerator","Use universal generator to
 
 	gen->DeleteCalibrations();
 	delete gen;
+}
+
+
+/** GetCalib of one double or int returns true when it finds the value (F25: it returned false since 2014) */
+TEST_CASE("CCDB/UserAPI/SQLite/single value", "tests")
+{
+    unique_ptr<Calibration> calib(CalibrationGenerator::CreateCalibration(get_test_sqlite_connection(), 0, "test"));
+
+    vector<string> row;
+    REQUIRE(calib->GetCalib(row, "/test/test_vars/test_table2"));
+
+    double doubleValue = -1;
+    REQUIRE(calib->GetCalib(doubleValue, "/test/test_vars/test_table2"));
+    REQUIRE(doubleValue == StringUtils::ParseDouble(row[0]));
+
+    int intValue = -1;
+    REQUIRE(calib->GetCalib(intValue, "/test/test_vars/test_table2"));
+    REQUIRE(intValue == StringUtils::ParseInt(row[0]));
+
+    // a missing table is an exception, as for every GetCalib
+    REQUIRE_THROWS(calib->GetCalib(doubleValue, "/test/test_vars/no_such_table"));
 }

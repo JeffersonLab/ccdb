@@ -585,7 +585,7 @@ bool Calibration::GetCalib(double &value, const string & namepath)
 	string rawValue;
 	if(!GetCalib(rawValue, namepath)) return false;
 	value = StringUtils::ParseDouble(rawValue);
-	return false;
+	return true;
 }
 
 //______________________________________________________________________________
@@ -594,7 +594,7 @@ bool Calibration::GetCalib(int &value, const string & namepath)
 	string rawValue;
 	if(!GetCalib(rawValue, namepath)) return false;
 	value = StringUtils::ParseInt(rawValue);
-	return false;
+	return true;
 }
 
 //______________________________________________________________________________
