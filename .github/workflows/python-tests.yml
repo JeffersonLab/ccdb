@@ -73,6 +73,10 @@ jobs:
           tests.unit_test_dedup
           tests.unit_test_rehash
           tests.unit_test_fixture_v6
+          tests.unit_test_tags
+          tests.unit_test_deprecation
+          tests.unit_test_properties
+          tests.unit_test_units
 
       # SQLite integration tests create their own database
       # (via ccdb.testing.recreate_test_sqlite_db) - no fixture files needed
