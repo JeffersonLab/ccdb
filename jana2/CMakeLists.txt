@@ -36,3 +36,13 @@ install(TARGETS CCDB_service LIBRARY DESTINATION lib/CCDB/plugins)
 install(EXPORT ccdbJana2Targets
         NAMESPACE ccdb::
         DESTINATION lib/cmake/ccdb)
+
+# The example: a factory in the EICrecon layout that reads its constants through the service (examples/).
+# Built for the [jana2] tests, not installed. C++20, as JANA2's factory generator and EICrecon use.
+add_library(ccdb_jana2_example SHARED examples/ccdb_jana2_example.cc)
+target_include_directories(ccdb_jana2_example PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/examples")
+target_link_libraries(ccdb_jana2_example PUBLIC ccdb_jana2)
+target_compile_features(ccdb_jana2_example PUBLIC cxx_std_20)
+set_target_properties(ccdb_jana2_example PROPERTIES
+        PREFIX ""
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/CCDB/plugins")
