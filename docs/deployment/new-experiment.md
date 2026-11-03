@@ -148,7 +148,8 @@ the CLI, and get exceptions instead of exit codes.
 | [HTTP API](apis/http.md) behind a cache | jobs anywhere with HTTP: offsite farms, clouds, agents, scripts in other languages | one service in front of the database; a job downloads the [run bundle](apis/http.md#run-bundles) of its run, or reads tables one by one; every answer that names fixed constants is cached for a year, so the database sees each request once |
 | C++ through the HTTP API, `https://host/api/v1` | C++ jobs (JANA2 included) where the HTTP API is the only way in | the library downloads the run bundle of the job's run once, checks its SHA-256 and reads it as SQLite; bundles by time or tag are reused from `CCDB_HTTP_CACHE_DIR` without asking the server (see [C++ API](apis/cpp.md#http-api)) |
 
-The same program reads all of them; only the connection string changes, through `CCDB_CONNECTION` or
+[Scaling: constants for thousands of jobs](deployment/scaling.md) measures these paths against each other
+with jobs starting together. The same program reads all of them; only the connection string changes, through `CCDB_CONNECTION` or
 the framework's own setting (`-Pccdb:url` for the [JANA2 service](apis/jana.md)). A snapshot is as old as its export, so publish
 a nightly snapshot and say so: a calibrator who adds constants in the afternoon should know when the
 farm will see them.

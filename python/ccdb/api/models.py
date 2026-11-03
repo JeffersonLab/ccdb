@@ -4,7 +4,7 @@ Times are UTC instants in ISO 8601 with microseconds, `2026-03-01T12:00:00.12345
 The data forms of an assignment (`data`, `data.json`, `data.txt`) are documented in docs/apis/http.md; data.json is
 byte-identical to the web GUI's.
 """
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -68,6 +68,38 @@ class TableInfo(TableSummary):
     assignments: int
     last_assignment: Optional[str] = Field(None, description="Creation time of the newest assignment")
     last_author: str = ""
+
+
+class CardVariation(BaseModel):
+    name: str
+    versions: int = Field(description="Assignments of the table in this variation")
+    runs: List[List[int]] = Field(description="The runs the assignments cover, as merged [first, last] intervals")
+
+
+class CardChange(BaseModel):
+    created: str = Field(description="UTC")
+    author: str
+    variation: str
+    comment: str
+
+
+class TableCard(BaseModel):
+    """A data card: what a reader needs to use a table's constants and to cite them"""
+    path: str
+    name: str
+    description: str = Field(description="The table's comment")
+    deprecated: bool = False
+    rows: int
+    columns: List[Column] = Field(description="The columns in order, with types, units and comments")
+    properties: Dict[str, str] = Field(description="The table's properties (`ccdb prop`), e.g. purpose, procedure, source_url")
+    versions: int = Field(description="Assignments of the table in every variation")
+    variations: List[CardVariation]
+    authors: List[Dict[str, Any]] = Field(description="Who added the assignments: name and count, most first")
+    last_change: Optional[CardChange] = Field(None, description="The newest assignment")
+    tags: List[str] = Field(description="Tags under which the table has constants")
+    license: str = Field("", description="The instance property `license`")
+    citation: str = Field("", description="The instance property `citation`")
+    instance: Dict[str, str] = Field(description="The instance properties experiment, license, citation, contact, url")
 
 
 class Variation(Deprecation):

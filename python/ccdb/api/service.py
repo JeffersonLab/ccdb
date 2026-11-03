@@ -6,6 +6,7 @@ The queries are the web GUI's (ccdb.webgui.queries, ccdb.webgui.assignments), so
 server show the same rows. Errors: ObjectIsNotFoundInDbError or LookupError for an object that does not exist,
 ValueError for a malformed parameter; the GUI helpers raise werkzeug's HTTP errors, which carry the same codes.
 """
+import dataclasses
 import datetime
 import json
 
@@ -123,6 +124,25 @@ def table(db, path):
                             last_author=activity.last_author)
 
 
+def table_card(db, path):
+    """The data card of a table, from the GUI's card builder"""
+    card = queries.table_card(db, table_object(db, path))
+    table = card.table
+    instance = dict(card.instance)
+    last = None
+    if card.last_created is not None:
+        last = models.CardChange(created=utc_text(card.last_created), author=card.last_author, variation=card.last_variation,
+                                 comment=card.last_comment)
+    return models.TableCard(path=table.path, name=table.name, description=table.comment or "", deprecated=bool(table.is_deprecated),
+                            rows=table.rows_count, columns=columns_of(table), properties=dict(card.properties),
+                            versions=card.versions,
+                            variations=[models.CardVariation(name=each.name, versions=each.versions, runs=[list(run) for run in each.runs])
+                                        for each in card.variations],
+                            authors=[{"name": name, "assignments": count} for name, count in card.authors],
+                            last_change=last, tags=[tag.name for tag in card.tags], license=instance.get("license", ""),
+                            citation=instance.get("citation", ""), instance=instance)
+
+
 # JSON Schema of the cells of data.json: CCDB keeps every cell as the text it was given, so every cell is a string;
 # the column type says how to read it
 CELL_PATTERNS = {"int": r"^[+-]?[0-9]+$", "uint": r"^\+?[0-9]+$", "long": r"^[+-]?[0-9]+$", "ulong": r"^\+?[0-9]+$",
@@ -211,6 +231,45 @@ def logs(db, args):
                            comment=row.comment, author=row.author) for row in page.items]
     return models.LogPage(items=items, page=page.page, per_page=page.query.per_page, pages=page.pages, total=page.total,
                           sort=page.query.sort, order=page.query.order)
+
+
+ATOM = "http://www.w3.org/2005/Atom"
+
+
+def logs_atom(db, args, feed_url, record_url):
+    """The newest page of the change log as an Atom feed (RFC 4287): one entry per log record, newest first.
+    `args` takes per_page and search as /logs does; record_url(id) gives an entry's link"""
+    from xml.etree import ElementTree
+    query = queries.parse_page_query(args, queries.LOG_SORTS, default_sort="id")
+    page = queries.list_logs(db.session, dataclasses.replace(query, page=1, sort="id", order="desc"))
+    experiment = dict(queries.properties_of(db.session, "instance", [0]).get(0, [])).get("experiment", "")
+    ElementTree.register_namespace("", ATOM)
+
+    def element(parent, name, text=None, **attributes):
+        child = ElementTree.SubElement(parent, "{%s}%s" % (ATOM, name), attributes)
+        if text is not None:
+            child.text = text
+        return child
+
+    feed = ElementTree.Element("{%s}feed" % ATOM)
+    element(feed, "id", feed_url)
+    element(feed, "title", "CCDB changes" + (" · " + experiment if experiment else "") + (" · " + query.search if query.search else ""))
+    newest = page.items[0].created if page.items else None
+    element(feed, "updated", utc_text(newest) if newest else "1970-01-01T00:00:00.000000Z")
+    element(feed, "link", rel="self", href=feed_url)
+    element(feed, "generator", "CCDB " + ccdb_version)
+    for row in page.items:
+        entry = element(feed, "entry")
+        url = record_url(row.id)
+        element(entry, "id", url)
+        element(entry, "title", "{0}: {1}".format(row.action, row.description))
+        element(entry, "updated", utc_text(row.created))
+        element(element(entry, "author"), "name", row.author or "unknown")
+        element(entry, "link", rel="alternate", href=url)
+        element(entry, "category", term=row.action)
+        if row.comment:
+            element(entry, "summary", row.comment)
+    return ElementTree.tostring(feed, encoding="unicode", xml_declaration=True)
 
 
 def log_record(db, log_id):

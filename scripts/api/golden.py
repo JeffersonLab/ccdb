@@ -28,6 +28,7 @@ sys.path.insert(0, str(HERE.parent / "webgui"))      # workspace.py; pages.py be
 sys.path.insert(0, str(HERE))
 import pages  # noqa: E402
 import workspace  # noqa: E402
+from urllib.parse import unquote
 
 IMMUTABLE = "public, max-age=31536000, immutable"
 SHORT = "public, max-age=60"
@@ -84,9 +85,9 @@ def main():
         checks.equal(f"{assignment_id} info sha256", info["sha256"], sha256)
 
     for label, url, kind in pages.PAGES:
-        if not (url.startswith("/api/v1/tables/") and kind == "json" and "/versions" not in url and "/schema" not in url):
+        if not (url.startswith("/api/v1/tables/") and kind == "json" and "/versions" not in url and "/schema" not in url
+                and not url.endswith("/card")):
             continue
-        from urllib.parse import unquote
         path = unquote(url[len("/api/v1/tables"):])
         info = get(url).json()
         name = path.rsplit("/", 1)[1]
@@ -97,6 +98,58 @@ def main():
         count = sql.execute("SELECT COUNT(*) FROM assignments a JOIN constantSets c ON c.id = a.constantSetId JOIN typeTables t "
                             "ON t.id = c.constantTypeId WHERE t.name = ?", (name,)).fetchone()[0]
         checks.equal(f"{label} assignment count", info["assignments"], count)
+
+    # Data cards: versions, coverage per variation, authors, the newest assignment and the covering tags, by SQL
+    for label, url, kind in pages.PAGES:
+        if not (kind == "json" and url.endswith("/card")):
+            continue
+        path = unquote(url[len("/api/v1/tables"):-len("/card")])
+        card = get(url).json()
+        directory_id = 0
+        for part in path.strip("/").split("/")[:-1]:
+            directory_id = sql.execute("SELECT id FROM directories WHERE name = ? AND parentId = ?", (part, directory_id)).fetchone()[0]
+        table_id = sql.execute("SELECT id FROM typeTables WHERE name = ? AND directoryId = ?", (path.rsplit("/", 1)[1], directory_id)).fetchone()[0]
+        rows = sql.execute("SELECT v.name, r.runMin, r.runMax, u.name, a.created, a.variationId FROM assignments a "
+                           "JOIN constantSets s ON a.constantSetId = s.id JOIN variations v ON a.variationId = v.id "
+                           "JOIN runRanges r ON a.runRangeId = r.id LEFT JOIN users u ON a.authorId = u.id "
+                           "WHERE s.constantTypeId = ? ORDER BY a.created, a.id", (table_id,)).fetchall()
+        ranges, authors = {}, {}
+        for variation, run_min, run_max, author, _, _ in rows:
+            ranges.setdefault(variation, []).append((run_min, run_max))
+            authors[author or ""] = authors.get(author or "", 0) + 1
+        coverage = []
+        for name, found in sorted(ranges.items()):
+            merged = []
+            for low, high in sorted(found):
+                if merged and low <= merged[-1][1] + 1:
+                    merged[-1][1] = max(merged[-1][1], high)
+                else:
+                    merged.append([low, high])
+            coverage.append({"name": name, "versions": len(found), "runs": merged})
+        covering = []
+        for tag, variation_id, snapshot in sql.execute("SELECT name, variationId, snapshotTime FROM tags ORDER BY name").fetchall():
+            chain, current = [], variation_id
+            while current:
+                chain.append(current)
+                current = sql.execute("SELECT parentId FROM variations WHERE id = ?", (current,)).fetchone()[0]
+            if any(row[5] in chain and row[4] <= snapshot for row in rows):
+                covering.append(tag)
+        checks.equal(f"{label} versions", card["versions"], len(rows))
+        checks.equal(f"{label} coverage", card["variations"], coverage)
+        checks.equal(f"{label} authors", card["authors"],
+                     [{"name": name, "assignments": n} for name, n in sorted(authors.items(), key=lambda item: (-item[1], item[0]))])
+        checks.equal(f"{label} tags", card["tags"], covering)
+        if rows:
+            checks.equal(f"{label} last change", (card["last_change"]["author"], card["last_change"]["variation"]),
+                         (rows[-1][3] or "", rows[-1][0]))
+
+    # The change feed: the newest log records, newest first
+    from xml.etree import ElementTree
+    feed = ElementTree.fromstring(get("/api/v1/logs.atom").content)
+    atom = "{http://www.w3.org/2005/Atom}"
+    newest = [row[0] for row in sql.execute("SELECT id FROM logs ORDER BY id DESC LIMIT 50")]
+    checks.equal("feed entries are the newest log records", [int(entry.find(atom + "id").text.rsplit("/", 1)[1])
+                                                              for entry in feed.findall(atom + "entry")], newest)
 
     big_total = sql.execute("SELECT COUNT(*) FROM assignments a JOIN constantSets c ON c.id = a.constantSetId JOIN typeTables t "
                             "ON t.id = c.constantTypeId WHERE t.name = 'gains'").fetchone()[0]

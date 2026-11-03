@@ -185,6 +185,66 @@
     "title": "AssignmentRow",
     "type": "object"
    },
+   "CardChange": {
+    "properties": {
+     "author": {
+      "title": "Author",
+      "type": "string"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "created": {
+      "description": "UTC",
+      "title": "Created",
+      "type": "string"
+     },
+     "variation": {
+      "title": "Variation",
+      "type": "string"
+     }
+    },
+    "required": [
+     "created",
+     "author",
+     "variation",
+     "comment"
+    ],
+    "title": "CardChange",
+    "type": "object"
+   },
+   "CardVariation": {
+    "properties": {
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "runs": {
+      "description": "The runs the assignments cover, as merged [first, last] intervals",
+      "items": {
+       "items": {
+        "type": "integer"
+       },
+       "type": "array"
+      },
+      "title": "Runs",
+      "type": "array"
+     },
+     "versions": {
+      "description": "Assignments of the table in this variation",
+      "title": "Versions",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "name",
+     "versions",
+     "runs"
+    ],
+    "title": "CardVariation",
+    "type": "object"
+   },
    "Column": {
     "properties": {
      "comment": {
@@ -563,6 +623,124 @@
      "comment"
     ],
     "title": "RunRange",
+    "type": "object"
+   },
+   "TableCard": {
+    "description": "A data card: what a reader needs to use a table's constants and to cite them",
+    "properties": {
+     "authors": {
+      "description": "Who added the assignments: name and count, most first",
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "title": "Authors",
+      "type": "array"
+     },
+     "citation": {
+      "default": "",
+      "description": "The instance property `citation`",
+      "title": "Citation",
+      "type": "string"
+     },
+     "columns": {
+      "description": "The columns in order, with types, units and comments",
+      "items": {
+       "$ref": "#/components/schemas/Column"
+      },
+      "title": "Columns",
+      "type": "array"
+     },
+     "deprecated": {
+      "default": false,
+      "title": "Deprecated",
+      "type": "boolean"
+     },
+     "description": {
+      "description": "The table's comment",
+      "title": "Description",
+      "type": "string"
+     },
+     "instance": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "description": "The instance properties experiment, license, citation, contact, url",
+      "title": "Instance",
+      "type": "object"
+     },
+     "last_change": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/CardChange"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The newest assignment"
+     },
+     "license": {
+      "default": "",
+      "description": "The instance property `license`",
+      "title": "License",
+      "type": "string"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "path": {
+      "title": "Path",
+      "type": "string"
+     },
+     "properties": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "description": "The table's properties (`ccdb prop`), e.g. purpose, procedure, source_url",
+      "title": "Properties",
+      "type": "object"
+     },
+     "rows": {
+      "title": "Rows",
+      "type": "integer"
+     },
+     "tags": {
+      "description": "Tags under which the table has constants",
+      "items": {
+       "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+     },
+     "variations": {
+      "items": {
+       "$ref": "#/components/schemas/CardVariation"
+      },
+      "title": "Variations",
+      "type": "array"
+     },
+     "versions": {
+      "description": "Assignments of the table in every variation",
+      "title": "Versions",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "path",
+     "name",
+     "description",
+     "rows",
+     "columns",
+     "properties",
+     "versions",
+     "variations",
+     "authors",
+     "tags",
+     "instance"
+    ],
+    "title": "TableCard",
     "type": "object"
    },
    "TableInfo": {
@@ -1574,6 +1752,58 @@
     ]
    }
   },
+  "/api/v1/logs.atom": {
+   "get": {
+    "operationId": "logs_atom_api_v1_logs_atom_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "per_page",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "title": "Per Page",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "search",
+      "required": false,
+      "schema": {
+       "default": "",
+       "title": "Search",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/atom+xml": {},
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "An Atom 1.0 feed (RFC 4287)"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "The newest log records as an Atom feed; `search` and `per_page` as for /logs",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
   "/api/v1/logs/{log_id}": {
    "get": {
     "operationId": "log_record_api_v1_logs__log_id__get",
@@ -1745,6 +1975,48 @@
      }
     },
     "summary": "One table: columns with units, properties, activity",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/tables/{path}/card": {
+   "get": {
+    "operationId": "table_card_api_v1_tables__path__card_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "path",
+      "required": true,
+      "schema": {
+       "title": "Path",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/TableCard"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "A data card: description, columns with units, versions and run coverage, authors, tags, license and citation",
     "tags": [
      "browse"
     ]

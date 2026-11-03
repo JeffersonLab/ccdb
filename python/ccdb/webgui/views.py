@@ -438,6 +438,14 @@ def register(app):
                                                 variation_names=queries.table_variation_names(db.session, table, include_deprecated=show_all))
         return table_page("versions.html", "_versions_table.html", page=page, query=query, table=table, filters=filters, **info)
 
+    @app.route('/tables/<path:table_path>/card')
+    def table_card(table_path):
+        """The data card of a table: what a reader needs to use its constants and to cite them (docs/concepts/fair.md)."""
+        db: ccdb.AlchemyProvider = g.db
+        table = db.get_type_table("/" + table_path)  # unknown path → ObjectIsNotFoundInDbError → 404 page
+        return render_template("table_card.html", card=queries.table_card(db, table), table=table,
+                               deprecated_by=author_name(db, table.deprecated_by_user_id))
+
     @app.route('/test_request')
     def test_request():
         db: ccdb.AlchemyProvider = g.db
