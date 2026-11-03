@@ -140,7 +140,13 @@ public:
 private:	
 
     //@parameter [in] connectionString - Connection string to the data source
-    static Calibration* CreateCalibration(bool isMySQL, int run, const std::string& variation, int64_t timeMicro);
+    enum class ConnectionKind { SQLite, MySQL, HTTP };
+
+    /** @brief The kind of a connection string; throws for an unknown one or one this build cannot open */
+    static ConnectionKind KindOf(const std::string& connectionString);
+
+    /** @brief A Calibration for the kind; an HTTP one downloads the run bundle of the run, by tag when tagName is set */
+    static Calibration* CreateCalibration(ConnectionKind kind, int run, const std::string& variation, int64_t timeMicro, const std::string& tagName);
 
     /// MakeCalibrationMicro and MakeCalibrationForTag: the cache lookup, the creation, and SetTag for a tag
     Calibration* MakeCalibrationCached(const std::string & connectionString, int run, const std::string& variation,

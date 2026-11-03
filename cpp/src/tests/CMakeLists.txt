@@ -9,6 +9,7 @@ add_executable(${PROJECT_NAME}
         "test_StringUtils.cc"
         "test_PathUtils.cc"
         "test_TimeParse.cc"
+        "test_Sha256.cc"
         )
 
 # The case tables shared with the Python tests (testdata/ at the repository root)
@@ -56,6 +57,11 @@ if (MySQL_FOUND)
         )
         target_compile_definitions(${PROJECT_NAME} PUBLIC "CCDB_MYSQL=1")
 endif (MySQL_FOUND)
+
+# The hidden [http] and [http_cache] tests of the HTTP provider; http_harness.py starts the API and runs them
+if(CCDB_HTTP_ENABLED)
+        target_sources(${PROJECT_NAME} PRIVATE "test_HTTPProvider.cc")
+endif()
 
 # The [jana2] tests of the JANA2 service; they read the database of scripts/eic/make_jana2_test_db.py
 if(CCDB_BUILD_JANA2)

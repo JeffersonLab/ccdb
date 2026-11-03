@@ -18,6 +18,7 @@ add_library(ccdb SHARED
         Helpers/PathUtils.cc
         Helpers/TimeProvider.cc
         Helpers/TimeUtils.cc
+        Helpers/Sha256.cc
         Helpers/SQLite.h
 
         Model/Assignment.cc
@@ -84,6 +85,26 @@ elseif (MySQL_FOUND)
     message(STATUS "(!) MySQL IS NOT FOUND. Building without MySQL")
 endif (MySQL_FOUND)
 
+# The HTTP provider (Providers/HTTPDataProvider.h): reads through the HTTP API's run bundles, with libcurl
+find_package(CURL)
+if (CURL_FOUND)
+    option(CCDB_WITH_HTTP "Build the HTTP provider (http:// and https:// connection strings; needs libcurl)" ON)
+else()
+    option(CCDB_WITH_HTTP "Build the HTTP provider (http:// and https:// connection strings; needs libcurl)" OFF)
+endif()
+if (CCDB_WITH_HTTP)
+    if (NOT CURL_FOUND)
+        message(FATAL_ERROR "CCDB_WITH_HTTP is ON, but CMake found no libcurl")
+    endif()
+    message(STATUS "HTTP provider: ON, libcurl ${CURL_VERSION_STRING}")
+    target_link_libraries(ccdb PRIVATE CURL::libcurl)
+    target_sources(ccdb PRIVATE Providers/HTTPDataProvider.cc)
+    target_compile_definitions(ccdb PRIVATE "CCDB_HTTP=1")
+    set(CCDB_HTTP_ENABLED ON CACHE INTERNAL "The library has the HTTP provider")
+else()
+    message(STATUS "HTTP provider: OFF")
+    set(CCDB_HTTP_ENABLED OFF CACHE INTERNAL "The library has the HTTP provider")
+endif()
 
 find_package(Threads)
 

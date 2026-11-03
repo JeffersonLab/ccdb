@@ -54,6 +54,39 @@ jobs:
       - name: Run tests (SQLite only, MySQL cases excluded by tag)
         run: ./cpp/build/src/tests/ccdb_tests "~[mysql]"
 
+  # The HTTP provider: cpp/src/tests/http_harness.py serves the time resolution database through the HTTP API
+  # (a second server with a wrong X-CCDB-SHA256), runs the hidden [http] tests, stops the servers and runs
+  # [http_cache] on the bundles the first run cached
+  cpp-http:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ libsqlite3-dev libcurl4-openssl-dev
+
+      - name: Install ccdb with the api extra
+        run: pip install ".[api]"
+
+      - name: Build the time resolution database
+        run: python scripts/time/make_time_db.py "sqlite:///$GITHUB_WORKSPACE/time_tests.sqlite"
+
+      - name: Configure, the HTTP provider required
+        run: cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release -DCCDB_WITH_HTTP=ON
+
+      - name: Build tests
+        run: cmake --build cpp/build --target ccdb_tests -j"$(nproc)"
+
+      - name: "[http] with the API running, [http_cache] with it stopped"
+        run: python cpp/src/tests/http_harness.py --tests ./cpp/build/src/tests/ccdb_tests --db "sqlite:///$GITHUB_WORKSPACE/time_tests.sqlite"
+
   # A project outside the tree finds the installed library with find_package(ccdb 2.5 CONFIG REQUIRED)
   # (cpp/examples/consumer) and reads a table through it
   cpp-consumer:
@@ -110,8 +143,25 @@ jobs:
 
       - uses: cvmfs-contrib/github-action-cvmfs@v5
 
+      # The HTTP case: the API on the demo tables, on the runner; eic-shell (apptainer) shares the runner's network
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Serve the demo tables through the HTTP API
+        run: |
+          pip install ".[api]"
+          python scripts/demo/make_epic_tables.py "sqlite:///$GITHUB_WORKSPACE/demo_http.sqlite"
+          CCDB_API_CACHE_DIR="$RUNNER_TEMP/api_cache" ccdb -c "sqlite:///$GITHUB_WORKSPACE/demo_http.sqlite" api --port 8765 > "$RUNNER_TEMP/api.log" 2>&1 &
+          for attempt in $(seq 1 60); do
+            curl -sf http://127.0.0.1:8765/api/v1/health && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8765/api/v1/health
+
       - name: Build CCDB with -DCCDB_BUILD_JANA2=ON and run the [jana2] tests in eic-shell
         uses: eic/run-cvmfs-osg-eic-shell@v1.5.0
         with:
           platform-release: "eic_xl:26.10.0-stable"
-          run: scripts/eic/jana2_tests.sh
+          run: CCDB_TEST_JANA2_HTTP_URL=http://127.0.0.1:8765/api/v1 scripts/eic/jana2_tests.sh

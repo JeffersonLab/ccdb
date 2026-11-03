@@ -109,6 +109,9 @@ The file holds every directory and table, the requested variation and its parent
 assignments that answer some request for that run; run ranges are clipped to the run. A request for another run
 or another variation finds nothing in it.
 
+The C++ library does this itself for an `http://` or `https://` connection string: it downloads the bundle of
+the job's run, checks the SHA-256 and keeps it in a local cache ([C++ API](apis/cpp.md#http-api)).
+
 ## Container
 
 `docker/api/Dockerfile` builds the image; it runs uvicorn with four workers on port 8000, in UTC:

@@ -97,7 +97,8 @@ class is responsible for holding a connection with the DB.
 - [ccdb::MySQLCalibration](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/src/CCDB/MySQLCalibration.h) and
 - [ccdb::SQLiteCalibration](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/src/CCDB/SQLiteCalibration.h)
 
-inherit from `Calibration` to provide concrete implementations for MySQL and SQLite.
+inherit from `Calibration` to provide concrete implementations for MySQL and SQLite. An `http://` or
+`https://` connection string reads through the [HTTP API](apis/http.md) (see [HTTP API](#http-api) below).
 
 [ccdb::CalibrationGenerator](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/src/CCDB/CalibrationGenerator.h)
 can be used to automatically instantiate the right `Calibration` type according to the connection
@@ -226,6 +227,39 @@ locking at all, so use it only when nothing modifies the file during the job:
 ```
 sqlite:///file:/group/halld/ccdb/ccdb.sqlite?immutable=1
 ```
+
+### HTTP API
+
+A connection string `http://host/api/v1` or `https://host/api/v1` reads through the CCDB
+[HTTP API](apis/http.md). The library downloads the [run bundle](apis/http.md#run-bundles) of the
+Calibration's run, a SQLite file with the constants of that run, and reads it as a SQLite file:
+
+```cpp
+CalibrationGenerator generator;
+// by variation and time: the bundle of run 1500 as of that moment (0: the newest)
+auto calib = generator.MakeCalibration("https://ccdb.example.org/api/v1", 1500, "default", 0);
+// by tag: the bundle of the tag's variation and time
+auto tagged = generator.MakeCalibrationForTag("https://ccdb.example.org/api/v1", 1500, "pass1");
+```
+
+- **Cache.** The bundle goes to `CCDB_HTTP_CACHE_DIR` (default `$HOME/.cache/ccdb`), one directory per
+  server. A bundle by time or by tag names one set of constants, so a job finds it there and does not ask
+  the server again, even when the server is down. The newest constants (time 0) always ask the server,
+  which redirects to the newest creation time; the bundle of that time is downloaded only when the cache
+  does not have it yet.
+- **Integrity.** The file is kept only when its SHA-256 equals the `X-CCDB-SHA256` header the API sends;
+  a mismatch is an error and leaves nothing in the cache. Files appear in the cache whole (written aside,
+  then renamed), so jobs on one node can share it.
+- **Timeouts.** `CCDB_HTTP_TIMEOUT` limits one download, in seconds (default 300); connecting gives up after
+  30 seconds or that limit, whichever is shorter.
+- **One run.** The bundle holds the constants of the Calibration's run: a request for another run in the
+  same Calibration finds none. `SetTag` on a Calibration made by time reads a tag the bundle does not hold;
+  make the Calibration with `MakeCalibrationForTag` instead.
+- **Build.** The provider needs libcurl. CMake builds it when it finds libcurl (`-DCCDB_WITH_HTTP=OFF`
+  leaves it out); a library without it says so for an `http://` connection string.
+
+The JANA2 service takes the same strings: `-Pccdb:url=https://ccdb.example.org/api/v1`, or
+`JANA_CALIB_URL`.
 
 ## Performance profiling
 
