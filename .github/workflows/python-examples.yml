@@ -39,6 +39,10 @@ jobs:
         working-directory: python
         run: python examples/example_llapi_readout.py
 
+      - name: example_cli_like_api
+        working-directory: python
+        run: python examples/example_cli_like_api.py
+
       - name: example_llapi_change_value
         working-directory: python
         run: python examples/example_llapi_change_value.py
