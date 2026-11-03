@@ -36,6 +36,13 @@ install(EXPORT ccdbDD4hepTargets
 
 # The tests link DD4hep only, not the plugin library: the plugins must be found through the .components file, as in
 # any DD4hep program, so building the tests also builds that file
+# The tutorial's program (docs/apis/dd4hep-tutorial.md): geometry constants, conditions and alignment from CCDB tables;
+# built here, run by scripts/eic/dd4hep_example.sh, not installed
+add_executable(ccdb_dd4hep_example examples/ccdb_dd4hep_example.cc)
+target_link_libraries(ccdb_dd4hep_example PRIVATE ccdb_dd4hep DD4hep::DDCore DD4hep::DDCond DD4hep::DDAlign)
+target_compile_features(ccdb_dd4hep_example PRIVATE cxx_std_17)
+add_dependencies(ccdb_dd4hep_example Components_ccdb_dd4hep)
+
 if(CCDB_BUILD_TESTS)
     add_executable(ccdb_dd4hep_tests tests/test_dd4hep.cc)
     target_include_directories(ccdb_dd4hep_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/../cpp/src")
