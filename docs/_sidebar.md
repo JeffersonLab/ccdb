@@ -26,6 +26,7 @@
 - [C++ API](apis/cpp.md)
 - [JANA2 service](apis/jana.md)
 - [HTTP API](apis/http.md)
+- [MCP server](apis/mcp.md)
 
 **Advanced**:
 - [Development](development/development.md)

@@ -1,0 +1,29 @@
+name: MCP tests
+
+on:
+  push:
+  pull_request:
+    branches: [v2-main]
+
+jobs:
+  # The read-only MCP server through the SDK's in-memory client: unit tests, and the recorded session in
+  # docs/apis/mcp.md reproduced from the demo tables
+  mcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install ccdb with the mcp and dev extras
+        run: pip install ".[mcp,dev]"
+
+      - name: Unit tests
+        working-directory: python
+        run: python -m unittest tests.unit_test_mcp
+
+      - name: The recorded session in the documentation
+        run: python scripts/mcp/transcript.py --check docs/apis/mcp.md
