@@ -19,6 +19,7 @@
 - [Database schema](concepts/database-schema.md)
 - [Streaming readout and runs](concepts/streaming-readout.md)
 - [FAIR data](concepts/fair.md)
+- [AI readiness](concepts/ai-readiness.md)
 
 **APIs**:
 - [Python](apis/python.md)

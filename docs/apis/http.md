@@ -34,6 +34,7 @@ variations unless you add `deprecated=all` ([Deprecation](concepts/deprecation.m
 |---|---|
 | `/health` | `{"status": "ok", "database": "ok", "version": ...}`, or 503 when the database does not answer |
 | `/instance` | the CCDB version, the schema version, the instance properties |
+| `/readiness?stale_years=5` | the [readiness profile](concepts/ai-readiness.md#the-readiness-profile) of the instance, the JSON of `ccdb db readiness --json` |
 | `/directories`, `/directories/{path}` | every directory; one directory with its subdirectories and tables |
 | `/tables?search=gain*` | the tables whose name matches a pattern with `*` and `?` |
 | `/tables/{path}` | one table: columns with types, units and comments, properties, variations with data, the assignment count and the newest assignment |
@@ -78,6 +79,7 @@ Answers say how long a cache may keep them:
 | an assignment by id, or by a request string with a past time or a tag; a run bundle with its time or tag | `public, max-age=31536000, immutable` |
 | a request string without a time or a tag | a `302` to the id form, `public, max-age=60` |
 | lists, pages, table and directory info | `public, max-age=60` |
+| `/readiness` | `public, max-age=3600` |
 | `/health` | `no-store` |
 
 An assignment never changes after it is added, so a URL that names one assignment may be cached for a year, and
