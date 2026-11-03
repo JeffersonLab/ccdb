@@ -117,6 +117,11 @@ class AlchemyProvider:
         self._auth = Authentication(self)
         self._auth.current_user_name = "anonymous"
         self.logging_enabled = True
+        # The usage record (docs/apis/python.md): off by default; while on, get_assignment adds every distinct
+        # resolution to resolved_assignments once, as the C++ Calibration::EnableUsageRecord does
+        self.usage_record_enabled = False
+        self.resolved_assignments = []
+        self._resolved_keys = set()
         self.engine = None  # is set after connect function
         self.session = None  # is set after connect function
         self._owns_engine = False  # True when connect() created the engine, so disconnect() disposes it
@@ -1799,8 +1804,11 @@ class AlchemyProvider:
                 tag = self.get_tag(tag)
             assert isinstance(tag, Tag)
             created_condition = self._created_at_or_before(tag.snapshot_time)
-            return self._get_assignment(table, run, self.get_tag_variation(tag), created_condition,
-                                        use_variation_tree)
+            assignment = self._get_assignment(table, run, self.get_tag_variation(tag), created_condition,
+                                              use_variation_tree)
+            if self.usage_record_enabled:
+                self._record_resolution(table, run, "", None, tag.name, assignment)
+            return assignment
 
         # filter by date and time
         created_condition = None
@@ -1811,7 +1819,38 @@ class AlchemyProvider:
             assert isinstance(date_and_time, datetime)
             created_condition = Assignment.created <= date_and_time
 
-        return self._get_assignment(table, run, variation, created_condition, use_variation_tree)
+        assignment = self._get_assignment(table, run, variation, created_condition, use_variation_tree)
+        if self.usage_record_enabled:
+            self._record_resolution(table, run, variation if isinstance(variation, str) else variation.name,
+                                    date_and_time, "", assignment)
+        return assignment
+
+    def _record_resolution(self, table, run, variation_name, date_and_time, tag_name, assignment):
+        """Adds one resolution to resolved_assignments unless the same one is there already.
+
+        The fields and their names are those of the record the JANA2 service writes (ccdb:provenance), so
+        `ccdb provenance` reads both; `time` is the UTC limit of the request, empty for the newest and under a tag."""
+        time_text, request = "", "{0}:{1}".format(table.path, run)
+        if tag_name:
+            request += "@" + tag_name
+        else:
+            request += ":" + variation_name
+            if date_and_time:
+                aware = date_and_time if date_and_time.tzinfo else path_utils.local_to_utc(date_and_time)
+                time_text = aware.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+                request += ":" + path_utils.format_request_time(date_and_time)
+        key = (table.path, run, variation_name, time_text, tag_name, assignment.id)
+        if key in self._resolved_keys:
+            return
+        self._resolved_keys.add(key)
+        self.resolved_assignments.append({
+            "request": request, "path": table.path, "run": run, "variation": variation_name, "time": time_text,
+            "tag": tag_name, "assignment_id": assignment.id, "sha256": assignment.constant_set.sha256})
+
+    def clear_resolved_assignments(self):
+        """Forgets the usage record (resolved_assignments)"""
+        self.resolved_assignments = []
+        self._resolved_keys = set()
 
     def _get_assignment(self, table, run, variation, created_condition, use_variation_tree):
         """ get_assignment with the time filter as an SQL condition (None: no time filter) """

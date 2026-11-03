@@ -10,6 +10,7 @@
 #include "CCDB/Helpers/TimeUtils.h"
 #include "CCDB/Helpers/TimeProvider.h"
 #include "CCDB/Helpers/PerfLog.h"
+#include "CCDB/Helpers/Sha256.h"
 
 using namespace std;
 
@@ -693,6 +694,10 @@ Assignment* Calibration::GetAssignmentInternal(const string& namepath, bool load
         auto cached = mAssignmentCache.find(cacheKey);
         if (cached != mAssignmentCache.end()) {
             isCached = true;
+            if(mIsUsageRecordEnabled) {
+                RecordResolution(namepath, PathUtils::MakeAbsolute(result.Path), run, result.WasParsedTag ? string() : variation,
+                                 result.WasParsedTag ? 0 : time, result.WasParsedTag ? result.Tag : string(), cached->second);
+            }
             return cached->second;
         }
     }
@@ -706,7 +711,60 @@ Assignment* Calibration::GetAssignmentInternal(const string& namepath, bool load
         isCached = true;
     }
 
+    if(mIsUsageRecordEnabled) {
+        RecordResolution(namepath, PathUtils::MakeAbsolute(result.Path), run, result.WasParsedTag ? string() : variation,
+                         result.WasParsedTag ? 0 : time, result.WasParsedTag ? result.Tag : string(), assignment);
+    }
+
     return assignment;
+}
+
+
+//______________________________________________________________________________
+void Calibration::RecordResolution(const string& request, const string& path, int run, const string& variation,
+                                   int64_t timeMicro, const string& tag, Assignment* assignment)
+{
+    // A request that found nothing is an error the caller sees; the record lists what a program received
+    if(assignment == nullptr) return;
+
+    string key = path + "\x1f" + to_string(run) + "\x1f" + variation + "\x1f" + to_string(timeMicro) + "\x1f" +
+                 tag + "\x1f" + to_string(assignment->GetId());
+    if(!mResolvedKeys.insert(key).second) return;
+
+    ResolvedAssignment resolved;
+    resolved.request = request;
+    resolved.path = path;
+    resolved.run = run;
+    resolved.variation = variation;
+    resolved.timeMicro = timeMicro;
+    resolved.tag = tag;
+    resolved.assignmentId = assignment->GetId();
+    resolved.sha256 = Sha256::Of(assignment->GetRawData());
+    mResolvedAssignments.push_back(resolved);
+}
+
+
+//______________________________________________________________________________
+void Calibration::EnableUsageRecord(bool value)
+{
+    mIsUsageRecordEnabled = value;
+}
+
+
+//______________________________________________________________________________
+std::vector<ResolvedAssignment> Calibration::GetResolvedAssignments()
+{
+    std::lock_guard<std::recursive_mutex> lock(mReadMutex);
+    return mResolvedAssignments;
+}
+
+
+//______________________________________________________________________________
+void Calibration::ClearResolvedAssignments()
+{
+    std::lock_guard<std::recursive_mutex> lock(mReadMutex);
+    mResolvedAssignments.clear();
+    mResolvedKeys.clear();
 }
 
 

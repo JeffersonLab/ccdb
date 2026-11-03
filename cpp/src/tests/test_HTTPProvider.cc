@@ -12,6 +12,7 @@
 
 #include "CCDB/Calibration.h"
 #include "CCDB/CalibrationGenerator.h"
+#include "CCDB/Helpers/Sha256.h"
 #include "CCDB/Helpers/TimeUtils.h"
 #include "CCDB/Providers/HTTPDataProvider.h"
 
@@ -233,4 +234,23 @@ TEST_CASE("HTTP provider/the server stopped, bundles from the cache", "[.][http_
     // the newest constants are whatever the server says now
     string message = Failure([&]() { return CalibrationGenerator::CreateCalibrationMicro(url, RUN, "default", 0); });
     REQUIRE(message.find("The newest constants need the server") != string::npos);
+}
+
+
+TEST_CASE("HTTP provider/usage record equals the database file's", "[.][http]")
+{
+    if (!HarnessRunning()) return;
+    unique_ptr<Calibration> http(CalibrationGenerator::CreateCalibrationMicro(Setting("CCDB_TEST_HTTP_URL"), RUN, "default", 0));
+    unique_ptr<Calibration> direct(CalibrationGenerator::CreateCalibrationMicro(Setting("CCDB_TEST_TIME_SQLITE_CONNECTION"), RUN, "default", 0));
+    http->EnableUsageRecord(true);
+    direct->EnableUsageRecord(true);
+    REQUIRE(Value(http.get()) == 105);
+    REQUIRE(Value(direct.get()) == 105);
+    vector<ResolvedAssignment> overHttp = http->GetResolvedAssignments();
+    vector<ResolvedAssignment> fromFile = direct->GetResolvedAssignments();
+    REQUIRE(overHttp.size() == 1);
+    REQUIRE(fromFile.size() == 1);
+    REQUIRE(overHttp[0].assignmentId == fromFile[0].assignmentId);
+    REQUIRE(overHttp[0].sha256 == fromFile[0].sha256);
+    REQUIRE(overHttp[0].sha256 == Sha256::Of("105"));
 }
