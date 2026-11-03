@@ -1,5 +1,0 @@
-<root>
-    <item name='com.mysql.jdbc.integration.jboss.ExtendedMysqlExceptionSorter boolean isExceptionFatal(java.sql.SQLException) 0'>
-        <annotation name='org.jetbrains.annotations.NotNull'/>
-    </item>
-</root>
