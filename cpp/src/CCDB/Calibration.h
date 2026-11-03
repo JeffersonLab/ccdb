@@ -8,6 +8,7 @@
 #include <memory>
 #include <mutex>
 #include <atomic>
+#include <set>
 
 #include "Globals.h"
 #include "Providers/DataProvider.h"
@@ -20,6 +21,23 @@
 namespace ccdb
 {
     class CalibrationGenerator;
+
+    /** @brief One resolution a Calibration served while its usage record was on (CCDB 2.5, EnableUsageRecord)
+     *
+     * The table, run, variation and time (or tag) the request resolved under, the assignment it resolved to, and
+     * the SHA-256 of the data the program received, which equals the stored sha256 of the assignment's constant set.
+     * `ccdb provenance FILE` checks a list of these against a database.
+     */
+    struct ResolvedAssignment {
+        std::string request;      ///< the request string as the program gave it
+        std::string path;         ///< absolute table path
+        int run = 0;              ///< the run it resolved for
+        std::string variation;    ///< the variation it resolved under; empty under a tag
+        int64_t timeMicro = 0;    ///< the time limit, UTC microseconds since the epoch; 0 = the newest (and under a tag)
+        std::string tag;          ///< the tag it resolved under, empty if none
+        int assignmentId = 0;     ///< the assignment it resolved to
+        std::string sha256;       ///< SHA-256 of the data, 64 lowercase hexadecimal digits
+    };
 
     class Calibration {
         friend class CalibrationGenerator;
@@ -297,6 +315,24 @@ namespace ccdb
         /** @brief if true the caching is using */
         bool IsCacheEnabled();
 
+        /** @brief Records which assignment each request resolves to; off by default (CCDB 2.5)
+         *
+         * While on, every distinct resolution is kept once, in request order: the same table, run, variation and
+         * time (or tag) resolving to the same assignment adds nothing, so a program that reads a table per event
+         * keeps one entry. Each entry carries the SHA-256 of the data, computed from the bytes received.
+         * Turning it off stops recording and keeps the entries. @see GetResolvedAssignments
+         */
+        void EnableUsageRecord(bool value);
+
+        /** @brief True while the usage record is on */
+        bool IsUsageRecordEnabled() const { return mIsUsageRecordEnabled; }
+
+        /** @brief A copy of the resolutions recorded so far, in request order @see EnableUsageRecord */
+        std::vector<ResolvedAssignment> GetResolvedAssignments();
+
+        /** @brief Forgets the recorded resolutions */
+        void ClearResolvedAssignments();
+
     protected:
 
         /**@brief Try to auto-reconnect if possible
@@ -329,6 +365,9 @@ namespace ccdb
         std::atomic<time_t> mLastActivityTime;   /// Time of the last request (read by the generator from other threads)
         bool mIsAutoReconnect;           /// Try to auto-reconnect if possible
         std::atomic<bool> mIsCacheEnabled;       /// If true the data is cached
+        std::atomic<bool> mIsUsageRecordEnabled{false};      /// If true resolutions are recorded (EnableUsageRecord)
+        std::vector<ResolvedAssignment> mResolvedAssignments;  /// Guarded by mReadMutex
+        std::set<std::string> mResolvedKeys;                   /// One key per recorded resolution, guarded by mReadMutex
 
         /// Guards the provider and the cache. Recursive because Connect and IsConnected
         /// are also called while a request already holds it (auto-reconnect).
@@ -340,6 +379,10 @@ namespace ccdb
 
         /// GetAssignment that also tells whether the result is owned by the cache (must not be deleted)
         Assignment* GetAssignmentInternal(const string& namepath, bool loadColumns, bool& isCached);
+
+        /// Adds a resolution to the usage record unless it is there already; mReadMutex must be held
+        void RecordResolution(const string& request, const string& path, int run, const string& variation,
+                              int64_t timeMicro, const string& tag, Assignment* assignment);
 
         /// Request => assignment cache. Key includes the connection string
         std::map<std::string, Assignment*> mAssignmentCache;
