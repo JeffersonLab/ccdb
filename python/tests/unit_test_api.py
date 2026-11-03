@@ -94,6 +94,24 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(data["schema_version"], 6)
         self.assertIsInstance(data["properties"], dict)
 
+    def test_readiness_profile(self):
+        """/readiness is `ccdb db readiness --json`, cached for an hour; a negative window is refused"""
+        from ccdb import AlchemyProvider
+        from ccdb.readiness import profile
+        response = self.get("/readiness?stale_years=3")
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.headers["Cache-Control"], "public, max-age=3600")
+        served = response.json()
+        provider = AlchemyProvider()
+        provider.connect(self.connection)
+        try:
+            expected = profile(provider, stale_years=3)
+        finally:
+            provider.disconnect()
+        served["config"].pop("generated"), expected["config"].pop("generated")
+        self.assertEqual(served, expected)
+        self.assertEqual(self.get("/readiness?stale_years=-1").status_code // 100, 4)
+
     def test_openapi_document(self):
         document = self.json("/openapi.json")
         self.assertTrue(document["openapi"].startswith("3."))

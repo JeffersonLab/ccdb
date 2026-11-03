@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, Query, Request
 
 from . import models, service
 from .dependencies import provider_dependency
-from .responses import SHORT, respond, respond_json
+from .responses import HOURLY, SHORT, respond, respond_json
 
 router = APIRouter()
 
@@ -27,6 +27,14 @@ def as_json(items):
 @router.get("/instance", response_model=models.Instance, summary="The CCDB version, the schema version and the instance properties")
 def instance(request: Request, db=Depends(provider_dependency)):
     return respond_json(request, service.instance(db))
+
+
+@router.get("/readiness", summary="The readiness profile: counts of units, descriptions, comments, run ranges, authors, "
+                                  "stale and empty tables, shared sets and instance properties, as `ccdb db readiness --json`")
+def readiness(request: Request, stale_years: int = Query(5, ge=0, le=100, description="A table is stale when no version "
+                                                         "of it was created in the last N years"),
+              db=Depends(provider_dependency)):
+    return respond_json(request, service.readiness(db, stale_years), cache=HOURLY)
 
 
 @router.get("/directories", response_model=List[models.DirectorySummary], summary="Every directory, by path")
