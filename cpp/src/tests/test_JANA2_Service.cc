@@ -309,3 +309,35 @@ TEST_CASE("CCDB_service/loaded as a plugin", "[jana2]")
     auto service = app.GetService<CCDB_service>();
     REQUIRE(service->GetConstants<double>(100, "/test/jana2/pedestal") == 100);
 }
+
+
+// The service through the HTTP API: CCDB_TEST_JANA2_HTTP_URL is the API on the demo tables of
+// scripts/demo/make_epic_tables.py (jana2_tests.sh says how to start it); unset, the case is skipped.
+TEST_CASE("CCDB_service/HTTP API", "[jana2][http]")
+{
+    const char* url = getenv("CCDB_TEST_JANA2_HTTP_URL");
+    if (!url) {
+        WARN("CCDB_TEST_JANA2_HTTP_URL is not set: the HTTP case is skipped");
+        return;
+    }
+    REQUIRE(ccdb::CalibrationGenerator::CheckOpenable(url));
+    const string table = "/epic/TOFBarrel/lgad_calibration";
+
+    SECTION("ccdb:url, the newest constants of two runs")
+    {
+        JApplication app;
+        auto service = StartService(app, {{"ccdb:url", url}});
+        REQUIRE(service->GetConstants<map<string, double>>(500, table).at("tIntercept") == 0.04314);
+        REQUIRE(service->GetConstants<map<string, double>>(1500, table).at("tIntercept") == 0.05114);
+    }
+
+    SECTION("JANA_CALIB_URL with the campaign tag, before the late correction")
+    {
+        ScopedEnv connection("CCDB_CONNECTION", nullptr);
+        ScopedEnv jana_url("JANA_CALIB_URL", url);
+        JApplication app;
+        auto service = StartService(app, {{"ccdb:tag", "campaign_demo"}});
+        REQUIRE(service->GetUrl() == url);
+        REQUIRE(service->GetConstants<map<string, double>>(1500, table).at("tIntercept") == 0.04314);
+    }
+}
