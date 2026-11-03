@@ -1,0 +1,95 @@
+name: API tests
+
+on:
+  push:
+  pull_request:
+    branches: [v2-main]
+
+jobs:
+  # The API in-process on the GUI fixture: unit tests, the smoke suite with its stored OpenAPI document, golden checks
+  api:
+    runs-on: ubuntu-latest
+    env:
+      CCDB_SPACE: ${{ github.workspace }}/api-space
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install ccdb with the web, api and dev extras
+        run: pip install ".[web,api,dev]"
+
+      - name: Build the fixture database
+        run: python scripts/webgui/make_fixture.py --space "$CCDB_SPACE"
+
+      - name: Unit tests
+        working-directory: python
+        run: python -m unittest tests.unit_test_api tests.unit_test_snapshot
+
+      - name: Smoke suite, statuses and the OpenAPI document
+        run: python scripts/api/smoke.py --label ci --check
+
+      - name: Golden checks against SQL and the web GUI
+        run: python scripts/api/golden.py --label ci
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: api-reports
+          path: api-space/reports
+
+  # The container image behind nginx with the shipped cache configuration: the same URLs, the same bytes
+  api-container:
+    runs-on: ubuntu-latest
+    env:
+      CCDB_SPACE: ${{ github.workspace }}/api-space
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install ccdb with the web, api and dev extras
+        run: pip install ".[web,api,dev]"
+
+      - name: Build the fixture database
+        run: python scripts/webgui/make_fixture.py --space "$CCDB_SPACE"
+
+      - name: Build the image
+        run: docker build -f docker/api/Dockerfile -t ccdb-api .
+
+      - name: Start the API and nginx
+        run: |
+          docker network create ccdb
+          chmod a+r "$CCDB_SPACE/fixture/ccdb_fixture.sqlite"
+          docker run -d --name ccdb-api --network ccdb -e CCDB_CONNECTION=sqlite:////data/ccdb_fixture.sqlite \
+            -v "$CCDB_SPACE/fixture:/data:ro" ccdb-api
+          docker run -d --name ccdb-nginx --network ccdb -p 8080:8080 \
+            -v "$PWD/docker/nginx/ccdb-api.conf:/etc/nginx/conf.d/default.conf:ro" nginx:1.29.3-alpine
+          for attempt in $(seq 1 60); do
+            curl -sf http://localhost:8080/api/v1/health && break
+            sleep 2
+          done
+          curl -sf http://localhost:8080/api/v1/health
+
+      - name: Smoke suite through nginx, bytes equal to the in-process run
+        run: |
+          python scripts/api/smoke.py --label inprocess
+          python scripts/api/smoke.py --label container --base-url http://localhost:8080 --check
+          python scripts/api/compare_runs.py "$CCDB_SPACE/reports/api_smoke_inprocess.json" "$CCDB_SPACE/reports/api_smoke_container.json"
+
+      - name: nginx serves a repeated request from its cache
+        run: |
+          curl -s -o /dev/null http://localhost:8080/api/v1/assignments/3612/data.json
+          curl -s -D - -o /dev/null http://localhost:8080/api/v1/assignments/3612/data.json | grep -i "x-cache-status: HIT"
+
+      - name: Container logs
+        if: always()
+        run: |
+          docker logs ccdb-api | tail -n 50
+          docker logs ccdb-nginx | tail -n 20
