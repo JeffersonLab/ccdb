@@ -6,6 +6,7 @@
 #
 # The image ships JANA2, DD4hep and EICrecon at the versions ePIC uses (ccdb-2.5.md, D3).
 # CCDB_EIC_IMAGE overrides the image; the default is the tag the CCDB 2.5 program pins.
+# CCDB_EIC_DOCKER_ARGS adds docker run options, e.g. "--network host" to reach an HTTP API on the host.
 # The command runs as the calling user, so files it writes into the checkout (build trees) stay yours.
 # CI runs the same command through eic-shell on CVMFS instead (see .github/workflows/cpp-tests.yml).
 set -euo pipefail
@@ -18,7 +19,8 @@ fi
 image="${CCDB_EIC_IMAGE:-eicweb/eic_xl:26.10.0-stable}"
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
-exec docker run --rm \
+# shellcheck disable=SC2086
+exec docker run --rm ${CCDB_EIC_DOCKER_ARGS:-} \
     --user "$(id -u):$(id -g)" \
     --env HOME=/tmp \
     --volume "$repo":/ccdb \

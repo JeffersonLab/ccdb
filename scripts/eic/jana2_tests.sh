@@ -5,6 +5,9 @@
 #   scripts/eic/jana2_tests.sh                                            # already inside eic-shell (CI)
 #
 # CCDB_JANA2_BUILD_DIR sets the build tree (default build/jana2 in the checkout; build/ is ignored by git).
+# CCDB_TEST_JANA2_HTTP_URL adds the HTTP case: the HTTP API on the demo tables (scripts/demo/make_epic_tables.py),
+# e.g. the demo stack (docker/demo) or `ccdb -c sqlite:///demo.sqlite api --port 8765`; the [jana2] tests and
+# ccdb_epic_demo then also read through it.
 set -euo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -17,6 +20,10 @@ cmake --build "$build" --target ccdb_tests ccdb_epic_demo -j "$jobs"
 test_db="$build/jana2_tests.sqlite"
 python3 "$repo/scripts/eic/make_jana2_test_db.py" "$test_db"
 
+if [ -n "${CCDB_TEST_JANA2_HTTP_URL:-}" ]; then
+    export CCDB_HTTP_CACHE_DIR="$build/http_cache"
+    rm -rf "$CCDB_HTTP_CACHE_DIR"
+fi
 CCDB_TEST_JANA2_SQLITE="$test_db" "$build/src/tests/ccdb_tests" "[jana2]"
 
 # The ePIC demo application on the demo tables: once by variation and run, once by the campaign tag
@@ -29,3 +36,12 @@ echo "$newest" | grep -q "run 1500  /epic/TOFBarrel/lgad_calibration  cSlope=1.1
 echo "$tagged" | grep -q "run 1500  /epic/TOFBarrel/lgad_calibration  cSlope=1.18760244e-06  tSlope=0.02456308082  tIntercept=0.04314"
 echo "$newest" | grep -q "run 500  /epic/TOFBarrel/lgad_calibration  cSlope=1.175844e-06  tSlope=0.024319882  tIntercept=0.04314"
 echo "ccdb_epic_demo: the constants switch at run 1000 and the tag keeps the earlier offset"
+
+if [ -n "${CCDB_TEST_JANA2_HTTP_URL:-}" ]; then
+    # the same application through the HTTP API: the same lines
+    newest_http="$("$build/jana2/ccdb_epic_demo" "$CCDB_TEST_JANA2_HTTP_URL")"
+    tagged_http="$("$build/jana2/ccdb_epic_demo" "$CCDB_TEST_JANA2_HTTP_URL" campaign_demo)"
+    [ "$(echo "$newest_http" | grep '^run ')" = "$(echo "$newest" | grep '^run ')" ]
+    [ "$(echo "$tagged_http" | grep '^run ')" = "$(echo "$tagged" | grep '^run ')" ]
+    echo "ccdb_epic_demo through $CCDB_TEST_JANA2_HTTP_URL: the same constants as from the file"
+fi

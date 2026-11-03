@@ -53,7 +53,7 @@ void CCDB_service::Init() {
     m_cache_dir = DefaultCacheDir();
 
     m_app->SetDefaultParameter("ccdb:url", m_url,
-        "CCDB connection string (mysql://, sqlite://); default $CCDB_CONNECTION, then $JANA_CALIB_URL");
+        "CCDB connection string (mysql://, sqlite://, http(s):// of the HTTP API); default $CCDB_CONNECTION, then $JANA_CALIB_URL");
     m_variation_param = m_app->SetDefaultParameter("ccdb:variation", m_variation,
         "CCDB variation of the constants");
     m_time_param = m_app->SetDefaultParameter("ccdb:time", m_time_string,
@@ -105,7 +105,7 @@ void CCDB_service::Initialize() {
                              "finds a MySQL or MariaDB client library", m_safe_url.c_str());
         }
         throw JException("CCDB_service: CCDB can't open connection string '%s' "
-                         "(it supports mysql:// and sqlite://)", m_safe_url.c_str());
+                         "(it supports mysql://, sqlite:// and, when built with libcurl, http(s):// of the HTTP API)", m_safe_url.c_str());
     }
     m_generator = std::make_unique<ccdb::CalibrationGenerator>();
 

@@ -13,6 +13,9 @@
 #include "CCDB/MySQLCalibration.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 #endif //CCDB_MYSQL
+#ifdef CCDB_HTTP
+#include "CCDB/Providers/HTTPDataProvider.h"
+#endif //CCDB_HTTP
 
 using namespace std;
 
@@ -39,28 +42,8 @@ namespace ccdb
          */
 
 
-        //is it sqlite or mysql
-        bool isMySql = false; //if false SQlite provider is used
-        if(connectionString.find("mysql://")==0)
-        {
-            isMySql = true;  //It is mysql
-
-            #ifndef CCDB_MYSQL
-            throw std::logic_error("Cannot be used with MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using with-mysql=true flag. The connection string: " + StringUtils::MaskPassword(connectionString));
-            #endif //CCDB_MYSQL
-        }
-        else
-        {
-            //It should be sqlite, but lets check then...
-            if(connectionString.find("sqlite://")!=0)
-            {
-                //something wrong here!!!
-                throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now. The connection string: " + StringUtils::MaskPassword(connectionString));
-            }
-        }
-
         //now we create calibration
-        std::unique_ptr<Calibration> calib(CreateCalibration(isMySql, run, variation, timeMicro));
+        std::unique_ptr<Calibration> calib(CreateCalibration(KindOf(connectionString), run, variation, timeMicro, ""));
 
         //Connect! (throws on failure, unique_ptr then deletes the object)
         if(!calib->Connect(connectionString))
@@ -80,8 +63,37 @@ namespace ccdb
         if(str.find("mysql://")== 0) return true;
         #endif
 
+        #ifdef CCDB_HTTP
+        if(HTTPDataProvider::IsHttpUrl(str)) return true;
+        #endif
+
         if(str.find("sqlite://")== 0) return true;
         return false;
+    }
+
+
+    //______________________________________________________________________________
+    CalibrationGenerator::ConnectionKind CalibrationGenerator::KindOf(const std::string& connectionString)
+    {
+        if(connectionString.find("mysql://")==0)
+        {
+            #ifndef CCDB_MYSQL
+            throw std::logic_error("Cannot be used with MySQL database. CCDB was compiled without MySQL support! Recompile CCDB where CMake finds a MySQL or MariaDB client library. The connection string: " + StringUtils::MaskPassword(connectionString));
+            #endif //CCDB_MYSQL
+            return ConnectionKind::MySQL;
+        }
+        if(connectionString.find("http://")==0 || connectionString.find("https://")==0)
+        {
+            #ifndef CCDB_HTTP
+            throw std::logic_error("Cannot be used with the HTTP API. CCDB was compiled without HTTP support! Recompile CCDB where CMake finds libcurl (CCDB_WITH_HTTP). The connection string: " + StringUtils::MaskPassword(connectionString));
+            #endif //CCDB_HTTP
+            return ConnectionKind::HTTP;
+        }
+        if(connectionString.find("sqlite://")!=0)
+        {
+            throw std::logic_error("Unknown connection string type. mysql://, sqlite:// and http(s):// are the known types. The connection string: " + StringUtils::MaskPassword(connectionString));
+        }
+        return ConnectionKind::SQLite;
     }
 
 
@@ -193,28 +205,8 @@ namespace ccdb
             return mCalibrationsByHash[calibHash];
         }
 
-        //is it sqlite or mysql
-        bool isMySql = false; //if false SQlite provider is used
-        if(connectionString.find("mysql://")==0)
-        {
-            isMySql = true;  //It is mysql
-
-            #ifndef CCDB_MYSQL
-            throw std::logic_error("Cannot be used with MySQL database. CCDB was compiled without MySQL support! Recompile CCDB using with-mysql=true flag. The connection string: " + StringUtils::MaskPassword(connectionString));
-            #endif //CCDB_MYSQL
-        }
-        else
-        {
-            //It should be sqlite, but lets check then...
-            if(connectionString.find("sqlite://")!=0)
-            {
-                //something wrong here!!!
-                throw std::logic_error("Unknown connection string type. mysql:// and sqlite:// are only known types now. The connection string: " + StringUtils::MaskPassword(connectionString));
-            }
-        }
-
-        //now we create calibration
-        std::unique_ptr<Calibration> newCalib(CreateCalibration(isMySql, run, variation, timeMicro));
+        //now we create calibration; an HTTP provider downloads the run bundle of the tag
+        std::unique_ptr<Calibration> newCalib(CreateCalibration(KindOf(connectionString), run, variation, timeMicro, tagName));
 
         //Connect! (throws on failure, unique_ptr then deletes the object)
         if(!newCalib->Connect(connectionString))
@@ -235,10 +227,10 @@ namespace ccdb
 
 
     //______________________________________________________________________________
-    Calibration* CalibrationGenerator::CreateCalibration( bool isMySQL, int run, const std::string& variation, int64_t timeMicro )
+    Calibration* CalibrationGenerator::CreateCalibration( ConnectionKind kind, int run, const std::string& variation, int64_t timeMicro, const std::string& tagName )
     {
         Calibration* calib = nullptr;
-        if (isMySQL)
+        if (kind == ConnectionKind::MySQL)
         {
             #ifdef CCDB_MYSQL
                 calib = new MySQLCalibration(run, variation, TimeUtils::ToSeconds(timeMicro));
@@ -249,6 +241,10 @@ namespace ccdb
         else
         {
             calib = new SQLiteCalibration(run, variation, TimeUtils::ToSeconds(timeMicro));
+            #ifdef CCDB_HTTP
+            // The one HTTP hook: the bundle of the run is a SQLite file, so a SQLite calibration reads it
+            if (kind == ConnectionKind::HTTP) calib->UseProvider(new HTTPDataProvider(run, variation, timeMicro, tagName), false);
+            #endif //CCDB_HTTP
         }
         calib->mDefaultTimeMicro = timeMicro;
         return calib;
