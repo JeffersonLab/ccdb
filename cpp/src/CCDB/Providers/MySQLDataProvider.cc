@@ -12,6 +12,7 @@
 #include "CCDB/Globals.h"
 #include "CCDB/Helpers/EnvUtils.h"
 #include "CCDB/Helpers/StringUtils.h"
+#include "CCDB/Helpers/TimeUtils.h"
 #include "CCDB/Helpers/PathUtils.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
 #include "CCDB/Model/ConstantsTypeTable.h"
@@ -669,21 +670,28 @@ ccdb::Variation* ccdb::MySQLDataProvider::SelectVariation(const string& whereCla
 //----------------------------------------------------------------------------------------
 //    A S S I G N M E N T S
 //----------------------------------------------------------------------------------------
-ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variationName, bool loadColumns /*=false*/)
+ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variationName, bool loadColumns)
+{
+    // a whole second means its latest microsecond, so code written for whole seconds reads what it read
+    return GetAssignmentShortMicro(run, path, TimeUtils::EndOfSecond(time), variationName, loadColumns);
+}
+
+
+ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShortMicro(int run, const string& path, int64_t timeMicro, const string& variationName, bool loadColumns /*=false*/)
 {
     /** @brief Get specified by creation time version of Assignment with data blob only.
      *
-     * The Time is a timestamp, data that is equal or earlier in time than that timestamp is returned
+     * The time limit is a UTC instant in microseconds; the newest data created at or before it is returned
      *
      * @remarks this function is named so
      * @param [in] run - run number
      * @param [in] path - object path
-     * @param [in] time - timestamp, data that is equal or earlier in time than that timestamp is returned
+     * @param [in] timeMicro - UTC microseconds since the epoch; 0 means no time limit
      * @param [in] variation - variation name
      * @return new DAssignment object or 
      */
 
-    string thisFuncName("ccdb::MySQLDataProvider::GetAssignmentShort");
+    string thisFuncName("ccdb::MySQLDataProvider::GetAssignmentShortMicro");
 
     if(!IsConnected()) {
         throw runtime_error(thisFuncName+" => Not connected to DB");
@@ -724,12 +732,15 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
         "AND `assignments`.`variationId`= '"+StringUtils::IntToString(variation->GetId())+"' "
         "AND `constantSets`.`constantTypeId` ='"+StringUtils::IntToString(table->GetId())+"' ";
     
-    //time in querY?
-    if(time>0)
+    // The time limit as an unquoted decimal: UNIX_TIMESTAMP of a TIMESTAMP(6) has six fraction digits, and a
+    // DECIMAL comparison is exact where a quoted string would be compared as a double
+    if(timeMicro>0)
     {
-        char timeBuf[32];
-        sprintf(timeBuf,"%lu",time);
-        query=query + "AND UNIX_TIMESTAMP(`assignments`.`created`) <= '"+string(timeBuf)+"' ";
+        const time_t seconds = TimeUtils::ToSeconds(timeMicro);
+        char timeBuf[48];
+        snprintf(timeBuf, sizeof(timeBuf), "%lld.%06lld", static_cast<long long>(seconds),
+                 static_cast<long long>(timeMicro - static_cast<int64_t>(seconds) * TimeUtils::MicrosecondsPerSecond));
+        query=query + "AND UNIX_TIMESTAMP(`assignments`.`created`) <= "+string(timeBuf)+" ";
     }
 
     //finish query 
@@ -745,7 +756,7 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
     if(mReturnedRowsNum==0 && variation->GetParentDbId()!=0)
     {
         delete table;
-        return GetAssignmentShort(run, path, time, variation->GetParent()->GetName(), loadColumns);
+        return GetAssignmentShortMicro(run, path, timeMicro, variation->GetParent()->GetName(), loadColumns);
     }
 
     //Ok! We queried our run range! lets catch it!
@@ -754,7 +765,7 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShort(int run, const str
         // No assignment and no parent variation to fall back to. The type table was created for this request only
         delete table;
         FreeMySQLResult();
-        Error(CCDB_ERROR_NO_ASSIGMENT, "MySQLDataProvider::GetAssignmentShort(int, const string&, time_t, const string&)", "Error fetching assignment");
+        Error(CCDB_ERROR_NO_ASSIGMENT, "MySQLDataProvider::GetAssignmentShortMicro(int, const string&, int64_t, const string&)", "Error fetching assignment");
     }
 
     //ok lets read the data...
@@ -790,8 +801,8 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByTag(int run, cons
     // The name goes into the query text, so only a-zA-Z0-9_ may pass
     CheckTagName(tagName);
 
-    // One query for the tag's variation and snapshot time, then the normal resolution.
-    // snapshotTime is UTC; its unix time (timegm) is compared with UNIX_TIMESTAMP(assignments.created)
+    // One query for the tag's variation and snapshot time, then the normal resolution. Both times are UTC instants
+    // with microseconds; DATETIME(6) is read as text with its fraction
     string tagQuery =
         "SELECT `variations`.`name`, `tags`.`snapshotTime` "
         "FROM `tags` "
@@ -810,7 +821,7 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByTag(int run, cons
     string tagVariation = ReadString(0);
     string tagSnapshotTime = ReadString(1);
     FreeMySQLResult();
-    return GetAssignmentShort(run, path, GetTagUnixTime(tagName, tagSnapshotTime), tagVariation, loadColumns);
+    return GetAssignmentShortMicro(run, path, GetTagMicro(tagName, tagSnapshotTime), tagVariation, loadColumns);
 }
 
 

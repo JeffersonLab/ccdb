@@ -34,6 +34,13 @@ public:
      * @return Calibration*
      */
     static Calibration* CreateCalibration(const std::string & connectionString, int run=0, const std::string& variation="default", const time_t time=0);
+
+    /** @brief CreateCalibration with the default time in UTC microseconds since the epoch (CCDB 2.5)
+     *
+     * A time_t T given to CreateCalibration or MakeCalibration means the end of that second, T.999999; 0 means the
+     * newest constants in both forms (docs/concepts/time.md). @see TimeUtils::ParseLocalTime reads a time to it.
+     */
+    static Calibration* CreateCalibrationMicro(const std::string & connectionString, int run, const std::string& variation, int64_t timeMicro);
     
     
     /** @brief Checks if ccdb can work with this datasource (by connection string)
@@ -61,6 +68,9 @@ public:
      */
     virtual Calibration* MakeCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time=0);
 
+    /** @brief MakeCalibration with the default time in UTC microseconds since the epoch (CCDB 2.5), cached alike */
+    virtual Calibration* MakeCalibrationMicro(const std::string & connectionString, int run, const std::string& variation, int64_t timeMicro);
+
 
     /** @brief Deletes (and so disconnects) all Calibrations created by this generator that are still alive
      *
@@ -83,6 +93,9 @@ public:
      * @return   string
      */
     virtual string GetCalibrationHash(const std::string & connectionString, int run, const std::string& variation, const time_t time);
+
+    /** @brief GetCalibrationHash with the time in UTC microseconds (CCDB 2.5) */
+    virtual string GetCalibrationHashMicro(const std::string & connectionString, int run, const std::string& variation, int64_t timeMicro);
 
       
 
@@ -121,7 +134,7 @@ public:
 private:	
 
     //@parameter [in] connectionString - Connection string to the data source
-    static Calibration* CreateCalibration(bool isMySQL, int run, const std::string& variation, const time_t time);
+    static Calibration* CreateCalibration(bool isMySQL, int run, const std::string& variation, int64_t timeMicro);
 
     CalibrationGenerator(const CalibrationGenerator& rhs);
     CalibrationGenerator& operator=(const CalibrationGenerator& rhs);

@@ -8,6 +8,7 @@
 
 #include <CCDB/Helpers/PathUtils.h>
 #include <CCDB/Helpers/StringUtils.h>
+#include <CCDB/Helpers/TimeUtils.h>
 
 #include "Sha256.h"
 
@@ -85,10 +86,11 @@ void CCDB_service::Init() {
 
     if (!m_time_string.empty()) {
         bool parsed = false;
-        m_time = ccdb::PathUtils::ParseTime(m_time_string, &parsed);
+        // local wall time to the UTC instant, to the microsecond; a prefix is the latest moment it covers
+        m_time = ccdb::TimeUtils::ParseLocalTime(m_time_string, &parsed);
         if (!parsed) {
             throw JException("CCDB_service: can't read ccdb:time='%s'; use the form "
-                             "YYYY-MM-DD hh:mm:ss or a prefix of it (2025, 2025-06)", m_time_string.c_str());
+                             "YYYY-MM-DD hh:mm:ss.ffffff or a prefix of it (2025, 2025-06)", m_time_string.c_str());
         }
     }
 }
@@ -126,7 +128,7 @@ ccdb::Calibration* CCDB_service::GetCalibrationForRun(int run) {
     // The generator keeps one Calibration per (url, run, variation, time) and is thread safe.
     // Under a tag the variation and the time come from the tag, which ApplyTag puts into each request.
     try {
-        return m_generator->MakeCalibration(m_url, run, m_variation, m_time);
+        return m_generator->MakeCalibrationMicro(m_url, run, m_variation, m_time);
     } catch (std::exception& ex) {
         throw JException("CCDB_service: can't connect to %s for run %d: %s", m_safe_url.c_str(), run, ex.what());
     }

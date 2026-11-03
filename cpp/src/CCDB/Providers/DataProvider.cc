@@ -12,6 +12,7 @@
 #include "CCDB/Providers/DataProvider.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/PathUtils.h"
+#include "CCDB/Helpers/TimeUtils.h"
 
 #include "CCDB/Globals.h"
 
@@ -87,6 +88,23 @@ time_t DataProvider::GetTagUnixTime(const string& tagName, const string& snapsho
         throw std::runtime_error("DataProvider::GetTagUnixTime => Tag '" + tagName + "' has a bad snapshot time '" + snapshotTime + "'");
     }
     return time;
+}
+
+
+int64_t DataProvider::GetTagMicro(const string& tagName, const string& snapshotTime)
+{
+    int64_t micro = 0;
+    if(!TimeUtils::ParseUtc(snapshotTime, micro) || micro <= 0)
+    {
+        throw std::runtime_error("DataProvider::GetTagMicro => Tag '" + tagName + "' has a bad snapshot time '" + snapshotTime + "'");
+    }
+    return micro;
+}
+
+
+Assignment* DataProvider::GetAssignmentShortMicro(int run, const string& path, int64_t timeMicro, const string& variation, bool loadColumns)
+{
+    return GetAssignmentShort(run, path, TimeUtils::ToSeconds(timeMicro), variation, loadColumns);
 }
 
 

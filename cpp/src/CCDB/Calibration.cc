@@ -7,6 +7,7 @@
 #include "CCDB/CalibrationGenerator.h"
 #include "CCDB/Providers/DataProvider.h"
 #include "CCDB/Helpers/PathUtils.h"
+#include "CCDB/Helpers/TimeUtils.h"
 #include "CCDB/Helpers/TimeProvider.h"
 #include "CCDB/Helpers/PerfLog.h"
 
@@ -33,6 +34,7 @@ Calibration::Calibration()
     mProviderIsLocked = false; //by default we assume that we own the provider
     mDefaultRun = 0;
 	mDefaultTime = 0;
+	mDefaultTimeMicro = 0;
     mDefaultVariation = "default";
     mIsAutoReconnect = true;
     mLastActivityTime=0;
@@ -53,6 +55,7 @@ Calibration::Calibration(int defaultRun, string defaultVariation/*="default"*/, 
 	mDefaultRun = defaultRun;
 	mDefaultVariation = defaultVariation;
 	mDefaultTime = defaultTime;
+	mDefaultTimeMicro = TimeUtils::EndOfSecond(defaultTime);     // a whole second means its latest microsecond
 
     mProvider = nullptr;
     mProviderIsLocked = false;      // by default we assume that we own the provider
@@ -635,7 +638,7 @@ Assignment* Calibration::GetAssignmentInternal(const string& namepath, bool load
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
 
-    auto time = result.WasParsedTime ? result.Time: mDefaultTime;
+    int64_t time = result.WasParsedTime ? result.TimeMicro : mDefaultTimeMicro;     // UTC microseconds
     if(time < 0) time = 0;
 
     // Connection check, reconnect and the query must be atomic against Disconnect from other threads
@@ -664,7 +667,7 @@ Assignment* Calibration::GetAssignmentInternal(const string& namepath, bool load
 
     Assignment* assignment = result.WasParsedTag ?
         mProvider->GetAssignmentShortByTag(run, PathUtils::MakeAbsolute(result.Path), result.Tag, loadColumns) :
-        mProvider->GetAssignmentShort(run, PathUtils::MakeAbsolute(result.Path), time, variation, loadColumns);
+        mProvider->GetAssignmentShortMicro(run, PathUtils::MakeAbsolute(result.Path), time, variation, loadColumns);
 
     if(useCache && assignment != nullptr) {
         mAssignmentCache[cacheKey] = assignment;
