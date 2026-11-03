@@ -23,3 +23,7 @@ components="$build/lib/CCDB/dd4hep"
 test -s "$components/libccdb_dd4hep.components" || { echo "$components/libccdb_dd4hep.components was not generated" >&2; exit 1; }
 grep -q CCDB_Constants "$components/libccdb_dd4hep.components" || { echo "libccdb_dd4hep.components lists no CCDB_Constants" >&2; exit 1; }
 LD_LIBRARY_PATH="$components:${LD_LIBRARY_PATH:-}" CCDB_TEST_DD4HEP_SQLITE="$test_db" "$build/dd4hep/ccdb_dd4hep_tests"
+
+# The tutorial, end to end (docs/apis/dd4hep-tutorial.md): the database made with the ccdb commands of the page,
+# the example program run for two runs and a tag, its printed values checked
+CCDB_DD4HEP_BUILD_DIR="$build" "$repo/scripts/eic/dd4hep_example.sh"
