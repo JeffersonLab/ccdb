@@ -119,6 +119,7 @@ This table is printed when you execute `ccdb help`:
 | ls        | List            | List objects in a given directory              |
 | log       | ShowLog         | Shows log records                              |
 | db        | Database        | Database information and management            |
+| provenance | Provenance     | Checks the record of the versions a job resolved and names the tags that give it |
 | deprecate | Deprecate       | Marks a table, a directory or a variation as deprecated |
 | tag       | Tag             | Creates, lists, shows or removes snapshot tags |
 | prop      | Prop            | Sets, gets and lists properties of the instance, tables, directories and variations |
@@ -455,5 +456,22 @@ stale: no version created since 2021-11-03 (5 years)
   shared sets (more than one version)              66,146 of 585,786        11.3 %
   ...
   instance properties not set: license, citation, contact, experiment, url
+```
+
+### What a job used
+
+`ccdb provenance FILE.json` checks the record a job wrote ([JANA2 service](apis/jana.md#what-a-job-used)) or
+a Python program saved ([Python](apis/python.md#what-a-program-resolved)). For every entry it checks that the
+version exists, belongs to the table named and has the SHA-256 the job received, and shows what the same
+request resolves to today. `--tag` lists the tags that give every entry's version. The exit code is 1 when a
+version is missing or its data differs, so a script can gate on it.
+
+```
+$ ccdb provenance run_031000.ccdb.json --tag
+(check)        (id) (sha256)       (today)          (request)
+ok           812211 55d35b501c1a   same             /FCAL/gains
+ok           815004 b2ceb52d6aa9   same             /BCAL/timing_offsets
+2 of 2 entries match the database
+tags that give every entry: ver03
 ```
 

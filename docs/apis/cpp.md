@@ -96,6 +96,28 @@ run is optional, as in any request: `/test/test_vars/test_table@Run2026`. A requ
 variation (`/path:1500:mc@Run2026`) or a tag and a time (`/path:1500::2026@Run2026`) is an error, as
 in Python.
 
+### What a job resolved
+
+A Calibration can record which version each request resolved to. The record is off by default:
+`EnableUsageRecord(true)` turns it on, and `GetResolvedAssignments()` returns every distinct resolution
+once, in the order of its first request, so a table read for every event is one entry. A
+`ResolvedAssignment` holds `request`, `path`, `run`, `variation` and `timeMicro` (UTC microseconds, 0 for the
+newest) or `tag`, then `assignmentId` and `sha256`, the SHA-256 of the data the program received:
+
+```cpp
+calib->EnableUsageRecord(true);
+// ... read constants ...
+for (const auto& r : calib->GetResolvedAssignments())
+    std::cout << r.path << " run " << r.run << " -> " << r.assignmentId << " " << r.sha256.substr(0, 12) << "\n";
+```
+
+`EnableUsageRecord(false)` stops recording and keeps the entries; `ClearResolvedAssignments()` forgets
+them. The list is the provenance of the job's constants: written to a file, it names the exact data the job
+read, verifiable with `ccdb provenance` against any copy of the database ([CLI](cli.md#what-a-job-used)).
+The [JANA2 service](apis/jana.md#what-a-job-used) turns it on and writes it with the parameter
+`ccdb:provenance`. A run bundle or a SQLite snapshot records the same ids and hashes as the central
+database, since it keeps them.
+
 ### Everything about one version: DataProvider::GetAssignmentFull
 
 `GetCalib` gives the values. A program that also needs the run range, the variation the data came from, the

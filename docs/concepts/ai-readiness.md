@@ -18,6 +18,7 @@ FAIR principles; this page maps readiness.
 | Identity of the data | Every version has a permanent id and the SHA-256 of its data; a [tag](concepts/tags.md) names a whole calibration |
 | Understandable without a human | Typed columns with units and comments, [properties](cli.md#properties), a JSON Schema per table, a [data card](concepts/fair.md#data-cards) in HTML and JSON |
 | Provenance of every value | Author, UTC time and comment on every version; the change log of every operation; the hash of every data set |
+| Provenance of every use | The C++ and Python libraries record, when a program asks, which versions it resolved; the JANA2 service writes the record as a file with `ccdb:provenance`; `ccdb provenance` checks it against the database ([JANA2 service](apis/jana.md#what-a-job-used)) |
 | Access by programs and agents | The [HTTP API](apis/http.md) with its OpenAPI document, run bundles, the read-only [MCP server](apis/mcp.md), [Parquet and data frames](apis/analysis.md) |
 | Checks on the values | A JSON Schema per table for types; [Parquet and data frames](apis/analysis.md) for checks with tabular tools |
 | Nothing lost | [Deprecation](concepts/deprecation.md) instead of deletion; tagged history protected from `rm` |

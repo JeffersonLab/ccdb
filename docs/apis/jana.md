@@ -48,10 +48,14 @@ The parameters:
 | `ccdb:time` | empty: the newest constants | the newest constants as of this local time: `2026`, `2026-03`, `2026-03-01 12:00:00`, `2026-03-01 12:00:00.250`; a partial time is the latest moment it covers ([Time](concepts/time.md)) |
 | `ccdb:tag` | empty | a tag gives both the variation and the time; it can't be set together with `ccdb:variation` or `ccdb:time` |
 | `ccdb:cache_dir` | `$XDG_CACHE_HOME/ccdb/resources`, else `$HOME/.cache/ccdb/resources` | where `GetResource` keeps the files it fetched |
+| `ccdb:provenance` | empty: no record | a file; the service records which version every request resolved to and writes the record there when it ends ([below](#what-a-job-used)) |
 
 The service checks the parameters when the application starts: a missing connection string, a time it
 can't read, an invalid tag name or a tag set together with a variation or a time stops the job with a
-message that names the parameter. It connects to the database on the first request.
+message that names the parameter. At startup it logs the connection string (without the password) with
+the variation and the time, or the tag; with neither a time nor a tag it warns that the job reads the
+newest constants, which its parameters can't repeat later. It connects to the database on the first
+request.
 
 For a production campaign, give one tag (`-Pccdb:tag=calib_2026_pass1`): every job of the campaign
 then reads the same constants, whatever calibrators add while it runs, and the campaign can be repeated
@@ -141,6 +145,47 @@ To make a resources table, create it with three columns and add one row per run 
 ccdb mktbl /tracking/ml/seed_model -r 1 url=string sha256=string size=int "#seed finder weights"
 ccdb add /tracking/ml/seed_model -r 1000-1999 seed_model.txt
 ```
+
+## What a job used
+
+A job's constants follow from its run, its variation and its time or tag; the library resolves each request
+to one version of one table. With `ccdb:provenance=PATH` the service records those resolutions and writes
+them to `PATH` when it ends, so an output file can be matched to its constants years later without the
+launch configuration:
+
+```bash
+jana -Pplugins=CCDB_service,myplugin -Pccdb:url=https://ccdb.example.org/api/v1 -Pccdb:tag=ver03 \
+     -Pccdb:provenance=run_031000.ccdb.json run_031000.evio
+```
+
+```json
+{
+ "ccdb_version": "2.5.0",
+ "connection": "https://ccdb.example.org/api/v1",
+ "variation": "",
+ "time": "",
+ "tag": "ver03",
+ "generated": "2026-11-03T19:02:11.483120Z",
+ "resolved": [
+  {"request": "/FCAL/gains", "path": "/FCAL/gains", "run": 31000, "variation": "", "time": "", "tag": "ver03", "assignment_id": 812211, "sha256": "55d35b501c1a…"},
+  {"request": "/BCAL/timing_offsets", "path": "/BCAL/timing_offsets", "run": 31000, "variation": "", "time": "", "tag": "ver03", "assignment_id": 815004, "sha256": "b2ceb52d6aa9…"}
+ ]
+}
+```
+
+The record holds, per run, every distinct resolution in the order the job first made it: a table read for
+every event is one entry. Each entry names the table, the run, the variation and time or the tag it resolved
+under, the version id, and the SHA-256 of the data the job received. The file is written whole and then
+renamed, so a reader never sees half of it; a processor that wants it earlier calls `WriteUsageRecord()`
+from its `Finish()`.
+
+`ccdb provenance FILE` checks every entry against a database and names the tags that give the same
+constants ([CLI](cli.md#what-a-job-used)). The script that submits the job (a launch script, MCwrapper) can
+attach the file to the job's output as metadata.
+
+Without the parameter the service records nothing. The same record is available in code:
+`EnableUsageRecord(true)` and `GetResolvedAssignments()` in the [C++ library](apis/cpp.md#what-a-job-resolved),
+`usage_record_enabled` and `resolved_assignments` in [Python](apis/python.md#what-a-program-resolved).
 
 ## Use the service in EICrecon
 
