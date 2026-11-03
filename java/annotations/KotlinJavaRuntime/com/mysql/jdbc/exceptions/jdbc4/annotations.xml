@@ -1,5 +1,0 @@
-<root>
-    <item name='com.mysql.jdbc.exceptions.jdbc4.CommunicationsException java.lang.String getSQLState()'>
-        <annotation name='org.jetbrains.annotations.NotNull'/>
-    </item>
-</root>

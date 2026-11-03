@@ -24,7 +24,6 @@
 - [Python low-level API](apis/python-low-level.md)
 - [C++ API](apis/cpp.md)
 - [JANA2 service](apis/jana.md)
-- [Java API](apis/java.md)
 
 **Advanced**:
 - [Development](development/development.md)

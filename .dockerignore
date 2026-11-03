@@ -8,7 +8,6 @@ dist
 **/*.egg-info
 space-ccdb-webgui
 cpp
-java
 docs
 scripts
 *.sqlite

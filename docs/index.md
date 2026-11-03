@@ -43,7 +43,7 @@ connects you to that database read-only.
 ### Central database, local copies and farm scale
 
 - **[Central database with native clients](deployment/new-experiment.md#serving-constants-to-jobs).**
-  MySQL or MariaDB holds the master copy; the C++, Python and Java APIs read it directly, with
+  MySQL or MariaDB holds the master copy; the C++ and Python APIs read it directly, with
   connect, read and write [timeouts](apis/cpp.md#timeouts-and-reconnect) and automatic reconnect.
 - **[SQLite snapshots](deployment/new-experiment.md#serving-constants-to-jobs).** The whole database
   exports to one file for CVMFS, shared file systems, containers and laptops. A farm reads the snapshot

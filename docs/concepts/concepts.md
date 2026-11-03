@@ -194,7 +194,7 @@ The time is your local time; CCDB stores and compares UTC. [Time](concepts/time.
 
 CCDB searches for the latest constants.
 
-> **WARNING** — Don't use requests (instead of a simple namepath) in C++ or Java *production* code.
+> **WARNING** — Don't use requests (instead of a simple namepath) in C++ *production* code.
 > Use them to manage constants or for debugging. See the next section!
 
 ### Default values

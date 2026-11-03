@@ -11,7 +11,6 @@ The Jefferson Lab Calibration Constants Database (CCDB) is a framework to store 
 CCDB provides readout interfaces for:
 * C++
 * Python
-* Java
 * JANA framework
 * Command line
 * Web site
