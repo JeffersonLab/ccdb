@@ -1,4 +1,5 @@
 import itertools
+import json
 import logging
 import os
 
@@ -19,7 +20,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 log = logging.getLogger("ccdb.cmd.commands.db")
 
-SUBCOMMANDS = ["init", "update", "upgrade", "stats", "rollback-v6", "dedup", "rehash"]
+SUBCOMMANDS = ["init", "update", "upgrade", "stats", "readiness", "rollback-v6", "dedup", "rehash"]
 LEGACY_FLAGS = ["--init-i-am-sure", "--upgrade-i-am-sure"]     # the only flags of CCDB 2.4's `ccdb db`
 
 
@@ -137,6 +138,8 @@ class Database(CliCommandBase):
             return self.db_rehash(result)
         elif result.sub_command == 'stats':
             return self.db_stats()
+        elif result.sub_command == 'readiness':
+            return self.db_readiness(result)
         else:
             return self.db_base_info()
 
@@ -152,6 +155,10 @@ class Database(CliCommandBase):
 
         subcommands.add_parser("update")      # a frequent typo of 'upgrade': answered with a hint
         subcommands.add_parser("stats")
+        readiness = subcommands.add_parser("readiness")
+        readiness.add_argument("--stale-years", type=int, default=5, metavar="N",
+                               help="a table is stale when no version of it was created in the last N years (5)")
+        readiness.add_argument("--json", action="store_true", help="print the profile as JSON")
 
         upgrade = subcommands.add_parser("upgrade")
         upgrade.add_argument("--upgrade-i-am-sure", action="store_true")
@@ -263,6 +270,22 @@ class Database(CliCommandBase):
 
         return True
 
+    def db_readiness(self, options):
+        """The readiness profile of the database (ccdb.readiness): counts only, it reads and changes nothing"""
+        from ccdb.readiness import profile, format_text
+        if options.stale_years < 0:
+            log.error("--stale-years must be 0 or more")
+            return False
+        provider = self.context.provider
+        if not provider.is_connected:      # inside a session (the interactive shell, tests) it is connected already
+            provider = self.connected_provider(check_version=True)
+        numbers = profile(provider, stale_years=options.stale_years)
+        if options.json:
+            print(json.dumps(numbers, indent=1))
+        else:
+            print(format_text(numbers, hide_password(self.context.connection_string)))
+        return True
+
     def db_base_info(self):
         provider = self.context.provider
         assert isinstance(provider, AlchemyProvider)
@@ -291,6 +314,9 @@ subcommands:
                 --sqlite-time-zone ZONE  SQLite, required: the zone the file's times were written in
                     (America/New_York at Jefferson Lab); schema 6 stores every time as UTC
     stats     - provide database statistics: assignments, constant sets, sets shared by several assignments
+    readiness - the readiness profile: units, descriptions, comments, run ranges, authors, stale and
+                empty tables, shared sets, instance properties; one SQL count per number
+                [--stale-years N] (5)  [--json]
     dedup     - report constant sets of one table with equal data and unused sets; --dedup-i-am-sure merges
                 them into the oldest set, removes the unused ones and creates the unique index
                 [--table PATH] [--no-transaction-check]

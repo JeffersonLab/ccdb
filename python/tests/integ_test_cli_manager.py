@@ -1,3 +1,4 @@
+import json
 import unittest
 import os
 import logging
@@ -234,6 +235,21 @@ class CliManagerTests(unittest.TestCase):
         from ccdb.cmd.commands.dump import Dump
         self.assertEqual(Dump.cat_flags([]), ["--no-borders", "--no-header", "--comments", "--horizontal"])
         self.assertEqual(Dump.cat_flags(["-nc", "-pv"]), ["--no-borders", "--no-header"])
+
+    def test_db_readiness(self):
+        """db readiness. The text form and the JSON form carry the same counts"""
+        self.cli.process_command_line("db readiness")
+        text_form = self.output.getvalue()
+        self.assertIn("columns with units", text_form)
+        self.assertIn("stale: no version created since", text_form)
+        self.output.seek(0)
+        self.output.truncate()
+        self.cli.process_command_line("db readiness --stale-years 2 --json")
+        numbers = json.loads(self.output.getvalue())
+        self.assertEqual(numbers["config"]["stale_years"], 2)
+        self.assertEqual(numbers["config"]["schema_version"], 6)
+        self.assertEqual(sorted(numbers), ["config", "data", "history", "instance", "metadata", "units"])
+        self.assertIn("{0:,} of".format(numbers["metadata"]["versions_with_comment"]), text_form)
 
     def test_info(self):
         """info. General test"""

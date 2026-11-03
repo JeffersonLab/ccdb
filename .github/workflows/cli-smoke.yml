@@ -131,6 +131,20 @@ jobs:
           ccdb db stats
           ccdb db stats | grep "Num shared constant sets" > /dev/null
 
+      - name: ccdb db readiness (text and JSON)
+        run: |
+          ccdb db readiness
+          ccdb db readiness | grep "columns with units" > /dev/null
+          ccdb db readiness --stale-years 2 --json | python -c "import json, sys; p = json.load(sys.stdin); assert p['config']['stale_years'] == 2, p['config']"
+
+      - name: ccdb db readiness refuses a negative window (exit 1)
+        run: |
+          set +e
+          ccdb db readiness --stale-years -1
+          code=$?
+          set -e
+          test "$code" -eq 1
+
       - name: ccdb db upgrade refuses a schema 6 database (exit 1)
         run: |
           set +e
