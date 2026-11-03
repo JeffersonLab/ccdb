@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Readiness · CCDB{% endblock %}
+
+{% block page_header %}
+<h1 class="h3 mb-1">Readiness</h1>
+<p class="text-body-secondary small mb-3">How much of its metadata this database documents, counted over every table and version; nothing is sampled. <code>ccdb db readiness</code> prints the same numbers and <code>/api/v1/readiness</code> serves them as JSON. A table is stale when no version of it was created since {{ numbers.config.stale_before[:10] }} ({{ numbers.config.stale_years }} years). Counted {{ numbers.config.generated.replace('T', ' ').replace('Z', ' UTC') }}.</p>
+{% endblock %}
+
+{% block content %}
+{#- The units row (UCUM) sits under columns with units, in the metadata card. -#}
+{%- set titles = {'metadata': 'Metadata', 'history': 'History', 'data': 'Data'} %}
+{#- The golden comparison reads the data-field attribute and the first number of each row. -#}
+<div class="row g-3" style="max-width: 60rem" id="readiness">
+  {%- for group, title in titles.items() %}
+  <div class="col-12 col-lg-6">
+    <div class="card h-100"><div class="card-body">
+      <h2 class="h5">{{ title }}</h2>
+      <ul class="list-unstyled mb-0">
+        {%- for row in rows if row.group == group or (group == 'metadata' and row.group == 'units') %}
+        <li class="mb-2" data-field="{{ row.group }}.{{ row.field }}">
+          <div class="d-flex justify-content-between gap-2 small">
+            <span>{{ row.label }}</span>
+            {%- if row.value is none %}
+            <span class="text-body-secondary">not measured</span>
+            {%- elif row.total is not none %}
+            <span class="text-nowrap"><span class="fw-medium">{{ '{:,}'.format(row.value) }}</span> of {{ '{:,}'.format(row.total) }}</span>
+            {%- else %}
+            <span class="fw-medium text-nowrap">{{ '{:,}'.format(row.value) }}</span>
+            {%- endif %}
+          </div>
+          {%- if row.share is not none %}
+          <div class="progress" role="progressbar" aria-label="{{ row.label }}" aria-valuenow="{{ '%.1f'|format(row.share) }}" aria-valuemin="0" aria-valuemax="100" style="height: .4rem">
+            <div class="progress-bar" style="width: {{ '%.1f'|format(row.share) }}%"></div>
+          </div>
+          {%- endif %}
+        </li>
+        {%- endfor %}
+      </ul>
+    </div></div>
+  </div>
+  {%- endfor %}
+  <div class="col-12 col-lg-6">
+    <div class="card h-100"><div class="card-body">
+      <h2 class="h5">Instance properties</h2>
+      <ul class="list-unstyled mb-0 small">
+        {%- for name, is_set in numbers.instance.items() %}
+        <li class="d-flex justify-content-between" data-field="instance.{{ name }}"><span class="cell-mono">{{ name }}</span><span>{{ 'set' if is_set else 'not set' }}</span></li>
+        {%- endfor %}
+      </ul>
+      <p class="small text-body-secondary mt-2 mb-0">Set one with <code>ccdb prop set --instance NAME VALUE</code>.</p>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

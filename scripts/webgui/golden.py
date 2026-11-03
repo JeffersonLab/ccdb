@@ -331,6 +331,20 @@ def compute(space):
         "table_info": dict(db.execute("SELECT name, value FROM properties WHERE ownerType = 'table' AND ownerId = 1").fetchall()),
     }
 
+    # the readiness page: the counts that need no time window, straight from SQL
+    golden["readiness"] = {field: db.execute(query).fetchone()[0] for field, query in (
+        ("metadata.columns_with_units", "SELECT COUNT(*) FROM columns WHERE TRIM(COALESCE(units, '')) <> ''"),
+        ("metadata.tables_with_description", "SELECT COUNT(*) FROM typeTables WHERE TRIM(COALESCE(comment, '')) <> ''"),
+        ("metadata.versions_with_comment", "SELECT COUNT(*) FROM assignments WHERE TRIM(COALESCE(comment, '')) <> ''"),
+        ("history.open_ended_run_ranges", "SELECT COUNT(*) FROM assignments a JOIN runRanges r ON r.id = a.runRangeId "
+                                          "WHERE r.runMax = 2147483647 AND r.runMin > 0"),
+        ("history.empty_tables", "SELECT COUNT(*) FROM typeTables t WHERE NOT EXISTS (SELECT 1 FROM constantSets s "
+                                 "JOIN assignments a ON a.constantSetId = s.id WHERE s.constantTypeId = t.id)"),
+        ("history.deprecated_tables", "SELECT COUNT(*) FROM typeTables WHERE isDeprecated = 1"),
+        ("history.tags", "SELECT COUNT(*) FROM tags"),
+        ("data.constant_sets", "SELECT COUNT(*) FROM constantSets"),
+        ("data.shared_sets", "SELECT COUNT(*) FROM (SELECT constantSetId FROM assignments GROUP BY constantSetId HAVING COUNT(*) > 1)"))}
+
     # the notice on the versions page of a deprecated table: "Deprecated <time> by <user>: <comment>"
     row = db.execute("SELECT t.deprecatedTime, t.deprecationComment, u.name FROM typeTables t LEFT JOIN users u ON u.id = t.deprecatedByUserId "
                      "WHERE t.id = ?", (DEPRECATED_INFO["table_info_retired"],)).fetchone()
@@ -629,6 +643,18 @@ def compare(space, phase, label, db_url):
             rows = [row for row in read_tables("<table><tr>" + body)[0] if len(row) == 2] if body else []
         check(results, f"{label_}.status", 200, status)
         check(results, f"{label_}.properties", expected, dict(rows))
+
+    # readiness: the first number of each row, by its data-field
+    if "readiness" in golden:
+        status, html = get("readiness")
+        shown = {}
+        for item in html.split("<li ")[1:]:
+            field = re.match(r'class="[^"]*" data-field="([^"]+)"', item)
+            number = re.search(r'class="fw-medium[^"]*">([\d,]+)</span>', item)
+            if field and number:
+                shown[field.group(1)] = int(number.group(1).replace(",", ""))
+        check(results, "readiness.status", 200, status)
+        check(results, "readiness.counts", golden["readiness"], {key: shown.get(key) for key in golden["readiness"]})
 
     # tags: the list, the table each tag page shows with the assignment the tag gives, and a tag in a request string
     status, html = get("tags")
