@@ -418,6 +418,7 @@ Schema version: 6
 |---|---|---|
 | `db init` | drops every CCDB table and creates the schema with its standard content; all data is lost | `--init-i-am-sure` |
 | `db stats` | counts assignments, constant sets and the sets shared by several assignments | |
+| `db readiness` | the [readiness profile](concepts/ai-readiness.md#the-readiness-profile) of the instance: units, descriptions and comments, open-ended run ranges, anonymous versions, stale and empty tables, shared and unused sets, instance properties | `--stale-years N`, `--json` |
 | `db upgrade` | upgrades the database from schema version 5 to 6 | `--dry-run`, `--duplicates none\|sample\|all`, `--upgrade-i-am-sure`, `--skip-privilege-check`, `--no-transaction-check`, `--in-place` |
 | `db dedup` | reports byte-identical and unused constant sets; with its flag merges and removes them and creates the unique index | `--table PATH`, `--dedup-i-am-sure`, `--no-transaction-check` |
 | `db rehash` | recomputes the SHA-256 and size of every constant set and compares them with the stored values | `--sample N`, `--server`, `--rehash-i-am-sure` |
@@ -435,4 +436,24 @@ A subcommand that changes data acts only with its own flag, `--<verb>-i-am-sure`
 `rehash` verifies. `db upgrade --dry-run` writes nothing. The commands exit with 1 on a refusal, a
 collision or a hash mismatch. [Upgrading to CCDB 2.5](deployment/upgrade-2.5.md) describes every flag
 and its output.
+
+`db readiness` prints one line per count with its share of the total; `--json` prints the same as JSON. On the
+Hall D database, shortened:
+
+```
+$ ccdb db readiness
+generated 2026-11-03T22:49:06Z, CCDB 2.5.0, schema 6
+stale: no version created since 2021-11-03 (5 years)
+
+  columns with units                                    0 of 7,700           0.0 %
+  tables with a description                           318 of 688            46.2 %
+  versions with a comment                         290,787 of 821,394        35.4 %
+  versions open-ended (run N to infinity)          41,350 of 821,394         5.0 %
+  versions by anonymous                             4,675 of 821,394         0.6 %
+  stale tables                                        390 of 688            56.7 %
+  empty tables                                          9 of 688             1.3 %
+  shared sets (more than one version)              66,146 of 585,786        11.3 %
+  ...
+  instance properties not set: license, citation, contact, experiment, url
+```
 
