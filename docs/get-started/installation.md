@@ -35,7 +35,8 @@ Optional extras:
 python -m pip install "ccdb[web]"
 ```
 
-Check that it works (using the HallD read-only database as an example):
+Check that it works (using the HallD read-only database as an example; until its administrators upgrade it to
+schema 6 it answers CCDB 2.4 only, `pip install "ccdb<2.5"`):
 
 ```bash
 export CCDB_CONNECTION="mysql://ccdb_user@hallddb.jlab.org/ccdb"

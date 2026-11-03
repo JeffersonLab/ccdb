@@ -18,12 +18,14 @@ installations that clients use at 2.4 until step 5.
 
 To upgrade a database:
 
-1. Take a verified backup.
-2. Stop every Python client of CCDB 2.4 that uses the database, the web GUI and scripts included.
+1. Days before: run `ccdb db upgrade --dry-run` on production with a read-only account, and time the upgrade
+   on a copy ([below](#timing-on-a-copy)).
+2. Take a verified backup.
+3. Stop every Python client of CCDB 2.4 that uses the database, the web GUI and scripts included.
    C++ jobs may keep reading.
-3. Run `ccdb db upgrade --dry-run`, then `ccdb db upgrade --upgrade-i-am-sure`.
-4. Run `ccdb db dedup --dedup-i-am-sure` in the same maintenance window.
-5. Move every Python installation that reads or writes the database to CCDB 2.5 the same day.
+4. Run `ccdb db upgrade --dry-run` once more, then `ccdb db upgrade --upgrade-i-am-sure`.
+5. Run `ccdb db dedup --dedup-i-am-sure` in the same maintenance window.
+6. Move every Python installation that reads or writes the database to CCDB 2.5 the same day.
 
 ## What changes
 
@@ -49,17 +51,17 @@ same answer on MySQL, MariaDB and SQLite wherever the job runs. On MySQL and Mar
 instants do not change. On SQLite the upgrade rewrites every time from the writers' local time to UTC, so it
 needs the zone the file was written in (below). [Time](concepts/time.md) gives the rules.
 
-**New tables and columns.** The upgrade also creates tables and columns that no command of this version
-reads or writes yet. The table marks them reserved; the others are in use.
+**New tables and columns.** The upgrade also creates the tables and columns of the features that come
+with schema 6. One of them is reserved for a later version: no command reads or writes it yet.
 
 | object | purpose | status |
 |---|---|---|
 | `constantSets.sha256`, `constantSets.size` | identity and size of a set's data | in use |
 | index `uq_constantSets_table_sha256` (or the interim `ix_constantSets_table_sha256`) | finds a table's set by hash; the unique form rejects a second copy | in use |
-| `tags` (new shape: `variationId`, `snapshotTime`, `comment`, `authorId`, `created`) | named snapshots of a variation at a time | reserved |
-| `properties` | instance and object metadata: description, contact, license, citation | reserved |
-| `columns.units` | the units of a column | reserved |
-| `deprecatedTime`, `deprecationComment` on `directories`, `typeTables`, `variations` | deprecation of tables, directories and variations | reserved |
+| `tags` (new shape: `variationId`, `snapshotTime`, `comment`, `authorId`, `created`) | named snapshots of a variation at a time ([Tags](concepts/tags.md)) | in use |
+| `properties` | instance and object metadata: description, contact, license, citation (`ccdb prop`) | in use |
+| `columns.units` | the units of a column (`mktbl name=type:units`) | in use |
+| `deprecatedTime`, `deprecationComment` on `directories`, `typeTables`, `variations` | deprecation of tables, directories and variations ([Deprecation](concepts/deprecation.md)) | in use |
 | `timeRanges`, `assignments.timeRangeId` | validity by time | reserved |
 
 Nothing is dropped. `eventRanges`, `assignmentsMaterializedView`, the `isLocked` columns and the link
@@ -156,7 +158,7 @@ Dedup refused, nothing was changed: other sessions hold a transaction open on th
 ```
 
 **Disk, binary log and replicas.** Converting a table copies it, so the server needs free space for the
-largest table once more (`constantSets`, 4.9 GB at GlueX). With row-based binary logging, the hash
+largest table once more (`constantSets`: 4.9 GB on a loaded copy of GlueX's database, 3.5 GB by `information_schema` on the production server). With row-based binary logging, the hash
 backfill writes about twice the bytes of all constant set text to the binary log (3 255 MB of text at
 GlueX). A replica applies the same statements and needs the same free space. The dry run prints the
 space, the binary log settings (with the estimated bytes when binary logging is on) and the replica
@@ -295,10 +297,10 @@ NVMe storage), by scripts that run the upgrade's statements:
 | hash backfill, 1 643 batches of 500 sets | 95—100 s |
 | `sha256` and `size` made `NOT NULL` | 19.6 s |
 | interim index | 2.8 s |
-| upgrade in all | about 160 s |
+| upgrade in all | `ccdb db upgrade`: 168 s on this copy, 165 s on a second trial |
 | byte-identical duplicates | 235 645 sets (28.7 %) in 274 tables, 66 152 groups, 384 MB |
 | sets equal as numbers but not as text (`0` and `0.0`), kept apart | 1 379 |
-| dedup: 235 622 assignments moved, 235 645 sets deleted | 36.6 s |
+| dedup: 235 622 assignments moved, 235 645 sets deleted | `ccdb db dedup`: 111 s on this copy (its SQL alone 36.6 s) |
 | unique index | 1.6 s |
 | constant sets after dedup | 585 786 |
 
@@ -384,7 +386,9 @@ file works. `--in-place` changes the file itself, without a copy, for a file no 
 SQLite snapshots that jobs read, such as files on CVMFS, follow the same rule as the server: CCDB 2.5
 Python reads only schema 6 files and CCDB 2.4 Python only schema 5 files; C++ jobs read both. Publish
 snapshots exported from the upgraded server when the Python clients move to 2.5, or upgrade a published
-file with `ccdb db upgrade --upgrade-i-am-sure`.
+file with `ccdb db upgrade --upgrade-i-am-sure`. Run `ANALYZE` on a whole-database snapshot before you publish
+it (`sqlite3 FILE 'ANALYZE'`): without statistics the C++ library's lookup walks every assignment of the
+variation, 17 s against 65 ms for a job of 200 tables ([Scaling](deployment/scaling.md)).
 
 ## Merging duplicate sets
 
@@ -532,7 +536,7 @@ changes nothing. No command asks a question and none makes a backup.
 
 ## Checklist
 
-- [ ] CCDB 2.5 installed in a separate environment; `ccdb --version` prints 2.5
+- [ ] CCDB 2.5 installed in a separate environment; `ccdb --version` prints 2.5.0
 - [ ] verified backup of the database
 - [ ] `CCDB_USER` set to a user that exists in the database
 - [ ] dry run on production with a read-only account; the lines `would refuse` understood

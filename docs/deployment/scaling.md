@@ -2,9 +2,9 @@
 
 When a campaign starts, thousands of jobs start within minutes, and each reads a few hundred tables before
 its first event. This page measures how each way of serving constants copes with that burst, on a database
-shaped like a production one, and says what to deploy. The short answer: **put a cache in front**. A run
-bundle per job behind nginx serves any number of jobs from a handful of database requests; tables read one by
-one from a cache work too; anything that reaches the database for every job hits a wall.
+shaped like a production one, and says what to deploy. The short answer: **put a cache in front**. Behind a
+cache the database answers each distinct request once, whether jobs read tables one by one or download a run
+bundle; what remains is the bytes the cache moves. Anything that reaches the database for every job hits a wall.
 
 ## Method
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL-3.0-or-later
 // CCDB_Constants: compact XML constants from a one-row CCDB table (docs/apis/dd4hep.md).
 //
 //   <properties>
