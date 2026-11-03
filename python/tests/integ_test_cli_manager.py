@@ -214,6 +214,27 @@ class CliManagerTests(unittest.TestCase):
         self.cli.theme = ccdb.cmd.themes.NoColorTheme()
         self.output.truncate(0)
 
+    def test_dump_flags_override_defaults(self):
+        """dump. A flag the user names replaces dump's default of the same pair (#99)"""
+        self.cli.process_command_line("dump /test/test_vars/test_table")
+        self.assertTrue(self.output.getvalue().lstrip().startswith("#"), "dump prints the comment line by default")
+
+        self.output.truncate(0); self.output.seek(0)
+        self.cli.process_command_line("dump -nc /test/test_vars/test_table")
+        text = self.output.getvalue()
+        self.assertNotIn("#", text)
+        self.assertIn("2.2", text)
+
+        self.output.truncate(0); self.output.seek(0)
+        self.cli.process_command_line("dump --no-comments --borders /test/test_vars/test_table")
+        self.assertIn("|", self.output.getvalue())
+
+    def test_dump_cat_flags(self):
+        """dump. The defaults dump passes to cat"""
+        from ccdb.cmd.commands.dump import Dump
+        self.assertEqual(Dump.cat_flags([]), ["--no-borders", "--no-header", "--comments", "--horizontal"])
+        self.assertEqual(Dump.cat_flags(["-nc", "-pv"]), ["--no-borders", "--no-header"])
+
     def test_info(self):
         """info. General test"""
         self.cli.process_command_line("info /test/test_vars/test_table")
