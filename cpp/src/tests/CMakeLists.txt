@@ -31,6 +31,7 @@ if (SQLite3_FOUND)
                 "test_SQLiteProvider_TypeTables.cc"
                 "test_SQLiteProvider_Variations.cc"
                 "test_TimeProvider.cc"
+                "test_TimeResolution.cc"
         )
 endif (SQLite3_FOUND)
 
