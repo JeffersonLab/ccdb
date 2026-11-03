@@ -601,6 +601,26 @@ bool Calibration::GetCalib(int &value, const string & namepath)
 }
 
 //______________________________________________________________________________
+void Calibration::SetTag(const string& tagName)
+{
+    std::lock_guard<std::recursive_mutex> lock(mReadMutex);
+    CheckConnection();
+
+    string variation;
+    int64_t snapshotMicro = 0;
+    if(!mProvider->GetTag(tagName, variation, snapshotMicro))
+    {
+        throw std::runtime_error("Calibration::SetTag => No tag '" + tagName + "' in " +
+                                 StringUtils::MaskPassword(GetConnectionString()));
+    }
+    mDefaultTag = tagName;
+    mDefaultVariation = variation;
+    mDefaultTimeMicro = snapshotMicro;
+    mDefaultTime = TimeUtils::ToSeconds(snapshotMicro);
+}
+
+
+//______________________________________________________________________________
 string Calibration::GetConnectionString() const
 {
     //
@@ -635,6 +655,18 @@ Assignment* Calibration::GetAssignmentInternal(const string& namepath, bool load
 	UpdateActivityTime();
 
     RequestParseResult result = PathUtils::ParseRequest(namepath);
+
+    // Under SetTag a request resolves through the tag, as if it ended with @tag
+    if(!result.WasParsedTag && !mDefaultTag.empty())
+    {
+        if(result.WasParsedVariation || result.WasParsedTime)
+        {
+            throw std::invalid_argument("Request '" + namepath + "': this Calibration reads tag '" + mDefaultTag +
+                                        "' (SetTag), so a request may not name a variation or a time; name another tag with @NAME");
+        }
+        result.WasParsedTag = true;
+        result.Tag = mDefaultTag;
+    }
     string variation = (result.WasParsedVariation ? result.Variation : mDefaultVariation);
     int run  = (result.WasParsedRunNumber ? result.RunNumber : mDefaultRun);
 

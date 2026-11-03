@@ -71,6 +71,12 @@ public:
     /** @brief MakeCalibration with the default time in UTC microseconds since the epoch (CCDB 2.5), cached alike */
     virtual Calibration* MakeCalibrationMicro(const std::string & connectionString, int run, const std::string& variation, int64_t timeMicro);
 
+    /** @brief The Calibration of a run that reads every request through a tag (Calibration::SetTag), cached alike
+     *
+     * @throw std::logic_error if the connection fails, std::runtime_error if there is no such tag
+     */
+    virtual Calibration* MakeCalibrationForTag(const std::string & connectionString, int run, const std::string& tagName);
+
 
     /** @brief Deletes (and so disconnects) all Calibrations created by this generator that are still alive
      *
@@ -135,6 +141,10 @@ private:
 
     //@parameter [in] connectionString - Connection string to the data source
     static Calibration* CreateCalibration(bool isMySQL, int run, const std::string& variation, int64_t timeMicro);
+
+    /// MakeCalibrationMicro and MakeCalibrationForTag: the cache lookup, the creation, and SetTag for a tag
+    Calibration* MakeCalibrationCached(const std::string & connectionString, int run, const std::string& variation,
+                                       int64_t timeMicro, const std::string& tagName);
 
     CalibrationGenerator(const CalibrationGenerator& rhs);
     CalibrationGenerator& operator=(const CalibrationGenerator& rhs);

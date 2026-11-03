@@ -114,10 +114,6 @@ void CCDB_service::Initialize() {
 
 
 ccdb::Calibration* CCDB_service::GetCalibration(int run) {
-    if (!m_tag.empty()) {
-        throw JException("CCDB_service: GetCalibration(run) is not available with ccdb:tag='%s': a Calibration "
-                         "has no default tag and would read untagged constants. Use GetConstants", m_tag.c_str());
-    }
     return GetCalibrationForRun(run);
 }
 
@@ -125,19 +121,14 @@ ccdb::Calibration* CCDB_service::GetCalibration(int run) {
 ccdb::Calibration* CCDB_service::GetCalibrationForRun(int run) {
     std::call_once(m_init_flag, &CCDB_service::Initialize, this);
 
-    // The generator keeps one Calibration per (url, run, variation, time) and is thread safe.
-    // Under a tag the variation and the time come from the tag, which ApplyTag puts into each request.
+    // The generator keeps one Calibration per (url, run, variation, time) or (url, run, tag) and is thread safe.
+    // Under a tag the Calibration reads every request through it (Calibration::SetTag).
     try {
+        if (!m_tag.empty()) return m_generator->MakeCalibrationForTag(m_url, run, m_tag);
         return m_generator->MakeCalibrationMicro(m_url, run, m_variation, m_time);
     } catch (std::exception& ex) {
         throw JException("CCDB_service: can't connect to %s for run %d: %s", m_safe_url.c_str(), run, ex.what());
     }
-}
-
-
-std::string CCDB_service::ApplyTag(const std::string& request) const {
-    if (m_tag.empty() || request.find('@') != std::string::npos) return request;
-    return request + "@" + m_tag;
 }
 
 

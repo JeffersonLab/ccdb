@@ -104,6 +104,9 @@ public:
      */
     Assignment* GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns) override;
 
+    /** @see DataProvider::GetTag */
+    bool GetTag(const string& tagName, string& variation, int64_t& snapshotMicro) override;
+
 
     //----------------------------------------------------------------------------------------
     //  E N D   I M P L E M E N T   I N T E R F A C E

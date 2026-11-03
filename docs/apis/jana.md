@@ -106,13 +106,13 @@ The type `T` chooses the form of the result:
 
 The request is a CCDB request and may name its own run, variation or time
 (`/calorimeter/gains:1000:mc`), as with `GetCalib`; under a tag a request that names a variation or a
-time is an error. A table that does not exist, or has no constants for the run, raises a `JException`
+time is an error, and one that names another tag (`@NAME`) reads that tag. A table that does not exist, or has no constants for the run, raises a `JException`
 that names the request and the run.
 
 The service keeps one `ccdb::Calibration` per run and is thread safe, so factories in all worker threads
-share it. `GetCalibration(run)` returns that object for code that wants the C++ API itself; with
-`ccdb:tag` set it raises an exception, because a `Calibration` has no default tag and would read
-untagged constants. Use `GetConstants` with a tag.
+share it. `GetCalibration(run)` returns that object for code that wants the C++ API itself. With
+`ccdb:tag` set, that Calibration reads every request through the tag (`Calibration::SetTag`), as
+`GetConstants` does.
 
 ## Files from a resources table
 

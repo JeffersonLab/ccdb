@@ -51,24 +51,22 @@ public:
     template <typename T>
     T GetConstants(int run, const std::string& request) {
         T values;
-        const std::string full_request = ApplyTag(request);
         bool found = false;
         try {
-            found = GetCalibrationForRun(run)->GetCalib(values, full_request);
+            found = GetCalibrationForRun(run)->GetCalib(values, request);
         } catch (std::exception& ex) {
-            throw JException("CCDB_service: request '%s' for run %d failed: %s", full_request.c_str(), run, ex.what());
+            throw JException("CCDB_service: request '%s' for run %d%s failed: %s", request.c_str(), run, TagText().c_str(), ex.what());
         }
         if (!found) {
-            throw JException("CCDB_service: no constants for request '%s' and run %d in %s",
-                             full_request.c_str(), run, m_safe_url.c_str());
+            throw JException("CCDB_service: no constants for request '%s' and run %d%s in %s",
+                             request.c_str(), run, TagText().c_str(), m_safe_url.c_str());
         }
         return values;
     }
 
-    /// The Calibration of a run under ccdb:variation and ccdb:time: one object per run, created on first use
-    /// and owned by the service. It is for code that wants the CCDB C++ API itself (GetAssignment, the
-    /// listing calls). With ccdb:tag set this throws: a Calibration has no default tag, so its GetCalib
-    /// would silently read the newest constants of the default variation. Use GetConstants then.
+    /// The Calibration of a run under ccdb:variation and ccdb:time, or under ccdb:tag (Calibration::SetTag):
+    /// one object per run, created on first use and owned by the service. It is for code that wants the CCDB
+    /// C++ API itself (GetAssignment, the listing calls).
     ccdb::Calibration* GetCalibration(int run);
 
     /// A file that a resources table points to, fetched into ccdb:cache_dir and verified, as a local path.
@@ -101,7 +99,7 @@ private:
     ccdb::Calibration* GetCalibrationForRun(int run);
 
     /// "/path" -> "/path@tag" when ccdb:tag is set and the request names no tag itself
-    std::string ApplyTag(const std::string& request) const;
+    std::string TagText() const { return m_tag.empty() ? std::string() : " under tag '" + m_tag + "'"; }
 
     std::once_flag m_init_flag;
     JApplication* m_app = nullptr;
