@@ -103,6 +103,98 @@ The item `dd4hep::align::Keys::deltaName` becomes a `dd4hep::Delta` flagged as a
 The interval of validity of a loaded condition is the requested run: the C++ library does not report the
 run range of an assignment, so the next run loads again, from a `Calibration` the loader keeps per run.
 
+## How DD4hep conditions work, and how CCDB maps onto them
+
+DD4hep's detector description is a tree of `DetElement`s. A *condition* is any payload object attached to one
+element under an item name, together with an *interval of validity* (IOV) in a unit the experiment chooses. The
+framework's `ConditionsManager` keeps pools of conditions per IOV; a job *prepares a slice* for the IOV it is
+processing, and whatever the pools lack is requested from the experiment's loader in one call. Derived
+conditions, alignment among them, are computed from loaded ones by callbacks. The snippets below are DD4hep's
+own (`examples/AlignDet` and `examples/Conditions` of DD4hep 1.38) and this library's tests.
+
+**A condition is any payload.** The condition object is a handle; `bind<T>()` gives it a `T`. DD4hep's
+alignment example binds a `Delta`; its conditions example binds `std::vector<int>`; CCDB's loader binds a `Delta`
+for the alignment item and `std::map<std::string, double>` for every other table row.
+
+```cpp
+Condition cond(de.path() + "#" + align::Keys::deltaName, align::Keys::deltaName);
+Delta& delta = cond.bind<Delta>();                                   // the payload type
+cond->hash = ConditionKey(de.key(), align::Keys::deltaKey).hash;     // (detector element, item) is the key
+cond->setFlag(Condition::ACTIVE | Condition::ALIGNMENT_DELTA);
+delta.translation.SetZ(delta.translation.Z() + 0.1 * dd4hep::cm);
+delta.flags |= Delta::HAVE_TRANSLATION | Delta::HAVE_ROTATION;
+manager.registerUnlocked(pool, cond);                                // into the pool of one IOV
+```
+
+**The experiment chooses what validity means.** An IOV type is a number and a name; DD4hep has no opinion
+whether it is a run, a timestamp or a fill. CCDB's run model is the `"run"` type:
+
+```cpp
+const IOVType* iov_typ = manager.registerIOVType(0, "run").second;
+IOV iov(iov_typ, IOV::Key(1001, 2000));                              // runs 1001–2000
+ConditionsPool* pool = manager.registerIOV(*iov.iovType, iov.key());
+```
+
+**Preparing a slice.** A `ConditionsContent` declares which conditions a slice holds and where each comes from;
+`prepare` fills the slice for one IOV, calling the loader's `load_many(required IOV, missing items)` for what the
+pools lack, which is the one method `CCDB_ConditionsLoader` implements:
+
+```cpp
+manager["LoaderType"] = "CCDB_ConditionsLoader";                     // before initialize()
+manager.initialize();
+manager.loader()["URL"] = connection;
+auto content = std::make_shared<cond::ConditionsContent>();
+ccdb::dd4hep_plugins::AddCondition(*content, module, "gains", "/epic/EcalBarrel/gains");
+cond::ConditionsSlice slice(manager, content);
+manager.prepare(IOV(iov_typ, 1500), slice);                          // run 1500
+auto& gains = slice.get(module, ConditionKey::itemCode("gains")).get<std::map<std::string, double>>();
+```
+
+**Derived conditions through callbacks.** A dependency names a target, its inputs and a `ConditionUpdateCall`
+that creates the payload and fills it from the inputs; `prepare` runs the callbacks in dependency order with the
+intersection of the inputs' IOVs as validity. Alignment is this machinery packaged:
+`AlignmentsCalculator::compute(deltas, slice)` turns `Delta` conditions into `Alignment` conditions, the
+transformation matrices reconstruction asks for.
+
+```cpp
+Condition MyCall::operator()(const ConditionKey& key, ConditionUpdateContext&) {
+    Condition target(key.hash);
+    target.bind<std::vector<int>>();                                   // create the derived payload
+    return target;
+}
+void MyCall::resolve(Condition target, ConditionUpdateContext& context) {
+    auto& data = target.get<std::vector<int>>();
+    data.push_back(context.condition(context.key(0)).get<int>());      // from the inputs of this IOV
+}
+DependencyBuilder build(de, ConditionKey(de, "derived").item_key(), std::make_shared<MyCall>());
+build.add(ConditionKey(de, "raw"));
+content.addDependency(build.release());
+```
+
+### The mapping onto CCDB
+
+What the loader receives is a list of `(element, item, IOV)`; what CCDB stores is tables of typed rows assigned
+to run ranges in variations. The two meet like this, with nothing added to CCDB's schema:
+
+| DD4hep | CCDB |
+|---|---|
+| item (`"gains"`, `align::Keys::deltaName`) | a table, named by the experiment in `AddCondition(content, element, item, table)` |
+| element (`/world/EcalBarrel/module_1`) | a row of that table: the text column `element` holds the element's path, the other columns the values |
+| the payload | the row's numeric columns as `map<string, double>`, or `dx dy dz dphi dtheta dpsi` as a `Delta` |
+| IOV (run 1500) | the assignment of the table that covers the run, resolved as `ccdb cat` resolves it: variation with its parents, created at or before the time, or under the tag |
+| validity returned | the run (the assignment's run range once the C++ short query returns it, Q60) |
+
+The DD4hep tree does not shape the CCDB tree: the element path is a value in a column, the table path is
+whatever the detector's directory is (`/epic/EcalBarrel/gains`), and the mapping between the two is the
+`AddCondition` lines in the code that knows both, the detector's own plugin. One table can serve all modules of a
+detector; a table needs the `element` column only when DD4hep asks per element, so the geometry numbers of
+`CCDB_Constants` are a one-row table without it.
+
+What CCDB adds over a file of conditions is its history and context: a new alignment for runs 1000 onward is a
+new assignment and the old one stays, `mc` can carry its own alignment for simulation, and a tag gives a
+campaign the conditions as they were when it was frozen, all through the loader's `URL`, `Variation`/`Time` or
+`Tag` properties.
+
 ## Worked example: from `ccdb add` to a DD4hep job
 
 The whole path for one detector, the barrel ECal: a calibrator describes and fills three tables, a tag freezes
