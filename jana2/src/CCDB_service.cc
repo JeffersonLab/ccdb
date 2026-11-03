@@ -14,9 +14,14 @@
 
 #include "Sha256.h"
 
+#include <chrono>
+#include <cstdio>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <map>
+#include <sstream>
 #include <unistd.h>
 #include <vector>
 
@@ -41,10 +46,37 @@ namespace {
         }
         return cache_home + "/ccdb/resources";
     }
+
+    /// A JSON string literal of text
+    std::string Json(const std::string& text) {
+        std::ostringstream out;
+        out << '"';
+        for (unsigned char c : text) {
+            if (c == '"' || c == '\\') out << '\\' << c;
+            else if (c < 0x20) { char code[8]; snprintf(code, sizeof(code), "\\u%04x", c); out << code; }
+            else out << c;
+        }
+        out << '"';
+        return out.str();
+    }
+
+    /// UTC microseconds as ISO 8601 with Z, "" for 0 (the newest)
+    std::string IsoUtc(int64_t micro) {
+        if (micro <= 0) return "";
+        std::string text = ccdb::TimeUtils::FormatUtc(micro);     // YYYY-MM-DD HH:MM:SS.ffffff
+        text[10] = 'T';
+        return text + "Z";
+    }
 }
 
 
 CCDB_service::~CCDB_service() {
+    // A destructor must not throw: a record that can't be written is reported, and the job's output stands
+    try {
+        WriteUsageRecord();
+    } catch (std::exception& ex) {
+        std::cerr << "CCDB_service: " << ex.what() << std::endl;
+    }
     // The generator does not delete the Calibrations it made; the service owns them
     if (m_generator) m_generator->DeleteCalibrations();
 }
@@ -64,6 +96,8 @@ void CCDB_service::Init() {
         "CCDB tag; it gives both the variation and the time, so it can't be set together with them");
     m_app->SetDefaultParameter("ccdb:cache_dir", m_cache_dir,
         "Directory where GetResource keeps the files it fetched");
+    m_app->SetDefaultParameter("ccdb:provenance", m_provenance_path,
+        "File for the JSON record of the constants the job resolved (assignment ids and SHA-256); empty = no record");
 
     m_safe_url = ccdb::StringUtils::MaskPassword(m_url);
 
@@ -95,6 +129,22 @@ void CCDB_service::Init() {
                              "YYYY-MM-DD hh:mm:ss.ffffff or a prefix of it (2025, 2025-06)", m_time_string.c_str());
         }
     }
+
+    // What the job will read, said once at startup, where a job log keeps it
+    auto& log = GetLogger();
+    if (!m_tag.empty()) {
+        LOG_INFO(log) << "CCDB_service: " << m_safe_url << ", tag '" << m_tag << "'" << LOG_END;
+    } else {
+        LOG_INFO(log) << "CCDB_service: " << m_safe_url << ", variation '" << m_variation << "', time '"
+                      << (m_time_string.empty() ? "newest" : m_time_string) << "'" << LOG_END;
+        if (m_time_string.empty()) {
+            LOG_WARN(log) << "CCDB_service: neither ccdb:tag nor ccdb:time is set, so the job reads the newest constants "
+                             "and its parameters can't repeat it later. Set ccdb:tag (or ccdb:time) for production" << LOG_END;
+        }
+    }
+    if (!m_provenance_path.empty()) {
+        LOG_INFO(log) << "CCDB_service: the constants the job resolves are recorded in " << m_provenance_path << LOG_END;
+    }
 }
 
 
@@ -110,14 +160,6 @@ void CCDB_service::Initialize() {
                          "(it supports mysql://, sqlite:// and, when built with libcurl, http(s):// of the HTTP API)", m_safe_url.c_str());
     }
     m_generator = std::make_unique<ccdb::CalibrationGenerator>();
-
-    auto& log = GetLogger();
-    if (m_tag.empty()) {
-        LOG_INFO(log) << "CCDB_service: " << m_safe_url << ", variation '" << m_variation << "', time '"
-                      << (m_time_string.empty() ? "newest" : m_time_string) << "'" << LOG_END;
-    } else {
-        LOG_INFO(log) << "CCDB_service: " << m_safe_url << ", tag '" << m_tag << "'" << LOG_END;
-    }
 }
 
 
@@ -131,11 +173,63 @@ ccdb::Calibration* CCDB_service::GetCalibrationForRun(int run) {
 
     // The generator keeps one Calibration per (url, run, variation, time) or (url, run, tag) and is thread safe.
     // Under a tag the Calibration reads every request through it (Calibration::SetTag).
+    ccdb::Calibration* calibration = nullptr;
     try {
-        if (!m_tag.empty()) return m_generator->MakeCalibrationForTag(m_url, run, m_tag);
-        return m_generator->MakeCalibrationMicro(m_url, run, m_variation, m_time);
+        if (!m_tag.empty()) calibration = m_generator->MakeCalibrationForTag(m_url, run, m_tag);
+        else calibration = m_generator->MakeCalibrationMicro(m_url, run, m_variation, m_time);
     } catch (std::exception& ex) {
         throw JException("CCDB_service: can't connect to %s for run %d: %s", m_safe_url.c_str(), run, ex.what());
+    }
+    if (!m_provenance_path.empty()) {
+        std::lock_guard<std::mutex> lock(m_record_mutex);
+        if (m_recorded_calibrations.insert(calibration).second) calibration->EnableUsageRecord(true);
+    }
+    return calibration;
+}
+
+
+void CCDB_service::WriteUsageRecord() {
+    if (m_provenance_path.empty()) return;
+    std::lock_guard<std::mutex> lock(m_record_mutex);
+
+    // runs in order, each with its resolutions in request order
+    std::map<int, std::vector<ccdb::ResolvedAssignment>> by_run;
+    for (ccdb::Calibration* calibration : m_recorded_calibrations) {
+        for (const auto& resolved : calibration->GetResolvedAssignments()) by_run[resolved.run].push_back(resolved);
+    }
+
+    auto now = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch());
+    std::ostringstream out;
+    out << "{\n \"ccdb_version\": " << Json(CCDB_VERSION_STRING)
+        << ",\n \"connection\": " << Json(m_safe_url)
+        << ",\n \"variation\": " << Json(m_tag.empty() ? m_variation : "")
+        << ",\n \"time\": " << Json(IsoUtc(m_time))
+        << ",\n \"tag\": " << Json(m_tag)
+        << ",\n \"generated\": " << Json(IsoUtc(now.count()))
+        << ",\n \"resolved\": [";
+    bool first = true;
+    for (const auto& run : by_run) {
+        for (const auto& r : run.second) {
+            out << (first ? "\n" : ",\n") << "  {\"request\": " << Json(r.request) << ", \"path\": " << Json(r.path)
+                << ", \"run\": " << r.run << ", \"variation\": " << Json(r.variation) << ", \"time\": " << Json(IsoUtc(r.timeMicro))
+                << ", \"tag\": " << Json(r.tag) << ", \"assignment_id\": " << r.assignmentId
+                << ", \"sha256\": " << Json(r.sha256) << "}";
+            first = false;
+        }
+    }
+    out << (first ? "]\n}\n" : "\n ]\n}\n");
+
+    // written whole and renamed, so a reader never sees half a record
+    std::string partial = m_provenance_path + ".part";
+    {
+        std::ofstream file(partial, std::ios::binary | std::ios::trunc);
+        if (!file) throw JException("CCDB_service: can't write ccdb:provenance file '%s'", partial.c_str());
+        file << out.str();
+    }
+    std::error_code error;
+    std::filesystem::rename(partial, m_provenance_path, error);
+    if (error) {
+        throw JException("CCDB_service: can't write ccdb:provenance file '%s': %s", m_provenance_path.c_str(), error.message().c_str());
     }
 }
 

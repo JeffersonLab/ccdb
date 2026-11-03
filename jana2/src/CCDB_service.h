@@ -17,6 +17,12 @@
 //     ccdb:tag        a CCDB tag: it gives both variation and time, so it can't be set with them
 //     ccdb:cache_dir  where GetResource keeps fetched files; default $XDG_CACHE_HOME/ccdb/resources
 //                     or $HOME/.cache/ccdb/resources
+//     ccdb:provenance a file for the record of the constants the job resolved (JSON); default empty = no record.
+//                     Setting it turns on Calibration::EnableUsageRecord; the file is written when the service
+//                     ends, or when WriteUsageRecord() is called
+//
+// At startup the service logs the connection (password masked) with the variation and time, or the tag. Without
+// ccdb:time and ccdb:tag it warns: the job reads the newest constants, which its parameters can't repeat later.
 
 #pragma once
 
@@ -31,6 +37,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <set>
 #include <string>
 
 class JParameter;
@@ -87,6 +94,13 @@ public:
     const std::string& GetTimeString() const { return m_time_string; }
     const std::string& GetTag() const { return m_tag; }
     const std::string& GetCacheDir() const { return m_cache_dir; }
+    const std::string& GetProvenancePath() const { return m_provenance_path; }
+
+    /// Writes the record of the constants this job resolved to ccdb:provenance, as JSON: a header (CCDB version,
+    /// connection without password, variation, time or tag, when written) and, per run, every distinct resolution
+    /// with its assignment id and the SHA-256 of the data (docs/apis/jana.md, "What a job used"). The service calls
+    /// it when it ends; a processor may call it earlier, from its Finish(). Does nothing without ccdb:provenance.
+    void WriteUsageRecord();
 
 protected:
     /// Declares the parameters and checks them, so a wrong setting fails when the application starts
@@ -112,12 +126,16 @@ private:
     std::string m_time_string;
     std::string m_tag;
     std::string m_cache_dir;
+    std::string m_provenance_path;
     int64_t m_time = 0;              ///< m_time_string parsed, UTC microseconds (docs/concepts/time.md); 0 = newest
 
     JParameter* m_variation_param = nullptr;   ///< kept to know whether the user set it (a tag excludes it)
     JParameter* m_time_param = nullptr;
 
     std::unique_ptr<ccdb::CalibrationGenerator> m_generator;
+
+    std::mutex m_record_mutex;                            ///< guards m_recorded_calibrations and the file
+    std::set<ccdb::Calibration*> m_recorded_calibrations; ///< every Calibration handed out while ccdb:provenance is set
 
     std::mutex m_resources_mutex;                         ///< one fetch at a time per service
     std::map<std::string, std::string> m_verified_resources;  ///< sha256 -> path checked by this service
