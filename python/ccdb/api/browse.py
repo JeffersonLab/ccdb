@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, Query, Request
 
 from . import models, service
 from .dependencies import provider_dependency
-from .responses import respond_json
+from .responses import SHORT, respond, respond_json
 
 router = APIRouter()
 
@@ -61,6 +61,12 @@ def table_schema(path: str, request: Request, db=Depends(provider_dependency)):
     return respond_json(request, service.table_schema(db, path, request.url.path))
 
 
+@router.get("/tables/{path:path}/card", response_model=models.TableCard,
+            summary="A data card: description, columns with units, versions and run coverage, authors, tags, license and citation")
+def table_card(path: str, request: Request, db=Depends(provider_dependency)):
+    return respond_json(request, service.table_card(db, path))
+
+
 @router.get("/tables/{path:path}", response_model=models.TableInfo, summary="One table: columns with units, properties, activity")
 def table(path: str, request: Request, db=Depends(provider_dependency)):
     return respond_json(request, service.table(db, path))
@@ -95,6 +101,14 @@ def tag(name: str, request: Request, db=Depends(provider_dependency)):
 def logs(request: Request, page: int = Query(1, ge=1), per_page: int = Query(50), search: str = "",
          sort: str = Query("id", description="created, action, author or id"), order: str = Query("desc"), db=Depends(provider_dependency)):
     return respond_json(request, service.logs(db, request.query_params))
+
+
+@router.get("/logs.atom", summary="The newest log records as an Atom feed; `search` and `per_page` as for /logs",
+            responses={200: {"content": {"application/atom+xml": {}}, "description": "An Atom 1.0 feed (RFC 4287)"}})
+def logs_atom(request: Request, per_page: int = Query(50), search: str = "", db=Depends(provider_dependency)):
+    feed = service.logs_atom(db, request.query_params, str(request.url),
+                             lambda log_id: str(request.url_for("log_record", log_id=log_id)))
+    return respond(request, feed, "application/atom+xml; charset=utf-8", SHORT)
 
 
 @router.get("/logs/{log_id}", response_model=models.LogRecord, summary="One log record in full")

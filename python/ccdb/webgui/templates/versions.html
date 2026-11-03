@@ -12,6 +12,7 @@
       {%- for segment in segments[:-1] %}{% set prefix.path = prefix.path + '/' + segment %}/<a class="link-body-emphasis text-decoration-none" href="{{ url_for('directory_tree', filter=prefix.path) }}" title="Show {{ prefix.path }} in the tree">{{ segment }}</a>{% endfor %}/{{ segments[-1] }}
     </h1>
     <a class="btn btn-primary" href="{{ url_for('compare_assignments', table=table.path) }}" title="Compare two assignments of this table"><svg class="ico"><use href="#i-compare"/></svg> Compare</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('table_card', table_path=table.path.lstrip('/')) }}" title="The data card: description, columns with units, run coverage, authors, tags, license and citation">Card</a>
     {#- Pick to compare needs JavaScript (pick.js unhides the button): a checkbox per row, the first two picks are A and B. -#}
     <button type="button" class="btn btn-outline-secondary" id="pick-toggle" aria-pressed="false" title="Pick two assignments from the list and compare them" hidden>Pick to compare</button>
   </div>

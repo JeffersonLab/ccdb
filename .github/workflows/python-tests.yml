@@ -38,10 +38,11 @@ jobs:
           echo /opt/venv/bin >> "$GITHUB_PATH"
 
       # The web extra (Flask) is needed by the web GUI unit tests, the api extra (FastAPI) by unit_test_api, the mcp extra by
-      # unit_test_mcp (Python 3.10+; the 3.9 job skips it), the dev
+      # unit_test_mcp (Python 3.10+; the 3.9 job skips it), the export and frames extras (pyarrow, pandas) by
+      # unit_test_export_parquet and unit_test_frames, the dev
       # extra (PyYAML, httpx, jsonschema) by unit_test_metadata_files and unit_test_api
       - name: Install ccdb
-        run: pip install ".[web,api,mcp,dev]"
+        run: pip install ".[web,api,mcp,export,frames,dev]"
 
       - name: Run unit tests
         working-directory: python
@@ -61,6 +62,9 @@ jobs:
           tests.unit_test_api
           tests.unit_test_demo_tables
           tests.unit_test_mcp
+          tests.unit_test_card_feed
+          tests.unit_test_export_parquet
+          tests.unit_test_frames
           tests.unit_test_utility_argument_parse
           tests.unit_test_version
           tests.unit_test_provider_attach
@@ -120,6 +124,10 @@ jobs:
       # Builds its own small SQLite databases in a temporary directory
       - name: Run shallow copy script tests
         run: python -m unittest discover -s scripts/shallow_copy
+
+      # The load test scripts (docs/deployment/scaling.md): generator distributions, client aggregation, report output
+      - name: Run load test script tests
+        run: python -m unittest discover -s scripts/loadtest
 
       - name: CLI entry point smoke
         run: |

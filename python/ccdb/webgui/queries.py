@@ -548,3 +548,86 @@ def variation_chains(session):
             current = by_id[current][1]
         chains[name] = list(reversed(chain))
     return chains
+
+
+# --------------------------------------------------------------------------- data card
+
+# Instance properties a card shows (`ccdb prop set --instance`), in this order
+CARD_INSTANCE_PROPERTIES = ("experiment", "license", "citation", "contact", "url")
+
+
+@dataclass
+class CardVariation:
+    """The assignments of one variation on a table: how many, and the runs they cover as merged intervals."""
+    name: str
+    versions: int
+    runs: list
+
+
+@dataclass
+class TableCard:
+    """What the data card of a table shows (GUI /tables/<path>/card, API /api/v1/tables/<path>/card). Times are the
+    model's: assignment creation times naive local wall times, tag times naive UTC."""
+    table: TypeTable
+    properties: list
+    instance: list
+    versions: int
+    variations: list
+    authors: list
+    last_created: datetime = None
+    last_author: str = ""
+    last_variation: str = ""
+    last_comment: str = ""
+    tags: list = None
+
+
+def merged_runs(ranges):
+    """[(min, max)] merged into the fewest intervals that cover the same runs, sorted"""
+    merged = []
+    for low, high in sorted(ranges):
+        if merged and low <= merged[-1][1] + 1:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], high))
+        else:
+            merged.append((low, high))
+    return merged
+
+
+def table_card(db, table):
+    """The data card of a table: its properties and the instance's, its columns (on the table object), its versions
+    and run coverage per variation, its authors, its last change, and the tags under which it gives constants."""
+    session = db.session
+    rows = session.execute(
+        select(Variation.name, RunRange.min, RunRange.max, User.name, Assignment.created, Assignment.__table__.c.comment)
+        .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
+        .join(Variation, Assignment.variation_id == Variation.id)
+        .join(RunRange, Assignment.run_range_id == RunRange.id)
+        .join(User, Assignment.author_id == User.id, isouter=True)
+        .where(ConstantSet.type_table_id == table.id)
+        .order_by(Assignment.created, Assignment.id)).all()
+
+    ranges, authors = {}, {}
+    for variation, run_min, run_max, author, _, _ in rows:
+        ranges.setdefault(variation, []).append((run_min, run_max))
+        authors[author or ""] = authors.get(author or "", 0) + 1
+    variations = [CardVariation(name, len(found), merged_runs(found)) for name, found in sorted(ranges.items())]
+    card = TableCard(table=table, properties=properties_of(session, "table", [table.id]).get(table.id, []),
+                     instance=[(name, value) for name, value in properties_of(session, "instance", [0]).get(0, [])
+                               if name in CARD_INSTANCE_PROPERTIES],
+                     versions=len(rows), variations=variations,
+                     authors=sorted(authors.items(), key=lambda item: (-item[1], item[0])), tags=[])
+    card.instance.sort(key=lambda item: CARD_INSTANCE_PROPERTIES.index(item[0]))
+    if rows:
+        newest = rows[-1]
+        card.last_created, card.last_author, card.last_variation, card.last_comment = newest[4], newest[3] or "", newest[0], newest[5] or ""
+
+    # A tag covers the table when its variation, or a parent of it, has an assignment of the table made before its time
+    for tag_row in list_tags(session):
+        tag = db.get_tag(tag_row.name)
+        variation_ids = [variation.id for variation in db.get_variation_tree_up(db.get_tag_variation(tag))]
+        found = session.execute(select(Assignment.id)
+                                .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
+                                .where(ConstantSet.type_table_id == table.id, Assignment.variation_id.in_(variation_ids),
+                                       db._created_at_or_before(tag.snapshot_time)).limit(1)).first()
+        if found:
+            card.tags.append(tag_row)
+    return card

@@ -94,6 +94,8 @@ Simulated data have no run of their own. The practice is to simulate a data-taki
 simulation the run numbers of that period and reading constants in a variation made for simulation
 (`mc` in the standard layout), which inherits everything from `default` that it does not override. The
 run registry is not involved; the run numbers are the link between the simulated and the real period.
+The [DD4hep plugins](apis/dd4hep.md) read geometry constants and detector conditions the same way, so a
+simulation production and its reconstruction see the same constants for a run, fixed by one tag.
 
 ## Scale
 
@@ -102,7 +104,7 @@ at every run change, so the load on the calibration database is a burst, not a s
 run period means the same constants for thousands of jobs, which is what makes snapshots work: a SQLite
 copy of the database, or a shallow copy holding one run period, serves a farm with no database server
 in the loop. [Deploying CCDB for a new experiment](deployment/new-experiment.md#serving-constants-to-jobs)
-describes the options.
+describes the options and [Scaling](deployment/scaling.md) measures them against each other.
 
 ## CCDB and RCDB
 
@@ -114,16 +116,14 @@ deployed together on one database server, and merging them into one package is o
 
 ## Roadmap
 
-None of the following is in CCDB 2.4.0. It is listed so that the direction is clear.
+None of the following is in CCDB 2.5.0. It is listed so that the direction is clear.
 
 - **Validity-time assignments.** An assignment gets a time range as an alternative to a run range; a
   request accepts a validity timestamp; resolution picks by time when no run is given. Existing data
   stay valid under an implicit "all time" range, and the request string keeps its shape. The schema
   already has an `eventRanges` table for finer-than-run validity that no API uses yet
   (see [database schema](concepts/database-schema.md#eventranges)); the time range follows the same pattern.
-- **Snapshot tags.** A name for a variation plus a snapshot time, so that a campaign pins its constants by
-  name. The schema has unused `tags` tables for this.
-- **HTTP access.** A read-only HTTP API with immutable URLs for exact assignments, and a bundle per run
-  that a job downloads once, so that farms read through ordinary HTTP caches instead of database
-  connections.
+- **Bundles of chosen tables.** A run bundle holds one set of every table; a bundle of the tables a job reads
+  would be a fraction of the size ([Scaling](deployment/scaling.md) measures the difference).
+- **A conditions REST adapter**, so that frameworks speaking the HSF conditions interface read CCDB.
 - **One package with RCDB**, so that time-to-run and run-to-constants are one call.

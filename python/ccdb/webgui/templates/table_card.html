@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}{{ table.path }} card · CCDB{% endblock %}
+
+{% from '_deprecation.html' import notice with context %}
+{% import '_properties.html' as props %}
+
+{#- A run interval as `ccdb vers` writes it; the last run of the open range is "inf" -#}
+{% macro run_interval(interval) -%}{{ interval[0] }}–{{ 'inf' if interval[1] == 2147483647 else interval[1] }}{%- endmacro %}
+
+{% block page_header %}
+<div class="mb-3">
+  <div class="toolbar mb-1">
+    <h1 class="h3 m-0 text-break"><svg class="ico me-1"><use href="#i-table"/></svg>{{ table.path }}</h1>
+    <a class="btn btn-outline-secondary" href="{{ url_for('versions', table_path=table.path.lstrip('/')) }}" title="Every assignment of this table">Versions</a>
+  </div>
+  <p class="text-body-secondary mb-2" id="card-description">{{ table.comment or 'No description.' }}</p>
+  {{ notice(table, deprecated_by) }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-6">
+    <h2 class="h5">Summary</h2>
+    <table class="table table-sm meta" id="card-summary">
+      <tbody>
+        <tr><th scope="row">Shape</th><td data-card="shape">{{ table.rows_count }} row{{ 's' if table.rows_count != 1 }} × {{ table.columns | length }} column{{ 's' if table.columns | length != 1 }}</td></tr>
+        <tr><th scope="row">Versions</th><td data-card="versions">{{ card.versions }}</td></tr>
+        {%- if card.last_created %}
+        <tr><th scope="row">Last change</th><td data-card="last-change">{{ card.last_created.strftime('%Y-%m-%d %H:%M:%S') }} · {{ card.last_author }} · {{ card.last_variation }}{% if card.last_comment %} — {{ card.last_comment }}{% endif %}</td></tr>
+        {%- endif %}
+        <tr><th scope="row">Authors</th><td data-card="authors">{% for name, count in card.authors %}{{ name or '(unknown)' }} ({{ count }}){{ ', ' if not loop.last }}{% else %}none{% endfor %}</td></tr>
+        <tr><th scope="row">Tags</th><td data-card="tags">{% for tag in card.tags %}<a class="badge rounded-pill text-bg-secondary text-decoration-none me-1" href="{{ url_for('tag_page', name=tag.name) }}">@{{ tag.name }}</a>{% else %}none{% endfor %}</td></tr>
+        {{ props.rows(card.properties) }}
+      </tbody>
+    </table>
+  </div>
+  <div class="col-lg-6">
+    <h2 class="h5">Use and cite</h2>
+    {%- if card.instance %}
+    <table class="table table-sm meta" id="card-instance">
+      <tbody>
+        {%- for name, text in card.instance %}
+        <tr class="property"><th scope="row" class="fw-normal">{{ 'URL' if name == 'url' else name | capitalize }}</th><td class="text-break" data-card="instance-{{ name }}">{{ props.value(text) }}</td></tr>
+        {%- endfor %}
+      </tbody>
+    </table>
+    {%- else %}
+    <p class="text-body-secondary small" id="card-instance">This CCDB instance names no license or citation yet: <span class="cell-mono">ccdb prop set --instance license …</span></p>
+    {%- endif %}
+    <h2 class="h5 mt-3">Run coverage</h2>
+    <table class="table table-sm" id="card-coverage">
+      <thead><tr><th scope="col">Variation</th><th scope="col" class="text-end">Versions</th><th scope="col">Runs</th></tr></thead>
+      <tbody>
+        {%- for variation in card.variations %}
+        <tr data-variation="{{ variation.name }}"><td>{{ variation.name }}</td><td class="text-end">{{ variation.versions }}</td><td class="cell-mono">{% for interval in variation.runs %}{{ run_interval(interval) }}{{ ', ' if not loop.last }}{% endfor %}</td></tr>
+        {%- else %}
+        <tr><td colspan="3" class="text-body-secondary">No constants yet.</td></tr>
+        {%- endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 class="h5 mt-2">Columns</h2>
+<div class="table-responsive">
+<table class="table table-sm" id="card-columns">
+  <thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Units</th><th scope="col">Comment</th></tr></thead>
+  <tbody>
+    {%- for column in table.columns %}
+    <tr><td class="cell-mono">{{ column.name }}</td><td>{{ column.type }}</td><td>{{ column.units or '' }}</td><td class="text-break">{{ column.comment or '' }}</td></tr>
+    {%- endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

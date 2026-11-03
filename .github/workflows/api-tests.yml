@@ -27,7 +27,15 @@ jobs:
 
       - name: Unit tests
         working-directory: python
-        run: python -m unittest tests.unit_test_api tests.unit_test_snapshot
+        run: python -m unittest tests.unit_test_api tests.unit_test_snapshot tests.unit_test_card_feed
+
+      # The DuckDB and polars recipes of docs/apis/analysis.md, which the python-tests jobs skip
+      - name: Install the export and frames extras, DuckDB and polars
+        run: pip install ".[export,frames]" duckdb polars
+
+      - name: Analysis recipes with DuckDB and polars
+        working-directory: python
+        run: python -m unittest tests.unit_test_export_parquet tests.unit_test_frames
 
       - name: Smoke suite, statuses and the OpenAPI document
         run: python scripts/api/smoke.py --label ci --check
