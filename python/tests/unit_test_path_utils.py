@@ -56,3 +56,24 @@ class PathUtilsTest(unittest.TestCase):
         self.assertTrue(ccdb.path_utils.validate_name("this_is_variation2"))
         self.assertFalse(ccdb.path_utils.validate_name("this-is_variation2"))
         self.assertFalse(ccdb.path_utils.validate_name("this:isvariation2"))
+
+
+class FormatRequestTimeTest(unittest.TestCase):
+    """format_request_time renders local wall time, whatever the datetime it gets (F34)"""
+
+    def test_naive_local_time_as_is(self):
+        import datetime
+        from ccdb.path_utils import format_request_time
+        self.assertEqual(format_request_time(datetime.datetime(2026, 3, 1, 12, 30, 15)), "2026-03-01_12-30-15")
+        self.assertEqual(format_request_time(datetime.datetime(2026, 3, 1, 12, 30, 15, 820564)),
+                         "2026-03-01_12-30-15.820564")
+
+    def test_aware_utc_time_becomes_local(self):
+        import datetime
+        from ccdb.path_utils import format_request_time, utc_to_local
+        instant = datetime.datetime(2026, 11, 3, 16, 3, 33, 820564, tzinfo=datetime.timezone.utc)
+        self.assertEqual(format_request_time(instant), format_request_time(utc_to_local(instant)))
+        offset = instant.astimezone().utcoffset()
+        if offset:    # the zone of this process is not UTC: the rendered hour differs from the UTC hour
+            self.assertNotEqual(format_request_time(instant), "2026-11-03_16-03-33.820564")
+

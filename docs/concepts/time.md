@@ -71,6 +71,9 @@ microsecond, partial times, three time zones, and tags.
 Commands and the web GUI show times as local wall time, to the second. Where a time names an assignment
 exactly — `ccdb vers -l`, `ccdb tag NAME`, the request strings in web GUI links — it carries the microseconds
 when they are not zero, so the address resolves to that assignment.
+The request string a log record carries (`Created assignment '/path:run:variation:time'`) follows the same
+rule: the writer's local wall time, with microseconds, so `ccdb cat` on the string returns that assignment in
+the zone it was written in.
 
 ## C++
 
