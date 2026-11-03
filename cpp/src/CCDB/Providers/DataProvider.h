@@ -154,6 +154,16 @@ namespace ccdb
         */
         virtual Assignment* GetAssignmentShortByTag(int run, const std::string& path, const std::string& tagName, bool loadColumns)=0;
 
+        /** @brief The variation and the snapshot time of a tag (CCDB 2.5)
+        *
+        * @param [in] tagName - tag name, without '@'
+        * @param [out] variation - the tag's variation name
+        * @param [out] snapshotMicro - the tag's time, UTC microseconds since the epoch
+        * @return false when there is no such tag
+        * @throw std::runtime_error if the name is invalid, or the provider has no tags (this default)
+        */
+        virtual bool GetTag(const std::string& tagName, std::string& variation, int64_t& snapshotMicro);
+
 
 
 

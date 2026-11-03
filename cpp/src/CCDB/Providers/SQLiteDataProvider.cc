@@ -372,13 +372,10 @@ static Assignment* SelectAssignmentShortByTimeLimit(SQLiteDataProvider* provider
 }
 
 
-Assignment* ccdb::SQLiteDataProvider::GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns)
+bool ccdb::SQLiteDataProvider::GetTag(const string& tagName, string& variation, int64_t& snapshotMicro)
 {
     CheckTagName(tagName);
-
-    // One query for the tag's variation and snapshot time, then the resolution with that variation and time limit
-    string tagVariation;
-    string tagSnapshotTime;
+    string snapshotTime;
     SQLiteStatement tagQuery(mDatabase);
     tagQuery.Prepare(
         "SELECT `variations`.`name`, `tags`.`snapshotTime` "
@@ -387,16 +384,25 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShortByTag(int run, const str
         "WHERE `tags`.`name` = ?1 "
         "LIMIT 1 ");
     tagQuery.BindString(1, tagName);
-    auto tagRows = tagQuery.Execute([&tagVariation, &tagSnapshotTime, &tagQuery](uint64_t rowIndex) {
-        tagVariation = tagQuery.ReadString(0);
-        tagSnapshotTime = tagQuery.ReadString(1);
+    auto tagRows = tagQuery.Execute([&variation, &snapshotTime, &tagQuery](uint64_t rowIndex) {
+        variation = tagQuery.ReadString(0);
+        snapshotTime = tagQuery.ReadString(1);
     });
-    if(tagRows == 0) {
+    if(tagRows == 0) return false;
+    snapshotMicro = GetTagMicro(tagName, snapshotTime);
+    return true;
+}
+
+
+Assignment* ccdb::SQLiteDataProvider::GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns)
+{
+    // The tag's variation and its time, then the resolution with them; both times are UTC instants with microseconds
+    string tagVariation;
+    int64_t tagMicro = 0;
+    if(!GetTag(tagName, tagVariation, tagMicro)) {
         throw std::runtime_error("SQLiteDataProvider::GetAssignmentShortByTag => No tag '" + tagName + "' was found");
     }
-
-    // Both columns are UTC instants with microseconds: the tag's time is the limit, exactly
-    return GetAssignmentShortMicro(run, path, GetTagMicro(tagName, tagSnapshotTime), tagVariation, loadColumns);
+    return GetAssignmentShortMicro(run, path, tagMicro, tagVariation, loadColumns);
 }
 
 

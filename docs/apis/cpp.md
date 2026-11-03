@@ -54,9 +54,30 @@ delete calib;  // <== DON'T DO THIS
 calib = generator.MakeCalibration("<SAME connection string>");  // Problem: deleted pointer.
 ```
 
+### Reading through a tag
+
+To read every request of a job from the constants a [tag](concepts/tags.md) froze, set the tag on the
+Calibration once, where the job sets its run and variation, and keep the table names in the code:
+
+```cpp
+ccdb::CalibrationGenerator generator;
+ccdb::Calibration* calib = generator.MakeCalibrationForTag("mysql://ccdb_user@hallddb.jlab.org/ccdb", 1500, "Run2026");
+
+std::vector<std::vector<double>> values;
+calib->GetCalib(values, "/test/test_vars/test_table");      // the constants of Run2026
+```
+
+`calib->SetTag("Run2026")` does the same on a Calibration you already have. The tag is looked up at once, so a
+wrong name fails there. The Calibration then reports the tag with `GetDefaultTag()`, and its
+`GetDefaultVariation()` and `GetDefaultTimeMicro()` are the tag's variation and time. A request that names a
+variation or a time is an error, since it would mix the tag with other constants; a request with another tag
+(`/path@Run2025`) reads that tag. A JANA context string names a tag with `tag=Run2026`
+(`PathUtils::ParseContext`), which can't be combined with `variation=` or `calibtime=`.
+
 ### Requests with a tag
 
-To read constants frozen by a [tag](concepts/tags.md), add `@NAME` to the request:
+To read the constants of a tag in one request, for example while checking a calibration, add `@NAME` to the
+request:
 
 ```cpp
 std::vector<std::vector<double>> values;

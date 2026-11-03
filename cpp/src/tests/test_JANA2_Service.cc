@@ -212,10 +212,15 @@ TEST_CASE("CCDB_service/ccdb:tag", "[jana2]")
         REQUIRE(service->GetConstants<vector<vector<double>>>(250, "/test/jana2/gains") == GAINS_OLD);
         REQUIRE(service->GetConstants<double>(100, "/test/jana2/pedestal") == 100);
 
-        // A Calibration can't carry a tag, so the service refuses to hand one out under a tag
-        REQUIRE_THROWS_WITH(service->GetCalibration(100), Catch::Contains("Use GetConstants"));
-        // A request that names a variation under a tag is the tag-with-variation error of the request syntax
-        REQUIRE_THROWS(service->GetConstants<double>(100, "/test/jana2/pedestal::jana2_child"));
+        // The Calibration of the run reads through the tag too (Calibration::SetTag)
+        ccdb::Calibration* calib = service->GetCalibration(100);
+        REQUIRE(calib->GetDefaultTag() == "jana2_campaign");
+        vector<vector<double>> gains;
+        REQUIRE(calib->GetCalib(gains, "/test/jana2/gains"));
+        REQUIRE(gains == GAINS_OLD);
+        // A request that names a variation under a tag would mix the tag with other constants: an error
+        REQUIRE_THROWS_WITH(service->GetConstants<double>(100, "/test/jana2/pedestal::jana2_child"),
+                            Catch::Contains("may not name a variation"));
     }
 
     SECTION("A tag together with a time is a configuration error")

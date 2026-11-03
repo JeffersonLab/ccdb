@@ -790,10 +790,9 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShortMicro(int run, cons
 }
 
 
-ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns)
+bool ccdb::MySQLDataProvider::GetTag(const string& tagName, string& variation, int64_t& snapshotMicro)
 {
-    string thisFuncName("ccdb::MySQLDataProvider::GetAssignmentShortByTag");
-
+    string thisFuncName("ccdb::MySQLDataProvider::GetTag");
     if(!IsConnected()) {
         throw runtime_error(thisFuncName+" => Not connected to DB");
     }
@@ -801,8 +800,7 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByTag(int run, cons
     // The name goes into the query text, so only a-zA-Z0-9_ may pass
     CheckTagName(tagName);
 
-    // One query for the tag's variation and snapshot time, then the normal resolution. Both times are UTC instants
-    // with microseconds; DATETIME(6) is read as text with its fraction
+    // DATETIME(6) is read as text with its fraction; it holds a UTC instant
     string tagQuery =
         "SELECT `variations`.`name`, `tags`.`snapshotTime` "
         "FROM `tags` "
@@ -816,12 +814,26 @@ ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByTag(int run, cons
     if(!FetchRow())
     {
         FreeMySQLResult();
-        throw runtime_error(thisFuncName+" => No tag '"+tagName+"' was found");
+        return false;
     }
-    string tagVariation = ReadString(0);
-    string tagSnapshotTime = ReadString(1);
+    variation = ReadString(0);
+    string snapshotTime = ReadString(1);
     FreeMySQLResult();
-    return GetAssignmentShortMicro(run, path, GetTagMicro(tagName, tagSnapshotTime), tagVariation, loadColumns);
+    snapshotMicro = GetTagMicro(tagName, snapshotTime);
+    return true;
+}
+
+
+ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns)
+{
+    // The tag's variation and its time, then the normal resolution; both times are UTC instants with microseconds
+    string tagVariation;
+    int64_t tagMicro = 0;
+    if(!GetTag(tagName, tagVariation, tagMicro))
+    {
+        throw runtime_error("ccdb::MySQLDataProvider::GetAssignmentShortByTag => No tag '"+tagName+"' was found");
+    }
+    return GetAssignmentShortMicro(run, path, tagMicro, tagVariation, loadColumns);
 }
 
 

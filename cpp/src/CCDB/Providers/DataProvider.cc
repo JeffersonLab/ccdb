@@ -102,6 +102,12 @@ int64_t DataProvider::GetTagMicro(const string& tagName, const string& snapshotT
 }
 
 
+bool DataProvider::GetTag(const string& tagName, string& variation, int64_t& snapshotMicro)
+{
+    throw std::runtime_error("DataProvider::GetTag => this provider has no tags (tag '" + tagName + "')");
+}
+
+
 Assignment* DataProvider::GetAssignmentShortMicro(int run, const string& path, int64_t timeMicro, const string& variation, bool loadColumns)
 {
     return GetAssignmentShort(run, path, TimeUtils::ToSeconds(timeMicro), variation, loadColumns);
