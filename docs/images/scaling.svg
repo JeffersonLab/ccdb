@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1116 364" width="1116" height="364" role="img" aria-label="Scaling with the number of jobs: delivered share, wait per job and database requests" font-family="'Noto Sans', 'DejaVu Sans', 'Segoe UI', Helvetica, Arial, sans-serif">
+<rect width="1116" height="364" rx="0" fill="#fcfcfb"/>
+<line x1="64.0" y1="26.0" x2="82.0" y2="26.0" stroke="#2a78d6" stroke-width="2" stroke-linecap="round"/>
+<circle cx="73.0" cy="26.0" r="4" fill="#2a78d6"/>
+<text x="88.0" y="30.0" font-size="11" fill="#52514e" text-anchor="start" font-weight="normal">Jobs ask MySQL directly</text>
+<line x1="247.4" y1="26.0" x2="265.4" y2="26.0" stroke="#eb6834" stroke-width="2" stroke-linecap="round"/>
+<circle cx="256.4" cy="26.0" r="4" fill="#eb6834"/>
+<text x="271.4" y="30.0" font-size="11" fill="#52514e" text-anchor="start" font-weight="normal">Jobs ask the HTTP API, no cache</text>
+<line x1="477.2" y1="26.0" x2="495.2" y2="26.0" stroke="#1baf7a" stroke-width="2" stroke-linecap="round"/>
+<circle cx="486.2" cy="26.0" r="4" fill="#1baf7a"/>
+<text x="501.2" y="30.0" font-size="11" fill="#52514e" text-anchor="start" font-weight="normal">Jobs ask the API through a cache, table by table</text>
+<line x1="805.6" y1="26.0" x2="823.6" y2="26.0" stroke="#eda100" stroke-width="2" stroke-linecap="round"/>
+<circle cx="814.6" cy="26.0" r="4" fill="#eda100"/>
+<text x="829.6" y="30.0" font-size="11" fill="#52514e" text-anchor="start" font-weight="normal">Jobs download a run bundle through a cache</text>
+<text x="64.0" y="64.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="700">a</text>
+<text x="78.0" y="64.0" font-size="12.5" fill="#0b0b0b" text-anchor="start" font-weight="600">Jobs that got their constants</text>
+<line x1="64.0" y1="308.0" x2="364.0" y2="308.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="312.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">0 %</text>
+<line x1="64.0" y1="250.5" x2="364.0" y2="250.5" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="254.5" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">25 %</text>
+<line x1="64.0" y1="193.0" x2="364.0" y2="193.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="197.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">50 %</text>
+<line x1="64.0" y1="135.5" x2="364.0" y2="135.5" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="139.5" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">75 %</text>
+<line x1="64.0" y1="78.0" x2="364.0" y2="78.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="82.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">100 %</text>
+<line x1="64.0" y1="308.0" x2="364.0" y2="308.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<line x1="64.0" y1="308.0" x2="64.0" y2="312.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<text x="64.0" y="325.0" font-size="10.5" fill="#52514e" text-anchor="middle" font-weight="normal" font-variant-numeric="tabular-nums">1k</text>
+<line x1="364.0" y1="308.0" x2="364.0" y2="312.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<text x="364.0" y="325.0" font-size="10.5" fill="#52514e" text-anchor="middle" font-weight="normal" font-variant-numeric="tabular-nums">20k</text>
+<polyline fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="64.0,78.0 364.0,269.6"/>
+<circle cx="64.0" cy="78.0" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="64.0" cy="78.0" r="4.5" fill="#2a78d6"/>
+<circle cx="364.0" cy="269.6" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="364.0" cy="269.6" r="4.5" fill="#2a78d6"/>
+<polyline fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="64.0,78.0 364.0,308.0"/>
+<circle cx="64.0" cy="78.0" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="64.0" cy="78.0" r="4.5" fill="#eb6834"/>
+<circle cx="364.0" cy="308.0" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="364.0" cy="308.0" r="4.5" fill="#eb6834"/>
+<polyline fill="none" stroke="#1baf7a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="64.0,78.0 364.0,297.5"/>
+<circle cx="64.0" cy="78.0" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="64.0" cy="78.0" r="4.5" fill="#1baf7a"/>
+<circle cx="364.0" cy="297.5" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="364.0" cy="297.5" r="4.5" fill="#1baf7a"/>
+<polyline fill="none" stroke="#eda100" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="64.0,78.0 364.0,78.1"/>
+<circle cx="64.0" cy="78.0" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="64.0" cy="78.0" r="4.5" fill="#eda100"/>
+<circle cx="364.0" cy="78.1" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="364.0" cy="78.1" r="4.5" fill="#eda100"/>
+<text x="428.0" y="64.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="700">b</text>
+<text x="442.0" y="64.0" font-size="12.5" fill="#0b0b0b" text-anchor="start" font-weight="600">Wait per job</text>
+<line x1="428.0" y1="308.0" x2="728.0" y2="308.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="420.0" y="312.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">10 ms</text>
+<line x1="428.0" y1="262.0" x2="728.0" y2="262.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="420.0" y="266.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">100 ms</text>
+<line x1="428.0" y1="216.0" x2="728.0" y2="216.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="420.0" y="220.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">1 s</text>
+<line x1="428.0" y1="170.0" x2="728.0" y2="170.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="420.0" y="174.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">10 s</text>
+<line x1="428.0" y1="124.0" x2="728.0" y2="124.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="420.0" y="128.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">100 s</text>
+<line x1="428.0" y1="78.0" x2="728.0" y2="78.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="420.0" y="82.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">1 000 s</text>
+<line x1="428.0" y1="308.0" x2="728.0" y2="308.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<line x1="428.0" y1="308.0" x2="428.0" y2="312.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<text x="428.0" y="325.0" font-size="10.5" fill="#52514e" text-anchor="middle" font-weight="normal" font-variant-numeric="tabular-nums">1k</text>
+<line x1="728.0" y1="308.0" x2="728.0" y2="312.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<text x="728.0" y="325.0" font-size="10.5" fill="#52514e" text-anchor="middle" font-weight="normal" font-variant-numeric="tabular-nums">20k</text>
+<line x1="428.0" y1="159.8" x2="728.0" y2="159.8" stroke="#52514e" stroke-width="1" stroke-linecap="butt"/>
+<text x="724.0" y="154.8" font-size="10" fill="#52514e" text-anchor="end" font-weight="normal">local SQLite file</text>
+<line x1="428.0" y1="270.6" x2="728.0" y2="270.6" stroke="#52514e" stroke-width="1" stroke-linecap="butt"/>
+<text x="724.0" y="265.6" font-size="10" fill="#52514e" text-anchor="end" font-weight="normal">the same file after ANALYZE</text>
+<circle cx="428.0" cy="240.1" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="428.0" cy="240.1" r="4.5" fill="#2a78d6"/>
+<circle cx="428.0" cy="141.8" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="428.0" cy="141.8" r="4.5" fill="#eb6834"/>
+<circle cx="428.0" cy="252.0" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="428.0" cy="252.0" r="4.5" fill="#1baf7a"/>
+<polyline fill="none" stroke="#eda100" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="428.0,271.4 728.0,92.5"/>
+<circle cx="428.0" cy="271.4" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="428.0" cy="271.4" r="4.5" fill="#eda100"/>
+<circle cx="728.0" cy="92.5" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="728.0" cy="92.5" r="4.5" fill="#eda100"/>
+<text x="792.0" y="64.0" font-size="13" fill="#0b0b0b" text-anchor="start" font-weight="700">c</text>
+<text x="806.0" y="64.0" font-size="12.5" fill="#0b0b0b" text-anchor="start" font-weight="600">Requests reaching the database</text>
+<line x1="792.0" y1="308.0" x2="1092.0" y2="308.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="784.0" y="312.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">100</text>
+<line x1="792.0" y1="250.5" x2="1092.0" y2="250.5" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="784.0" y="254.5" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">1k</text>
+<line x1="792.0" y1="193.0" x2="1092.0" y2="193.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="784.0" y="197.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">10k</text>
+<line x1="792.0" y1="135.5" x2="1092.0" y2="135.5" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="784.0" y="139.5" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">100k</text>
+<line x1="792.0" y1="78.0" x2="1092.0" y2="78.0" stroke="#e9e8e3" stroke-width="1" stroke-linecap="butt"/>
+<text x="784.0" y="82.0" font-size="10.5" fill="#52514e" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">1M</text>
+<line x1="792.0" y1="308.0" x2="1092.0" y2="308.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<line x1="792.0" y1="308.0" x2="792.0" y2="312.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<text x="792.0" y="325.0" font-size="10.5" fill="#52514e" text-anchor="middle" font-weight="normal" font-variant-numeric="tabular-nums">1k</text>
+<line x1="1092.0" y1="308.0" x2="1092.0" y2="312.0" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<text x="1092.0" y="325.0" font-size="10.5" fill="#52514e" text-anchor="middle" font-weight="normal" font-variant-numeric="tabular-nums">20k</text>
+<circle cx="792.0" cy="100.8" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="792.0" cy="100.8" r="4.5" fill="#2a78d6"/>
+<circle cx="792.0" cy="118.2" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="792.0" cy="118.2" r="4.5" fill="#eb6834"/>
+<circle cx="792.0" cy="175.7" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="792.0" cy="175.7" r="4.5" fill="#1baf7a"/>
+<polyline fill="none" stroke="#eda100" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="792.0,308.0 1092.0,308.0"/>
+<circle cx="792.0" cy="308.0" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="792.0" cy="308.0" r="4.5" fill="#eda100"/>
+<circle cx="1092.0" cy="308.0" r="5.5" fill="#fcfcfb" stroke="#fcfcfb" stroke-width="2"/>
+<circle cx="1092.0" cy="308.0" r="4.5" fill="#eda100"/>
+<text x="578.0" y="350.0" font-size="11" fill="#52514e" text-anchor="middle" font-weight="normal">jobs starting within 5 minutes</text>
+</svg>

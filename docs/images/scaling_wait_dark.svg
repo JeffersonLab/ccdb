@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 388 364" width="388" height="364" role="img" aria-label="Scaling with the number of jobs: delivered share, wait per job and database requests" font-family="'Noto Sans', 'DejaVu Sans', 'Segoe UI', Helvetica, Arial, sans-serif">
+<rect width="388" height="364" rx="0" fill="#1a1a19"/>
+<line x1="64.0" y1="26.0" x2="82.0" y2="26.0" stroke="#3987e5" stroke-width="2" stroke-linecap="round"/>
+<circle cx="73.0" cy="26.0" r="4" fill="#3987e5"/>
+<text x="88.0" y="30.0" font-size="11" fill="#c3c2b7" text-anchor="start" font-weight="normal">Jobs ask MySQL directly</text>
+<line x1="247.4" y1="26.0" x2="265.4" y2="26.0" stroke="#d95926" stroke-width="2" stroke-linecap="round"/>
+<circle cx="256.4" cy="26.0" r="4" fill="#d95926"/>
+<text x="271.4" y="30.0" font-size="11" fill="#c3c2b7" text-anchor="start" font-weight="normal">Jobs ask the HTTP API, no cache</text>
+<line x1="477.2" y1="26.0" x2="495.2" y2="26.0" stroke="#199e70" stroke-width="2" stroke-linecap="round"/>
+<circle cx="486.2" cy="26.0" r="4" fill="#199e70"/>
+<text x="501.2" y="30.0" font-size="11" fill="#c3c2b7" text-anchor="start" font-weight="normal">Jobs ask the API through a cache, table by table</text>
+<line x1="805.6" y1="26.0" x2="823.6" y2="26.0" stroke="#c98500" stroke-width="2" stroke-linecap="round"/>
+<circle cx="814.6" cy="26.0" r="4" fill="#c98500"/>
+<text x="829.6" y="30.0" font-size="11" fill="#c3c2b7" text-anchor="start" font-weight="normal">Jobs download a run bundle through a cache</text>
+<text x="64.0" y="64.0" font-size="13" fill="#f0efec" text-anchor="start" font-weight="700">b</text>
+<text x="78.0" y="64.0" font-size="12.5" fill="#f0efec" text-anchor="start" font-weight="600">Wait per job</text>
+<line x1="64.0" y1="308.0" x2="364.0" y2="308.0" stroke="#2a2a28" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="312.0" font-size="10.5" fill="#c3c2b7" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">10 ms</text>
+<line x1="64.0" y1="262.0" x2="364.0" y2="262.0" stroke="#2a2a28" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="266.0" font-size="10.5" fill="#c3c2b7" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">100 ms</text>
+<line x1="64.0" y1="216.0" x2="364.0" y2="216.0" stroke="#2a2a28" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="220.0" font-size="10.5" fill="#c3c2b7" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">1 s</text>
+<line x1="64.0" y1="170.0" x2="364.0" y2="170.0" stroke="#2a2a28" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="174.0" font-size="10.5" fill="#c3c2b7" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">10 s</text>
+<line x1="64.0" y1="124.0" x2="364.0" y2="124.0" stroke="#2a2a28" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="128.0" font-size="10.5" fill="#c3c2b7" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">100 s</text>
+<line x1="64.0" y1="78.0" x2="364.0" y2="78.0" stroke="#2a2a28" stroke-width="1" stroke-linecap="butt"/>
+<text x="56.0" y="82.0" font-size="10.5" fill="#c3c2b7" text-anchor="end" font-weight="normal" font-variant-numeric="tabular-nums">1 000 s</text>
+<line x1="64.0" y1="308.0" x2="364.0" y2="308.0" stroke="#383835" stroke-width="1" stroke-linecap="butt"/>
+<line x1="64.0" y1="308.0" x2="64.0" y2="312.0" stroke="#383835" stroke-width="1" stroke-linecap="butt"/>
+<text x="64.0" y="325.0" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-weight="normal" font-variant-numeric="tabular-nums">1k</text>
+<line x1="364.0" y1="308.0" x2="364.0" y2="312.0" stroke="#383835" stroke-width="1" stroke-linecap="butt"/>
+<text x="364.0" y="325.0" font-size="10.5" fill="#c3c2b7" text-anchor="middle" font-weight="normal" font-variant-numeric="tabular-nums">20k</text>
+<line x1="64.0" y1="159.8" x2="364.0" y2="159.8" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<text x="360.0" y="154.8" font-size="10" fill="#c3c2b7" text-anchor="end" font-weight="normal">local SQLite file</text>
+<line x1="64.0" y1="270.6" x2="364.0" y2="270.6" stroke="#c3c2b7" stroke-width="1" stroke-linecap="butt"/>
+<text x="360.0" y="265.6" font-size="10" fill="#c3c2b7" text-anchor="end" font-weight="normal">the same file after ANALYZE</text>
+<circle cx="64.0" cy="240.1" r="5.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="64.0" cy="240.1" r="4.5" fill="#3987e5"/>
+<circle cx="64.0" cy="141.8" r="5.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="64.0" cy="141.8" r="4.5" fill="#d95926"/>
+<circle cx="64.0" cy="252.0" r="5.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="64.0" cy="252.0" r="4.5" fill="#199e70"/>
+<polyline fill="none" stroke="#c98500" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="64.0,271.4 364.0,92.5"/>
+<circle cx="64.0" cy="271.4" r="5.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="64.0" cy="271.4" r="4.5" fill="#c98500"/>
+<circle cx="364.0" cy="92.5" r="5.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="2"/>
+<circle cx="364.0" cy="92.5" r="4.5" fill="#c98500"/>
+<text x="214.0" y="350.0" font-size="11" fill="#c3c2b7" text-anchor="middle" font-weight="normal">jobs starting within 5 minutes</text>
+</svg>

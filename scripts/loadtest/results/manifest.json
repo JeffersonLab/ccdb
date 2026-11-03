@@ -1,0 +1,4764 @@
+{
+ "connection": "127.0.0.1:33105/ccdb_loadtest",
+ "scale": 0.1,
+ "seed": 2026,
+ "runs": 100000,
+ "campaign_time": "2026-01-01 00:00:00",
+ "assignments": 82541,
+ "sets": 59026,
+ "tables": [
+  {
+   "path": "/loadtest/d00/t0000",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d01/t0001",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d02/t0002",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d03/t0003",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d04/t0004",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 2,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d05/t0005",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d06/t0006",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d07/t0007",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d08/t0008",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d09/t0009",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d10/t0010",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d11/t0011",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d12/t0012",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d13/t0013",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 4,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d14/t0014",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 4,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d15/t0015",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 4,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d16/t0016",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 4,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d17/t0017",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 5,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d18/t0018",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 7,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d19/t0019",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 40,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d20/t0020",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 43,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d21/t0021",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 46,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d22/t0022",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d23/t0023",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d24/t0024",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d25/t0025",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d26/t0026",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 2,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d27/t0027",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 4,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d28/t0028",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 11716,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d29/t0029",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 12618,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d30/t0030",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 72380,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d31/t0031",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d32/t0032",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d33/t0033",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d34/t0034",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d35/t0035",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d36/t0036",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 44,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d37/t0037",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 124,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d38/t0038",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1867,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d39/t0039",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 5875,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d40/t0040",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d41/t0041",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 6,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d42/t0042",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 7,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d43/t0043",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 30,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d44/t0044",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 41,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d45/t0045",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1634,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d46/t0046",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 72369,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d47/t0047",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 72369,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d48/t0048",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 72372,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d49/t0049",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 72372,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d50/t0050",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 72372,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d51/t0051",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 72372,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d52/t0052",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 72374,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d53/t0053",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 115964,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d54/t0054",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 118142,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d55/t0055",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 118340,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d56/t0056",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 118340,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d57/t0057",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 118889,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d58/t0058",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d59/t0059",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d60/t0060",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 4,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d61/t0061",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 4,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d62/t0062",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 4941,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d63/t0063",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d00/t0064",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d01/t0065",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 2053,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d02/t0066",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d03/t0067",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 95143,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d04/t0068",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d05/t0069",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 8563,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d06/t0070",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 100251,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d07/t0071",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 879,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d08/t0072",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 2382,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d09/t0073",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3271,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d10/t0074",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 5515,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d11/t0075",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 16025,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d12/t0076",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 10411,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d13/t0077",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 31493,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d14/t0078",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 43813,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d15/t0079",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 122377,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d16/t0080",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 3639,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d17/t0081",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 6709,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d18/t0082",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 85223,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d19/t0083",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d20/t0084",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 4295,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d21/t0085",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 15540,
+   "assignments": 3
+  },
+  {
+   "path": "/loadtest/d22/t0086",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1244,
+   "assignments": 3
+  },
+  {
+   "path": "/loadtest/d23/t0087",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 13730,
+   "assignments": 4
+  },
+  {
+   "path": "/loadtest/d24/t0088",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 59239,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d25/t0089",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 7209,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d26/t0090",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 6,
+   "assignments": 6
+  },
+  {
+   "path": "/loadtest/d27/t0091",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 5360,
+   "assignments": 6
+  },
+  {
+   "path": "/loadtest/d28/t0092",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 10784,
+   "assignments": 6
+  },
+  {
+   "path": "/loadtest/d29/t0093",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 2878620,
+   "assignments": 12
+  },
+  {
+   "path": "/loadtest/d30/t0094",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 5941,
+   "assignments": 14
+  },
+  {
+   "path": "/loadtest/d31/t0095",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 39,
+   "assignments": 27
+  },
+  {
+   "path": "/loadtest/d32/t0096",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 4,
+   "assignments": 37
+  },
+  {
+   "path": "/loadtest/d33/t0097",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 45
+  },
+  {
+   "path": "/loadtest/d34/t0098",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 72283,
+   "assignments": 58
+  },
+  {
+   "path": "/loadtest/d35/t0099",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 104
+  },
+  {
+   "path": "/loadtest/d36/t0100",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 8,
+   "assignments": 112
+  },
+  {
+   "path": "/loadtest/d37/t0101",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 1,
+   "assignments": 494
+  },
+  {
+   "path": "/loadtest/d38/t0102",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 65315,
+   "assignments": 628
+  },
+  {
+   "path": "/loadtest/d39/t0103",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 8,
+   "assignments": 646
+  },
+  {
+   "path": "/loadtest/d40/t0104",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 23806,
+   "assignments": 665
+  },
+  {
+   "path": "/loadtest/d41/t0105",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 7,
+   "assignments": 1114
+  },
+  {
+   "path": "/loadtest/d42/t0106",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 8,
+   "assignments": 2910
+  },
+  {
+   "path": "/loadtest/d43/t0107",
+   "rows": 1,
+   "columns": 1,
+   "mean_set_bytes": 8,
+   "assignments": 3070
+  },
+  {
+   "path": "/loadtest/d44/t0108",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 5,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d45/t0109",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 7,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d46/t0110",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 9,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d47/t0111",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 9,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d48/t0112",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 9,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d49/t0113",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d50/t0114",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d51/t0115",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 13,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d52/t0116",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 9,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d53/t0117",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 14,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d54/t0118",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 7,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d55/t0119",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 11,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d56/t0120",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 13,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d57/t0121",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 12,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d58/t0122",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 7,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d59/t0123",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d60/t0124",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d61/t0125",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d62/t0126",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 7,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d63/t0127",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d00/t0128",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 6,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d01/t0129",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 7,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d02/t0130",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d03/t0131",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d04/t0132",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d05/t0133",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 12,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d06/t0134",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 17,
+   "assignments": 191
+  },
+  {
+   "path": "/loadtest/d07/t0135",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 21,
+   "assignments": 306
+  },
+  {
+   "path": "/loadtest/d08/t0136",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 18,
+   "assignments": 335
+  },
+  {
+   "path": "/loadtest/d09/t0137",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 18,
+   "assignments": 1347
+  },
+  {
+   "path": "/loadtest/d10/t0138",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 17,
+   "assignments": 1848
+  },
+  {
+   "path": "/loadtest/d11/t0139",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 18,
+   "assignments": 2312
+  },
+  {
+   "path": "/loadtest/d12/t0140",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 18,
+   "assignments": 2519
+  },
+  {
+   "path": "/loadtest/d13/t0141",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 18,
+   "assignments": 2519
+  },
+  {
+   "path": "/loadtest/d14/t0142",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 18,
+   "assignments": 2612
+  },
+  {
+   "path": "/loadtest/d15/t0143",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 17,
+   "assignments": 2910
+  },
+  {
+   "path": "/loadtest/d16/t0144",
+   "rows": 1,
+   "columns": 2,
+   "mean_set_bytes": 9,
+   "assignments": 3014
+  },
+  {
+   "path": "/loadtest/d17/t0145",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 5,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d18/t0146",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 8,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d19/t0147",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 8,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d20/t0148",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 8,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d21/t0149",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 11,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d22/t0150",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 12,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d23/t0151",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 12,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d24/t0152",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 16,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d25/t0153",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 18,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d26/t0154",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 18,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d27/t0155",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 23,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d28/t0156",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 104,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d29/t0157",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 106,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d30/t0158",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 106,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d31/t0159",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 108,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d32/t0160",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 108,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d33/t0161",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 108,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d34/t0162",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 109,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d35/t0163",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 109,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d36/t0164",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 111,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d37/t0165",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 116,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d38/t0166",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 116,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d39/t0167",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d40/t0168",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d41/t0169",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d42/t0170",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d43/t0171",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d44/t0172",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d45/t0173",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d46/t0174",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d47/t0175",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d48/t0176",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d49/t0177",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d50/t0178",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d51/t0179",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d52/t0180",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d53/t0181",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d54/t0182",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d55/t0183",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d56/t0184",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d57/t0185",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d58/t0186",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d59/t0187",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d60/t0188",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d61/t0189",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d62/t0190",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d63/t0191",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d00/t0192",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d01/t0193",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d02/t0194",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d03/t0195",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d04/t0196",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d05/t0197",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d06/t0198",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d07/t0199",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d08/t0200",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d09/t0201",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d10/t0202",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d11/t0203",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d12/t0204",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d13/t0205",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 117,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d14/t0206",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 118,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d15/t0207",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 118,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d16/t0208",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 118,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d17/t0209",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 118,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d18/t0210",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 118,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d19/t0211",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 118,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d20/t0212",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d21/t0213",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d22/t0214",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d23/t0215",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d24/t0216",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d25/t0217",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d26/t0218",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d27/t0219",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d28/t0220",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d29/t0221",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d30/t0222",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d31/t0223",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d32/t0224",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d33/t0225",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d34/t0226",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d35/t0227",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d36/t0228",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d37/t0229",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d38/t0230",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d39/t0231",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d40/t0232",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d41/t0233",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d42/t0234",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d43/t0235",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d44/t0236",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d45/t0237",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d46/t0238",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d47/t0239",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d48/t0240",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d49/t0241",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d50/t0242",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d51/t0243",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d52/t0244",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d53/t0245",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d54/t0246",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 123,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d55/t0247",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d56/t0248",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d57/t0249",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d58/t0250",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d59/t0251",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d60/t0252",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d61/t0253",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d62/t0254",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d63/t0255",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d00/t0256",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d01/t0257",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d02/t0258",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d03/t0259",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d04/t0260",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d05/t0261",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d06/t0262",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d07/t0263",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d08/t0264",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d09/t0265",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d10/t0266",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d11/t0267",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d12/t0268",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d13/t0269",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d14/t0270",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d15/t0271",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d16/t0272",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d17/t0273",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d18/t0274",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d19/t0275",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d20/t0276",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d21/t0277",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d22/t0278",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 128,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d23/t0279",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 129,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d24/t0280",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 131,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d25/t0281",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 132,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d26/t0282",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 132,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d27/t0283",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 132,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d28/t0284",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 132,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d29/t0285",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 132,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d30/t0286",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 132,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d31/t0287",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 132,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d32/t0288",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d33/t0289",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d34/t0290",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d35/t0291",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d36/t0292",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d37/t0293",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d38/t0294",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d39/t0295",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d40/t0296",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d41/t0297",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d42/t0298",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d43/t0299",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d44/t0300",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d45/t0301",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d46/t0302",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d47/t0303",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d48/t0304",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d49/t0305",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d50/t0306",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d51/t0307",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d52/t0308",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d53/t0309",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d54/t0310",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d55/t0311",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d56/t0312",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d57/t0313",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d58/t0314",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d59/t0315",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d60/t0316",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d61/t0317",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d62/t0318",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d63/t0319",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d00/t0320",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d01/t0321",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d02/t0322",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d03/t0323",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d04/t0324",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 133,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d05/t0325",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 134,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d06/t0326",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 8,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d07/t0327",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 10,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d08/t0328",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 19,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d09/t0329",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 20,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d10/t0330",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 24,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d11/t0331",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 26,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d12/t0332",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 115,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d13/t0333",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 17,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d14/t0334",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 19,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d15/t0335",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 21,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d16/t0336",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 20,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d17/t0337",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 25,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d18/t0338",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 21,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d19/t0339",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 8,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d20/t0340",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 13,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d21/t0341",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 26,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d22/t0342",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 40,
+   "assignments": 332
+  },
+  {
+   "path": "/loadtest/d23/t0343",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 15,
+   "assignments": 801
+  },
+  {
+   "path": "/loadtest/d24/t0344",
+   "rows": 1,
+   "columns": 3,
+   "mean_set_bytes": 27,
+   "assignments": 2875
+  },
+  {
+   "path": "/loadtest/d25/t0345",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 15,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d26/t0346",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 15,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d27/t0347",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 32,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d28/t0348",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 12,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d29/t0349",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 20,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d30/t0350",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 42,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d31/t0351",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 18,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d32/t0352",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 22,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d33/t0353",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 22,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d34/t0354",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 22,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d35/t0355",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 19,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d36/t0356",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 19,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d37/t0357",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 26,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d38/t0358",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 27,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d39/t0359",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 39,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d40/t0360",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 43,
+   "assignments": 57
+  },
+  {
+   "path": "/loadtest/d41/t0361",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 42,
+   "assignments": 1008
+  },
+  {
+   "path": "/loadtest/d42/t0362",
+   "rows": 1,
+   "columns": 4,
+   "mean_set_bytes": 34,
+   "assignments": 1100
+  },
+  {
+   "path": "/loadtest/d43/t0363",
+   "rows": 1,
+   "columns": 5,
+   "mean_set_bytes": 14,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d44/t0364",
+   "rows": 1,
+   "columns": 5,
+   "mean_set_bytes": 19,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d45/t0365",
+   "rows": 1,
+   "columns": 5,
+   "mean_set_bytes": 28,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d46/t0366",
+   "rows": 1,
+   "columns": 5,
+   "mean_set_bytes": 32,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d47/t0367",
+   "rows": 1,
+   "columns": 5,
+   "mean_set_bytes": 33,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d48/t0368",
+   "rows": 1,
+   "columns": 5,
+   "mean_set_bytes": 17,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d49/t0369",
+   "rows": 1,
+   "columns": 5,
+   "mean_set_bytes": 18,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d50/t0370",
+   "rows": 1,
+   "columns": 6,
+   "mean_set_bytes": 11,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d51/t0371",
+   "rows": 1,
+   "columns": 6,
+   "mean_set_bytes": 23,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d52/t0372",
+   "rows": 1,
+   "columns": 6,
+   "mean_set_bytes": 45,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d53/t0373",
+   "rows": 1,
+   "columns": 6,
+   "mean_set_bytes": 38,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d54/t0374",
+   "rows": 1,
+   "columns": 6,
+   "mean_set_bytes": 37,
+   "assignments": 6
+  },
+  {
+   "path": "/loadtest/d55/t0375",
+   "rows": 1,
+   "columns": 6,
+   "mean_set_bytes": 38,
+   "assignments": 312
+  },
+  {
+   "path": "/loadtest/d56/t0376",
+   "rows": 1,
+   "columns": 7,
+   "mean_set_bytes": 27,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d57/t0377",
+   "rows": 1,
+   "columns": 7,
+   "mean_set_bytes": 53,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d58/t0378",
+   "rows": 1,
+   "columns": 7,
+   "mean_set_bytes": 27,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d59/t0379",
+   "rows": 1,
+   "columns": 7,
+   "mean_set_bytes": 48,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d60/t0380",
+   "rows": 1,
+   "columns": 8,
+   "mean_set_bytes": 46,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d61/t0381",
+   "rows": 1,
+   "columns": 8,
+   "mean_set_bytes": 57,
+   "assignments": 1243
+  },
+  {
+   "path": "/loadtest/d62/t0382",
+   "rows": 1,
+   "columns": 9,
+   "mean_set_bytes": 50,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d63/t0383",
+   "rows": 1,
+   "columns": 9,
+   "mean_set_bytes": 72,
+   "assignments": 7
+  },
+  {
+   "path": "/loadtest/d00/t0384",
+   "rows": 1,
+   "columns": 10,
+   "mean_set_bytes": 51,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d01/t0385",
+   "rows": 1,
+   "columns": 11,
+   "mean_set_bytes": 74,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d02/t0386",
+   "rows": 1,
+   "columns": 12,
+   "mean_set_bytes": 48,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d03/t0387",
+   "rows": 1,
+   "columns": 13,
+   "mean_set_bytes": 56,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d04/t0388",
+   "rows": 1,
+   "columns": 14,
+   "mean_set_bytes": 66,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d05/t0389",
+   "rows": 1,
+   "columns": 15,
+   "mean_set_bytes": 58310,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d06/t0390",
+   "rows": 1,
+   "columns": 15,
+   "mean_set_bytes": 87024,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d07/t0391",
+   "rows": 1,
+   "columns": 17,
+   "mean_set_bytes": 88,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d08/t0392",
+   "rows": 1,
+   "columns": 23,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d09/t0393",
+   "rows": 1,
+   "columns": 23,
+   "mean_set_bytes": 122,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d10/t0394",
+   "rows": 1,
+   "columns": 24,
+   "mean_set_bytes": 114,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d11/t0395",
+   "rows": 1,
+   "columns": 240,
+   "mean_set_bytes": 926,
+   "assignments": 27
+  },
+  {
+   "path": "/loadtest/d12/t0396",
+   "rows": 2,
+   "columns": 1,
+   "mean_set_bytes": 9,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d13/t0397",
+   "rows": 2,
+   "columns": 3,
+   "mean_set_bytes": 11,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d14/t0398",
+   "rows": 2,
+   "columns": 3,
+   "mean_set_bytes": 18,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d15/t0399",
+   "rows": 2,
+   "columns": 3,
+   "mean_set_bytes": 54,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d16/t0400",
+   "rows": 2,
+   "columns": 4,
+   "mean_set_bytes": 55,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d17/t0401",
+   "rows": 2,
+   "columns": 11,
+   "mean_set_bytes": 148,
+   "assignments": 2161
+  },
+  {
+   "path": "/loadtest/d18/t0402",
+   "rows": 3,
+   "columns": 5,
+   "mean_set_bytes": 67,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d19/t0403",
+   "rows": 3,
+   "columns": 5,
+   "mean_set_bytes": 73,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d20/t0404",
+   "rows": 3,
+   "columns": 5,
+   "mean_set_bytes": 76,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d21/t0405",
+   "rows": 3,
+   "columns": 5,
+   "mean_set_bytes": 75,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d22/t0406",
+   "rows": 4,
+   "columns": 3,
+   "mean_set_bytes": 47,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d23/t0407",
+   "rows": 4,
+   "columns": 5,
+   "mean_set_bytes": 57,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d24/t0408",
+   "rows": 4,
+   "columns": 5,
+   "mean_set_bytes": 57,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d25/t0409",
+   "rows": 4,
+   "columns": 5,
+   "mean_set_bytes": 57,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d26/t0410",
+   "rows": 4,
+   "columns": 5,
+   "mean_set_bytes": 89,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d27/t0411",
+   "rows": 4,
+   "columns": 5,
+   "mean_set_bytes": 113,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d28/t0412",
+   "rows": 4,
+   "columns": 5,
+   "mean_set_bytes": 112,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d29/t0413",
+   "rows": 4,
+   "columns": 5,
+   "mean_set_bytes": 124,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d30/t0414",
+   "rows": 4,
+   "columns": 5,
+   "mean_set_bytes": 108,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d31/t0415",
+   "rows": 4,
+   "columns": 11,
+   "mean_set_bytes": 392,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d32/t0416",
+   "rows": 4,
+   "columns": 11,
+   "mean_set_bytes": 387,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d33/t0417",
+   "rows": 5,
+   "columns": 4,
+   "mean_set_bytes": 182,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d34/t0418",
+   "rows": 5,
+   "columns": 9,
+   "mean_set_bytes": 573,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d35/t0419",
+   "rows": 5,
+   "columns": 9,
+   "mean_set_bytes": 576,
+   "assignments": 4
+  },
+  {
+   "path": "/loadtest/d36/t0420",
+   "rows": 6,
+   "columns": 4,
+   "mean_set_bytes": 47,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d37/t0421",
+   "rows": 6,
+   "columns": 96,
+   "mean_set_bytes": 1151,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d38/t0422",
+   "rows": 6,
+   "columns": 96,
+   "mean_set_bytes": 1170,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d39/t0423",
+   "rows": 6,
+   "columns": 96,
+   "mean_set_bytes": 1151,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d40/t0424",
+   "rows": 6,
+   "columns": 96,
+   "mean_set_bytes": 1165,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d41/t0425",
+   "rows": 6,
+   "columns": 96,
+   "mean_set_bytes": 8626,
+   "assignments": 1677
+  },
+  {
+   "path": "/loadtest/d42/t0426",
+   "rows": 6,
+   "columns": 96,
+   "mean_set_bytes": 8623,
+   "assignments": 1679
+  },
+  {
+   "path": "/loadtest/d43/t0427",
+   "rows": 6,
+   "columns": 96,
+   "mean_set_bytes": 8567,
+   "assignments": 1681
+  },
+  {
+   "path": "/loadtest/d44/t0428",
+   "rows": 6,
+   "columns": 96,
+   "mean_set_bytes": 8397,
+   "assignments": 1684
+  },
+  {
+   "path": "/loadtest/d45/t0429",
+   "rows": 6,
+   "columns": 144,
+   "mean_set_bytes": 2591,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d46/t0430",
+   "rows": 6,
+   "columns": 144,
+   "mean_set_bytes": 2591,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d47/t0431",
+   "rows": 6,
+   "columns": 144,
+   "mean_set_bytes": 2591,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d48/t0432",
+   "rows": 8,
+   "columns": 1,
+   "mean_set_bytes": 15,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d49/t0433",
+   "rows": 8,
+   "columns": 1,
+   "mean_set_bytes": 15,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d50/t0434",
+   "rows": 8,
+   "columns": 1,
+   "mean_set_bytes": 48,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d51/t0435",
+   "rows": 8,
+   "columns": 1,
+   "mean_set_bytes": 51,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d52/t0436",
+   "rows": 8,
+   "columns": 1,
+   "mean_set_bytes": 79,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d53/t0437",
+   "rows": 8,
+   "columns": 5,
+   "mean_set_bytes": 79,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d54/t0438",
+   "rows": 8,
+   "columns": 5,
+   "mean_set_bytes": 303,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d55/t0439",
+   "rows": 8,
+   "columns": 5,
+   "mean_set_bytes": 183,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d56/t0440",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1190,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d57/t0441",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1195,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d58/t0442",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1200,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d59/t0443",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1201,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d60/t0444",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1202,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d61/t0445",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1207,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d62/t0446",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1208,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d63/t0447",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1210,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d00/t0448",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1215,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d01/t0449",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1215,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d02/t0450",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1216,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d03/t0451",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1217,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d04/t0452",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1218,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d05/t0453",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1219,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d06/t0454",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1220,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d07/t0455",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1221,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d08/t0456",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1223,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d09/t0457",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1228,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d10/t0458",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1231,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d11/t0459",
+   "rows": 10,
+   "columns": 10,
+   "mean_set_bytes": 1235,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d12/t0460",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d13/t0461",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d14/t0462",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d15/t0463",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d16/t0464",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d17/t0465",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d18/t0466",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d19/t0467",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d20/t0468",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d21/t0469",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d22/t0470",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d23/t0471",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d24/t0472",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 7487,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d25/t0473",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 7487,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d26/t0474",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 7487,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d27/t0475",
+   "rows": 12,
+   "columns": 192,
+   "mean_set_bytes": 7487,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d28/t0476",
+   "rows": 12,
+   "columns": 216,
+   "mean_set_bytes": 10367,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d29/t0477",
+   "rows": 12,
+   "columns": 216,
+   "mean_set_bytes": 10367,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d30/t0478",
+   "rows": 12,
+   "columns": 216,
+   "mean_set_bytes": 10367,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d31/t0479",
+   "rows": 12,
+   "columns": 216,
+   "mean_set_bytes": 10367,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d32/t0480",
+   "rows": 16,
+   "columns": 1,
+   "mean_set_bytes": 31,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d33/t0481",
+   "rows": 16,
+   "columns": 1,
+   "mean_set_bytes": 31,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d34/t0482",
+   "rows": 16,
+   "columns": 1,
+   "mean_set_bytes": 31,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d35/t0483",
+   "rows": 16,
+   "columns": 1,
+   "mean_set_bytes": 31,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d36/t0484",
+   "rows": 16,
+   "columns": 1,
+   "mean_set_bytes": 31,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d37/t0485",
+   "rows": 16,
+   "columns": 1,
+   "mean_set_bytes": 52,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d38/t0486",
+   "rows": 16,
+   "columns": 1,
+   "mean_set_bytes": 146,
+   "assignments": 872
+  },
+  {
+   "path": "/loadtest/d39/t0487",
+   "rows": 16,
+   "columns": 1,
+   "mean_set_bytes": 153,
+   "assignments": 874
+  },
+  {
+   "path": "/loadtest/d40/t0488",
+   "rows": 16,
+   "columns": 7,
+   "mean_set_bytes": 398,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d41/t0489",
+   "rows": 20,
+   "columns": 2,
+   "mean_set_bytes": 270,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d42/t0490",
+   "rows": 20,
+   "columns": 11,
+   "mean_set_bytes": 2351,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d43/t0491",
+   "rows": 24,
+   "columns": 2,
+   "mean_set_bytes": 250,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d44/t0492",
+   "rows": 24,
+   "columns": 2,
+   "mean_set_bytes": 464,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d45/t0493",
+   "rows": 24,
+   "columns": 3,
+   "mean_set_bytes": 396,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d46/t0494",
+   "rows": 24,
+   "columns": 3,
+   "mean_set_bytes": 835,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d47/t0495",
+   "rows": 24,
+   "columns": 4,
+   "mean_set_bytes": 1099,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d48/t0496",
+   "rows": 24,
+   "columns": 4,
+   "mean_set_bytes": 876,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d49/t0497",
+   "rows": 24,
+   "columns": 6,
+   "mean_set_bytes": 484,
+   "assignments": 9
+  },
+  {
+   "path": "/loadtest/d50/t0498",
+   "rows": 24,
+   "columns": 10,
+   "mean_set_bytes": 1967,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d51/t0499",
+   "rows": 25,
+   "columns": 11,
+   "mean_set_bytes": 2390,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d52/t0500",
+   "rows": 26,
+   "columns": 9,
+   "mean_set_bytes": 1441,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d53/t0501",
+   "rows": 30,
+   "columns": 1,
+   "mean_set_bytes": 119,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d54/t0502",
+   "rows": 30,
+   "columns": 1,
+   "mean_set_bytes": 59,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d55/t0503",
+   "rows": 30,
+   "columns": 1,
+   "mean_set_bytes": 183,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d56/t0504",
+   "rows": 30,
+   "columns": 1,
+   "mean_set_bytes": 252,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d57/t0505",
+   "rows": 30,
+   "columns": 1,
+   "mean_set_bytes": 265,
+   "assignments": 597
+  },
+  {
+   "path": "/loadtest/d58/t0506",
+   "rows": 30,
+   "columns": 1,
+   "mean_set_bytes": 284,
+   "assignments": 734
+  },
+  {
+   "path": "/loadtest/d59/t0507",
+   "rows": 30,
+   "columns": 2,
+   "mean_set_bytes": 254,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d60/t0508",
+   "rows": 30,
+   "columns": 4,
+   "mean_set_bytes": 881,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d61/t0509",
+   "rows": 30,
+   "columns": 5,
+   "mean_set_bytes": 1341,
+   "assignments": 14
+  },
+  {
+   "path": "/loadtest/d62/t0510",
+   "rows": 30,
+   "columns": 6,
+   "mean_set_bytes": 1658,
+   "assignments": 3
+  },
+  {
+   "path": "/loadtest/d63/t0511",
+   "rows": 30,
+   "columns": 9,
+   "mean_set_bytes": 1499,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d00/t0512",
+   "rows": 30,
+   "columns": 11,
+   "mean_set_bytes": 1872,
+   "assignments": 3
+  },
+  {
+   "path": "/loadtest/d01/t0513",
+   "rows": 30,
+   "columns": 12,
+   "mean_set_bytes": 2750,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d02/t0514",
+   "rows": 30,
+   "columns": 12,
+   "mean_set_bytes": 3389,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d03/t0515",
+   "rows": 32,
+   "columns": 2,
+   "mean_set_bytes": 170,
+   "assignments": 330
+  },
+  {
+   "path": "/loadtest/d04/t0516",
+   "rows": 40,
+   "columns": 11,
+   "mean_set_bytes": 3707,
+   "assignments": 4
+  },
+  {
+   "path": "/loadtest/d05/t0517",
+   "rows": 45,
+   "columns": 1,
+   "mean_set_bytes": 267,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d06/t0518",
+   "rows": 48,
+   "columns": 3,
+   "mean_set_bytes": 575,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d07/t0519",
+   "rows": 51,
+   "columns": 1,
+   "mean_set_bytes": 488,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d08/t0520",
+   "rows": 60,
+   "columns": 11,
+   "mean_set_bytes": 5824,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d09/t0521",
+   "rows": 78,
+   "columns": 1,
+   "mean_set_bytes": 829,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d10/t0522",
+   "rows": 84,
+   "columns": 2,
+   "mean_set_bytes": 335,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d11/t0523",
+   "rows": 84,
+   "columns": 3,
+   "mean_set_bytes": 503,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d12/t0524",
+   "rows": 88,
+   "columns": 1,
+   "mean_set_bytes": 445,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d13/t0525",
+   "rows": 88,
+   "columns": 1,
+   "mean_set_bytes": 688,
+   "assignments": 23
+  },
+  {
+   "path": "/loadtest/d14/t0526",
+   "rows": 88,
+   "columns": 1,
+   "mean_set_bytes": 693,
+   "assignments": 135
+  },
+  {
+   "path": "/loadtest/d15/t0527",
+   "rows": 88,
+   "columns": 6,
+   "mean_set_bytes": 2646,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d16/t0528",
+   "rows": 91,
+   "columns": 1,
+   "mean_set_bytes": 181,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d17/t0529",
+   "rows": 92,
+   "columns": 1,
+   "mean_set_bytes": 514,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d18/t0530",
+   "rows": 92,
+   "columns": 1,
+   "mean_set_bytes": 725,
+   "assignments": 396
+  },
+  {
+   "path": "/loadtest/d19/t0531",
+   "rows": 100,
+   "columns": 11,
+   "mean_set_bytes": 10006,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d20/t0532",
+   "rows": 100,
+   "columns": 11,
+   "mean_set_bytes": 10008,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d21/t0533",
+   "rows": 100,
+   "columns": 11,
+   "mean_set_bytes": 10009,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d22/t0534",
+   "rows": 100,
+   "columns": 41,
+   "mean_set_bytes": 37753,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d23/t0535",
+   "rows": 102,
+   "columns": 3,
+   "mean_set_bytes": 2587,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d24/t0536",
+   "rows": 102,
+   "columns": 3,
+   "mean_set_bytes": 2095,
+   "assignments": 214
+  },
+  {
+   "path": "/loadtest/d25/t0537",
+   "rows": 102,
+   "columns": 3,
+   "mean_set_bytes": 1709,
+   "assignments": 511
+  },
+  {
+   "path": "/loadtest/d26/t0538",
+   "rows": 102,
+   "columns": 3,
+   "mean_set_bytes": 1917,
+   "assignments": 771
+  },
+  {
+   "path": "/loadtest/d27/t0539",
+   "rows": 120,
+   "columns": 11,
+   "mean_set_bytes": 11800,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d28/t0540",
+   "rows": 122,
+   "columns": 3,
+   "mean_set_bytes": 882,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d29/t0541",
+   "rows": 122,
+   "columns": 3,
+   "mean_set_bytes": 1086,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d30/t0542",
+   "rows": 122,
+   "columns": 3,
+   "mean_set_bytes": 842,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d31/t0543",
+   "rows": 122,
+   "columns": 3,
+   "mean_set_bytes": 2382,
+   "assignments": 3369
+  },
+  {
+   "path": "/loadtest/d32/t0544",
+   "rows": 122,
+   "columns": 3,
+   "mean_set_bytes": 2277,
+   "assignments": 4185
+  },
+  {
+   "path": "/loadtest/d33/t0545",
+   "rows": 122,
+   "columns": 4,
+   "mean_set_bytes": 1281,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d34/t0546",
+   "rows": 122,
+   "columns": 7,
+   "mean_set_bytes": 9483,
+   "assignments": 1924
+  },
+  {
+   "path": "/loadtest/d35/t0547",
+   "rows": 139,
+   "columns": 1,
+   "mean_set_bytes": 1168,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d36/t0548",
+   "rows": 144,
+   "columns": 1,
+   "mean_set_bytes": 1130,
+   "assignments": 15
+  },
+  {
+   "path": "/loadtest/d37/t0549",
+   "rows": 144,
+   "columns": 1,
+   "mean_set_bytes": 290,
+   "assignments": 47
+  },
+  {
+   "path": "/loadtest/d38/t0550",
+   "rows": 144,
+   "columns": 1,
+   "mean_set_bytes": 1119,
+   "assignments": 194
+  },
+  {
+   "path": "/loadtest/d39/t0551",
+   "rows": 144,
+   "columns": 1,
+   "mean_set_bytes": 1168,
+   "assignments": 935
+  },
+  {
+   "path": "/loadtest/d40/t0552",
+   "rows": 144,
+   "columns": 4,
+   "mean_set_bytes": 5402,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d41/t0553",
+   "rows": 145,
+   "columns": 2,
+   "mean_set_bytes": 579,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d42/t0554",
+   "rows": 145,
+   "columns": 2,
+   "mean_set_bytes": 1884,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d43/t0555",
+   "rows": 145,
+   "columns": 2,
+   "mean_set_bytes": 2629,
+   "assignments": 1173
+  },
+  {
+   "path": "/loadtest/d44/t0556",
+   "rows": 145,
+   "columns": 4,
+   "mean_set_bytes": 4617,
+   "assignments": 14
+  },
+  {
+   "path": "/loadtest/d45/t0557",
+   "rows": 168,
+   "columns": 1,
+   "mean_set_bytes": 335,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d46/t0558",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 351,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d47/t0559",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 351,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d48/t0560",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 351,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d49/t0561",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 351,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d50/t0562",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 527,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d51/t0563",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 2168,
+   "assignments": 40
+  },
+  {
+   "path": "/loadtest/d52/t0564",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 1650,
+   "assignments": 45
+  },
+  {
+   "path": "/loadtest/d53/t0565",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 1633,
+   "assignments": 124
+  },
+  {
+   "path": "/loadtest/d54/t0566",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 1646,
+   "assignments": 135
+  },
+  {
+   "path": "/loadtest/d55/t0567",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 1188,
+   "assignments": 249
+  },
+  {
+   "path": "/loadtest/d56/t0568",
+   "rows": 176,
+   "columns": 1,
+   "mean_set_bytes": 1485,
+   "assignments": 340
+  },
+  {
+   "path": "/loadtest/d57/t0569",
+   "rows": 176,
+   "columns": 2,
+   "mean_set_bytes": 1583,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d58/t0570",
+   "rows": 176,
+   "columns": 4,
+   "mean_set_bytes": 5717,
+   "assignments": 93
+  },
+  {
+   "path": "/loadtest/d59/t0571",
+   "rows": 176,
+   "columns": 5,
+   "mean_set_bytes": 6950,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d60/t0572",
+   "rows": 176,
+   "columns": 6,
+   "mean_set_bytes": 7849,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d61/t0573",
+   "rows": 176,
+   "columns": 10,
+   "mean_set_bytes": 17178,
+   "assignments": 45
+  },
+  {
+   "path": "/loadtest/d62/t0574",
+   "rows": 176,
+   "columns": 10,
+   "mean_set_bytes": 13799,
+   "assignments": 137
+  },
+  {
+   "path": "/loadtest/d63/t0575",
+   "rows": 184,
+   "columns": 1,
+   "mean_set_bytes": 367,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d00/t0576",
+   "rows": 184,
+   "columns": 1,
+   "mean_set_bytes": 551,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d01/t0577",
+   "rows": 184,
+   "columns": 1,
+   "mean_set_bytes": 367,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d02/t0578",
+   "rows": 184,
+   "columns": 1,
+   "mean_set_bytes": 367,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d03/t0579",
+   "rows": 184,
+   "columns": 1,
+   "mean_set_bytes": 1627,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d04/t0580",
+   "rows": 184,
+   "columns": 1,
+   "mean_set_bytes": 2199,
+   "assignments": 126
+  },
+  {
+   "path": "/loadtest/d05/t0581",
+   "rows": 184,
+   "columns": 1,
+   "mean_set_bytes": 1147,
+   "assignments": 190
+  },
+  {
+   "path": "/loadtest/d06/t0582",
+   "rows": 184,
+   "columns": 1,
+   "mean_set_bytes": 1713,
+   "assignments": 494
+  },
+  {
+   "path": "/loadtest/d07/t0583",
+   "rows": 184,
+   "columns": 1,
+   "mean_set_bytes": 1572,
+   "assignments": 578
+  },
+  {
+   "path": "/loadtest/d08/t0584",
+   "rows": 184,
+   "columns": 2,
+   "mean_set_bytes": 1655,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d09/t0585",
+   "rows": 184,
+   "columns": 10,
+   "mean_set_bytes": 13856,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d10/t0586",
+   "rows": 184,
+   "columns": 10,
+   "mean_set_bytes": 17179,
+   "assignments": 494
+  },
+  {
+   "path": "/loadtest/d11/t0587",
+   "rows": 192,
+   "columns": 2,
+   "mean_set_bytes": 2959,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d12/t0588",
+   "rows": 250,
+   "columns": 11,
+   "mean_set_bytes": 24224,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d13/t0589",
+   "rows": 250,
+   "columns": 11,
+   "mean_set_bytes": 23505,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d14/t0590",
+   "rows": 274,
+   "columns": 2,
+   "mean_set_bytes": 1535,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d15/t0591",
+   "rows": 274,
+   "columns": 2,
+   "mean_set_bytes": 2083,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d16/t0592",
+   "rows": 274,
+   "columns": 2,
+   "mean_set_bytes": 1535,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d17/t0593",
+   "rows": 274,
+   "columns": 2,
+   "mean_set_bytes": 2919,
+   "assignments": 2949
+  },
+  {
+   "path": "/loadtest/d18/t0594",
+   "rows": 274,
+   "columns": 2,
+   "mean_set_bytes": 2935,
+   "assignments": 4249
+  },
+  {
+   "path": "/loadtest/d19/t0595",
+   "rows": 274,
+   "columns": 3,
+   "mean_set_bytes": 5823,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d20/t0596",
+   "rows": 274,
+   "columns": 3,
+   "mean_set_bytes": 5334,
+   "assignments": 215
+  },
+  {
+   "path": "/loadtest/d21/t0597",
+   "rows": 274,
+   "columns": 3,
+   "mean_set_bytes": 4074,
+   "assignments": 749
+  },
+  {
+   "path": "/loadtest/d22/t0598",
+   "rows": 274,
+   "columns": 3,
+   "mean_set_bytes": 4217,
+   "assignments": 771
+  },
+  {
+   "path": "/loadtest/d23/t0599",
+   "rows": 274,
+   "columns": 5,
+   "mean_set_bytes": 8435,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d24/t0600",
+   "rows": 274,
+   "columns": 5,
+   "mean_set_bytes": 7408,
+   "assignments": 2235
+  },
+  {
+   "path": "/loadtest/d25/t0601",
+   "rows": 300,
+   "columns": 11,
+   "mean_set_bytes": 27754,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d26/t0602",
+   "rows": 300,
+   "columns": 11,
+   "mean_set_bytes": 28194,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d27/t0603",
+   "rows": 400,
+   "columns": 1,
+   "mean_set_bytes": 3502,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d28/t0604",
+   "rows": 432,
+   "columns": 1,
+   "mean_set_bytes": 1295,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d29/t0605",
+   "rows": 432,
+   "columns": 1,
+   "mean_set_bytes": 863,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d30/t0606",
+   "rows": 588,
+   "columns": 6,
+   "mean_set_bytes": 29688,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d31/t0607",
+   "rows": 600,
+   "columns": 11,
+   "mean_set_bytes": 61521,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d32/t0608",
+   "rows": 600,
+   "columns": 11,
+   "mean_set_bytes": 61560,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d33/t0609",
+   "rows": 600,
+   "columns": 11,
+   "mean_set_bytes": 61586,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d34/t0610",
+   "rows": 600,
+   "columns": 11,
+   "mean_set_bytes": 61613,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d35/t0611",
+   "rows": 720,
+   "columns": 1,
+   "mean_set_bytes": 2159,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d36/t0612",
+   "rows": 720,
+   "columns": 1,
+   "mean_set_bytes": 1439,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d37/t0613",
+   "rows": 768,
+   "columns": 1,
+   "mean_set_bytes": 5663,
+   "assignments": 3
+  },
+  {
+   "path": "/loadtest/d38/t0614",
+   "rows": 768,
+   "columns": 1,
+   "mean_set_bytes": 5920,
+   "assignments": 10
+  },
+  {
+   "path": "/loadtest/d39/t0615",
+   "rows": 768,
+   "columns": 1,
+   "mean_set_bytes": 6640,
+   "assignments": 33
+  },
+  {
+   "path": "/loadtest/d40/t0616",
+   "rows": 768,
+   "columns": 2,
+   "mean_set_bytes": 17494,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d41/t0617",
+   "rows": 768,
+   "columns": 3,
+   "mean_set_bytes": 12315,
+   "assignments": 3
+  },
+  {
+   "path": "/loadtest/d42/t0618",
+   "rows": 768,
+   "columns": 3,
+   "mean_set_bytes": 17653,
+   "assignments": 3
+  },
+  {
+   "path": "/loadtest/d43/t0619",
+   "rows": 840,
+   "columns": 6,
+   "mean_set_bytes": 36250,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d44/t0620",
+   "rows": 1000,
+   "columns": 11,
+   "mean_set_bytes": 90964,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d45/t0621",
+   "rows": 1000,
+   "columns": 11,
+   "mean_set_bytes": 98643,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d46/t0622",
+   "rows": 1000,
+   "columns": 11,
+   "mean_set_bytes": 95040,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d47/t0623",
+   "rows": 1152,
+   "columns": 1,
+   "mean_set_bytes": 5237,
+   "assignments": 229
+  },
+  {
+   "path": "/loadtest/d48/t0624",
+   "rows": 1152,
+   "columns": 8,
+   "mean_set_bytes": 29109,
+   "assignments": 52
+  },
+  {
+   "path": "/loadtest/d49/t0625",
+   "rows": 1152,
+   "columns": 9,
+   "mean_set_bytes": 55518,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d50/t0626",
+   "rows": 1536,
+   "columns": 1,
+   "mean_set_bytes": 4607,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d51/t0627",
+   "rows": 1536,
+   "columns": 1,
+   "mean_set_bytes": 17294,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d52/t0628",
+   "rows": 1536,
+   "columns": 1,
+   "mean_set_bytes": 7218,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d53/t0629",
+   "rows": 1536,
+   "columns": 1,
+   "mean_set_bytes": 6098,
+   "assignments": 3
+  },
+  {
+   "path": "/loadtest/d54/t0630",
+   "rows": 1536,
+   "columns": 1,
+   "mean_set_bytes": 18536,
+   "assignments": 139
+  },
+  {
+   "path": "/loadtest/d55/t0631",
+   "rows": 1536,
+   "columns": 1,
+   "mean_set_bytes": 4811,
+   "assignments": 358
+  },
+  {
+   "path": "/loadtest/d56/t0632",
+   "rows": 1536,
+   "columns": 5,
+   "mean_set_bytes": 38996,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d57/t0633",
+   "rows": 1536,
+   "columns": 5,
+   "mean_set_bytes": 39742,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d58/t0634",
+   "rows": 1600,
+   "columns": 1,
+   "mean_set_bytes": 3199,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d59/t0635",
+   "rows": 1600,
+   "columns": 1,
+   "mean_set_bytes": 14399,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d60/t0636",
+   "rows": 1600,
+   "columns": 1,
+   "mean_set_bytes": 16662,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d61/t0637",
+   "rows": 1600,
+   "columns": 1,
+   "mean_set_bytes": 13971,
+   "assignments": 19
+  },
+  {
+   "path": "/loadtest/d62/t0638",
+   "rows": 1600,
+   "columns": 1,
+   "mean_set_bytes": 12906,
+   "assignments": 25
+  },
+  {
+   "path": "/loadtest/d63/t0639",
+   "rows": 1600,
+   "columns": 2,
+   "mean_set_bytes": 9599,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d00/t0640",
+   "rows": 2800,
+   "columns": 1,
+   "mean_set_bytes": 7879,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d01/t0641",
+   "rows": 2800,
+   "columns": 1,
+   "mean_set_bytes": 5671,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d02/t0642",
+   "rows": 2800,
+   "columns": 1,
+   "mean_set_bytes": 5599,
+   "assignments": 85
+  },
+  {
+   "path": "/loadtest/d03/t0643",
+   "rows": 2800,
+   "columns": 1,
+   "mean_set_bytes": 19619,
+   "assignments": 206
+  },
+  {
+   "path": "/loadtest/d04/t0644",
+   "rows": 2800,
+   "columns": 1,
+   "mean_set_bytes": 20931,
+   "assignments": 348
+  },
+  {
+   "path": "/loadtest/d05/t0645",
+   "rows": 2800,
+   "columns": 1,
+   "mean_set_bytes": 12944,
+   "assignments": 412
+  },
+  {
+   "path": "/loadtest/d06/t0646",
+   "rows": 2800,
+   "columns": 1,
+   "mean_set_bytes": 6111,
+   "assignments": 458
+  },
+  {
+   "path": "/loadtest/d07/t0647",
+   "rows": 2800,
+   "columns": 1,
+   "mean_set_bytes": 5599,
+   "assignments": 551
+  },
+  {
+   "path": "/loadtest/d08/t0648",
+   "rows": 2800,
+   "columns": 1,
+   "mean_set_bytes": 21386,
+   "assignments": 807
+  },
+  {
+   "path": "/loadtest/d09/t0649",
+   "rows": 2800,
+   "columns": 2,
+   "mean_set_bytes": 16799,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d10/t0650",
+   "rows": 3522,
+   "columns": 1,
+   "mean_set_bytes": 7043,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d11/t0651",
+   "rows": 3522,
+   "columns": 1,
+   "mean_set_bytes": 27465,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d12/t0652",
+   "rows": 3522,
+   "columns": 1,
+   "mean_set_bytes": 13509,
+   "assignments": 5
+  },
+  {
+   "path": "/loadtest/d13/t0653",
+   "rows": 3522,
+   "columns": 1,
+   "mean_set_bytes": 10847,
+   "assignments": 10
+  },
+  {
+   "path": "/loadtest/d14/t0654",
+   "rows": 3522,
+   "columns": 1,
+   "mean_set_bytes": 20872,
+   "assignments": 17
+  },
+  {
+   "path": "/loadtest/d15/t0655",
+   "rows": 3522,
+   "columns": 2,
+   "mean_set_bytes": 36571,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d16/t0656",
+   "rows": 3522,
+   "columns": 4,
+   "mean_set_bytes": 80957,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d17/t0657",
+   "rows": 3600,
+   "columns": 11,
+   "mean_set_bytes": 357447,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d18/t0658",
+   "rows": 5000,
+   "columns": 11,
+   "mean_set_bytes": 496255,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d19/t0659",
+   "rows": 5184,
+   "columns": 1,
+   "mean_set_bytes": 25008,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d20/t0660",
+   "rows": 6912,
+   "columns": 1,
+   "mean_set_bytes": 13823,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d21/t0661",
+   "rows": 6912,
+   "columns": 1,
+   "mean_set_bytes": 13823,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d22/t0662",
+   "rows": 6912,
+   "columns": 1,
+   "mean_set_bytes": 32311,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d23/t0663",
+   "rows": 6912,
+   "columns": 1,
+   "mean_set_bytes": 43304,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d24/t0664",
+   "rows": 6912,
+   "columns": 1,
+   "mean_set_bytes": 50430,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d25/t0665",
+   "rows": 6912,
+   "columns": 1,
+   "mean_set_bytes": 51216,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d26/t0666",
+   "rows": 10000,
+   "columns": 11,
+   "mean_set_bytes": 994861,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d27/t0667",
+   "rows": 10291,
+   "columns": 6,
+   "mean_set_bytes": 506214,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d28/t0668",
+   "rows": 10500,
+   "columns": 11,
+   "mean_set_bytes": 1007976,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d29/t0669",
+   "rows": 32481,
+   "columns": 6,
+   "mean_set_bytes": 1686908,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d30/t0670",
+   "rows": 32481,
+   "columns": 6,
+   "mean_set_bytes": 1817206,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d31/t0671",
+   "rows": 32481,
+   "columns": 6,
+   "mean_set_bytes": 1819511,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d32/t0672",
+   "rows": 32481,
+   "columns": 6,
+   "mean_set_bytes": 1819684,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d33/t0673",
+   "rows": 40000,
+   "columns": 11,
+   "mean_set_bytes": 3876993,
+   "assignments": 2
+  },
+  {
+   "path": "/loadtest/d34/t0674",
+   "rows": 40501,
+   "columns": 6,
+   "mean_set_bytes": 2125224,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d35/t0675",
+   "rows": 175951,
+   "columns": 6,
+   "mean_set_bytes": 12311216,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d36/t0676",
+   "rows": 175951,
+   "columns": 6,
+   "mean_set_bytes": 12358424,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d37/t0677",
+   "rows": 175951,
+   "columns": 6,
+   "mean_set_bytes": 12387795,
+   "assignments": 1
+  },
+  {
+   "path": "/loadtest/d38/t0678",
+   "rows": 364000,
+   "columns": 4,
+   "mean_set_bytes": 7812991,
+   "assignments": 1
+  }
+ ]
+}

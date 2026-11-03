@@ -7,6 +7,7 @@ JSON, and the OpenAPI document. Skipped when the api extra (fastapi, httpx) is n
 import hashlib
 import json
 import os
+import time
 import tempfile
 import unittest
 from urllib.parse import quote
@@ -199,6 +200,34 @@ class ApiTest(unittest.TestCase):
             jsonschema.validate(rows[:1], schema)
 
     # ------------------------------------------------------------------ bundle
+
+    def test_bundle_builds_are_bounded(self):
+        """A burst of requests for many runs builds at most BUNDLE_BUILDS bundles at a time (F30)"""
+        import threading
+        from concurrent.futures import ThreadPoolExecutor
+        from unittest import mock
+        from ccdb.api import snapshots
+        lock, state = threading.Lock(), {"running": 0, "peak": 0}
+
+        def slow_build(source, cache_dir, run, variation="default", max_time_utc=None, tag=None):
+            with lock:
+                state["running"] += 1
+                state["peak"] = max(state["peak"], state["running"])
+            time.sleep(0.05)
+            path = os.path.join(self.directory.name, "fake_bundle_{0}.sqlite".format(run))
+            with open(path, "wb") as file:
+                file.write(b"bundle of run %d" % run)
+            with lock:
+                state["running"] -= 1
+            return path
+
+        with mock.patch.object(snapshots.snapshot, "run_bundle", slow_build):
+            with ThreadPoolExecutor(max_workers=16) as pool:
+                statuses = list(pool.map(lambda run: self.client.get("/api/v1/bundle?run={0}&time=2020-01-01".format(run)).status_code,
+                                         range(1000, 1024)))
+        self.assertEqual(statuses, [200] * 24)
+        self.assertLessEqual(state["peak"], snapshots.BUNDLE_BUILDS)
+        self.assertGreaterEqual(state["peak"], 1)
 
     def test_bundle_by_time_and_by_tag(self):
         from ccdb import AlchemyProvider
