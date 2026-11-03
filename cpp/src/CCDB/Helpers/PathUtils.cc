@@ -283,6 +283,7 @@ ccdb::ContextParseResult ccdb::PathUtils::ParseContext( const string& context )
 	result.ConstantsTime = 0;
 	result.ConstantsTimeMicro = 0;
 	result.VariationIsParsed = false;
+	result.TagIsParsed = false;
     result.RunNumberIsParsed = false;
 	
 	//check empty string
@@ -307,7 +308,7 @@ ccdb::ContextParseResult ccdb::PathUtils::ParseContext( const string& context )
 			if(result.Variation.find('@') != string::npos)
 			{
 				throw std::invalid_argument("Context '" + context + "': variation '" + result.Variation +
-				                            "' is invalid. A tag (@NAME) can't be a default variation, put it in the request: /path/to/data@NAME");
+				                            "' is invalid. A tag (@NAME) can't be a default variation: give it as tag=NAME, or in the request: /path/to/data@NAME");
 			}
 			continue;
 		}
@@ -327,12 +328,31 @@ ccdb::ContextParseResult ccdb::PathUtils::ParseContext( const string& context )
 			result.ConstantsTime = TimeUtils::ToSeconds(result.ConstantsTimeMicro);
 		}
 
-        //calibtime is found?
+        //tag is found?
+        if(token.find("tag=")==0)
+        {
+            result.TagIsParsed = true;
+            result.Tag = StringUtils::Replace("tag=","",token);
+            if(!IsValidTagName(result.Tag))
+            {
+                throw std::invalid_argument("Context '" + context + "': tag name '" + result.Tag +
+                                            "' is invalid. It should consist of A-Z, a-z, 0-9, _");
+            }
+        }
+
+        //run is found?
         if(token.find("run=")==0)
         {
             result.RunNumberIsParsed = true;
             result.RunNumber = StringUtils::ParseInt(StringUtils::Replace("run=","",token));
         }
+	}
+
+	// A tag gives both the variation and the time, as in a request
+	if(result.TagIsParsed && (result.VariationIsParsed || result.ConstantsTimeIsParsed))
+	{
+		throw std::invalid_argument("Context '" + context + "': tag=" + result.Tag +
+		                            " may not be combined with variation= or calibtime=");
 	}
 
 	return result;

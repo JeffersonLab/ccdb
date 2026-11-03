@@ -253,6 +253,9 @@ namespace ccdb
          */
         Assignment* GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns) override;
 
+        /** @see DataProvider::GetTag */
+        bool GetTag(const string& tagName, string& variation, int64_t& snapshotMicro) override;
+
 
 
     protected:

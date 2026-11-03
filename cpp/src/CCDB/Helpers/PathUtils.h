@@ -65,6 +65,9 @@ struct ContextParseResult
 	int64_t     ConstantsTimeMicro;     /// calibtime, UTC microseconds since the epoch
 	bool        ConstantsTimeIsParsed;
 
+    std::string Tag;                    /// tag=NAME: requests resolve through this tag (Calibration::SetTag)
+    bool        TagIsParsed;            /// true if the context names a tag
+
     int         RunNumber;              /// The run number that is HAS to be used for CCDB
     bool        RunNumberIsParsed;      /// The run number is parsed
 
@@ -177,7 +180,9 @@ public:
 	 * 'variation=default calibtime=2012'
 	 * parameters and values are separated by '=' (!) WITH NO SPACES
 	 *
-	 * @throw std::invalid_argument if the variation has '@': a tag can't be a default variation
+	 * 'tag=pass1' names a tag (CCDB 2.5): it gives the variation and the time, so it can't be set with them
+	 *
+	 * @throw std::invalid_argument if the variation has '@', or a tag is set with a variation or a calibtime
 	 */
 	static ContextParseResult ParseContext(const std::string& context);
 };

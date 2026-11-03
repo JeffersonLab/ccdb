@@ -234,6 +234,24 @@ namespace ccdb
          */
         int64_t GetDefaultTimeMicro() const { return mDefaultTimeMicro; }
 
+        /** @brief Reads every request through a tag: the tag gives the variation and the time (CCDB 2.5)
+         *
+         * After SetTag("pass1"), GetCalib(values, "/calorimeter/gains") returns the constants of the tag pass1,
+         * exactly as the request "/calorimeter/gains@pass1" does: the tag's variation, with its parents, and the
+         * assignments created at or before the tag's time, to the microsecond (docs/concepts/tags.md). The
+         * Calibration remembers the tag: GetDefaultVariation and GetDefaultTimeMicro report the tag's variation
+         * and time, and a request that names its own variation or time is an error (std::invalid_argument),
+         * since it would mix the tag with other constants. A request that names another tag (@NAME) reads that
+         * tag. The tag is looked up now, so a wrong name fails here.
+         *
+         * @param tagName [in] tag name, without '@'
+         * @throw std::runtime_error if there is no such tag or the name is invalid
+         */
+        void SetTag(const std::string& tagName);
+
+        /** @brief The tag set by SetTag, empty if none */
+        std::string GetDefaultTag() const { return mDefaultTag; }
+
          /** @brief Get list of all type tables with full path
           *
           * @parameter [in] vector<string> & namepaths
@@ -307,6 +325,7 @@ namespace ccdb
         string mDefaultVariation;        /// Default variation
         time_t mDefaultTime;             /// Set default time: the whole second of mDefaultTimeMicro
         int64_t mDefaultTimeMicro;       /// Default time, UTC microseconds since the epoch; 0 means the newest
+        string mDefaultTag;              /// The tag of SetTag: requests resolve through it; empty if none
         std::atomic<time_t> mLastActivityTime;   /// Time of the last request (read by the generator from other threads)
         bool mIsAutoReconnect;           /// Try to auto-reconnect if possible
         std::atomic<bool> mIsCacheEnabled;       /// If true the data is cached

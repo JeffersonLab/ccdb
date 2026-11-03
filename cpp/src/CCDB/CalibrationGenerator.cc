@@ -155,6 +155,21 @@ namespace ccdb
     //______________________________________________________________________________
     Calibration* CalibrationGenerator::MakeCalibrationMicro( const std::string & connectionString, int run, const std::string& variation, int64_t timeMicro )
     {
+        return MakeCalibrationCached(connectionString, run, variation, timeMicro, "");
+    }
+
+
+    //______________________________________________________________________________
+    Calibration* CalibrationGenerator::MakeCalibrationForTag( const std::string & connectionString, int run, const std::string& tagName )
+    {
+        return MakeCalibrationCached(connectionString, run, "default", 0, tagName);
+    }
+
+
+    //______________________________________________________________________________
+    Calibration* CalibrationGenerator::MakeCalibrationCached( const std::string & connectionString, int run, const std::string& variation,
+                                                              int64_t timeMicro, const std::string& tagName )
+    {
         /** @brief Creates @see Calibration by connectionString, run number and desirable variation
          *
          * @parameter [in] connectionString - Connection string to the data source
@@ -164,8 +179,9 @@ namespace ccdb
          * @return Calibration*
          */
 
-        //hash of requested variation
+        //hash of requested variation; a tag gives its own entry, apart from any untagged one
         string calibHash = GetCalibrationHashMicro(connectionString, run, variation, timeMicro);
+        if(!tagName.empty()) calibHash += "\x1f@" + tagName;
 
         // Lookup, creation and registration must be atomic: concurrent callers would otherwise
         // corrupt the containers or open duplicate connections for the same key
@@ -206,6 +222,7 @@ namespace ccdb
             string message = GetConnectionErrorMessage(newCalib.get());
             throw std::logic_error(message);
         }
+        if(!tagName.empty()) newCalib->SetTag(tagName);     // throws for an unknown tag; unique_ptr deletes the object
 
         //add it to arrays
         Calibration * calib = newCalib.release();
