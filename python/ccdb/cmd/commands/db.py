@@ -162,12 +162,15 @@ class Database(CliCommandBase):
         upgrade.add_argument("--skip-privilege-check", action="store_true")
         upgrade.add_argument("--no-transaction-check", action="store_true")
         upgrade.add_argument("--in-place", action="store_true", help="SQLite: change the file itself, not a copy")
+        upgrade.add_argument("--sqlite-time-zone", metavar="ZONE", default="",
+                             help="SQLite: the IANA zone in which the file's times were written (America/New_York)")
 
         rollback = subcommands.add_parser("rollback-v6")
         rollback.add_argument("--rollback-i-am-sure", action="store_true")
         rollback.add_argument("--drop-v6-data", action="store_true")
         rollback.add_argument("--allow-non-strict", action="store_true")
         rollback.add_argument("--in-place", action="store_true")
+        rollback.add_argument("--sqlite-time-zone", metavar="ZONE", default="")
         rollback.add_argument("--skip-privilege-check", action="store_true")
         rollback.add_argument("--no-transaction-check", action="store_true")
 
@@ -211,7 +214,8 @@ class Database(CliCommandBase):
         try:
             upgrade_v6(provider.engine, dry_run=options.dry_run, duplicates=options.duplicates,
                        skip_privilege_check=options.skip_privilege_check,
-                       transaction_check=not options.no_transaction_check, in_place=options.in_place)
+                       transaction_check=not options.no_transaction_check, in_place=options.in_place,
+                       sqlite_time_zone=options.sqlite_time_zone)
         except UpgradeRefusedError as refusal:
             log.error(str(refusal))
             return False  # a refusal changed nothing: exit code 1
@@ -224,7 +228,7 @@ class Database(CliCommandBase):
         try:
             rollback_v6(provider.engine, drop_v6_data=options.drop_v6_data, allow_non_strict=options.allow_non_strict,
                         in_place=options.in_place, skip_privilege_check=options.skip_privilege_check,
-                        transaction_check=not options.no_transaction_check)
+                        transaction_check=not options.no_transaction_check, sqlite_time_zone=options.sqlite_time_zone)
         except UpgradeRefusedError as refusal:
             log.error(str(refusal))
             return False  # a refusal changed nothing: exit code 1
@@ -284,6 +288,8 @@ subcommands:
                 --skip-privilege-check, --no-transaction-check  proceed although the preflight cannot see
                     a privilege granted through a role, or other sessions' transactions (no PROCESS privilege)
                 --in-place  SQLite: change the file itself; by default a copy replaces it, keeping <file>.v5
+                --sqlite-time-zone ZONE  SQLite, required: the zone the file's times were written in
+                    (America/New_York at Jefferson Lab); schema 6 stores every time as UTC
     stats     - provide database statistics: assignments, constant sets, sets shared by several assignments
     dedup     - report constant sets of one table with equal data and unused sets; --dedup-i-am-sure merges
                 them into the oldest set, removes the unused ones and creates the unique index
@@ -292,4 +298,5 @@ subcommands:
                 --server (MySQL) also compares with the server's SHA2, --rehash-i-am-sure rewrites mismatches
     rollback-v6 - return the database from schema version 6 to 5 for CCDB 2.4 (add --rollback-i-am-sure)
                 [--drop-v6-data] [--allow-non-strict] [--in-place] [--skip-privilege-check] [--no-transaction-check]
+                [--sqlite-time-zone ZONE]  SQLite, required: the zone the times are written back in
 """)

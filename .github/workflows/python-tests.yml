@@ -53,6 +53,7 @@ jobs:
           tests.unit_test_exceptions
           tests.unit_test_path_utils
           tests.unit_test_time_parse
+          tests.unit_test_time_upgrade
           tests.unit_test_utility_argument_parse
           tests.unit_test_version
           tests.unit_test_provider_attach
@@ -106,7 +107,7 @@ jobs:
           from schema_v5_base import create_v5_sqlite
           create_v5_sqlite(engine_for(sys.argv[1]))
           EOF
-          ccdb -c "$UPGRADED" db upgrade --upgrade-i-am-sure
+          ccdb -c "$UPGRADED" db upgrade --upgrade-i-am-sure --sqlite-time-zone UTC
           python scripts/schema/compare.py diff "$FRESH" "$UPGRADED" --ignore-table variationsToTags --ignore-table variations_has_tags
 
       # Builds its own small SQLite databases in a temporary directory

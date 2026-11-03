@@ -39,25 +39,18 @@ log = logging.getLogger("ccdb.provider")
 SCHEMA_VERSION = 6
 
 
-def client_utc_offset():
-    """The current UTC offset of this process's local time zone as MySQL time_zone text, such as '-05:00'"""
-    minutes = int(datetime.now().astimezone().utcoffset().total_seconds() // 60)
-    sign = "-" if minutes < 0 else "+"
-    return "{}{:02d}:{:02d}".format(sign, abs(minutes) // 60, abs(minutes) % 60)
-
-
 def _set_session_time_zone(dbapi_connection, connection_record, connection_proxy):
     """
-    Pool checkout listener: the MySQL session time zone is the client's own UTC offset.
+    Pool checkout listener: the MySQL session time zone is UTC ('+00:00').
 
-    created and modified hold the client's naive local time (datetime.now) and MySQL TIMESTAMP columns read a
-    naive value in the session time zone, so with the client's offset they store the true instant, whatever the
-    server's zone; a time in a request is read the same way. The offset is taken at every checkout, so a
-    long-running process follows daylight saving time.
+    Every time CCDB stores is a UTC instant (docs/concepts/time.md): the model's UtcDateTime columns send and
+    receive UTC values, so with a UTC session a TIMESTAMP stores exactly the instant sent, DATETIME columns and
+    CURRENT_TIMESTAMP defaults hold UTC, whatever the server's zone, and no daylight-saving change between
+    checkout and write can shift a value.
     """
     cursor = dbapi_connection.cursor()
     try:
-        cursor.execute("SET time_zone = %s", (client_utc_offset(),))
+        cursor.execute("SET time_zone = '+00:00'")
     finally:
         cursor.close()
 
@@ -144,7 +137,7 @@ class AlchemyProvider:
 
         :param connection_string: connection string
         :param check_version: Instantly check the schema version
-        :param client_time_zone: MySQL and MariaDB: the session time zone is the client's UTC offset (see attach)
+        :param client_time_zone: MySQL and MariaDB: the session time zone is UTC (see attach)
         :type connection_string: str
         :raises RuntimeError: the provider is connected already; call disconnect() first
         """
@@ -201,10 +194,10 @@ class AlchemyProvider:
         :param session: session bound to that engine; a scoped_session registry is accepted
         :type session: sqlalchemy.orm.Session | sqlalchemy.orm.scoped_session
         :param check_version: Instantly check the schema version
-        :param client_time_zone: MySQL and MariaDB: every connection the engine hands out gets the client's UTC
-            offset as its session time zone, so the creation times the provider writes are true instants. The
-            schema commands (db init, upgrade, rollback-v6) pass False: their DDL keeps the server's zone, in
-            which TIMESTAMP column defaults of existing databases were written
+        :param client_time_zone: MySQL and MariaDB: every connection the engine hands out gets the session time
+            zone UTC, which the model's UTC columns need (docs/concepts/time.md). The schema commands (db init,
+            upgrade, rollback-v6) pass False: their DDL keeps the server's zone, in which the literal TIMESTAMP
+            column defaults of existing databases were written
         :raises TypeError: engine or session has the wrong type
         :raises ValueError: the session has no bind or is bound to another engine
         :raises RuntimeError: the provider is connected already; call disconnect() first
@@ -1374,7 +1367,7 @@ class AlchemyProvider:
         try:
             obj.is_deprecated = True
             obj.deprecated_by_user_id = user.id
-            obj.deprecated_time = datetime.now()
+            obj.deprecated_time = datetime.now(timezone.utc)
             obj.deprecation_comment = comment
 
             # 'update' as the action: the log action column holds 7 characters
@@ -1525,7 +1518,7 @@ class AlchemyProvider:
             prop.value = value
             prop.author_id = user.id
             # the server default fills 'modified' only on insert
-            prop.modified = datetime.now()
+            prop.modified = datetime.now(timezone.utc)
             self.session.flush()
 
             description = "{0} property '{1}' of {2} {3}".format("Created" if action == "create" else "Updated",
@@ -1704,18 +1697,14 @@ class AlchemyProvider:
 
     def _created_at_or_before(self, utc_instant):
         """
-        SQL condition: the assignment was created at or before the UTC instant
+        SQL condition: the assignment was created at or before the UTC instant (a naive UTC or an aware datetime)
 
-        assignments.created holds a naive local time, so the instant is brought to it per provider.
-        MySQL and MariaDB: created is a TIMESTAMP, an instant (the session time zone is the client's, see
-        _set_session_time_zone), and UNIX_TIMESTAMP gives it as an epoch, as the C++ library reads it.
-        SQLite has no time zones: created holds the writing client's local time, compared to the instant in the
-        reader's local time, as a request time is compared.
+        assignments.created holds a UTC instant with microseconds on every engine (docs/concepts/time.md), so the
+        comparison is exact and the same SQL on MySQL, MariaDB and SQLite.
         """
-        aware = utc_instant.replace(tzinfo=timezone.utc)
-        if self.engine is not None and self.engine.dialect.name == "sqlite":
-            return Assignment.created <= aware.astimezone().replace(tzinfo=None)
-        return func.unix_timestamp(Assignment.created) <= aware.timestamp()
+        if utc_instant.tzinfo is None:
+            utc_instant = utc_instant.replace(tzinfo=timezone.utc)
+        return Assignment.created <= utc_instant
 
     def get_pinning_tags(self, assignment):
         """
@@ -2734,7 +2723,7 @@ class AlchemyProvider:
                 raise UserExistsError("The user with name '" + name + "' exists in the database", name)
         except UserNotFoundError:
             user = User()
-            user.last_action_time = datetime.now()
+            user.last_action_time = datetime.now(timezone.utc)
             user.name = name
             self.session.add(user)
 
@@ -2822,7 +2811,7 @@ class AlchemyProvider:
         record.action = action
         record.description = description
         record.comment = comment
-        user.last_action_time = datetime.now()
+        user.last_action_time = datetime.now(timezone.utc)
 
         self.session.add(record)
         if commit:

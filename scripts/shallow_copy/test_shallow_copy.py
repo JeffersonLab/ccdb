@@ -26,6 +26,7 @@ import ccdb_shallow_copy as shallow  # noqa: E402
 import verify_shallow_copy  # noqa: E402
 
 from ccdb.errors import ObjectIsNotFoundInDbError  # noqa: E402
+from ccdb import testing  # noqa: E402
 from ccdb.model import INFINITE_RUN, TypeTable, vault_digest  # noqa: E402
 from ccdb.provider import AlchemyProvider  # noqa: E402
 
@@ -46,6 +47,16 @@ HOSTILE_VAULT = "a|b&delimiter;c|<script>alert(1)</script>|O'Brien \"quoted\"|ü
 def stamp(value):
     return value.isoformat(sep=" ")
 
+
+
+def setUpModule():
+    # the data holds literal UTC times that the tests compare with shown (local) times
+    global _restore_time_zone
+    _restore_time_zone = testing.pin_time_zone("UTC")
+
+
+def tearDownModule():
+    _restore_time_zone()
 
 class SourceBuilder:
     """Writes a CCDB SQLite source with the repository schema (no test content) and given rows"""

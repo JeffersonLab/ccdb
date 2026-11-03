@@ -53,8 +53,8 @@ except ImportError:
 ENV_MYSQL_READER = "CCDB_TEST_MYSQL_READER_CONNECTION"
 ENV_MYSQL_ROOT = "CCDB_TEST_MYSQL_ROOT_CONNECTION"
 
-UPGRADE = "db upgrade --upgrade-i-am-sure"
-ROLLBACK = "db rollback-v6 --rollback-i-am-sure"
+UPGRADE = "db upgrade --upgrade-i-am-sure --sqlite-time-zone UTC"
+ROLLBACK = "db rollback-v6 --rollback-i-am-sure --sqlite-time-zone UTC"
 BACKFILL_BATCH = 500        # §6.3 step 2 and §6.4 step 2: LIMIT 500, one commit per batch
 
 

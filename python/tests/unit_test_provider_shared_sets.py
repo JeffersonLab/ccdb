@@ -248,7 +248,7 @@ class SharedSetsTest(SharedSetsTestBase):
                         "1, 1, NULL, :set_id, 2, 'duplicate')"), {"id": assignment_id, "set_id": set_id})
             engine.dispose()
             cli = self.new_cli(path)
-            self.assert_cli_succeeds(cli, "db upgrade --upgrade-i-am-sure")
+            self.assert_cli_succeeds(cli, "db upgrade --upgrade-i-am-sure --sqlite-time-zone UTC")
             cli.provider.disconnect()
             indexes = [row[0] for row in self.query(
                 path, "SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = 'constantSets'")]

@@ -123,8 +123,10 @@ class Versions(CliCommandBase):
                 constant_set = asgmnt.constant_set
                 data_columns = "%-13s " % constant_set.sha256[:12] + "%-9s " % sharer_counts.get(constant_set.id, 0)
 
+            # vers -l shows the microseconds of the creation time, so it names the assignment's moment exactly
+            created = asgmnt.created.strftime("%Y-%m-%d %H-%M-%S.%f   " if extended else "%Y-%m-%d %H-%M-%S   ")
             print(" %-6i "%asgmnt.id +\
-                  " %-20s"%asgmnt.created.strftime("%Y-%m-%d %H-%M-%S   ") +\
+                  " %-20s"%created +\
                   " %-15s" % asgmnt.author.name + " " +\
                   " %-14s "%asgmnt.variation.name +\
                   " %-15s "%(repr(asgmnt.run_range.min) + "-" + max_str) +\

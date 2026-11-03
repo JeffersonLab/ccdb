@@ -1,6 +1,7 @@
 """
-MySQL and MariaDB session time zone: the provider sets it to the client's own UTC offset, so the creation time it
-writes as naive local time is the true instant even when the client and the server are in different zones.
+MySQL and MariaDB session time zone: the provider sets it to UTC, and the model's UTC columns send and receive UTC
+(docs/concepts/time.md), so the creation time it writes is the true instant, with microseconds, even when the client
+and the server are in different zones; Python reads it back as the client's local wall time.
 
 The process time zone is pinned to America/New_York, or to Asia/Tokyo when the server's own offset is New York's,
 so the two always differ. Runs on the database of CCDB_TEST_MYSQL_CONNECTION, re-initialized before each test;
@@ -17,7 +18,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import text
 
 from ccdb import testing as helper
-from ccdb.provider import AlchemyProvider, client_utc_offset
+from ccdb.provider import AlchemyProvider
 
 TABLE = "/test/test_vars/test_table"
 RUN = 100
@@ -67,9 +68,8 @@ class MySqlSessionTimeZoneTest(unittest.TestCase):
     def new_assignment(self, value):
         return self.provider.create_assignment([[value] * 3, [value] * 3], TABLE, 0, 1000, "default", "tz test")
 
-    def test_session_time_zone_is_the_client_offset(self):
-        self.assertEqual(self.scalar("SELECT @@session.time_zone"), client_utc_offset())
-        self.assertNotEqual(client_utc_offset(), "+00:00")
+    def test_session_time_zone_is_utc(self):
+        self.assertEqual(self.scalar("SELECT @@session.time_zone"), "+00:00")
 
     def test_created_is_the_true_instant(self):
         before = time.time()
@@ -79,10 +79,14 @@ class MySqlSessionTimeZoneTest(unittest.TestCase):
         self.assertGreaterEqual(float(epoch), int(before) - 1)
         self.assertLessEqual(float(epoch), after + 1)
 
-        # read back, it is the client's local time again
+        # read back, it is the client's local time again, with the microseconds the server kept
         self.provider.session.expire_all()
         created = self.provider.get_assignment_by_id(assignment.id).created
         self.assertLess(abs((created - datetime.now()).total_seconds()), 60)
+        stored = self.scalar("SELECT `created` FROM `assignments` WHERE `id` = :id", id=assignment.id)
+        self.assertEqual(stored.microsecond, created.microsecond)
+        self.assertEqual(self.scalar("SELECT DATETIME_PRECISION FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = "
+                                     "DATABASE() AND TABLE_NAME = 'assignments' AND COLUMN_NAME = 'created'"), 6)
 
     def test_tag_and_request_time_before_a_new_assignment_do_not_see_it(self):
         old = self.new_assignment(111)

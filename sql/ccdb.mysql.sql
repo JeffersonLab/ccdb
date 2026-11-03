@@ -36,7 +36,7 @@ INSERT INTO `constantSets` (`id`, `created`, `modified`, `vault`, `constantTypeI
 DROP TABLE IF EXISTS `assignments` ;
 CREATE TABLE IF NOT EXISTS `assignments` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `created` TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     `modified` TIMESTAMP NOT NULL DEFAULT 20070101000000,
     `variationId` INT NOT NULL,
     `runRangeId` INT NULL,
@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS `tags` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
     `variationId` INT NOT NULL,
-    `snapshotTime` DATETIME NOT NULL,
+    `snapshotTime` DATETIME(6) NOT NULL,
     `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
     `authorId` INT NOT NULL DEFAULT 1,
     `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
