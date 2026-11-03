@@ -106,8 +106,8 @@ def logs(request: Request, page: int = Query(1, ge=1), per_page: int = Query(50)
 @router.get("/logs.atom", summary="The newest log records as an Atom feed; `search` and `per_page` as for /logs",
             responses={200: {"content": {"application/atom+xml": {}}, "description": "An Atom 1.0 feed (RFC 4287)"}})
 def logs_atom(request: Request, per_page: int = Query(50), search: str = "", db=Depends(provider_dependency)):
-    feed = service.logs_atom(db, request.query_params, str(request.url),
-                             lambda log_id: str(request.url_for("log_record", log_id=log_id)))
+    feed = service.logs_atom(db, request.query_params, request.url.path + ("?" + request.url.query if request.url.query else ""),
+                             lambda log_id: request.url_for("log_record", log_id=log_id).path)
     return respond(request, feed, "application/atom+xml; charset=utf-8", SHORT)
 
 

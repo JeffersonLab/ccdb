@@ -3,7 +3,7 @@ import json
 import os
 import tempfile
 import unittest
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 from ccdb.sql.sqlite_schema import create_sqlite_database
 from ccdb.webgui import cerate_ccdb_flask_app
@@ -102,9 +102,9 @@ class AssignmentViewsTest(unittest.TestCase):
     def test_request_form_parts_redirect_to_the_request_string(self):
         response = self.get("/show_request?path=" + quote(TABLE) + "&run=0&variation=default&time=")
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.headers["Location"].endswith("/show_request?request=" + quote(TABLE + ":0:default", safe="/:")), response.headers["Location"])
+        self.assertTrue(unquote(response.headers["Location"]).endswith("/show_request?request=" + TABLE + ":0:default"), response.headers["Location"])  # decoded: Werkzeug 2.2 escapes / and : in a query, newer ones keep them
         with_time = self.get("/show_request?path=" + quote(TABLE) + "&run=5&variation=mc&time=2020-01-04")
-        self.assertTrue(with_time.headers["Location"].endswith(quote(TABLE + ":5:mc:2020-01-04", safe="/:")), with_time.headers["Location"])
+        self.assertTrue(unquote(with_time.headers["Location"]).endswith(TABLE + ":5:mc:2020-01-04"), with_time.headers["Location"])
         with_clock = self.get("/show_request?path=" + quote(TABLE) + "&run=0&variation=default&time=2012-10-30_23-48-42")
         self.assertEqual(with_clock.status_code, 302)
         followed = self.get(with_clock.headers["Location"])
@@ -148,7 +148,7 @@ class AssignmentViewsTest(unittest.TestCase):
         for old in ("/dowload_request", "/download_request"):
             response = self.get(old + "?request=" + quote(AMBIGUOUS))
             self.assertEqual(response.status_code, 302, old)
-            self.assertTrue(response.headers["Location"].endswith("/assignments/data.txt?request=" + quote(AMBIGUOUS, safe="/:")), response.headers["Location"])
+            self.assertTrue(unquote(response.headers["Location"]).endswith("/assignments/data.txt?request=" + AMBIGUOUS), response.headers["Location"])  # decoded, see above
 
 
 if __name__ == "__main__":

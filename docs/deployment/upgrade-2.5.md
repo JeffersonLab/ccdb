@@ -387,8 +387,9 @@ SQLite snapshots that jobs read, such as files on CVMFS, follow the same rule as
 Python reads only schema 6 files and CCDB 2.4 Python only schema 5 files; C++ jobs read both. Publish
 snapshots exported from the upgraded server when the Python clients move to 2.5, or upgrade a published
 file with `ccdb db upgrade --upgrade-i-am-sure`. Run `ANALYZE` on a whole-database snapshot before you publish
-it (`sqlite3 FILE 'ANALYZE'`): without statistics the C++ library's lookup walks every assignment of the
-variation, 17 s against 65 ms for a job of 200 tables ([Scaling](deployment/scaling.md)).
+it (`sqlite3 FILE 'ANALYZE'`) while CCDB 2.4 C++ programs read it: without statistics their lookup walks every
+assignment of the variation, 17 s against 65 ms for a job of 200 tables ([Scaling](deployment/scaling.md)); the
+2.5 library does not depend on the statistics.
 
 ## Merging duplicate sets
 

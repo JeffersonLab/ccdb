@@ -9,6 +9,9 @@ feature, so you can install only what you need:
 - [**MySQL** server setup](#mysql)
 - [**Test the installation**](#test-the-installation)
 
+A Java library for CCDB and RCDB is maintained separately:
+[ccdbrcdb-java](https://code.jlab.org/hallb/clas12/coatjava/ccdbrcdb-java).
+
 ## Python
 
 The `ccdb` command and the Python API are published on [PyPI](https://pypi.org/project/ccdb/).

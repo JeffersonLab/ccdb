@@ -76,7 +76,9 @@ public:
     /// <cache_dir>/<sha256>/<file name of the url>, so jobs that share a cache directory share the file, and a
     /// file already there is checked against the hash once per service and fetched again when it differs.
     /// A fetched file with another hash or size is removed and is an error. URLs: file:///path and plain
-    /// absolute paths; http(s) is not supported yet (ccdb-2.5 Q52).
+    /// absolute paths are copied; http:// and https:// URLs are downloaded through the ccdb library's libcurl
+    /// (ccdb::HttpDownload), so they need a library built with CCDB_WITH_HTTP, else they are a clear error.
+    /// CCDB_HTTP_TIMEOUT bounds one download in seconds (default 300), as for the library's HTTP provider.
     std::string GetResource(int run, const std::string& table);
 
     /// The values of the service's parameters after JANA applied the user's settings

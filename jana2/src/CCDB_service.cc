@@ -6,6 +6,8 @@
 #include <JANA/JApplication.h>
 #include <JANA/JLogger.h>
 
+#include <CCDB/Helpers/EnvUtils.h>
+#include <CCDB/Helpers/HttpDownload.h>
 #include <CCDB/Helpers/PathUtils.h>
 #include <CCDB/Helpers/StringUtils.h>
 #include <CCDB/Helpers/TimeUtils.h>
@@ -167,15 +169,18 @@ std::string CCDB_service::GetResource(int run, const std::string& table) {
                          table.c_str(), expected_sha256.c_str());
     }
 
-    // Where the file comes from: file:///path or /path
+    // Where the file comes from: file:///path or /path to copy, http(s)://host/path to download
     std::string source_path;
-    if (url.rfind("file://", 0) == 0) {
+    bool is_http = url.rfind("http://", 0) == 0 || url.rfind("https://", 0) == 0;
+    if (is_http) {
+        source_path = url.substr(0, url.find_first_of("?#"));      // the file name comes from the path part
+    } else if (url.rfind("file://", 0) == 0) {
         source_path = url.substr(7);
     } else if (!url.empty() && url[0] == '/') {
         source_path = url;
     } else {
-        throw JException("CCDB_service: resource '%s' of table '%s': only file:// URLs and absolute paths are "
-                         "supported so far", url.c_str(), table.c_str());
+        throw JException("CCDB_service: resource '%s' of table '%s': the url must be file:///path, an absolute "
+                         "path, or http(s)://host/path", url.c_str(), table.c_str());
     }
 
     namespace fs = std::filesystem;
@@ -198,18 +203,37 @@ std::string CCDB_service::GetResource(int run, const std::string& table) {
         fs::remove(target, error);
     }
 
-    // Copy next to the target under a temporary name, check, then rename: a reader never sees half a file
+    // Checked after the cache: a build without libcurl still serves a cache that other jobs filled
+    if (is_http && !ccdb::HttpDownload::Available()) {
+        throw JException("CCDB_service: can't fetch resource '%s' of table '%s': this CCDB library was built without "
+                         "HTTP support. Build CCDB where CMake finds libcurl (option CCDB_WITH_HTTP), or point the "
+                         "table at a file:// URL", url.c_str(), table.c_str());
+    }
+
+    // Copy or download next to the target under a temporary name, check, then rename: a reader never sees half a file
     fs::create_directories(target.parent_path(), error);
     if (error) {
         throw JException("CCDB_service: can't create the cache directory '%s': %s", target.parent_path().string().c_str(), error.message().c_str());
     }
     fs::path partial = target;
     partial += ".part." + std::to_string(::getpid());
-    fs::copy_file(source_path, partial, fs::copy_options::overwrite_existing, error);
-    if (error) {
-        fs::remove(partial, error);
-        throw JException("CCDB_service: can't fetch resource '%s' of table '%s' for run %d: %s",
-                         url.c_str(), table.c_str(), run, error.message().c_str());
+    if (is_http) {
+        // CCDB_HTTP_TIMEOUT, the setting of the library's HTTP provider (docs/apis/cpp.md), bounds one download
+        unsigned int timeout = ccdb::GetEnvPositiveUInt("CCDB_HTTP_TIMEOUT", 300, 86400);
+        try {
+            ccdb::HttpDownload::ToFile(url, partial.string(), timeout);
+        } catch (std::exception& ex) {
+            fs::remove(partial, error);
+            throw JException("CCDB_service: can't fetch resource '%s' of table '%s' for run %d: %s",
+                             url.c_str(), table.c_str(), run, ex.what());
+        }
+    } else {
+        fs::copy_file(source_path, partial, fs::copy_options::overwrite_existing, error);
+        if (error) {
+            fs::remove(partial, error);
+            throw JException("CCDB_service: can't fetch resource '%s' of table '%s' for run %d: %s",
+                             url.c_str(), table.c_str(), run, error.message().c_str());
+        }
     }
 
     long long actual_size = (long long)fs::file_size(partial, error);

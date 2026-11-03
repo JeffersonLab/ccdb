@@ -482,7 +482,13 @@ void ccdb::MySQLDataProvider::LoadColumns(ConstantsTypeTable* table)
         Error(CCDB_ERROR_INVALID_ID,"MySQLDataProvider::LoadColumns", "Type table has wrong ID");
     }
 
-    string query = "SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `columnType`, `comment` "
+    // columns.units exists from schema 6 on; a schema 5 database stays readable (the C++ library has no version check)
+    if(mHasUnitsColumn < 0)
+    {
+        mHasUnitsColumn = (QuerySelect("SHOW COLUMNS FROM `columns` LIKE 'units';") && FetchRow()) ? 1 : 0;
+    }
+    string query = "SELECT `id`, UNIX_TIMESTAMP(`created`) as `created`, UNIX_TIMESTAMP(`modified`) as `modified`, `name`, `columnType`, `comment`" +
+                   string(mHasUnitsColumn ? ", `units` " : " ") +
                    "FROM `columns` WHERE `typeId` = '" + to_string(table->GetId()) + "' ORDER BY `order`;";
 
 
@@ -504,6 +510,7 @@ void ccdb::MySQLDataProvider::LoadColumns(ConstantsTypeTable* table)
         result->SetName(ReadString(3));
         result->SetType(ReadString(4));
         result->SetComment(ReadString(5));
+        if(mHasUnitsColumn) result->SetUnits(ReadString(6));
         result->SetDBTypeTableId(table->GetId());
         table->AddColumn(result);
     }

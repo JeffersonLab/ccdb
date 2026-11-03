@@ -40,11 +40,11 @@ becomes `(value)*units`, so the evaluator converts it to DD4hep's units; a text 
 | `variation`, `time` | `default`, the newest | as `ccdb:variation` and `ccdb:time` of the [JANA2 service](apis/jana.md) |
 | `tag` | none | a [tag](concepts/tags.md) instead of variation and time |
 | `prefix` | none | prepended to every constant's name |
-| `units` | none | units of every number column, e.g. `mm` |
-| `<unit column= value=/>` | | the units of one column, overriding `units`; an empty value means none |
+| `units` | the columns' own units | units of every number column, e.g. `mm` |
+| `<unit column= value=/>` | | the units of one column, overriding `units` and the column's own; an empty value means none |
 
-The units come from the XML because the C++ library does not read the units that schema 6 stores with
-each column yet.
+Without `units` and `<unit>` the units stored with each column apply (`mktbl inner_radius=double:mm`), so a
+well-described table needs no units in the XML.
 
 A table of geometry constants has one row and one column per constant:
 

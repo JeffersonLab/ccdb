@@ -23,7 +23,15 @@ next to the database, <database>.resource/weights.bin:
     /test/jana2/model             the file with its true sha256 and size
     /test/jana2/model_bad_hash    the same file with the sha256 of other bytes
     /test/jana2/model_missing     a file:// URL to a file that does not exist
-    /test/jana2/model_http        an https:// URL
+    /test/jana2/model_http        https://example.org/ccdb/weights.bin, a server the tests never reach
+
+With CCDB_TEST_JANA2_HTTP_RESOURCE_BASE set (jana2_tests.sh sets it to a `python3 -m http.server` on that
+directory, http://127.0.0.1:<port>), the HTTP tables point at that server instead:
+
+    /test/jana2/model_http           $BASE/weights.bin with the true sha256 and size
+    /test/jana2/model_http_bad_hash  $BASE/weights.bin with the sha256 of other bytes
+    /test/jana2/model_http_missing   $BASE/missing.bin, which the server answers with 404
+    /test/jana2/model_http_unreachable  http://127.0.0.1:<a free port nothing listens on>/weights.bin
 
 The CLI runs from this checkout (PYTHONPATH=<repo>/python), so the script needs only the ccdb package's
 dependencies, which the eic-shell image has.
@@ -32,6 +40,7 @@ dependencies, which the eic-shell image has.
 import argparse
 import hashlib
 import os
+import socket
 import sqlite3
 import subprocess
 import sys
@@ -57,6 +66,13 @@ def run_ccdb(connection, *args):
     result = subprocess.run(command, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
     if result.returncode != 0:
         sys.exit("ccdb {} failed with exit code {}:\n{}".format(" ".join(args), result.returncode, result.stdout))
+
+
+def free_port():
+    """A loopback port nothing listens on: bound once to learn its number, then released"""
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
 
 
 def write_resource_file(directory):
@@ -93,8 +109,17 @@ def main():
         ("/test/jana2/model", "file://" + resource_path, resource_sha256),
         ("/test/jana2/model_bad_hash", "file://" + resource_path, other_sha256),
         ("/test/jana2/model_missing", "file://" + resource_path + ".missing", resource_sha256),
-        ("/test/jana2/model_http", "https://example.org/ccdb/weights.bin", resource_sha256),
     ]
+    http_base = os.environ.get("CCDB_TEST_JANA2_HTTP_RESOURCE_BASE", "").rstrip("/")
+    if http_base:
+        resources += [
+            ("/test/jana2/model_http", http_base + "/weights.bin", resource_sha256),
+            ("/test/jana2/model_http_bad_hash", http_base + "/weights.bin", other_sha256),
+            ("/test/jana2/model_http_missing", http_base + "/missing.bin", resource_sha256),
+            ("/test/jana2/model_http_unreachable", "http://127.0.0.1:{}/weights.bin".format(free_port()), resource_sha256),
+        ]
+    else:
+        resources.append(("/test/jana2/model_http", "https://example.org/ccdb/weights.bin", resource_sha256))
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         for table, url, sha256 in resources:

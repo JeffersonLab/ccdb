@@ -68,6 +68,9 @@ public:
     std::string     GetComment() const;                 /// get comment
     void            SetComment(std::string val);        /// set comment
 
+    std::string     GetUnits() const;                   /// units of the column (schema 6), "" when none
+    void            SetUnits(std::string val);          /// set units
+
     time_t          GetCreatedTime() const;             /// get mCreatedTime time
     void            SetCreatedTime(time_t val);         /// set mCreatedTime time
 
@@ -104,6 +107,7 @@ private:
     dbkey_t      mId;                //database table uniq id;
     std::string  mName;              //name
     std::string  mComment;           //comment
+    std::string  mUnits;             //units (schema 6), empty when none
     time_t       mCreatedTime;       //mCreatedTime time
     time_t       mModifiedTime;      //mModifiedTime time
     dbkey_t      mDBTypeTableId;     //gets Type table Id
