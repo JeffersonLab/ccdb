@@ -91,6 +91,7 @@ jobs:
           tests.unit_test_properties
           tests.unit_test_readiness
           tests.unit_test_usage_record
+          tests.unit_test_provenance
           tests.unit_test_units
           tests.unit_test_metadata_files
 
