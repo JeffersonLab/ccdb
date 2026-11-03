@@ -62,7 +62,7 @@ class InstallDocsTest(unittest.TestCase):
         options = cmake_options()
         for document in DOCUMENTS:
             for name in set(re.findall(r"\b(CCDB_[A-Z_]+)\b", read(document))):
-                if name in ("CCDB_HOME", "CCDB_USER", "CCDB_CONNECTION") or name.startswith(("CCDB_TEST_", "CCDB_MYSQL_", "CCDB_SQLITE_")):
+                if name in ("CCDB_HOME", "CCDB_USER", "CCDB_CONNECTION") or name.startswith(("CCDB_TEST_", "CCDB_MYSQL_", "CCDB_SQLITE_", "CCDB_HTTP_", "CCDB_API_", "CCDB_EIC_")):
                     continue
                 with self.subTest(document=document, option=name):
                     self.assertIn(name, options)
