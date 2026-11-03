@@ -14,6 +14,8 @@ target_include_directories(ccdb_jana2 PUBLIC
         "$<INSTALL_INTERFACE:include/CCDB/JANA2>")
 target_link_libraries(ccdb_jana2 PUBLIC ccdb JANA::jana2_shared_lib)
 target_compile_features(ccdb_jana2 PUBLIC cxx_std_17)
+# the CCDB version the service writes into its record of resolved constants (ccdb:provenance)
+target_compile_definitions(ccdb_jana2 PRIVATE CCDB_VERSION_STRING="${ccdb_main_VERSION}")
 set_target_properties(ccdb_jana2 PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # The plugin: a shared object without the 'lib' prefix, as JANA2 loads plugins by name from JANA_PLUGIN_PATH

@@ -9,6 +9,11 @@
 #include "CCDB_service.h"
 
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <unistd.h>
 #include <map>
 #include <memory>
 #include <string>
@@ -340,4 +345,116 @@ TEST_CASE("CCDB_service/HTTP API", "[jana2][http]")
         REQUIRE(service->GetUrl() == url);
         REQUIRE(service->GetConstants<map<string, double>>(1500, table).at("tIntercept") == 0.04314);
     }
+}
+
+
+namespace {
+    /// Everything written to std::cout (where JANA2's logger writes) while it lives
+    class CaptureCout {
+    public:
+        CaptureCout(): mOld(std::cout.rdbuf(mBuffer.rdbuf())) {}
+        ~CaptureCout() { std::cout.rdbuf(mOld); }
+        string Text() const { return mBuffer.str(); }
+    private:
+        std::ostringstream mBuffer;
+        std::streambuf* mOld;
+    };
+
+    shared_ptr<CCDB_service> StartServiceLogged(JApplication& app, const map<string, string>& parameters) {
+        app.SetParameterValue("jana:loglevel", "info");
+        for (const auto& parameter: parameters) app.SetParameterValue(parameter.first, parameter.second);
+        app.ProvideService(make_shared<CCDB_service>(&app));
+        app.Initialize();
+        return app.GetService<CCDB_service>();
+    }
+
+    string ReadFile(const string& path) {
+        std::ifstream file(path);
+        std::stringstream text;
+        text << file.rdbuf();
+        return text.str();
+    }
+
+    size_t Count(const string& text, const string& part) {
+        size_t count = 0;
+        for (size_t at = text.find(part); at != string::npos; at = text.find(part, at + 1)) count++;
+        return count;
+    }
+}
+
+
+TEST_CASE("CCDB_service/startup log", "[jana2]")
+{
+    SECTION("Without a time or a tag the service warns that the job reads the newest constants")
+    {
+        CaptureCout capture;
+        JApplication app;
+        StartServiceLogged(app, {{"ccdb:url", JanaTestConnection()}});
+        string text = capture.Text();
+        REQUIRE(text.find("variation 'default', time 'newest'") != string::npos);
+        REQUIRE(text.find("neither ccdb:tag nor ccdb:time is set") != string::npos);
+    }
+
+    SECTION("A tag is logged, and there is no warning")
+    {
+        CaptureCout capture;
+        JApplication app;
+        StartServiceLogged(app, {{"ccdb:url", JanaTestConnection()}, {"ccdb:tag", "jana2_campaign"}});
+        string text = capture.Text();
+        REQUIRE(text.find("tag 'jana2_campaign'") != string::npos);
+        REQUIRE(text.find("neither ccdb:tag nor ccdb:time") == string::npos);
+    }
+
+    SECTION("A time is logged, and there is no warning")
+    {
+        CaptureCout capture;
+        JApplication app;
+        StartServiceLogged(app, {{"ccdb:url", JanaTestConnection()}, {"ccdb:time", "2022"}});
+        REQUIRE(capture.Text().find("time '2022'") != string::npos);
+        REQUIRE(capture.Text().find("neither ccdb:tag nor ccdb:time") == string::npos);
+    }
+}
+
+
+TEST_CASE("CCDB_service/ccdb:provenance", "[jana2]")
+{
+    string path = std::filesystem::temp_directory_path().string() + "/ccdb_provenance_" + to_string(getpid()) + ".json";
+    std::filesystem::remove(path);
+
+    SECTION("Without it nothing is recorded")
+    {
+        JApplication app;
+        auto service = StartService(app, {{"ccdb:url", JanaTestConnection()}});
+        REQUIRE(service->GetProvenancePath().empty());
+        REQUIRE_FALSE(service->GetCalibration(100)->IsUsageRecordEnabled());
+    }
+
+    SECTION("With it every distinct resolution is in the file, written when the service ends")
+    {
+        {
+            JApplication app;
+            auto service = StartService(app, {{"ccdb:url", JanaTestConnection()}, {"ccdb:tag", "jana2_campaign"},
+                                              {"ccdb:provenance", path}});
+            REQUIRE(service->GetCalibration(100)->IsUsageRecordEnabled());
+            for (int event = 0; event < 5; event++) {
+                REQUIRE(service->GetConstants<vector<vector<double>>>(100, "/test/jana2/gains") == GAINS_OLD);
+            }
+            REQUIRE(service->GetConstants<vector<vector<double>>>(250, "/test/jana2/gains") == GAINS_OLD);
+            REQUIRE(service->GetConstants<double>(100, "/test/jana2/pedestal") == 100);
+
+            service->WriteUsageRecord();
+            string early = ReadFile(path);
+            REQUIRE(Count(early, "\"assignment_id\"") == 3);
+        }
+        string text = ReadFile(path);                     // written again when the application ended
+        REQUIRE(text.find("\"ccdb_version\": \"2.5.0\"") != string::npos);
+        REQUIRE(text.find("\"tag\": \"jana2_campaign\"") != string::npos);
+        REQUIRE(Count(text, "\"assignment_id\"") == 3);
+        REQUIRE(Count(text, "\"path\": \"/test/jana2/gains\"") == 2);
+        REQUIRE(Count(text, "\"run\": 250") == 1);
+        REQUIRE(Count(text, "\"sha256\": \"") == 3);
+        REQUIRE(text.find("password") == string::npos);
+        REQUIRE_FALSE(std::filesystem::exists(path + ".part"));
+    }
+    std::filesystem::remove(path);
 }
