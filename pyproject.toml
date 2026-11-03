@@ -43,11 +43,14 @@ dependencies = [
 [project.optional-dependencies]
 # Web GUI (the `ccdb gui` command / ccdbweb WSGI app)
 web = ["flask>=2.0"]
+# HTTP API (the `ccdb api` command / ccdb.api:app ASGI app); it shares the web GUI's queries
+api = ["ccdb[web]", "fastapi>=0.110", "uvicorn>=0.23"]
 # Extras used by python/examples
 examples = ["jsonpickle", "pandas"]
 # Tests use stdlib unittest; pytest is intentionally NOT a dependency
-# pyflakes for the lint; PyYAML reads CITATION.cff in unit_test_metadata_files
-dev = ["pyflakes>=3", "pyyaml"]
+# pyflakes for the lint; PyYAML reads CITATION.cff in unit_test_metadata_files; httpx drives FastAPI's TestClient
+# and jsonschema checks the API's table schema in unit_test_api
+dev = ["pyflakes>=3", "pyyaml", "httpx", "jsonschema"]
 
 [project.urls]
 Repository = "https://github.com/JeffersonLab/ccdb"
