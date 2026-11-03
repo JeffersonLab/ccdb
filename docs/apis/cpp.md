@@ -54,6 +54,13 @@ delete calib;  // <== DON'T DO THIS
 calib = generator.MakeCalibration("<SAME connection string>");  // Problem: deleted pointer.
 ```
 
+### Columns and their units
+
+`calib->GetAssignment("/path/table")` gives the assignment with its table and columns:
+`assignment->GetTypeTable()->GetColumns()` lists `ConstantsTypeColumn` objects with `GetName()`, `GetType()`
+and, since 2.5, `GetUnits()`, the units stored with the column (`mktbl gain=double:MeV`; `""` when none). A
+schema 5 database has no units column and reads as before.
+
 ### Reading through a tag
 
 To read every request of a job from the constants a [tag](concepts/tags.md) froze, set the tag on the

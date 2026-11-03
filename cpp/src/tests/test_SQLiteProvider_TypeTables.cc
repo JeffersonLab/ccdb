@@ -156,3 +156,28 @@ TEST_CASE("CCDB/SQLiteDataProvider/TypeTables","TypeTables tests")
 
 	delete prov;//with all objects...
 }
+
+
+// Column units of schema 6 (Q59): read with the columns; "" for a column without units
+TEST_CASE("CCDB/SQLiteDataProvider/ColumnUnits", "[typetables]")
+{
+    const char* fixture = getenv("CCDB_TEST_FIXTURE_CONNECTION");
+    if (!fixture) {
+        WARN("CCDB_TEST_FIXTURE_CONNECTION is not set: the column units test is skipped");
+        return;
+    }
+    ccdb::SQLiteDataProvider provider;
+    provider.Connect(fixture);
+    ccdb::ConstantsTypeTable* table = provider.DataProvider::GetConstantsTypeTable("/schema6/shared", true);
+    REQUIRE(table != nullptr);
+    std::map<std::string, std::string> units;
+    for (ccdb::ConstantsTypeColumn* column : table->GetColumns()) units[column->GetName()] = column->GetUnits();
+    REQUIRE(units.at("gain") == "MeV/count");
+    REQUIRE(units.at("pedestal") == "count");
+    REQUIRE(units.size() == 3);
+    for (const auto& each : units) {
+        if (each.first != "gain" && each.first != "pedestal") REQUIRE(each.second == "");
+    }
+    delete table;
+    provider.Disconnect();
+}

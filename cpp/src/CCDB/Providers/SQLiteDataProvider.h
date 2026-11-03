@@ -146,6 +146,7 @@ private:
 	sqlite3 *		mDatabase;			//Handler to sqlite object
 
 	bool mIsConnected;					//indicates connection to db
+	int mHasUnitsColumn = -1;			//columns.units (schema 6) present: 1, absent: 0, not probed yet: -1
 
 };
 }

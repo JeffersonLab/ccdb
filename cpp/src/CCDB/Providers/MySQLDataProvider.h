@@ -305,6 +305,7 @@ namespace ccdb
         MYSQL_ULONG mReturnedAffectedRows;	//number of affected rows from last INSERT, DELETE, UPDATE queries
         MYSQL_ULONG mLastInsertedId;		//number of last id
         bool mIsConnected;					//indicates connection to db
+        int mHasUnitsColumn = -1;			//columns.units (schema 6) present: 1, absent: 0, not probed yet: -1
         MySQLConnectionInfo mConnectionInfo;	//parameters of the last successful connect, used to reconnect
 
         string mLastFullQuerry;   //full text of last full get assignment query

@@ -11,14 +11,17 @@
 // to DD4hep's units; strings as string constants. The compact reader runs <properties> plugins before the detectors,
 // so detector descriptions can use the constants. Attributes: table (required), run (default 0), url (default
 // $CCDB_CONNECTION, then $JANA_CALIB_URL), variation (default "default"), time (UTC or local text, as ccdb:time of the
-// JANA2 service; default the newest) or tag, prefix (default none), units (for every number column; default none) and
-// <unit column= value=/> children for single columns. The C++ library does not read the units schema 6 stores in
-// the columns yet, so the units come from this element.
+// JANA2 service; default the newest) or tag, prefix (default none), units (for every number column) and
+// <unit column= value=/> children for single columns. Without them a column's own units (schema 6, `mktbl
+// name=double:mm`) apply; a <unit> child wins over `units`, which wins over the column's.
 #include <DD4hep/DetFactoryHelper.h>
 #include <DD4hep/Printout.h>
 #include <XML/Utilities.h>
 
 #include <CCDB/CalibrationGenerator.h>
+#include <CCDB/Model/Assignment.h>
+#include <CCDB/Model/ConstantsTypeColumn.h>
+#include <CCDB/Model/ConstantsTypeTable.h>
 #include <CCDB/Helpers/TimeUtils.h>
 
 #include <cstdlib>
@@ -78,10 +81,17 @@ namespace {
             throw std::runtime_error("CCDB_Constants: " + table + " for run " + std::to_string(run) + " must hold one row, it holds " +
                                      std::to_string(rows.size()));
         }
+        // the columns' own units (schema 6), used where the XML names none
+        std::map<std::string, std::string> storedUnits;
+        if (ccdb::Assignment* assignment = calib->GetAssignment(table)) {
+            for (ccdb::ConstantsTypeColumn* column : assignment->GetTypeTable()->GetColumns()) {
+                storedUnits[column->GetName()] = column->GetUnits();
+            }
+        }
         for (const auto& cell : rows[0]) {
             std::string name = prefix + cell.first;
             auto unit = columnUnits.find(cell.first);
-            std::string unitText = unit != columnUnits.end() ? unit->second : units;
+            std::string unitText = unit != columnUnits.end() ? unit->second : (!units.empty() ? units : storedUnits[cell.first]);
             if (IsNumber(cell.second)) {
                 std::string value = unitText.empty() ? cell.second : "(" + cell.second + ")*" + unitText;
                 description.addConstant(dd4hep::Constant(name, value, "number"));

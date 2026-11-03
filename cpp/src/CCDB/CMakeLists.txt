@@ -19,6 +19,7 @@ add_library(ccdb SHARED
         Helpers/TimeProvider.cc
         Helpers/TimeUtils.cc
         Helpers/Sha256.cc
+        Helpers/HttpDownload.cc
         Helpers/SQLite.h
 
         Model/Assignment.cc

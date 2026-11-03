@@ -30,7 +30,7 @@ bundle; what remains is the bytes the cache moves. Anything that reaches the dat
     moves what 200 tables need. The API builds at most four bundles at a time per worker.
   - *SQLite snapshot*: each job opens its own copy of the whole database on a local disk. There is no shared
     server, so the number of jobs does not matter; 100 jobs run 12 at a time to give the cost of one job. The
-    file is measured as written and after `ANALYZE`.
+    file is measured as written and after `ANALYZE`, with the C++ library before the F28 fix.
 - **Host.** One machine for the client and every server: AMD Ryzen 9 5900X (12 cores, 24 threads), 62 GB,
   local NVMe; the client runs 12 processes in a memory-capped cgroup, and the containers carry memory limits. Each table gives the start skew: how much later than planned the
   client started a job. A large skew (‡) means the client, not the server, was the limit of that run, and the
@@ -112,8 +112,9 @@ Errors: ReadTimeout (7 at 20 000 jobs).
   hosts than the jobs and runs several of them, which this measurement could not (one host).
 - **A SQLite snapshot costs no server at all, and its cost per job depends on one detail.** The file as the
   `ccdb` tools write it makes a 200-table job wait 17 s, because the C++ library's query walks every assignment of
-  the variation; the same file after `ANALYZE` answers in 65 ms. Until finding F28 is fixed in the library, run
-  `ANALYZE` on every snapshot you publish.
+  the variation; the same file after `ANALYZE` answers in 65 ms. The measurement used the library before the fix
+  of finding F28; the 2.5 library names its join order and answers in 65 ms either way, while a 2.4 program still
+  needs the statistics, so run `ANALYZE` on a snapshot that 2.4 programs read.
 
 - **A run bundle per job keeps the database out of the picture, and moves the bundle's bytes instead.** For 1 000
   jobs the database built 100 bundles, one per run, and every job had its constants in 63 ms. For 20 000 jobs the

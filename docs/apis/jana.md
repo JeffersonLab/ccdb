@@ -116,19 +116,24 @@ share it. `GetCalibration(run)` returns that object for code that wants the C++ 
 
 ## Files from a resources table
 
-Files that are too large for a table, such as ONNX model weights or field maps, stay on a file system
-or CVMFS; a CCDB table records where they are. `GetResource(run, table)` reads a one-row table with
-the columns `url`, `sha256` and `size`, copies the file into `ccdb:cache_dir`, checks its size and
-SHA-256, and returns the local path:
+Files that are too large for a table, such as ONNX model weights or field maps, stay on a file system,
+CVMFS or a web server; a CCDB table records where they are. `GetResource(run, table)` reads a one-row
+table with the columns `url`, `sha256` and `size`, fetches the file into `ccdb:cache_dir`, checks its
+size and SHA-256, and returns the local path:
 
 ```cpp
 std::string weights = m_ccdb->GetResource(run_number, "/tracking/ml/seed_model");
 ```
 
-The file is copied once: it lands in `<cache_dir>/<sha256>/<file name>`, and jobs that share the cache
-directory share the file. A cached file is checked against the hash once per job and copied again if it
+The file is fetched once: it lands in `<cache_dir>/<sha256>/<file name>`, and jobs that share the cache
+directory share the file. A cached file is checked against the hash once per job and fetched again if it
 differs. A file whose size or hash differs from the table is not kept and is an error. The `url` is a
-`file://` URL or an absolute path; `http://` and `https://` URLs are not supported yet.
+`file://` URL or an absolute path, which is copied, or an `http://` or `https://` URL, which is
+downloaded with the libcurl of the CCDB library (built with `CCDB_WITH_HTTP`, the default when CMake
+finds libcurl; a library without it reports that clearly). `CCDB_HTTP_TIMEOUT` bounds one download in
+seconds (default 300), as for the [HTTP API connection](apis/cpp.md#http-api). The download goes to a
+temporary name next to the target and is checked before it is moved into place, so a job that shares
+the cache never reads half a file.
 
 To make a resources table, create it with three columns and add one row per run range:
 

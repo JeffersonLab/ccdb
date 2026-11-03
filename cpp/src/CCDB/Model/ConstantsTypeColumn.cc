@@ -86,6 +86,16 @@ void ConstantsTypeColumn::SetComment( std::string val )
 	mComment = val;
 }
 
+std::string ConstantsTypeColumn::GetUnits() const
+{
+	return mUnits;
+}
+
+void ConstantsTypeColumn::SetUnits( std::string val )
+{
+	mUnits = val;
+}
+
 time_t ConstantsTypeColumn::GetCreatedTime() const
 {
 	return mCreatedTime;

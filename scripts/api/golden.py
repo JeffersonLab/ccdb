@@ -148,7 +148,7 @@ def main():
     feed = ElementTree.fromstring(get("/api/v1/logs.atom").content)
     atom = "{http://www.w3.org/2005/Atom}"
     newest = [row[0] for row in sql.execute("SELECT id FROM logs ORDER BY id DESC LIMIT 50")]
-    checks.equal("feed entries are the newest log records", [int(entry.find(atom + "id").text.rsplit("/", 1)[1])
+    checks.equal("feed entries are the newest log records", [int(entry.find(atom + "id").text.rsplit(":", 1)[1])
                                                               for entry in feed.findall(atom + "entry")], newest)
 
     big_total = sql.execute("SELECT COUNT(*) FROM assignments a JOIN constantSets c ON c.id = a.constantSetId JOIN typeTables t "
