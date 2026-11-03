@@ -193,6 +193,30 @@ class WebGuiAppTest(unittest.TestCase):
         self.assertEqual((body["status"], body["database"]), ("ok", "ok"))
         self.assertIn("version", body)
 
+    def test_readiness_page(self):
+        """/readiness shows the profile's counts, is cached an hour, refuses a bad window and is linked from /doc"""
+        import re
+        from ccdb import AlchemyProvider
+        from ccdb.readiness import profile
+        client = self.make_app(self.connection_string).test_client()
+        response = client.get("/readiness")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Cache-Control"], "public, max-age=3600")
+        html = response.get_data(as_text=True)
+        provider = AlchemyProvider()
+        provider.connect(self.connection_string)
+        try:
+            numbers = profile(provider)
+        finally:
+            provider.disconnect()
+        versions = re.search(r'data-field="metadata.versions_with_comment">.*?fw-medium">([\d,]+)</span> of ([\d,]+)', html, re.S)
+        self.assertEqual((int(versions.group(1).replace(",", "")), int(versions.group(2).replace(",", ""))),
+                         (numbers["metadata"]["versions_with_comment"], numbers["metadata"]["versions"]))
+        self.assertIn('data-field="units.columns_with_ucum_units"', html)
+        self.assertEqual(client.get("/readiness?stale_years=x").status_code, 400)
+        self.assertEqual(client.get("/readiness?stale_years=101").status_code, 400)
+        self.assertIn('href="/readiness"', client.get("/doc").get_data(as_text=True))
+
     def test_health_reports_a_dead_database_as_503_and_recovers(self):
         import json
         missing = os.path.join(self.tmp_dir.name, "not_yet.sqlite")

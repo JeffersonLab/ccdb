@@ -16,6 +16,7 @@ from ccdb.path_utils import parse_time
 import json
 import math
 import re
+import time
 
 from flask import g, render_template, url_for, request, redirect, make_response, abort
 from sqlalchemy import select, text
@@ -30,6 +31,7 @@ log = logging.getLogger("ccdb.webgui")
 COMPARE_VIEWS = ("cells", "columns", "tables")
 DATA_PAGE_SIZE = 200      # rows per page of a data table (assignment page, comparison); the list pages keep queries.DEFAULT_PAGE_SIZE
 BIG_PAIR_CELLS = 20000    # a comparison above this many cells opens with the changed rows alone
+READINESS_SECONDS = 3600  # the readiness profile costs seconds on a large instance; each process keeps it an hour
 
 
 def author_name(db, author_id):
@@ -402,6 +404,30 @@ def register(app):
     def documentation():
         db: ccdb.AlchemyProvider = g.db
         return render_template("doc.html", instance_properties=queries.properties_of(db.session, "instance", [0]).get(0, []))
+
+    @app.route('/readiness')
+    def readiness():
+        """The readiness profile (docs/concepts/ai-readiness.md): the counts of `ccdb db readiness`, one bar per share.
+        Each process keeps a profile for READINESS_SECONDS, so reloading the page does not rerun the counts."""
+        from ccdb.readiness import profile, TEXT_ROWS
+        text_years = request.args.get("stale_years", "5")
+        if not text_years.isdigit() or int(text_years) > 100:
+            abort(400, "stale_years must be a whole number from 0 to 100")
+        stale_years = int(text_years)
+        kept = app.extensions.setdefault("ccdb_readiness", {})
+        if stale_years not in kept or kept[stale_years][0] < time.monotonic():
+            kept[stale_years] = (time.monotonic() + READINESS_SECONDS, profile(g.db, stale_years=stale_years))
+        numbers = kept[stale_years][1]
+        totals = {"columns": numbers["metadata"]["columns"], "tables": numbers["metadata"]["tables"],
+                  "versions": numbers["metadata"]["versions"], "constant_sets": numbers["data"]["constant_sets"]}
+        rows = []
+        for group, field, label, total_name in TEXT_ROWS:
+            value, total = numbers[group][field], totals.get(total_name)
+            share = 100.0 * value / total if value is not None and total else None
+            rows.append({"group": group, "field": field, "label": label, "value": value, "total": total, "share": share})
+        response = make_response(render_template("readiness.html", numbers=numbers, rows=rows))
+        response.headers["Cache-Control"] = "public, max-age={0}".format(READINESS_SECONDS)
+        return response
 
     @app.route('/health')
     def health():
