@@ -256,6 +256,11 @@ namespace ccdb
         /** @see DataProvider::GetTag */
         bool GetTag(const string& tagName, string& variation, int64_t& snapshotMicro) override;
 
+    protected:
+        /** @see DataProvider::LoadAssignmentDetails */
+        bool LoadAssignmentDetails(Assignment* assignment) override;
+    public:
+
 
 
     protected:

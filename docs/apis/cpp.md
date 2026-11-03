@@ -96,6 +96,31 @@ run is optional, as in any request: `/test/test_vars/test_table@Run2026`. A requ
 variation (`/path:1500:mc@Run2026`) or a tag and a time (`/path:1500::2026@Run2026`) is an error, as
 in Python.
 
+### Everything about one version: DataProvider::GetAssignmentFull
+
+`GetCalib` gives the values. A program that also needs the run range, the variation the data came from, the
+comment or the creation time asks the provider for the whole assignment:
+
+```cpp
+#include <CCDB/Providers/SQLiteDataProvider.h>   // or MySQLDataProvider.h
+#include <CCDB/Model/RunRange.h>
+#include <CCDB/Model/Variation.h>
+
+ccdb::SQLiteDataProvider provider;
+provider.Connect("sqlite:///path/to/ccdb.sqlite");
+std::unique_ptr<ccdb::Assignment> a(provider.GetAssignmentFull(1500, "/test/test_vars/test_table", "mc"));
+if (a) {
+    a->GetRunRange()->GetMin();      // the run range of this version
+    a->GetVariation()->GetName();    // "default" when mc has no data of its own for the table
+    a->GetComment();
+    a->GetCreatedTime();             // UTC seconds
+    a->GetData();                    // rows of columns, as strings
+}
+```
+
+A fourth argument limits the time (UTC microseconds, `TimeUtils::ParseLocalTime`), and
+`GetAssignmentFullByTag(run, path, tag)` resolves with a tag's variation and time. The caller owns the object.
+
 ## Connection to the database
 
 The [ccdb::Calibration](https://github.com/JeffersonLab/ccdb/blob/v2-main/cpp/src/CCDB/Calibration.h)

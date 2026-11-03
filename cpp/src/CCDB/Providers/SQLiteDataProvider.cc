@@ -385,6 +385,47 @@ static Assignment* SelectAssignmentShortByTimeLimit(SQLiteDataProvider* provider
 }
 
 
+
+/** The run range, variation, comment and times of an assignment, for GetAssignmentFull (issue #94)
+ *
+ * assignments.created and modified hold UTC text 'YYYY-MM-DD HH:MM:SS[.ffffff]' (docs/concepts/time.md)
+ */
+bool ccdb::SQLiteDataProvider::LoadAssignmentDetails(Assignment* assignment)
+{
+    SQLiteStatement query(mDatabase);
+    query.Prepare(
+        "SELECT `assignments`.`created`, `assignments`.`modified`, `assignments`.`comment`, "
+        "`assignments`.`runRangeId`, `assignments`.`variationId`, `assignments`.`constantSetId`, "
+        "`runRanges`.`runMin`, `runRanges`.`runMax`, `runRanges`.`name`, `variations`.`name` "
+        "FROM `assignments` "
+        "INNER JOIN `runRanges` ON `runRanges`.`id` = `assignments`.`runRangeId` "
+        "INNER JOIN `variations` ON `variations`.`id` = `assignments`.`variationId` "
+        "WHERE `assignments`.`id` = ?1 ");
+    query.BindInt64(1, assignment->GetId());
+
+    bool found = false;
+    query.Execute([this, &found, &query, assignment](uint64_t rowIndex) {
+        int64_t micro = 0;
+        if(TimeUtils::ParseUtc(query.ReadString(0), micro)) assignment->SetCreatedTime(TimeUtils::ToSeconds(micro));
+        if(TimeUtils::ParseUtc(query.ReadString(1), micro)) assignment->SetModifiedTime(TimeUtils::ToSeconds(micro));
+        assignment->SetComment(query.ReadString(2));
+        assignment->SetRunRangeId(static_cast<unsigned int>(query.ReadInt64(3)));
+        assignment->SetVariationId(static_cast<unsigned int>(query.ReadInt64(4)));
+        assignment->SetDataVaultId(static_cast<unsigned int>(query.ReadInt64(5)));
+
+        RunRange* runRange = new RunRange();
+        runRange->SetId(static_cast<int>(query.ReadInt64(3)));
+        runRange->SetRange(query.ReadInt32(6), query.ReadInt32(7));
+        runRange->SetName(query.ReadString(8));
+        assignment->SetRunRange(runRange, /*ownsRunRange*/ true);
+
+        Variation* variation = GetVariation(query.ReadString(9));
+        if(variation) assignment->SetVariation(variation);
+        found = true;
+    });
+    return found;
+}
+
 bool ccdb::SQLiteDataProvider::GetTag(const string& tagName, string& variation, int64_t& snapshotMicro)
 {
     CheckTagName(tagName);
