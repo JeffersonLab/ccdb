@@ -18,6 +18,7 @@
 - [Deprecation](concepts/deprecation.md)
 - [Database schema](concepts/database-schema.md)
 - [Streaming readout and runs](concepts/streaming-readout.md)
+- [FAIR data](concepts/fair.md)
 
 **APIs**:
 - [Python](apis/python.md)
@@ -25,8 +26,10 @@
 - [Python low-level API](apis/python-low-level.md)
 - [C++ API](apis/cpp.md)
 - [JANA2 service](apis/jana.md)
+- [DD4hep plugins](apis/dd4hep.md)
 - [HTTP API](apis/http.md)
 - [MCP server](apis/mcp.md)
+- [Analysis: Parquet and data frames](apis/analysis.md)
 
 **Advanced**:
 - [Development](development/development.md)
@@ -35,4 +38,5 @@
 - [Utilities & scripts](utilities.md)
 - [Deploying the web GUI](deployment/webgui.md)
 - [Deploying for a new experiment](deployment/new-experiment.md)
+- [Scaling: constants for thousands of jobs](deployment/scaling.md)
 - [Upgrading to CCDB 2.5](deployment/upgrade-2.5.md)
