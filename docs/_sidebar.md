@@ -27,6 +27,7 @@
 - [C++ API](apis/cpp.md)
 - [JANA2 service](apis/jana.md)
 - [DD4hep plugins](apis/dd4hep.md)
+- [CCDB and DD4hep, step by step](apis/dd4hep-tutorial.md)
 - [HTTP API](apis/http.md)
 - [MCP server](apis/mcp.md)
 - [Analysis: Parquet and data frames](apis/analysis.md)
