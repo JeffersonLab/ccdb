@@ -45,6 +45,8 @@ dependencies = [
 web = ["flask>=2.0"]
 # HTTP API (the `ccdb api` command / ccdb.api:app ASGI app); it shares the web GUI's queries
 api = ["ccdb[web]", "fastapi>=0.110", "uvicorn>=0.23"]
+# MCP server (the `ccdb mcp` command); the mcp SDK needs Python 3.10 or newer
+mcp = ["ccdb[api]", "mcp>=2.3,<3; python_version >= '3.10'"]
 # Extras used by python/examples
 examples = ["jsonpickle", "pandas"]
 # Tests use stdlib unittest; pytest is intentionally NOT a dependency
