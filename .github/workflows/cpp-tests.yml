@@ -165,3 +165,17 @@ jobs:
         with:
           platform-release: "eic_xl:26.10.0-stable"
           run: CCDB_TEST_JANA2_HTTP_URL=http://127.0.0.1:8765/api/v1 scripts/eic/jana2_tests.sh
+
+  # The DD4hep plugins (dd4hep/) and their [dd4hep] tests, in the ePIC software image, as cpp-jana2
+  cpp-dd4hep:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: cvmfs-contrib/github-action-cvmfs@v5
+
+      - name: Build CCDB with -DCCDB_BUILD_DD4HEP=ON and run the [dd4hep] tests in eic-shell
+        uses: eic/run-cvmfs-osg-eic-shell@v1.5.0
+        with:
+          platform-release: "eic_xl:26.10.0-stable"
+          run: scripts/eic/dd4hep_tests.sh
