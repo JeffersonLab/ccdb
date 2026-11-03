@@ -67,6 +67,24 @@ change or delete data, and so on.
 
 See [low-level API](apis/python-low-level.md) for examples.
 
+## What a program resolved
+
+`AlchemyProvider` can record which version each `get_assignment` or `get_assignment_by_request` resolved to,
+as the C++ library does ([What a job resolved](apis/cpp.md#what-a-job-resolved)). The record is off by
+default:
+
+```python
+provider.usage_record_enabled = True
+provider.get_assignment_by_request("/test/test_vars/test_table:100")
+json.dump(provider.resolved_assignments, open("record.json", "w"))
+```
+
+`resolved_assignments` is a list of dicts with the fields of the JANA2 service's record: `request`, `path`,
+`run`, `variation`, `time` (the UTC limit, empty for the newest), `tag`, `assignment_id` and `sha256`. Every
+distinct resolution appears once. Setting `usage_record_enabled` back to `False` stops recording;
+`clear_resolved_assignments()` forgets the entries. `ccdb provenance record.json` checks the file against a
+database ([CLI](cli.md#what-a-job-used)).
+
 ## Where things live
 
 The data class model, where you can find classes for tables or directories, is in
