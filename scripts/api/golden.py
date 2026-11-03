@@ -31,6 +31,7 @@ import workspace  # noqa: E402
 from urllib.parse import unquote
 
 IMMUTABLE = "public, max-age=31536000, immutable"
+HOURLY = "public, max-age=3600"
 SHORT = "public, max-age=60"
 
 
@@ -143,6 +144,26 @@ def main():
             checks.equal(f"{label} last change", (card["last_change"]["author"], card["last_change"]["variation"]),
                          (rows[-1][3] or "", rows[-1][0]))
 
+    # The readiness profile: the counts that need no time window, straight from SQL
+    profile = get("/api/v1/readiness").json()
+    for group, field, query in (
+            ("metadata", "columns", "SELECT COUNT(*) FROM columns"),
+            ("metadata", "columns_with_units", "SELECT COUNT(*) FROM columns WHERE TRIM(COALESCE(units, '')) <> ''"),
+            ("metadata", "tables", "SELECT COUNT(*) FROM typeTables"),
+            ("metadata", "tables_with_description", "SELECT COUNT(*) FROM typeTables WHERE TRIM(COALESCE(comment, '')) <> ''"),
+            ("metadata", "versions", "SELECT COUNT(*) FROM assignments"),
+            ("metadata", "versions_with_comment", "SELECT COUNT(*) FROM assignments WHERE TRIM(COALESCE(comment, '')) <> ''"),
+            ("history", "open_ended_run_ranges", "SELECT COUNT(*) FROM assignments a JOIN runRanges r ON r.id = a.runRangeId "
+                                                 "WHERE r.runMax = 2147483647 AND r.runMin > 0"),
+            ("history", "versions_by_anonymous", "SELECT COUNT(*) FROM assignments a JOIN users u ON u.id = a.authorId "
+                                                 "WHERE u.name = 'anonymous'"),
+            ("history", "deprecated_tables", "SELECT COUNT(*) FROM typeTables WHERE isDeprecated = 1"),
+            ("history", "tags", "SELECT COUNT(*) FROM tags"),
+            ("data", "constant_sets", "SELECT COUNT(*) FROM constantSets"),
+            ("data", "shared_sets", "SELECT COUNT(*) FROM (SELECT constantSetId FROM assignments GROUP BY constantSetId "
+                                    "HAVING COUNT(*) > 1)")):
+        checks.equal(f"readiness {group}.{field}", profile[group][field], sql.execute(query).fetchone()[0])
+
     # The change feed: the newest log records, newest first
     from xml.etree import ElementTree
     feed = ElementTree.fromstring(get("/api/v1/logs.atom").content)
@@ -171,6 +192,8 @@ def main():
             checks.equal(f"{label} redirect cache", response.headers.get("cache-control"), SHORT)
         elif label in ("tables", "variations", "tags", "logs", "versions_big"):
             checks.equal(f"{label} list cache", response.headers.get("cache-control"), SHORT)
+        elif label in ("readiness", "readiness_window"):
+            checks.equal(f"{label} hourly cache", response.headers.get("cache-control"), HOURLY)
         elif label in ("assignment", "assignment_exact", "assignment_tag", "bundle_tag"):
             checks.equal(f"{label} immutable", response.headers.get("cache-control"), IMMUTABLE)
 

@@ -1,9 +1,10 @@
 """Responses of the HTTP API with their cache rules (docs/apis/http.md).
 
-Three lifetimes:
+Four lifetimes:
 - IMMUTABLE: a URL that names one assignment for good — by id, or by a request string with a past time or a tag.
   Assignments are never changed, so a cache may keep the answer for a year.
 - SHORT: lists and resolving requests, which change when someone adds data; a minute.
+- HOURLY: the readiness profile, counts over the whole database that move slowly and cost seconds to make; an hour.
 - NO_STORE: the health check.
 
 Every response carries an ETag: the stored sha256 of the data for the data forms, otherwise the SHA-256 of the body.
@@ -16,6 +17,7 @@ from fastapi.responses import RedirectResponse, Response
 
 IMMUTABLE = "public, max-age=31536000, immutable"
 SHORT = "public, max-age=60"
+HOURLY = "public, max-age=3600"
 NO_STORE = "no-store"
 
 JSON = "application/json; charset=utf-8"

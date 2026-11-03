@@ -1846,6 +1846,51 @@
     ]
    }
   },
+  "/api/v1/readiness": {
+   "get": {
+    "operationId": "readiness_api_v1_readiness_get",
+    "parameters": [
+     {
+      "description": "A table is stale when no version of it was created in the last N years",
+      "in": "query",
+      "name": "stale_years",
+      "required": false,
+      "schema": {
+       "default": 5,
+       "description": "A table is stale when no version of it was created in the last N years",
+       "maximum": 100,
+       "minimum": 0,
+       "title": "Stale Years",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "The readiness profile: counts of units, descriptions, comments, run ranges, authors, stale and empty tables, shared sets and instance properties, as `ccdb db readiness --json`",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
   "/api/v1/run-ranges": {
    "get": {
     "operationId": "run_ranges_api_v1_run_ranges_get",

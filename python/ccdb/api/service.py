@@ -76,6 +76,12 @@ def columns_of(table):
 
 # ---------------------------------------------------------------------------------------------------------- browse
 
+def readiness(db, stale_years=5):
+    """The readiness profile of the database (docs/concepts/ai-readiness.md): plain data, as `ccdb db readiness --json`"""
+    from ccdb.readiness import profile
+    return profile(db, stale_years=stale_years)
+
+
 def instance(db):
     return models.Instance(version=ccdb_version, schema_version=6, properties=properties(db, "instance", 0))
 
