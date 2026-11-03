@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL-3.0-or-later
 // The DD4hep plugins of CCDB (dd4hep/src) against the database of scripts/eic/make_dd4hep_test_db.py:
 //   CCDB_TEST_DD4HEP_SQLITE   the file the script made
 //   DD4hepINSTALL             DD4hep's installation, for its element and material tables (eic-shell sets it)

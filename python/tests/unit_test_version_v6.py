@@ -13,7 +13,7 @@ import unittest
 import ccdb
 import ccdb.version
 
-EXPECTED_VERSION = "2.5.0.dev0"
+EXPECTED_VERSION = "2.5.0"
 
 # version text -> (major, minor, patch): a release and one case of each suffix §14.1 lists
 PARSE_CASES = (

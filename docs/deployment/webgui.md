@@ -73,7 +73,7 @@ site behind the lab sign-on; both are narrower than a password over the whole GU
 
 ## Health check
 
-`GET /health` answers `200 {"status": "ok", "database": "ok", "version": "2.4.0"}` after a `SELECT 1` on the database, or `503 {"status": "error", ...}` when the database is unreachable. The response is never cached. Load balancers, Docker's `HEALTHCHECK` and monitoring use it.
+`GET /health` answers `200 {"status": "ok", "database": "ok", "version": "2.5.0"}` after a `SELECT 1` on the database, or `503 {"status": "error", ...}` when the database is unreachable. The response is never cached. Load balancers, Docker's `HEALTHCHECK` and monitoring use it.
 
 ## Docker image
 
