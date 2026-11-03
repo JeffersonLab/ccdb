@@ -17,6 +17,7 @@
 #include <iostream>
 #include <ostream>
 #include <time.h>
+#include <stdint.h>
 
 #include "CCDB/Helpers/StringUtils.h"
 
@@ -44,7 +45,8 @@ struct RequestParseResult
 	bool   WasParsedPath;      /// true if Path was nonempty
     std::string Variation;          /// Variation name
 	bool   WasParsedVariation; /// true if variation was not empty
-	time_t Time;               /// Time stampt
+	time_t Time;               /// Time stamp: the whole second of TimeMicro
+	int64_t TimeMicro;         /// Time stamp, UTC microseconds since the epoch (docs/concepts/time.md)
 	bool   WasParsedTime;      /// true if time stampt was not empty
     std::string TimeString;         /// Original string with time
     std::string Tag;                /// Tag name, the part after '@' (CCDB 2.5)
@@ -59,7 +61,8 @@ struct ContextParseResult
 {
 	std::string Variation;				/// Variation name
 	bool		VariationIsParsed;      /// true if variation was not empty
-	time_t      ConstantsTime;
+	time_t      ConstantsTime;          /// calibtime: the whole second of ConstantsTimeMicro
+	int64_t     ConstantsTimeMicro;     /// calibtime, UTC microseconds since the epoch
 	bool        ConstantsTimeIsParsed;
 
     int         RunNumber;              /// The run number that is HAS to be used for CCDB
@@ -142,21 +145,15 @@ public:
      */
     static bool IsValidTagName(const std::string& name);
 
-    /** @brief ParseTime
-     * parses time as any part of
-     * YYYY:MM:DD-hh:mm:ss
+    /** @brief ParseTime: the whole second of a time a person types, @see TimeUtils::ParseLocalTime
      *
-     * 1) in place of ':' and '-' might be any ONE non digit character
-     *
-     * 2) One could place only part of the string,
-     *    the latest date for this part will be returned.
-     *    I.e. if timeString is "2011" - (it means the year 2011 and nothing more),
-     *    this function returns result as if it were 2011:12:31-23:59:59
-     *    thus using such timestamp would get the latest constants for year 2011
+     * Groups of digits separated by one non-digit character: YYYY MM DD hh mm ss and a fraction of 1 to 6 digits.
+     * A partial time is the latest moment it covers ("2011" is the end of 2011), read as local wall time.
+     * Use TimeUtils::ParseLocalTime for the microseconds.
      *
      * @parameter [in] const string & timeString string to parse
      * @parameter [out] succsess true if success
-     * @return   time_t
+     * @return   time_t, 0 on failure
      */
     static time_t ParseTime(const std::string &timeStr, bool * succsess);
 

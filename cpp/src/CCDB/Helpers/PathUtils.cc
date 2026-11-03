@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include "CCDB/Helpers/PathUtils.h"
+#include "CCDB/Helpers/TimeUtils.h"
 
 using namespace std;
 using namespace ccdb;
@@ -98,150 +99,11 @@ bool ccdb::PathUtils::WildCardCheck( const char* pattern, const char* source )
 //______________________________________________________________________________
 time_t ccdb::PathUtils::ParseTime( const string &timeStr, bool * succsess )
 {
-     /** @brief ParseTime
-     * parses time as any part of
-     * YYYY:MM:DD-hh:mm:ss
-     *
-     * 1) in place of ':' and '-' might be any ONE non digit character
-     *
-     * 2) One could place only part of the string,
-     *    the latest date for this part will be returned.
-     *    I.e. if timeString is "2011" - (it means the year 2011 and nothing more),
-     *    this function returns result as if it were 2011:12:31-23:59:59
-     *    thus using such timestamp would get the latest constants for year 2011
-     *
-     * @parameter [in] const string & timeString string to parse
-     * @parameter [out] succsess true if success
-     * @return   time_t
-     */
-    
-    
-    //default result
-    tm time;
-    time.tm_hour = 23;
-    time.tm_mday = 31;
-    time.tm_min = 59;
-    time.tm_mon = 11;
-    time.tm_sec = 59;
-    time.tm_isdst=-1;   //auto determine. It is not always work automatically. 
-                        //See http://stackoverflow.com/questions/8558919/mktime-and-tm-isdst
-    
-    if(succsess!=NULL) *succsess = true;
-
-    //some tmp values
-    string tmpStr =""; //tmp string to buffer chars
-    int delimCount=0;  //number of delimeters we've met
-
-    string workStr(timeStr); //we appended a work string for one more non digit symbol
-    workStr.push_back(' ');  //so the logic behind would work in any case
-
-    bool lastIsDigit;   //last symbol was digit
-
-    //scan all symbols
-    for (size_t i=0; i<workStr.size(); i++)
-    {
-        char symbol = workStr[i];
-
-        if(symbol>='0'&&symbol<='9') //Check if it is number
-        {
-            tmpStr.push_back(symbol);
-            lastIsDigit = true;
-        }
-        else if(lastIsDigit) //it is a delimeter after the value;
-        {
-            delimCount++;
-            if(delimCount ==1) //it was a year
-            {
-                if(tmpStr.length()!=4) //it is an error with lengtn of year
-                {
-                    if(succsess!=NULL) *succsess = false;
-                    return 0;
-                }
-                time.tm_year = StringUtils::ParseInt(tmpStr) - 1900;  //since in tm the year is from 1900
-            }
-            
-            if(delimCount ==2) //it was a month
-            {
-                if(tmpStr.length()!=2) //it is an error with lengtn of year
-                {
-                    if(succsess!=NULL) *succsess = false;
-                    return 0;
-                }
-
-                time.tm_mon = StringUtils::ParseInt(tmpStr) - 1;  // -1 becaouse months since January [0-11]
-
-                //#check for 30 day month
-                if((time.tm_mon == 9)||(time.tm_mon == 10)||(time.tm_mon == 4)||(time.tm_mon == 6))
-                {
-                     time.tm_mday = 30;
-                }
-
-                //February...
-                if(time.tm_mon == 2)
-                {
-                    if( (time.tm_year % 4 == 0 &&  time.tm_year % 100 != 0) || time.tm_year % 400 == 0)
-                    {
-                        time.tm_mday = 29;
-                    }
-                    else
-                    {
-                        time.tm_mday = 28;
-                    }
-                }
-            }
-
-            if(delimCount ==3) //it was a day
-            {
-                if(tmpStr.length()!=2) //it is an error with lengtn of day
-                {
-                    if(succsess!=NULL) *succsess = false;
-                    return 0;
-                }
-                time.tm_mday = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
-            }
-
-            if(delimCount ==4) //it was a hour
-            {
-                if(tmpStr.length()!=2) //it is an error with lengtn
-                {
-                    if(succsess!=NULL) *succsess = false;
-                    return 0;
-                }
-                time.tm_hour = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
-            }
-            
-            if(delimCount ==5) //it was a min
-            {
-                if(tmpStr.length()!=2) //it is an error with lengtn of min
-                {
-                    if(succsess!=NULL) *succsess = false;
-                    return 0;
-                }
-                time.tm_min = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
-            }
-            
-            if(delimCount ==6) //it was a sec
-            {
-                if(tmpStr.length()!=2) //it is an error with lengtn of sec
-                {
-                    if(succsess!=NULL) *succsess = false;
-                    return 0;
-                }
-                time.tm_sec = StringUtils::ParseInt(tmpStr);  //since in tm the year is from 1900
-            }
-
-			
-            //clear temp string for the next digit seria
-            tmpStr.clear();
-        }
-        else
-        {
-            tmpStr.clear(); //in this case we clear temp string too
-        }
-    }
-    time_t result = mktime(&time);
-	if( result == -1 && succsess!=NULL) *succsess = false;
-    return result;
+    // The whole second of the instant TimeUtils::ParseLocalTime reads (docs/concepts/time.md)
+    bool parsed = false;
+    int64_t micro = TimeUtils::ParseLocalTime(timeStr, &parsed);
+    if(succsess!=NULL) *succsess = parsed;
+    return parsed ? TimeUtils::ToSeconds(micro) : 0;
 }
 
 
@@ -273,6 +135,7 @@ ccdb::RequestParseResult ccdb::PathUtils::ParseRequest( const string& requestStr
     result.Variation="";              // Variation name
     result.WasParsedVariation=false;  // true if variation was not empty
     result.Time=0;                    // Time stamp
+    result.TimeMicro=0;               // Time stamp in microseconds
     result.WasParsedTime=false;       // true if time stamp was not empty
     result.TimeString="";             // Original string with time
     result.Tag="";                    // Tag name
@@ -349,11 +212,17 @@ ccdb::RequestParseResult ccdb::PathUtils::ParseRequest( const string& requestStr
         throw std::invalid_argument("Request '" + requestStr + "': a tag (@NAME) may not be combined with a variation or a time");
     }
 
-    //parse time
+    //parse time: an invalid time is an error, as in Python, not "the newest constants"
     if(result.WasParsedTime)
     {
-        bool success=true;
-        result.Time = ParseTime(result.TimeString, &success);
+        bool success=false;
+        result.TimeMicro = TimeUtils::ParseLocalTime(result.TimeString, &success);
+        if(!success)
+        {
+            throw std::invalid_argument("Request '" + requestStr + "': can't read the time '" + result.TimeString +
+                                        "' (YYYY-MM-DD hh:mm:ss.ffffff or a leading part of it)");
+        }
+        result.Time = TimeUtils::ToSeconds(result.TimeMicro);
     }
 
     return result;
@@ -411,6 +280,8 @@ ccdb::ContextParseResult ccdb::PathUtils::ParseContext( const string& context )
 
 	ContextParseResult result;	
 	result.ConstantsTimeIsParsed = false;
+	result.ConstantsTime = 0;
+	result.ConstantsTimeMicro = 0;
 	result.VariationIsParsed = false;
     result.RunNumberIsParsed = false;
 	
@@ -446,8 +317,14 @@ ccdb::ContextParseResult ccdb::PathUtils::ParseContext( const string& context )
 		{
 			result.ConstantsTimeIsParsed = true;
 			bool parseResult = false;
-			result.ConstantsTime = PathUtils::ParseTime(StringUtils::Replace("calibtime=","",token), &parseResult);
-			if(!parseResult) result.ConstantsTime = 0;
+			string timeText = StringUtils::Replace("calibtime=","",token);
+			result.ConstantsTimeMicro = TimeUtils::ParseLocalTime(timeText, &parseResult);
+			if(!parseResult)
+			{
+				throw std::invalid_argument("Context '" + context + "': can't read calibtime '" + timeText +
+				                            "' (YYYY-MM-DD-hh-mm-ss.ffffff or a leading part of it)");
+			}
+			result.ConstantsTime = TimeUtils::ToSeconds(result.ConstantsTimeMicro);
 		}
 
         //calibtime is found?
