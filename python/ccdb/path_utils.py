@@ -123,7 +123,13 @@ def parse_time(time_str="-1", max_time_by_default=True):
 
 def format_request_time(local_time):
     """The time part of a request string that names this moment: 2024-03-01_12-30-15, plus .ffffff when the
-    microseconds are not zero, so the string resolves to exactly that moment (docs/concepts/time.md)"""
+    microseconds are not zero, so the string resolves to exactly that moment (docs/concepts/time.md)
+
+    A request string is local wall time, so an aware datetime (an assignment's `created` right after it was
+    inserted holds the aware UTC value of utc_now) is converted to local time first; before that, a log record's
+    "Created assignment '…'" carried the UTC hour as if it were local (F34)."""
+    if local_time.tzinfo is not None:
+        local_time = utc_to_local(local_time)
     text = local_time.strftime("%Y-%m-%d_%H-%M-%S")
     return text + ".{0:06d}".format(local_time.microsecond) if local_time.microsecond else text
 

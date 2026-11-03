@@ -146,7 +146,9 @@ Assuming you are in interactive mode, the commands can be categorized:
 - `vers` — gets all versions of the table
 - `cat` — displays values
 - `dump` — same as `cat` but dumps files to disk
-- `log` — see logs information
+- `log [N] [SKIP] [TABLE]` — the newest N log records (20 by default, 0 for all), skipping SKIP; a table path
+  or pattern, `-v VARIATION` or `-u USER` narrow them. Every command that changes the database writes a record,
+  on SQLite files as on MySQL and MariaDB (before 2.5.0 the command line kept no log on `sqlite://` connections)
 - `tag` — lists and shows tags
 - `prop get`, `prop ls` — read properties
 

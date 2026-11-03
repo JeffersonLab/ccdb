@@ -359,15 +359,85 @@ class CliManagerTests(unittest.TestCase):
         self.assertRaises(ObjectIsNotFoundInDbError, self.cli.process_command_line, "vers /some/wrong/dir/table")
         self.assertRaises(ObjectIsNotFoundInDbError, self.cli.process_command_line, "vers /test/test_vars/wrong_table")
 
-    def test_skip_sqlite_logging(self):
-        """
-        check that for sqlite connection user name is skipped
-        """
-        self.cli.process_command_line("ls")  # run command that requires connection make it to connect
+    def test_sqlite_writes_log_records(self):
+        """A command that changes a SQLite database writes a log record, as on MySQL (F32); the author is the CLI's user"""
+        from ccdb.model import LogRecord
+        self.cli.process_command_line("ls")  # connects
+        self.assertTrue(self.cli.provider.logging_enabled)
+        before = self.cli.provider.session.query(LogRecord).count()
+        self.cli.process_command_line("mkdir /test/log_dir #a directory the log should know")
+        records = self.cli.provider.session.query(LogRecord).order_by(LogRecord.id.desc()).all()
+        self.assertEqual(len(records), before + 1)
+        self.assertEqual(records[0].author.name, "test_user")
+        self.assertIn("/test/log_dir", records[0].description)
+
+    def test_sqlite_logging_can_be_switched_off(self):
+        """log_sqlite = False restores the pre-2.5 behaviour: no log records on sqlite:// connections"""
+        self.cli.log_sqlite = False
+        self.cli.process_command_line("ls")
         self.assertFalse(self.cli.provider.logging_enabled)
 
     def test_log(self):
-        """
-        log. general test
-        """
+        """log. The newest records first, 20 by default; `log N` shows N; `log N SKIP` pages (F33)"""
+        self.cli.process_command_line("mkdir /test/log_first #first")
+        self.cli.process_command_line("mkdir /test/log_second #second")
+        self.output.truncate(0); self.output.seek(0)
         self.cli.process_command_line("log")
+        lines = [line for line in self.output.getvalue().splitlines() if line.strip()]
+        self.assertIn("(action)", lines[0])
+        self.assertIn("/test/log_second", lines[1])
+        self.assertIn("/test/log_first", lines[2])
+        self.assertLessEqual(len(lines) - 1, 20)
+
+        self.output.truncate(0); self.output.seek(0)
+        self.cli.process_command_line("log 1")
+        lines = [line for line in self.output.getvalue().splitlines() if line.strip()]
+        self.assertEqual(len(lines), 2)
+        self.assertIn("/test/log_second", lines[1])
+
+        self.output.truncate(0); self.output.seek(0)
+        self.cli.process_command_line("log 1 1")
+        lines = [line for line in self.output.getvalue().splitlines() if line.strip()]
+        self.assertEqual(len(lines), 2)
+        self.assertIn("/test/log_first", lines[1])
+
+    def test_log_filters(self):
+        """log. A table path, -u and 0 for all records"""
+        from ccdb.model import LogRecord
+        self.cli.process_command_line("mkdir /test/log_dir #a directory")
+        self.cli.process_command_line("log /test/test_vars/test_table")
+        self.assertNotIn("/test/log_dir", self.output.getvalue())
+
+        self.output.truncate(0); self.output.seek(0)
+        self.cli.process_command_line("log -u test_user 1")
+        lines = [line for line in self.output.getvalue().splitlines() if line.strip()]
+        self.assertEqual(len(lines), 2)
+        self.assertIn("test_user", lines[1])
+
+        self.output.truncate(0); self.output.seek(0)
+        self.cli.process_command_line("log 0")
+        lines = [line for line in self.output.getvalue().splitlines() if line.strip()]
+        self.assertEqual(len(lines) - 1, self.cli.provider.session.query(LogRecord).count())
+
+    def test_log_bad_arguments(self):
+        """log. Three numbers or a negative count are errors"""
+        self.assertRaises(ValueError, self.cli.process_command_line, "log 1 2 3")
+        self.assertRaises(ValueError, self.cli.process_command_line, "log -5")
+
+    def test_log_description_time_is_local_wall_time(self):
+        """The request string inside a "Created assignment" record carries the writer's local wall time, the same
+        time the log line and `vers` print (F34)"""
+        import re
+        from ccdb.model import LogRecord, Assignment
+        from ccdb.path_utils import format_request_time
+        self.cli.process_command_line("add /test/test_vars/test_table -v default -r 0-100 "
+                                      + os.path.join(os.path.dirname(__file__), "test_table.txt") + " #a log test")
+        record = self.cli.provider.session.query(LogRecord).order_by(LogRecord.id.desc()).first()
+        self.assertIn("Created assignment", record.description)
+        embedded = re.search(r":default:([0-9_.-]+)'", record.description).group(1)
+        assignment = self.cli.provider.session.query(Assignment).order_by(Assignment.id.desc()).first()
+        self.cli.provider.session.refresh(assignment)          # `created` as a reader sees it: local wall time
+        self.assertEqual(embedded, format_request_time(assignment.created))
+        self.assertEqual(embedded[:10], record.created.strftime("%Y-%m-%d"))
+        self.assertEqual(embedded[11:19], record.created.strftime("%H-%M-%S"))
+
