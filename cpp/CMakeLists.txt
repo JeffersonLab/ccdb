@@ -34,10 +34,18 @@ if(CCDB_BUILD_JANA2)
     add_subdirectory("${PROJECT_SOURCE_DIR}/../jana2" "${PROJECT_BINARY_DIR}/jana2")
 endif()
 
+# The DD4hep plugins (library ccdb_dd4hep: CCDB_Constants and CCDB_ConditionsLoader) live in ../dd4hep and need DD4hep
+option(CCDB_BUILD_DD4HEP "Build the DD4hep plugins ccdb_dd4hep (needs DD4hep)" OFF)
+
 # The Catch2 suite; a package build may switch it off. When on, ccdb_tests is installed to <prefix>/bin as in 2.4.
 option(CCDB_BUILD_TESTS "Build the Catch2 test suite ccdb_tests" ON)
 if(CCDB_BUILD_TESTS)
     add_subdirectory(src/tests)
+endif()
+
+# After the tests option: the DD4hep directory builds its own test program when CCDB_BUILD_TESTS is on
+if(CCDB_BUILD_DD4HEP)
+    add_subdirectory("${PROJECT_SOURCE_DIR}/../dd4hep" "${PROJECT_BINARY_DIR}/dd4hep")
 endif()
 
 # CMake package: find_package(ccdb CONFIG) gives the imported target ccdb::ccdb
