@@ -13,6 +13,7 @@ import datetime
 import hashlib
 import os
 import tempfile
+import threading
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Query, Request
@@ -31,6 +32,11 @@ router = APIRouter()
 BUNDLE_MEDIA_TYPE = "application/vnd.sqlite3"
 _file_hashes = {}
 
+# Builds at a time in this process (CCDB_API_BUNDLE_BUILDS): a build opens connections of its own and holds the run's
+# constants while it writes them, so a burst of requests for many runs must not start them all at once (F30)
+BUNDLE_BUILDS = int(os.environ.get("CCDB_API_BUNDLE_BUILDS", "4"))
+_builds = threading.BoundedSemaphore(BUNDLE_BUILDS)
+
 
 def cache_dir():
     return os.environ.get("CCDB_API_CACHE_DIR") or os.path.join(tempfile.gettempdir(), "ccdb_api_cache")
@@ -45,6 +51,15 @@ def file_sha256(path):
                 digest.update(block)
         _file_hashes[path] = digest.hexdigest()
     return _file_hashes[path]
+
+
+def build_bundle(source, run, variation="default", max_time_utc=None, tag=None):
+    """The bundle's file: made now when the cache lacks it, at most BUNDLE_BUILDS at a time; a cached one needs no slot"""
+    path = os.path.join(cache_dir(), snapshot.bundle_file_name(run, variation, max_time_utc, tag))
+    if os.path.exists(path):
+        return path
+    with _builds:
+        return snapshot.run_bundle(source, cache_dir(), run, variation, max_time_utc, tag)
 
 
 def time_text(utc_naive):
@@ -62,7 +77,7 @@ def bundle(request: Request, run: int = Query(..., ge=0), variation: Optional[st
         raise ValueError("A bundle by tag can have neither a variation nor a time")
     if tag:
         db.get_tag(tag)                                                         # unknown → 404
-        path = snapshot.run_bundle(request.app.state.database.connection_string, cache_dir(), run, tag=tag)
+        arguments = dict(tag=tag)
     else:
         variation = variation or "default"
         db.get_variation(variation)                                             # unknown → 404
@@ -73,8 +88,11 @@ def bundle(request: Request, run: int = Query(..., ge=0), variation: Optional[st
             newest_utc = local_to_utc(newest).replace(tzinfo=None) if newest else datetime.datetime(1970, 1, 1)
             target = request.url_for("bundle").include_query_params(run=run, variation=variation, time=time_text(newest_utc))
             return redirect(str(target))
-        path = snapshot.run_bundle(request.app.state.database.connection_string, cache_dir(), run, variation,
-                                   moment.replace(tzinfo=None))
+        arguments = dict(variation=variation, max_time_utc=moment.replace(tzinfo=None))
+    # A build takes seconds and opens connections of its own: the request's connection goes back to the pool first,
+    # or a burst of requests for many runs exhausts the pool while the builds run (F30)
+    db.session.rollback()
+    path = build_bundle(request.app.state.database.connection_string, run, **arguments)
     sha256 = file_sha256(path)
     tag_header = '"{0}"'.format(sha256)
     headers = {"Cache-Control": IMMUTABLE, "ETag": tag_header, "X-CCDB-SHA256": sha256}

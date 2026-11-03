@@ -90,6 +90,9 @@ A tag is never changed, so an answer by tag is cached for a year too. Do not reu
 Put a cache in front of the API. `docker/nginx/ccdb-api.conf` is the configuration the container image is tested
 with: it keeps what the API allows, and with `proxy_cache_lock` the first request for a missing entry fetches it
 while every other request for that URL waits, so a thousand jobs that start together reach the API once per URL.
+A proxy of your own needs room for large response headers: the `X-CCDB-Schema` header of a table with 200
+columns is about 10 KB, more with column comments, while nginx's default header buffer is 4 or 8 KB
+(`proxy_buffer_size 64k` in the shipped configuration). [Scaling](deployment/scaling.md) measures the configurations.
 
 ## Run bundles
 
@@ -103,7 +106,8 @@ CCDB database (`sqlite:///bundle.sqlite`):
 Without a time or a tag, or with a time in the future, the answer is a `302` to the explicit form at the creation
 time of the newest assignment, so a bundle URL always names one set of constants. The file is built on the first
 request and kept in `CCDB_API_CACHE_DIR` (in the container `/var/cache/ccdb`); its `ETag` and `X-CCDB-SHA256` are
-the SHA-256 of the file. The bundle time is UTC, read with the [time format](concepts/time.md) of requests.
+the SHA-256 of the file. A worker builds at most `CCDB_API_BUNDLE_BUILDS` bundles at a time (default 4); requests for
+other runs wait their turn, which a cache in front hides behind its own lock. The bundle time is UTC, read with the [time format](concepts/time.md) of requests.
 
 The file holds every directory and table, the requested variation and its parents, and, for each table, the
 assignments that answer some request for that run; run ranges are clipped to the run. A request for another run

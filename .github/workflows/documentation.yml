@@ -31,6 +31,10 @@ jobs:
           python3 -m unittest discover -s scripts/docs -p 'test_*.py'
           python3 scripts/docs/check_links.py docs
 
+      # docs/deployment/scaling.md: its tables and charts are the published load test results (scripts/loadtest/results)
+      - name: Scaling page equals the load test results
+        run: python3 scripts/loadtest/report.py --check
+
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Upload artifact
