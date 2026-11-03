@@ -1,64 +1,70 @@
+#include <cerrno>
+#include <climits>
 #include <cstdlib>
+#include <cstring>
 
 #include "CCDB/Helpers/StringUtils.h"
 
 using namespace std;
 using namespace ccdb;
 
-struct DHTMLReplace {
-    string match;
-    string replace;
-} gHTMLReplaceCodes[] = {
-    {"&", "&amp;"},
-    {"<", "&lt;"}, 
-    {">", "&gt;"},
-    {"\"","&quot;"}
-};
-
-std::string ccdb::StringUtils::Decode(const string& source )
+namespace
 {
-    string rs = source;
+    // Encode replaces '&' first and Decode replaces "&amp;" last, so an encoded "&lt;" decodes to "&lt;" again
+    const char* const gEntities[][2] = {{"&", "&amp;"}, {"<", "&lt;"}, {">", "&gt;"}, {"\"", "&quot;"}};
+    const size_t gEntityCount = sizeof(gEntities) / sizeof(gEntities[0]);
 
-    // Replace each matching token in turn
-    for ( size_t i = 0; i < array_length( gHTMLReplaceCodes ); i++ ) {
-        // Find the first match
-        const string& match = gHTMLReplaceCodes[i].replace;
-        const string& repl = gHTMLReplaceCodes[i].match;
-        string::size_type start = rs.find_first_of( match );
-
-        // Replace all matches
-        while ( start != string::npos ) {
-            rs.replace( start, match.size(), repl );
-            // Be sure to jump forward by the replacement length
-            start = rs.find_first_of( match, start + repl.size() );
-        }
+    /// Whether the text, blanks around it aside, ended where the number ended
+    bool OnlyBlanksAfter(const char* end)
+    {
+        while (*end && CCDB_CHECK_CHAR_IS_BLANK(*end)) end++;
+        return *end == '\0';
     }
 
-    return rs;
+    /// strtol-style parse with the whole-text and range check of the Parse functions
+    template<typename Number, typename Parse>
+    Number ParseNumber(const string& source, bool* result, Parse parse)
+    {
+        const char* begin = source.c_str();
+        char* end = nullptr;
+        errno = 0;
+        Number value = parse(begin, &end);
+        if (result) *result = end != begin && errno != ERANGE && OnlyBlanksAfter(end);
+        return value;
+    }
 }
 
-std::string ccdb::StringUtils::Encode( const string& source )
+
+std::string ccdb::StringUtils::Encode(const string& source)
 {
-    string rs = source;
+    string encoded;
+    encoded.reserve(source.size());
+    for (char symbol: source) {
+        size_t i = 0;
+        while (i < gEntityCount && symbol != gEntities[i][0][0]) i++;
+        if (i < gEntityCount) encoded += gEntities[i][1]; else encoded += symbol;
+    }
+    return encoded;
+}
 
-    // Replace each matching token in turn
-    for ( size_t i = 0; i < array_length( gHTMLReplaceCodes ); i++ ) {
-        // Find the first match
-        const string& match = gHTMLReplaceCodes[i].match;
-        const string& repl = gHTMLReplaceCodes[i].replace;
-        string::size_type start = rs.find_first_of( match );
 
-        // Replace all matches
-        while ( start != string::npos ) {
-            rs.replace( start, match.size(), repl );
-            // Be sure to jump forward by the replacement length
-            start = rs.find_first_of( match, start + repl.size() );
+std::string ccdb::StringUtils::Decode(const string& source)
+{
+    string decoded;
+    decoded.reserve(source.size());
+    for (size_t position = 0; position < source.size(); ) {
+        size_t i = 0;
+        while (i < gEntityCount && source.compare(position, strlen(gEntities[i][1]), gEntities[i][1]) != 0) i++;
+        if (i < gEntityCount) {
+            decoded += gEntities[i][0];
+            position += strlen(gEntities[i][1]);
+        }
+        else {
+            decoded += source[position++];
         }
     }
-
-    return rs;
+    return decoded;
 }
-
 
 
 //_____________________________________________________________________________________________________________
@@ -90,49 +96,29 @@ string ccdb::StringUtils::Replace(const string& pattern, const string& replace, 
 
 //______________________________________________________________________________
 bool ccdb::StringUtils::WildCardCheck( const char* pattern, const char* source )
-{   
-    char *cp, *mp;
-    while ((*source) && (*pattern != '*')) 
-    {
-        if ((*pattern != *source) && (*pattern != '?')) 
-        {
-                return 0;
+{
+    // Greedy match with one backtrack point: the last '*' and the source position it was tried at
+    const char* star = nullptr;
+    const char* resume = nullptr;
+    while (*source) {
+        if (*pattern == '*') {
+            star = pattern++;
+            resume = source;
         }
-
-        pattern++;
-        source++;
-    }
-
-    while (*source) 
-    {
-        if (*pattern == '*') 
-        {
-            if (!*++pattern) 
-            {
-                    return 1;
-            }
-
-            mp = const_cast<char *>(pattern);
-            cp = const_cast<char *>(source+1);
-        } 
-        else if ((*pattern == *source) || (*pattern == '?')) 
-        {
+        else if (*pattern == '?' || *pattern == *source) {
             pattern++;
             source++;
-        } 
-        else 
-        {
-            pattern = mp;
-            source = cp++;
+        }
+        else if (star) {
+            pattern = star + 1;
+            source = ++resume;
+        }
+        else {
+            return false;
         }
     }
-
-    while (*pattern == '*') 
-    {
-        pattern++;
-    }
-
-    return !*pattern;
+    while (*pattern == '*') pattern++;
+    return *pattern == '\0';
 }
 
 
@@ -167,51 +153,73 @@ vector<string> & ccdb::StringUtils::Split( const string& str, vector<string>& to
 
 
 //______________________________________________________________________________
+std::string ccdb::StringUtils::IntToString(int value, int base /*= 10*/)
+{
+    if (base == 10) return std::to_string(value);
+    if (base < 2 || base > 36) return string();
+
+    // the magnitude as unsigned, so the smallest int has one too
+    unsigned long long magnitude = value < 0 ? 0ULL - static_cast<unsigned long long>(value) : static_cast<unsigned long long>(value);
+    string digits;
+    do {
+        digits += "0123456789abcdefghijklmnopqrstuvwxyz"[magnitude % base];
+        magnitude /= base;
+    } while (magnitude);
+    if (value < 0) digits += '-';
+    return string(digits.rbegin(), digits.rend());
+}
+
+
+//______________________________________________________________________________
 int ccdb::StringUtils::ParseInt( const string& source, bool *result/*=NULL*/  )
 {
-    return atoi(source.c_str()); //ugly isn't it?
+    long value = ParseNumber<long>(source, result, [](const char* text, char** end) { return std::strtol(text, end, 10); });
+    if (result && (value < INT_MIN || value > INT_MAX)) *result = false;
+    return static_cast<int>(value);
 }
 
 
 //______________________________________________________________________________
 unsigned int ccdb::StringUtils::ParseUInt( const string& source, bool *result/*=NULL*/  )
 {
-    return static_cast<unsigned int>(atoi(source.c_str())); //ugly isn't it?
+    long value = ParseNumber<long>(source, result, [](const char* text, char** end) { return std::strtol(text, end, 10); });
+    if (result && (value < 0 || value > static_cast<long>(UINT_MAX))) *result = false;
+    return static_cast<unsigned int>(value);
 }
 
 
 //______________________________________________________________________________
 long ccdb::StringUtils::ParseLong( const string& source, bool *result/*=NULL*/  )
 {
-    return atol(source.c_str()); //ugly isn't it?
+    return ParseNumber<long>(source, result, [](const char* text, char** end) { return std::strtol(text, end, 10); });
 }
 
 
 //______________________________________________________________________________
 unsigned long ccdb::StringUtils::ParseULong( const string& source, bool *result/*=NULL*/  )
 {
-    return static_cast<unsigned long>(atol(source.c_str())); //ugly isn't it?
+    return ParseNumber<unsigned long>(source, result, [](const char* text, char** end) { return std::strtoul(text, end, 10); });
 }
 
 
 //______________________________________________________________________________
 bool ccdb::StringUtils::ParseBool( const string& source, bool *result/*=NULL*/  )
 {
-    if(source=="true") return true;
-    if(source=="false") return false;
-
-    return static_cast<bool>(atoi(source.c_str())!=0); //ugly isn't it?
+    if(source=="true") { if (result) *result = true; return true; }
+    if(source=="false") { if (result) *result = true; return false; }
+    return ParseInt(source, result) != 0;
 }
 
 //___________________________________________________________________________________
 double ccdb::StringUtils::ParseDouble( const string& source, bool *result/*=NULL*/  )
 {
-    return atof(source.c_str()); //ugly isn't it?
+    return ParseNumber<double>(source, result, [](const char* text, char** end) { return std::strtod(text, end); });
 }
 
 //_______________________________________________________________________________________
 std::string ccdb::StringUtils::ParseString( const string& source, bool *result/*=NULL*/  )
 {
+    if (result) *result = true;
     return string(source);
 }
 

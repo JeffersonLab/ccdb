@@ -47,15 +47,14 @@ class StringUtils
 {
 public:
 
-    /** @brief Encodes string to add to DB
-     * Encode
+    /** @brief HTML-escapes &, <, > and " (as &amp; &lt; &gt; &quot;)
      *
      * @param     const string & source
      * @return   std::string
      */
     static std::string    Encode(const std::string& source);
 
-    /** @brief Decode string from encoded string
+    /** @brief Reverses Encode: &amp; &lt; &gt; &quot; back to & < > "; other text is unchanged
      *
      * @param     const string & source
      * @return   std::string
@@ -81,7 +80,7 @@ public:
      */
     static std::string    Replace(const std::string& pattern, const std::string& replace, const std::string& source);
 
-    /** @brief search pattern in source using * and ?
+    /** @brief Whether source matches pattern as a whole, '*' standing for any text and '?' for one character
      *
      * @param pattern
      * @param source
@@ -202,54 +201,24 @@ public:
     static void LexicalSplit(std::vector<std::string>& tokens, const std::string& source);
 
 
-    /** itoa implementation for string
-     *  C++ version 0.4 char* style "itoa": Written by Lukas Chmela
-     *  Released under GPLv3.
-     * @remark:
-     * It is proved by benchmarking that writing int to C buffer and making it a string at the end is the fastest way of getting string from int
+    /** @brief The text of an integer in a base from 2 to 36, lower-case digits, '-' before a negative value
+     *
+     * Base 10 is std::to_string. An invalid base gives an empty string.
      */
-    static std::string IntToString(int value, int base = 10)
-    {
-        /**
-         * C++ version 0.4 char* style "itoa":
-         * Written by Lukas Chmela
-         * Released under GPLv3.
-         */
+    static std::string IntToString(int value, int base = 10);
 
-        char result[50];
-
-        // check that the base if valid
-        if (base < 2 || base > 36) { *result = '\0'; return result; }
-
-        char* ptr = result, *ptr1 = result, tmp_char;
-        int tmp_value;
-
-        do {
-            tmp_value = value;
-            value /= base;
-            *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
-        } while ( value );
-
-        // Apply negative sign
-        if (tmp_value < 0) *ptr++ = '-';
-        *ptr-- = '\0';
-        while(ptr1 < ptr) {
-            tmp_char = *ptr;
-            *ptr--= *ptr1;
-            *ptr1++ = tmp_char;
-        }
-        return std::string(result);
-
-    }
-
-    static int              ParseInt(const std::string& source, bool *result=nullptr );         ///Reads int    from the last query row
-    static unsigned int     ParseUInt(const std::string& source, bool *result=nullptr );        ///Reads unsigned int from the last query row
-    static long             ParseLong(const std::string& source, bool *result=nullptr );        ///Reads long from the last query row
-    static unsigned long    ParseULong(const std::string& source, bool *result=nullptr );       ///Reads unsigned long from the last query row
-    static bool             ParseBool(const std::string& source, bool *result=nullptr );        ///Reads bool from the last query row
-    static double           ParseDouble(const std::string& source, bool *result=nullptr );      ///Reads double from the last query row
-    static std::string      ParseString(const std::string& source, bool *result=nullptr );      ///Reads string from the last query row
-    static time_t           ParseUnixTime(const std::string& source, bool *result=nullptr );    ///Reads string from the last query row
+    /* The Parse functions read text as the C library does (std::strtol, std::strtoul, std::strtod): leading blanks and
+     * a sign are allowed, the number is the longest valid prefix, text without one gives 0. When `result` is given it
+     * is set to true only if the whole text, blanks around it aside, was a number in range. ParseBool takes "true",
+     * "false" or an integer (not 0 is true). */
+    static int              ParseInt(const std::string& source, bool *result=nullptr );         ///Reads an int
+    static unsigned int     ParseUInt(const std::string& source, bool *result=nullptr );        ///Reads an unsigned int
+    static long             ParseLong(const std::string& source, bool *result=nullptr );        ///Reads a long
+    static unsigned long    ParseULong(const std::string& source, bool *result=nullptr );       ///Reads an unsigned long
+    static bool             ParseBool(const std::string& source, bool *result=nullptr );        ///Reads a bool
+    static double           ParseDouble(const std::string& source, bool *result=nullptr );      ///Reads a double
+    static std::string      ParseString(const std::string& source, bool *result=nullptr );      ///The text itself
+    static time_t           ParseUnixTime(const std::string& source, bool *result=nullptr );    ///Reads seconds since the epoch
 };
 }
 #endif // StringUtils_h__
