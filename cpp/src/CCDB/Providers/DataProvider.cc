@@ -114,6 +114,31 @@ Assignment* DataProvider::GetAssignmentShortMicro(int run, const string& path, i
 }
 
 
+Assignment* DataProvider::GetAssignmentFull(int run, const string& path, const string& variation, int64_t timeMicro)
+{
+    Assignment* assignment = GetAssignmentShortMicro(run, path, timeMicro, variation, /*loadColumns*/ true);
+    if(assignment) LoadAssignmentDetails(assignment);
+    return assignment;
+}
+
+
+Assignment* DataProvider::GetAssignmentFullByTag(int run, const string& path, const string& tagName)
+{
+    string tagVariation;
+    int64_t tagMicro = 0;
+    if(!GetTag(tagName, tagVariation, tagMicro)) {
+        throw std::runtime_error("DataProvider::GetAssignmentFullByTag => No tag '" + tagName + "' was found");
+    }
+    return GetAssignmentFull(run, path, tagVariation, tagMicro);
+}
+
+
+bool DataProvider::LoadAssignmentDetails(Assignment* assignment)
+{
+    return false;
+}
+
+
 bool DataProvider::ValidateName(const string& name )
 {
 	//Validates that name has a-zA-Z0-9_- symbols

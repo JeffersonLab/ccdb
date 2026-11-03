@@ -38,6 +38,7 @@ ccdb::Assignment::Assignment()
 //______________________________________________________________________________
 ccdb::Assignment::~Assignment() {
 	if(mOwnsTypeTable) delete mTypeTable;
+	if(mOwnsRunRange) delete mRunRange;
 }
 
 //______________________________________________________________________________
@@ -160,9 +161,11 @@ RunRange * ccdb::Assignment::GetRunRange() const
 }
 
 //______________________________________________________________________________
-void ccdb::Assignment::SetRunRange( RunRange * val )
+void ccdb::Assignment::SetRunRange( RunRange * val, bool ownsRunRange )
 {
+	if(mOwnsRunRange && mRunRange != val) delete mRunRange;
 	mRunRange = val;
+	mOwnsRunRange = ownsRunRange;
 }
 
 //______________________________________________________________________________
