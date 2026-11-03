@@ -1,0 +1,32 @@
+name: Demo
+
+on:
+  push:
+  pull_request:
+    branches: [v2-main]
+
+jobs:
+  # The demo stack of docker/demo/compose.yml, checked from the outside as a person would use it
+  demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Start the demo
+        run: docker compose -f docker/demo/compose.yml up --build -d
+
+      - name: Check the demo
+        run: python scripts/demo/check.py --timeout 600
+
+      - name: Logs
+        if: always()
+        run: docker compose -f docker/demo/compose.yml logs --tail 50
+
+      - name: Stop the demo
+        if: always()
+        run: docker compose -f docker/demo/compose.yml down -v

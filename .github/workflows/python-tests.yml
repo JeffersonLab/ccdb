@@ -58,6 +58,7 @@ jobs:
           tests.unit_test_time_resolution
           tests.unit_test_snapshot
           tests.unit_test_api
+          tests.unit_test_demo_tables
           tests.unit_test_utility_argument_parse
           tests.unit_test_version
           tests.unit_test_provider_attach
