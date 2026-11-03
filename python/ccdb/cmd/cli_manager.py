@@ -55,7 +55,8 @@ class CliManager:
         self._commands = {}
         self._ls = None
         self.exception_handling = CCDB_EXCEPTIONS_SILENT  # rethrow happened exceptions
-        self.log_sqlite = False
+        self.log_sqlite = True   # the command line writes log records on SQLite too (2.5.0; F32). False restores the
+                                 # old behaviour, where every sqlite:// connection ran without a log
         self.context = CliContext(self._prov, themes.NoColorTheme(), self._commands)
         self.matching_words = []
 
@@ -367,9 +368,9 @@ class CliManager:
                 hide_password(connection_string), hide_password(str(ex), connection_string)))
             return False
 
-        # skip user for sqlite
+        # log records on sqlite: written like on MySQL unless log_sqlite is switched off
         if (not self.log_sqlite) and (self.provider.connection_string.startswith("sqlite://")):
-            log.debug(" |  |- log_sqlite == False, set user to anonymous and disable logging'")
+            log.debug(" |  |- log_sqlite == False: no log records are written to this sqlite database")
             self.provider.logging_enabled = False
 
         # connected

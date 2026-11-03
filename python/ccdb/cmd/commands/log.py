@@ -43,15 +43,28 @@ class ShowLog(CliCommandBase):
             self.print_logs(log_records)
         return True
 
+    DEFAULT_LIMIT = 20
+
     def process_arguments(self, args):
+        """`log [N] [SKIP]` shows the newest N records (20 by default) after skipping SKIP; a positional that is not
+        a number is a table path or pattern, as `-t` (so `log /dir/table` keeps working)"""
         # utility argument parser is argparse which raises errors instead of exiting app
         parser = UtilityArgumentParser()
-        parser.add_argument("obj_name", nargs="?", default="")
+        parser.add_argument("positionals", nargs="*", default=[])
         parser.add_argument("-t", "--table", default="")
         parser.add_argument("-v", "--variation", default="")
         parser.add_argument("-u", "--user", default="")
         parser.add_argument("-d", "--date", default="") # TODO: Implement filter by date
         result = parser.parse_args(args)
+        numbers = [int(value) for value in result.positionals if value.lstrip("-").isdigit()]
+        names = [value for value in result.positionals if not value.lstrip("-").isdigit()]
+        if len(numbers) > 2 or len(names) > 1:
+            raise ValueError("log takes at most two numbers (records to show, records to skip) and one table name")
+        result.limit = numbers[0] if numbers else self.DEFAULT_LIMIT
+        result.offset = numbers[1] if len(numbers) > 1 else 0
+        if result.limit < 0 or result.offset < 0:
+            raise ValueError("log: the number of records to show and to skip cannot be negative")
+        result.obj_name = names[0] if names else ""
         return result
 
 # ----------------------------------------
@@ -76,8 +89,12 @@ class ShowLog(CliCommandBase):
         if result.variation: # filter by variation
             query = query.filter(LogRecord.description.like("%:%:{0}:%".format(result.variation)))
 
-        query.order_by(desc(LogRecord.id))
-
+        # newest first, a page of them: `log` alone never streams the whole table (F33)
+        query = query.order_by(desc(LogRecord.id))
+        if result.offset:
+            query = query.offset(result.offset)
+        if result.limit:
+            query = query.limit(result.limit)
         return query.all()
 
 
@@ -101,10 +118,20 @@ class ShowLog(CliCommandBase):
     def print_help(self):
         """Prints help of the command"""
           
-        print("""Shows log records
-    log <records to show>  <records to skip>
+        print("""Shows log records, the newest first
+    log [<records to show>] [<records to skip>] [<table>]
+
+    records to show   - how many records to print (20 by default; 0 prints all)
+    records to skip   - how many of the newest records to skip (paging)
+    table             - a table path or a pattern with * and ?; only records that name it
+    -t, --table       - the same as the table argument
+    -v, --variation   - only records that name the variation
+    -u, --user        - only records by this user
 
 Example:
     > log
     > log 50
+    > log 50 100
+    > log /test/test_vars/test_table
+    > log -u test_user 10
     """)
