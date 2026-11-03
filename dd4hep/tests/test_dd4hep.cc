@@ -74,13 +74,20 @@ TEST_CASE("CCDB_Constants/compact constants from a one-row table", "[dd4hep]")
         "    <plugin name=\"CCDB_Constants\" type=\"xml\" url=\"" + Connection() + "\" table=\"/test/dd4hep/ecal_dims\"\n"
         "            run=\"1\" prefix=\"ecal_\" units=\"mm\">\n"
         "      <unit column=\"n_sectors\" value=\"\"/>\n"
-        "    </plugin>\n"));
+        "    </plugin>\n"
+        // the same table without units in the XML: the columns' stored units apply (mm on the lengths, none on n_sectors)
+        "    <plugin name=\"CCDB_Constants\" type=\"xml\" url=\"" + Connection() + "\" table=\"/test/dd4hep/ecal_dims\"\n"
+        "            run=\"1\" prefix=\"db_\"/>\n"));
 
     REQUIRE(detector->constant<double>("ecal_inner_radius") == Approx(105.5 * dd4hep::mm));
     REQUIRE(detector->constant<double>("ecal_outer_radius") == Approx(16.0 * dd4hep::cm));
     REQUIRE(detector->constant<double>("ecal_length") == Approx(0.34 * dd4hep::m));
     REQUIRE(detector->constant<int>("ecal_n_sectors") == 48);
     REQUIRE(detector->constantAsString("ecal_material") == "PbWO4");
+    // units from the columns themselves (Q59): inner_radius=double:mm, n_sectors=int without units
+    REQUIRE(detector->constant<double>("db_inner_radius") == Approx(105.5 * dd4hep::mm));
+    REQUIRE(detector->constant<double>("db_length") == Approx(0.34 * dd4hep::m));
+    REQUIRE(detector->constant<int>("db_n_sectors") == 48);
     // the constants are in the compact evaluator: detector descriptions can use them in expressions
     REQUIRE(dd4hep::_toDouble("ecal_outer_radius - ecal_inner_radius") == Approx(54.5 * dd4hep::mm));
 }

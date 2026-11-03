@@ -35,7 +35,8 @@ python -m pip install ccdb
 
 gives the library and the `ccdb` command. Extras: `ccdb[web]` (web GUI), `ccdb[api]` (HTTP API),
 `ccdb[mcp]` (MCP server, Python 3.10+), `ccdb[export]` (Parquet), `ccdb[frames]` (pandas frames).
-From a checkout, `source environment.bash` puts the checkout's `ccdb` on the path.
+From a checkout, `source environment.bash` puts the checkout's `ccdb` on the path. A Java library for CCDB and
+RCDB is maintained separately: [ccdbrcdb-java](https://code.jlab.org/hallb/clas12/coatjava/ccdbrcdb-java).
 
 CCDB 2.5 works with database schema 6. A database made by 2.4 is upgraded once, with a dry run and a rollback:
 [Upgrading to CCDB 2.5](https://jeffersonlab.github.io/ccdb/#/deployment/upgrade-2.5).

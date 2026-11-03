@@ -7,6 +7,7 @@ import os
 import re
 import tempfile
 import unittest
+from urllib.parse import unquote
 
 from ccdb.sql.sqlite_schema import create_sqlite_database
 from ccdb.webgui import cerate_ccdb_flask_app
@@ -136,7 +137,7 @@ class ComparePageTest(unittest.TestCase):
     def test_form_parts_redirect_to_the_canonical_url(self):
         response = self.client.get("/compare?table={0}&a_variation=default&b_variation=test&b_run=600&view=columns".format(TABLE))
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.headers["Location"], "/compare?a={0}:0:default&b={0}:600:test&view=columns".format(TABLE))
+        self.assertEqual(unquote(response.headers["Location"]), "/compare?a={0}:0:default&b={0}:600:test&view=columns".format(TABLE))
 
     def test_pair_by_id_and_by_request_string(self):
         by_id = self.get("/compare?a={0}&b={1}".format(self.older, self.newest))
@@ -220,16 +221,16 @@ class ComparePageTest(unittest.TestCase):
         self.assertEqual(self.client.get("/compare/data.diff?a=/no/such:0&b={0}".format(self.newest)).status_code, 404)
         self.assertEqual(self.client.get("/compare/data.diff?a={0}&b={1}".format(self.newest, self.other)).status_code, 400)
         page = self.get("/compare?a={0}&b={1}".format(self.older, self.newest))
-        self.assertIn('href="/compare/data.diff?a={0}&amp;b={1}" download="test_table_{2}_{3}.diff"'.format(self.older_request, self.newest_request, self.older, self.newest), page)
+        self.assertIn('href="/compare/data.diff?a={0}&amp;b={1}" download="test_table_{2}_{3}.diff"'.format(self.older_request, self.newest_request, self.older, self.newest), unquote(page))
 
     def test_assignment_page_links(self):
         newest = self.get("/assignments/{0}".format(self.newest))
         self.assertIn("Compare with previous", newest)
-        self.assertIn("/compare?a={0}&amp;b={1}".format(self.older_request, self.newest_request), newest)
-        self.assertIn("/compare?a={0}&amp;table={1}".format(self.newest_request, TABLE), newest)
+        self.assertIn("/compare?a={0}&amp;b={1}".format(self.older_request, self.newest_request), unquote(newest))
+        self.assertIn("/compare?a={0}&amp;table={1}".format(self.newest_request, TABLE), unquote(newest))
         older = self.get("/assignments/{0}".format(self.older))
         self.assertNotIn("Compare with previous", older)
-        self.assertIn("/compare?table={0}".format(TABLE), self.get("/versions" + TABLE))
+        self.assertIn("/compare?table={0}".format(TABLE), unquote(self.get("/versions" + TABLE)))
 
 
 if __name__ == "__main__":

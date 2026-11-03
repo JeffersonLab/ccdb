@@ -49,3 +49,43 @@ jobs:
         with:
           name: webgui-reports
           path: space-ci/reports/
+
+  # The RPM stack of a RHEL 9 deployment: AlmaLinux 9 (python 3.9) with Flask 2.2 and Werkzeug 2.2, whose
+  # URL encoding differs from the newer releases the Python tests workflow gets (Werkzeug 2.2 percent-encodes
+  # "/" and ":" in a query string). Keeps that stack under test; the pages are the same, so the tests
+  # compare decoded URLs.
+  webgui-unit-tests-rhel9:
+    name: webgui-unit-tests-rhel9 (AlmaLinux 9, Flask 2.2, Werkzeug 2.2)
+    runs-on: ubuntu-latest
+    container: almalinux:9
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up the system Python in a virtual environment
+        run: |
+          dnf -y install python3
+          python3 -m venv /opt/venv
+          echo /opt/venv/bin >> "$GITHUB_PATH"
+
+      # The api extra (FastAPI) is needed by unit_test_card_feed, the dev extra (PyYAML, httpx, jsonschema) by the test helpers
+      - name: Install ccdb with Flask 2.2 and Werkzeug 2.2
+        run: pip install ".[web,api,dev]" "flask==2.2.*" "werkzeug==2.2.*"
+
+      - name: Show the versions
+        run: python -c "import sys, flask, importlib.metadata as m; print(sys.version); print('flask', m.version('flask'), 'werkzeug', m.version('werkzeug'))"
+
+      - name: Run the web GUI unit tests
+        working-directory: python
+        run: >
+          python -m unittest
+          tests.unit_test_webgui
+          tests.unit_test_webgui_assignments
+          tests.unit_test_webgui_compare
+          tests.unit_test_webgui_diff
+          tests.unit_test_webgui_escaping
+          tests.unit_test_webgui_fragments
+          tests.unit_test_webgui_prefix
+          tests.unit_test_webgui_queries
+          tests.unit_test_card_feed

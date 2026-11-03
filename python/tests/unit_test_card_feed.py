@@ -167,14 +167,18 @@ class CardAndFeedTest(unittest.TestCase):
             for required in ("id", "title", "updated"):
                 self.assertTrue(entry.find(ATOM + required).text, required)
             self.assertIsNotNone(entry.find(ATOM + "author/" + ATOM + "name"))
-            self.assertTrue(entry.find(ATOM + "id").text.endswith("/api/v1/logs/{0}".format(log_id)))
+            self.assertEqual(entry.find(ATOM + "id").text, "urn:ccdb:log:{0}".format(log_id))
+            self.assertEqual(entry.find(ATOM + "link").get("href"), "/api/v1/logs/{0}".format(log_id))
             self.assertEqual(entry.find(ATOM + "updated").text, utc_text(created))
             ids.append(entry.find(ATOM + "id").text)
         self.assertEqual(len(set(ids)), len(ids))
         self.assertEqual(feed.find(ATOM + "updated").text, entries[0].find(ATOM + "updated").text)
         # an entry's link answers
         link = entries[0].find(ATOM + "link").get("href")
-        self.assertEqual(self.api.get(link.replace("http://testserver", "")).status_code, 200)
+        self.assertEqual(self.api.get(link).status_code, 200)
+        # no host name anywhere: the same bytes behind any proxy
+        self.assertNotIn(b"testserver", response.content)
+        self.assertEqual(feed.find(ATOM + "link").get("href"), "/api/v1/logs.atom?per_page=25")
 
     def test_atom_search(self):
         feed = ElementTree.fromstring(self.api.get("/api/v1/logs.atom?search=lgad_calibration").content)

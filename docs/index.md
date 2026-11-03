@@ -86,8 +86,8 @@ connects you to that database read-only.
   interval of validity, alignment deltas being the worked example, plus geometry constants from the
   database at parse time.
 - **[Model weights and external files (resources)](apis/jana.md).** A resources table records URL, SHA-256, size and
-  metadata of files such as ONNX models; the file lives on CVMFS or a shared file system and the client
-  fetches and verifies it (fetching over HTTP is on the roadmap).
+  metadata of files such as ONNX models; the file lives on a web server, on CVMFS or on a shared file system,
+  and the client fetches it once, verifies the hash and keeps it in a local cache.
 - **[Parquet export and DataFrames](apis/analysis.md).** Every version of a table, or the constants one run
   reads, export to Parquet, one file per table with types and units, for DuckDB, polars and pandas;
   `to_dataframe` gives a request's constants as a typed frame.

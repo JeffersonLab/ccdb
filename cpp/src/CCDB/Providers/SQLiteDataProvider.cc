@@ -237,8 +237,18 @@ std::vector<ConstantsTypeTable *> ccdb::SQLiteDataProvider::GetAllConstantsTypeT
 
 void ccdb::SQLiteDataProvider::LoadColumns( ConstantsTypeTable* table )
 {
+    // columns.units exists from schema 6 on; a schema 5 file stays readable (the C++ library has no version check)
+    if(mHasUnitsColumn < 0)
+    {
+        SQLiteStatement probe(mDatabase);
+        probe.Prepare("SELECT COUNT(*) FROM pragma_table_info('columns') WHERE name = 'units'");
+        int found = 0;
+        probe.Execute([&probe, &found](uint64_t) { found = probe.ReadInt32(0); });
+        mHasUnitsColumn = found > 0 ? 1 : 0;
+    }
     SQLiteStatement query(mDatabase);
-    query.Prepare("SELECT `id`, `name`, `columnType` FROM `columns` WHERE `typeId` = ?1 ORDER BY `order`");
+    query.Prepare(mHasUnitsColumn ? "SELECT `id`, `name`, `columnType`, `units` FROM `columns` WHERE `typeId` = ?1 ORDER BY `order`"
+                                  : "SELECT `id`, `name`, `columnType` FROM `columns` WHERE `typeId` = ?1 ORDER BY `order`");
 	query.BindInt32(1, table->GetId());
 
     // execute the statement
@@ -249,6 +259,7 @@ void ccdb::SQLiteDataProvider::LoadColumns( ConstantsTypeTable* table )
         column->SetId(query.ReadUInt64(0));
         column->SetName(query.ReadString(1));
         column->SetType(query.ReadString(2));
+        if(mHasUnitsColumn) column->SetUnits(query.ReadString(3));
         column->SetDBTypeTableId(table->GetId());
         table->AddColumn(column);
     });
@@ -328,10 +339,12 @@ static Assignment* SelectAssignmentShortByTimeLimit(SQLiteDataProvider* provider
     query.Prepare(
         "SELECT `assignments`.`id` AS `asId`, "
         "`constantSets`.`vault` AS `blob` "
-        "FROM  `assignments` "
+        // CROSS JOIN keeps this join order: the table's sets by index, then their assignments. Without it, and without
+        // ANALYZE statistics in the file, SQLite walks every assignment of the variation newest first and reads each
+        // one's set row past its vault (F28: 34 ms per table at 41 000 assignments, 0.2 ms in this order)
+        "FROM  `constantSets` "
+        "CROSS JOIN `assignments` ON `assignments`.`constantSetId` = `constantSets`.`id` "
         "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
-        "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
-        "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
         "WHERE  `runRanges`.`runMin` <= ?1 "
         "AND `runRanges`.`runMax` >= ?1 "
         "AND `assignments`.`variationId`= ?2 "

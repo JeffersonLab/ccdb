@@ -236,9 +236,11 @@ def logs(db, args):
 ATOM = "http://www.w3.org/2005/Atom"
 
 
-def logs_atom(db, args, feed_url, record_url):
+def logs_atom(db, args, feed_path, record_path):
     """The newest page of the change log as an Atom feed (RFC 4287): one entry per log record, newest first.
-    `args` takes per_page and search as /logs does; record_url(id) gives an entry's link"""
+    `args` takes per_page and search as /logs does. Ids are URNs and links are paths, so the feed holds no host
+    name and is byte-identical behind any proxy (caches keep one copy); feed_path is the request's path and query,
+    record_path(id) the path of a record"""
     from xml.etree import ElementTree
     query = queries.parse_page_query(args, queries.LOG_SORTS, default_sort="id")
     page = queries.list_logs(db.session, dataclasses.replace(query, page=1, sort="id", order="desc"))
@@ -252,16 +254,16 @@ def logs_atom(db, args, feed_url, record_url):
         return child
 
     feed = ElementTree.Element("{%s}feed" % ATOM)
-    element(feed, "id", feed_url)
+    element(feed, "id", "urn:ccdb:logs" + (":search:" + query.search if query.search else ""))
     element(feed, "title", "CCDB changes" + (" · " + experiment if experiment else "") + (" · " + query.search if query.search else ""))
     newest = page.items[0].created if page.items else None
     element(feed, "updated", utc_text(newest) if newest else "1970-01-01T00:00:00.000000Z")
-    element(feed, "link", rel="self", href=feed_url)
+    element(feed, "link", rel="self", href=feed_path)
     element(feed, "generator", "CCDB " + ccdb_version)
     for row in page.items:
         entry = element(feed, "entry")
-        url = record_url(row.id)
-        element(entry, "id", url)
+        url = record_path(row.id)
+        element(entry, "id", "urn:ccdb:log:{0}".format(row.id))
         element(entry, "title", "{0}: {1}".format(row.action, row.description))
         element(entry, "updated", utc_text(row.created))
         element(element(entry, "author"), "name", row.author or "unknown")
