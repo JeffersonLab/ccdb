@@ -46,3 +46,8 @@ target_compile_features(ccdb_jana2_example PUBLIC cxx_std_20)
 set_target_properties(ccdb_jana2_example PROPERTIES
         PREFIX ""
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/CCDB/plugins")
+
+# The ePIC demo application (docs/get-started/demo.md): reads demo tables through CCDB_service for two runs; not installed
+add_executable(ccdb_epic_demo examples/epic_demo/ccdb_epic_demo.cc)
+target_link_libraries(ccdb_epic_demo PRIVATE ccdb_jana2)
+target_compile_features(ccdb_epic_demo PRIVATE cxx_std_17)

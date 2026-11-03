@@ -1,0 +1,75 @@
+# The CCDB demo on one machine (docs/get-started/demo.md): MariaDB with the ePIC-shaped demo tables, the HTTP API
+# behind its nginx cache, and the web GUI.
+#
+#     docker compose -f docker/demo/compose.yml up --build -d
+#     python scripts/demo/check.py                 # waits for the services and checks every demo URL
+#     docker compose -f docker/demo/compose.yml down -v
+#
+# API through the cache: http://localhost:8080/api/v1/docs   web GUI: http://localhost:5000
+# CCDB_DEMO_API_PORT, CCDB_DEMO_GUI_PORT and CCDB_DEMO_DB_PORT move the host ports when these are taken.
+# The database listens on 127.0.0.1:3306 for the JANA2 demo application (jana2/examples/epic_demo); its root user has
+# no password, so the port is bound to the loopback interface only. Do not expose this compose file to a network.
+
+name: ccdb-demo
+
+services:
+  db:
+    image: mariadb:10.11.14
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
+      MARIADB_DATABASE: ccdb_demo
+    ports:
+      - "127.0.0.1:${CCDB_DEMO_DB_PORT:-3306}:3306"     # CCDB_DEMO_DB_PORT when 3306 is taken
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # Writes the demo tables once (scripts/demo/make_epic_tables.py), then exits
+  init:
+    build:
+      context: ../..
+      dockerfile: docker/api/Dockerfile
+    image: ccdb-api:demo
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../../scripts/demo:/demo:ro
+    command: ["python", "/demo/make_epic_tables.py", "mysql://root@db/ccdb_demo"]
+
+  api:
+    image: ccdb-api:demo
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    environment:
+      CCDB_CONNECTION: mysql://root@db/ccdb_demo
+      CCDB_API_WORKERS: "2"
+    networks:
+      default:
+        aliases: [ccdb-api]         # the upstream name of docker/nginx/ccdb-api.conf
+
+  nginx:
+    image: nginx:1.29.3-alpine
+    depends_on:
+      - api
+    volumes:
+      - ../nginx/ccdb-api.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "127.0.0.1:${CCDB_DEMO_API_PORT:-8080}:8080"
+
+  gui:
+    build:
+      context: ../..
+      dockerfile: docker/webgui/Dockerfile
+    image: ccdb-webgui:demo
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    environment:
+      CCDB_CONNECTION: mysql://root@db/ccdb_demo
+      CCDB_WEBGUI_WORKERS: "2"
+    ports:
+      - "127.0.0.1:${CCDB_DEMO_GUI_PORT:-5000}:5000"

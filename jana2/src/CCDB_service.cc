@@ -98,6 +98,12 @@ void CCDB_service::Init() {
 
 void CCDB_service::Initialize() {
     if (!ccdb::CalibrationGenerator::CheckOpenable(m_url)) {
+        if (m_url.rfind("mysql://", 0) == 0) {
+            // eic-shell, for one, has no MySQL client library: a SQLite file is the way there
+            throw JException("CCDB_service: '%s' is a MySQL connection string, and this CCDB library was built without "
+                             "MySQL support. Use a SQLite file (sqlite:////path/ccdb.sqlite), or build CCDB where CMake "
+                             "finds a MySQL or MariaDB client library", m_safe_url.c_str());
+        }
         throw JException("CCDB_service: CCDB can't open connection string '%s' "
                          "(it supports mysql:// and sqlite://)", m_safe_url.c_str());
     }

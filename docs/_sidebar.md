@@ -5,6 +5,7 @@
 
 **Get Started**:
 - [Installation](get-started/installation.md)
+- [Demo](get-started/demo.md)
 - [Command line (CLI)](cli.md)
 
 **CCDB Explained**:
