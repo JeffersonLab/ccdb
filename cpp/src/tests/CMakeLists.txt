@@ -8,7 +8,11 @@ add_executable(${PROJECT_NAME}
         #"test_Console.cc"
         "test_StringUtils.cc"
         "test_PathUtils.cc"
+        "test_TimeParse.cc"
         )
+
+# The case tables shared with the Python tests (testdata/ at the repository root)
+target_compile_definitions(${PROJECT_NAME} PRIVATE "CCDB_TESTDATA_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/../../../testdata\"")
 
 # Add SQLITE3
 find_package (SQLite3 REQUIRED)

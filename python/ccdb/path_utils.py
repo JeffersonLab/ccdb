@@ -1,5 +1,6 @@
 import posixpath
 import datetime
+import calendar
 
 
 def split(path):
@@ -72,113 +73,77 @@ def join(a, *p):
     return path
 
 
+TIME_GROUP_LENGTHS = (4, 2, 2, 2, 2, 2)    # YYYY MM DD hh mm ss; a seventh group is the fraction, 1 to 6 digits
+
+
 def parse_time(time_str="-1", max_time_by_default=True):
-    """ @brief ParseTime
-    parses time as any part of
-    YYYY:MM:DD-hh:mm:ss
+    """Parses a time a person types: local wall time, any leading part of YYYY-MM-DD hh:mm:ss.ffffff
 
-    1) in place of ':' and '-' might be any ONE non digit character
+    Groups of digits separated by exactly one non-digit character of any kind: "2024-03-01 12:30:15.25",
+    "2024-03-01_12-30-15", "2024/03". The fraction group has 1 to 6 digits.
 
-    2) One could place only part of the string,
-       the latest date for this part will be returned.
-       I.e. if timeString is "2011" - (it means the year 2011 and nothing more),
-       this function returns result as if it were 2011:12:31-23:59:59
-       thus using such timestamp would get the latest constants for year 2011
+    A partial time is the latest moment it covers (docs/concepts/time.md): "2011" is 2011-12-31 23:59:59.999999,
+    "2024-02" is 2024-02-29 23:59:59.999999, "12:00:00" is 12:00:00.999999 and "12:00:00.5" is 12:00:00.599999,
+    so constants added any time within the named part count. With max_time_by_default=False the missing parts are
+    the earliest moment instead (the fraction padded with zeros).
 
-    :param max_time_by_default:
-    :parameter time_str: timeString string to parse
-    :return: result time object
+    The C++ library reads the same text the same way (TimeUtils::ParseLocalTime); testdata/time/parse_cases.tsv
+    holds the cases both run. local_to_utc gives the UTC instant of the result.
+
+    :param time_str: the text
+    :param max_time_by_default: True: missing parts are the latest moment they cover
+    :return: naive local wall time with microseconds (fold=0)
     :rtype: datetime.datetime
+    :raises ValueError: the text does not follow the grammar or names an impossible date
     """
+    import re
+    if not re.match(r"^\d+(\D\d+){0,6}$", time_str):
+        raise ValueError("Can't read the time '{0}': expected YYYY-MM-DD hh:mm:ss.ffffff or a leading part of it"
+                         .format(time_str))
+    groups = re.findall(r"\d+", time_str)
+    for group, length, name in zip(groups, TIME_GROUP_LENGTHS, ("year", "month", "day", "hour", "minute", "second")):
+        if len(group) != length:
+            raise ValueError("Can't read the time '{0}': the {1} must have {2} digits".format(time_str, name, length))
+    if len(groups) == 7 and len(groups[6]) > 6:
+        raise ValueError("Can't read the time '{0}': at most 6 digits after the seconds".format(time_str))
 
-    # the function is ported from C++ dont be surprise by struct_time
+    year = int(groups[0])
+    month = int(groups[1]) if len(groups) > 1 else (12 if max_time_by_default else 1)
+    if not 1 <= month <= 12:
+        raise ValueError("Can't read the time '{0}': month {1}".format(time_str, month))
+    days_in_month = calendar.monthrange(year, month)[1]
+    defaults = (days_in_month, 23, 59, 59) if max_time_by_default else (1, 0, 0, 0)
+    day, hour, minute, second = [int(groups[2 + i]) if len(groups) > 2 + i else defaults[i] for i in range(4)]
+    if not (1 <= day <= days_in_month and hour <= 23 and minute <= 59 and second <= 59):
+        raise ValueError("Can't read the time '{0}': no such date or time".format(time_str))
+    fraction = groups[6] if len(groups) == 7 else ""
+    microsecond = int(fraction.ljust(6, "9" if max_time_by_default else "0"))
+    return datetime.datetime(year, month, day, hour, minute, second, microsecond)
 
-    # default result
-    if max_time_by_default:
-        year = 2137
-        month = 12
-        day = 31
-        hour = 23
-        minute = 59
-        second = 59
-    else:
-        year = 2000
-        month = 1
-        day = 1
-        hour = 0
-        minute = 0
-        second = 0
 
-    # some tmp values
-    tmp_str = ""  # tmp string to buffer chars
-    delim_count = 0  # number of delimiters we've met
+def local_to_utc(local_time):
+    """The UTC instant of a naive local wall time, as an aware datetime
 
-    work_str = time_str + ' '  # we appended a work string for one more non digit symbol
-    # so the logic behind would work in any case
-    last_is_digit = False  # last symbol was digit
+    A wall time that occurs twice (the hour after daylight saving ends) or never (the hour skipped when it starts)
+    is read with the UTC offset in effect before the transition, as `fold=0` says (PEP 495); a value with
+    fold=1, as utc_to_local makes for the second occurrence, keeps it. An aware datetime is converted as it is.
+    The C++ library implements the same rule (TimeUtils::LocalWallToUtc).
+    """
+    if local_time.tzinfo is not None:
+        return local_time.astimezone(datetime.timezone.utc)
+    seconds = int(local_time.replace(microsecond=0).timestamp())
+    return datetime.datetime.fromtimestamp(seconds, datetime.timezone.utc).replace(microsecond=local_time.microsecond)
 
-    # scan all symbols
-    for symbol in work_str:
 
-        if '0' <= symbol <= '9':  # Check if it is number
-            tmp_str = tmp_str + symbol
-            last_is_digit = True
+def utc_to_local(utc_time):
+    """The naive local wall time of a UTC instant (an aware datetime, or a naive one that holds UTC)
 
-        elif last_is_digit:  # it is a delimiter after the value;
-            delim_count += 1
-
-            # it was a year
-            if delim_count == 1:
-                if len(tmp_str) != 4:
-                    raise ValueError("The year length !=4")  # it is an error with length of year
-                year = int(tmp_str)  # since in tm the year is from 1900
-
-            # it was a month
-            if delim_count == 2:
-                if len(tmp_str) != 2:
-                    raise ValueError("The month length !=2")  # it is an error with length of month
-                month = int(tmp_str)
-
-                # check for 30 day month
-                if month in [4, 6, 9, 11]:
-                    day = 30
-                if month == 2:
-                    if year % 4 == 0 and year % 100 != 0 or year % 400 == 0:
-                        day = 29
-                    else:
-                        day = 28
-
-            # it was a day
-            if delim_count == 3:
-                if len(tmp_str) != 2:
-                    raise ValueError("The day length !=2")  # it is an error with length of day
-                day = int(tmp_str)
-
-            # it was an hour
-            if delim_count == 4:
-                if len(tmp_str) != 2:
-                    raise ValueError("The hour length !=2")  # it is an error with length of hour
-                hour = int(tmp_str)
-
-            # it was a min
-            if delim_count == 5:
-                if len(tmp_str) != 2:
-                    raise ValueError("The minutes length !=2")  # it is an error with length of minutes
-                minute = int(tmp_str)
-
-            # it was a sec
-            if delim_count == 6:
-                if len(tmp_str) != 2:
-                    raise ValueError("The sec length !=2")  # it is an error with length of sec
-                second = int(tmp_str)
-
-            # clear temp string for the next digits
-            tmp_str = ""
-
-        else:
-            tmp_str = ""  # in this case we clear temp string too
-
-    return datetime.datetime(year=year, month=month, day=day, hour=hour, minute=minute, second=second)
+    `fold` is set on the second occurrence of a repeated hour, so local_to_utc gives the instant back.
+    """
+    if utc_time.tzinfo is None:
+        utc_time = utc_time.replace(tzinfo=datetime.timezone.utc)
+    seconds = int(utc_time.replace(microsecond=0).timestamp())
+    return datetime.datetime.fromtimestamp(seconds).replace(microsecond=utc_time.microsecond)
 
 
 def parse_request(request_str=""):

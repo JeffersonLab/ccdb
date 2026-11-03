@@ -157,7 +157,8 @@ class TagsTest(TimeZonePinned):
 
         self.run_cli('tag past -t 2012-09-01-00-00-00 -c "September 2012"')
         tag = self.provider.get_tag("past")
-        self.assertEqual(tag.snapshot_time, moment)        # TZ is UTC, so local time is the UTC instant
+        # TZ is UTC, so local time is the UTC instant; a whole second is its latest microsecond (docs/concepts/time.md)
+        self.assertEqual(tag.snapshot_time, moment.replace(microsecond=999999))
 
         self.assertEqual(self.provider.get_assignment_by_request(TABLE + ":{}@past".format(RUN)).id, expected.id)
 
