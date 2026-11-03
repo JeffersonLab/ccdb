@@ -37,9 +37,10 @@ jobs:
           python3 -m venv /opt/venv
           echo /opt/venv/bin >> "$GITHUB_PATH"
 
-      # The web extra (Flask) is needed by the web GUI unit tests, the dev extra (PyYAML) by unit_test_metadata_files
+      # The web extra (Flask) is needed by the web GUI unit tests, the api extra (FastAPI) by unit_test_api, the dev
+      # extra (PyYAML, httpx, jsonschema) by unit_test_metadata_files and unit_test_api
       - name: Install ccdb
-        run: pip install ".[web,dev]"
+        run: pip install ".[web,api,dev]"
 
       - name: Run unit tests
         working-directory: python
@@ -55,6 +56,8 @@ jobs:
           tests.unit_test_time_parse
           tests.unit_test_time_upgrade
           tests.unit_test_time_resolution
+          tests.unit_test_snapshot
+          tests.unit_test_api
           tests.unit_test_utility_argument_parse
           tests.unit_test_version
           tests.unit_test_provider_attach

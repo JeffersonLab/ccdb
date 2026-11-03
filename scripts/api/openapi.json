@@ -1,0 +1,2130 @@
+{
+ "components": {
+  "schemas": {
+   "Assignment": {
+    "properties": {
+     "author": {
+      "title": "Author",
+      "type": "string"
+     },
+     "columns": {
+      "items": {
+       "$ref": "#/components/schemas/Column"
+      },
+      "title": "Columns",
+      "type": "array"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "created": {
+      "title": "Created",
+      "type": "string"
+     },
+     "id": {
+      "title": "Id",
+      "type": "integer"
+     },
+     "request": {
+      "title": "Request",
+      "type": "string"
+     },
+     "rows": {
+      "title": "Rows",
+      "type": "integer"
+     },
+     "run_max": {
+      "title": "Run Max",
+      "type": "integer"
+     },
+     "run_min": {
+      "title": "Run Min",
+      "type": "integer"
+     },
+     "sha256": {
+      "description": "SHA-256 of the stored data text, the ETag of the data forms",
+      "title": "Sha256",
+      "type": "string"
+     },
+     "shared_by": {
+      "title": "Shared By",
+      "type": "integer"
+     },
+     "size": {
+      "description": "Bytes of the stored data text (UTF-8)",
+      "title": "Size",
+      "type": "integer"
+     },
+     "table": {
+      "title": "Table",
+      "type": "string"
+     },
+     "variation": {
+      "title": "Variation",
+      "type": "string"
+     }
+    },
+    "required": [
+     "id",
+     "request",
+     "table",
+     "variation",
+     "run_min",
+     "run_max",
+     "created",
+     "author",
+     "comment",
+     "sha256",
+     "size",
+     "rows",
+     "columns",
+     "shared_by"
+    ],
+    "title": "Assignment",
+    "type": "object"
+   },
+   "AssignmentPage": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/AssignmentRow"
+      },
+      "title": "Items",
+      "type": "array"
+     },
+     "order": {
+      "title": "Order",
+      "type": "string"
+     },
+     "page": {
+      "title": "Page",
+      "type": "integer"
+     },
+     "pages": {
+      "title": "Pages",
+      "type": "integer"
+     },
+     "per_page": {
+      "title": "Per Page",
+      "type": "integer"
+     },
+     "sort": {
+      "title": "Sort",
+      "type": "string"
+     },
+     "total": {
+      "title": "Total",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "page",
+     "per_page",
+     "pages",
+     "total",
+     "sort",
+     "order",
+     "items"
+    ],
+    "title": "AssignmentPage",
+    "type": "object"
+   },
+   "AssignmentRow": {
+    "properties": {
+     "author": {
+      "title": "Author",
+      "type": "string"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "created": {
+      "title": "Created",
+      "type": "string"
+     },
+     "id": {
+      "title": "Id",
+      "type": "integer"
+     },
+     "request": {
+      "description": "The request string that names this assignment, as `ccdb vers` and the web GUI give it",
+      "title": "Request",
+      "type": "string"
+     },
+     "run_max": {
+      "title": "Run Max",
+      "type": "integer"
+     },
+     "run_min": {
+      "title": "Run Min",
+      "type": "integer"
+     },
+     "shared_by": {
+      "description": "How many assignments use this assignment's data; more than 1 is shared data",
+      "title": "Shared By",
+      "type": "integer"
+     },
+     "variation": {
+      "title": "Variation",
+      "type": "string"
+     }
+    },
+    "required": [
+     "id",
+     "request",
+     "run_min",
+     "run_max",
+     "variation",
+     "created",
+     "author",
+     "comment",
+     "shared_by"
+    ],
+    "title": "AssignmentRow",
+    "type": "object"
+   },
+   "Column": {
+    "properties": {
+     "comment": {
+      "default": "",
+      "title": "Comment",
+      "type": "string"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "type": {
+      "description": "int, uint, long, ulong, double, string or bool",
+      "title": "Type",
+      "type": "string"
+     },
+     "units": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Units"
+     }
+    },
+    "required": [
+     "name",
+     "type"
+    ],
+    "title": "Column",
+    "type": "object"
+   },
+   "DirectoryInfo": {
+    "properties": {
+     "author": {
+      "title": "Author",
+      "type": "string"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "created": {
+      "title": "Created",
+      "type": "string"
+     },
+     "deprecated": {
+      "default": false,
+      "title": "Deprecated",
+      "type": "boolean"
+     },
+     "deprecated_time": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Deprecated Time"
+     },
+     "deprecation_comment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Deprecation Comment"
+     },
+     "directories": {
+      "items": {
+       "$ref": "#/components/schemas/DirectorySummary"
+      },
+      "title": "Directories",
+      "type": "array"
+     },
+     "modified": {
+      "title": "Modified",
+      "type": "string"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "path": {
+      "title": "Path",
+      "type": "string"
+     },
+     "properties": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "title": "Properties",
+      "type": "object"
+     },
+     "tables": {
+      "items": {
+       "$ref": "#/components/schemas/TableSummary"
+      },
+      "title": "Tables",
+      "type": "array"
+     }
+    },
+    "required": [
+     "path",
+     "name",
+     "comment",
+     "created",
+     "modified",
+     "author",
+     "properties",
+     "directories",
+     "tables"
+    ],
+    "title": "DirectoryInfo",
+    "type": "object"
+   },
+   "DirectorySummary": {
+    "properties": {
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "deprecated": {
+      "default": false,
+      "title": "Deprecated",
+      "type": "boolean"
+     },
+     "deprecated_time": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Deprecated Time"
+     },
+     "deprecation_comment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Deprecation Comment"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "path": {
+      "title": "Path",
+      "type": "string"
+     }
+    },
+    "required": [
+     "path",
+     "name",
+     "comment"
+    ],
+    "title": "DirectorySummary",
+    "type": "object"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "title": "Detail",
+      "type": "array"
+     }
+    },
+    "title": "HTTPValidationError",
+    "type": "object"
+   },
+   "Instance": {
+    "properties": {
+     "properties": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "description": "Instance properties (`ccdb prop set --instance`): experiment, description, license, citation, contact, url",
+      "title": "Properties",
+      "type": "object"
+     },
+     "schema_version": {
+      "title": "Schema Version",
+      "type": "integer"
+     },
+     "version": {
+      "description": "CCDB version of the server",
+      "title": "Version",
+      "type": "string"
+     }
+    },
+    "required": [
+     "version",
+     "schema_version",
+     "properties"
+    ],
+    "title": "Instance",
+    "type": "object"
+   },
+   "LogPage": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/LogRow"
+      },
+      "title": "Items",
+      "type": "array"
+     },
+     "order": {
+      "title": "Order",
+      "type": "string"
+     },
+     "page": {
+      "title": "Page",
+      "type": "integer"
+     },
+     "pages": {
+      "title": "Pages",
+      "type": "integer"
+     },
+     "per_page": {
+      "title": "Per Page",
+      "type": "integer"
+     },
+     "sort": {
+      "title": "Sort",
+      "type": "string"
+     },
+     "total": {
+      "title": "Total",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "page",
+     "per_page",
+     "pages",
+     "total",
+     "sort",
+     "order",
+     "items"
+    ],
+    "title": "LogPage",
+    "type": "object"
+   },
+   "LogRecord": {
+    "properties": {
+     "action": {
+      "title": "Action",
+      "type": "string"
+     },
+     "affected": {
+      "description": "[kind, id] pairs the record names: assignments, variations, typeTables, directories, users",
+      "items": {
+       "items": {},
+       "type": "array"
+      },
+      "title": "Affected",
+      "type": "array"
+     },
+     "author": {
+      "title": "Author",
+      "type": "string"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "created": {
+      "title": "Created",
+      "type": "string"
+     },
+     "description": {
+      "title": "Description",
+      "type": "string"
+     },
+     "id": {
+      "title": "Id",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "id",
+     "created",
+     "action",
+     "description",
+     "comment",
+     "author",
+     "affected"
+    ],
+    "title": "LogRecord",
+    "type": "object"
+   },
+   "LogRow": {
+    "properties": {
+     "action": {
+      "title": "Action",
+      "type": "string"
+     },
+     "author": {
+      "title": "Author",
+      "type": "string"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "created": {
+      "title": "Created",
+      "type": "string"
+     },
+     "description": {
+      "title": "Description",
+      "type": "string"
+     },
+     "id": {
+      "title": "Id",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "id",
+     "created",
+     "action",
+     "description",
+     "comment",
+     "author"
+    ],
+    "title": "LogRow",
+    "type": "object"
+   },
+   "RunRange": {
+    "properties": {
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "id": {
+      "title": "Id",
+      "type": "integer"
+     },
+     "max": {
+      "title": "Max",
+      "type": "integer"
+     },
+     "min": {
+      "title": "Min",
+      "type": "integer"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     }
+    },
+    "required": [
+     "id",
+     "name",
+     "min",
+     "max",
+     "comment"
+    ],
+    "title": "RunRange",
+    "type": "object"
+   },
+   "TableInfo": {
+    "properties": {
+     "assignments": {
+      "title": "Assignments",
+      "type": "integer"
+     },
+     "author": {
+      "title": "Author",
+      "type": "string"
+     },
+     "column_count": {
+      "title": "Column Count",
+      "type": "integer"
+     },
+     "columns": {
+      "description": "The columns in order",
+      "items": {
+       "$ref": "#/components/schemas/Column"
+      },
+      "title": "Columns",
+      "type": "array"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "created": {
+      "title": "Created",
+      "type": "string"
+     },
+     "deprecated": {
+      "default": false,
+      "title": "Deprecated",
+      "type": "boolean"
+     },
+     "deprecated_time": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Deprecated Time"
+     },
+     "deprecation_comment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Deprecation Comment"
+     },
+     "last_assignment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Creation time of the newest assignment",
+      "title": "Last Assignment"
+     },
+     "last_author": {
+      "default": "",
+      "title": "Last Author",
+      "type": "string"
+     },
+     "modified": {
+      "title": "Modified",
+      "type": "string"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "path": {
+      "title": "Path",
+      "type": "string"
+     },
+     "properties": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "title": "Properties",
+      "type": "object"
+     },
+     "rows": {
+      "title": "Rows",
+      "type": "integer"
+     },
+     "variations": {
+      "description": "Variations with at least one assignment of the table",
+      "items": {
+       "type": "string"
+      },
+      "title": "Variations",
+      "type": "array"
+     }
+    },
+    "required": [
+     "path",
+     "name",
+     "rows",
+     "column_count",
+     "comment",
+     "created",
+     "modified",
+     "author",
+     "columns",
+     "properties",
+     "variations",
+     "assignments"
+    ],
+    "title": "TableInfo",
+    "type": "object"
+   },
+   "TableSummary": {
+    "properties": {
+     "column_count": {
+      "title": "Column Count",
+      "type": "integer"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "deprecated": {
+      "default": false,
+      "title": "Deprecated",
+      "type": "boolean"
+     },
+     "deprecated_time": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Deprecated Time"
+     },
+     "deprecation_comment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Deprecation Comment"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "path": {
+      "title": "Path",
+      "type": "string"
+     },
+     "rows": {
+      "title": "Rows",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "path",
+     "name",
+     "rows",
+     "column_count",
+     "comment"
+    ],
+    "title": "TableSummary",
+    "type": "object"
+   },
+   "Tag": {
+    "properties": {
+     "author": {
+      "title": "Author",
+      "type": "string"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "created": {
+      "title": "Created",
+      "type": "string"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "time": {
+      "description": "The moment the tag freezes, UTC",
+      "title": "Time",
+      "type": "string"
+     },
+     "variation": {
+      "title": "Variation",
+      "type": "string"
+     }
+    },
+    "required": [
+     "name",
+     "variation",
+     "time",
+     "comment",
+     "author",
+     "created"
+    ],
+    "title": "Tag",
+    "type": "object"
+   },
+   "ValidationError": {
+    "properties": {
+     "ctx": {
+      "title": "Context",
+      "type": "object"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "title": "Location",
+      "type": "array"
+     },
+     "msg": {
+      "title": "Message",
+      "type": "string"
+     },
+     "type": {
+      "title": "Error Type",
+      "type": "string"
+     }
+    },
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError",
+    "type": "object"
+   },
+   "Variation": {
+    "properties": {
+     "author": {
+      "title": "Author",
+      "type": "string"
+     },
+     "chain": {
+      "description": "The ancestry from the root: default, ..., this variation",
+      "items": {
+       "type": "string"
+      },
+      "title": "Chain",
+      "type": "array"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     },
+     "created": {
+      "title": "Created",
+      "type": "string"
+     },
+     "deprecated": {
+      "default": false,
+      "title": "Deprecated",
+      "type": "boolean"
+     },
+     "deprecated_time": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Deprecated Time"
+     },
+     "deprecation_comment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Deprecation Comment"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "parent": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The variation this one inherits from; none for default",
+      "title": "Parent"
+     }
+    },
+    "required": [
+     "name",
+     "comment",
+     "chain",
+     "created",
+     "author"
+    ],
+    "title": "Variation",
+    "type": "object"
+   }
+  }
+ },
+ "info": {
+  "description": "Read-only access to the calibration constants of a CCDB database. Documentation: https://jeffersonlab.github.io/ccdb/#/apis/http",
+  "title": "CCDB HTTP API",
+  "version": "2.5.0.dev0"
+ },
+ "openapi": "3.1.0",
+ "paths": {
+  "/api/v1/assignments": {
+   "get": {
+    "operationId": "assignment_by_request_api_v1_assignments_get",
+    "parameters": [
+     {
+      "description": "A CCDB request string: /path:run:variation:time or /path:run@tag",
+      "in": "query",
+      "name": "request",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A CCDB request string: /path:run:variation:time or /path:run@tag",
+       "title": "Request"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Assignment"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "302": {
+      "description": "The request resolves to the newest assignment: its id form"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "The assignment a request string names; without a time or a tag, a 302 to the id form",
+    "tags": [
+     "constants"
+    ]
+   }
+  },
+  "/api/v1/assignments/{assignment_id}": {
+   "get": {
+    "operationId": "assignment_by_id_api_v1_assignments__assignment_id__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "assignment_id",
+      "required": true,
+      "schema": {
+       "title": "Assignment Id",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Assignment"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "One assignment by its database id",
+    "tags": [
+     "constants"
+    ]
+   }
+  },
+  "/api/v1/assignments/{assignment_id}/{form}": {
+   "get": {
+    "operationId": "assignment_data_by_id_api_v1_assignments__assignment_id___form__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "assignment_id",
+      "required": true,
+      "schema": {
+       "title": "Assignment Id",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "path",
+      "name": "form",
+      "required": true,
+      "schema": {
+       "title": "Form",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       },
+       "application/json; charset=utf-8": {},
+       "text/plain; charset=utf-8": {}
+      },
+      "description": "`data`: the stored data text; `data.json`: the web GUI's JSON; `data.txt`: the `ccdb dump` text"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "A data form (data, data.json, data.txt) of an assignment by its database id",
+    "tags": [
+     "constants"
+    ]
+   }
+  },
+  "/api/v1/assignments/{form}": {
+   "get": {
+    "operationId": "assignment_data_by_request_api_v1_assignments__form__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "form",
+      "required": true,
+      "schema": {
+       "title": "Form",
+       "type": "string"
+      }
+     },
+     {
+      "description": "A CCDB request string: /path:run:variation:time or /path:run@tag",
+      "in": "query",
+      "name": "request",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A CCDB request string: /path:run:variation:time or /path:run@tag",
+       "title": "Request"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       },
+       "application/json; charset=utf-8": {},
+       "text/plain; charset=utf-8": {}
+      },
+      "description": "`data`: the stored data text; `data.json`: the web GUI's JSON; `data.txt`: the `ccdb dump` text"
+     },
+     "302": {
+      "description": "The request resolves to the newest assignment: its id form"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "A data form (data, data.json, data.txt) of the assignment a request string names",
+    "tags": [
+     "constants"
+    ]
+   }
+  },
+  "/api/v1/bundle": {
+   "get": {
+    "operationId": "bundle_api_v1_bundle_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "run",
+      "required": true,
+      "schema": {
+       "minimum": 0,
+       "title": "Run",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "variation",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Variation"
+      }
+     },
+     {
+      "description": "UTC, YYYY-MM-DDThh:mm:ss.ffffff or a leading part of it",
+      "in": "query",
+      "name": "time",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "UTC, YYYY-MM-DDThh:mm:ss.ffffff or a leading part of it",
+       "title": "Time"
+      }
+     },
+     {
+      "in": "query",
+      "name": "tag",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Tag"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       },
+       "application/vnd.sqlite3": {}
+      },
+      "description": "The SQLite file"
+     },
+     "302": {
+      "description": "No time, or a future one: the explicit form at the newest creation time"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "A SQLite file with the constants of one run, by variation and time or by tag",
+    "tags": [
+     "bundle"
+    ]
+   }
+  },
+  "/api/v1/compare": {
+   "get": {
+    "operationId": "compare_api_v1_compare_get",
+    "parameters": [
+     {
+      "description": "Request string or database id",
+      "in": "query",
+      "name": "a",
+      "required": true,
+      "schema": {
+       "description": "Request string or database id",
+       "title": "A",
+       "type": "string"
+      }
+     },
+     {
+      "description": "Request string or database id",
+      "in": "query",
+      "name": "b",
+      "required": true,
+      "schema": {
+       "description": "Request string or database id",
+       "title": "B",
+       "type": "string"
+      }
+     },
+     {
+      "description": "1 keeps only the rows with a change",
+      "in": "query",
+      "name": "changed",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "description": "1 keeps only the rows with a change",
+       "maximum": 1,
+       "minimum": 0,
+       "title": "Changed",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Two assignments of one table cell by cell, as the web GUI's compare/data.json",
+    "tags": [
+     "constants"
+    ]
+   }
+  },
+  "/api/v1/compare.diff": {
+   "get": {
+    "operationId": "compare_diff_api_v1_compare_diff_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "a",
+      "required": true,
+      "schema": {
+       "title": "A",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "b",
+      "required": true,
+      "schema": {
+       "title": "B",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Two assignments of one table as a unified diff (`diff -u`) of their `data.txt` rows",
+    "tags": [
+     "constants"
+    ]
+   }
+  },
+  "/api/v1/directories": {
+   "get": {
+    "operationId": "directories_api_v1_directories_get",
+    "parameters": [
+     {
+      "description": "`all` lists deprecated directories, tables and variations too",
+      "in": "query",
+      "name": "deprecated",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "`all` lists deprecated directories, tables and variations too",
+       "title": "Deprecated"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/DirectorySummary"
+         },
+         "title": "Response Directories Api V1 Directories Get",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Every directory, by path",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/directories/{path}": {
+   "get": {
+    "operationId": "directory_api_v1_directories__path__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "path",
+      "required": true,
+      "schema": {
+       "title": "Path",
+       "type": "string"
+      }
+     },
+     {
+      "description": "`all` lists deprecated directories, tables and variations too",
+      "in": "query",
+      "name": "deprecated",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "`all` lists deprecated directories, tables and variations too",
+       "title": "Deprecated"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DirectoryInfo"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "One directory with its subdirectories and tables",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/health": {
+   "get": {
+    "operationId": "health_api_v1_health_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Liveness and database check: 200 or 503, never cached",
+    "tags": [
+     "service"
+    ]
+   }
+  },
+  "/api/v1/instance": {
+   "get": {
+    "operationId": "instance_api_v1_instance_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Instance"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "The CCDB version, the schema version and the instance properties",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/logs": {
+   "get": {
+    "operationId": "logs_api_v1_logs_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "page",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "minimum": 1,
+       "title": "Page",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "per_page",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "title": "Per Page",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "search",
+      "required": false,
+      "schema": {
+       "default": "",
+       "title": "Search",
+       "type": "string"
+      }
+     },
+     {
+      "description": "created, action, author or id",
+      "in": "query",
+      "name": "sort",
+      "required": false,
+      "schema": {
+       "default": "id",
+       "description": "created, action, author or id",
+       "title": "Sort",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "order",
+      "required": false,
+      "schema": {
+       "default": "desc",
+       "title": "Order",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/LogPage"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "A page of the change log, newest first; `search` matches description and author",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/logs/{log_id}": {
+   "get": {
+    "operationId": "log_record_api_v1_logs__log_id__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "log_id",
+      "required": true,
+      "schema": {
+       "title": "Log Id",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/LogRecord"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "One log record in full",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/run-ranges": {
+   "get": {
+    "operationId": "run_ranges_api_v1_run_ranges_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/RunRange"
+         },
+         "title": "Response Run Ranges Api V1 Run Ranges Get",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Every run range",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/tables": {
+   "get": {
+    "operationId": "tables_api_v1_tables_get",
+    "parameters": [
+     {
+      "description": "Name pattern with * and ?, as `ccdb ls`",
+      "in": "query",
+      "name": "search",
+      "required": false,
+      "schema": {
+       "default": "*",
+       "description": "Name pattern with * and ?, as `ccdb ls`",
+       "title": "Search",
+       "type": "string"
+      }
+     },
+     {
+      "description": "`all` lists deprecated directories, tables and variations too",
+      "in": "query",
+      "name": "deprecated",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "`all` lists deprecated directories, tables and variations too",
+       "title": "Deprecated"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/TableSummary"
+         },
+         "title": "Response Tables Api V1 Tables Get",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Tables whose name matches a pattern (* and ?)",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/tables/{path}": {
+   "get": {
+    "operationId": "table_api_v1_tables__path__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "path",
+      "required": true,
+      "schema": {
+       "title": "Path",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/TableInfo"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "One table: columns with units, properties, activity",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/tables/{path}/schema": {
+   "get": {
+    "operationId": "table_schema_api_v1_tables__path__schema_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "path",
+      "required": true,
+      "schema": {
+       "title": "Path",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "A JSON Schema of the `rows` of the table's data.json",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/tables/{path}/versions": {
+   "get": {
+    "operationId": "versions_api_v1_tables__path__versions_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "path",
+      "required": true,
+      "schema": {
+       "title": "Path",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "page",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "minimum": 1,
+       "title": "Page",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "25, 50, 100 or 200",
+      "in": "query",
+      "name": "per_page",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "description": "25, 50, 100 or 200",
+       "title": "Per Page",
+       "type": "integer"
+      }
+     },
+     {
+      "description": "created, run_min, run_max, variation, author or id",
+      "in": "query",
+      "name": "sort",
+      "required": false,
+      "schema": {
+       "default": "created",
+       "description": "created, run_min, run_max, variation, author or id",
+       "title": "Sort",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "order",
+      "required": false,
+      "schema": {
+       "default": "desc",
+       "title": "Order",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "variation",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Variation"
+      }
+     },
+     {
+      "in": "query",
+      "name": "run",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "minimum": 0,
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Run"
+      }
+     },
+     {
+      "in": "query",
+      "name": "run_min",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "minimum": 0,
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Run Min"
+      }
+     },
+     {
+      "in": "query",
+      "name": "run_max",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "minimum": 0,
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Run Max"
+      }
+     },
+     {
+      "description": "`all` lists deprecated directories, tables and variations too",
+      "in": "query",
+      "name": "deprecated",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "`all` lists deprecated directories, tables and variations too",
+       "title": "Deprecated"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AssignmentPage"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "A page of a table's assignments, newest first by default, as `ccdb vers`",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/tags": {
+   "get": {
+    "operationId": "tags_api_v1_tags_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/Tag"
+         },
+         "title": "Response Tags Api V1 Tags Get",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Every tag, by name",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/tags/{name}": {
+   "get": {
+    "operationId": "tag_api_v1_tags__name__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "name",
+      "required": true,
+      "schema": {
+       "title": "Name",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Tag"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "One tag",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/variations": {
+   "get": {
+    "operationId": "variations_api_v1_variations_get",
+    "parameters": [
+     {
+      "description": "`all` lists deprecated directories, tables and variations too",
+      "in": "query",
+      "name": "deprecated",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "`all` lists deprecated directories, tables and variations too",
+       "title": "Deprecated"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/Variation"
+         },
+         "title": "Response Variations Api V1 Variations Get",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Every variation, by name",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
+  "/api/v1/variations/{name}": {
+   "get": {
+    "operationId": "variation_api_v1_variations__name__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "name",
+      "required": true,
+      "schema": {
+       "title": "Name",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Variation"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "One variation with its ancestry",
+    "tags": [
+     "browse"
+    ]
+   }
+  }
+ }
+}
