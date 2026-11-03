@@ -23,8 +23,8 @@ and a variation, each with its creation time. A request string names constants: 
 trailing part optional (variation default, time newest), or /path:run@tag for the state a tag froze. A run selects the
 assignment whose run range holds it; a variation falls back to its parent when it has no data; the newest assignment
 created at or before the time wins. Times are UTC in answers; times you give are the server's local wall time,
-any leading part of YYYY-MM-DD hh:mm:ss.ffffff, the latest moment it covers. Start with instance_info and
-list_directories or list_tables, then table_info, then resolve_request or get_constants."""
+any leading part of YYYY-MM-DD hh:mm:ss.ffffff, the latest moment it covers. Start with instance_info (readiness tells
+how much of the metadata the instance documents) and list_directories or list_tables, then table_info, then resolve_request or get_constants."""
 
 def create_server(connection_string=None, provider_factory=None):
     """The MCP server for one database. provider_factory (tests) replaces the per-call provider."""
@@ -78,6 +78,14 @@ def create_server(connection_string=None, provider_factory=None):
     def instance_info() -> Dict[str, Any]:
         with provider() as db:
             return dumped(service.instance(db))
+
+    @tool("The readiness profile of the instance, as `ccdb db readiness --json`: how many columns have units, tables a "
+          "description, versions a comment; open-ended run ranges; versions by anonymous; stale and empty tables; shared "
+          "constant sets; which instance properties (license, citation, contact) are set. A table is stale when no "
+          "version of it was created in the last stale_years years.")
+    def readiness(stale_years: int = 5) -> Dict[str, Any]:
+        with provider() as db:
+            return service.readiness(db, stale_years)
 
     @tool("Whether the database answers: status ok or error, and the CCDB version.")
     def health() -> Dict[str, Any]:

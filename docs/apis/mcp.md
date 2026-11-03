@@ -39,6 +39,7 @@ The tools answer with the same values as the [HTTP API](apis/http.md); times are
 |---|---|
 | `instance_info` | the CCDB version, the schema version and the instance properties |
 | `health` | whether the database answers |
+| `readiness(stale_years)` | the [readiness profile](concepts/ai-readiness.md#the-readiness-profile) of the instance, as `ccdb db readiness --json` |
 | `list_directories(include_deprecated)` | every directory |
 | `list_tables(pattern, include_deprecated)` | the tables whose name matches a pattern with `*` and `?` |
 | `table_info(path)` | columns with types, units and comments, properties, variations with data, the assignment count and the newest assignment |
@@ -62,7 +63,36 @@ The question an agent gets: *What changed in `/epic/HCal/adc_calib` between run 
 changed it?* The steps below are the tool calls an agent makes, on the [demo tables](get-started/demo.md), and the
 part of each answer the next step uses. `scripts/mcp/transcript.py` reproduces them with the MCP SDK's client.
 
-**1. Find the table**
+**1. Check what the instance documents**
+
+```
+readiness()
+```
+
+```json
+{
+ "metadata": {
+  "columns": 113,
+  "columns_with_units": 65,
+  "tables": 17,
+  "tables_with_description": 17,
+  "versions": 49,
+  "versions_with_comment": 49,
+  "tables_with_contact": 0,
+  "tables_with_source_url": 14,
+  "tables_with_doc_url": 0
+ },
+ "instance": {
+  "license": true,
+  "citation": false,
+  "contact": true,
+  "experiment": true,
+  "url": true
+ }
+}
+```
+
+**2. Find the table**
 
 ```
 list_tables(pattern="adc_calib")
@@ -78,7 +108,7 @@ list_tables(pattern="adc_calib")
 ]
 ```
 
-**2. Read what it holds**
+**3. Read what it holds**
 
 ```
 table_info(path="/epic/HCal/adc_calib")
@@ -105,7 +135,7 @@ table_info(path="/epic/HCal/adc_calib")
 }
 ```
 
-**3. List the versions of the default variation**
+**4. List the versions of the default variation**
 
 ```
 list_versions(path="/epic/HCal/adc_calib", variation="default", sort="run_min", order="asc")
@@ -132,7 +162,7 @@ list_versions(path="/epic/HCal/adc_calib", variation="default", sort="run_min", 
 ]
 ```
 
-**4. Compare a run of each period**
+**5. Compare a run of each period**
 
 ```
 compare_assignments(a="/epic/HCal/adc_calib:500:default", b="/epic/HCal/adc_calib:1500:default")
@@ -192,7 +222,7 @@ compare_assignments(a="/epic/HCal/adc_calib:500:default", b="/epic/HCal/adc_cali
 }
 ```
 
-**5. Who changed it**
+**6. Who changed it**
 
 ```
 search_log(search="/epic/HCal/adc_calib")
