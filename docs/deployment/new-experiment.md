@@ -145,8 +145,9 @@ the CLI, and get exceptions instead of exit codes.
 | MySQL directly, `mysql://ccdb_user@dbhost/ccdb` | interactive work and small numbers of jobs on the lab network | one connection per job; the C++ client has connect, read and write timeouts (`CCDB_MYSQL_*_TIMEOUT`, see [C++ API](apis/cpp.md#timeouts-and-reconnect)) and reconnects once after a dropped connection |
 | SQLite snapshot of the whole database | farms, containers, any place with a shared file system | made with [mysql2sqlite](utilities.md#creating-a-sqlite-database) from a dump; publish it on CVMFS or a shared file system; open it as `sqlite:///file:/path/ccdb.sqlite?immutable=1` on network file systems |
 | SQLite shallow copy of one run period | offsite jobs, containers that ship their constants | made with [ccdb_shallow_copy.py](https://github.com/JeffersonLab/ccdb/tree/v2-main/scripts/shallow_copy): the constants one run range, one snapshot time and chosen variations need, a few megabytes |
+| [HTTP API](apis/http.md) behind a cache | jobs anywhere with HTTP: offsite farms, clouds, agents, scripts in other languages | one service in front of the database; a job downloads the [run bundle](apis/http.md#run-bundles) of its run, or reads tables one by one; every answer that names fixed constants is cached for a year, so the database sees each request once |
 
-The same program reads all three; only the connection string changes, through `CCDB_CONNECTION` or
+The same program reads all of them; only the connection string changes, through `CCDB_CONNECTION` or
 the framework's own setting (`-Pccdb:url` for the [JANA2 service](apis/jana.md)). A snapshot is as old as its export, so publish
 a nightly snapshot and say so: a calibrator who adds constants in the afternoon should know when the
 farm will see them.
