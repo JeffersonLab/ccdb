@@ -137,6 +137,17 @@ jobs:
           ccdb db readiness | grep "columns with units" > /dev/null
           ccdb db readiness --stale-years 2 --json | python -c "import json, sys; p = json.load(sys.stdin); assert p['config']['stale_years'] == 2, p['config']"
 
+      - name: ccdb provenance (a true record passes; another hash exits 1)
+        run: |
+          echo '[{"request": "/test/test_vars/test_table:100:default", "path": "/test/test_vars/test_table", "run": 100, "variation": "default", "time": "", "tag": "", "assignment_id": 4, "sha256": "55d35b501c1a5775b00fe77c00e7195ebe4d0b1b513ec0948d60df9cba239346"}]' > record.json
+          ccdb provenance record.json
+          sed 's/"sha256": "55/"sha256": "00/' record.json > changed.json
+          set +e
+          ccdb provenance changed.json
+          code=$?
+          set -e
+          test "$code" -eq 1
+
       - name: ccdb db readiness refuses a negative window (exit 1)
         run: |
           set +e
