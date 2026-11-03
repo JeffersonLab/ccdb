@@ -52,14 +52,15 @@ mark them **reserved**:
 
 ## assignments
 
-An assignment gives one constant set to a table for a run range, in a variation, at a creation time.
+An assignment gives one constant set to a table for a run range, in a variation, at a creation time:
+`created`, a UTC instant with microseconds ([Time](concepts/time.md)).
 
 ```
 +---------------+------------------+------+-----+---------------------+----------------+
 | Field         | Type             | Null | Key | Default             | Extra          |
 +---------------+------------------+------+-----+---------------------+----------------+
 | id            | int(10) unsigned | NO   | PRI | NULL                | auto_increment |
-| created       | timestamp        | NO   | MUL | current_timestamp() |                |
+| created       | timestamp(6)     | NO   | MUL | current_timestamp(6) |               |
 | modified      | timestamp        | NO   |     | 2007-01-01 00:00:00 |                |
 | variationId   | int(11)          | NO   | MUL | NULL                |                |
 | runRangeId    | int(11)          | YES  | MUL | NULL                |                |
@@ -251,7 +252,7 @@ version 6.
 | id           | int(11)      | NO   | PRI | NULL                | auto_increment |
 | name         | varchar(100) | NO   | UNI | NULL                |                |
 | variationId  | int(11)      | NO   | MUL | NULL                |                |
-| snapshotTime | datetime     | NO   |     | NULL                |                |
+| snapshotTime | datetime(6)  | NO   |     | NULL                |                |
 | comment      | text         | YES  |     | NULL                |                |
 | authorId     | int(11)      | NO   |     | 1                   |                |
 | created      | datetime     | NO   |     | current_timestamp() |                |
@@ -259,7 +260,7 @@ version 6.
 ```
 
 - `name`: unique (`uq_tags_name`), up to 100 characters.
-- `snapshotTime`: a UTC time.
+- `snapshotTime`: a UTC instant with microseconds ([Time](concepts/time.md)).
 - In schema 5 this table had only `id` and `name`. The upgrade gives it the new shape and refuses a
   database where it holds rows.
 
