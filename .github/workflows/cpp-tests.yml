@@ -12,6 +12,8 @@ jobs:
       CCDB_TEST_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/cpp_test.sqlite"
       # The schema 6 fixture test (shared sets, 1.0 against 1.00) fails under CI without it
       CCDB_TEST_FIXTURE_CONNECTION: "sqlite:///${{ github.workspace }}/ccdb_fixture.sqlite"
+      # The time resolution cases of testdata/time (docs/concepts/time.md); required under CI
+      CCDB_TEST_TIME_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/time_tests.sqlite"
 
     steps:
       - uses: actions/checkout@v7
@@ -36,6 +38,9 @@ jobs:
       # The file the web GUI checks use; its schema 6 values are the literals the C++ test expects
       - name: Build the fixture database
         run: python scripts/webgui/make_fixture.py --out "$GITHUB_WORKSPACE/ccdb_fixture.sqlite"
+
+      - name: Build the time resolution database
+        run: python scripts/time/make_time_db.py "$CCDB_TEST_TIME_SQLITE_CONNECTION"
 
       - name: Configure
         run: cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release

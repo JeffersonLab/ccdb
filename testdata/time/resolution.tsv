@@ -1,0 +1,52 @@
+# Shared time resolution cases (docs/concepts/time.md) for Python (python/tests/unit_test_time_resolution.py) and
+# C++ (cpp/src/tests/test_TimeResolution.cc), on SQLite, MySQL and MariaDB. scripts/time/make_time_db.py writes the
+# data into a database; every engine and both languages must give the expected value for every query.
+#
+# assignment<TAB>value<TAB>variation<TAB>created (UTC, microseconds)     rows in insertion order: ids grow down the list
+# tag<TAB>name<TAB>variation<TAB>snapshotTime (UTC, microseconds)
+# query<TAB>zone<TAB>request<TAB>expected value, or NONE when no assignment resolves
+#
+# The table is /test/time/values (one int column, one row); every assignment covers all runs, and its value names it.
+# The variation child inherits from default. Two assignments, 102 and 103, share one microsecond: the later
+# insert (higher id) wins at every limit at or after it.
+assignment	101	default	2024-03-01 12:00:00.100000
+assignment	102	default	2024-03-01 12:00:00.600000
+assignment	103	default	2024-03-01 12:00:00.600000
+assignment	104	default	2024-03-01 12:00:01.000000
+assignment	201	child	2024-03-01 12:00:00.300000
+assignment	105	default	2024-07-01 00:00:00.000000
+tag	tag_a	default	2024-03-01 12:00:00.400000
+tag	tag_b	default	2024-03-01 12:00:00.600000
+tag	tag_c	child	2024-03-01 12:00:00.200000
+tag	tag_d	default	2024-03-01 12:00:00.099999
+tag	tag_e	child	2024-03-01 12:00:00.300000
+query	UTC	/test/time/values:100:default:2024-03-01 12:00:00.099999	NONE
+query	UTC	/test/time/values:100:default:2024-03-01 12:00:00.100000	101
+query	UTC	/test/time/values:100:default:2024-03-01 12:00:00.1	101
+query	UTC	/test/time/values:100:default:2024-03-01 12:00:00.5	101
+query	UTC	/test/time/values:100:default:2024-03-01 12:00:00.599999	101
+query	UTC	/test/time/values:100:default:2024-03-01 12:00:00.600000	103
+query	UTC	/test/time/values:100:default:2024-03-01 12:00:00.6	103
+query	UTC	/test/time/values:100:default:2024-03-01 12:00:00	103
+query	UTC	/test/time/values:100:default:2024-03-01 12:00:01	104
+query	UTC	/test/time/values:100:default:2024-03-01 12:00:01.000000	104
+query	UTC	/test/time/values:100:default:2024-03	104
+query	UTC	/test/time/values:100:default:2024	105
+query	UTC	/test/time/values:100:default	105
+query	UTC	/test/time/values:100:child:2024-03-01 12:00:00.300000	201
+query	UTC	/test/time/values:100:child:2024-03-01 12:00:00.299999	101
+query	UTC	/test/time/values:100:child	201
+query	UTC	/test/time/values:100@tag_a	101
+query	UTC	/test/time/values:100@tag_b	103
+query	UTC	/test/time/values:100@tag_c	101
+query	UTC	/test/time/values:100@tag_d	NONE
+query	UTC	/test/time/values:100@tag_e	201
+query	America/New_York	/test/time/values:100:default:2024-03-01 07:00:00.6	103
+query	America/New_York	/test/time/values:100:default:2024-03-01 07:00:00.5	101
+query	America/New_York	/test/time/values:100:default:2024-03-01 06	NONE
+query	America/New_York	/test/time/values:100:default:2024-06-30 19:59:59	104
+query	America/New_York	/test/time/values:100:default:2024-06-30 20	105
+query	America/New_York	/test/time/values:100@tag_b	103
+query	Asia/Kolkata	/test/time/values:100:default:2024-03-01 17:30:00.5	101
+query	Asia/Kolkata	/test/time/values:100:default:2024-03-01 17:30:00.6	103
+query	Asia/Kolkata	/test/time/values:100@tag_e	201
