@@ -50,8 +50,8 @@ What the program delivers, in the words a user meets:
 
 - `ccdb db readiness`: a deterministic JSON profile of an instance, the same numbers at
   `/api/v1/readiness`, as the MCP tool `readiness`, and as a GUI page.
-- A record of the constants a job resolved: in the C++ and Python libraries, written by the JANA2
-  service, checked by `ccdb provenance`.
+- A record of the constants a job resolved: in the C++ and Python libraries when a program
+  turns it on (`EnableUsageRecord`), written by the JANA2 service, checked by `ccdb provenance`.
 - Properties on tags, so a tag names the software, container, data and DOI of a pass.
 - `ccdb export tag`: the constants of a tag as one SQLite file with a DataCite metadata file and a
   hash, ready for a repository deposit. CCDB makes no network call.
@@ -73,9 +73,10 @@ add.
 | A-D4 | Recommendations and docs name cheap, gradual steps in plain language (feedback of 2026-07-20 on the article). |
 | A-D5 | Confirmation flags keep 2.4's `--<verb>-i-am-sure` spelling; no flag name implies an automatic action (standing). |
 | A-D6 | Git: `please-git` for this program (2026-11-03). Work on branch `ai-ready` in the worktree `{repo}`; one commit per work item once its test and gate checks pass, so commits replace the checkpoints of the common file. No pull request. No push until PHASE-A5 is done, because `documentation.yml` publishes the docs site from any pushed branch. The main checkout (`/home/romanov/dev/ccdb`, branch `fix-56-edit-comment`, PR #125) is not touched. |
-| A-D7 | Core scope (default taken 2026-11-03, the user stated no preference). These existing core files may be edited, with their tests: A1 `{py}/cmd/commands/db.py`; A2 `{cpp}/src/CCDB/Calibration.h`, `Calibration.cc` and `{py}/provider.py` (the Python package has no `Calibration` class, so the Python record of resolved assignments lives on `AlchemyProvider`); A3 `{py}/provider.py` (`PROPERTY_OWNER_TYPES`, property lookup by tag), `{py}/cmd/commands/prop.py`, `tag.py`, `info.py`, `export.py`; A4 `prop.py`, `mktbl.py`, `edit.py`; plus command registration, `pyproject.toml` and `{ci}`. New files need no decision. A change to any other existing core file goes the core-patch PARK route. |
+| A-D7 | Core scope (default taken 2026-11-03, the user stated no preference). These existing core files may be edited, with their tests: A1 `{py}/cmd/commands/db.py`; A2 `{cpp}/src/CCDB/Calibration.h`, `Calibration.cc`, `{py}/provider.py`; A3 `{py}/provider.py` (`PROPERTY_OWNER_TYPES`, property lookup by tag), `{py}/cmd/commands/prop.py`, `tag.py`, `info.py`, `export.py`; A4 `prop.py`, `mktbl.py`, `edit.py`; plus command registration, `pyproject.toml` and `{ci}`. New files need no decision. A change to any other existing core file goes the core-patch PARK route. |
 | A-D8 | Run mode (default taken 2026-11-03). PHASE-A0 and PHASE-A1 run, then the run stops so the user checks the readiness profile the article prints. After the user's OK, A2 to A5 run without stopping between phases: a gate is a check, and a non-blocking question takes its default. |
 | A-D9 | The docs written on 2026-11-03 describe every phase as done; they wait uncommitted in `{repo}`. Each phase commits only the sections it implements, corrected to the code it shipped (default taken 2026-11-03). |
+| A-D10 | The record of resolved assignments is off by default in both libraries; a program turns it on: C++ `Calibration::EnableUsageRecord(bool)`, `IsUsageRecordEnabled()`, `GetResolvedAssignments()`; Python `AlchemyProvider.usage_record_enabled = True`, `resolved_assignments`. The JANA2 service turns it on when `ccdb:provenance=PATH` is set (user, 2026-11-03, Q64). |
 
 ## Defaults for open decisions
 
@@ -129,7 +130,7 @@ Task: the calibration third of a processing pass, recorded by the code that reso
 - **Step 0**: the A1 gate.
 - Work items:
   1. **Light.** `CCDB_service` logs at startup the connection string (password hidden), the variation, and the time or tag it pins; when neither `ccdb:time` nor `ccdb:tag` is set, it logs a warning that the job reads the newest constants and cannot be repeated by its parameters. A `[jana2]` test checks both messages. *The user may end the phase here (A-Q1).*
-  2. `Calibration::GetResolvedAssignments()` in `{cpp}`: for every request served since connection, the request string, the assignment id, the SHA-256, the run range, the variation and the creation time, in request order; a `[sqlite]` and an `[http]` Catch2 test. Python: `ccdb.Calibration.resolved_assignments` with the same fields; `unit_test_calibration_resolved.py`.
+  2. `Calibration::GetResolvedAssignments()` in `{cpp}`: for every request served since connection, the request string, the assignment id, the SHA-256, the run range, the variation and the creation time, in request order; recorded only after `EnableUsageRecord(true)` (A-D10); a `[sqlite]` and an `[http]` Catch2 test. Python: `AlchemyProvider.usage_record_enabled` (False) and `resolved_assignments`, filled by `get_assignment`; `unit_test_usage_record.py`.
   3. `CCDB_service` parameter `ccdb:provenance=PATH` (A-Q2): at the end of the job, the list as JSON with a header (`ccdb_version`, `connection` without password, `variation`, `time` or `tag`, `run`, `generated`). A `[jana2]` test reads the file back.
   4. `ccdb provenance FILE.json [--tag]`: checks every assignment id and hash against the connected database and prints the tags whose resolution equals the file's; exit code 1 when a hash differs. Test in `integ_test_cli_manager.py`.
   5. Docs: a section "What a job used" in `{docs}/apis/jana.md` and `{docs}/apis/cpp.md`; `{docs}/cli.md`.
@@ -183,7 +184,7 @@ about the plan:
 | statement | phase |
 |---|---|
 | `ccdb db readiness`, `/api/v1/readiness`, MCP `readiness`, the GUI page, the Hall D profile as the command's output | A1 |
-| the startup log and warning of `CCDB_service`; `GetResolvedAssignments`, `resolved_assignments`; `ccdb:provenance`; `ccdb provenance` | A2 |
+| the startup log and warning of `CCDB_service`; `EnableUsageRecord`, `GetResolvedAssignments`, `usage_record_enabled`, `resolved_assignments`; `ccdb:provenance`; `ccdb provenance` | A2 |
 | properties on tags; `ccdb export tag`; the DataCite file | A3 |
 | the property vocabulary and `--free`; UCUM warnings; JSON-LD on cards | A4 |
 | the Great Expectations example in CI | A5 |
