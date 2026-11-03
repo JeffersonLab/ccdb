@@ -169,11 +169,11 @@ the next section, [Default values](#default-values).
 The time is parsed as:
 
 ```
-YYYY:MM:DD-hh:mm:ss
+YYYY:MM:DD-hh:mm:ss.ffffff
 ```
 
-Any non-digit character may be used as a separator instead of `:` and `-`, so all these time strings
-are the same:
+The fraction of a second has 1 to 6 digits. Any one non-digit character may be used as a separator
+instead of `:`, `-` and `.`, so all these time strings are the same:
 
 ```
 2029/06/17-22:03:05
@@ -185,9 +185,12 @@ are the same:
 One can omit any part of the time from the right. In this case the latest date for the omitted part is
 returned. For example:
 
-- `2011` — (Year 2011, everything else omitted) is interpreted as `2011/12/31-23:59:59`, so the latest
+- `2011` — (Year 2011, everything else omitted) is interpreted as `2011/12/31-23:59:59.999999`, so the latest
   constants for the year 2011 are returned.
-- `2012/05/21` — interpreted as `2012/05/21-23:59:59`, the latest constants for 21 May 2012.
+- `2012/05/21` — interpreted as `2012/05/21-23:59:59.999999`, the latest constants for 21 May 2012.
+- `2012/05/21-10:00:00` — the end of that second, `10:00:00.999999`; `10:00:00.5` is `10:00:00.599999`.
+
+The time is your local time; CCDB stores and compares UTC. [Time](concepts/time.md) gives the full rules.
 
 CCDB searches for the latest constants.
 

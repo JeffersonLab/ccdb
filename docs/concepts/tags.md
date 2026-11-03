@@ -51,15 +51,14 @@ You still give the table, and the run as in any request. A request with a tag re
 
 - Without `-t`, `ccdb tag` stores the current time.
 - `-t TIME` takes a time in your local time zone, in the request time format
-  (`YYYY:MM:DD-hh:mm:ss`, see [Requests](concepts/concepts.md#requests)). CCDB converts it to UTC.
+  (`YYYY:MM:DD-hh:mm:ss.ffffff`, see [Time](concepts/time.md)). CCDB converts it to UTC. A partial time is
+  the latest moment it covers: `-t 2026-03-01-12-00-00` is 12:00:00.999999.
 - A time in the future is refused. A tag describes history that already exists.
 
-The tag stores a UTC instant. On MySQL and MariaDB, CCDB sets each connection's time zone to the
-client's own UTC offset, so assignment creation times are true instants wherever the client runs, and
-a request with a tag or a time and the `rm -a` pin check are exact. Creation times written by CCDB 2.4
-or earlier from a client in another time zone than the server keep that zone difference.
-A SQLite file stores the local time of the client that wrote it, so there these checks are exact
-when the clients share one time zone.
+The tag stores a UTC instant with microseconds, and assignment creation times are UTC instants with
+microseconds too, on MySQL, MariaDB and SQLite. A request with a tag and the `rm -a` pin check compare
+them exactly, wherever the client runs. Creation times written by CCDB 2.4 or earlier from a client in
+another time zone than the server keep that zone difference.
 
 ## Tags in requests
 

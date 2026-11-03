@@ -41,6 +41,14 @@ from the column's old character set; text stored wrongly before (UTF-8 bytes wri
 connection, for example) stays as it is. A text column keeps its type: `TEXT` stays `TEXT`. Every
 Python connection of CCDB 2.5 uses utf8mb4, so any Unicode character (μs, Ω) can be stored.
 
+**Times in UTC, with microseconds.** Every time CCDB stores becomes a UTC instant on every engine, and
+`assignments.created` and `tags.snapshotTime` keep microseconds, so a request with a time or a tag gives the
+same answer on MySQL, MariaDB and SQLite wherever the job runs. On MySQL and MariaDB the upgrade changes
+`assignments.created` to `TIMESTAMP(6)` in the statement that rebuilds `assignments` anyway (7.8 s for
+821 394 assignments on a copy of the Hall D database), and `tags.snapshotTime` to `DATETIME(6)`; the stored
+instants do not change. On SQLite the upgrade rewrites every time from the writers' local time to UTC, so it
+needs the zone the file was written in (below). [Time](concepts/time.md) gives the rules.
+
 **New tables and columns.** The upgrade also creates tables and columns that no command of this version
 reads or writes yet. The table marks them reserved; the others are in use.
 
@@ -67,7 +75,7 @@ by CCDB 2.5 has no link table. [Database schema](concepts/database-schema.md) li
 | Python CCDB 2.4 web GUI, started after the upgrade | answers its requests with the version error |
 | Python CCDB 2.4, connected before the upgrade | keeps reading; its open transaction blocks the upgrade (with `PROCESS` the upgrade refuses while it is open); its new data fails or is stored without a hash (below) |
 | Python CCDB 2.4 code that connects with `check_version=False` | reads; its new data fails or is stored without a hash (below) |
-| C++ jobs built with CCDB 2.4 | keep reading, shared sets included |
+| C++ jobs built with CCDB 2.4 | keep reading, shared sets included; a request with a time sees UTC times ([Time](concepts/time.md#ccdb-24-programs-on-a-schema-6-database)) |
 | Python CCDB 2.5 on a schema 5 database | refuses to connect, exit code 1 |
 
 CCDB 2.4 on an upgraded file:
@@ -354,7 +362,7 @@ with it in one rename, keeping the original as `<file>.v5`. Jobs that have the o
 reading it; new ones open the upgraded file. An interruption leaves the original untouched.
 
 ```
-$ ccdb -c sqlite:///ccdb.sqlite db upgrade --upgrade-i-am-sure
+$ ccdb -c sqlite:///ccdb.sqlite db upgrade --upgrade-i-am-sure --sqlite-time-zone America/New_York
 ALTER TABLE "directories" ADD COLUMN "deprecatedTime" DATETIME NULL
 ...
 Copied and hashed 8 constant sets
@@ -362,6 +370,13 @@ Copied and hashed 8 constant sets
 'ccdb.sqlite' replaced by its changed copy; the file before the change is kept as 'ccdb.sqlite.v5'
 Schema version is 6. Delete 'ccdb.sqlite.v5' when you are satisfied
 ```
+
+`--sqlite-time-zone` is required for an SQLite file: an SQLite file stores the local time of the clients that
+wrote it and does not say which zone that was. Give the IANA name of that zone (`America/New_York` for files
+made at Jefferson Lab, `Europe/Berlin`, `UTC`). `--dry-run --sqlite-time-zone ZONE` prints, per time column,
+the first and last value before and after the conversion, and how many values fall in an hour that repeats or
+is skipped at a daylight-saving change. A file written by clients in different zones cannot be converted
+exactly; convert it with the zone of most of its writers.
 
 While `<file>.v5` exists, the upgrade of that file refuses; move it away or delete it once the upgraded
 file works. `--in-place` changes the file itself, without a copy, for a file no job reads.
@@ -459,7 +474,9 @@ Rehash: checked 5 constant sets, also against the server's SHA2
 `ccdb db rollback-v6 --rollback-i-am-sure` returns a database to version 5, for CCDB 2.4. It drops what
 the upgrade added: `sha256`, `size` and their indexes, `timeRangeId`, `units`, `deprecatedTime`,
 `deprecationComment`, the tables `timeRanges` and `properties`, and the new columns and indexes of
-`tags`, whose `name` returns to `VARCHAR(45)`. It also takes a version 5 database that an interrupted
+`tags`, whose `name` returns to `VARCHAR(45)`; `assignments.created` returns to whole seconds, the fraction
+cut, and an SQLite file's times return to local time in the zone of `--sqlite-time-zone`, which the SQLite
+rollback requires. It also takes a version 5 database that an interrupted
 upgrade left half done. After the rollback, CCDB 2.5 refuses the database: install CCDB 2.4 again
 wherever Python reads or writes it.
 

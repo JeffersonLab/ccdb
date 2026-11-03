@@ -45,7 +45,7 @@ The parameters:
 |---|---|---|
 | `ccdb:url` | `$CCDB_CONNECTION`, then `$JANA_CALIB_URL` | connection string: `mysql://user@host/ccdb`, `sqlite:////path/ccdb.sqlite` |
 | `ccdb:variation` | `default` | variation of the constants; a variation without a table inherits it from its parent |
-| `ccdb:time` | empty: the newest constants | the newest constants as of this time: `2026`, `2026-03`, `2026-03-01 12:00:00` |
+| `ccdb:time` | empty: the newest constants | the newest constants as of this local time: `2026`, `2026-03`, `2026-03-01 12:00:00`, `2026-03-01 12:00:00.250`; a partial time is the latest moment it covers ([Time](concepts/time.md)) |
 | `ccdb:tag` | empty | a tag gives both the variation and the time; it can't be set together with `ccdb:variation` or `ccdb:time` |
 | `ccdb:cache_dir` | `$XDG_CACHE_HOME/ccdb/resources`, else `$HOME/.cache/ccdb/resources` | where `GetResource` keeps the files it fetched |
 
