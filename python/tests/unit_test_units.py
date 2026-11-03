@@ -95,7 +95,7 @@ class ColumnUnitsTests(unittest.TestCase):
     def test_dump_header_shows_units(self):
         self.run_cmd("mktbl /test/units_t -r 2 gain=double:MeV n=int 'width=double:counts per s'")
         data_file = self.write_file("in.txt", "#calibration of the day\n1.5 3 0.1\n2.5 4 0.2\n")
-        self.run_cmd("add /test/units_t " + data_file)
+        self.run_cmd("add /test/units_t -r 0- " + data_file)
 
         dumped = self.run_cmd("dump /test/units_t")
         lines = [ln.strip() for ln in dumped.strip().splitlines()]
@@ -111,7 +111,7 @@ class ColumnUnitsTests(unittest.TestCase):
         self.assertEqual(parse_units_meta(dom.metas["units"]), {"gain": "MeV", "width": "counts per s"})
 
         # adding the dump back does not grow the assignment comment with the units line
-        self.run_cmd("add /test/units_t " + dump_file)
+        self.run_cmd("add /test/units_t -r 0- " + dump_file)
         dumped_again = self.run_cmd("dump /test/units_t")
         self.assertEqual(dumped_again, dumped)
 
@@ -119,7 +119,7 @@ class ColumnUnitsTests(unittest.TestCase):
         """A table without units dumps exactly as before units existed"""
         self.run_cmd("mktbl /test/plain_t -r 2 x y=int")
         data_file = self.write_file("plain.txt", "#plain\n1.5 3\n2.5 4\n")
-        self.run_cmd("add /test/plain_t " + data_file)
+        self.run_cmd("add /test/plain_t -r 0- " + data_file)
         dumped = self.run_cmd("dump /test/plain_t")
         self.assertNotIn("#meta", dumped)
         lines = [ln.strip() for ln in dumped.strip().splitlines()]

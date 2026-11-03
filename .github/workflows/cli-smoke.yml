@@ -80,7 +80,7 @@ jobs:
       - name: ccdb mktbl + add + vers
         run: |
           ccdb mktbl /test/smoke_dir/data_table -r 2 x y z
-          ccdb add /test/smoke_dir/data_table python/tests/test_table.txt
+          ccdb add /test/smoke_dir/data_table -r 0- python/tests/test_table.txt
           ccdb vers /test/smoke_dir/data_table
 
       - name: ccdb rm (empty table, then directory)

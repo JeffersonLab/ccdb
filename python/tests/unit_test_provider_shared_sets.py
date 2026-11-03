@@ -712,7 +712,7 @@ class SharedSetsTest(SharedSetsTestBase):
         with self.subTest("cli: add and log"):
             path = self.new_fresh_db()
             cli = self.new_cli(path, log_sqlite=True)
-            self.run_cli(cli, "add {} {}".format(TABLE, os.path.join(TESTS_DIR, "test_table.txt")))
+            self.run_cli(cli, "add {} -r 0- {}".format(TABLE, os.path.join(TESTS_DIR, "test_table.txt")))
             new_id = self.query(path, "SELECT MAX(id) FROM assignments")[0][0]
             self.assertEqual(self.set_id_of_assignment(path, new_id), 4)
             self.assertEqual(self.query(path, 'SELECT "affectedIds" FROM logs ORDER BY id DESC LIMIT 1'),
@@ -725,7 +725,7 @@ class SharedSetsTest(SharedSetsTestBase):
         path = self.new_fresh_db()
         cli = self.new_cli(path)
         for _ in range(2):      # two more sharers of seed set 4 (test_table.txt holds its bytes): 3 in all
-            self.run_cli(cli, "add {} {}".format(TABLE, os.path.join(TESTS_DIR, "test_table.txt")))
+            self.run_cli(cli, "add {} -r 0- {}".format(TABLE, os.path.join(TESTS_DIR, "test_table.txt")))
         new_ids = [row[0] for row in self.query(path, "SELECT id FROM assignments WHERE id > 5 ORDER BY id")]
         self.assertEqual(len(new_ids), 2)
 

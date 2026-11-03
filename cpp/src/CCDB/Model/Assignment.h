@@ -81,7 +81,7 @@ class RunRange;
         void			SetRequestedRun(int val);			/// Run than was requested for user
 
         RunRange *	    GetRunRange() const;		        /// Run range object, is NULL if not set
-        void            SetRunRange(RunRange * val);		/// Run range object, is NULL if not set
+        void            SetRunRange(RunRange * val, bool ownsRunRange=false);	/// Run range object, is NULL if not set; deleted with the assignment when owned
 
         EventRange *	GetEventRange() const;			    /// Event range object, is NULL if not set
         void			SetEventRange(EventRange * val);    /// Event range object, is NULL if not set
@@ -184,6 +184,7 @@ class RunRange;
         Variation *mVariation;				// Variation object, is NULL if not set
         ConstantsTypeTable * mTypeTable;	// Constants table
         bool mOwnsTypeTable = false;		// mTypeTable was created for this assignment only
+        bool mOwnsRunRange = false;		// mRunRange was created for this assignment only (GetAssignmentFull)
 
         time_t mCreatedTime;				// time of creation
         time_t mModifiedTime;				// time of last modification

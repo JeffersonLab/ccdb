@@ -831,6 +831,51 @@ bool ccdb::MySQLDataProvider::GetTag(const string& tagName, string& variation, i
 }
 
 
+
+/** The run range, variation, comment and times of an assignment, for GetAssignmentFull (issue #94)
+ *
+ * The session runs in UTC, so UNIX_TIMESTAMP gives the stored instants (docs/concepts/time.md)
+ */
+bool ccdb::MySQLDataProvider::LoadAssignmentDetails(Assignment* assignment)
+{
+    if(!IsConnected()) return false;
+
+    string query =
+        "SELECT FLOOR(UNIX_TIMESTAMP(`assignments`.`created`)), FLOOR(UNIX_TIMESTAMP(`assignments`.`modified`)), "
+        "`assignments`.`comment`, `assignments`.`runRangeId`, `assignments`.`variationId`, `assignments`.`constantSetId`, "
+        "`runRanges`.`runMin`, `runRanges`.`runMax`, `runRanges`.`name`, `variations`.`name` "
+        "FROM `assignments` "
+        "INNER JOIN `runRanges` ON `runRanges`.`id` = `assignments`.`runRangeId` "
+        "INNER JOIN `variations` ON `variations`.`id` = `assignments`.`variationId` "
+        "WHERE `assignments`.`id` = " + StringUtils::IntToString(assignment->GetId()) + " ";
+    if(!QuerySelect(query)) return false;
+    if(!FetchRow())
+    {
+        FreeMySQLResult();
+        return false;
+    }
+
+    assignment->SetCreatedTime(static_cast<time_t>(strtoll(ReadString(0).c_str(), nullptr, 10)));
+    assignment->SetModifiedTime(static_cast<time_t>(strtoll(ReadString(1).c_str(), nullptr, 10)));
+    assignment->SetComment(ReadString(2));
+    assignment->SetRunRangeId(ReadUInt(3));
+    assignment->SetVariationId(ReadUInt(4));
+    assignment->SetDataVaultId(ReadUInt(5));
+
+    RunRange* runRange = new RunRange();
+    runRange->SetId(ReadInt(3));
+    runRange->SetRange(ReadInt(6), ReadInt(7));
+    runRange->SetName(ReadString(8));
+    assignment->SetRunRange(runRange, /*ownsRunRange*/ true);
+
+    string variationName = ReadString(9);
+    FreeMySQLResult();
+
+    Variation* variation = GetVariation(variationName);
+    if(variation) assignment->SetVariation(variation);
+    return true;
+}
+
 ccdb::Assignment* ccdb::MySQLDataProvider::GetAssignmentShortByTag(int run, const string& path, const string& tagName, bool loadColumns)
 {
     // The tag's variation and its time, then the normal resolution; both times are UTC instants with microseconds

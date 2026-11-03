@@ -156,7 +156,8 @@ Assuming you are in interactive mode, the commands can be categorized:
 
 - `mkdir` — creates a directory
 - `mktbl` — creates a data table
-- `add` — adds data from a text file to a table (variation and run ranges are created automatically)
+- `add` — adds data from a text file to a table for a run range: `-r 1000-1999`, `-r 1000-` or `-r 0-` for every
+  run; the range is required (variation and run ranges are created automatically)
 - `deprecate` — hides a directory, table or variation from listings
 - `edit -a ID --comment "text"` — replaces the comment of a version; the log keeps the previous one
 - `tag` — creates and removes tags

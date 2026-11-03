@@ -33,6 +33,7 @@ class AddData(CliCommandBase):
         self.file_path = ""
         self.run_min = 0
         self.run_max = ccdb.INFINITE_RUN
+        self.run_range_given = False
         if self.context is None:
             self.variation = "default"
         else:
@@ -77,6 +78,11 @@ class AddData(CliCommandBase):
         if not self.validate():
             log.debug(LogFmt(" |- arguments validation {0}{1}{2}", self.theme.Fail, "failed", self.theme.Reset))
             raise ValueError("Arguments validation failed")
+
+        # the run range is required: before 2.5.1 a missing -r silently meant every run (issue #47)
+        if not self.run_range_given:
+            raise ValueError("add needs a run range: -r <run_min>-<run_max>, -r <run_min>- for every run from run_min "
+                             "on, or -r 0- for every run")
 
         # correct paths
         self.table_path = self.context.prepare_path(self.raw_table_path)
@@ -155,6 +161,7 @@ class AddData(CliCommandBase):
 
                     # there is a result
                     (self.run_min, self.run_max, run_min_set, run_max_set) = result
+                    self.run_range_given = True
 
                     # check how the bounds were set
                     if not run_min_set:
@@ -235,10 +242,10 @@ Required parameters:
 
     <variation> - variation name 
     
-    <run_min>-<run_max> - run range. 
+    <run_min>-<run_max> - run range, required.
         if one inputs '<run_min>-' this means <run_min>-<infinit run>
-        if one inputs '-<run_max>' this means <0>-<run_max> 
-        if one omits runrange at all. The data will be put as
+        if one inputs '-<run_max>' this means <0>-<run_max>
+        '-r 0-' puts the data to every run (what a missing -r meant before CCDB 2.5.1)
     
    file_to_import - file to import. It should be ccdb file format (see documentation or file format section) 
                     if file format is column of names and column of values add --name-value flag

@@ -1,5 +1,6 @@
 import os
 import logging
+import shlex
 
 from ccdb.cmd import CliCommandBase
 from ccdb import NoColorTheme
@@ -26,8 +27,22 @@ class Dump(CliCommandBase):
         log.debug(" |- arguments: " + " ".join(args))
 
         self.theme = NoColorTheme()
-        # self.context.utils["cat"].theme = NoColorTheme()
-        return "cat --no-borders --no-header --comments --horizontal " + " ".join(args)
+        return "cat " + " ".join(shlex.quote(arg) for arg in self.cat_flags(args) + list(args))
+
+    # dump's defaults, each with every flag of its pair: a default goes to cat only when the user named neither
+    # flag of the pair, so `dump -nc` prints no comment line instead of an argparse conflict (issue #99)
+    DEFAULTS = (
+        ("--no-borders", ("-b", "--borders", "-nb", "--no-borders")),
+        ("--no-header", ("-h", "--header", "-nh", "--no-header")),
+        ("--comments", ("-c", "--comments", "-nc", "--no-comments")),
+        ("--horizontal", ("-ph", "--horizontal", "-pv", "--vertical")),
+    )
+
+    @classmethod
+    def cat_flags(cls, args):
+        """The flags dump adds to the user's arguments for cat"""
+        named = set(args)
+        return [default for default, pair in cls.DEFAULTS if not named.intersection(pair)]
 
     def print_help(self):
         """Prints help of the command"""
@@ -40,5 +55,7 @@ Example:
     > cat /test/test_vars/test_table::subtest > file.txt     # latest data in subtest variation
     > cat /test/test_vars/test_table:::2012-08 > file.txt    # data latest for august 2012
 
-Dump accepts the same flags as 'cat' command. See 'help cat' for flags
+Dump is 'cat --no-borders --no-header --comments --horizontal'. It accepts the flags of 'cat' (see 'help cat'),
+and a flag the user names replaces dump's default of the same pair:
+    > dump -nc /test/test_vars/test_table > file.txt         # no comment line
         """)

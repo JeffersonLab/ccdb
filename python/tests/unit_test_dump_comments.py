@@ -70,7 +70,7 @@ class AddThenDumpFileTests(unittest.TestCase):
 
         self.test_data_path = os.path.join(helper.ccdb_test_path, 'channel_mc_efficiency.list')
 
-        self.context.process_command_line("add /test/channel_mc_efficiency " + self.test_data_path)
+        self.context.process_command_line("add /test/channel_mc_efficiency -r 0- " + self.test_data_path)
 
         with helper.captured_output() as (out, err):
             self.context.process_command_line("dump /test/channel_mc_efficiency")

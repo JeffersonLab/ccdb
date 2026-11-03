@@ -164,6 +164,27 @@ namespace ccdb
         */
         virtual bool GetTag(const std::string& tagName, std::string& variation, int64_t& snapshotMicro);
 
+        /** @brief The assignment a request resolves to, with everything about it loaded (issue #94)
+        *
+        * Resolves as GetAssignmentShortMicro (the variation chain and the time limit included), then loads the
+        * assignment's run range (GetRunRange: min, max, name), its variation (GetVariation: the one the data
+        * came from, a parent when the requested variation has none), its comment, and its creation and
+        * modification times (UTC seconds). The type table comes with its columns. The caller owns the object.
+        *
+        * @param [in] run - run number
+        * @param [in] path - table path
+        * @param [in] variation - variation name, "default" by default
+        * @param [in] timeMicro - UTC microseconds since the epoch: the newest data created at or before that
+        *                         instant; 0 (the default) means no time limit
+        * @return Assignment object or NULL if no assignment is found
+        */
+        virtual Assignment* GetAssignmentFull(int run, const std::string& path, const std::string& variation="default", int64_t timeMicro=0);
+
+        /** @brief GetAssignmentFull with the variation and time of a tag (CCDB 2.5)
+        * @throw std::runtime_error if there is no such tag
+        */
+        virtual Assignment* GetAssignmentFullByTag(int run, const std::string& path, const std::string& tagName);
+
 
 
 
@@ -255,6 +276,12 @@ namespace ccdb
 
 
     protected:
+
+        /** @brief Loads the run range, variation, comment and times of an assignment found by id (GetAssignmentFull)
+        *
+        * The SQLite and MySQL providers implement it; this default, for other providers, loads nothing and returns false.
+        */
+        virtual bool LoadAssignmentDetails(Assignment* assignment);
 
         std::vector<Directory *>  mDirectories;
         std::map<dbkey_t,Directory *> mDirectoriesById;
