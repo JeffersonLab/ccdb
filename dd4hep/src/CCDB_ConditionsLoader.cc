@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL-3.0-or-later
 // CCDB_ConditionsLoader: a DDCond conditions loader that reads detector element conditions from CCDB (docs/apis/dd4hep.md).
 //
 //   manager["LoaderType"] = "CCDB_ConditionsLoader";      // before manager.initialize()

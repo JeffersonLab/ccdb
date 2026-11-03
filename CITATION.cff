@@ -8,13 +8,13 @@ abstract: >-
   CCDB stores and manages the calibration constants of nuclear and high energy physics experiments.
   Constants are looked up by run number in a tree of tables, with variations for alternative sets,
   the complete history of every change, and named snapshot tags. CCDB provides C++ and Python
-  APIs, a command line tool and a web interface over MySQL and SQLite databases.
+  APIs, a command line tool and a web interface over MySQL, MariaDB and SQLite databases.
 authors:
   - family-names: Romanov
     given-names: Dmitry
     email: romanov@jlab.org
     affiliation: Thomas Jefferson National Accelerator Facility
-version: 2.5.0.dev0
+version: 2.5.0
 license: LGPL-3.0-or-later
 repository-code: "https://github.com/JeffersonLab/ccdb"
 url: "https://jeffersonlab.github.io/ccdb"

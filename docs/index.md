@@ -34,8 +34,14 @@ connects you to that database read-only.
 - **[Who, when and why on every change](cli.md#commands-overview).** Author, time and comment are
   recorded on every assignment, table and branch. The log is searchable with `ccdb log` and in the web
   GUI.
-- **Named snapshots (tags).** A tag names a branch plus a date, so a production campaign pins its
+- **[Named snapshots (tags)](concepts/tags.md).** A tag names a branch plus a date, so a production campaign pins its
   constants by one name and the name resolves to the same constants forever.
+- **[Exact times (UTC, to the microsecond)](concepts/time.md).** Every stored time is a UTC instant, so a
+  request with a date or a tag gives the same constants on MySQL, MariaDB and SQLite in any time zone, and
+  versions added within one second keep their order.
+- **[Units and descriptions (column units, properties)](cli.md).** Columns carry units (`gain=double:MeV`);
+  the instance and every table, directory and branch carry free properties such as purpose, procedure,
+  license and citation (`ccdb prop`).
 - **[Content hashes (shared constant sets)](concepts/constant-sets.md).** Every constant set carries
   the SHA-256 of its data, so identical data in a table is stored once and any copy can be verified
   against the source.
@@ -51,38 +57,40 @@ connects you to that database read-only.
 - **[Shallow copies per run period](https://github.com/JeffersonLab/ccdb/tree/v2-main/scripts/shallow_copy).**
   A few megabytes of SQLite hold what one run range, one date and chosen branches need, and answer
   lookups identically to the source.
-- **HTTP API with immutable URLs.** Constant sets and per-run bundles are served over HTTP with
-  cache-friendly immutable addresses, so tens of thousands of jobs starting at once read from ordinary
-  HTTP caches. The C++ client downloads a run bundle and opens it as a local SQLite file.
+- **[HTTP API with immutable URLs](apis/http.md).** Constant sets and per-run bundles are served over HTTP with
+  cache-friendly immutable addresses, so the jobs of a campaign read from ordinary HTTP caches and the
+  database answers each address once ([measured](deployment/scaling.md)). The [C++ client](apis/cpp.md#http-api)
+  downloads a run bundle, checks its hash and opens it as a local SQLite file.
 - **[Same program, any source](deployment/new-experiment.md#serving-constants-to-jobs).** Switching
   between the central database, a snapshot, a shallow copy and the HTTP API is a change of the
   connection string.
 
 ### AI and agent ready
 
-- **MCP server (read-only).** Agents browse the tree, read constants, compare versions and search the
+- **[MCP server (read-only)](apis/mcp.md).** Agents browse the tree, read constants, compare versions and search the
   log through the Model Context Protocol, with the concepts pages shipped as a resource. Writes are not
   exposed.
-- **OpenAPI document.** Every HTTP endpoint and its typed JSON are described in an OpenAPI document,
+- **[OpenAPI document](apis/http.md).** Every HTTP endpoint and its typed JSON are described in an OpenAPI document,
   ready for generated clients and tool definitions.
-- **Self-describing tables.** Each table carries column descriptions and units, a JSON Schema and a
+- **[Self-describing tables](concepts/fair.md#data-cards).** Each table carries column descriptions and units, a JSON Schema and a
   generated data card, so a program or an agent understands a constant set without a human in the
   loop.
-- **FAIR metadata.** License, citation and instance metadata are served with the data and written into
-  every export.
+- **[FAIR metadata](concepts/fair.md).** License, citation and instance metadata are served on every data
+  card once the instance properties are set, and every change is announced in an Atom feed.
 
 ### Framework integrations
 
-- **JANA2 service.** A `CCDB_service` in the EICRecon style hands factories a calibration object per
-  run with typed getters; branch and date come from parameters.
-- **DD4hep conditions.** A conditions loader maps a CCDB table to DD4hep conditions with a run
+- **[JANA2 service](apis/jana.md).** A `CCDB_service` hands JANA2 factories a calibration object per
+  run with typed getters; branch and date, or a tag, come from parameters.
+- **[DD4hep conditions](apis/dd4hep.md).** A conditions loader maps a CCDB table to DD4hep conditions with a run
   interval of validity, alignment deltas being the worked example, plus geometry constants from the
   database at parse time.
-- **Model weights and external files (resources).** A resources table records URL, SHA-256, size and
-  metadata of files such as ONNX models; the file lives in object storage or CVMFS and the client
-  fetches and verifies it.
-- **Parquet export and DataFrames.** A snapshot exports to Parquet, one file per table, for DuckDB,
-  polars and pandas.
+- **[Model weights and external files (resources)](apis/jana.md).** A resources table records URL, SHA-256, size and
+  metadata of files such as ONNX models; the file lives on CVMFS or a shared file system and the client
+  fetches and verifies it (fetching over HTTP is on the roadmap).
+- **[Parquet export and DataFrames](apis/analysis.md).** Every version of a table, or the constants one run
+  reads, export to Parquet, one file per table with types and units, for DuckDB, polars and pandas;
+  `to_dataframe` gives a request's constants as a typed frame.
 
 ### Runs, time and streaming readout
 
@@ -104,8 +112,9 @@ connects you to that database read-only.
 - **[Deployment guide](deployment/new-experiment.md).** Accounts, tree layout, branch policy,
   run-range rules, serving constants to jobs and backups, each with the choice that has worked at GlueX
   since 2012, and a checklist.
-- **Published load tests.** Three configurations measured against a production-sized database at
-  20 000 and 100 000 simultaneous clients, with median and tail latency.
+- **[Published load test](deployment/scaling.md).** Five ways of serving constants, measured on a database
+  with the table shapes of Hall D's at 1 000 and 20 000 jobs starting within five minutes: how many jobs get
+  their constants, how long a job waits, how often the database is asked.
 
 ## A simple example
 
@@ -154,6 +163,10 @@ After installation you have:
 - the `ccdb` Python library,
 - the `ccdb` command, to work with CCDB in the terminal (also runnable as `python -m ccdb`).
 
+CCDB 2.5 works with database schema 6 and refuses a schema 5 database. The Hall D database stays on
+schema 5 until its administrators [upgrade it](deployment/upgrade-2.5.md); to read it before then, install the
+previous release: `python -m pip install "ccdb<2.5"`.
+
 Try it against the HallD read-only database, for example:
 
 ```bash
@@ -164,5 +177,7 @@ ccdb -i              # start the interactive shell
 Continue with:
 
 - [Installation](get-started/installation.md) — all installation options (pip/uv, source, C++ with CMake, MySQL)
+- [Demo](get-started/demo.md) — a database, the API behind its cache and the web GUI in one command
+- [Upgrading from 2.4](deployment/upgrade-2.5.md) — schema 6, with a dry run and a rollback
 - [Command line interface](cli.md) — the `ccdb` tool
 - [Concepts illustrated](concepts/concepts.md) — namepaths, table types, assignments, requests

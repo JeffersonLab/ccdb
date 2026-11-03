@@ -2,7 +2,7 @@ import re
 
 # String version. Used both for packaging (pyproject.toml dynamic version)
 # and for internal code. Must be PEP 440 compliant so it is valid on PyPI.
-version = "2.5.0.dev0"
+version = "2.5.0"
 
 
 def parse_version(text):

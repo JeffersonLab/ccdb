@@ -1086,7 +1086,7 @@
  "info": {
   "description": "Read-only access to the calibration constants of a CCDB database. Documentation: https://jeffersonlab.github.io/ccdb/#/apis/http",
   "title": "CCDB HTTP API",
-  "version": "2.5.0.dev0"
+  "version": "2.5.0"
  },
  "openapi": "3.1.0",
  "paths": {
