@@ -80,6 +80,7 @@ jobs:
           tests.unit_test_path_utils
           tests.unit_test_time_parse
           tests.unit_test_time_upgrade
+          tests.unit_test_time_resolution
           tests.unit_test_utility_argument_parse
           tests.unit_test_version
           tests.unit_test_provider_attach
@@ -165,6 +166,9 @@ jobs:
       CCDB_TEST_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/cpp_test.sqlite"
       # The schema 6 fixture test (shared sets, 1.0 against 1.00) fails under CI without it
       CCDB_TEST_FIXTURE_CONNECTION: "sqlite:///${{ github.workspace }}/ccdb_fixture.sqlite"
+      # The time resolution cases of testdata/time on both engines (docs/concepts/time.md)
+      CCDB_TEST_TIME_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/time_tests.sqlite"
+      CCDB_TEST_TIME_MYSQL_CONNECTION: mysql://ccdb_user@127.0.0.1:3306/ccdb_test_time
       # Schema 5 databases, upgraded and then deduplicated, for the later runs of the suite
       UPGRADED_MYSQL_CONNECTION: mysql://ccdb_user@127.0.0.1:3306/ccdb_test_upgraded
       UPGRADED_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/cpp_test_upgraded.sqlite"
@@ -203,6 +207,12 @@ jobs:
       - name: Build tests
         run: cmake --build cpp/build --target ccdb_tests -j"$(nproc)"
 
+      - name: Build the time resolution databases
+        run: |
+          mysql -h 127.0.0.1 -u root --password=root -e 'CREATE DATABASE ccdb_test_time;'
+          python scripts/time/make_time_db.py "$CCDB_TEST_TIME_SQLITE_CONNECTION"
+          python scripts/time/make_time_db.py "$CCDB_TEST_TIME_MYSQL_CONNECTION"
+
       # Full C++ suite: the [mysql]-tagged cases (excluded from the cpp-tests
       # workflow) AND the SQLite cases - both env vars point at seeded databases
       - name: Run full C++ test suite
@@ -233,7 +243,7 @@ jobs:
                   connection.execute(text("UPDATE assignments SET constantSetId = (SELECT MAX(id) FROM constantSets) WHERE id = 4"))
           EOF
           for connection in "$UPGRADED_MYSQL_CONNECTION" "$UPGRADED_SQLITE_CONNECTION"; do
-            ccdb -c "$connection" db upgrade --upgrade-i-am-sure --no-transaction-check
+            ccdb -c "$connection" db upgrade --upgrade-i-am-sure --no-transaction-check --sqlite-time-zone UTC
           done
 
       - name: Run full C++ test suite on the upgraded databases
