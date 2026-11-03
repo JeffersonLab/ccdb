@@ -97,6 +97,12 @@ class McpTest(unittest.TestCase):
                     self.assertEqual(answer["type"], "array")
         self.assertEqual(self.call("health")["status"], "ok")
 
+    def test_readiness_answers_as_the_api(self):
+        answer = self.call("readiness", stale_years=3)
+        served = self.api_json("/readiness?stale_years=3")
+        answer["config"].pop("generated"), served["config"].pop("generated")
+        self.assertEqual(answer, served)
+
     def test_get_constants_pages_rows_with_the_stored_hash(self):
         answer = self.call("get_constants", request=TABLE + ":0:default", offset=1, limit=1)
         self.assertEqual(answer["rows"], [["2.5", "2.6", "2.7"]])
@@ -107,7 +113,7 @@ class McpTest(unittest.TestCase):
 
     def test_the_tool_list_names_no_write_operation(self):
         names = [tool.name for tool in self.list_tools()]
-        self.assertEqual(len(names), 13)
+        self.assertEqual(len(names), 14)
         for name in names:
             self.assertFalse(any(word in name for word in WRITE_WORDS), name)
 
@@ -130,7 +136,7 @@ class McpTest(unittest.TestCase):
             return provider
 
         guarded = create_server(provider_factory=provider_factory)
-        calls = {"instance_info": {}, "health": {}, "list_directories": {"include_deprecated": True},
+        calls = {"instance_info": {}, "health": {}, "readiness": {"stale_years": 2}, "list_directories": {"include_deprecated": True},
                  "list_tables": {}, "table_info": {"path": TABLE}, "table_schema": {"path": TABLE}, "list_variations": {},
                  "list_tags": {}, "resolve_request": {"request": TABLE + ":0"}, "get_constants": {"request": TABLE + ":0"},
                  "list_versions": {"path": TABLE}, "compare_assignments": {"a": "1", "b": "4"}, "search_log": {}}

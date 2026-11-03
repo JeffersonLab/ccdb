@@ -44,25 +44,29 @@ async def session(connection):
         return content["result"] if isinstance(content, dict) and set(content) == {"result"} else content
 
     async with Client(create_server(connection)) as client:
+        profile = await call(client, "readiness")
+        show("1. Check what the instance documents", "readiness()",
+             {"metadata": profile["metadata"], "instance": profile["instance"]})
+
         tables = await call(client, "list_tables", pattern="adc_calib")
-        show("1. Find the table", 'list_tables(pattern="adc_calib")', [each["path"] for each in tables])
+        show("2. Find the table", 'list_tables(pattern="adc_calib")', [each["path"] for each in tables])
 
         info = await call(client, "table_info", path=TABLE)
-        show("2. Read what it holds", 'table_info(path="{0}")'.format(TABLE),
+        show("3. Read what it holds", 'table_info(path="{0}")'.format(TABLE),
              {key: info[key] for key in ("comment", "variations", "assignments")} |
              {"columns": ["{0} [{1}]".format(c["name"], c["units"]) if c["units"] else c["name"] for c in info["columns"]]})
 
         versions = await call(client, "list_versions", path=TABLE, variation="default", sort="run_min", order="asc")
-        show("3. List the versions of the default variation", 'list_versions(path="{0}", variation="default", sort="run_min", order="asc")'.format(TABLE),
+        show("4. List the versions of the default variation", 'list_versions(path="{0}", variation="default", sort="run_min", order="asc")'.format(TABLE),
              [{key: row[key] for key in ("id", "run_min", "run_max", "created", "author", "comment")} for row in versions["items"]])
 
         compared = await call(client, "compare_assignments", a="{0}:500:default".format(TABLE), b="{0}:1500:default".format(TABLE))
         changed = [{"row": row["row"], "cells": [cell for cell in row["cells"] if cell["changed"]]} for row in compared["rows"]]
-        show("4. Compare a run of each period", 'compare_assignments(a="{0}:500:default", b="{0}:1500:default")'.format(TABLE),
+        show("5. Compare a run of each period", 'compare_assignments(a="{0}:500:default", b="{0}:1500:default")'.format(TABLE),
              {"changed_cells": compared["changed_cells"], "changed_rows": compared["changed_rows"], "rows": changed})
 
         log = await call(client, "search_log", search=TABLE, per_page=25)
-        show("5. Who changed it", 'search_log(search="{0}")'.format(TABLE),
+        show("6. Who changed it", 'search_log(search="{0}")'.format(TABLE),
              [{key: row[key] for key in ("created", "author", "action", "description")} for row in log["items"]][:3])
 
 
