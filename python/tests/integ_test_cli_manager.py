@@ -306,13 +306,24 @@ class CliManagerTests(unittest.TestCase):
         tests_dir = os.path.dirname(os.path.realpath(__file__))
         test_file = os.path.join(tests_dir, "test_table.txt")
         print(test_file)
-        self.cli.process_command_line("add /test/test_vars/test_table " + test_file)
+        self.cli.process_command_line("add /test/test_vars/test_table -r 0- " + test_file)
         self.output.truncate(0)
         self.cli.process_command_line("vers /test/test_vars/test_table")
         text = str(self.output.getvalue())
         line = text.split("\n")[1]
         assignment_id = int(shlex.split(line)[0])
         self.cli.process_command_line("rm -f -a {0}".format(assignment_id))
+
+    def test_add_requires_run_range(self):
+        """add. Without -r the command refuses instead of putting the data to every run (#47)"""
+        from ccdb.model import Assignment
+        test_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_table.txt")
+        self.cli.process_command_line("ls")  # connects
+        before = self.cli.provider.session.query(Assignment).count()
+        with self.assertRaises(ValueError) as caught:
+            self.cli.process_command_line("add /test/test_vars/test_table " + test_file)
+        self.assertIn("-r 0-", str(caught.exception))
+        self.assertEqual(self.cli.provider.session.query(Assignment).count(), before)
 
     def test_add_with_run_range_assignment(self):
         """Regression tests for failing add with run range"""
