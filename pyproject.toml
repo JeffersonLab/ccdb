@@ -59,7 +59,7 @@ ccdb = "ccdb:init_ccdb_console"
 
 # ---------------------------------------------------------------------------
 # setuptools configuration
-# The Python package lives in python/ccdb (this repo also holds cpp/ and java/),
+# The Python package lives in python/ccdb (this repo also holds cpp/ and jana2/),
 # so point setuptools at the python/ directory.
 # ---------------------------------------------------------------------------
 [tool.setuptools]

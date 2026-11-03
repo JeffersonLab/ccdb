@@ -49,7 +49,7 @@ ccdb ls /        # list the root directory
 
 ## From source
 
-If you want the full repository (C++, Java, SQL schema, scripts) or you are developing CCDB, clone
+If you want the full repository (C++, SQL schema, scripts) or you are developing CCDB, clone
 the repository and source the environment script:
 
 ```bash

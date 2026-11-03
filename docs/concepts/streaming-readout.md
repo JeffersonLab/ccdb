@@ -61,8 +61,8 @@ flowchart LR
    as it does for a triggered experiment.
 
 In most reconstruction code the first step is already done: the stream carries the run number in its
-headers, and the framework hands the run number to CCDB at run change. The request string and the C++,
-Python and Java APIs are unchanged. A time frame boundary is not a CCDB concept, and does not need to
+headers, and the framework hands the run number to CCDB at run change. The request string and the C++
+and Python APIs are unchanged. A time frame boundary is not a CCDB concept, and does not need to
 be.
 
 ## What belongs where
