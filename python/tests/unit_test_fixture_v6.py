@@ -15,6 +15,7 @@ import tempfile
 import unittest
 
 import ccdb
+from ccdb import testing
 
 
 SHARED_VAULT = "0|1.25|100.5|1|1.5|101.0|2|0.75|99.5"
@@ -37,6 +38,16 @@ def _load_make_fixture():
     spec.loader.exec_module(module)
     return module
 
+
+
+def setUpModule():
+    # the data holds literal UTC times that the tests compare with shown (local) times
+    global _restore_time_zone
+    _restore_time_zone = testing.pin_time_zone("UTC")
+
+
+def tearDownModule():
+    _restore_time_zone()
 
 class FixtureV6Test(unittest.TestCase):
 

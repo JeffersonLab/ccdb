@@ -8,6 +8,8 @@ database again. Like the upgrade it checks, then acts: it takes version 6, and v
     columns         units
     directories, typeTables, variations     deprecatedTime, deprecationComment
     tags            the columns added to it and its new indexes; name back to VARCHAR(45)
+    assignments     created back to whole seconds (TIMESTAMP), the fraction cut
+    SQLite times    every time column back from UTC to wall time in --sqlite-time-zone
     timeRanges, properties                  the tables
 The schema 5 columns the upgrade added to files upgraded from v4 (isDeprecated, deprecatedByUserId, isLocked,
 lockedByUserId) stay: they belong to schema 5.
@@ -34,7 +36,10 @@ from sqlalchemy import text
 from ccdb.sql.update_v6 import (MySqlMaintenance, UpgradeRefusedError, UPGRADE_PRIVILEGES, UNIQUE_INDEX, INTERIM_INDEX,
                                 SOURCE_VERSION, check_version_rows, replace_with_changed_copy,
                                 split_create_table, renamed_head, sqlite_file_or_refuse, sqlite_read_only,
-                                sqlite_tables, sqlite_columns)
+                                sqlite_tables, sqlite_columns, convert_sqlite_times, time_zone_or_refuse)
+
+# assignments.created back to whole seconds; the fraction is cut, never rounded into the next second
+ASSIGNMENTS_CREATED_V5 = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
 
 log = logging.getLogger("ccdb.sql.rollback_v6")
 
@@ -69,16 +74,17 @@ class RollbackRefusedError(UpgradeRefusedError):
 
 
 def rollback_v6(engine, drop_v6_data=False, allow_non_strict=False, in_place=False, skip_privilege_check=False,
-                transaction_check=True):
+                transaction_check=True, sqlite_time_zone=None):
     """Rolls the CCDB database behind the engine back from schema 6 to 5.
 
     :param drop_v6_data: delete the rows of tags, properties and timeRanges instead of refusing while they exist
     :param allow_non_strict: MySQL: roll back although the server's global sql_mode is not strict
     :param in_place: SQLite: change the file itself instead of a copy that replaces it
+    :param sqlite_time_zone: SQLite, required there: the IANA zone whose wall time the file's UTC times go back to
     :raises RollbackRefusedError: the preflight refused; nothing was changed
     """
     if engine.dialect.name == "sqlite":
-        SqliteRollback(engine.url.database, drop_v6_data).run(in_place)
+        SqliteRollback(engine.url.database, drop_v6_data, sqlite_time_zone).run(in_place)
     else:
         MySqlRollback(engine, drop_v6_data, allow_non_strict, skip_privilege_check, transaction_check).run()
 
@@ -114,6 +120,9 @@ class MySqlRollback(MySqlMaintenance):
             log.info(f"Server: {self.server_version}")
             self.preflight()
             self.set_session()
+            if not self.is_mariadb:
+                # MySQL rounds a fraction when a column loses precision (12:00:00.6 -> 12:00:01); MariaDB truncates
+                self.conn.execute(text("SET SESSION sql_mode = CONCAT(@@session.sql_mode, ',TIME_TRUNCATE_FRACTIONAL')"))
             if self.drop_v6_data:
                 self.delete_v6_data()
             for statement in self.plan():
@@ -178,6 +187,9 @@ class MySqlRollback(MySqlMaintenance):
             clauses = [f"DROP INDEX `{index}`" for t, index in V6_INDEXES if t == table and index in indexes]
             dropped_columns = [column for t, column in V6_COLUMNS if t == table and column in columns]
             clauses += [f"DROP COLUMN `{column}`" for column in dropped_columns]
+            narrows_time = table == "assignments" and columns.get("created", ("",) * 5)[1] == "timestamp(6)"
+            if narrows_time:
+                clauses.append(f"MODIFY `created` {ASSIGNMENTS_CREATED_V5}")
             narrows_name = table == "tags" and columns.get("name", ("",) * 5)[1] != f"varchar({TAGS_V5_NAME_LENGTH})"
             if narrows_name:
                 # keep the column's charset and collation: the rollback leaves the conversion to utf8mb4 in place
@@ -185,8 +197,9 @@ class MySqlRollback(MySqlMaintenance):
                 clauses.append(f"MODIFY `name` VARCHAR({TAGS_V5_NAME_LENGTH}) CHARACTER SET {charset} COLLATE {collation} NOT NULL")
             if not clauses:
                 continue
-            if narrows_name:
-                # a narrowing crosses the 255-byte length-prefix boundary in utf8mb4; both servers reject INPLACE
+            if narrows_name or narrows_time:
+                # a narrowing crosses the 255-byte length-prefix boundary in utf8mb4, and a precision change
+                # rewrites every row; both servers reject INPLACE for them
                 lock_clause = "ALGORITHM=COPY, LOCK=SHARED"
             elif dropped_columns and not self.instant_add_column:
                 # MariaDB before 10.6.9 drops a column instantly with a plain INPLACE, the format MDEV-18519 can corrupt
@@ -205,9 +218,11 @@ class MySqlRollback(MySqlMaintenance):
 class SqliteRollback:
     """The rollback of an SQLite file in one transaction, every changed table rebuilt"""
 
-    def __init__(self, path, drop_v6_data):
+    def __init__(self, path, drop_v6_data, time_zone_name=None):
         self.path = path
         self.drop_v6_data = drop_v6_data
+        self.time_zone_name = time_zone_name
+        self.zone = None
         self.conn = None
 
     def run(self, in_place=False):
@@ -235,6 +250,7 @@ class SqliteRollback:
         versions = [row[0] for row in conn.execute("SELECT schemaVersion FROM schemaVersions")] \
             if "schemaVersions" in sqlite_tables(conn) else []
         check_version_rows(versions, ACCEPTED_VERSIONS, VERSION_TEXT)
+        self.zone = time_zone_or_refuse(self.time_zone_name, "'ccdb db rollback-v6'")
         problems = []
         kept = self.path + ".before-rollback"
         if check_kept_file and os.path.exists(kept):
@@ -284,6 +300,9 @@ class SqliteRollback:
             for table in V6_TABLES:
                 if table in tables:
                     self.execute(f'DROP TABLE "{table}"')
+            # CCDB 2.4 reads wall time: every time back from UTC to the zone's wall time
+            _, problems = convert_sqlite_times(self.conn, self.zone, to_utc=False, execute=log.info)
+            refuse(problems)
             self.execute("UPDATE schemaVersions SET schemaVersion = ?", (SOURCE_VERSION,))
             self.conn.execute("COMMIT")
         except BaseException:

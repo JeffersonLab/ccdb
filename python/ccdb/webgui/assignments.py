@@ -81,21 +81,21 @@ def resolve_assignment(db, request_string=None, assignment_id=None):
         abort(400, "Bad request string: {0}".format(error))
     except NoResultFound:
         abort(404, "No assignment matches the request '{0}:{1}:{2}'".format(parsed.path, parsed.run, variation))
-    # A timestamp in the past pins the answer; a future or unparseable one (parse_request turns "notadate"
-    # into the year 2137) still resolves to the newest assignment, so it must not be cached as exact.
+    # A timestamp in the past pins the answer; a future one still resolves to the newest assignment, so it must not
+    # be cached as exact. (An unreadable time is a 400 in parse_request_or_400.)
     exact = parsed.time_is_parsed and parsed.time <= datetime.datetime.now()
     return Resolved(assignments[0], exact=exact)
 
 
 def previous_assignment(db, assignment):
-    """The assignment the same request string resolved to before this one was added: the newest one of the same
-    table, run and variation created at least a second earlier; None when there is none.
+    """The assignment the same request string resolved to before this one was added: the newest one (by id) of the
+    same table, run and variation added before it and created at or before its moment; None when there is none.
 
-    Request strings carry seconds, so an assignment created in the same second as this one is not "previous":
-    the two are one to a request string, and this returns what came before both.
+    Request strings carry the creation time to the microsecond (docs/concepts/time.md), so this is exact, also for
+    two assignments added within one second.
     """
-    before = assignment.created - datetime.timedelta(seconds=1)
-    return queries.newest_before(db.session, assignment.constant_set.type_table, assignment.run_range.min, assignment.variation_id, before)
+    return queries.newest_before(db.session, assignment.constant_set.type_table, assignment.run_range.min,
+                                 assignment.variation_id, assignment.created, assignment.id)
 
 
 def column_lines(layout, row_count, column_count):

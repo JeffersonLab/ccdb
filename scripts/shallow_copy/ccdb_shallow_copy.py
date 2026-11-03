@@ -50,8 +50,8 @@ from sqlalchemy import bindparam, create_engine, event, inspect, text
 from sqlalchemy.orm import sessionmaker
 
 from ccdb.model import INFINITE_RUN, TypeTable
-from ccdb.path_utils import parse_time
-from ccdb.provider import AlchemyProvider
+from ccdb.path_utils import parse_time, utc_to_local
+from ccdb.provider import AlchemyProvider, _set_session_time_zone
 from ccdb.sql.mysql_schema import mysql_tables
 from ccdb.sql.sqlite_schema import _iter_statements, sqlite_init_script
 # The unique index of constantSets, created after the copy (finish_target), and the interim index used instead
@@ -90,13 +90,18 @@ class TimeLimitReached(Exception):
 # --------------------------------------------------------------------------------------------------
 
 def open_engine(connection_string):
-    """Opens an engine the way AlchemyProvider.connect does: mysql:// falls back to pymysql"""
+    """Opens an engine the way AlchemyProvider.connect does: mysql:// falls back to pymysql, and a MySQL session runs
+    in UTC, so the times read and written are the stored UTC instants (docs/concepts/time.md)"""
     try:
-        return create_engine(connection_string)
+        engine = create_engine(connection_string)
     except ImportError as err:
         if connection_string.startswith("mysql://") and "MySQLdb" in repr(err):
-            return create_engine(connection_string.replace("mysql://", "mysql+pymysql://", 1))
-        raise
+            engine = create_engine(connection_string.replace("mysql://", "mysql+pymysql://", 1))
+        else:
+            raise
+    if engine.dialect.name in ("mysql", "mariadb"):
+        event.listen(engine, "checkout", _set_session_time_zone)
+    return engine
 
 
 def hide_password(connection_string):
@@ -129,10 +134,10 @@ def as_datetime(value):
 
 
 def to_sqlite_value(value):
-    """SQLite stores timestamps as text; this is the format C++ compares against
-    (`created` <= datetime(?, 'unixepoch', 'localtime') gives 'YYYY-MM-DD HH:MM:SS')"""
+    """SQLite stores timestamps as UTC text with six fraction digits, 'YYYY-MM-DD HH:MM:SS.ffffff', so text order is time
+    order (docs/concepts/time.md); MySQL hands them over as UTC datetimes in the provider's UTC session"""
     if isinstance(value, datetime.datetime):
-        return value.isoformat(sep=" ")
+        return value.strftime("%Y-%m-%d %H:%M:%S.%f")
     if isinstance(value, datetime.date):
         return value.isoformat()
     return value
@@ -365,7 +370,8 @@ def load_candidates(source, variation_ids, run_min, run_max):
     """Every assignment of the given variations whose run range overlaps the period, grouped by table.
 
     One query for the whole database. The time filter is applied later in Python, on parsed
-    timestamps, so that MySQL datetimes and SQLite text compare the same way.
+    timestamps, so that MySQL datetimes and SQLite text compare the same way. The stored values are UTC
+    (docs/concepts/time.md); they become local wall time here, as --time and the provider's values are.
     """
     query = text(
         "SELECT a.id, a.created, a.variationId, a.runRangeId, r.runMin, r.runMax, c.constantTypeId "
@@ -378,7 +384,10 @@ def load_candidates(source, variation_ids, run_min, run_max):
     with source.connect() as connection:
         rows = connection.execute(query, {"variation_ids": sorted(variation_ids), "run_min": run_min, "run_max": run_max})
         for row in rows:
-            candidate = Candidate(row[0], as_datetime(row[1]), row[2], row[3], row[4], row[5], row[6])
+            created = as_datetime(row[1])
+            if created != datetime.datetime.min:
+                created = utc_to_local(created)
+            candidate = Candidate(row[0], created, row[2], row[3], row[4], row[5], row[6])
             by_table.setdefault(candidate.table_id, []).append(candidate)
     return by_table
 

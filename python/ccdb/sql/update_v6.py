@@ -98,11 +98,19 @@ NEW_INDEXES = [
 TAGS_NAME = f"VARCHAR(100) {UTF8} NOT NULL"
 TAGS_COLUMNS = [
     ("variationId", "INT NOT NULL"),
-    ("snapshotTime", "DATETIME NOT NULL"),
+    ("snapshotTime", "DATETIME(6) NOT NULL"),
     ("comment", f"TEXT {UTF8} NULL"),
     ("authorId", "INT NOT NULL DEFAULT 1"),
     ("created", "DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"),
 ]
+
+# The time model (docs/concepts/time.md): the two times that resolve constants keep microseconds
+ASSIGNMENTS_CREATED = "TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)"
+TAGS_SNAPSHOT_TIME = "DATETIME(6) NOT NULL"
+# SQLite: columns of these declared types hold times, rewritten from the writers' wall time to UTC text
+SQLITE_TIME_TYPES = ("timestamp", "datetime")
+SQLITE_UTC_COLUMNS = {("tags", "snapshotTime")}     # UTC already in schema 5 and 6: only the text width changes
+_SQLITE_TIME_TEXT = re.compile(r"^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?$")
 
 # MySQL: added NULL in step 1, made NOT NULL in step 3 once the backfill hashed every set
 SHA256_TYPE = "CHAR(64) CHARACTER SET ascii COLLATE ascii_bin"
@@ -140,7 +148,7 @@ class UpgradeRefusedError(Exception):
 
 
 def upgrade_v6(engine, dry_run=False, duplicates="none", skip_privilege_check=False, transaction_check=True,
-               in_place=False):
+               in_place=False, sqlite_time_zone=None):
     """Upgrades the CCDB database behind the engine from schema 5 to 6, or with dry_run prints what the upgrade would
     do and writes nothing.
 
@@ -150,10 +158,13 @@ def upgrade_v6(engine, dry_run=False, duplicates="none", skip_privilege_check=Fa
                                  (privileges granted through a role do not show there)
     :param transaction_check: MySQL: refuse while another session holds a transaction open on the database
     :param in_place: SQLite: change the file itself instead of a copy that replaces it
+    :param sqlite_time_zone: SQLite, required there: the IANA zone (America/New_York) in which the file's times were
+                             written; they become UTC (docs/concepts/time.md). Ignored on MySQL, whose TIMESTAMPs are
+                             instants already
     :raises UpgradeRefusedError: the database is not one this upgrade takes; nothing was changed
     """
     if engine.dialect.name == "sqlite":
-        upgrade = SqliteUpgrade(engine.url.database)
+        upgrade = SqliteUpgrade(engine.url.database, sqlite_time_zone)
         if dry_run:
             upgrade.dry_run(duplicates)
         else:
@@ -710,6 +721,14 @@ class MySqlUpgrade(MySqlMaintenance):
         additions = [(column, definition) for t, column, definition, _ in NEW_COLUMNS if t == table]
         if table == "constantSets":
             additions += [("sha256", f"{SHA256_TYPE} NULL DEFAULT NULL"), ("size", f"{SIZE_TYPE} NULL DEFAULT NULL")]
+        # microseconds for the times that resolve constants; a precision change rebuilds the table, so it joins the
+        # ALTER this table gets anyway (timeRangeId): one rebuild of assignments, 7.8 s on the hallddb copy
+        if table == "assignments" and "created" in columns and columns["created"][1] != "timestamp(6)":
+            alter.modify["created"] = ASSIGNMENTS_CREATED
+            alter.needs_copy = True
+        if table == "tags" and "snapshotTime" in columns and columns["snapshotTime"][1] != "datetime(6)":
+            alter.modify["snapshotTime"] = TAGS_SNAPSHOT_TIME
+            alter.needs_copy = True
         if table == "tags":
             additions += TAGS_COLUMNS
             if columns["name"][1] != "varchar(100)":
@@ -980,6 +999,92 @@ def sqlite_columns(conn, table):
     return {row[1]: bool(row[3]) for row in conn.execute(f'PRAGMA table_info("{table}")')}
 
 
+def sqlite_time_columns(conn):
+    """[(table, column)] of the columns declared as times, in table order"""
+    return [(table, row[1]) for table in sorted(sqlite_tables(conn))
+            for row in conn.execute(f'PRAGMA table_info("{table}")')
+            if row[2].lower().startswith(SQLITE_TIME_TYPES)]
+
+
+def time_zone_or_refuse(name, command):
+    """The ZoneInfo of an IANA zone name, refusing a missing or unknown one"""
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+    if not name:
+        raise UpgradeRefusedError(
+            f"{command} on SQLite needs --sqlite-time-zone ZONE: the IANA zone in which the file's times were written "
+            "(America/New_York for files made at Jefferson Lab). Schema 6 stores UTC (docs/concepts/time.md), and the "
+            "file does not say its zone. Nothing was changed")
+    try:
+        return ZoneInfo(name)
+    except (ZoneInfoNotFoundError, ValueError):
+        raise UpgradeRefusedError(f"--sqlite-time-zone '{name}' is not a known IANA zone (such as America/New_York). "
+                                  "Nothing was changed")
+
+
+def convert_sqlite_time_text(value, zone, to_utc):
+    """One stored time text to the 26-character form, from wall time in zone to UTC (to_utc) or back.
+
+    :return: (new text, note) where note is None, "repeated" or "skipped" for a wall time the zone has twice or never
+             (read with the offset before the transition, fold=0); (None, None) for a text that is not a time
+    """
+    from datetime import datetime, timezone
+    match = _SQLITE_TIME_TEXT.match(value.strip()) if isinstance(value, str) else None
+    if not match:
+        return None, None
+    fields = [int(group) for group in match.groups()[:6]]
+    micro = int((match.group(7) or "0").ljust(6, "0"))
+    try:
+        moment = datetime(*fields, micro)
+    except ValueError:
+        return None, None
+    note = None
+    if zone is not None:
+        try:
+            if to_utc:
+                first, second = moment.replace(tzinfo=zone, fold=0), moment.replace(tzinfo=zone, fold=1)
+                if first.utcoffset() != second.utcoffset():
+                    back = first.astimezone(timezone.utc).astimezone(zone).replace(tzinfo=None)
+                    note = "repeated" if back == moment else "skipped"
+                moment = first.astimezone(timezone.utc).replace(tzinfo=None)
+            else:
+                moment = moment.replace(tzinfo=timezone.utc).astimezone(zone).replace(tzinfo=None)
+        except OverflowError:
+            pass        # a placeholder such as 0001-01-01 00:00:00 stays as it is
+    return moment.strftime("%Y-%m-%d %H:%M:%S.%f"), note
+
+
+def convert_sqlite_times(conn, zone, to_utc, execute=None, write=True):
+    """Every time column of the file from wall time in zone to UTC text (to_utc), or back for the rollback.
+    tags.snapshotTime is UTC already: only its text width changes.
+
+    :return: {(table, column): (rows, repeated, skipped)} and the problems (texts that are not times)
+    """
+    summary, problems = {}, []
+    for table, column in sqlite_time_columns(conn):
+        column_zone = None if (table, column) in SQLITE_UTC_COLUMNS else zone
+        rows = conn.execute(f'SELECT rowid, "{column}" FROM "{table}" WHERE "{column}" IS NOT NULL').fetchall()
+        updates, repeated, skipped, bad = [], 0, 0, []
+        for rowid, value in rows:
+            new, note = convert_sqlite_time_text(value, column_zone, to_utc)
+            if new is None:
+                bad.append(rowid)
+                continue
+            repeated += note == "repeated"
+            skipped += note == "skipped"
+            if new != value:
+                updates.append((new, rowid))
+        if bad:
+            problems.append(f"{table}.{column} holds {describe_rows(len(bad), bad)} that are not times "
+                            "(YYYY-MM-DD hh:mm:ss[.ffffff]); correct them first")
+        summary[(table, column)] = (len(rows), repeated, skipped)
+        if write and updates and not bad:
+            statement = f'UPDATE "{table}" SET "{column}" = ? WHERE rowid = ?'
+            if execute:
+                execute(f"{statement} -- {len(updates)} rows")
+            conn.executemany(statement, updates)
+    return summary, problems
+
+
 def sqlite_row_counts(conn):
     return {table: conn.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0] for table in sqlite_tables(conn)}
 
@@ -1069,8 +1174,10 @@ def verify_sqlite_copy(copy, original_counts, expected_version, uncounted_tables
 class SqliteUpgrade:
     """The upgrade of an SQLite file in one transaction, on a copy that replaces the file (or in place)"""
 
-    def __init__(self, path):
+    def __init__(self, path, time_zone_name=None):
         self.path = path
+        self.time_zone_name = time_zone_name
+        self.zone = None
         self.conn = None
 
     def run(self, in_place=False):
@@ -1103,6 +1210,7 @@ class SqliteUpgrade:
             self.add_columns_and_tables()
             self.rebuild_constant_sets()
             self.create_index()
+            self.convert_times()
             self.execute("UPDATE schemaVersions SET schemaVersion = ?", (TARGET_VERSION,))
             self.conn.execute("COMMIT")
         except BaseException:
@@ -1126,12 +1234,23 @@ class SqliteUpgrade:
 
     def preflight(self, conn, check_kept_original=True):
         check_version_rows(sqlite_versions(conn))
+        self.zone = time_zone_or_refuse(self.time_zone_name, "'ccdb db upgrade'")
         problems = self.preflight_problems(conn, check_kept_original)
         if problems:
             raise UpgradeRefusedError("The upgrade to schema 6 is refused, nothing was changed: " + "; ".join(problems))
 
+    def convert_times(self):
+        """Every time from the writers' wall time in --sqlite-time-zone to UTC text with six digits"""
+        summary, problems = convert_sqlite_times(self.conn, self.zone, to_utc=True, execute=log.info)
+        if problems:
+            raise UpgradeRefusedError("The upgrade to schema 6 is refused, nothing was changed: " + "; ".join(problems))
+        rows = sum(count for count, _, _ in summary.values())
+        log.info(f"Times of {len(summary)} columns, {rows} values, read in {self.time_zone_name} and stored as UTC")
+
     def preflight_problems(self, conn, check_kept_original):
         problems = []
+        _, time_problems = convert_sqlite_times(conn, None, to_utc=True, write=False)
+        problems += time_problems
         kept = self.path + ".v5"
         if check_kept_original and os.path.exists(kept):
             problems.append(f"'{kept}' exists: an earlier upgrade kept the original file there. Move it away (or delete "
@@ -1216,6 +1335,7 @@ class SqliteUpgrade:
                   f"{conn.execute('PRAGMA encoding').fetchone()[0]} (SQLite text is always Unicode: nothing to convert)")
             self.conn = conn
             check_version_rows(sqlite_versions(conn))
+            self.zone = time_zone_or_refuse(self.time_zone_name, "'ccdb db upgrade --dry-run'")
             for problem in self.preflight_problems(conn, check_kept_original=True):
                 print(f"Preflight: would refuse: {problem}")
             print(f"The upgrade works on a copy, '{self.path}.v6', and replaces the file with it, keeping the original as "
@@ -1234,6 +1354,17 @@ class SqliteUpgrade:
                     print(f"  {table}: new table")
             print(f"  constantSets: the unique index {UNIQUE_INDEX}, or the interim index {INTERIM_INDEX} while a table "
                   "holds duplicate sets")
+            summary, _ = convert_sqlite_times(conn, self.zone, to_utc=True, write=False)
+            print(f"  times: read as wall time in {self.time_zone_name}, stored as UTC with six digits "
+                  "(docs/concepts/time.md); tags.snapshotTime is UTC already")
+            for (table, column), (rows, repeated, skipped) in summary.items():
+                if rows:
+                    first, last = conn.execute(f'SELECT MIN("{column}"), MAX("{column}") FROM "{table}"').fetchone()
+                    zone = None if (table, column) in SQLITE_UTC_COLUMNS else self.zone
+                    notes = "".join([f", {repeated} in a repeated hour (first occurrence taken)" if repeated else "",
+                                     f", {skipped} in a skipped hour (moved forward)" if skipped else ""])
+                    print(f"    {table}.{column}: {rows} values, {first} .. {last} -> "
+                          f"{convert_sqlite_time_text(first, zone, True)[0]} .. {convert_sqlite_time_text(last, zone, True)[0]} UTC{notes}")
             print(f"  schemaVersions: {TARGET_VERSION}")
             if duplicates == "none":
                 print("Duplicate sets: not counted (--duplicates none reads no vault)")

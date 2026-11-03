@@ -10,7 +10,18 @@ import ccdb
 from ccdb.errors import ObjectIsNotFoundInDbError
 from ccdb.model import Directory, TypeTable
 from ccdb.sql.sqlite_schema import create_sqlite_database
+from ccdb import testing
 
+
+
+def setUpModule():
+    # the data holds literal UTC times that the tests compare with shown (local) times
+    global _restore_time_zone
+    _restore_time_zone = testing.pin_time_zone("UTC")
+
+
+def tearDownModule():
+    _restore_time_zone()
 
 class ProviderLookupsTest(unittest.TestCase):
     """Each test gets a fresh standard SQLite database"""

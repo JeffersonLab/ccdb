@@ -18,6 +18,7 @@ from sqlalchemy.orm import aliased
 from werkzeug.exceptions import BadRequest
 
 from ccdb.model import Assignment, ConstantSet, LogRecord, Property, RunRange, Tag, TypeTable, User, Variation
+from ccdb.path_utils import format_request_time
 
 PAGE_SIZES = (25, 50, 100, 200)
 DEFAULT_PAGE_SIZE = 50
@@ -225,7 +226,7 @@ ASSIGNMENT_SORTS = {
 
 def request_string(path, run_min, variation, created):
     """The CCDB request string, byte-identical to Assignment.request."""
-    return "{0}:{1}:{2}:{3}".format(path, run_min, variation, created.strftime("%Y-%m-%d_%H-%M-%S"))
+    return "{0}:{1}:{2}:{3}".format(path, run_min, variation, format_request_time(created))
 
 
 def list_assignments(session, table, query, variation=None, run=None, run_min=None, run_max=None, include_deprecated=True):
@@ -273,8 +274,9 @@ class Found:
     request: str
 
 
-def newest_before(session, table, run, variation_id, before):
-    """The newest assignment (by id) of the table, run and variation created at or before `before`, or None.
+def newest_before(session, table, run, variation_id, created, below_id):
+    """The newest assignment (by id) of the table, run and variation with an id below `below_id` and created at or
+    before `created`, or None: what a request for that moment resolved to before the assignment `below_id` existed.
 
     MAX(id) first, then that row: written as ORDER BY id DESC LIMIT 1 (AlchemyProvider.get_assignments), MariaDB walks
     the primary key back from the newest of all assignments until one matches, 0.55 s for /FCAL/gains on the Hall D
@@ -284,7 +286,8 @@ def newest_before(session, table, run, variation_id, before):
                                 .join(ConstantSet, Assignment.constant_set_id == ConstantSet.id)
                                 .join(RunRange, Assignment.run_range_id == RunRange.id)
                                 .where(ConstantSet.type_table_id == table.id, Assignment.variation_id == variation_id,
-                                       RunRange.min <= run, RunRange.max >= run, Assignment.created <= before)).scalar_one()
+                                       RunRange.min <= run, RunRange.max >= run, Assignment.created <= created,
+                                       Assignment.id < below_id)).scalar_one()
     if newest_id is None:
         return None
     low, variation_name, created = session.execute(select(RunRange.min, Variation.name, Assignment.created)

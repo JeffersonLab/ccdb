@@ -31,6 +31,28 @@ else:
         mysql_test_connection_str = "mysql://ccdb_user@localhost/ccdb_test"
 
 
+def pin_time_zone(name="UTC"):
+    """Sets the process time zone (TZ and time.tzset) and returns a function that restores the previous one.
+
+    CCDB stores UTC and shows local wall time (docs/concepts/time.md), so a test that compares shown times with the
+    literal times of its data pins the zone; with UTC a shown time equals the stored one. Use it in setUpModule
+    (and the returned function in tearDownModule), or setUp with addCleanup.
+    """
+    import time
+    saved = os.environ.get("TZ")
+
+    def restore():
+        if saved is None:
+            os.environ.pop("TZ", None)
+        else:
+            os.environ["TZ"] = saved
+        time.tzset()
+
+    os.environ["TZ"] = name
+    time.tzset()
+    return restore
+
+
 # Default SQLite test database file (created fresh by recreate_test_sqlite_db)
 sqlite_test_file_path = os.path.join(os.getcwd(), 'test.sqlite')
 
