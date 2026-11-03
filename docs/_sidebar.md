@@ -13,6 +13,7 @@
 - [Connection strings](concepts/concepts.md#connection-strings)
 - [Constant sets and their hashes](concepts/constant-sets.md)
 - [Tags](concepts/tags.md)
+- [Time](concepts/time.md)
 - [Deprecation](concepts/deprecation.md)
 - [Database schema](concepts/database-schema.md)
 - [Streaming readout and runs](concepts/streaming-readout.md)
