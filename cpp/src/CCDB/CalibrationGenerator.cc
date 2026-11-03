@@ -8,6 +8,7 @@
 #include "Providers/SQLiteDataProvider.h"
 #include "Helpers/TimeProvider.h"
 #include "Helpers/StringUtils.h"
+#include "Helpers/TimeUtils.h"
 #ifdef CCDB_MYSQL
 #include "CCDB/MySQLCalibration.h"
 #include "CCDB/Providers/MySQLDataProvider.h"
@@ -20,12 +21,20 @@ namespace ccdb
     //______________________________________________________________________________
     Calibration* CalibrationGenerator::CreateCalibration(const std::string & connectionString, int run, const std::string& variation, const time_t time )
     {
+        // a whole second means its latest microsecond (docs/concepts/time.md)
+        return CreateCalibrationMicro(connectionString, run, variation, TimeUtils::EndOfSecond(time));
+    }
+
+
+    //______________________________________________________________________________
+    Calibration* CalibrationGenerator::CreateCalibrationMicro(const std::string & connectionString, int run, const std::string& variation, int64_t timeMicro )
+    {
         /** @brief Creates @see Calibration by run number and desirable variation
          *
          * @parameter [in] connectionString - Connection string to the data source
          * @parameter [in] int run - run number
          * @parameter [in] variation - desirable variation
-         * @parameter [in] time - default time of constants
+         * @parameter [in] timeMicro - default time of constants, UTC microseconds; 0 means the newest
          * @return Calibration*
          */
 
@@ -51,7 +60,7 @@ namespace ccdb
         }
 
         //now we create calibration
-        std::unique_ptr<Calibration> calib(CreateCalibration(isMySql, run, variation, time));
+        std::unique_ptr<Calibration> calib(CreateCalibration(isMySql, run, variation, timeMicro));
 
         //Connect! (throws on failure, unique_ptr then deletes the object)
         if(!calib->Connect(connectionString))
@@ -138,17 +147,25 @@ namespace ccdb
     //______________________________________________________________________________
     Calibration* CalibrationGenerator::MakeCalibration( const std::string & connectionString, int run, const std::string& variation, const time_t time )
     {
+        // a whole second means its latest microsecond (docs/concepts/time.md)
+        return MakeCalibrationMicro(connectionString, run, variation, TimeUtils::EndOfSecond(time));
+    }
+
+
+    //______________________________________________________________________________
+    Calibration* CalibrationGenerator::MakeCalibrationMicro( const std::string & connectionString, int run, const std::string& variation, int64_t timeMicro )
+    {
         /** @brief Creates @see Calibration by connectionString, run number and desirable variation
          *
          * @parameter [in] connectionString - Connection string to the data source
          * @parameter [in] int run - run number
          * @parameter [in] variation - desirable variation
-         * @parameter [in] time - default time of constants
+         * @parameter [in] timeMicro - default time of constants, UTC microseconds; 0 means the newest
          * @return Calibration*
          */
 
         //hash of requested variation
-        string calibHash = GetCalibrationHash(connectionString, run, variation, time);
+        string calibHash = GetCalibrationHashMicro(connectionString, run, variation, timeMicro);
 
         // Lookup, creation and registration must be atomic: concurrent callers would otherwise
         // corrupt the containers or open duplicate connections for the same key
@@ -181,7 +198,7 @@ namespace ccdb
         }
 
         //now we create calibration
-        std::unique_ptr<Calibration> newCalib(CreateCalibration(isMySql, run, variation, time));
+        std::unique_ptr<Calibration> newCalib(CreateCalibration(isMySql, run, variation, timeMicro));
 
         //Connect! (throws on failure, unique_ptr then deletes the object)
         if(!newCalib->Connect(connectionString))
@@ -201,26 +218,35 @@ namespace ccdb
 
 
     //______________________________________________________________________________
-    Calibration* CalibrationGenerator::CreateCalibration( bool isMySQL, int run, const std::string& variation, const time_t time )
+    Calibration* CalibrationGenerator::CreateCalibration( bool isMySQL, int run, const std::string& variation, int64_t timeMicro )
     {
-
+        Calibration* calib = nullptr;
         if (isMySQL)
         {
             #ifdef CCDB_MYSQL
-                return new MySQLCalibration(run, variation, time);
+                calib = new MySQLCalibration(run, variation, TimeUtils::ToSeconds(timeMicro));
             #else
                 return NULL;
             #endif //CCDB_MYSQL
         }
         else
         {
-            return new SQLiteCalibration(run, variation, time);
+            calib = new SQLiteCalibration(run, variation, TimeUtils::ToSeconds(timeMicro));
         }
+        calib->mDefaultTimeMicro = timeMicro;
+        return calib;
     }
 
 
     //______________________________________________________________________________
     string CalibrationGenerator::GetCalibrationHash( const std::string & connectionString, int run, const std::string& variation, const time_t time )
+    {
+        return GetCalibrationHashMicro(connectionString, run, variation, TimeUtils::EndOfSecond(time));
+    }
+
+
+    //______________________________________________________________________________
+    string CalibrationGenerator::GetCalibrationHashMicro( const std::string & connectionString, int run, const std::string& variation, int64_t timeMicro )
     {
          //gets string hash based on  connectionString, run, and variation
          //
@@ -234,7 +260,7 @@ namespace ccdb
         // (run=123, variation="x") apart
         const char separator = '\x1f';
         ostringstream strstrm;
-        strstrm<<connectionString<<separator<<run<<separator<<variation<<separator<<time;
+        strstrm<<connectionString<<separator<<run<<separator<<variation<<separator<<timeMicro;
         return strstrm.str();
     }
 

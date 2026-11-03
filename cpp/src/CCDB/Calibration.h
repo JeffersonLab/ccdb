@@ -228,6 +228,12 @@ namespace ccdb
          */
         std::string GetDefaultVariation() const { return mDefaultVariation; }
 
+        /** @brief The default time of constants in UTC microseconds since the epoch, 0 for the newest (CCDB 2.5)
+         *
+         * A time_t given to the constructor means the end of that second, T.999999 (docs/concepts/time.md)
+         */
+        int64_t GetDefaultTimeMicro() const { return mDefaultTimeMicro; }
+
          /** @brief Get list of all type tables with full path
           *
           * @parameter [in] vector<string> & namepaths
@@ -299,7 +305,8 @@ namespace ccdb
         bool mProviderIsLocked;          /// If provider
         int mDefaultRun;                 /// Default run number
         string mDefaultVariation;        /// Default variation
-        time_t mDefaultTime;             /// Set default time
+        time_t mDefaultTime;             /// Set default time: the whole second of mDefaultTimeMicro
+        int64_t mDefaultTimeMicro;       /// Default time, UTC microseconds since the epoch; 0 means the newest
         std::atomic<time_t> mLastActivityTime;   /// Time of the last request (read by the generator from other threads)
         bool mIsAutoReconnect;           /// Try to auto-reconnect if possible
         std::atomic<bool> mIsCacheEnabled;       /// If true the data is cached

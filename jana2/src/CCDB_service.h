@@ -112,7 +112,7 @@ private:
     std::string m_time_string;
     std::string m_tag;
     std::string m_cache_dir;
-    time_t m_time = 0;               ///< m_time_string parsed; 0 = newest
+    int64_t m_time = 0;              ///< m_time_string parsed, UTC microseconds (docs/concepts/time.md); 0 = newest
 
     JParameter* m_variation_param = nullptr;   ///< kept to know whether the user set it (a tag excludes it)
     JParameter* m_time_param = nullptr;

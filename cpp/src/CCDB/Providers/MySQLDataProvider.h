@@ -245,7 +245,8 @@ namespace ccdb
          * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
          * @return new DAssignment object or
          */
-        virtual Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns=false);
+        Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation="default", bool loadColumns=false) override;
+        Assignment* GetAssignmentShortMicro(int run, const string& path, int64_t timeMicro, const string& variation, bool loadColumns) override;
 
         /** @brief Get the assignment that a tag gives: the tag's variation at its snapshot time
          * @see DataProvider::GetAssignmentShortByTag

@@ -97,6 +97,7 @@ public:
     * @return DAssignment object or NULL if no assignment is found or error
     */
     Assignment* GetAssignmentShort(int run, const string& path, time_t time, const string& variation, bool loadColumns) override;
+    Assignment* GetAssignmentShortMicro(int run, const string& path, int64_t timeMicro, const string& variation, bool loadColumns) override;
 
     /** @brief Get the assignment that a tag gives: the tag's variation at its snapshot time
      * @see DataProvider::GetAssignmentShortByTag
