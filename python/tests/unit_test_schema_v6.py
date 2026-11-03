@@ -57,7 +57,7 @@ def _load_compare():
 compare = _load_compare()
 
 INIT = "db init --init-i-am-sure"
-UPGRADE = "db upgrade --upgrade-i-am-sure"
+UPGRADE = "db upgrade --upgrade-i-am-sure --sqlite-time-zone UTC"
 # ccdb_user has no PROCESS privilege, so the open-transaction check cannot run (section 6.2 item 3)
 UPGRADE_MYSQL = UPGRADE + " --no-transaction-check"
 
@@ -204,6 +204,9 @@ def _schema6_columns(dialect):
             ("constantSets", "size"): ("integer" if dialect == "sqlite" else "int unsigned", "NO", None),
             ("assignments", "timeRangeId"): (integer, "YES", None),
             ("columns", "units"): ("varchar(64)", "YES", None)}
+    if dialect != "sqlite":
+        # the time model: the creation time that resolves constants keeps microseconds (docs/concepts/time.md)
+        spec[("assignments", "created")] = ("timestamp(6)", "NO", "current_timestamp(6)")
     for table in DEPRECATABLE_TABLES:
         spec[(table, "deprecatedTime")] = ("datetime", "YES", None)
         spec[(table, "deprecationComment")] = ("text", "YES", None)
@@ -214,7 +217,8 @@ def _schema6_tables(dialect):
     integer = "integer" if dialect == "sqlite" else "int"
     return {
         "tags": {"id": (integer, "NO", None), "name": ("varchar(100)", "NO", None),
-                 "variationId": (integer, "NO", None), "snapshotTime": ("datetime", "NO", None),
+                 "variationId": (integer, "NO", None),
+                 "snapshotTime": ("datetime" if dialect == "sqlite" else "datetime(6)", "NO", None),
                  "comment": ("text", "YES", None), "authorId": (integer, "NO", "1"),
                  "created": ("datetime", "NO", "current_timestamp")},
         "timeRanges": {"id": (integer, "NO", None), "timeFrom": ("datetime", "NO", None),
@@ -1019,13 +1023,14 @@ class MySqlSchemaV6Test(SchemaV6TestCase):
                     self.assertNotEqual(algorithm.group(1), "INSTANT", "MDEV-18519")
                     if ADDS_COLUMN.search(normal) and algorithm.group(1) == "INPLACE":
                         self.assertIn("FORCE", normal, "MDEV-18519: adding columns rebuilds")
-        for table, expected in (("columns", "INSTANT"), ("assignments", "INPLACE")):
+        # assignments: the precision change of created rebuilds the table (docs/concepts/time.md), one COPY
+        for table, expected in (("columns", "INSTANT"), ("assignments", "COPY")):
             if table == "columns" and self.mariadb_before_10_6_9:
                 expected = "INPLACE"
             self.assertIn(table, by_table, f"no ALTER of {table}")
             for normal in by_table[table]:
                 self.assertIn("ALGORITHM=" + expected, normal, f"{table}: {normal}")
-                if self.mariadb_before_10_6_9:
+                if self.mariadb_before_10_6_9 and expected == "INPLACE":
                     self.assertIn("FORCE", normal, f"{table}: {normal}")
 
     def test_upgrade_charset_stops(self):

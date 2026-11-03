@@ -5,10 +5,11 @@ import posixpath
 from sqlalchemy import inspect, text
 
 from sqlalchemy.schema import Column, ForeignKey
-from sqlalchemy.types import Integer, String, Text, DateTime, Enum, Boolean
+from sqlalchemy.types import Integer, String, Text, DateTime, Enum, Boolean, TypeDecorator
 from sqlalchemy.orm import declarative_base, reconstructor, relationship, backref
 
 from .errors import ConstantSetIsImmutableError
+from .path_utils import format_request_time, local_to_utc, utc_to_local
 
 Base = declarative_base()
 
@@ -21,6 +22,48 @@ blob_delimiter_replacement = "&delimiter;"
 
 # The default "infinite run" number
 INFINITE_RUN = 2147483647
+
+
+def utc_now():
+    """The current instant as an aware UTC datetime: the value of every "now" CCDB stores"""
+    return datetime.datetime.now(datetime.timezone.utc)
+
+
+class UtcDateTime(TypeDecorator):
+    """A time column of the schema 6 time model (docs/concepts/time.md): the database holds a UTC instant
+
+    MySQL and MariaDB sessions run with time_zone '+00:00' (provider._set_session_time_zone), SQLite holds the
+    text 'YYYY-MM-DD HH:MM:SS.ffffff', so the stored value is UTC on every engine and an engine never shifts it.
+
+    Python sees what it saw in 2.4: a naive local wall time (with `fold` set in a repeated hour), or, with
+    python_utc=True, a naive UTC value (tags.snapshotTime). A naive value bound to the column means the same;
+    an aware value is converted exactly. `precision` 6 keeps microseconds (assignments.created,
+    tags.snapshotTime, the times that resolve constants); 0 truncates to the second, so no server rounds a
+    fraction into the next second and every engine stores the same value.
+    """
+    impl = DateTime
+    cache_ok = True
+
+    def __init__(self, precision=0, python_utc=False):
+        super().__init__()
+        self.precision = precision
+        self.python_utc = python_utc
+
+    def process_bind_param(self, value, dialect):
+        if value is None or not isinstance(value, datetime.datetime):
+            return value
+        if value.tzinfo is not None:
+            value = value.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+        elif not self.python_utc:
+            value = local_to_utc(value).replace(tzinfo=None)
+        if self.precision == 0:
+            value = value.replace(microsecond=0)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is None or self.python_utc:
+            return value
+        return utc_to_local(value)
 
 # noinspection PyClassHasNoInit
 # --------------------------------------------
@@ -52,10 +95,10 @@ class Directory(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False, server_default=text("''"))
     comment = Column(Text)
-    created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    modified = Column(DateTime, nullable=False,
-                      default=datetime.datetime.now,
-                      onupdate=datetime.datetime.now,
+    created = Column(UtcDateTime(), default=utc_now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(UtcDateTime(), nullable=False,
+                      default=utc_now,
+                      onupdate=utc_now,
                       server_default=text("'2007-01-01 00:00:00'"))
     parent_id = Column('parentId', Integer, nullable=False, index=True, server_default=text("'0'"))
     author_id = Column('authorId', Integer, default=1, nullable=False, server_default=text("'1'"))
@@ -63,7 +106,7 @@ class Directory(Base):
     # Deprecation, mapped since schema 6. Nothing reads these yet; a new row gets isDeprecated = 0
     is_deprecated = Column('isDeprecated', Boolean, nullable=False, default=False)
     deprecated_by_user_id = Column('deprecatedByUserId', Integer)
-    deprecated_time = Column('deprecatedTime', DateTime)
+    deprecated_time = Column('deprecatedTime', UtcDateTime())
     deprecation_comment = Column('deprecationComment', Text)
 
     def __init__(self):
@@ -90,8 +133,8 @@ class TypeTable(Base):
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(255), nullable=False)
     comment = Column(Text)
-    created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    created = Column(UtcDateTime(), default=utc_now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(UtcDateTime(), default=utc_now, onupdate=utc_now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
     parent_dir_id = Column('directoryId', Integer, ForeignKey('directories.id'), nullable=False, index=True)
     parent_dir = relationship("Directory", backref=backref('type_tables', order_by=id))
     constant_sets = relationship("ConstantSet", backref=backref('type_table'))
@@ -106,7 +149,7 @@ class TypeTable(Base):
     # Deprecation, mapped since schema 6. Nothing reads these yet; a new row gets isDeprecated = 0
     is_deprecated = Column('isDeprecated', Boolean, nullable=False, default=False)
     deprecated_by_user_id = Column('deprecatedByUserId', Integer)
-    deprecated_time = Column('deprecatedTime', DateTime)
+    deprecated_time = Column('deprecatedTime', UtcDateTime())
     deprecation_comment = Column('deprecationComment', Text)
 
     @property
@@ -138,10 +181,10 @@ class TypeTableColumn(Base):
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(45), nullable=False)
     comment = Column(Text)
-    created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    modified = Column(DateTime, nullable=False,
-                      default=datetime.datetime.now,
-                      onupdate=datetime.datetime.now,
+    created = Column(UtcDateTime(), default=utc_now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(UtcDateTime(), nullable=False,
+                      default=utc_now,
+                      onupdate=utc_now,
                       server_default=text("'2007-01-01 00:00:00'"))
     order = Column(Integer, nullable=False)
     type = Column('columnType', Enum('int', 'uint', 'long', 'ulong', 'double', 'string', 'bool'))
@@ -165,8 +208,8 @@ class ConstantSet(Base):
     __tablename__ = 'constantSets'
     id = Column(Integer, primary_key=True, unique=True)
     _vault = Column('vault', Text, nullable=False)
-    created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    created = Column(UtcDateTime(), default=utc_now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(UtcDateTime(), default=utc_now, onupdate=utc_now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
     type_table_id = Column('constantTypeId', Integer, ForeignKey('typeTables.id'), nullable=False, index=True)
     sha256 = Column(String(64), nullable=False)    # hex SHA-256 of the vault's UTF-8 bytes, see vault_digest
     size = Column(Integer, nullable=False)         # number of those bytes
@@ -226,12 +269,12 @@ class Assignment(Base):
     __tablename__ = 'assignments'
 
     id = Column(Integer, primary_key=True, unique=True)
-    created = Column(DateTime, nullable=False, index=True,
-                     default=datetime.datetime.now,
+    created = Column(UtcDateTime(6), nullable=False, index=True,
+                     default=utc_now,
                      server_default=text("CURRENT_TIMESTAMP"))
-    modified = Column(DateTime, nullable=False,
-                      default=datetime.datetime.now,
-                      onupdate=datetime.datetime.now,
+    modified = Column(UtcDateTime(), nullable=False,
+                      default=utc_now,
+                      onupdate=utc_now,
                       server_default=text("'2007-01-01 00:00:00'"))
     constant_set_id = Column('constantSetId', Integer, ForeignKey('constantSets.id'), nullable=False)
     # Many assignments to one set, with no cascade: the ORM never deletes a set, not even with its last
@@ -272,7 +315,7 @@ class Assignment(Base):
         path = self.constant_set.type_table.path
         run = self.run_range.min
         variation = self.variation.name
-        time = self.created.strftime("%Y-%m-%d_%H-%M-%S")
+        time = format_request_time(self.created)
 
         return "{0}:{1}:{2}:{3}".format(path, run, variation, time)
 
@@ -299,8 +342,8 @@ class EventRange(Base):
     __tablename__ = 'eventRanges'
 
     id = Column(Integer, primary_key=True, unique=True)
-    created = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    modified = Column(DateTime, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    created = Column(UtcDateTime(), nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    modified = Column(UtcDateTime(), nullable=False, server_default=text("'2007-01-01 00:00:00'"))
     runNumber = Column(Integer, nullable=False)
     eventMin = Column(Integer, nullable=False)
     eventMax = Column(Integer, nullable=False)
@@ -315,8 +358,8 @@ class RunRange(Base):
     __tablename__ = 'runRanges'
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(45))
-    created = Column(DateTime, default=datetime.datetime.now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
-    modified = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    created = Column(UtcDateTime(), default=utc_now, nullable=False, server_default=text("'2007-01-01 00:00:00'"))
+    modified = Column(UtcDateTime(), default=utc_now, onupdate=utc_now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     comment = Column(Text)
     min = Column('runMin', Integer, nullable=False)
     max = Column('runMax', Integer, nullable=False)
@@ -336,9 +379,9 @@ class Variation(Base):
     __tablename__ = 'variations'
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(100), nullable=False, index=True, server_default=text("'default'"))
-    created = Column(DateTime, nullable=False,
-                     server_default=text("'2007-01-01 00:00:00'"), default=datetime.datetime.now)
-    modified = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"), default=datetime.datetime.now)
+    created = Column(UtcDateTime(), nullable=False,
+                     server_default=text("'2007-01-01 00:00:00'"), default=utc_now)
+    modified = Column(UtcDateTime(), nullable=False, server_default=text("CURRENT_TIMESTAMP"), default=utc_now)
     comment = Column(Text)
     author_id = Column('authorId', Integer, nullable=False, server_default=text("'1'"), default=1)
     parent_id = Column('parentId', Integer, ForeignKey('variations.id'), nullable=False, index=True,
@@ -347,12 +390,12 @@ class Variation(Base):
     children = relationship("Variation", back_populates='parent')
 
     is_locked = Column('isLocked', Boolean, nullable=False, default=True)
-    lock_time = Column('lockTime', DateTime, default=datetime.datetime.now, nullable=False)
+    lock_time = Column('lockTime', UtcDateTime(), default=utc_now, nullable=False)
 
     # Deprecation, mapped since schema 6. Nothing reads these yet; a new row gets isDeprecated = 0
     is_deprecated = Column('isDeprecated', Boolean, nullable=False, default=False)
     deprecated_by_user_id = Column('deprecatedByUserId', Integer)
-    deprecated_time = Column('deprecatedTime', DateTime)
+    deprecated_time = Column('deprecatedTime', UtcDateTime())
     deprecation_comment = Column('deprecationComment', Text)
 
     _description = Column("description", String(255))   # (!) Deprecated! Is here for C++ compatibility with 1.06.1
@@ -371,8 +414,8 @@ class User(Base):
     """
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, unique=True)
-    created = Column('created', DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
-    last_action_time = Column('lastActionTime', DateTime, nullable=False,)
+    created = Column('created', UtcDateTime(), default=utc_now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    last_action_time = Column('lastActionTime', UtcDateTime(), nullable=False,)
     name = Column(String(100), nullable=False)
     password = Column(String(100))
     _roles_str = Column('roles', String, nullable=False)
@@ -408,10 +451,10 @@ class Tag(Base):
     id = Column(Integer, primary_key=True, unique=True)
     name = Column(String(100), nullable=False)
     variation_id = Column('variationId', Integer, ForeignKey('variations.id'), nullable=False, index=True)
-    snapshot_time = Column('snapshotTime', DateTime, nullable=False)     # a UTC instant, unlike the other times
+    snapshot_time = Column('snapshotTime', UtcDateTime(6, python_utc=True), nullable=False)     # Python sees naive UTC
     comment = Column(Text)
     author_id = Column('authorId', Integer, default=1, nullable=False, server_default=text("'1'"))
-    created = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))     # the server clock fills it
+    created = Column(UtcDateTime(), nullable=False, server_default=text("CURRENT_TIMESTAMP"))     # the server clock fills it
 
     def __repr__(self):
         return "<Tag {0} '{1}'>".format(self.id, self.name)
@@ -427,8 +470,8 @@ class TimeRange(Base):
     """
     __tablename__ = 'timeRanges'
     id = Column(Integer, primary_key=True)
-    time_from = Column('timeFrom', DateTime, nullable=False)
-    time_to = Column('timeTo', DateTime)        # None: open end
+    time_from = Column('timeFrom', UtcDateTime(), nullable=False)
+    time_to = Column('timeTo', UtcDateTime())        # None: open end
     comment = Column(Text)
 
     def __repr__(self):
@@ -453,7 +496,7 @@ class Property(Base):
     name = Column(String(64), nullable=False)
     value = Column(Text, nullable=False)
     author_id = Column('authorId', Integer, default=1, nullable=False, server_default=text("'1'"))
-    modified = Column(DateTime, nullable=False, server_default=text("CURRENT_TIMESTAMP"))    # the server clock fills it on insert
+    modified = Column(UtcDateTime(), nullable=False, server_default=text("CURRENT_TIMESTAMP"))    # the server clock fills it on insert
 
     def __repr__(self):
         return "<Property {0} {1}:{2} '{3}'>".format(self.id, self.owner_type, self.owner_id, self.name)
@@ -469,7 +512,7 @@ class LogRecord(Base):
     """
     __tablename__ = 'logs'
     id = Column(Integer, primary_key=True, unique=True)
-    created = Column('created', DateTime, default=datetime.datetime.now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
+    created = Column('created', UtcDateTime(), default=utc_now, nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     affected_ids = Column('affectedIds', String, nullable=False)
     action = Column(String(7), nullable=False)
     description = Column(String(255), nullable=False)

@@ -11,7 +11,18 @@ from ccdb.sql.sqlite_schema import create_sqlite_database
 from ccdb.webgui import cerate_ccdb_flask_app, create_ccdb_flask_app, connection_string_from_env
 from ccdb.webgui.db import NO_CONNECTION_MESSAGE, get_database, normalize_dialect
 from ccdb.webgui.views import natural_key
+from ccdb import testing
 
+
+
+def setUpModule():
+    # the data holds literal UTC times that the tests compare with shown (local) times
+    global _restore_time_zone
+    _restore_time_zone = testing.pin_time_zone("UTC")
+
+
+def tearDownModule():
+    _restore_time_zone()
 
 class WebGuiAppTest(unittest.TestCase):
     """Each test gets a fresh standard SQLite database and a clean environment"""

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from ccdb import AlchemyProvider
 from ccdb.cmd import CliCommandBase, UtilityArgumentParser
-from ccdb.path_utils import parse_time
+from ccdb.path_utils import parse_time, local_to_utc
 from ccdb.errors import ObjectIsNotFoundInDbError
 from ccdb.brace_log_message import BraceMessage as LogFmt
 
@@ -17,8 +17,8 @@ def print_tag(theme, tag, variation):
     utc = tag.snapshot_time.replace(tzinfo=timezone.utc)
     print(" Tag        :  " + theme.Success + tag.name + theme.Reset)
     print(" Variation  :  " + variation.name)
-    print(" Time (UTC) :  " + utc.strftime("%Y-%m-%d %H:%M:%S"))
-    print(" Time (loc) :  " + utc.astimezone().strftime("%Y-%m-%d %H:%M:%S"))
+    print(" Time (UTC) :  " + utc.strftime("%Y-%m-%d %H:%M:%S.%f"))
+    print(" Time (loc) :  " + utc.astimezone().strftime("%Y-%m-%d %H:%M:%S.%f"))
     print(" DB Id      :  " + repr(int(tag.id)))
     print(" Comment    :  " + (tag.comment or ""))
 
@@ -81,14 +81,14 @@ class TagCommand(CliCommandBase):
                                  "-t expects a date like 2012-08 or 2012-08-30-14-00-00"
                                  .format(parsed.time, ex)) from ex
             # a user gives local time; the tag stores the UTC instant
-            snapshot_time = local_time.astimezone(timezone.utc).replace(tzinfo=None)
+            snapshot_time = local_to_utc(local_time).replace(tzinfo=None)
 
-            # A partial date is the last second of what it names, so today's date is a time in the future. The
+            # A partial date is the last moment of what it names, so today's date is a time in the future. The
             # provider refuses any future time; this says why the date given lands there
             is_partial = len(re.findall(r"\d+", parsed.time)) < 6
             if is_partial and snapshot_time > datetime.now(timezone.utc).replace(tzinfo=None):
                 raise ValueError("Cannot create tag '{0}': the time is in the future. A partial date means its "
-                                 "last second: -t {1} means {2} local time. Give a full past time "
+                                 "last moment: -t {1} means {2} local time. Give a full past time "
                                  "(YYYY-MM-DD-hh-mm-ss), or leave -t out for now"
                                  .format(parsed.name, parsed.time, local_time.strftime("%Y-%m-%d %H:%M:%S")))
 

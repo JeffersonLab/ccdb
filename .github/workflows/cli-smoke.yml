@@ -162,7 +162,7 @@ jobs:
 
       - name: ccdb db upgrade --dry-run
         run: |
-          ccdb -c "sqlite:///$V5_FILE" db upgrade --dry-run
+          ccdb -c "sqlite:///$V5_FILE" db upgrade --dry-run --sqlite-time-zone America/New_York
           ccdb -c "sqlite:///$V5_FILE" db | grep "Schema version: 5" > /dev/null
 
       - name: ccdb db upgrade without its flag changes nothing (exit 1)
@@ -178,7 +178,7 @@ jobs:
 
       - name: ccdb db upgrade --upgrade-i-am-sure
         run: |
-          ccdb -c "sqlite:///$V5_FILE" db upgrade --upgrade-i-am-sure
+          ccdb -c "sqlite:///$V5_FILE" db upgrade --upgrade-i-am-sure --sqlite-time-zone America/New_York
           ccdb -c "sqlite:///$V5_FILE" db | grep "Schema version: 6" > /dev/null
           test -f "$V5_FILE.v5"
 
@@ -226,7 +226,7 @@ jobs:
 
       - name: ccdb db rollback-v6 --rollback-i-am-sure
         run: |
-          ccdb -c "sqlite:///$V5_FILE" db rollback-v6 --rollback-i-am-sure
+          ccdb -c "sqlite:///$V5_FILE" db rollback-v6 --rollback-i-am-sure --sqlite-time-zone America/New_York
           ccdb -c "sqlite:///$V5_FILE" db | grep "Schema version: 5" > /dev/null
 
       # The CCDB 2.5 commands, back on the schema 6 database of the steps before the upgrade ones.

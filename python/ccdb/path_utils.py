@@ -121,6 +121,13 @@ def parse_time(time_str="-1", max_time_by_default=True):
     return datetime.datetime(year, month, day, hour, minute, second, microsecond)
 
 
+def format_request_time(local_time):
+    """The time part of a request string that names this moment: 2024-03-01_12-30-15, plus .ffffff when the
+    microseconds are not zero, so the string resolves to exactly that moment (docs/concepts/time.md)"""
+    text = local_time.strftime("%Y-%m-%d_%H-%M-%S")
+    return text + ".{0:06d}".format(local_time.microsecond) if local_time.microsecond else text
+
+
 def local_to_utc(local_time):
     """The UTC instant of a naive local wall time, as an aware datetime
 

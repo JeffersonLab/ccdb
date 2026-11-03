@@ -8,10 +8,21 @@ from urllib.parse import quote
 from ccdb.sql.sqlite_schema import create_sqlite_database
 from ccdb.webgui import cerate_ccdb_flask_app
 from ccdb.webgui.db import get_database
+from ccdb import testing
 
 TABLE = "/test/test_vars/test_table"
 AMBIGUOUS = TABLE + ":0:default"  # assignments 1 and 4 match; 4 is the newest
 
+
+
+def setUpModule():
+    # the data holds literal UTC times that the tests compare with shown (local) times
+    global _restore_time_zone
+    _restore_time_zone = testing.pin_time_zone("UTC")
+
+
+def tearDownModule():
+    _restore_time_zone()
 
 class AssignmentViewsTest(unittest.TestCase):
 
@@ -74,8 +85,10 @@ class AssignmentViewsTest(unittest.TestCase):
         self.assertEqual(self.get("/assignments/data.json?request=" + quote(AMBIGUOUS)).headers["Cache-Control"], "no-cache")
         exact = TABLE + ":0:default:2012-10-30_23-48-42"
         self.assertEqual(self.get("/assignments/data.json?request=" + quote(exact)).headers["Cache-Control"], "public, max-age=86400")
-        for not_pinned in (TABLE + ":0:default:notadate", TABLE + ":0:default:2099-01-01"):  # both resolve to the newest
-            self.assertEqual(self.get("/assignments/data.json?request=" + quote(not_pinned)).headers["Cache-Control"], "no-cache", not_pinned)
+        not_pinned = TABLE + ":0:default:2099-01-01"   # resolves to the newest
+        self.assertEqual(self.get("/assignments/data.json?request=" + quote(not_pinned)).headers["Cache-Control"], "no-cache")
+        # an unreadable time is an error, as in the C++ library, not "the newest"
+        self.assertEqual(self.get("/assignments/data.json?request=" + quote(TABLE + ":0:default:notadate")).status_code, 400)
 
     def test_errors(self):
         self.assertEqual(self.get("/assignments/999999").status_code, 404)

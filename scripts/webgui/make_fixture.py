@@ -21,8 +21,8 @@ cases the web GUI checks need:
   an instance property and a property of /schema6/shared; a log record per new assignment
 
 Every timestamp and every random value comes from a fixed seed, so the SQLite file hashes the same
-on each build. The timestamps are naive values with no zone; tags.snapshotTime is defined as a UTC
-instant, so the fixture's tags line up with its assignment times when those are read as UTC too.
+on each build. The timestamps are UTC instants (BASE_TIME is aware), stored as UTC as every CCDB time is
+(docs/concepts/time.md), so the file is the same on any build machine and its tags line up with its assignment times.
 Trap: the provider's create_* methods stamp datetime.now() and write log records,
 so this script inserts ORM objects directly and never calls them. The same holds for the columns that
 only the server clock fills (tags.created, properties.modified): set them here. pages.py refers to the
@@ -46,7 +46,7 @@ from ccdb.model import Assignment, ConstantSet, Directory, LogRecord, Property, 
 from ccdb.sql.sqlite_schema import init_sqlite_database
 
 INFINITE_RUN = 2147483647
-BASE_TIME = datetime.datetime(2020, 1, 1, 12, 0, 0)
+BASE_TIME = datetime.datetime(2020, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc)
 
 HOSTILE_COMMENT = 'Tag <script>alert("x")</script> & "double" \'single\'\nsecond line — Привет ✓ ünïcödé'
 HOSTILE_TABLE_NAME = "x\"y'z&<script>alert(1)<b>"
@@ -308,9 +308,8 @@ def add_schema6_cases(b, variations, run_ranges):
         b.add_log(author, "create", "assignments{0}|constantSets{1}".format(assignment.id, assignment.constant_set.id),
                   "Created assignment '{0}'{1}".format(request, suffix), assignment.comment)
 
-    # Tags: one at the creation time of the newest assignment of the fixture, one in the past. snapshotTime is a UTC
-    # instant while assignments.created has no zone: fixture_newest sits exactly at assignment 3618 only when the
-    # reader takes created as UTC, so a test that resolves tags against this fixture pins its time zone to UTC.
+    # Tags: one at the creation time of the newest assignment of the fixture, one in the past. Both times are UTC
+    # instants, so fixture_newest sits exactly at assignment 3618 in every time zone.
     newest = max((first, second, one, one_again, retired_assignment), key=lambda each: each.created)
     b.add_tag("fixture_newest", default, newest.created, "At the creation time of the newest assignment")
     b.add_tag("fixture_past", default, at(24 * 60), "A moment inside the fixture's history: 2020-01-02 12:00", "alice")
