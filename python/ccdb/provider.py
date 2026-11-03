@@ -2371,6 +2371,36 @@ class AlchemyProvider:
                                description="Updated assignment '{0}'".format(assignment.request),
                                comment=assignment.comment)
 
+    def set_assignment_comment(self, assignment, comment):
+        """
+        Replaces the comment of an assignment (a version), as `ccdb edit -a ID --comment` does (issue #56). The data,
+        run range, variation and creation time stay; the log record keeps the previous comment, so nothing is lost.
+
+        :param assignment: Assignment, or its database id
+        :param comment: the new comment; None or empty clears it
+        :return: the Assignment
+        """
+        if not isinstance(assignment, Assignment):
+            assignment = self.get_assignment_by_id(int(assignment))
+
+        # get user here to fail if no such user
+        user = self.get_current_user()
+        if user.name == 'anonymous':
+            raise AnonymousUserForbiddenError
+
+        previous = assignment.comment or ""
+        assignment.comment = comment or ""
+        self.session.flush()
+        self.create_log_record(user=user,
+                               affected_ids=[assignment.__tablename__ + str(assignment.id)],
+                               action="update",
+                               description=self._log_description("Changed the comment of assignment '{0}'",
+                                                                 assignment.request),
+                               comment="Previous comment: " + previous if previous else "There was no comment",
+                               commit=False)
+        self.session.commit()
+        return assignment
+
     @staticmethod
     def _is_constant_set_changed(assignment):
         """

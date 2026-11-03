@@ -214,6 +214,30 @@ class CliManagerTests(unittest.TestCase):
         self.cli.theme = ccdb.cmd.themes.NoColorTheme()
         self.output.truncate(0)
 
+    def test_edit_comment(self):
+        """edit. -a ID --comment replaces a version's comment; the log keeps the previous one (#56)"""
+        from ccdb.model import Assignment, LogRecord
+        self.cli.process_command_line("ls")  # connects
+        assignment = self.cli.provider.get_assignment_by_request("/test/test_vars/test_table:100")
+        previous, data_id = assignment.comment, assignment.constant_set_id
+        self.cli.process_command_line("edit -a {0} --comment \"Fixed BCAL cable swap\"".format(assignment.id))
+        self.cli.provider.session.expire_all()
+        changed = self.cli.provider.session.get(Assignment, assignment.id)
+        self.assertEqual(changed.comment, "Fixed BCAL cable swap")
+        self.assertEqual(changed.constant_set_id, data_id)
+        record = self.cli.provider.session.query(LogRecord).order_by(LogRecord.id.desc()).first()
+        self.assertIn("Changed the comment of assignment", record.description)
+        self.assertEqual(record.comment, "Previous comment: " + previous)
+
+        # by request string, and clearing
+        self.cli.process_command_line("edit -a /test/test_vars/test_table:100 --comment \"\"")
+        self.cli.provider.session.expire_all()
+        self.assertEqual(self.cli.provider.session.get(Assignment, assignment.id).comment, "")
+
+    def test_edit_comment_needs_assignment(self):
+        """edit. --comment without -a is an error"""
+        self.assertRaises(ValueError, self.cli.process_command_line, "edit --comment text")
+
     def test_info(self):
         """info. General test"""
         self.cli.process_command_line("info /test/test_vars/test_table")

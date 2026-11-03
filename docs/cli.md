@@ -158,6 +158,7 @@ Assuming you are in interactive mode, the commands can be categorized:
 - `mktbl` — creates a data table
 - `add` — adds data from a text file to a table (variation and run ranges are created automatically)
 - `deprecate` — hides a directory, table or variation from listings
+- `edit -a ID --comment "text"` — replaces the comment of a version; the log keeps the previous one
 - `tag` — creates and removes tags
 - `prop set` — sets a property
 
