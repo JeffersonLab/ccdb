@@ -10,6 +10,7 @@
 #include "CCDB/Globals.h"
 #include "CCDB/Helpers/StringUtils.h"
 #include "CCDB/Helpers/PathUtils.h"
+#include "CCDB/Helpers/TimeUtils.h"
 #include "CCDB/Helpers/SQLite.h"
 #include "CCDB/Helpers/EnvUtils.h"
 #include "CCDB/Providers/SQLiteDataProvider.h"
@@ -302,10 +303,11 @@ Variation* ccdb::SQLiteDataProvider::SelectVariation(SQLiteStatement& query)
 }
 
 
-/** @brief The resolution of a tag request on SQLite (CCDB 2.5)
+/** @brief The resolution of a request on SQLite: the newest assignment (by id) of the table, run and variation
+ * created at or before timeLimit, with the fallback to the parent variations
  *
- * The same query as GetAssignmentShort, with the time limit given as the local naive time that
- * assignments.created is compared with as text, and the same fallback to the parent variations
+ * assignments.created holds UTC text 'YYYY-MM-DD HH:MM:SS.ffffff' (docs/concepts/time.md), so it is compared with
+ * the limit as text; an empty timeLimit means no time limit
  */
 static Assignment* SelectAssignmentShortByTimeLimit(SQLiteDataProvider* provider, sqlite3* database, int run, const string& path, const string& timeLimit, const string& variationName, bool loadColumns)
 {
@@ -333,15 +335,15 @@ static Assignment* SelectAssignmentShortByTimeLimit(SQLiteDataProvider* provider
         "WHERE  `runRanges`.`runMin` <= ?1 "
         "AND `runRanges`.`runMax` >= ?1 "
         "AND `assignments`.`variationId`= ?2 "
-        "AND  `constantSets`.`constantTypeId` =?3 "
-        "AND  `assignments`.`created` <= ?4 "
+        "AND  `constantSets`.`constantTypeId` =?3 " +
+        (timeLimit.empty() ? string() : string("AND  `assignments`.`created` <= ?4 ")) +
         "ORDER BY `assignments`.`id` DESC "
         "LIMIT 1 ");
 
     query.BindInt32(1, run);
     query.BindInt32(2, variation->GetId());
     query.BindInt32(3, table->GetId());
-    query.BindString(4, timeLimit);
+    if(!timeLimit.empty()) query.BindString(4, timeLimit);
 
     Assignment *assignment = nullptr;
     auto selectedRows = query.Execute([&assignment, &query, run](uint64_t rowIndex) {
@@ -393,95 +395,20 @@ Assignment* ccdb::SQLiteDataProvider::GetAssignmentShortByTag(int run, const str
         throw std::runtime_error("SQLiteDataProvider::GetAssignmentShortByTag => No tag '" + tagName + "' was found");
     }
 
-    // snapshotTime is a UTC instant, while assignments.created holds the local naive time of the client
-    // that wrote it. So the instant is converted to local time, as the time filter of GetAssignmentShort does
-    // with 'localtime'. Both columns carry microseconds as text ('2020-01-06 10:17:00.000000'), so the limit
-    // keeps the tag's own fraction: an assignment added later in the tag's second must not count,
-    // which is how Python compares the exact instant
-    time_t tagTime = GetTagUnixTime(tagName, tagSnapshotTime);
-    string fraction = "000000";
-    size_t dotPos = tagSnapshotTime.find('.');
-    if(dotPos != string::npos)
-    {
-        for(size_t i = 0; i < 6 && dotPos + 1 + i < tagSnapshotTime.size() && isdigit((unsigned char)tagSnapshotTime[dotPos + 1 + i]); i++)
-        {
-            fraction[i] = tagSnapshotTime[dotPos + 1 + i];
-        }
-    }
-    struct tm localTagTime;
-    memset(&localTagTime, 0, sizeof(localTagTime));
-    localtime_r(&tagTime, &localTagTime);
-    char tagTimeBuf[40];
-    strftime(tagTimeBuf, sizeof(tagTimeBuf), "%Y-%m-%d %H:%M:%S", &localTagTime);
-    return SelectAssignmentShortByTimeLimit(this, mDatabase, run, path, string(tagTimeBuf) + "." + fraction, tagVariation, loadColumns);
+    // Both columns are UTC instants with microseconds: the tag's time is the limit, exactly
+    return GetAssignmentShortMicro(run, path, GetTagMicro(tagName, tagSnapshotTime), tagVariation, loadColumns);
 }
 
 
-Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variationName, bool loadColumns /*=false*/)
+Assignment* ccdb::SQLiteDataProvider::GetAssignmentShort(int run, const string& path, time_t time, const string& variationName, bool loadColumns)
 {
-    //Get type table
-    ConstantsTypeTable *table = DataProvider::GetConstantsTypeTable(path, loadColumns);
-    if(!table) {
-        string error(std::string(__PRETTY_FUNCTION__ ) + " => Type table was not found: '" + path + "'" );
-        throw std::runtime_error(error);
-    }
-    
-    //get variation
-    Variation* variation = GetVariation(variationName);
-    if(!variation) {
-        string error("SQLiteDataProvider::GetAssignmentShort => No variation '"+variationName+"' was found");
-        throw std::runtime_error(error);
-    }
-
-	////ok now we must build our mighty query...
-    SQLiteStatement query(mDatabase);
-    query.Prepare(
-        "SELECT `assignments`.`id` AS `asId`, "
-        "`constantSets`.`vault` AS `blob` "
-        "FROM  `assignments` "
-        "INNER JOIN `runRanges` ON `assignments`.`runRangeId`= `runRanges`.`id` "
-        "INNER JOIN `constantSets` ON `assignments`.`constantSetId` = `constantSets`.`id` "
-        "INNER JOIN `typeTables` ON `constantSets`.`constantTypeId` = `typeTables`.`id` "
-        "WHERE  `runRanges`.`runMin` <= ?1 "
-        "AND `runRanges`.`runMax` >= ?1 "
-        "AND `assignments`.`variationId`= ?2 "
-        "AND  `constantSets`.`constantTypeId` =?3 " + 
-        ((time>0)? string("AND  `assignments`.`created` <= datetime(?4, 'unixepoch', 'localtime') ") : string()) +
-        "ORDER BY `assignments`.`id` DESC "
-        "LIMIT 1 ");
-	
-    query.BindInt32(1, run);
-	query.BindInt32(2, variation->GetId());	/*`variationId`*/
-	query.BindInt32(3, table->GetId());	    /*``typeTables`.`directoryId``*/
-    
-    if(time>0) {
-        query.BindInt64(4, time);	/*` `assignments`.`created``*/
-    }
-
-	// execute the statement
-	Assignment *assignment = nullptr;
-    auto selectedRows = query.Execute([&assignment, &query, run](uint64_t rowIndex) {
-        assignment = new Assignment();
-        assignment->SetId( query.ReadUInt64(0) );
-        assignment->SetRawData(query.ReadString(1));
-        assignment->SetRequestedRun(run);
-    });
+    // a whole second means its latest microsecond, so code written for whole seconds reads what it read
+    return GetAssignmentShortMicro(run, path, TimeUtils::EndOfSecond(time), variationName, loadColumns);
+}
 
 
-    // The type table was created for this request only
-    if(assignment == nullptr) delete table;
-
-    //If We have not found data for this variation, getting data for parent variation
-    if((assignment == nullptr && selectedRows==0) && variation->GetParentDbId()!=0)
-    {
-        return GetAssignmentShort(run, path, time, variation->GetParent()->GetName(), loadColumns);
-    }
-    
-	if(assignment != nullptr)
-	{
-        assignment->SetTypeTable(table, /*ownsTypeTable*/ true);
-        assignment->SetVariation(variation);
-	}
-
-	return assignment;
+Assignment* ccdb::SQLiteDataProvider::GetAssignmentShortMicro(int run, const string& path, int64_t timeMicro, const string& variationName, bool loadColumns /*=false*/)
+{
+    string timeLimit = timeMicro > 0 ? TimeUtils::FormatUtc(timeMicro) : string();
+    return SelectAssignmentShortByTimeLimit(this, mDatabase, run, path, timeLimit, variationName, loadColumns);
 }

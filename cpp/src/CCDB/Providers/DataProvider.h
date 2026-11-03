@@ -2,6 +2,7 @@
 #define _DDataProvider_
 
 #include <string>
+#include <stdint.h>
 #include <vector>
 #include <map>
 
@@ -120,20 +121,29 @@ namespace ccdb
         * @remarks this function is named so
         * @param [in] run - run number
         * @param [in] path - object path
-        * @param [in] time - timestamp, data that is equal or earlier in time than that timestamp is returned
+        * @param [in] time - timestamp: the newest data created at or before the end of that second (T.999999);
+        *                    0 means no time limit (docs/concepts/time.md)
         * @param [in] variation - variation name
         * @param [in] loadColumns - optional, do we need to load table columns information (for column names and types) or not
         * @return DAssignment object or NULL if no assignment is found or error
         */
         virtual Assignment* GetAssignmentShort(int run, const std::string& path, time_t time, const std::string& variation, bool loadColumns)=0;
 
+        /** @brief GetAssignmentShort with the time limit in microseconds (CCDB 2.5)
+        *
+        * The SQLite and MySQL providers implement it and make GetAssignmentShort call it; this default, for a provider
+        * written for 2.4 that implements only GetAssignmentShort, calls that with the whole second.
+        *
+        * @param [in] timeMicro - UTC microseconds since the epoch: the newest data created at or before that instant;
+        *                         0 means no time limit. @see TimeUtils
+        */
+        virtual Assignment* GetAssignmentShortMicro(int run, const std::string& path, int64_t timeMicro, const std::string& variation, bool loadColumns);
+
         /** @brief Get the assignment that a tag gives (CCDB 2.5): the tag replaces variation and time
         *
         * The provider reads the tag's variation and snapshot time in one query and resolves the request
-        * as GetAssignmentShort does with that variation and that time. snapshotTime is a UTC instant
-        * (@see UtcDateTimeToUnixTime). Each provider's time filter converts it: MySQL compares
-        * UNIX_TIMESTAMP(assignments.created), SQLite converts it to the local time the writing client
-        * stored in assignments.created.
+        * as GetAssignmentShortMicro does with that variation and that instant, to the microsecond: both
+        * snapshotTime and assignments.created are UTC instants (docs/concepts/time.md).
         *
         * @param [in] run - run number
         * @param [in] path - object path
@@ -228,6 +238,10 @@ namespace ccdb
         /** @brief Unix time of a tag's snapshotTime column
          * @throw std::runtime_error if the time can't be parsed */
         static time_t GetTagUnixTime(const std::string& tagName, const std::string& snapshotTime);
+
+        /** @brief A tag's snapshotTime column as UTC microseconds since the epoch
+         * @throw std::runtime_error if the time can't be parsed */
+        static int64_t GetTagMicro(const std::string& tagName, const std::string& snapshotTime);
 
 
     protected:
