@@ -111,6 +111,7 @@ jobs:
           tests.unit_test_tags
           tests.unit_test_deprecation
           tests.unit_test_properties
+          tests.unit_test_readiness
           tests.unit_test_units
           tests.unit_test_tags_mysql
           tests.unit_test_time_zone_mysql
