@@ -416,7 +416,18 @@ $ ccdb mktbl /calib/gains -r 2 channel=int gain=double:MeV offset=double:ns time
 ```
 
 The units part is optional, and `name=type` stays valid. An empty type keeps the default `double`:
-`time=:ns` is a `double` column in `ns`. `info` shows the units in brackets:
+`time=:ns` is a `double` column in `ns`.
+
+Units are checked against [UCUM](https://ucum.org), the Unified Code for Units of Measure, which programs
+can parse and convert: `MeV`, `ns`, `cm`, `cm2`, `1/s`, `GeV/[c]` pass. `mktbl` warns on a string UCUM can't
+read (`Mev`, `nsec`, `GeV/c`) and stores it as typed. A quantity without a standard unit, such as ADC counts
+or a channel number, is a UCUM annotation in braces, `{ADC}` or `{channel}`, which passes. The
+[readiness profile](concepts/ai-readiness.md) counts the columns whose units UCUM reads.
+
+A table made before units existed gets them column by column in Python, with a log record for each:
+`provider.set_column_units("/calib/gains", "gain", "MeV")`.
+
+`info` shows the units in brackets:
 
 ```
 $ ccdb info /calib/gains

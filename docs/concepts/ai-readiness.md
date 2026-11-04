@@ -16,7 +16,7 @@ FAIR principles; this page maps readiness.
 | requirement | CCDB 2.5 |
 |---|---|
 | Identity of the data | Every version has a permanent id and the SHA-256 of its data; a [tag](concepts/tags.md) names a whole calibration and, with its properties, the software, container and data of the pass; `ccdb export tag` makes a tag a file with a hash and a DataCite record, ready for a DOI ([Publishing a tag](concepts/tags.md#publishing-a-tag)) |
-| Understandable without a human | Typed columns with units and comments, [properties](cli.md#properties), a JSON Schema per table, a [data card](concepts/fair.md#data-cards) in HTML and JSON |
+| Understandable without a human | Typed columns with [UCUM](cli.md#column-units) units and comments, properties from a checked [vocabulary](cli.md#properties), a JSON Schema per table, a [data card](concepts/fair.md#data-cards) in HTML, JSON and schema.org JSON-LD |
 | Provenance of every value | Author, UTC time and comment on every version; the change log of every operation; the hash of every data set |
 | Provenance of every use | The C++ and Python libraries record, when a program asks, which versions it resolved; the JANA2 service writes the record as a file with `ccdb:provenance`; `ccdb provenance` checks it against the database ([JANA2 service](apis/jana.md#what-a-job-used)) |
 | Access by programs and agents | The [HTTP API](apis/http.md) with its OpenAPI document, run bundles, the read-only [MCP server](apis/mcp.md), [Parquet and data frames](apis/analysis.md) |
@@ -48,7 +48,7 @@ The same profile is served at `/api/v1/readiness` by the [HTTP API](apis/http.md
 | | `tables_with_description` / `tables` | tables with a non-empty comment |
 | | `versions_with_comment` / `versions` | assignments with a non-empty comment |
 | | `tables_with_contact`, `tables_with_source_url`, `tables_with_doc_url` | tables with that property |
-| `units` | `columns_with_ucum_units` | not measured yet: `null` |
+| `units` | `columns_with_ucum_units` | columns whose unit string is valid [UCUM](cli.md#column-units) |
 | `history` | `open_ended_run_ranges` | assignments whose run range starts at a run above 0 and has no upper bound: later runs receive these constants without anyone deciding so |
 | | `versions_for_all_runs` | assignments whose run range covers every run, 0 to infinity |
 | | `versions_by_anonymous` | assignments authored by `anonymous` |
@@ -80,6 +80,7 @@ It took 7 seconds:
  "metadata": {"columns": 7700, "columns_with_units": 0, "tables": 688, "tables_with_description": 318,
               "versions": 821394, "versions_with_comment": 290787,
               "tables_with_contact": 0, "tables_with_source_url": 0, "tables_with_doc_url": 0},
+ "units": {"columns_with_ucum_units": 0},
  "history": {"open_ended_run_ranges": 41350, "versions_for_all_runs": 1212, "versions_by_anonymous": 4675,
              "stale_tables": 390, "empty_tables": 9, "deprecated_tables": 0, "tags": 1},
  "data": {"constant_sets": 585786, "shared_sets": 66146, "unused_sets": 0, "bytes": 2870802276},
@@ -87,6 +88,6 @@ It took 7 seconds:
 }
 ```
 
-Each line names one thing a collaboration can change with the tools CCDB has: `mktbl` and `edit` for
-units, `prop set` for descriptions and the instance license, a comment on every `add`, `deprecate` for
-the tables nobody writes to. The next profile shows whether it happened.
+Each line names one thing a collaboration can change with the tools CCDB has: units in `mktbl` for new
+tables and `set_column_units` for old ones, `prop set` for descriptions and the instance license, a
+comment on every `add`, `deprecate` for the tables nobody writes to. The next profile shows whether it happened.
