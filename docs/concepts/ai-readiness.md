@@ -5,8 +5,8 @@ constants, understand them without a human, trust where they came from, and meas
 numbers that come out the same every time. CCDB 2.5 covers each of these in a feature of its own, and
 `ccdb db readiness` measures how far an instance has come.
 
-The requirements follow the assessment framework of the GlueX AI-readiness study (Panta, Morean,
-Romanov, 2026): seven categories of criteria, and the rule that a readiness claim is **reproducible**
+The requirements follow the assessment framework of the GlueX AI-readiness study (Panta, Sawatzky,
+Morean, Romanov, Higinbotham, 2026, [arXiv:2609.34987](https://arxiv.org/abs/2609.34987)): seven categories of criteria, and the rule that a readiness claim is **reproducible**
 (the same inputs give the same numbers), **comparable** (across instances and across time) and
 **defensible** (every number traces to a query or a recorded rule). [FAIR data](concepts/fair.md) maps the
 FAIR principles; this page maps readiness.
