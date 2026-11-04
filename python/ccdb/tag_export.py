@@ -17,7 +17,9 @@ import datetime
 import json
 import hashlib
 import os
+import warnings
 
+from sqlalchemy.exc import SAWarning
 from sqlalchemy.orm import sessionmaker
 
 from ccdb.model import INFINITE_RUN
@@ -89,6 +91,13 @@ def export_tag(source_url, tag_name, directory, now_utc=None):
     """Writes the three files of a tag export into `directory`; returns a report dict with their paths.
 
     Refuses to overwrite: a published export is a file other people may already hold."""
+    # SQLite reflection reports column types like INTEGER(11) it cannot rebuild; the copy does not need them
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", SAWarning)
+        return _export_tag(source_url, tag_name, directory, now_utc)
+
+
+def _export_tag(source_url, tag_name, directory, now_utc):
     now_utc = now_utc or datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None, microsecond=0)
     engine = open_engine(source_url)
     try:

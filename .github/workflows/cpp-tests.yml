@@ -14,6 +14,8 @@ jobs:
       CCDB_TEST_FIXTURE_CONNECTION: "sqlite:///${{ github.workspace }}/ccdb_fixture.sqlite"
       # The time resolution cases of testdata/time (docs/concepts/time.md); required under CI
       CCDB_TEST_TIME_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/time_tests.sqlite"
+      # A tag of the time database exported by `ccdb export tag`, read by the [export] test
+      CCDB_TEST_EXPORT_SQLITE: "${{ github.workspace }}/export/tag_b.sqlite"
 
     steps:
       - uses: actions/checkout@v7
@@ -41,6 +43,9 @@ jobs:
 
       - name: Build the time resolution database
         run: python scripts/time/make_time_db.py "$CCDB_TEST_TIME_SQLITE_CONNECTION"
+
+      - name: Export a tag of it (ccdb export tag)
+        run: ccdb -c "$CCDB_TEST_TIME_SQLITE_CONNECTION" export tag @tag_b -o "$GITHUB_WORKSPACE/export"
 
       - name: Configure
         run: cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release
