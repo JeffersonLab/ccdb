@@ -471,7 +471,7 @@ def register(app):
         db: ccdb.AlchemyProvider = g.db
         table = db.get_type_table("/" + table_path)  # unknown path → ObjectIsNotFoundInDbError → 404 page
         card = queries.table_card(db, table)
-        jsonld = queries.card_jsonld(card, url_for('table_card', table_path=table_path, _external=True))
+        jsonld = queries.card_jsonld(card)
         return render_template("table_card.html", card=card, table=table, jsonld=jsonld,
                                deprecated_by=author_name(db, table.deprecated_by_user_id))
 

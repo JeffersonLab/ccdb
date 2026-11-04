@@ -147,7 +147,7 @@ class ApiTest(unittest.TestCase):
         self.assertEqual((record["@context"], record["@type"]), ("https://schema.org", "Dataset"))
         self.assertEqual(record["identifier"], "/test/test_vars/test_table")
         self.assertEqual([variable["name"] for variable in record["variableMeasured"]], ["x", "y", "z"])
-        self.assertTrue(record["url"].endswith("/api/v1/tables/test/test_vars/test_table/card"))
+        self.assertNotIn("url", record, "no instance url: no address, rather than the request's host")
         self.assertIn("dateModified", record)
         self.assertEqual(self.get("/tables/test/test_vars/test_table/card?format=xml").status_code, 400)
 

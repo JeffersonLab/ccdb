@@ -10,6 +10,7 @@ empty table, and no request turns into an OFFSET that walks the whole table.
 """
 import math
 import re
+from urllib.parse import quote
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -582,11 +583,12 @@ class TableCard:
     tags: list = None
 
 
-def card_jsonld(card, url=""):
+def card_jsonld(card):
     """The data card as a schema.org Dataset in JSON-LD, the form catalogs and search engines read (docs/concepts/fair.md).
 
-    Served by the API (/tables/<path>/card?format=jsonld) and embedded in the GUI card page. `url` is the address
-    of the card the reader came from; an empty one is left out."""
+    Served by the API (/tables/<path>/card?format=jsonld) and embedded in the GUI card page. The `url` is the card
+    page under the instance property `url`, the published address of the web GUI, and is left out without it: an
+    address taken from the request would differ behind a proxy and change the bytes a cache keeps."""
     table = card.table
     instance, properties = dict(card.instance), dict(card.properties)
     record = {"@context": "https://schema.org", "@type": "Dataset", "name": table.path, "identifier": table.path,
@@ -600,8 +602,8 @@ def card_jsonld(card, url=""):
         if column.comment:
             variable["description"] = column.comment
         record["variableMeasured"].append(variable)
-    if url:
-        record["url"] = url
+    if instance.get("url", "").startswith(("http://", "https://")):
+        record["url"] = instance["url"].rstrip("/") + "/tables" + quote(table.path) + "/card"
     if card.authors:
         record["creator"] = [{"@type": "Person", "name": name} for name, _ in card.authors if name]
     if card.last_created is not None:
