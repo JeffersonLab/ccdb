@@ -68,11 +68,13 @@ class Export(CliCommandBase):
 
     command = "export"
     name = "Export"
-    short_descr = "Exports tables to Parquet files (needs the export extra: pip install ccdb[export])"
+    short_descr = "Exports tables to Parquet files, or a tag to a SQLite file with a DataCite record"
     uses_db = True
 
     def execute(self, args):
         args = self.process_arguments(args)
+        if args.format == "tag":
+            return self.export_tag(args)
         if importlib.util.find_spec("pyarrow") is None:
             log.critical("ccdb export parquet needs the export extra: pip install 'ccdb[export]' (no module pyarrow)")
             return False
@@ -99,11 +101,26 @@ class Export(CliCommandBase):
             print("{0}: {1} assignments, {2} rows -> {3}".format(table.path, len(assignments), rows, path))
         return True
 
+    def export_tag(self, args):
+        """`export tag @NAME -o DIR`: the tag as one SQLite file with its hash and a DataCite record (ccdb.tag_export)"""
+        from ccdb.tag_export import export_tag
+        if len(args.tables) != 1 or args.run is not None or args.variation or args.time or args.tag:
+            raise ValueError("Usage: export tag @NAME -o DIR (one tag; it gives the variation, the time and every run)")
+        name = args.tables[0].lstrip("@")
+        self.context.provider.get_tag(name)          # an unknown tag fails here, with the provider's message
+        report = export_tag(self.context.connection_string, name, args.output)
+        print("tag {0}: {1} tables with constants, {2} assignments, {3} bytes".format(
+            name, report["tables_with_data"], report["assignments"], report["bytes"]))
+        for kind in ("sqlite", "sha256", "datacite"):
+            print("  " + report["paths"][kind])
+        print("sha256 " + report["sha256"])
+        return True
+
     @staticmethod
     def process_arguments(args):
         parser = UtilityArgumentParser(prog="ccdb export")
-        parser.add_argument("format", choices=["parquet"])
-        parser.add_argument("tables", nargs="+", help="table paths")
+        parser.add_argument("format", choices=["parquet", "tag"])
+        parser.add_argument("tables", nargs="+", help="table paths; for `tag`, the tag as @NAME")
         parser.add_argument("-o", "--output", required=True, help="directory for the files, one per table")
         parser.add_argument("-r", "--run", type=int, help="only the assignment this run resolves to")
         parser.add_argument("-v", "--variation", default="")
@@ -116,6 +133,11 @@ class Export(CliCommandBase):
 
 Usage:
     export parquet <table> [<table> ...] -o <directory> [-r <run>] [-v <variation>] [-t <time>] [--tag <tag>]
+    export tag @<tag> -o <directory>
+
+`export tag` writes <directory>/<tag>.sqlite (every constant the tag gives, for every run, as a CCDB database),
+<tag>.sha256 and <tag>.datacite.json (a DataCite record for a repository deposit). It needs no extra and
+contacts no outside service; after the deposit, record the DOI with: prop set @<tag> doi <DOI>
 
 Each row of the file is one row of one assignment's data, after the columns that name the assignment:
 assignment_id, run_min, run_max, variation, created (UTC, microseconds), author, comment, sha256, and the
@@ -130,4 +152,5 @@ Examples:
     > export parquet /epic/HCal/adc_calib -o exports                    # every version of the table
     > export parquet /epic/HCal/adc_calib -r 1500 -o exports            # what run 1500 reads now
     > export parquet /epic/HCal/adc_calib --tag campaign_demo -o exports
+    > export tag @campaign_demo -o deposit
 """)
