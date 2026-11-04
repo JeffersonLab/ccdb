@@ -39,7 +39,7 @@ a library call over schema 6 as it is.
 Make CCDB 2.5 the calibration database whose readiness for AI use can be measured, whose
 constants carry their provenance into every job that reads them, and whose tags name a
 processing pass completely. The source of the requirements is the assessment framework of the
-GlueX AI-readiness article (Panta, Morean, Romanov, 2026): seven categories, 26 sub-criteria, and
+GlueX AI-readiness article (Panta, Sawatzky, Morean, Romanov, Higinbotham, 2026, arXiv:2609.34987): seven categories, 26 sub-criteria, and
 the rule that every readiness claim is reproducible, comparable and defensible. The report
 `{space}/reports/ai-readiness.md` maps the article onto CCDB and lists the code changes; this
 plan implements changes 1, 2, 3, 4, 5, 6, 8 and 10 of that list. Changes 7 (value expectations on
