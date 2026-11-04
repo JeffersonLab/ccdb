@@ -42,7 +42,7 @@ def datacite_record(tag_name, tag_comment, snapshot_utc, instance, tag_propertie
     """The DataCite 4.5 record (JSON attributes) of an exported tag.
 
     instance and tag_properties are {name: value}. The instance gives the creator and publisher (experiment,
-    publisher), the license and the landing URL; the tag gives the description, the software, container, data and
+    publisher), the contact person, the license and the landing URL; the tag gives the description, the software, container, data and
     rucio_did of the pass, and the DOI of the previous export. No DOI of its own: the repository assigns it."""
     experiment = instance.get("experiment", "")
     creator = instance.get("creator") or (experiment + " Collaboration" if experiment else "CCDB")
@@ -75,6 +75,8 @@ def datacite_record(tag_name, tag_comment, snapshot_utc, instance, tag_propertie
     citation = tag_properties.get("citation") or instance.get("citation")
     if citation:
         record["descriptions"].append({"description": "Cite as: " + citation, "descriptionType": "Other"})
+    if instance.get("contact"):
+        record["contributors"] = [{"name": instance["contact"], "contributorType": "ContactPerson"}]
     if instance.get("license"):
         record["rightsList"] = [{"rights": instance["license"]}]
     if instance.get("url", "").startswith(("http://", "https://")):
