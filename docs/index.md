@@ -76,7 +76,18 @@ connects you to that database read-only.
   generated data card, so a program or an agent understands a constant set without a human in the
   loop.
 - **[FAIR metadata](concepts/fair.md).** License, citation and instance metadata are served on every data
-  card once the instance properties are set, and every change is announced in an Atom feed.
+  card once the instance properties are set, every card carries schema.org metadata for data catalogs, and
+  every change is announced in an Atom feed.
+- **[Measured readiness](concepts/ai-readiness.md).** `ccdb db readiness` computes one profile of an
+  instance: units, descriptions and comments, open-ended run ranges, stale tables, anonymous versions, shared
+  data sets, license and citation, each a count over the whole database. The API, the MCP server and the GUI
+  serve the same profile.
+- **[Provenance of every job](apis/jana.md#what-a-job-used).** On request, the libraries record which version
+  each request resolved to, with the hash of its data; the JANA2 service writes the record as a file with one
+  parameter, and `ccdb provenance` checks it against any copy of the database and names the tags that give it.
+- **[Tags that name a pass, ready for a DOI](concepts/tags.md#publishing-a-tag).** A tag carries the software,
+  container and data of the pass it names; `ccdb export tag` writes its constants as one file with a hash and
+  a DataCite record for a repository deposit.
 
 ### Framework integrations
 
