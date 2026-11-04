@@ -4,7 +4,8 @@ constants (docs/concepts/ai-readiness.md).
     from ccdb.readiness import profile
     numbers = profile(provider)                  # a dict of plain values, ready for json.dumps
 
-Every number is one SQL count over the whole database; nothing is sampled. Two profiles of the same data made on the
+Every number is one SQL count over the whole database, apart from the UCUM check of the distinct unit strings that
+one query returns; nothing is sampled. Two profiles of the same data made on the
 same UTC day are equal apart from `generated`, so profiles of two snapshots or two instances compare line by line.
 The staleness cutoff is the start of the UTC day of `generated` minus `stale_years` years; it is echoed in `config`.
 
@@ -16,6 +17,7 @@ from sqlalchemy import func, select, exists, and_
 
 from ccdb.model import (Assignment, CcdbSchemaVersion, ConstantSet, Directory, Property, RunRange, Tag, TypeTable, TypeTableColumn, User,
                         Variation, INFINITE_RUN)
+from ccdb.ucum import is_ucum
 from ccdb.version import version as ccdb_version
 
 DEFAULT_STALE_YEARS = 5
@@ -90,7 +92,10 @@ def profile(provider, stale_years=DEFAULT_STALE_YEARS, generated=None):
             **{"tables_with_" + name: owners_with_property("table", name) for name in TABLE_PROPERTIES},
         },
         "units": {
-            "columns_with_ucum_units": None,
+            # UCUM is a grammar, not a list SQL can match: one query groups the unit strings, Python checks each
+            "columns_with_ucum_units": sum(count for units, count in session.execute(
+                select(TypeTableColumn.units, func.count(TypeTableColumn.id)).where(non_empty(TypeTableColumn.units))
+                .group_by(TypeTableColumn.units)) if is_ucum(units)),
         },
         "history": {
             # a range from run N > 0 to infinity: later runs silently get these constants

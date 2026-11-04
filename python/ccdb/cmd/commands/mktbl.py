@@ -7,6 +7,7 @@ import os
 from ccdb.cmd import CliCommandBase
 from ccdb import BraceMessage as LogFmt
 from ccdb.table_file import read_ccdb_text_file, TextFileDOM
+from ccdb.ucum import is_ucum
 
 log = logging.getLogger("ccdb.cmd.commands.mktbl")
 
@@ -122,6 +123,13 @@ class MakeTable(CliCommandBase):
     #----------------------------------------------
     def do_create_type(self):
         """this function finally creates table"""
+
+        # Units UCUM cannot read are stored as typed; the warning says how to write them so programs can convert
+        for name, _, units in self.columns:
+            if units and not is_ucum(units):
+                log.warning(LogFmt("Units '{0}' of column '{1}' are not UCUM (https://ucum.org); they are stored as "
+                                   "written. UCUM spells MeV, ns, cm, cm2, GeV/[c]; a count is an annotation: {{ADC}}",
+                                   units, name))
 
         log.debug("  write table to database...")
         table = self.context.provider.create_type_table(self.table_name, self.table_parent_path,
@@ -342,7 +350,8 @@ columns format:
     where: 
        quantity - number of columns with such name
        type     - type of the column (int, double, string)
-       units    - optional free text units of the column, e.g. MeV (at most 64 characters)
+       units    - optional units of the column in UCUM, e.g. MeV, ns, cm2, {ADC} (at most 64 characters);
+                  units UCUM cannot read get a warning and are stored as written
        name     - name of the column - the only required part
        start_index - if quantity is defined set start index for auto-naming
 

@@ -1541,6 +1541,42 @@ class AlchemyProvider:
             raise
         return prop
 
+    def set_column_units(self, table_or_path, column_name, units):
+        """
+        Sets the units of one column of an existing table; None or '' clears them. Writes a log record.
+
+        Units are expected in UCUM (ccdb.ucum); others are stored as written, as `mktbl` stores them. A table made
+        before units existed gets its units this way, column by column, without a new table.
+
+        :return: the column
+        :rtype: TypeTableColumn
+        """
+        user = self.get_current_user()
+        if user.name == 'anonymous':
+            raise AnonymousUserForbiddenError
+        table = self.get_type_table(table_or_path) if isinstance(table_or_path, str) else table_or_path
+        column = next((each for each in table.columns if each.name == column_name), None)
+        if column is None:
+            raise ObjectIsNotFoundInDbError(TypeTableColumn, "Table '{0}' has no column '{1}'".format(table.path, column_name))
+        if units and len(units) > 64:
+            raise ValueError("Units are at most 64 characters, got {0}".format(len(units)))
+        old = column.units or ""
+        try:
+            column.units = units or None
+            self.session.flush()
+            self.create_log_record(user=user,
+                                   affected_ids=[TypeTableColumn.__tablename__ + str(column.id), TypeTable.__tablename__ + str(table.id)],
+                                   action="update",
+                                   description="Changed units of column '{0}' of table '{1}' from '{2}' to '{3}'"
+                                   .format(column_name, table.path, old, units or "")[:255],
+                                   comment="",
+                                   commit=False)
+            self.session.commit()
+        except Exception:
+            self._rollback_quietly()
+            raise
+        return column
+
     def delete_property(self, owner_type, owner_id, name):
         """
         Deletes a property of the instance or of an object
