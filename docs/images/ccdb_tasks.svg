@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 840" width="860" height="840" role="img" aria-label="CCDB in the middle; around it Python, C++, command line, Integrations, Web, Java; Web branches to OpenAPI and MCP, Integrations to JANA2, DD4hep and CLAS12">
-<title>CCDB in the middle; around it Python, C++, command line, Integrations, Web, Java; Web branches to OpenAPI and MCP, Integrations to JANA2, DD4hep and CLAS12</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 840" width="860" height="840" role="img" aria-label="CCDB in the middle; around it Python, C++, SI Ready, Integrations, Web, command line; Web branches to OpenAPI and MCP, Integrations to JANA2, DD4hep and Java">
+<title>CCDB in the middle; around it Python, C++, SI Ready, Integrations, Web, command line; Web branches to OpenAPI and MCP, Integrations to JANA2, DD4hep and Java</title>
 <defs>
   <radialGradient id="ccdbRed" cx="40%" cy="35%" r="70%">
     <stop offset="0" stop-color="#ff5a52"/><stop offset="1" stop-color="#d10f08"/>
@@ -26,9 +26,13 @@
 <polygon points="582.8,237.5 569.8,245.0 556.9,237.5 556.9,222.5 569.8,215.0 582.8,222.5" fill="#00599C"/>
 <text x="569.8460969082653" y="234.5" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">C++</text>
 <text x="594.8" y="237.0" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="19" font-weight="600" fill="#1d2a44">C++</text>
-<rect x="542.8" y="428.0" width="190" height="84" rx="14" fill="#0a0a0a" stroke="#6b7280" stroke-width="1.5"/>
-<text x="569.8460969082653" y="476.0" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-size="20" font-weight="700" fill="#7CFC9A" text-anchor="middle">&gt;_</text>
-<text x="594.8" y="477.0" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="600" fill="#ffffff">Command line</text>
+<rect x="542.8" y="428.0" width="190" height="84" rx="14" fill="#C9B8E6" stroke="#9a86c4" stroke-width="1.5"/>
+
+<g transform="translate(569.8,470.0)" fill="#F2C94C" stroke="#B8860B" stroke-width="0.8" stroke-linejoin="round">
+  <path d="M0-15C1-7 7-1 15 0 7 1 1 7 0 15-1 7-7 1-15 0-7-1-1-7 0-15z"/>
+  <path d="M11-13c0.5 2.5 2.5 4.5 5 5-2.5 0.5-4.5 2.5-5 5-0.5-2.5-2.5-4.5-5-5 2.5-0.5 4.5-2.5 5-5z" transform="translate(-1,0)"/>
+</g>
+<text x="594.8" y="477.0" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="19" font-weight="600" fill="#2e2452">SI Ready</text>
 <rect x="335.0" y="548.0" width="190" height="84" rx="14" fill="url(#greyV)" stroke="#6e6e6e" stroke-width="1.5"/>
 
 <g transform="translate(362.0,590.0)" fill="none" stroke="#2b2b2b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -43,15 +47,9 @@
   <circle r="14"/><ellipse rx="6" ry="14"/><path d="M-14 0h28M-12-7h24M-12 7h24"/>
 </g>
 <text x="179.2" y="477.0" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="19" font-weight="600" fill="#1d2a44">Web</text>
-<rect x="127.2" y="188.0" width="190" height="84" rx="14" fill="#5E4C42" stroke="#443730" stroke-width="1.5"/>
-
-<g transform="translate(139.15390309173475,214.99999999999997)" fill="none" stroke="#E8B623" stroke-width="2.2" stroke-linecap="round">
-  <path d="M5 13h17v7a6 6 0 0 1-6 6h-5a6 6 0 0 1-6-6z"/>
-  <path d="M22 15h2.5a3 3 0 0 1 0 6H22"/>
-  <path d="M10 3c-2 2 2 3 0 6M15 2c-2 2 2 3 0 6"/>
-  <path d="M6 29h16"/>
-</g>
-<text x="179.2" y="237.0" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="19" font-weight="600" fill="#E8B623">Java</text>
+<rect x="127.2" y="188.0" width="190" height="84" rx="14" fill="#0a0a0a" stroke="#6b7280" stroke-width="1.5"/>
+<text x="154.15390309173472" y="236.0" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-size="20" font-weight="700" fill="#7CFC9A" text-anchor="middle">&gt;_</text>
+<text x="179.2" y="237.0" font-family="Consolas, 'DejaVu Sans Mono', monospace" font-size="17" font-weight="600" fill="#ffffff">Command line</text>
 <path d="M192.2 512.0 C192.2 625.5 154.0 625.5 154.0 731.0" fill="none" stroke="#8a93a6" stroke-width="2" marker-end="url(#arr)"/>
 <path d="M252.2 512.0 C252.2 625.5 292.0 625.5 292.0 731.0" fill="none" stroke="#8a93a6" stroke-width="2" marker-end="url(#arr)"/>
 <path d="M380.0 632.0 C380.0 685.5 430.0 685.5 430.0 731.0" fill="none" stroke="#8a93a6" stroke-width="2" marker-end="url(#arr)"/>
@@ -61,5 +59,5 @@
 <rect x="233.0" y="739.0" width="118" height="46" rx="10" fill="#DCE6F5" stroke="#7f9ac4" stroke-width="1.5"/><text x="292.0" y="767.0" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#1d2a44" text-anchor="middle" letter-spacing="0.5">MCP</text>
 <rect x="371.0" y="739.0" width="118" height="46" rx="10" fill="#E4E4E4" stroke="#8e8e8e" stroke-width="1.5"/><text x="430.0" y="767.0" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#1f1f1f" text-anchor="middle" letter-spacing="0.5">JANA2</text>
 <rect x="509.0" y="739.0" width="118" height="46" rx="10" fill="#E4E4E4" stroke="#8e8e8e" stroke-width="1.5"/><text x="568.0" y="767.0" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#1f1f1f" text-anchor="middle">DD4hep</text>
-<rect x="647.0" y="739.0" width="118" height="46" rx="10" fill="#E4E4E4" stroke="#8e8e8e" stroke-width="1.5"/><text x="706.0" y="767.0" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13.5" font-weight="600" fill="#1f1f1f" text-anchor="middle" letter-spacing="0.5">CLAS12</text>
+<rect x="647.0" y="739.0" width="118" height="46" rx="10" fill="#E4E4E4" stroke="#8e8e8e" stroke-width="1.5"/><text x="706.0" y="767.0" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#1f1f1f" text-anchor="middle">Java</text>
 </svg>
