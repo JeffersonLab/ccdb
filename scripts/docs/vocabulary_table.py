@@ -15,9 +15,19 @@ PAGE = os.path.join(REPO, "docs", "cli.md")
 START, END = "<!-- vocabulary:start -->", "<!-- vocabulary:end -->"
 
 
+def load_vocabulary():
+    """python/ccdb/vocabulary.py by its path: it needs nothing, while importing the ccdb package needs SQLAlchemy,
+    which the documentation job does not install"""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("ccdb_vocabulary", os.path.join(REPO, "python", "ccdb", "vocabulary.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def render():
-    sys.path.insert(0, os.path.join(REPO, "python"))
-    from ccdb.vocabulary import MEANINGS, STANDARD_NAMES
+    vocabulary = load_vocabulary()
+    MEANINGS, STANDARD_NAMES = vocabulary.MEANINGS, vocabulary.STANDARD_NAMES
 
     # owners with the same names share a row
     rows = []
