@@ -493,16 +493,17 @@ class TagRow:
     comment: str
     author: str
     created: datetime
+    id: int = 0
 
 
 def list_tags(session):
     """Every tag by name; tags are few (a handful per run period), so the list has no pages."""
-    statement = (select(Tag.name, Variation.name, Tag.snapshot_time, Tag.comment, User.name, Tag.created)
+    statement = (select(Tag.name, Variation.name, Tag.snapshot_time, Tag.comment, User.name, Tag.created, Tag.id)
                  .join(Variation, Tag.variation_id == Variation.id)
                  .join(User, Tag.author_id == User.id, isouter=True)
                  .order_by(Tag.name))
-    return [TagRow(name, variation, snapshot, comment or "", author or "", created)
-            for name, variation, snapshot, comment, author, created in session.execute(statement)]
+    return [TagRow(name, variation, snapshot, comment or "", author or "", created, tag_id)
+            for name, variation, snapshot, comment, author, created, tag_id in session.execute(statement)]
 
 
 @dataclass

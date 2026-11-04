@@ -126,6 +126,8 @@ class Tag(BaseModel):
     comment: str
     author: str
     created: str
+    properties: Dict[str, str] = Field(default_factory=dict, description="What the tag names besides the constants: "
+                                       "description, software, container, data, rucio_did, doi, citation")
 
 
 class AssignmentRow(BaseModel):

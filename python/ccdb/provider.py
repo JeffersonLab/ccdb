@@ -1432,11 +1432,12 @@ class AlchemyProvider:
     # ----------------------------------------------------------------------------------------
     #   P R O P E R T I E S
     # ----------------------------------------------------------------------------------------
-    PROPERTY_OWNER_TYPES = ("instance", "directory", "table", "variation", "column")
+    PROPERTY_OWNER_TYPES = ("instance", "directory", "table", "variation", "column", "tag")
 
     # log records name an object by its table name and id
     _PROPERTY_OWNER_TABLES = {"directory": Directory.__tablename__, "table": TypeTable.__tablename__,
-                              "variation": Variation.__tablename__, "column": TypeTableColumn.__tablename__}
+                              "variation": Variation.__tablename__, "column": TypeTableColumn.__tablename__,
+                              "tag": Tag.__tablename__}
 
     def _property_query(self, owner_type, owner_id, name=None):
         if owner_type not in self.PROPERTY_OWNER_TYPES:
@@ -1676,12 +1677,13 @@ class AlchemyProvider:
         tag_id, name, comment = tag.id, tag.name, tag.comment
 
         try:
+            properties_count = self._delete_properties_of("tag", [tag_id])
             self.session.delete(tag)
             self.session.flush()
             self.create_log_record(user=user,
                                    affected_ids=[Tag.__tablename__ + str(tag_id)],
                                    action="delete",
-                                   description="Deleted tag '{0}'".format(name),
+                                   description=self._with_properties_note("Deleted tag '{0}'".format(name), properties_count),
                                    comment=comment,
                                    commit=False)
             self.session.commit()

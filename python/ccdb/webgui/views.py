@@ -340,7 +340,8 @@ def register(app):
         run = queries.run_arg(request.args, "run")
         variations = db.get_variation_tree_up(db.get_tag_variation(tag))  # nearest first, as a request tries them
         context = dict(tag=tag, run=run, chain=[variation.name for variation in reversed(variations)],
-                       author=author_name(db, tag.author_id), resolved=None, hidden=0)
+                       author=author_name(db, tag.author_id), resolved=None, hidden=0,
+                       properties=queries.properties_of(db.session, "tag", [tag.id]).get(tag.id, []))
         if run is not None:
             # The time limit comes from the provider, which converts the tag's UTC instant for each database kind.
             created_condition = db._created_at_or_before(tag.snapshot_time)

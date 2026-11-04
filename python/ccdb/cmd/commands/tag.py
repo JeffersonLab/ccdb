@@ -12,8 +12,8 @@ from ccdb.brace_log_message import BraceMessage as LogFmt
 log = logging.getLogger("ccdb.cmd.commands.tag")
 
 
-def print_tag(theme, tag, variation):
-    """Prints one tag: name, variation, time (UTC and local), author, comment"""
+def print_tag(theme, tag, variation, properties=()):
+    """Prints one tag: name, variation, time (UTC and local), author, comment and its properties"""
     utc = tag.snapshot_time.replace(tzinfo=timezone.utc)
     print(" Tag        :  " + theme.Success + tag.name + theme.Reset)
     print(" Variation  :  " + variation.name)
@@ -21,6 +21,8 @@ def print_tag(theme, tag, variation):
     print(" Time (loc) :  " + utc.astimezone().strftime("%Y-%m-%d %H:%M:%S.%f"))
     print(" DB Id      :  " + repr(int(tag.id)))
     print(" Comment    :  " + (tag.comment or ""))
+    for prop in properties:
+        print(" {0:<11}:  {1}".format(prop.name, prop.value))
 
 
 # ********************************************************************
@@ -59,13 +61,13 @@ class TagCommand(CliCommandBase):
         if not parsed.name:
             if parsed.variation or parsed.time or parsed.comment:
                 raise ValueError("A tag name is required to create a tag. See 'help tag'")
-            self.print_tags(provider)
+            self.print_tags(provider, parsed.long)
             return True
 
         # show
         if not (parsed.variation or parsed.time or parsed.comment):
-            tag = provider.get_tag(parsed.name)
-            print_tag(self.theme, tag, provider.get_tag_variation(tag))
+            tag = provider.get_tag(parsed.name.lstrip("@"))
+            print_tag(self.theme, tag, provider.get_tag_variation(tag), provider.get_properties("tag", tag.id))
             return tag
 
         # create
@@ -103,9 +105,10 @@ class TagCommand(CliCommandBase):
         parser.add_argument("-v", "--variation", default="")
         parser.add_argument("-t", "--time", default="")
         parser.add_argument("-c", "--comment", default="")
+        parser.add_argument("-l", "--long", action="store_true", help="list each tag's properties too")
         return parser.parse_args(args)
 
-    def print_tags(self, provider):
+    def print_tags(self, provider, long=False):
         tags = provider.get_tags()
         if not tags:
             print("No tags")
@@ -123,6 +126,9 @@ class TagCommand(CliCommandBase):
                   " %-15s " % variation_names[tag.variation_id] +
                   " %-20s " % tag.snapshot_time.strftime("%Y-%m-%d %H:%M:%S") +
                   " " + (tag.comment or "").replace(os.linesep, " "))
+            if long:
+                for prop in provider.get_properties("tag", tag.id):
+                    print("    {0} = {1}".format(prop.name, prop.value))
 
     def print_help(self):
         """Prints help of the command"""
@@ -133,9 +139,11 @@ of the tag variation that existed at the tag time:
    cat /test/test_vars/test_table:1000@mytag
 
     tag                                       - lists tags
+    tag -l                                    - lists tags with their properties (software, data, doi, ...)
     tag NAME                                  - shows the tag
     tag NAME [-v VARIATION] [-t TIME] -c TEXT - creates the tag
-    tag rm NAME                               - removes the tag
+    tag rm NAME                               - removes the tag and its properties
+ Properties of a tag: prop set @NAME KEY VALUE (see 'help prop')
 
  Flags:
     -v or --variation - the variation of the tag, 'default' if not given

@@ -944,6 +944,14 @@
       "title": "Name",
       "type": "string"
      },
+     "properties": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "description": "What the tag names besides the constants: description, software, container, data, rucio_did, doi, citation",
+      "title": "Properties",
+      "type": "object"
+     },
      "time": {
       "description": "The moment the tag freezes, UTC",
       "title": "Time",

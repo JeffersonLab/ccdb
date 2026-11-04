@@ -112,6 +112,26 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(served, expected)
         self.assertEqual(self.get("/readiness?stale_years=-1").status_code // 100, 4)
 
+    def test_tag_properties(self):
+        """/tags and /tags/{name} carry the tag's properties; a fresh database, so the shared one stays without tags"""
+        from fastapi.testclient import TestClient
+        from ccdb import AlchemyProvider
+        path = os.path.join(self.directory.name, "tags.sqlite")
+        create_sqlite_database(path)
+        provider = AlchemyProvider()
+        provider.connect("sqlite:///" + path)
+        provider.authentication.current_user_name = "test_user"
+        tag = provider.create_tag("pass1", "default", comment="for properties")
+        provider.set_property("tag", tag.id, "software", "eicrecon-1.42.0")
+        provider.disconnect()
+        app = create_app("sqlite:///" + path)
+        try:
+            client = TestClient(app)
+            self.assertEqual(client.get("/api/v1/tags/pass1").json()["properties"], {"software": "eicrecon-1.42.0"})
+            self.assertEqual(client.get("/api/v1/tags").json()[0]["properties"], {"software": "eicrecon-1.42.0"})
+        finally:
+            app.state.database.dispose()
+
     def test_openapi_document(self):
         document = self.json("/openapi.json")
         self.assertTrue(document["openapi"].startswith("3."))
