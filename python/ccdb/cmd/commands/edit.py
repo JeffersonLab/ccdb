@@ -23,7 +23,7 @@ class Edit(CliCommandBase):
     # ------------------------------
     command = "edit"
     name = "Edit"
-    short_descr = "Edit a value in the table"
+    short_descr = "Edit the comment of a version"
     uses_db = True
 
     def __init__(self, context):
@@ -58,6 +58,21 @@ class Edit(CliCommandBase):
         # process arguments
         parsed_args = self.process_arguments(args)
 
+        # the comment of a version (issue #56)
+        if parsed_args.comment is not None:
+            if not parsed_args.assignment:
+                raise ValueError("--comment needs the version: edit -a <assignment id or request> --comment \"text\"")
+            assignment = self._get_assignment(parsed_args.assignment)
+            previous = assignment.comment or ""
+            provider.set_assignment_comment(assignment, parsed_args.comment)
+            log.info(LogFmt("Comment of assignment {0} ('{1}') changed", assignment.id, assignment.request))
+            log.info(LogFmt("  was: {0}", previous))
+            log.info(LogFmt("  now: {0}", assignment.comment))
+            return True
+
+        if not parsed_args.raw_path:
+            raise ValueError("edit needs a table path, or -a <assignment> --comment \"text\"")
+
         if not self.validate(parsed_args):
             return False  # False means the command failed
 
@@ -80,11 +95,20 @@ class Edit(CliCommandBase):
 
         # utility argument parser is argparse which raises errors instead of exiting app
         parser = UtilityArgumentParser()
-        parser.add_argument("raw_path")
+        parser.add_argument("raw_path", nargs="?", default="")
         parser.add_argument("-c", "--column", default="")
         parser.add_argument("-r", "--row", default="")
         parser.add_argument("-v", "--value")
+        parser.add_argument("-a", "--assignment", default="")
+        parser.add_argument("--comment")
         return parser.parse_args(args)
+
+    def _get_assignment(self, text):
+        """An assignment by its database id or by a request string"""
+        provider = self.context.provider
+        if text.isdigit():
+            return provider.get_assignment_by_id(int(text))
+        return provider.get_assignment_by_request(text)
 
     # ----------------------------------------
     #   validate
@@ -102,7 +126,17 @@ class Edit(CliCommandBase):
     def print_help(self):
         """Prints help for the command"""
 
-        print("""
+        print("""Edits the comment of a version (an assignment)
+    edit -a <assignment id or request> --comment "new comment"
+
+    The data, run range, variation and time of the version stay. The log record of the change keeps the previous
+    comment. The id is the first column of 'vers'; a request such as /test/test_vars/test_table:100 works too.
+
+Example:
+    > edit -a 4213 --comment "Undo the BCAL cable swap for future runs"
+    > edit -a /test/test_vars/test_table:100 --comment ""      # clears the comment
+
+Editing values (not implemented yet):
         -c or --column Columns of the wrong data
         -r or --row Row of the wrong data
         -v or --value Correct value to replace wrong data
