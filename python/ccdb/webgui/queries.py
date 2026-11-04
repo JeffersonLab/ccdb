@@ -18,7 +18,7 @@ from sqlalchemy.orm import aliased
 from werkzeug.exceptions import BadRequest
 
 from ccdb.model import Assignment, ConstantSet, LogRecord, Property, RunRange, Tag, TypeTable, User, Variation
-from ccdb.path_utils import format_request_time
+from ccdb.path_utils import format_request_time, local_to_utc
 
 PAGE_SIZES = (25, 50, 100, 200)
 DEFAULT_PAGE_SIZE = 50
@@ -580,6 +580,40 @@ class TableCard:
     last_variation: str = ""
     last_comment: str = ""
     tags: list = None
+
+
+def card_jsonld(card, url=""):
+    """The data card as a schema.org Dataset in JSON-LD, the form catalogs and search engines read (docs/concepts/fair.md).
+
+    Served by the API (/tables/<path>/card?format=jsonld) and embedded in the GUI card page. `url` is the address
+    of the card the reader came from; an empty one is left out."""
+    table = card.table
+    instance, properties = dict(card.instance), dict(card.properties)
+    record = {"@context": "https://schema.org", "@type": "Dataset", "name": table.path, "identifier": table.path,
+              "description": table.comment or properties.get("description") or "Calibration constants " + table.path,
+              "isAccessibleForFree": True,
+              "variableMeasured": []}
+    for column in table.columns:
+        variable = {"@type": "PropertyValue", "name": column.name}
+        if column.units:
+            variable["unitText"] = column.units
+        if column.comment:
+            variable["description"] = column.comment
+        record["variableMeasured"].append(variable)
+    if url:
+        record["url"] = url
+    if card.authors:
+        record["creator"] = [{"@type": "Person", "name": name} for name, _ in card.authors if name]
+    if card.last_created is not None:
+        record["dateModified"] = local_to_utc(card.last_created).strftime("%Y-%m-%dT%H:%M:%SZ")
+    for key in ("license", "citation"):
+        if properties.get(key) or instance.get(key):
+            record[key] = properties.get(key) or instance[key]
+    if properties.get("keywords"):
+        record["keywords"] = [word.strip() for word in properties["keywords"].split(",") if word.strip()]
+    if instance.get("experiment"):
+        record["includedInDataCatalog"] = {"@type": "DataCatalog", "name": "CCDB of " + instance["experiment"]}
+    return record
 
 
 def merged_runs(ranges):

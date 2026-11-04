@@ -10,10 +10,11 @@ parameter would take the suffix too.
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Query, Request
+from werkzeug.exceptions import BadRequest
 
 from . import models, service
 from .dependencies import provider_dependency
-from .responses import HOURLY, SHORT, respond, respond_json
+from .responses import HOURLY, JSONLD, SHORT, dump_json, respond, respond_json
 
 router = APIRouter()
 
@@ -77,7 +78,14 @@ def table_schema(path: str, request: Request, db=Depends(provider_dependency)):
 
 @router.get("/tables/{path:path}/card", response_model=models.TableCard,
             summary="A data card: description, columns with units, versions and run coverage, authors, tags, license and citation")
-def table_card(path: str, request: Request, db=Depends(provider_dependency)):
+def table_card(path: str, request: Request, format: Optional[str] = Query(None, description="`jsonld`: the card as a "
+                                                                          "schema.org Dataset in JSON-LD"),
+               db=Depends(provider_dependency)):
+    if format == "jsonld":
+        url = str(request.url.remove_query_params("format"))
+        return respond(request, dump_json(service.table_card_jsonld(db, path, url)), JSONLD, SHORT)
+    if format not in (None, "json"):
+        raise BadRequest("format is json or jsonld, got '{0}'".format(format))
     return respond_json(request, service.table_card(db, path))
 
 

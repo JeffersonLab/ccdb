@@ -21,6 +21,7 @@ HOURLY = "public, max-age=3600"
 NO_STORE = "no-store"
 
 JSON = "application/json; charset=utf-8"
+JSONLD = "application/ld+json; charset=utf-8"
 TEXT = "text/plain; charset=utf-8"
 
 

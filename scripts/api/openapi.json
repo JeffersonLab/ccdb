@@ -2064,6 +2064,24 @@
        "title": "Path",
        "type": "string"
       }
+     },
+     {
+      "description": "`jsonld`: the card as a schema.org Dataset in JSON-LD",
+      "in": "query",
+      "name": "format",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "`jsonld`: the card as a schema.org Dataset in JSON-LD",
+       "title": "Format"
+      }
      }
     ],
     "responses": {

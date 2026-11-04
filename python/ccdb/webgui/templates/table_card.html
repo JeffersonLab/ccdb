@@ -73,4 +73,6 @@
   </tbody>
 </table>
 </div>
+{#- schema.org Dataset for catalogs and search engines; tojson escapes <, > and & so database text cannot end the block -#}
+<script type="application/ld+json" id="card-jsonld">{{ jsonld | tojson }}</script>
 {% endblock %}

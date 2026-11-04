@@ -42,6 +42,8 @@ PAGES = [
     ("table_missing", "/api/v1/tables/no/such", "edge"),
     ("schema_channels", "/api/v1/tables" + CHANNELS_TABLE + "/schema", "json"),
     ("card_big", "/api/v1/tables" + BIG_TABLE + "/card", "json"),
+    ("card_big_jsonld", "/api/v1/tables" + BIG_TABLE + "/card?format=jsonld", "json"),
+    ("card_bad_format", "/api/v1/tables" + BIG_TABLE + "/card?format=xml", "edge"),
     ("card_shared", "/api/v1/tables" + SHARED_TABLE + "/card", "json"),
     ("card_unicode", "/api/v1/tables" + quote(UNICODE_TABLE) + "/card", "json"),
     ("card_retired", "/api/v1/tables" + RETIRED_TABLE + "/card", "json"),
