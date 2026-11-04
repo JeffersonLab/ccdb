@@ -193,9 +193,48 @@ Tag 'Run2026' is removed
 
 See [Command line (CLI)](cli.md#tags) for the options of `ccdb tag`.
 
+## Tag properties
+
+A tag names the constants of a pass. Its [properties](cli.md#properties) name the rest of the pass, so the
+tag alone answers "what produced this data": the software version, the container image, the input data,
+the identifier of the output and the DOI of the deposited constants. A property command names a tag as a
+request does, with `@NAME`:
+
+```
+$ ccdb prop set @Run2026 software halld_recon-5.14.0
+$ ccdb prop set @Run2026 container "docker://jeffersonlab/halld_recon:5.14.0"
+$ ccdb prop set @Run2026 data "RunPeriod-2026-01 recon ver03"
+$ ccdb prop ls @Run2026
+container = docker://jeffersonlab/halld_recon:5.14.0
+data = RunPeriod-2026-01 recon ver03
+software = halld_recon-5.14.0
+```
+
+The standard names for a tag are `description`, `software`, `container`, `data`, `rucio_did`, `doi` and
+`citation`. `ccdb tag NAME`, `ccdb tag -l`, `ccdb info @NAME`, `/api/v1/tags/NAME`, the MCP tool `list_tags`
+and the tag's page in the web GUI show them. Each change writes a log record; `ccdb tag rm` removes the
+tag's properties with it.
+
+## Publishing a tag
+
+To cite constants in a paper, deposit a tag in a repository and record its DOI:
+
+1. `ccdb export tag @Run2026 -o deposit/` writes `Run2026.sqlite` (the constants the tag gives for every
+   run, with the tag and the descriptions of the tables inside), `Run2026.sha256` and
+   `Run2026.datacite.json`, a DataCite metadata record built from the instance properties (`experiment`,
+   `contact`, `license`, `url`, `citation`) and the tag's ([CLI](cli.md#export-of-a-tag)).
+2. Upload the three files to Zenodo or an institutional repository. The metadata record holds what the
+   deposit form asks for. CCDB makes no network call.
+3. `ccdb prop set @Run2026 doi 10.5281/zenodo.1234567`. A later export of the same tag names that DOI as the
+   version it replaces.
+
+The deposited file opens with `sqlite:////path/Run2026.sqlite` in Python and C++, and a request
+`/path:run@Run2026` gives in it what it gives in the experiment's database, so a reader of the paper
+reproduces every constant the analysis used without access to that database.
+
 ## Tags in the web GUI
 
 - **Tags** in the sidebar lists every tag with its variation, time (UTC) and comment.
-- A tag's page takes a run number and shows, for every table, what `table:run@NAME` returns: the variation the constants come from and when they were added, as a link to them.
+- A tag's page lists its properties, takes a run number and shows, for every table, what `table:run@NAME` returns: the variation the constants come from and when they were added, as a link to them.
 - The Request page has a tag selector that builds `/path/table:run@NAME`.
 - An assignment page opened with `@NAME` in its request string shows the assignment the tag gives and the request it was resolved from.

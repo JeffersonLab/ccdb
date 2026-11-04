@@ -120,6 +120,7 @@ This table is printed when you execute `ccdb help`:
 | log       | ShowLog         | Shows log records                              |
 | db        | Database        | Database information and management            |
 | provenance | Provenance     | Checks the record of the versions a job resolved and names the tags that give it |
+| export    | Export          | Writes tables as Parquet files, or a tag as a SQLite file with a DataCite record |
 | deprecate | Deprecate       | Marks a table, a directory or a variation as deprecated |
 | tag       | Tag             | Creates, lists, shows or removes snapshot tags |
 | prop      | Prop            | Sets, gets and lists properties of the instance, tables, directories and variations |
@@ -291,6 +292,11 @@ The tag stores the time as a UTC instant. `ccdb tag rm` writes a log record and 
 in place. `rm -a` refuses to delete an assignment that a tag may resolve to; `rm -a ID -f` skips the
 prompt and deletes it anyway.
 
+A tag carries [properties](#properties) that describe the pass it names, set with `@NAME` in place of a
+path: `ccdb prop set @Run2026 software halld_recon-5.14.0`. `ccdb tag NAME`, `ccdb tag -l` and
+`ccdb info @NAME` list them. [Export of a tag](#export-of-a-tag) writes the tag as a file for a repository
+deposit.
+
 ### Tags in requests
 
 The [request](concepts/concepts.md#requests) part `@NAME` reads constants through a tag:
@@ -322,10 +328,10 @@ Properties are name and value pairs that describe the CCDB instance or an object
 description, a license.
 
 ```
-ccdb prop set [--instance | [-t|-d|-v] NAME] KEY VALUE
-ccdb prop get [--instance | [-t|-d|-v] NAME] KEY
-ccdb prop ls  [--instance | [-t|-d|-v] NAME]
-ccdb prop rm  [--instance | [-t|-d|-v] NAME] KEY
+ccdb prop set [--instance | [-t|-d|-v] NAME | @TAG] KEY VALUE
+ccdb prop get [--instance | [-t|-d|-v] NAME | @TAG] KEY
+ccdb prop ls  [--instance | [-t|-d|-v] NAME | @TAG]
+ccdb prop rm  [--instance | [-t|-d|-v] NAME | @TAG] KEY
 ```
 
 | flag | meaning |
@@ -334,6 +340,7 @@ ccdb prop rm  [--instance | [-t|-d|-v] NAME] KEY
 | `-t` | NAME is a table; the default |
 | `-d` | NAME is a directory |
 | `-v` | NAME is a variation |
+| `@NAME` | a tag, written as in a request ([tag properties](concepts/tags.md#tag-properties)) |
 
 Standard names:
 
@@ -341,6 +348,7 @@ Standard names:
 |---|---|
 | instance | `experiment`, `description`, `license`, `citation`, `contact`, `url` |
 | directory, table, variation | `description`, `contact`, `keywords`, `source_url`, `doc_url`, `license`, `citation` |
+| tag | `description`, `software`, `container`, `data`, `rucio_did`, `doi`, `citation` |
 
 Any other name is allowed. One owner holds one value per name; `prop set` on an existing name
 replaces the value.
@@ -457,6 +465,33 @@ stale: no version created since 2021-11-03 (5 years)
   ...
   instance properties not set: license, citation, contact, experiment, url
 ```
+
+### Export of a tag
+
+`ccdb export tag @NAME -o DIR` writes the constants a [tag](concepts/tags.md) gives as one SQLite file that
+the Python and C++ libraries open like any CCDB database, together with its hash and a metadata record for a
+repository deposit:
+
+| file | content |
+|---|---|
+| `DIR/NAME.sqlite` | every table, the tag's variation and its parents, every assignment the tag sees for any run, the tag itself, and the properties of the instance, directories, tables, columns, those variations and the tag, so requests with `@NAME` work in the file |
+| `DIR/NAME.sha256` | the SHA-256 of the file, in the format of `sha256sum` |
+| `DIR/NAME.datacite.json` | a [DataCite](https://schema.datacite.org) 4.5 record: creator and publisher from the instance `experiment`, the instance `contact`, `license`, `url` and `citation`, the tag's `description`, `software`, `container`, `data` and `rucio_did`, the file's size and SHA-256 |
+
+On a copy of the Hall D database, the export of a production tag took 42 seconds:
+
+```
+$ ccdb export tag @recon_2026a -o deposit
+tag recon_2026a: 651 tables with constants, 303895 assignments, 1776037888 bytes
+  deposit/recon_2026a.sqlite
+  deposit/recon_2026a.sha256
+  deposit/recon_2026a.datacite.json
+sha256 74dc31534fe769dded09cf2e3571a8eee9437df79879402d709ec02cc9a6dc6e
+```
+
+The command never overwrites an export and contacts no outside service. After the deposit, record the DOI
+with `ccdb prop set @NAME doi DOI`; the next export of the tag lists it as the version it replaces
+([Publishing a tag](concepts/tags.md#publishing-a-tag)).
 
 ### What a job used
 
