@@ -34,12 +34,14 @@ variations unless you add `deprecated=all` ([Deprecation](concepts/deprecation.m
 |---|---|
 | `/health` | `{"status": "ok", "database": "ok", "version": ...}`, or 503 when the database does not answer |
 | `/instance` | the CCDB version, the schema version, the instance properties |
+| `/properties/vocabulary` | the standard [property names](cli.md#properties) per owner type, their meanings and the names the instance adds |
 | `/readiness?stale_years=5` | the [readiness profile](concepts/ai-readiness.md#the-readiness-profile) of the instance, the JSON of `ccdb db readiness --json` |
 | `/directories`, `/directories/{path}` | every directory; one directory with its subdirectories and tables |
 | `/tables?search=gain*` | the tables whose name matches a pattern with `*` and `?` |
 | `/tables/{path}` | one table: columns with types, units and comments, properties, variations with data, the assignment count and the newest assignment |
 | `/tables/{path}/versions` | a page of the table's assignments, as `ccdb vers`: `page`, `per_page` (25, 50, 100, 200), `sort` (`created`, `run_min`, `run_max`, `variation`, `author`, `id`), `order`, `variation`, `run`, `run_min`, `run_max` |
 | `/tables/{path}/schema` | a [JSON Schema](https://json-schema.org/) of the `rows` of the table's `data.json` |
+| `/tables/{path}/card`, `/card?format=jsonld` | the [data card](concepts/fair.md#data-cards) of the table as JSON, or as a schema.org `Dataset` in JSON-LD |
 | `/variations`, `/variations/{name}` | every variation; one variation with its ancestry |
 | `/run-ranges` | every run range |
 | `/tags`, `/tags/{name}` | every tag; one tag; each with its [properties](concepts/tags.md#tag-properties) ([Tags](concepts/tags.md)) |
