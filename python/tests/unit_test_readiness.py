@@ -74,7 +74,8 @@ class ReadinessCases(object):
             self.assertEqual(numbers[group][field], expected, "{0}.{1}".format(group, field))
         self.assertEqual(numbers["instance"], {"license": True, "citation": True, "contact": False,
                                                "experiment": False, "url": False})
-        self.assertIsNone(numbers["units"]["columns_with_ucum_units"])
+        self.assertEqual(numbers["units"]["columns_with_ucum_units"], numbers["metadata"]["columns_with_units"],
+                         "MeV, the only units of the enriched seed, is UCUM")
 
     def test_the_enrichment_moves_the_numbers(self):
         """Guards the reference against counting nothing: each change of enrich() shows up"""
@@ -82,6 +83,7 @@ class ReadinessCases(object):
         self.enrich()
         after = profile(self.provider, generated=GENERATED)
         self.assertEqual(after["metadata"]["columns_with_units"], before["metadata"]["columns_with_units"] + 1)
+        self.assertEqual(after["units"]["columns_with_ucum_units"], before["units"]["columns_with_ucum_units"] + 1)
         self.assertEqual(after["metadata"]["tables_with_contact"], before["metadata"]["tables_with_contact"] + 1)
         self.assertEqual(after["metadata"]["versions"], before["metadata"]["versions"] + 1)
         self.assertEqual(after["metadata"]["versions_with_comment"], before["metadata"]["versions_with_comment"] + 1)

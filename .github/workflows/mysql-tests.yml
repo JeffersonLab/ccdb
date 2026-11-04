@@ -115,6 +115,7 @@ jobs:
           tests.unit_test_usage_record
           tests.unit_test_provenance
           tests.unit_test_export_tag
+          tests.unit_test_ucum
           tests.unit_test_units
           tests.unit_test_tags_mysql
           tests.unit_test_time_zone_mysql
