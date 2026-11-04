@@ -180,6 +180,8 @@ jobs:
       # The time resolution cases of testdata/time on both engines (docs/concepts/time.md)
       CCDB_TEST_TIME_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/time_tests.sqlite"
       CCDB_TEST_TIME_MYSQL_CONNECTION: mysql://ccdb_user@127.0.0.1:3306/ccdb_test_time
+      # A tag of the MySQL time database exported by `ccdb export tag`, read by the [export] test
+      CCDB_TEST_EXPORT_SQLITE: "${{ github.workspace }}/export/tag_b.sqlite"
       # Schema 5 databases, upgraded and then deduplicated, for the later runs of the suite
       UPGRADED_MYSQL_CONNECTION: mysql://ccdb_user@127.0.0.1:3306/ccdb_test_upgraded
       UPGRADED_SQLITE_CONNECTION: "sqlite:///${{ github.workspace }}/cpp_test_upgraded.sqlite"
@@ -223,6 +225,9 @@ jobs:
           mysql -h 127.0.0.1 -u root --password=root -e 'CREATE DATABASE ccdb_test_time;'
           python scripts/time/make_time_db.py "$CCDB_TEST_TIME_SQLITE_CONNECTION"
           python scripts/time/make_time_db.py "$CCDB_TEST_TIME_MYSQL_CONNECTION"
+
+      - name: Export a tag of the MySQL time database (ccdb export tag)
+        run: ccdb -c "$CCDB_TEST_TIME_MYSQL_CONNECTION" export tag @tag_b -o "$GITHUB_WORKSPACE/export"
 
       # Full C++ suite: the [mysql]-tagged cases (excluded from the cpp-tests
       # workflow) AND the SQLite cases - both env vars point at seeded databases

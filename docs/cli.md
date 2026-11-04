@@ -359,7 +359,7 @@ Standard names, the vocabulary:
 | `license` | the terms of use of the constants, an SPDX id such as CC-BY-4.0 |
 | `citation` | how to cite the constants |
 | `contact` | who answers questions about the object |
-| `url` | the address of the instance (web GUI or API) |
+| `url` | the published address of the instance's web GUI; data cards and tag exports link to it |
 | `publisher` | the organization that publishes the constants, for the DataCite record of a tag export |
 | `creator` | the creator named in the DataCite record of a tag export; the experiment's collaboration by default |
 | `property_names` | names this instance adds to the vocabulary, comma-separated |

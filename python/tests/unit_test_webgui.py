@@ -232,13 +232,19 @@ class WebGuiAppTest(unittest.TestCase):
     def test_card_page_embeds_jsonld(self):
         import json
         import re
+        from ccdb import AlchemyProvider
+        provider = AlchemyProvider()
+        provider.connect(self.connection_string)
+        provider.authentication.current_user_name = "test_user"
+        provider.set_property("instance", 0, "url", "https://ccdb.example.org/")
+        provider.disconnect()
         html = self.make_app(self.connection_string).test_client().get("/tables/test/test_vars/test_table/card").get_data(as_text=True)
         block = re.search(r'<script type="application/ld\+json" id="card-jsonld">(.*?)</script>', html, re.S)
         self.assertIsNotNone(block)
         record = json.loads(block.group(1))
         self.assertEqual(record["@type"], "Dataset")
         self.assertEqual(record["name"], "/test/test_vars/test_table")
-        self.assertTrue(record["url"].endswith("/tables/test/test_vars/test_table/card"))
+        self.assertEqual(record["url"], "https://ccdb.example.org/tables/test/test_vars/test_table/card")
 
     def test_health_reports_a_dead_database_as_503_and_recovers(self):
         import json

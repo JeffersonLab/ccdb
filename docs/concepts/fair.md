@@ -37,7 +37,8 @@ curl https://ccdb.example.org/api/v1/tables/epic/HCal/adc_calib/card
 curl https://ccdb.example.org/api/v1/tables/epic/HCal/adc_calib/card?format=jsonld
 ```
 
-The `jsonld` form is a schema.org `Dataset`: `name` and `identifier` (the table path), `description`, `url`,
+The `jsonld` form is a schema.org `Dataset`: `name` and `identifier` (the table path), `description`, `url` (the
+card page under the instance property `url`, when it is set),
 `creator` (the authors of its versions), `dateModified`, `license`, `citation`, `keywords`, and one
 `variableMeasured` per column with its units. The GUI's card page embeds the same record in a
 `<script type="application/ld+json">` element, so a search engine or a data catalog that reads the GUI finds it.

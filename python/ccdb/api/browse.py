@@ -82,8 +82,7 @@ def table_card(path: str, request: Request, format: Optional[str] = Query(None, 
                                                                           "schema.org Dataset in JSON-LD"),
                db=Depends(provider_dependency)):
     if format == "jsonld":
-        url = str(request.url.remove_query_params("format"))
-        return respond(request, dump_json(service.table_card_jsonld(db, path, url)), JSONLD, SHORT)
+        return respond(request, dump_json(service.table_card_jsonld(db, path)), JSONLD, SHORT)
     if format not in (None, "json"):
         raise BadRequest("format is json or jsonld, got '{0}'".format(format))
     return respond_json(request, service.table_card(db, path))
