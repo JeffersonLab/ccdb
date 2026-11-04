@@ -87,7 +87,7 @@ def main():
 
     for label, url, kind in pages.PAGES:
         if not (url.startswith("/api/v1/tables/") and kind == "json" and "/versions" not in url and "/schema" not in url
-                and not url.endswith("/card")):
+                and "/card" not in url):
             continue
         path = unquote(url[len("/api/v1/tables"):])
         info = get(url).json()
@@ -163,6 +163,18 @@ def main():
             ("data", "shared_sets", "SELECT COUNT(*) FROM (SELECT constantSetId FROM assignments GROUP BY constantSetId "
                                     "HAVING COUNT(*) > 1)")):
         checks.equal(f"readiness {group}.{field}", profile[group][field], sql.execute(query).fetchone()[0])
+
+    # The card as schema.org JSON-LD: one variableMeasured per column, with its units, in column order
+    for label, url, kind in pages.PAGES:
+        if not (kind == "json" and url.endswith("/card?format=jsonld")):
+            continue
+        name = unquote(url[len("/api/v1/tables"):-len("/card?format=jsonld")]).rsplit("/", 1)[1]
+        record = get(url).json()
+        rows = sql.execute("SELECT c.name, c.units FROM columns c JOIN typeTables t ON t.id = c.typeId WHERE t.name = ? "
+                           "ORDER BY c.\"order\"", (name,)).fetchall()
+        checks.equal(f"{label} variableMeasured", [(each["name"], each.get("unitText")) for each in record["variableMeasured"]],
+                     [(column, units or None) for column, units in rows])
+        checks.equal(f"{label} type", (record["@context"], record["@type"]), ("https://schema.org", "Dataset"))
 
     # The change feed: the newest log records, newest first
     from xml.etree import ElementTree

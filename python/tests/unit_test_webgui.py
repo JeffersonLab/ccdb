@@ -229,6 +229,17 @@ class WebGuiAppTest(unittest.TestCase):
         self.assertIn('<th scope="row" class="fw-normal cell-mono">doi</th>', html)
         self.assertIn('href="https://doi.org/10.5281/zenodo.1234567"', html)
 
+    def test_card_page_embeds_jsonld(self):
+        import json
+        import re
+        html = self.make_app(self.connection_string).test_client().get("/tables/test/test_vars/test_table/card").get_data(as_text=True)
+        block = re.search(r'<script type="application/ld\+json" id="card-jsonld">(.*?)</script>', html, re.S)
+        self.assertIsNotNone(block)
+        record = json.loads(block.group(1))
+        self.assertEqual(record["@type"], "Dataset")
+        self.assertEqual(record["name"], "/test/test_vars/test_table")
+        self.assertTrue(record["url"].endswith("/tables/test/test_vars/test_table/card"))
+
     def test_health_reports_a_dead_database_as_503_and_recovers(self):
         import json
         missing = os.path.join(self.tmp_dir.name, "not_yet.sqlite")

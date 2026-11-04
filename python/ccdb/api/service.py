@@ -155,6 +155,11 @@ def table_card(db, path):
                             citation=instance.get("citation", ""), instance=instance)
 
 
+def table_card_jsonld(db, path, url=""):
+    """The data card of a table as a schema.org Dataset (JSON-LD)"""
+    return queries.card_jsonld(queries.table_card(db, table_object(db, path)), url)
+
+
 # JSON Schema of the cells of data.json: CCDB keeps every cell as the text it was given, so every cell is a string;
 # the column type says how to read it
 CELL_PATTERNS = {"int": r"^[+-]?[0-9]+$", "uint": r"^\+?[0-9]+$", "long": r"^[+-]?[0-9]+$", "ulong": r"^\+?[0-9]+$",

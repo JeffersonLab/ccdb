@@ -139,6 +139,18 @@ class ApiTest(unittest.TestCase):
         self.assertIn("doi", data["meanings"])
         self.assertEqual(data["instance_additions"], [])
 
+    def test_card_as_jsonld(self):
+        response = self.get("/tables/test/test_vars/test_table/card?format=jsonld")
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertTrue(response.headers["content-type"].startswith("application/ld+json"))
+        record = response.json()
+        self.assertEqual((record["@context"], record["@type"]), ("https://schema.org", "Dataset"))
+        self.assertEqual(record["identifier"], "/test/test_vars/test_table")
+        self.assertEqual([variable["name"] for variable in record["variableMeasured"]], ["x", "y", "z"])
+        self.assertTrue(record["url"].endswith("/api/v1/tables/test/test_vars/test_table/card"))
+        self.assertIn("dateModified", record)
+        self.assertEqual(self.get("/tables/test/test_vars/test_table/card?format=xml").status_code, 400)
+
     def test_openapi_document(self):
         document = self.json("/openapi.json")
         self.assertTrue(document["openapi"].startswith("3."))

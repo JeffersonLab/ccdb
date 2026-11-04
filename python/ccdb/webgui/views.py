@@ -470,7 +470,9 @@ def register(app):
         """The data card of a table: what a reader needs to use its constants and to cite them (docs/concepts/fair.md)."""
         db: ccdb.AlchemyProvider = g.db
         table = db.get_type_table("/" + table_path)  # unknown path → ObjectIsNotFoundInDbError → 404 page
-        return render_template("table_card.html", card=queries.table_card(db, table), table=table,
+        card = queries.table_card(db, table)
+        jsonld = queries.card_jsonld(card, url_for('table_card', table_path=table_path, _external=True))
+        return render_template("table_card.html", card=card, table=table, jsonld=jsonld,
                                deprecated_by=author_name(db, table.deprecated_by_user_id))
 
     @app.route('/test_request')
