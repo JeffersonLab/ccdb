@@ -41,6 +41,12 @@ class Info(CliCommandBase):
         #process arguments
         obj_name, obj_type = self._process_arguments(args)
 
+        # '@NAME' alone is the tag itself
+        if obj_type == InfoTypes.type_table and obj_name.startswith('@'):
+            tag = provider.get_tag(obj_name[1:])
+            print_tag(self.theme, tag, provider.get_tag_variation(tag), provider.get_properties("tag", tag.id))
+            return True
+
         # a table request with a tag: the table, then the tag
         tag = None
         if obj_type == InfoTypes.type_table and '@' in obj_name:
@@ -76,7 +82,7 @@ class Info(CliCommandBase):
             self.print_file(obj_name)
 
         if tag is not None:
-            print_tag(self.theme, tag, provider.get_tag_variation(tag))
+            print_tag(self.theme, tag, provider.get_tag_variation(tag), provider.get_properties("tag", tag.id))
 
         #everything is fine!
         return True

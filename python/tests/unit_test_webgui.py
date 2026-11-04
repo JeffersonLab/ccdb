@@ -217,6 +217,18 @@ class WebGuiAppTest(unittest.TestCase):
         self.assertEqual(client.get("/readiness?stale_years=101").status_code, 400)
         self.assertIn('href="/readiness"', client.get("/doc").get_data(as_text=True))
 
+    def test_tag_page_shows_the_tag_properties(self):
+        from ccdb import AlchemyProvider
+        provider = AlchemyProvider()
+        provider.connect(self.connection_string)
+        provider.authentication.current_user_name = "test_user"
+        tag = provider.create_tag("pass1", "default", comment="for properties")
+        provider.set_property("tag", tag.id, "doi", "https://doi.org/10.5281/zenodo.1234567")
+        provider.disconnect()
+        html = self.make_app(self.connection_string).test_client().get("/tags/pass1").get_data(as_text=True)
+        self.assertIn('<th scope="row" class="fw-normal cell-mono">doi</th>', html)
+        self.assertIn('href="https://doi.org/10.5281/zenodo.1234567"', html)
+
     def test_health_reports_a_dead_database_as_503_and_recovers(self):
         import json
         missing = os.path.join(self.tmp_dir.name, "not_yet.sqlite")

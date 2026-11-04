@@ -127,7 +127,7 @@ def create_server(connection_string=None, provider_factory=None):
             return dumped(service.variations(db, include_deprecated))
 
     @tool("Every tag: a named snapshot of one variation at one UTC moment, as used in a request "
-                             "/path:run@tag.")
+                             "/path:run@tag, with its properties (description, software, container, data, rucio_did, doi).")
     def list_tags() -> List[Dict[str, Any]]:
         with provider() as db:
             return dumped(service.tags(db))

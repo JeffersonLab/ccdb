@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% from '_tree.html' import tree, tree_buttons with context %}
 {% from '_deprecation.html' import switch with context %}
+{% from '_properties.html' import rows as property_rows %}
 {% block title %}@{{ tag.name }} · CCDB{% endblock %}
 
 {#- The assignment a request with the tag returns for the table; the golden comparison reads data-assignment. -#}
@@ -19,6 +20,7 @@
     <tr><th scope="row">Comment</th><td>{{ tag.comment or '' }}</td></tr>
     <tr><th scope="row">Author</th><td>{{ author }}</td></tr>
     <tr><th scope="row">Created</th><td>{{ tag.created.strftime('%Y-%m-%d %H:%M:%S') }}</td></tr>
+    {{- property_rows(properties) }}
   </tbody>
 </table>
 {% endblock %}

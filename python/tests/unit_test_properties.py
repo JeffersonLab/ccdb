@@ -291,6 +291,34 @@ class PropertiesTests(unittest.TestCase):
         self.assertIn("description :  The test directory", self.run_cli("info -d /test"))
         self.assertIn("keywords :  base", self.run_cli("info -v default"))
 
+    # tags
+    def test_cli_tag_set_get_ls_and_show(self):
+        self.provider.create_tag("pass1", "default", comment="for properties")
+        self.run_cli("prop set @pass1 software eicrecon-1.42.0")
+        self.run_cli("prop set @pass1 doi 10.5281/zenodo.1234567")
+        self.assertEqual(self.run_cli("prop get @pass1 software").strip(), "eicrecon-1.42.0")
+        self.assertEqual(self.run_cli("prop ls @pass1").strip().splitlines(),
+                         ["doi = 10.5281/zenodo.1234567", "software = eicrecon-1.42.0"])
+        tag = self.provider.get_tag("pass1")
+        self.assertEqual(self.provider.get_property("tag", tag.id, "doi").value, "10.5281/zenodo.1234567")
+        self.assertIn("software   :  eicrecon-1.42.0", self.run_cli("tag pass1"))
+        self.assertIn("doi        :  10.5281/zenodo.1234567", self.run_cli("info @pass1"))
+        self.assertIn("    software = eicrecon-1.42.0", self.run_cli("tag -l"))
+        self.assertNotIn("software =", self.run_cli("tag"))
+
+    def test_cli_tag_errors(self):
+        self.provider.create_tag("pass1", "default", comment="for properties")
+        self.assertRaises(ObjectIsNotFoundInDbError, self.run_cli, "prop set @no_such_tag doi x")
+        self.assertRaises(ValueError, self.run_cli, "prop set -v @pass1 doi x")
+
+    def test_delete_tag_deletes_its_properties(self):
+        tag = self.provider.create_tag("pass1", "default", comment="for properties")
+        tag_id = tag.id
+        self.provider.set_property("tag", tag_id, "software", "eicrecon-1.42.0")
+        self.provider.delete_tag("pass1")
+        self.assertEqual(self.owner_rows("tag", tag_id), 0)
+        self.assertIn("with 1 property", self.provider.get_log_records(limit=1)[0].description)
+
     def test_info_without_properties_has_no_block(self):
         self.assertNotIn("Properties:", self.run_cli("info " + TABLE))
 

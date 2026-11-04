@@ -21,7 +21,7 @@ class Prop(CliCommandBase):
     #------------------------------
     command = "prop"
     name = "Prop"
-    short_descr = "Sets, gets and lists properties of the instance, tables, directories and variations"
+    short_descr = "Sets, gets and lists properties of the instance, tables, directories, variations and tags"
     uses_db = True
 
     actions = ("set", "get", "ls", "rm")
@@ -81,6 +81,12 @@ class Prop(CliCommandBase):
 
     def _resolve_owner(self, provider, obj_name, parsed):
         """The owner type, its id and a title for messages, for the object the name refers to"""
+        if obj_name.startswith("@"):
+            # '@NAME' names a tag, as in a request string
+            if parsed.table or parsed.directory or parsed.variation:
+                raise ValueError("'{0}' names a tag; it can not be used with -t, -d or -v".format(obj_name))
+            tag = provider.get_tag(obj_name[1:])
+            return "tag", tag.id, "tag '{0}'".format(tag.name)
         if parsed.variation:
             variation = provider.get_variation(obj_name)
             return "variation", variation.id, "variation '{0}'".format(variation.name)
@@ -131,6 +137,8 @@ class Prop(CliCommandBase):
     prop ls  <name>
     prop rm  <name> <key>
 
+    <name> starting with @ is a tag: prop set @pass1 software eicrecon-1.42.0
+
     flags for <name>:
     -t, --table      - <name> is a table path (the default)
     -d, --directory  - <name> is a directory path
@@ -139,6 +147,7 @@ class Prop(CliCommandBase):
 Setting an existing key replaces its value. Each change is written to the log.
 Known instance keys: experiment, description, license, citation, contact, url
 Known object keys:   description, contact, keywords, source_url, doc_url, license, citation
+Known tag keys:      description, software, container, data, rucio_did, doi, citation
 Any other key is allowed too.
 
 Examples:
@@ -146,5 +155,6 @@ Examples:
    >> prop set /test/test_vars/test_table doc_url https://example.org/test_table
    >> prop set -d /test contact "Jane Doe"
    >> prop ls -v default
+   >> prop set @pass1 doi 10.5281/zenodo.1234567
    >> info /test/test_vars/test_table      #shows the table properties too
     """)

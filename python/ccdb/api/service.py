@@ -213,20 +213,22 @@ def run_ranges(db):
     return [models.RunRange(id=each.id, name=each.name or "", min=each.min, max=each.max, comment=each.comment or "") for each in found]
 
 
-def tag_model(row):
+def tag_model(row, properties_by_tag):
     return models.Tag(name=row.name, variation=row.variation, time=utc_text_of_utc(row.snapshot_time), comment=row.comment,
-                      author=row.author, created=utc_text(row.created))
+                      author=row.author, created=utc_text(row.created), properties=dict(properties_by_tag.get(row.id, [])))
 
 
 def tags(db):
-    return [tag_model(row) for row in queries.list_tags(db.session)]
+    rows = queries.list_tags(db.session)
+    properties_by_tag = queries.properties_of(db.session, "tag", [row.id for row in rows])
+    return [tag_model(row, properties_by_tag) for row in rows]
 
 
 def tag(db, name):
     rows = [row for row in queries.list_tags(db.session) if row.name == name]
     if not rows:
         raise ObjectIsNotFoundInDbError(models.Tag, "No tag '{0}'".format(name))
-    return tag_model(rows[0])
+    return tag_model(rows[0], queries.properties_of(db.session, "tag", [rows[0].id]))
 
 
 def logs(db, args):
