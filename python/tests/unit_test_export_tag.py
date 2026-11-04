@@ -44,6 +44,7 @@ class ExportTagTest(unittest.TestCase):
         db.set_property("instance", 0, "experiment", "GlueX")
         db.set_property("instance", 0, "license", "CC-BY-4.0")
         db.set_property("instance", 0, "url", "https://halldweb.jlab.org/ccdb")
+        db.set_property("instance", 0, "contact", "Hall D software <halld-software@example.org>")
         db.set_property("table", db.get_type_table(TABLE).id, "contact", "calib@example.org")
         tag = db.create_tag("pass1", "test", comment="Pass 1")
         for name, value in (("description", "Pass 1 of the test run"), ("software", "halld_recon 6.1.0"),
@@ -91,6 +92,8 @@ class ExportTagTest(unittest.TestCase):
         self.assertEqual(record["titles"][0]["title"], "GlueX calibration constants, tag pass1")
         self.assertEqual(record["creators"][0]["name"], "GlueX Collaboration")
         self.assertEqual(record["rightsList"], [{"rights": "CC-BY-4.0"}])
+        self.assertEqual(record["contributors"], [{"name": "Hall D software <halld-software@example.org>",
+                                                   "contributorType": "ContactPerson"}])
         self.assertEqual(record["alternateIdentifiers"][0], {"alternateIdentifier": sha256, "alternateIdentifierType": "SHA-256"})
         self.assertEqual(record["publicationYear"], "2026")
         self.assertIn("Software: halld_recon 6.1.0", record["descriptions"][1]["description"])
