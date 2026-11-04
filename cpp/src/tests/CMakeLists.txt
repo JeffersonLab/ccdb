@@ -35,6 +35,7 @@ if (SQLite3_FOUND)
                 "test_TimeResolution.cc"
                 "test_Calibration_SetTag.cc"
                 "test_Calibration_UsageRecord.cc"
+                "test_ExportedTag.cc"
         )
 endif (SQLite3_FOUND)
 
