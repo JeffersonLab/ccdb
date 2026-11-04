@@ -35,6 +35,14 @@ jobs:
       - name: Create database (ccdb db init)
         run: ccdb db init --init-i-am-sure
 
+      # Runs first, on the standard test content, before other examples add versions. This step installs
+      # Great Expectations, which is no dependency of CCDB (docs/apis/analysis.md)
+      - name: example_expectations_parquet (Great Expectations on a Parquet export)
+        working-directory: python
+        run: |
+          pip install "${GITHUB_WORKSPACE}[export]" "great_expectations>=1,<2"
+          python examples/example_expectations_parquet.py
+
       - name: example_llapi_readout
         working-directory: python
         run: python examples/example_llapi_readout.py
