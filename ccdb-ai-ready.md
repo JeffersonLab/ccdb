@@ -175,18 +175,20 @@ Task: the tabular readiness tools shown working on CCDB data, and every page con
 - Gate: every suite and ruler green on the final tree.
 - Done: `a5_release.md`; the final checkpoint is what the user reviews.
 
-## What the documentation and the article assume
+## State of the program
 
-The docs pages written on 2026-11-03 and the article *AI-ready calibration constants database:
-CCDB 2.5* describe this program as finished. Until the phases land, these statements are claims
-about the plan:
+Every phase is done on the branch `ai-ready` (2026-11-03): reports `a0_baseline.md` to `a5_release.md` in
+`{space}/reports/ai-ready/`. The docs on the branch describe what the branch holds; each phase committed its own
+sections. The article *Making a Calibration Database AI-Ready: CCDB 2.5*
+(`/od/JLab/Projects/AiDataReady/ccdb-ai-ready`) describes the same code; its status block lists the sentences that
+depend on the branch until it is merged into `v2-main`.
 
-| statement | phase |
+Deviations from the phases as written, each with its reason in the phase report:
+
+| phase | deviation |
 |---|---|
-| `ccdb db readiness`, `/api/v1/readiness`, MCP `readiness`, the GUI page, the Hall D profile as the command's output | A1 |
-| the startup log and warning of `CCDB_service`; `EnableUsageRecord`, `GetResolvedAssignments`, `usage_record_enabled`, `resolved_assignments`; `ccdb:provenance`; `ccdb provenance` | A2 |
-| properties on tags; `ccdb export tag`; the DataCite file | A3 |
-| the property vocabulary and `--free`; UCUM warnings; JSON-LD on cards | A4 |
-| the Great Expectations example in CI | A5 |
-
-Everything else the docs and the article say about CCDB 2.5 is in v2-main today.
+| A1 | two open-ended fields (`open_ended_run_ranges` from a run above 0, `versions_for_all_runs` from 0); `history.tags` and `data.unused_sets` added |
+| A2 | the record is off by default and turned on by `EnableUsageRecord` / `usage_record_enabled` (A-D10); it keeps distinct resolutions without run range and creation time, which `ccdb provenance` reads by id |
+| A3 | the DOI is not shown on data cards; the DataCite record also names the instance contact |
+| A4 | `edit` does not check units (a stub on v2-main, rewritten by #125); `AlchemyProvider.set_column_units` sets units of old tables; the UCUM module is `ccdb/ucum.py` |
+| A5 | the example runs on the standard test database, in the Python 3.9 examples job |
