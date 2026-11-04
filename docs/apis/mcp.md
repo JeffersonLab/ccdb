@@ -45,7 +45,7 @@ The tools answer with the same values as the [HTTP API](apis/http.md); times are
 | `table_info(path)` | columns with types, units and comments, properties, variations with data, the assignment count and the newest assignment |
 | `table_schema(path)` | a JSON Schema of the rows of the table |
 | `list_variations(include_deprecated)` | every variation with its ancestry |
-| `list_tags` | every tag with its variation and time |
+| `list_tags` | every tag with its variation, time and [properties](concepts/tags.md#tag-properties) |
 | `resolve_request(request, tag)` | the assignment a request string resolves to: run range, variation, time, author, comment, SHA-256 of the data |
 | `get_constants(request or assignment_id, tag, offset, limit)` | a page of rows of the constants, with the columns and the SHA-256 |
 | `list_versions(path, page, per_page, sort, order, variation, run)` | a page of the table's assignments, as `ccdb vers` |

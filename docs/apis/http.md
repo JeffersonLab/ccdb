@@ -42,7 +42,7 @@ variations unless you add `deprecated=all` ([Deprecation](concepts/deprecation.m
 | `/tables/{path}/schema` | a [JSON Schema](https://json-schema.org/) of the `rows` of the table's `data.json` |
 | `/variations`, `/variations/{name}` | every variation; one variation with its ancestry |
 | `/run-ranges` | every run range |
-| `/tags`, `/tags/{name}` | every tag; one tag ([Tags](concepts/tags.md)) |
+| `/tags`, `/tags/{name}` | every tag; one tag; each with its [properties](concepts/tags.md#tag-properties) ([Tags](concepts/tags.md)) |
 | `/logs?search=gains`, `/logs/{id}` | a page of the change log; one record |
 | `/assignments/{id}` | one assignment: request string, table, variation, run range, time, author, comment, `sha256`, `size`, columns, how many assignments share its data |
 | `/assignments?request=R` | the assignment a request string names |

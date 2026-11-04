@@ -15,7 +15,7 @@ FAIR principles; this page maps readiness.
 
 | requirement | CCDB 2.5 |
 |---|---|
-| Identity of the data | Every version has a permanent id and the SHA-256 of its data; a [tag](concepts/tags.md) names a whole calibration |
+| Identity of the data | Every version has a permanent id and the SHA-256 of its data; a [tag](concepts/tags.md) names a whole calibration and, with its properties, the software, container and data of the pass; `ccdb export tag` makes a tag a file with a hash and a DataCite record, ready for a DOI ([Publishing a tag](concepts/tags.md#publishing-a-tag)) |
 | Understandable without a human | Typed columns with units and comments, [properties](cli.md#properties), a JSON Schema per table, a [data card](concepts/fair.md#data-cards) in HTML and JSON |
 | Provenance of every value | Author, UTC time and comment on every version; the change log of every operation; the hash of every data set |
 | Provenance of every use | The C++ and Python libraries record, when a program asks, which versions it resolved; the JANA2 service writes the record as a file with `ccdb:provenance`; `ccdb provenance` checks it against the database ([JANA2 service](apis/jana.md#what-a-job-used)) |
