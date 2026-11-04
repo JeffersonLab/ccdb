@@ -29,6 +29,12 @@ def instance(request: Request, db=Depends(provider_dependency)):
     return respond_json(request, service.instance(db))
 
 
+@router.get("/properties/vocabulary", summary="The standard property names per owner type, their meanings and the "
+                                            "names the instance adds (property_names), as `ccdb prop` checks them")
+def property_vocabulary(request: Request, db=Depends(provider_dependency)):
+    return respond_json(request, service.property_vocabulary(db))
+
+
 @router.get("/readiness", summary="The readiness profile: counts of units, descriptions, comments, run ranges, authors, "
                                   "stale and empty tables, shared sets and instance properties, as `ccdb db readiness --json`")
 def readiness(request: Request, stale_years: int = Query(5, ge=0, le=100, description="A table is stale when no version "

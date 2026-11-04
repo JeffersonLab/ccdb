@@ -319,6 +319,20 @@ class PropertiesTests(unittest.TestCase):
         self.assertEqual(self.owner_rows("tag", tag_id), 0)
         self.assertIn("with 1 property", self.provider.get_log_records(limit=1)[0].description)
 
+    # vocabulary
+    def test_a_name_outside_the_vocabulary_warns_and_is_set(self):
+        text = self.run_cli("prop set {0} owner_group FCAL".format(TABLE))
+        self.assertIn("'owner_group' is not a standard property name for a table", text)
+        self.assertEqual(self.run_cli("prop get {0} owner_group".format(TABLE)).strip(), "FCAL")
+        self.assertNotIn("not a standard", self.run_cli("prop set {0} contact Jane".format(TABLE)))
+        self.assertNotIn("not a standard", self.run_cli("prop set {0} x y --free".format(TABLE)))
+
+    def test_the_instance_extends_the_vocabulary(self):
+        self.run_cli("prop set --instance property_names owner_group, run_period")
+        self.assertNotIn("not a standard", self.run_cli("prop set {0} owner_group FCAL".format(TABLE)))
+        self.assertNotIn("not a standard", self.run_cli("prop set -v default run_period 2026"))
+        self.assertIn("not a standard", self.run_cli("prop set {0} other x".format(TABLE)))
+
     def test_info_without_properties_has_no_block(self):
         self.assertNotIn("Properties:", self.run_cli("info " + TABLE))
 

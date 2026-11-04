@@ -132,6 +132,13 @@ class ApiTest(unittest.TestCase):
         finally:
             app.state.database.dispose()
 
+    def test_property_vocabulary(self):
+        from ccdb.vocabulary import STANDARD_NAMES
+        data = self.json("/properties/vocabulary")
+        self.assertEqual(data["owner_types"], {owner: list(names) for owner, names in STANDARD_NAMES.items()})
+        self.assertIn("doi", data["meanings"])
+        self.assertEqual(data["instance_additions"], [])
+
     def test_openapi_document(self):
         document = self.json("/openapi.json")
         self.assertTrue(document["openapi"].startswith("3."))

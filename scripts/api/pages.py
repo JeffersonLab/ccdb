@@ -23,6 +23,7 @@ PAGES = [
     ("health", "/api/v1/health", "json"),
     ("instance", "/api/v1/instance", "json"),
     ("openapi", "/api/v1/openapi.json", "json"),
+    ("property_vocabulary", "/api/v1/properties/vocabulary", "json"),
     ("readiness", "/api/v1/readiness", "json"),
     ("readiness_window", "/api/v1/readiness?stale_years=2", "json"),
     ("readiness_bad_window", "/api/v1/readiness?stale_years=-1", "edge"),

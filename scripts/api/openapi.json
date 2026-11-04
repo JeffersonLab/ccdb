@@ -1854,6 +1854,25 @@
     ]
    }
   },
+  "/api/v1/properties/vocabulary": {
+   "get": {
+    "operationId": "property_vocabulary_api_v1_properties_vocabulary_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "The standard property names per owner type, their meanings and the names the instance adds (property_names), as `ccdb prop` checks them",
+    "tags": [
+     "browse"
+    ]
+   }
+  },
   "/api/v1/readiness": {
    "get": {
     "operationId": "readiness_api_v1_readiness_get",
