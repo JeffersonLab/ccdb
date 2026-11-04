@@ -6,6 +6,7 @@ from ccdb import AlchemyProvider
 from ccdb import BraceMessage as LogFmt
 from ccdb.errors import ObjectIsNotFoundInDbError
 from ccdb.model import Property
+from ccdb import vocabulary
 
 
 log = logging.getLogger("ccdb.cmd.commands.prop")
@@ -75,6 +76,10 @@ class Prop(CliCommandBase):
         if not words:
             raise ValueError("No value is given for property '{0}'. See 'help prop'".format(key))
         value = " ".join(words)
+        if not parsed.free and not vocabulary.is_known(provider, owner_type, key):
+            log.warning(LogFmt("'{0}' is not a standard property name for a {1} ({2}). It is set anyway; add --free to "
+                               "set a name of your own without this warning, or list it in the instance property "
+                               "property_names", key, owner_type, ", ".join(vocabulary.known_names(provider, owner_type))))
         provider.set_property(owner_type, owner_id, key, value)
         log.info(LogFmt("Property '{0}' of {1} is set", key, owner_title))
         return True
@@ -106,6 +111,7 @@ class Prop(CliCommandBase):
         parser.add_argument("action", choices=self.actions)
         parser.add_argument("words", nargs="*")
         parser.add_argument("--instance", action="store_true")
+        parser.add_argument("--free", action="store_true", help="set a name outside the vocabulary without a warning")
         owner = parser.add_mutually_exclusive_group()
         owner.add_argument("-t", "--table", action="store_true")
         owner.add_argument("-d", "--directory", action="store_true")
@@ -145,10 +151,12 @@ class Prop(CliCommandBase):
     -v, --variation  - <name> is a variation name
 
 Setting an existing key replaces its value. Each change is written to the log.
-Known instance keys: experiment, description, license, citation, contact, url
-Known object keys:   description, contact, keywords, source_url, doc_url, license, citation
-Known tag keys:      description, software, container, data, rucio_did, doi, citation
-Any other key is allowed too.
+Standard keys (the vocabulary, ccdb.vocabulary):
+  instance:                    experiment, description, license, citation, contact, url, publisher, creator, property_names
+  directory, table, variation: description, contact, keywords, source_url, doc_url, license, citation
+  tag:                         description, software, container, data, rucio_did, doi, citation
+Another key is set too, with a warning; --free silences it. The instance property property_names
+(comma-separated) adds names an experiment agreed on.
 
 Examples:
    >> prop set --instance experiment GlueX

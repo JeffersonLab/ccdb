@@ -328,7 +328,7 @@ Properties are name and value pairs that describe the CCDB instance or an object
 description, a license.
 
 ```
-ccdb prop set [--instance | [-t|-d|-v] NAME | @TAG] KEY VALUE
+ccdb prop set [--instance | [-t|-d|-v] NAME | @TAG] KEY VALUE [--free]
 ccdb prop get [--instance | [-t|-d|-v] NAME | @TAG] KEY
 ccdb prop ls  [--instance | [-t|-d|-v] NAME | @TAG]
 ccdb prop rm  [--instance | [-t|-d|-v] NAME | @TAG] KEY
@@ -341,16 +341,42 @@ ccdb prop rm  [--instance | [-t|-d|-v] NAME | @TAG] KEY
 | `-d` | NAME is a directory |
 | `-v` | NAME is a variation |
 | `@NAME` | a tag, written as in a request ([tag properties](concepts/tags.md#tag-properties)) |
+| `--free` | set a name outside the vocabulary without a warning |
 
-Standard names:
+Standard names, the vocabulary:
 
+<!-- vocabulary:start -->
 | owner | names |
 |---|---|
-| instance | `experiment`, `description`, `license`, `citation`, `contact`, `url` |
+| instance | `experiment`, `description`, `license`, `citation`, `contact`, `url`, `publisher`, `creator`, `property_names` |
 | directory, table, variation | `description`, `contact`, `keywords`, `source_url`, `doc_url`, `license`, `citation` |
 | tag | `description`, `software`, `container`, `data`, `rucio_did`, `doi`, `citation` |
 
-Any other name is allowed. One owner holds one value per name; `prop set` on an existing name
+| name | meaning |
+|---|---|
+| `experiment` | the experiment the instance serves |
+| `description` | what the object holds, in a sentence or two |
+| `license` | the terms of use of the constants, an SPDX id such as CC-BY-4.0 |
+| `citation` | how to cite the constants |
+| `contact` | who answers questions about the object |
+| `url` | the address of the instance (web GUI or API) |
+| `publisher` | the organization that publishes the constants, for the DataCite record of a tag export |
+| `creator` | the creator named in the DataCite record of a tag export; the experiment's collaboration by default |
+| `property_names` | names this instance adds to the vocabulary, comma-separated |
+| `keywords` | words to find the object by, comma-separated |
+| `source_url` | the code that produces the constants |
+| `doc_url` | the documentation of the constants |
+| `software` | the software release of the pass a tag names |
+| `container` | the container image of the pass |
+| `data` | the input data of the pass |
+| `rucio_did` | the Rucio data identifier of the pass's output |
+| `doi` | the DOI of the deposited export of the tag |
+<!-- vocabulary:end -->
+
+`prop set` warns on a name outside the vocabulary and sets it anyway; `--free` silences the warning. An
+instance extends the vocabulary with the instance property `property_names`, a comma-separated list, so
+names an experiment agreed on pass without the flag. The HTTP API serves the vocabulary at
+`/api/v1/properties/vocabulary`. One owner holds one value per name; `prop set` on an existing name
 replaces the value.
 
 ```

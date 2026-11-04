@@ -76,6 +76,12 @@ def columns_of(table):
 
 # ---------------------------------------------------------------------------------------------------------- browse
 
+def property_vocabulary(db):
+    """The standard property names per owner type with their meanings and the instance's additions (docs/cli.md)"""
+    from ccdb.vocabulary import vocabulary
+    return vocabulary(db)
+
+
 def readiness(db, stale_years=5):
     """The readiness profile of the database (docs/concepts/ai-readiness.md): plain data, as `ccdb db readiness --json`"""
     from ccdb.readiness import profile
